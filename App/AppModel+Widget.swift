@@ -1,0 +1,79 @@
+import AppIntents
+import Foundation
+import MaruCore
+import MaruDatabase
+
+extension AppModel {
+    /// A tap on a widget opens Today at the slot of the link (D048). The link has no health data.
+    func openWidgetLink(_ url: URL) {
+        guard url.scheme == "maru", url.host() == "today" else { return }
+        selectedTab = .today
+        resetHistory()
+        pendingWidgetPart = url.pathComponents.dropFirst().first.flatMap(DayPart.init(linkName:))
+        showPendingWidgetSlot()
+    }
+
+    /// Scrolls to the slot of a widget link. Before Today loads, the slot waits for the load.
+    func showPendingWidgetSlot() {
+        guard let part = pendingWidgetPart, case let .loaded(snapshot) = content, let day = snapshot.today else { return }
+        pendingWidgetPart = nil
+        guard let group = day.groups.first(where: { $0.part == part }) else { return }
+        focus(Set(group.entries.map(\.occurrence.key)))
+    }
+
+    /// The tap on a gray capsule of the "Take Now" widget (D048). The system runs it in this process.
+    ///
+    /// It records one dose with the transaction of the record circle and the generation check of D040, and then it
+    /// runs the reminders as after a record on Today (D047). The dose must still be the one that the widget showed:
+    /// the same occurrence, the same schedule version, today, and open. A dose that is taken already needs nothing.
+    /// In every other case, and when the database is locked or the commit fails, it records nothing, never
+    /// shows a success, and asks the system to open Maru (spec 7.2).
+    func takeFromWidget(_ intent: TakeDoseIntent) async throws {
+        let now = Date()
+        let generation = dataGeneration
+        if let occurrenceID = UUID(uuidString: intent.occurrenceID).map({ OccurrenceID($0) }),
+           let versionID = UUID(uuidString: intent.scheduleVersionID).map({ ScheduleVersionID($0) }),
+           let deviceTimeZone = NamedTimeZone(device: .current, at: now),
+           let target = try? await store.widgetTarget(
+               of: occurrenceID, scheduleVersionID: versionID, at: now
+           ) {
+            switch target {
+            case .alreadyTaken:
+                return
+            case let .open(occurrence, record):
+                let event = PendingEvent(
+                    event: IntakeEvent(
+                        occurrenceID: occurrence.id,
+                        action: .taken,
+                        occurredAt: now,
+                        recordedAt: now,
+                        source: .app,
+                        // The event revises the last event that the store read, so a second tap writes nothing (T18).
+                        supersedes: record.events.last?.id
+                    ),
+                    scheduleVersionID: occurrence.scheduleVersionID
+                )
+                if await commitAndWait([event], generation: generation) {
+                    // The system can suspend the process after the intent returns, so wait for the reminders here.
+                    _ = try? await store.reconcileReminders(at: Date(), deviceTimeZone: deviceTimeZone)
+                    return
+                }
+            case .none:
+                break
+            }
+        }
+        selectedTab = .today
+        throw intent.needsToContinueInForegroundError(
+            IntentDialog("Open Maru to record this dose."), continuation: nil
+        )
+    }
+}
+
+extension AppStore {
+    /// What a tap on the "Take Now" widget can record. See `LocalStore.widgetTarget`.
+    func widgetTarget(
+        of occurrenceID: OccurrenceID, scheduleVersionID: ScheduleVersionID, at now: Date
+    ) async throws(StorageError) -> ReminderActionTarget {
+        try await open().widgetTarget(of: occurrenceID, scheduleVersionID: scheduleVersionID, at: now)
+    }
+}

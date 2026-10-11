@@ -10,7 +10,7 @@ extension TodaySnapshot {
     /// - Parameters:
     ///   - items: Every item of the store.
     ///   - generation: The generation of the data that the caller read (D040).
-    /// - Returns: The snapshot, and the number of occurrences that the run gave.
+    /// - Returns: The snapshot, and the occurrences that the run gave, also those of yesterday and tomorrow.
     static func load(
         from store: LocalStore,
         items: [Item],
@@ -18,7 +18,7 @@ extension TodaySnapshot {
         at now: Date,
         deviceTimeZone: NamedTimeZone,
         generation: Int
-    ) async throws(StorageError) -> (snapshot: TodaySnapshot, occurrenceCount: Int) {
+    ) async throws(StorageError) -> (snapshot: TodaySnapshot, occurrences: [Occurrence]) {
         let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
         let itemIDs = try await store.itemIDsBySlot()
         // An archived item leaves Today, also with a record of today. The record stays in the history (T08).
@@ -38,6 +38,6 @@ extension TodaySnapshot {
             doses: try await store.doses(of: Set(todays.map(\.scheduleVersionID))),
             records: try await store.records(of: todays.map(\.id))
         )
-        return (snapshot, run.occurrences.count)
+        return (snapshot, run.occurrences)
     }
 }

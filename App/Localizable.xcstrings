@@ -1,6 +1,15 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Open Maru to record this dose." : {
+      "comment" : "Widget: the prompt after a tap on a capsule that could not record. The system then opens the app."
+    },
+    "Record a Dose" : {
+      "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts."
+    },
+    "Dose" : {
+      "comment" : "Widget action: the name of the dose parameter."
+    },
     "%@ %@" : {
       "comment" : "Edit screen: a reminder time on the device with its days, when the kept zone of a medication is on another day. Example: Sun 6:00 PM."
     },

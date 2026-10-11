@@ -19,7 +19,7 @@ targets:
   Maru:
     type: application
     platform: iOS
-    sources: [App]
+    sources: [App, Shared]
     dependencies:
       - package: MaruKit
         product: MaruCore
@@ -27,6 +27,8 @@ targets:
         product: MaruDatabase
       - package: MaruKit
         product: MaruNotifications
+      # The Home Screen widgets (D048). XcodeGen embeds the extension in the app.
+      - target: MaruWidgets
     settings:
       base:
         # Placeholder. Freeze the bundle ID before the first TestFlight build.
@@ -40,5 +42,27 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
+        # The App Group holds the database that the widgets read (D048). The Info.plist adds the link scheme of a widget tap.
+        CODE_SIGN_ENTITLEMENTS: Config/Maru.entitlements
+        INFOPLIST_FILE: Config/Maru-Info.plist
         # The app icon is in App/Assets.xcassets. App/Icons.xcassets holds the form icons.
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  MaruWidgets:
+    type: app-extension
+    platform: iOS
+    sources: [Widget, Shared]
+    dependencies:
+      - package: MaruKit
+        product: MaruCore
+      - package: MaruKit
+        product: MaruDatabase
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.imhangli.maru.widgets
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_FILE: Config/MaruWidgets-Info.plist
+        INFOPLIST_KEY_CFBundleDisplayName: Maru
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_ENTITLEMENTS: Config/MaruWidgets.entitlements
+        SKIP_INSTALL: YES

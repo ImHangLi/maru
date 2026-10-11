@@ -3,6 +3,7 @@ import MaruCore
 import MaruDatabase
 import Observation
 import os
+import WidgetKit
 
 enum AppTab: Hashable {
     case today, myList
@@ -63,6 +64,8 @@ final class AppModel {
     /// A one-time result of the debug tool on Today, for example after a reset. See `App/Debug/`.
     var debugNotice: DebugMessage?
     #endif
+    /// The slot of a widget link that came before Today loaded. See `AppModel+Widget.swift`.
+    var pendingWidgetPart: DayPart?
     private var load: Task<Void, Never>?
     /// A refresh request came while a read ran. The model reads again when that read ends.
     private var needsRefresh = false
@@ -72,7 +75,10 @@ final class AppModel {
     private var backgroundedAt: ContinuousClock.Instant?
     private var launch: OSSignpostIntervalState?
 
-    init() {
+    /// The one model of the process. The widget intent runs in the app process and needs it (D048).
+    static let shared = AppModel()
+
+    private init() {
         store = AppStore()
         launch = Signposts.signposter.beginInterval("Launch")
         // A file of the share sheet stays when the app stops before the sheet closes (spec 10).
@@ -157,6 +163,11 @@ final class AppModel {
             let replacesToday = if case let .loaded(shown) = self.content { shown.today != nil } else { false }
             self.content = content
             todayDidShow(replacesToday: replacesToday)
+            if case .loaded = content {
+                // The widgets show what is stored, so they read again after each read of the app (D048).
+                WidgetCenter.shared.reloadAllTimelines()
+                showPendingWidgetSlot()
+            }
             // After the content shows, so Today never waits for the reminders (spec 8.1, 9).
             if case .loaded = content, needsReconcile, let deviceTimeZone = NamedTimeZone(device: .current, at: now) {
                 needsReconcile = false

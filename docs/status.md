@@ -24,7 +24,7 @@ Maru was developed in a private repository before it became public. Issue number
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the History graph, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.
-2. A Home Screen widget. The maintainer sees the design first (D046).
+2. Home Screen widgets are in code (D048), "Today" and "Take Now". Nobody saw them. Check on the iPhone: the signing of the App Group with the free team, the one-time move of the database, the tap on a capsule with the app closed, and the reminders after it. The database now lives in the App Group container, and the old copy stays in Application Support.
 3. Acceptance on a real iPhone: one week of daily use by the maintainer. It started on 2026-10-12.
 4. Milestone B: TestFlight. The maintainer starts it. The bundle ID freeze and the Apple Developer Program come first (D005, D007). Time-sensitive reminders also wait for the program (D034).
 

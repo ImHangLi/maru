@@ -125,7 +125,7 @@ extension AppModel {
         return Set(day.groups.filter { $0.entries.contains { keys.contains($0.occurrence.key) } }.map(\.part))
     }
 
-    private func focus(_ keys: Set<OccurrenceKey>) {
+    func focus(_ keys: Set<OccurrenceKey>) {
         today.focus = TodayFocus(keys: keys)
         if case let .loaded(snapshot) = content, let day = snapshot.today {
             today.foldedParts.subtract(focusedParts(of: day))
