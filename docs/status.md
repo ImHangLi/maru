@@ -28,13 +28,6 @@ Maru was developed in a private repository before it became public. Issue number
 3. Acceptance on a real iPhone: one week of daily use by the maintainer. It started on 2026-10-12.
 4. Milestone B: TestFlight. The maintainer starts it. The bundle ID freeze and the Apple Developer Program come first (D005, D007). Time-sensitive reminders also wait for the program (D034).
 
-## Open cleanup proposals
-
-These need a maintainer decision. The list with evidence is in the earlier private pull request "Remove dead code and stale content".
-
-- Model parts with no caller in the app: `ProductVersion`, `ScheduleVersion.productVersionID`, and `Item.imageReference`. Their tables and columns stay in the schema.
-- Debug launch arguments with no recorded use: `-MaruTab`, `-MaruHistory`, `-MaruSettings`, `-MaruTap`, `-MaruStorageError`, `-MaruSampleHistory`, and `-MaruSampleData one`.
-
 ## Known gaps
 
 - Dark Mode, the largest text sizes, and VoiceOver speech need a full check on a device.

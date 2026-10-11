@@ -99,9 +99,6 @@ struct SettingsView: View {
             #endif
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
-            #if DEBUG
-            .modifier(DebugMenuDestination())
-            #endif
             .toolbar {
                 // A restore replaces the data while it runs. The sheet stays until it ends (D040).
                 if !model.transfer.isRestoring {

@@ -69,8 +69,6 @@ public struct Item: Hashable, Sendable {
     public var form: ItemForm
     public var color: ItemColor
     public var isArchived: Bool
-    /// A reference to an image file. The database stores the reference, not the image.
-    public var imageReference: String?
     public var intakeNote: IntakeNote?
 
     public init(
@@ -80,7 +78,6 @@ public struct Item: Hashable, Sendable {
         form: ItemForm,
         color: ItemColor,
         isArchived: Bool = false,
-        imageReference: String? = nil,
         intakeNote: IntakeNote? = nil
     ) throws {
         self.id = id
@@ -89,7 +86,6 @@ public struct Item: Hashable, Sendable {
         self.form = form
         self.color = color
         self.isArchived = isArchived
-        self.imageReference = imageReference
         self.intakeNote = intakeNote
     }
 
@@ -101,41 +97,5 @@ public struct Item: Hashable, Sendable {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { throw ItemError.blankName }
         return trimmed
-    }
-}
-
-public enum ProductSource: String, Hashable, Sendable {
-    case manual
-    case labelScan
-}
-
-/// The product details that the user checked at one point in time. It is immutable.
-/// A correction or a new spec creates a new `ProductVersionID`, so the past never changes (spec 7.2, T06).
-/// The dose is not part of it. The dose belongs to the schedule version.
-public struct ProductVersion: Hashable, Sendable {
-    public let id: ProductVersionID
-    public let itemID: ItemID
-    public let name: String
-    public let specification: String?
-    public let source: ProductSource
-    public let verifiedAt: Date
-    public let effectiveFrom: LocalDate
-
-    public init(
-        id: ProductVersionID = ProductVersionID(),
-        itemID: ItemID,
-        name: String,
-        specification: String? = nil,
-        source: ProductSource,
-        verifiedAt: Date,
-        effectiveFrom: LocalDate
-    ) {
-        self.id = id
-        self.itemID = itemID
-        self.name = name
-        self.specification = specification
-        self.source = source
-        self.verifiedAt = verifiedAt
-        self.effectiveFrom = effectiveFrom
     }
 }

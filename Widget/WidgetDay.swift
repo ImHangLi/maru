@@ -37,7 +37,6 @@ struct WidgetDay: Sendable {
 
     var doses: [Dose] { slots.flatMap(\.doses) }
     var takenCount: Int { doses.filter(\.isTaken).count }
-    var hasOpenDose: Bool { doses.contains(where: \.isOpen) }
 
     /// The part of the day of the clock at `date`.
     func clockPart(at date: Date) -> DayPart {

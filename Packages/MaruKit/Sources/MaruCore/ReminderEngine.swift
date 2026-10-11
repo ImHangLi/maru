@@ -157,7 +157,7 @@ public actor ReminderEngine {
     private let center: any ReminderCenter
     private let ledger: any RemovalLedger
     private let privacy: any ReminderPrivacyStore
-    private let zoneRecord: (any TimeZoneRecord)?
+    private let zoneRecord: DefaultsTimeZoneRecord?
     /// The clock at the time of the call. A run reads it when it reads the pending requests, after every wait.
     private let clock: @Sendable () -> Date
     private var lastRun: Task<Void, Never>?
@@ -173,7 +173,7 @@ public actor ReminderEngine {
         center: any ReminderCenter,
         ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
-        zoneRecord: (any TimeZoneRecord)? = nil,
+        zoneRecord: DefaultsTimeZoneRecord? = nil,
         clock: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.source = source

@@ -62,13 +62,12 @@ extension LocalStore {
         try db.execute(
             sql: """
                 INSERT INTO scheduleVersion
-                    (id, scheduleID, position, effectiveFrom, weekdays, everyOtherDayFrom, dose, timeZonePolicy, timeZone,
-                     productVersionID)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (id, scheduleID, position, effectiveFrom, weekdays, everyOtherDayFrom, dose, timeZonePolicy, timeZone)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
             arguments: [
                 version.id.text, version.scheduleID.text, position, version.effectiveFrom.text, version.weeklyRule.text,
-                version.everyOtherDayFrom?.text, version.dose?.text, policy, timeZone, version.productVersionID?.text,
+                version.everyOtherDayFrom?.text, version.dose?.text, policy, timeZone,
             ]
         )
         for (slotPosition, slotTime) in version.slotTimes.enumerated() {
@@ -136,7 +135,6 @@ extension LocalStore {
         case ("followsDevice", nil): .followsDevice
         default: throw StorageError.invalidData
         }
-        let productVersionID: String? = try row.decode(forColumn: "productVersionID")
         let everyOtherDayFrom: String? = try row.decode(forColumn: "everyOtherDayFrom")
         return try ScheduleVersion(
             id: ScheduleVersionID(text: id),
@@ -146,8 +144,7 @@ extension LocalStore {
             everyOtherDayFrom: everyOtherDayFrom.map(LocalDate.init(text:)),
             slotTimes: slotTimes,
             dose: dose,
-            timeZonePolicy: timeZonePolicy,
-            productVersionID: productVersionID.map(ProductVersionID.init(text:))
+            timeZonePolicy: timeZonePolicy
         )
     }
 }

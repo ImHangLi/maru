@@ -13,7 +13,7 @@ extension LocalStore {
     /// and the event revises the last event of the returned record, so a second event is rejected (T18).
     ///
     /// - Parameters:
-    ///   - observedTimeZone: What `TimeZoneRecord.load()` returns.
+    ///   - observedTimeZone: What `DefaultsTimeZoneRecord.load()` returns.
     ///   - generation: The generation of the data that the caller read. See `checkedWrite`.
     public func actionTarget(
         of reminder: DeliveredReminder,

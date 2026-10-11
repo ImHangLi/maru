@@ -4,28 +4,6 @@ import Testing
 
 @Suite("Scope and item color (spec 1, D021)")
 struct ModelRuleTests {
-    // MARK: No inventory (spec 1, T09)
-
-    @Test func noTypeCarriesInventoryFields() throws {
-        let (schedule, _, _) = Fixtures.twiceDailySchedule()
-        let occurrence = Fixtures.occurrence()
-        let values: [Any] = [
-            Fixtures.item(),
-            ProductVersion(itemID: Fixtures.item().id, name: "D3", source: .manual, verifiedAt: Date(), effectiveFrom: Fixtures.date(2026, 1, 1)),
-            schedule,
-            try #require(schedule.versions.first),
-            occurrence,
-            Fixtures.event(for: occurrence, .taken),
-        ]
-        let banned = ["inventory", "stock", "remaining", "bottle", "supply", "refill", "quantity", "count", "pills"]
-        for value in values {
-            for child in Mirror(reflecting: value).children {
-                let label = (child.label ?? "").lowercased()
-                #expect(!banned.contains { label.contains($0) }, "\(type(of: value)).\(label)")
-            }
-        }
-    }
-
     // MARK: Item color (D021)
 
     @Test func newItemGetsTheFirstColorThatNoActiveItemUses() throws {

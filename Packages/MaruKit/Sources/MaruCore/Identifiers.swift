@@ -10,7 +10,6 @@ public struct Identifier<Tag>: Hashable, Sendable {
 }
 
 public typealias ItemID = Identifier<Item>
-public typealias ProductVersionID = Identifier<ProductVersion>
 public typealias ScheduleID = Identifier<Schedule>
 public typealias ScheduleSlotID = Identifier<ScheduleSlot>
 public typealias ScheduleVersionID = Identifier<ScheduleVersion>

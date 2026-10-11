@@ -44,7 +44,6 @@ public struct ScheduleVersion: Hashable, Sendable {
     /// The dose per intake as the user typed it. `nil` means no dose. There is no default dose.
     public let dose: Dose?
     public let timeZonePolicy: TimeZonePolicy
-    public let productVersionID: ProductVersionID?
 
     public init(
         id: ScheduleVersionID = ScheduleVersionID(),
@@ -54,8 +53,7 @@ public struct ScheduleVersion: Hashable, Sendable {
         everyOtherDayFrom: LocalDate? = nil,
         slotTimes: [SlotTime],
         dose: Dose? = nil,
-        timeZonePolicy: TimeZonePolicy,
-        productVersionID: ProductVersionID? = nil
+        timeZonePolicy: TimeZonePolicy
     ) throws {
         guard !slotTimes.isEmpty else { throw ScheduleError.noSlotTimes }
         guard everyOtherDayFrom == nil || weeklyRule == .everyDay else { throw ScheduleError.weekdaysWithEveryOtherDay }
@@ -71,7 +69,6 @@ public struct ScheduleVersion: Hashable, Sendable {
         self.slotTimes = slotTimes
         self.dose = dose
         self.timeZonePolicy = timeZonePolicy
-        self.productVersionID = productVersionID
     }
 
     public func time(for slotID: ScheduleSlotID) -> WallClockTime? {
@@ -158,8 +155,7 @@ public struct Schedule: Hashable, Sendable {
             everyOtherDayFrom: latest.everyOtherDayFrom,
             slotTimes: slotTimes,
             dose: latest.dose,
-            timeZonePolicy: latest.timeZonePolicy,
-            productVersionID: latest.productVersionID
+            timeZonePolicy: latest.timeZonePolicy
         )
         try appendVersion(next)
         return next

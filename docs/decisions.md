@@ -839,3 +839,14 @@ Agent detail:
 - Tests (D016): one new test, a restore with a missing staged file, and one for the move.
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw a widget. CI builds the app. Needs a check on a real iPhone: the signing, the move of an existing database, the tap on a capsule with the app closed and with the app open, the reminder and the follow-up that go after the tap, a locked iPhone, a change of the tint, and dark mode.
+
+## D049 · 2026-10-12 · Simplify: remove unused code
+
+The maintainer asked for this on 2026-10-12. Users see no change.
+
+- Debug launch arguments: `-MaruTab`, `-MaruHistory`, `-MaruSettings`, `-MaruStorageError`, `-MaruSampleHistory`, and `-MaruSampleData one`, with their code. `-MaruTap`, `-MaruScenario`, `-MaruSampleData YES`, and `-MaruSampleRecords YES` stay.
+- Model: `ProductVersion`, `ProductSource`, `ProductVersionID`, `ScheduleVersion.productVersionID`, and `Item.imageReference`. The tables and columns stay in the schema with no migration. Reads ignore them and writes leave them NULL.
+- `TimeZoneRecord` protocol: it had one conformer. `DefaultsTimeZoneRecord` now lives in `MaruCore`.
+- `AppStore`: one helper opens the store for both record transactions. The `history` and `historyCounts` forwarders are gone.
+- Tests and helpers: `noTypeCarriesInventoryFields`, `DoseTests`, `writerSetting`, and `WidgetDay.hasOpenDose`.
+- `LocalStore+Move.swift` is now `LocalStore+Adopt.swift`.

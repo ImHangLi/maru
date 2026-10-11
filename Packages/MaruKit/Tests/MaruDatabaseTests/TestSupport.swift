@@ -148,13 +148,6 @@ extension LocalStore {
         }
     }
 
-    /// Reads a setting of the connection that writes. The reader connections have their own settings.
-    func writerSetting(_ pragma: String) async throws -> Int? {
-        try await writer.writeWithoutTransaction { db in
-            try Int.fetchOne(db, sql: "PRAGMA \(pragma)")
-        }
-    }
-
     func count(_ table: String) async throws -> Int {
         try await writer.read { db in
             try Int.fetchOne(db, sql: "SELECT COUNT(*) FROM \(table)")!

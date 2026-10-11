@@ -86,8 +86,6 @@ final class AppModel {
         #if DEBUG
         // Applies a request of the debug menu before the first read opens a store.
         if let problem = DebugStore.launch.problem { debugNotice = DebugMessage(text: problem, isProblem: true) }
-        if let tab = DebugLaunch.tab { selectedTab = tab }
-        debugOpenSettings()
         #endif
     }
 
@@ -176,10 +174,6 @@ final class AppModel {
             #if DEBUG
             if let deviceTimeZone = NamedTimeZone(device: .current, at: now) {
                 debugTap(at: now, deviceTimeZone: deviceTimeZone)
-            }
-            if DebugLaunch.history != nil, !DebugLaunch.didOpenHistory {
-                DebugLaunch.didOpenHistory = true
-                openHistory()
             }
             #endif
         }

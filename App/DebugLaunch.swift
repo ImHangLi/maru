@@ -6,46 +6,14 @@ import MaruDatabase
 /// Launch arguments of a debug build, for screenshots and manual checks. A release build does not have this code.
 enum DebugLaunch {
     /// `-MaruSampleData YES`: load the sample items when the store has no item.
-    /// `-MaruSampleData one` loads only the first sample, for a page with one card.
     static var wantsSampleData: Bool {
-        UserDefaults.standard.bool(forKey: "MaruSampleData") || onlyOneSample
-    }
-
-    static var onlyOneSample: Bool {
-        UserDefaults.standard.string(forKey: "MaruSampleData") == "one"
+        UserDefaults.standard.bool(forKey: "MaruSampleData")
     }
 
     /// `-MaruSampleRecords YES`: with the sample items, record morning as taken, one noon item as taken,
     /// and one evening item as skipped, through the record transaction. For screenshots of recorded rows.
     static var wantsSampleRecords: Bool {
         UserDefaults.standard.bool(forKey: "MaruSampleRecords")
-    }
-
-    /// `-MaruSampleHistory YES`: the sample schedules start six days ago, and some past doses get records
-    /// through the backfill transaction. For screenshots of the history.
-    /// `-MaruSampleHistory 40` starts them that many days ago, for more than one page of days.
-    static var wantsSampleHistory: Bool {
-        sampleHistoryDays > 0
-    }
-
-    static var sampleHistoryDays: Int {
-        let days = UserDefaults.standard.integer(forKey: "MaruSampleHistory")
-        return days > 0 ? days : UserDefaults.standard.bool(forKey: "MaruSampleHistory") ? 6 : 0
-    }
-
-    /// `-MaruHistory open`: open the history after the first read. `correct` also opens the time of the
-    /// first taken dose, `backfill` the time of the first dose with no record, and `older` scrolls to the
-    /// oldest loaded day. The simulator cannot tap or scroll.
-    static var history: String? {
-        UserDefaults.standard.string(forKey: "MaruHistory")
-    }
-
-    @MainActor static var didOpenHistory = false
-    @MainActor static var didShowHistoryDemo = false
-
-    /// `-MaruTab myList`: start on My Items. A screenshot needs it, because a new session opens Today (spec 1).
-    static var tab: AppTab? {
-        UserDefaults.standard.string(forKey: "MaruTab") == "myList" ? .myList : nil
     }
 
     /// `-MaruTap 8:00` or `-MaruTap 8:00+120`: after the first read, act as a tap on the reminder of that time of today,
@@ -67,31 +35,12 @@ enum DebugLaunch {
     static var scenario: DebugScenario? {
         UserDefaults.standard.string(forKey: "MaruScenario").flatMap(DebugScenario.init)
     }
-
-    /// `-MaruSettings YES`: open the settings sheet at launch, for screenshots.
-    /// `-MaruSettings ask`: also show the system notification prompt first, as a save with a reminder time does.
-    /// `-MaruSettings debug`: also open the debug menu.
-    static var settings: String? {
-        UserDefaults.standard.string(forKey: "MaruSettings")
-    }
-
-    /// `-MaruStorageError corrupt`: the open fails with this error. The database files are not opened or changed.
-    static var storageError: StorageError? {
-        switch UserDefaults.standard.string(forKey: "MaruStorageError") {
-        case "corrupt": .corrupt
-        case "newerSchema": .newerSchema
-        case "migrationFailed": .migrationFailed
-        case "diskFull": .diskFull
-        case "unavailable": .unavailable
-        default: nil
-        }
-    }
 }
 
 extension AppStore {
     /// The tap of a `-MaruScenario` scenario, else the reminder of `DebugLaunch.tap` as the system would deliver it,
     /// with the `userInfo` of the plan.
-    /// When the plan does not read, for example with `-MaruStorageError unavailable`, it has only the series ID.
+    /// When the plan does not read, it has only the series ID.
     func debugTap(at now: Date, deviceTimeZone: NamedTimeZone) async -> DeliveredReminder? {
         if let tap = debug.launchTap {
             debug.launchTap = nil
@@ -125,7 +74,7 @@ extension AppStore {
         let store = try open()
         guard try await store.items().isEmpty else { return }
         var items: [Item] = []
-        for sample in DebugLaunch.onlyOneSample ? Array(Self.samples.prefix(1)) : Self.samples {
+        for sample in Self.samples {
             // Each sample gets the color that the edit screen gives a new item, so the colors differ (D021).
             let item = try Item(
                 category: .supplement,
@@ -143,7 +92,7 @@ extension AppStore {
             try schedule.appendVersion(
                 ScheduleVersion(
                     scheduleID: schedule.id,
-                    effectiveFrom: LocalDate(now, in: deviceTimeZone).adding(days: -DebugLaunch.sampleHistoryDays),
+                    effectiveFrom: LocalDate(now, in: deviceTimeZone),
                     weeklyRule: .everyDay,
                     slotTimes: slotTimes,
                     dose: sample.amount.flatMap(Dose.init),
@@ -153,28 +102,6 @@ extension AppStore {
             try await store.save(schedule)
         }
         if DebugLaunch.wantsSampleRecords { try await recordSamples(at: now, deviceTimeZone: deviceTimeZone) }
-        if DebugLaunch.wantsSampleHistory { try await recordSampleHistory(at: now, deviceTimeZone: deviceTimeZone) }
-    }
-
-    /// Past doses: most taken at the planned time, one recorded later, one skipped, and some with no record.
-    private func recordSampleHistory(at now: Date, deviceTimeZone: NamedTimeZone) async throws {
-        let store = try open()
-        let page = try await store.history(before: LocalDate(now, in: deviceTimeZone), days: DebugLaunch.sampleHistoryDays, deviceTimeZone: deviceTimeZone)
-        for (dayIndex, day) in page.days.enumerated() {
-            for (index, dose) in day.doses.enumerated() where (index + dayIndex) % 4 != 3 {
-                let planned = dose.occurrence.resolvedTime.earliestInstant
-                let action: IntakeAction = (index + dayIndex) % 5 == 2 ? .skipped : .taken
-                let recordedAt = index == 1 ? planned.addingTimeInterval(95 * 60) : planned.addingTimeInterval(2 * 60)
-                let event = IntakeEvent(
-                    occurrenceID: dose.occurrence.id,
-                    action: action,
-                    occurredAt: index == 1 ? planned : recordedAt,
-                    recordedAt: recordedAt,
-                    source: .app
-                )
-                try await store.recordBackfill(event, occurrence: dose.occurrence)
-            }
-        }
     }
 
     /// Morning taken, the first noon item taken, and the first evening item skipped.

@@ -100,16 +100,3 @@ extension AppModel {
         }
     }
 }
-
-#if DEBUG
-extension AppModel {
-    /// `-MaruSettings`. See `DebugLaunch.settings`.
-    func debugOpenSettings() {
-        guard let value = DebugLaunch.settings else { return }
-        Task {
-            if value == "ask" { _ = await SystemReminderCenter().requestAuthorization() }
-            openSettings()
-        }
-    }
-}
-#endif
