@@ -12,6 +12,8 @@ struct EditorContext: Sendable {
     /// The time at which the time wheel of a new supplement starts (spec 2.1): the earliest time that the user
     /// already confirmed for an active supplement, else 08:00. It counts only after "Add" (D032).
     let exampleTime: WallClockTime
+    /// The names of the user's other items, active items first. The name suggestions show them first (D038).
+    let itemNames: [String]
 }
 
 extension AppStore {
@@ -32,7 +34,10 @@ extension AppStore {
             item: item,
             schedule: schedule,
             newItemColor: .forNewItem(among: items),
-            exampleTime: exampleTime
+            exampleTime: exampleTime,
+            itemNames: (items.filter { !$0.isArchived } + items.filter(\.isArchived))
+                .filter { $0.id != itemID }
+                .map(\.name)
         )
     }
 

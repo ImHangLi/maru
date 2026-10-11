@@ -172,6 +172,9 @@
     "Choose the first day." : {
       "comment" : "Edit screen: the preview line and the hint when a plan repeats every second day and has no first day yet."
     },
+    "Clear" : {
+      "comment" : "Label scan: the button that removes the chosen name."
+    },
     "Color" : {
       "comment" : "Edit screen: the text “Color”."
     },
@@ -238,6 +241,9 @@
     "Every other day at %@, starting tomorrow, with no end date" : {
       "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times."
     },
+    "Fills the name." : {
+      "comment" : "Edit screen: the VoiceOver hint of a name suggestion under the name field."
+    },
     "For example 1000 IU" : {
       "comment" : "Edit screen: the placeholder of the optional amount field. The amount is free text, and IU is one of the units."
     },
@@ -288,6 +294,9 @@
     },
     "Maru can’t read your data right now" : {
       "comment" : "Storage problem: the title when the data can be read later, for example after the user unlocks the device."
+    },
+    "Maru Can’t Use the Camera" : {
+      "comment" : "Edit screen: the title of the alert when the camera is off for Maru."
     },
     "Maru can’t use your time zone" : {
       "comment" : "Today: the title when the time zone of the device is an offset such as GMT+8 and not a city."
@@ -351,6 +360,9 @@
     },
     "Name" : {
       "comment" : "Edit screen: the text “Name”."
+    },
+    "Name: %@" : {
+      "comment" : "Label scan: the VoiceOver text of the chosen name. The placeholder is the name."
     },
     "New Product" : {
       "comment" : "Edit screen: the title when the user replaces an item with a new product."
@@ -443,7 +455,7 @@
 
     },
     "Open Settings" : {
-      "comment" : "Settings and item detail: opens the notification settings of Maru."
+      "comment" : "Settings, item detail, and edit screen: opens the settings of Maru in the Settings app."
     },
     "Open Today" : {
 
@@ -465,6 +477,9 @@
     },
     "Plan: %@" : {
       "comment" : "Edit screen: the text “Plan: %@”."
+    },
+    "Point the camera at the bottle." : {
+      "comment" : "Edit screen: the helper line under “Scan Label”."
     },
     "Powder" : {
       "comment" : "Item form or color name: the text “Powder”."
@@ -523,6 +538,9 @@
     "Remove" : {
       "comment" : "Edit screen: the text “Remove”."
     },
+    "Remove %@" : {
+      "comment" : "Label scan: the VoiceOver text of the button that removes one part of the name. The placeholder is the part."
+    },
     "Repeat" : {
       "comment" : "Edit screen: the text “Repeat”."
     },
@@ -543,6 +561,9 @@
     },
     "Save %@ again" : {
 
+    },
+    "Scan Label" : {
+      "comment" : "Edit screen and label scan: the shortcut above the name of a new item, and the title of the scanner."
     },
     "Send Feedback" : {
       "comment" : "Settings: a button that opens the feedback form in a web page sheet."
@@ -616,6 +637,12 @@
     "Tap + to add a supplement or medication." : {
 
     },
+    "Tap more text to add it to the name." : {
+      "comment" : "Label scan: the helper line under the chosen name."
+    },
+    "Tap the name on the label" : {
+      "comment" : "Label scan: the prompt on the card before the user taps a text."
+    },
     "Test not sent. Notifications are off for Maru." : {
       "comment" : "Settings footer when the test notification is not allowed."
     },
@@ -660,6 +687,9 @@
     },
     "Time changed to %@" : {
 
+    },
+    "To scan a label, allow the camera for Maru in Settings." : {
+      "comment" : "Edit screen: the text of the alert when the camera is off for Maru."
     },
     "Today" : {
       "comment" : "The title of the first tab and of its page."
@@ -714,6 +744,24 @@
     },
     "Update Maru to open your data" : {
       "comment" : "Storage problem: the title when a newer version of the app saved the data."
+    },
+    "Use Capsule" : {
+      "comment" : "Edit screen: the form proposal after a label scan."
+    },
+    "Use Drops" : {
+      "comment" : "Edit screen: the form proposal after a label scan."
+    },
+    "Use Powder" : {
+      "comment" : "Edit screen: the form proposal after a label scan."
+    },
+    "Use Softgel" : {
+      "comment" : "Edit screen: the form proposal after a label scan."
+    },
+    "Use Tablet" : {
+      "comment" : "Edit screen: the form proposal after a label scan."
+    },
+    "Use This Name" : {
+      "comment" : "Label scan: the button that gives the chosen name to the edit screen."
     },
     "We read every message. The form opens a web page." : {
       "comment" : "Settings: the footer of the feedback button."
