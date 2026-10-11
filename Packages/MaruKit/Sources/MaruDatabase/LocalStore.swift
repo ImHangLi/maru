@@ -10,7 +10,7 @@ public struct LocalStore: Sendable {
     /// A first launch builds the database under this name with a UUID at the end. See `create`.
     static let temporaryPrefix = fileName + ".new-"
     /// One open at a time in the process. See `init`.
-    private static let opening = NSLock()
+    static let opening = NSLock()
 
     /// The directory that holds the database file and the files that SQLite keeps next to it.
     let directory: URL

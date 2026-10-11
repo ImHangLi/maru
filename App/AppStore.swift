@@ -178,26 +178,12 @@ actor AppStore {
         counts.items = items.count
         var today: TodaySnapshot?
         if let deviceTimeZone {
-            let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
-            counts.occurrences = run.occurrences.count
-            let itemIDs = try await store.itemIDsBySlot()
-            // An archived item leaves Today, also with a record of today. The record stays in the history (T08).
-            let looks = Dictionary(uniqueKeysWithValues: items.filter { !$0.isArchived }.map {
-                ($0.id, TodaySnapshot.ItemLook(
-                    itemID: $0.id, name: $0.name, form: $0.form, color: $0.color,
-                    remindersOff: remindersOff.contains($0.id)
-                ))
-            })
-            let todays = TodaySnapshot.today(run.occurrences, at: now)
-            today = TodaySnapshot(
-                now: now,
-                timeZone: deviceTimeZone,
-                occurrences: run.occurrences,
-                planZones: run.planZones,
-                looks: itemIDs.compactMapValues { looks[$0] },
-                doses: try await store.doses(of: Set(todays.map(\.scheduleVersionID))),
-                records: try await store.records(of: todays.map(\.id))
+            let loaded = try await TodaySnapshot.load(
+                from: store, items: items, remindersOff: remindersOff,
+                at: now, deviceTimeZone: deviceTimeZone, generation: generation
             )
+            counts.occurrences = loaded.occurrenceCount
+            today = loaded.snapshot
             let date = LocalDate(now, in: deviceTimeZone)
             today?.asNeeded = AsNeededCard(try await store.asNeeded(on: date), items: items, on: date)
         }
