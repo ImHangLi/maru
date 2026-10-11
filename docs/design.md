@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, and D044 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, and D048 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -133,6 +133,17 @@ One confirmation for each, and no second dialog before it (D033).
 - The footer of "Your Data" has two sentences, because it must say that the files are not encrypted.
 - A restore has one alert, "Replace All Data?", with a destructive button "Replace". After a restore, the sheet closes and Today shows the restored data. No message says so (D028). A failure is a system alert that says that the data did not change.
 - The share sheet is the one of UIKit, `UIActivityViewController`, in a system sheet. `ShareLink` needs the file before the tap and does not say when the sheet closes, and Maru must remove the file then (D026, D040).
+
+## Widgets
+
+Two Home Screen widgets, small and medium each (D048). They use the capsule of the app icon, tilted by 45 degrees, and no list rows.
+
+- One capsule is one dose. Taken: filled with the app tint (D025) as a gradient. Not taken and skipped: light gray (`systemGray5`) with a thin edge (`systemGray3`). VoiceOver says "Taken" or "Not taken", so the color is never the only signal.
+- The background is the system background: white in light mode, black in dark mode. Text uses the system font and the system colors.
+- "Today" has no names and no buttons. Small: the slot word in the tint, a "·", the time. Under it a large "2 left", and the capsules of the slot at the bottom right. When every dose is done: "All done · Next 8:00", "7 of 7", filled capsules. Medium: "Today" and "4 of 7", then a column for each slot with its title, its time, and its capsules. The slot of the clock has the title in the tint. A tap opens Today at the slot.
+- "Take Now" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
+- The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
+- The words "Today", "Morning", "Noon", and "Evening" match the app. The "·" in the header of the small "Today" widget is the owner design. It is the one use of the separator of principle 5.
 
 ## Motion
 

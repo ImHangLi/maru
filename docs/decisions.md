@@ -785,3 +785,57 @@ Agent detail:
 - One test in `MaruCore` (D016) covers the plan rule. The test of D036 changed: a daily and an every-other-day item at one time now give one request for each date.
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw a notification. It needs a check on a real iPhone.
+
+## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now
+
+Owner decision on the design (D046), with agent detail. It adds two widgets, small and medium each. It follows spec 6 (Widgets), 7.2, 9, and 10. Spec 10 says a widget shows only non-sensitive content by default.
+
+The owner design:
+
+- Each dose is one capsule, tilted by 45 degrees like the app icon. Taken: filled with the app tint of D025, as a gradient. Not taken: light gray with a thin gray edge. A skipped dose looks like a dose that is not taken. The background is white in light mode and the system background in dark mode. No list rows.
+- "Today" has no names and no buttons. Small: the slot word in the tint and its time, the number of open doses ("2 left"), and the capsules of the slot at the bottom right. When every dose is done: "All done" and the next time, "7 of 7", and filled capsules. Medium: "Today" and "4 of 7", then a column for each slot with its time and capsules. The slot of the clock has its title in the tint. A tap opens Today at the slot.
+- "Take Now" shows only the current slot. Small: up to 2 doses as rows (capsule, name, amount). Medium: up to 4 as columns. A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. The widget has no undo. Open doses come first when the slot has more doses than fit, and the header shows "+N" for the rest.
+
+Where the database lives:
+
+- The database moves from `Application Support/Database` to `Database` in the App Group container `group.com.imhangli.maru`. The widget extension cannot reach the container of the app. The group ID follows the bundle ID `com.imhangli.maru`. The extension has the ID `com.imhangli.maru.widgets`.
+- The move runs once, in `LocalStore.adopt(from:into:)`, before the first open. It does nothing when the container has a database already, or when the earlier directory has none. It makes one consistent copy with `VACUUM INTO` under a temporary name, reads the copy with the integrity check and the foreign key check, sets the complete file protection, flushes it, and gives it the final name with an atomic rename that never replaces a file (the way `create` does). A stop before the rename leaves only temporary files, which the next open removes.
+- The earlier files stay. The change deletes nothing and rebuilds nothing (spec 7.3). A failure of the move shows the storage problem page and never opens an empty database in the container, which would hide the data. A later change can remove the old copy when the maintainer has used the new build for a while. Until then the iPhone holds two copies of the data, both inside the app container with the same file protection. An earlier build that runs after this one reads the old copy and does not see new records.
+- The widget never creates the database. It opens the container only when a database is there, so an empty database can not come before the move. Before the first launch of the app after the update, the widgets ask the user to open Maru.
+- A build with no App Group entitlement, such as the CI build with no signing, keeps the database in Application Support and has no widget data.
+- The store waits up to 3 seconds for a lock (busy timeout), because two processes open the same database now. SQLite in WAL mode lets them read and write in turn. Risk: a process that the system suspends while it holds a database lock can be ended by the system (code 0xdead10cc). The store holds a lock only inside one transaction, so the risk is small. It needs a check on a device.
+- The container has complete file protection (spec 10). A locked iPhone gives no data to the widget.
+
+Where the record runs:
+
+- `TakeDoseIntent` is compiled in the app and in the extension. It carries two IDs and no health data. The app adds the conformance to `ForegroundContinuableIntent` in `App/TakeDoseIntent+App.swift`. Apple's WidgetKit article says that the system then performs the intent in the app process. By default it runs in the extension process. The protocol is deprecated for `supportedModes`, but `supportedModes` does not say where the intent runs. The extension can not use the protocol, so only the app target has the conformance.
+- The reason for the app process: the reminder engine and the follow-up engine must run after a record (D047), and spec 8.4 forbids two overlapping notification updates. Their settings and ledgers are in `UserDefaults.standard` of the app. The extension can not read them. A second engine in another process would need shared defaults and a lock across processes. In the app process there is one model and one queue.
+- `AppModel.takeFromWidget` reads the dose again with `LocalStore.widgetTarget`: the same occurrence, the same schedule version, a date of today in its own zone, and no state. Then it records with `commitAndWait`, the transaction of the record circle, with the data generation check of D040 (`checkedWrite`), and the event revises the last event it read (T18). The source of the event is `app`. After the commit it waits for the reminder run of D047 before it returns, because the system can suspend the process after the intent returns. A dose that is taken already is a success with no new event.
+- When the database is locked, the dose changed, the plan changed, the dose has a skip, or the commit fails, nothing is recorded and the widget shows no success. The intent throws the error of `needsToContinueInForegroundError`, and the system asks to open Maru. The capsule fills only when the timeline reads the committed record (spec 7.2).
+- Not verified: where the system runs the intent when a widget button calls it. If the device runs it in the extension, the hook of the app is empty and the intent throws, so no record is written. Then the capsule does nothing. Fix: move the record into the extension with shared defaults and a lock across processes.
+
+The data of the timelines:
+
+- No snapshot file. The widgets read the database through `TodaySnapshot.load`, the same function as the app. A snapshot file would be a second copy of the names with its own protection, and it could disagree with the database. The load runs the generation of the occurrences of today, as the app does at a launch, so the widget has data also when the user did not open the app today. It is the same domain operation and it creates only rows that the app would create.
+- One timeline has an entry for now and one at each change of the part of the day (11:00 and 17:00 by the rule of `DayPart`), and the next read is at the end of the day. So the current slot moves with no reload, and a locked iPhone at 11:00 does not blank the widget. The app asks WidgetKit to reload after each read of its own, and after a change of the tint. A record by a tap makes WidgetKit reload the timeline. When the read fails, the widget says "Open Maru to update." and tries again in 15 minutes.
+- The current slot of "Take Now" is the slot of the clock, or the next one with doses, or the last one. It does not jump when its last dose is taken, so the user sees the capsule fill. "Today" small shows the first slot from the clock on that has an open dose, else the first earlier slot with an open dose.
+- The tint comes from the App Group preferences. The app writes the color there at a launch and at a change (a copy of `display.appColor`). It is no health data.
+- A tap on "Today" opens `maru://today/<slot>`. The app scrolls to the slot and opens it. A link before Today loads waits for the load.
+
+Signing:
+
+- App Groups work with a free personal team in Xcode for the maintainer's own devices. I could not confirm it from an Apple page: the capability table of Apple (supported capabilities, iOS) lists "App Groups" and my tool could not read the columns. A forum answer by Apple DTS says that personal teams are separate and that a group belongs to one team. So the maintainer's team `JBG4XL9NQK` should sign both targets. The first build on the iPhone proves it. The free team has a limit of new App IDs per week, and the extension needs one more. If Xcode refuses the group, the widgets wait for the Apple Developer Program (D007).
+- The extension has the deployment target iOS 17, as the app.
+
+Agent detail:
+
+- Shared code is in `Shared/` and goes into both targets: the Today snapshot, its load function, the item tint, the slot title, the time format, the group values, and the intent. `Widget/` has the views.
+- Copy is in `Widget/Localizable.xcstrings`, English only (D017).
+- Privacy (spec 10): the widgets write no log. "Today" shows no name. "Take Now" shows names and amounts, so it is the user's choice to add it to the Home Screen. It shows nothing on a locked iPhone that the system has not drawn already.
+- Review fixes. The widget never opens `LocalStore`: its `init` removes staged backup files and creates files. `LocalStore.readForWidget` opens the database read-only in one read transaction, and plans the occurrences in memory (it stores none). A tap on an occurrence that is not stored opens the app. A restore now rejects a missing or empty staged file and opens it read-only, so it can not copy an empty database over the data.
+- The restore epoch is a counter in the file `restore-epoch` next to the database. A restore adds one at its start and one at its end, so an odd number means a restore runs. The widget reads it before and after its read, and it puts the number in each button. The intent compares it with the file before it records, and the in-process data generation check of D040 still runs in the record transaction. A restore that starts after the check changes the generation, so the record is refused. A restore that ended before the check changed the epoch, so the button is refused.
+- The record transaction of the widget also requires the plan of now: an active item, a slot in the plan, and the planned schedule version (`requireCurrentPlan`). The occurrence row of an archived item or of a removed slot stays, so the version check alone was not enough.
+- A tap on a dose that is taken already flushes again and waits for the reminder run before it reports success, because the first tap can have committed and failed to flush.
+- Tests (D016): one new test, a restore with a missing staged file, and one for the move.
+
+Not verified: no app build ran on the Mac of the maintainer, and nobody saw a widget. CI builds the app. Needs a check on a real iPhone: the signing, the move of an existing database, the tap on a capsule with the app closed and with the app open, the reminder and the follow-up that go after the tap, a locked iPhone, a change of the tint, and dark mode.

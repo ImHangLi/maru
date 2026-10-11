@@ -65,9 +65,11 @@ extension LocalStore {
     @discardableResult
     public func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
-        generation: Int = 0
+        generation: Int = 0,
+        currentPlan: OccurrenceGeneration? = nil,
+        restoreEpoch: Int? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        try await record(events, generation: generation, sync: Self.fullSync)
+        try await record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch, sync: Self.fullSync)
     }
 
     /// `sync` is for tests. See `flush`.
@@ -84,9 +86,15 @@ extension LocalStore {
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         inserting occurrences: [Occurrence] = [],
         generation: Int = 0,
+        currentPlan: OccurrenceGeneration? = nil,
+        restoreEpoch: Int? = nil,
         sync: @Sendable (Int32) -> Int32
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        try await commitRecord(generation: generation, sync: sync) { db in
+        let directory = directory
+        return try await commitRecord(generation: generation, sync: sync) { db in
+            // The widget read the data at this epoch. A restore changes it while it holds the writer, so the check
+            // and the write are in order with it (D048).
+            if let restoreEpoch, Self.restoreEpoch(in: directory) != restoreEpoch { throw RecordFailure.replaced }
             for occurrence in occurrences {
                 try Self.insert(occurrence, db)
             }
@@ -95,9 +103,23 @@ extension LocalStore {
                     throw RecordFailure.unknownOccurrence
                 }
                 guard occurrence.scheduleVersionID == scheduleVersionID else { throw RecordFailure.versionChanged }
+                if let currentPlan { try Self.requireCurrentPlan(occurrence, currentPlan, db) }
                 return try Self.append(event, db)
             }
         }
+    }
+
+    /// The widget records only a dose that the plan of now still has: its item is active, its slot is in the
+    /// plan, and its schedule version is the planned one. The occurrence row of an archived item or of a removed
+    /// slot stays, and a stale widget button must not record it (D048). The check runs in the record transaction.
+    static func requireCurrentPlan(_ occurrence: Occurrence, _ plan: OccurrenceGeneration, _ db: Database) throws {
+        let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)
+        let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
+            .compactMap { try fetchSchedule(db, id: ScheduleID(text: $0)) }
+        let planned = plan.outcome(items: items, schedules: schedules, stored: []).occurrences
+        guard planned.contains(where: {
+            $0.key == occurrence.key && $0.scheduleVersionID == occurrence.scheduleVersionID
+        }) else { throw RecordFailure.versionChanged }
     }
 
     /// Runs one record transaction, and returns only after the storage medium has the commit.

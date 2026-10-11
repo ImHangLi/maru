@@ -2,6 +2,7 @@ import MaruCore
 import MaruNotifications
 import SwiftUI
 import UserNotifications
+import WidgetKit
 
 @main
 struct MaruApp: App {
@@ -11,7 +12,7 @@ struct MaruApp: App {
     private let tapDelegate: ReminderTapDelegate
 
     init() {
-        let model = AppModel()
+        let model = AppModel.shared
         // Start the launch path here, so the database opens while the system builds the first view.
         model.refresh()
         _model = State(initialValue: model)
@@ -31,6 +32,10 @@ struct MaruApp: App {
         UNUserNotificationCenter.current().delegate = tapDelegate
         // The "Taken" action of a reminder for one item (D034). The call does not wait for the system.
         ReminderAction.register()
+        // A tap on a gray capsule of the "Take Now" widget runs in this process (D048).
+        TakeDoseHook.install { try await AppModel.shared.takeFromWidget($0) }
+        // The widgets read the tint from the App Group.
+        AppGroup.appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
     }
 
     var body: some Scene {
@@ -39,6 +44,11 @@ struct MaruApp: App {
                 .environment(model)
                 // The user picks the app color in settings. Pink is the default (D025).
                 .tint(appColor.tint)
+                .onOpenURL { model.openWidgetLink($0) }
+                .onChange(of: appColor) { _, color in
+                    AppGroup.appColor = color
+                    WidgetCenter.shared.reloadAllTimelines()
+                }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

@@ -188,4 +188,26 @@ struct PersistenceTests {
         try await store.save(tomorrow)
         #expect(try await store.count("occurrence") == 2)
     }
+
+    /// The move of the database to the App Group container keeps every record and leaves the old files (D048, spec 7.3).
+    @Test func adoptCopiesTheEarlierDatabaseOnceAndKeepsTheOldOne() async throws {
+        let earlier = TestDirectory()
+        let old = try LocalStore(directory: earlier.url)
+        let seed = try await old.seed()
+        let taken = Fixtures.event(for: seed.occurrence, .taken)
+        try await old.record(taken, scheduleVersionID: seed.versionID)
+        try old.writer.close()
+
+        try LocalStore.adopt(from: earlier.url, into: directory.url)
+        let moved = try LocalStore(directory: directory.url)
+        #expect(try await moved.items() == [seed.item])
+        #expect(try await moved.records(of: [seed.occurrence.id])[seed.occurrence.id]?.status == .taken)
+        try moved.writer.close()
+        #expect(FileManager.default.fileExists(atPath: earlier.databaseFile.path))
+
+        // A second call changes nothing, also when the earlier directory has other data.
+        try LocalStore.adopt(from: earlier.url, into: directory.url)
+        let again = try LocalStore(directory: directory.url)
+        #expect(try await again.items() == [seed.item])
+    }
 }

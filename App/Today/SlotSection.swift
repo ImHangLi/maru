@@ -93,13 +93,3 @@ private struct SlotHeader: View {
         return AnyShapeStyle(.primary)
     }
 }
-
-extension DayPart {
-    var title: LocalizedStringResource {
-        switch self {
-        case .morning: "Morning"
-        case .noon: "Noon"
-        case .evening: "Evening"
-        }
-    }
-}

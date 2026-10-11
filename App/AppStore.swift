@@ -9,7 +9,10 @@ import MaruNotifications
 /// and it opens the database one time (D014).
 actor AppStore {
     /// The store sets strict file protection on its whole directory (spec 10), so the database has a directory of its own.
-    private static let directory = URL.applicationSupportDirectory.appending(path: "Database", directoryHint: .isDirectory)
+    ///
+    /// The database lives in the App Group container, so the widgets reach it (D048). A build with no container
+    /// keeps it in Application Support, where the earlier builds put it.
+    private static let directory = AppGroup.databaseDirectory ?? AppGroup.earlierDatabaseDirectory
 
     private var opened: LocalStore?
     private var engine: ReminderEngine?
@@ -43,10 +46,17 @@ actor AppStore {
         #endif
         #if DEBUG
         // A debug scenario uses its own store, so the real database is never changed (spec 7.3).
-        let store = try LocalStore(directory: DebugStore.directory ?? Self.directory)
+        let directory = DebugStore.directory ?? Self.directory
         #else
-        let store = try LocalStore(directory: Self.directory)
+        let directory = Self.directory
         #endif
+        // The one-time copy of the database to the container. A failure stops here: an empty database in the
+        // container would hide the data that the earlier directory still has (spec 7.3, D048).
+        // A debug scenario has its own directory and gets no copy of the real data.
+        if let container = AppGroup.databaseDirectory, directory == container {
+            try LocalStore.adopt(from: AppGroup.earlierDatabaseDirectory, into: directory)
+        }
+        let store = try LocalStore(directory: directory)
         opened = store
         return store
     }
@@ -178,26 +188,12 @@ actor AppStore {
         counts.items = items.count
         var today: TodaySnapshot?
         if let deviceTimeZone {
-            let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
-            counts.occurrences = run.occurrences.count
-            let itemIDs = try await store.itemIDsBySlot()
-            // An archived item leaves Today, also with a record of today. The record stays in the history (T08).
-            let looks = Dictionary(uniqueKeysWithValues: items.filter { !$0.isArchived }.map {
-                ($0.id, TodaySnapshot.ItemLook(
-                    itemID: $0.id, name: $0.name, form: $0.form, color: $0.color,
-                    remindersOff: remindersOff.contains($0.id)
-                ))
-            })
-            let todays = TodaySnapshot.today(run.occurrences, at: now)
-            today = TodaySnapshot(
-                now: now,
-                timeZone: deviceTimeZone,
-                occurrences: run.occurrences,
-                planZones: run.planZones,
-                looks: itemIDs.compactMapValues { looks[$0] },
-                doses: try await store.doses(of: Set(todays.map(\.scheduleVersionID))),
-                records: try await store.records(of: todays.map(\.id))
+            let loaded = try await TodaySnapshot.load(
+                from: store, items: items, remindersOff: remindersOff,
+                at: now, deviceTimeZone: deviceTimeZone, generation: generation
             )
+            counts.occurrences = loaded.occurrences.count
+            today = loaded.snapshot
             let date = LocalDate(now, in: deviceTimeZone)
             today?.asNeeded = AsNeededCard(try await store.asNeeded(on: date), items: items, on: date)
         }
@@ -215,7 +211,9 @@ actor AppStore {
     /// `generation` is the generation of the data that the model read (D040).
     func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
-        generation: Int
+        generation: Int,
+        currentPlan: OccurrenceGeneration? = nil,
+        restoreEpoch: Int? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         let store: LocalStore
         do throws(StorageError) {
@@ -223,7 +221,7 @@ actor AppStore {
         } catch {
             throw .storage(error)
         }
-        let records = try await store.record(events, generation: generation)
+        let records = try await store.record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch)
         #if DEBUG
         // The "failed write" scenario: the commit is stored, and the caller gets `unavailable` (D014).
         if debug.failsNextRecord, DebugStore.directory != nil {

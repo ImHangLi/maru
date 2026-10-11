@@ -1,0 +1,69 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld left" : {
+      "comment" : "Small Today widget: the number of open doses of the slot. Example: 2 left."
+    },
+    "%lld of %lld" : {
+      "comment" : "Today widget: the doses taken of the doses planned. Example: 4 of 7."
+    },
+    "+%lld" : {
+      "comment" : "Take Now widget: the number of doses of the slot that do not fit. Example: +2."
+    },
+    "All done" : {
+      "comment" : "Small Today widget: every dose of today is done."
+    },
+    "Dose" : {
+      "comment" : "Widget action: the name of the dose parameter."
+    },
+    "Evening" : {
+      "comment" : "Widget: the name of a slot."
+    },
+    "Maru" : {
+      "comment" : "Widget: the title of the empty widget configuration."
+    },
+    "Morning" : {
+      "comment" : "Widget: the name of a slot."
+    },
+    "Next %@" : {
+      "comment" : "Small Today widget: the next planned time, after All done. Example: Next 8:00 AM."
+    },
+    "Noon" : {
+      "comment" : "Widget: the name of a slot."
+    },
+    "Not taken" : {
+      "comment" : "Widget: VoiceOver label of a gray capsule."
+    },
+    "Nothing to Take Today" : {
+      "comment" : "Widget: shown when no dose is due today."
+    },
+    "Open Maru to update." : {
+      "comment" : "Widget: shown when the widget cannot read the data, for example on a locked iPhone."
+    },
+    "Plan" : {
+      "comment" : "Widget action: the name of the schedule version parameter."
+    },
+    "Record a Dose" : {
+      "comment" : "Widget action: the name of the action of a tap on a capsule."
+    },
+    "Records this dose as taken" : {
+      "comment" : "Widget: VoiceOver hint of a gray capsule."
+    },
+    "See how many doses are left. It shows no names." : {
+      "comment" : "Widget gallery: description of the Today widget."
+    },
+    "Take Now" : {
+      "comment" : "Widget: the name of the widget that records a dose with a tap."
+    },
+    "Taken" : {
+      "comment" : "Widget: VoiceOver label of a filled capsule."
+    },
+    "Tap a capsule to record a dose of the current slot." : {
+      "comment" : "Widget gallery: description of the Take Now widget."
+    },
+    "Today" : {
+      "comment" : "Widget: the name of the widget with the counts, and the title of its medium size."
+    }
+  },
+  "version" : "1.0"
+}

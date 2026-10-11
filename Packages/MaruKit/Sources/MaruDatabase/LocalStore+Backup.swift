@@ -211,9 +211,19 @@ extension LocalStore {
     public func restore(_ backup: StagedBackup) async throws(StorageError) -> RestoreResult {
         defer { discard(backup) }
         let before = generation.withLock { $0 }
+        // The epoch is odd while the restore can change the data, so no widget action or read works across it (D048).
+        var epochIsOpen = false
+        defer { if epochIsOpen { try? bumpEpoch() } }
         do {
-            let staged = try DatabaseQueue(path: backup.file.path)
+            // The staged file must be there and must hold a database. SQLite creates a missing file as an empty
+            // database, and the copy would then replace the data with nothing. So the source opens read-only.
+            guard !Self.isEmpty(backup.file) else { throw StorageError.unavailable }
+            var sourceConfiguration = Configuration()
+            sourceConfiguration.readonly = true
+            let staged = try DatabaseQueue(path: backup.file.path, configuration: sourceConfiguration)
             defer { try? staged.close() }
+            try bumpEpoch()
+            epochIsOpen = true
             try await writer.barrierWriteWithoutTransaction { db in
                 try staged.read { source in
                     try source.backup(to: db)

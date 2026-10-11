@@ -10,7 +10,7 @@ public struct LocalStore: Sendable {
     /// A first launch builds the database under this name with a UUID at the end. See `create`.
     static let temporaryPrefix = fileName + ".new-"
     /// One open at a time in the process. See `init`.
-    private static let opening = NSLock()
+    static let opening = NSLock()
 
     /// The directory that holds the database file and the files that SQLite keeps next to it.
     let directory: URL
@@ -141,6 +141,8 @@ public struct LocalStore: Sendable {
         do {
             var configuration = Configuration()
             configuration.foreignKeysEnabled = true
+            // The app and the widgets open the same database (D048). A short wait replaces an instant failure.
+            configuration.busyMode = .timeout(3)
             // A pool opens the database in WAL mode.
             pool = try DatabasePool(path: file.path, configuration: configuration)
             // A new file gets the level of the directory on a device. Set the level on each file too,

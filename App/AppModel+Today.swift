@@ -10,6 +10,11 @@ struct PendingEvent: Equatable, Sendable {
     /// The occurrence that a backfill of the history stores with the event, for a past dose that no generation
     /// run stored. A retry sends this same occurrence (D014).
     var backfill: Occurrence?
+    /// The record must still be in the plan of now: an active item, a slot of the plan, and the planned schedule
+    /// version. The widget sets it, because its button can be old (D048).
+    var requiresCurrentPlan = false
+    /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
+    var restoreEpoch: Int?
 }
 
 /// Why a record on Today gave no success. The page shows it in an alert.
@@ -260,6 +265,8 @@ extension AppModel {
             // A backfill is one event, with its occurrence in the same transaction.
             let records = if events.count == 1, let occurrence = events[0].backfill {
                 [try await store.recordBackfill(events[0].event, occurrence: occurrence, generation: generation)]
+            } else if events.contains(where: \.requiresCurrentPlan) {
+                try await recordInCurrentPlan(events, generation: generation)
             } else {
                 try await store.record(events.map { ($0.event, $0.scheduleVersionID) }, generation: generation)
             }
@@ -276,6 +283,18 @@ extension AppModel {
             today.confirmed[id] = nil
         }
         return committed
+    }
+
+    /// The record of the widget: the store also checks the plan of now in the transaction (D048).
+    private func recordInCurrentPlan(_ events: [PendingEvent], generation: Int) async throws(RecordFailure) -> [OccurrenceRecord] {
+        let now = Date()
+        guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw .storage(.unavailable) }
+        return try await store.record(
+            events.map { ($0.event, $0.scheduleVersionID) },
+            generation: generation,
+            currentPlan: OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone),
+            restoreEpoch: events.first?.restoreEpoch
+        )
     }
 
     /// The records that a new read must not change: the last confirmed record of each occurrence with a running
