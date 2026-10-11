@@ -1,10 +1,14 @@
+import AVFoundation
 import MaruCore
 import MaruDatabase
 import SwiftUI
+import VisionKit
 
 /// The one edit screen for a new or a stored item (spec 3 P03, docs/design.md "Add and edit").
 ///
 /// The order is name, type, form, color, amount, times, note. The plan line under the times states the whole plan.
+/// A new item has "Scan Label" above the name, and the name field proposes names from the built-in lists (D038).
+/// Both only propose: the user sees each value here before the save.
 /// Save is at the top right, as in every system sheet (D026). Apple Health needs seven screens for one
 /// medication. Maru needs this one (D021).
 struct ItemEditorView: View {
@@ -19,6 +23,17 @@ struct ItemEditorView: View {
     /// The sheet where the user picks a time. It is not part of the draft until "Add" (spec 2.1).
     @State private var addsTime = false
     @State private var showsRestored: Bool
+    @Environment(\.openURL) private var openURL
+    @FocusState private var nameIsFocused: Bool
+    /// The built-in name lists. They load when this screen opens, not at launch (spec 9).
+    @State private var names: NameIndex?
+    /// The names to propose under the name field while the user types.
+    @State private var suggestions: [String] = []
+    @State private var scansLabel = false
+    @State private var scanFailed = false
+    @State private var cameraIsOff = false
+    /// The form words of the last label scan. They propose a form. They never set it.
+    @State private var scannedForms: Set<LabelForm> = []
 
     init(session: EditorSession) {
         self.session = session
@@ -51,6 +66,9 @@ struct ItemEditorView: View {
                 if showsRestored {
                     restoredSection
                 }
+                if session.isNew, DataScannerViewController.isSupported {
+                    scanSection
+                }
                 nameSection
                 formSection
                 amountSection
@@ -81,9 +99,17 @@ struct ItemEditorView: View {
             .sheet(isPresented: $addsTime) {
                 NewTimeSheet(time: startOfNewTime, add: addTime)
             }
+            .sheet(isPresented: $scansLabel, onDismiss: scanClosed) {
+                LabelScanView(use: use) {
+                    scanFailed = true
+                    scansLabel = false
+                }
+            }
             .alert(item: $saveError) { error in
                 Alert(title: Text("Maru couldn’t save"), message: Text(error.message))
             }
+            .task { names = await NameList.index.value }
+            .onChange(of: suggestionInput) { updateSuggestions() }
         }
         // Only unsaved changes ask before the screen closes (spec 3 P03).
         .interactiveDismissDisabled(hasChanges)
@@ -107,7 +133,20 @@ struct ItemEditorView: View {
             Dose(draft.amount) != nil,
             canRemoveTime,
             draft.note == .custom,
+            suggestions.count,
+            proposedForm?.rawValue ?? "",
         ]
+    }
+
+    /// What the name suggestions depend on.
+    private var suggestionInput: [AnyHashable] {
+        [draft.name, draft.category, nameIsFocused, names != nil]
+    }
+
+    /// The form to propose after a scan, when it is not the form of the draft.
+    private var proposedForm: ItemForm? {
+        let form = LabelText.proposedForm(from: scannedForms)
+        return form == draft.form ? nil : form
     }
 
     // MARK: Sections
@@ -123,11 +162,53 @@ struct ItemEditorView: View {
         }
     }
 
+    /// The shortcut is the first thing on the screen of a new item. The camera permission comes with
+    /// the first tap (spec 2.2).
+    private var scanSection: some View {
+        Section {
+            Button(action: startScan) {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(alignment: .firstTextBaseline, spacing: 6) {
+                            Text("Scan Label")
+                                .fontWeight(.semibold)
+                            Image(systemName: "sparkles")
+                                .imageScale(.small)
+                                .accessibilityHidden(true)
+                        }
+                        Text("Point the camera at the bottle.")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.secondary)
+                    }
+                } icon: {
+                    Image(systemName: "camera.viewfinder")
+                }
+            }
+            .alert("Maru Can’t Use the Camera", isPresented: $cameraIsOff) {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("To scan a label, allow the camera for Maru in Settings.")
+            }
+        }
+    }
+
     private var nameSection: some View {
         Section {
             TextField("Name", text: $draft.name)
                 .textInputAutocapitalization(.words)
                 .submitLabel(.done)
+                .focused($nameIsFocused)
+            // A proposal fills only the name. The user can ignore it and type any name.
+            ForEach(suggestions, id: \.self) { name in
+                Button(name) {
+                    draft.name = name
+                    nameIsFocused = false
+                }
+                .accessibilityHint(Text("Fills the name."))
+            }
             Picker("Type", selection: $draft.category) {
                 Text("Supplement").tag(ItemCategory.supplement)
                 Text("Medication").tag(ItemCategory.medication)
@@ -146,6 +227,9 @@ struct ItemEditorView: View {
                 }
             }
             .pickerStyle(.menu)
+            if let form = proposedForm {
+                Button(form.useTitle) { draft.form = form }
+            }
             Picker("Color", selection: $draft.color) {
                 ForEach(ItemColor.allCases, id: \.self) { color in
                     Label { Text(color.title) } icon: { color.color.circleImage }
@@ -254,6 +338,43 @@ struct ItemEditorView: View {
         draft.times = draft.sortedTimes
     }
 
+    private func updateSuggestions() {
+        guard nameIsFocused, let names else {
+            suggestions = []
+            return
+        }
+        suggestions = names.matches(draft.name, category: draft.category, ownNames: session.context.itemNames)
+    }
+
+    /// Opens the scanner. The system asks for the camera at the first tap. A camera that is off gets one
+    /// sentence and a button to Settings. A user who refuses at the question gets no second message.
+    private func startScan() {
+        nameIsFocused = false
+        Task {
+            switch AVCaptureDevice.authorizationStatus(for: .video) {
+            case .authorized: break
+            case .notDetermined: guard await AVCaptureDevice.requestAccess(for: .video) else { return }
+            default:
+                cameraIsOff = true
+                return
+            }
+            if DataScannerViewController.isAvailable { scansLabel = true } else { cameraIsOff = true }
+        }
+    }
+
+    /// The name from the scan goes to the draft as text that the user can edit. The scan sets no amount,
+    /// no time, and no form.
+    private func use(_ scan: LabelScan) {
+        draft.name = scan.name
+        scannedForms = scan.forms
+    }
+
+    private func scanClosed() {
+        guard scanFailed else { return }
+        scanFailed = false
+        cameraIsOff = true
+    }
+
     private func cancel() {
         if hasChanges { confirmsDiscard = true } else { model.discardEditor() }
     }
@@ -268,6 +389,19 @@ struct ItemEditorView: View {
             } catch {
                 saveError = SaveErrorText(error)
             }
+        }
+    }
+}
+
+private extension ItemForm {
+    /// The form proposal after a label scan, for example "Use Softgel".
+    var useTitle: LocalizedStringKey {
+        switch self {
+        case .capsule, .unknown: "Use Capsule"
+        case .tablet: "Use Tablet"
+        case .softgel: "Use Softgel"
+        case .powder: "Use Powder"
+        case .drop: "Use Drops"
         }
     }
 }

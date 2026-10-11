@@ -445,3 +445,45 @@ Owner decision. Settings has a "Send Feedback" button at the end. It opens the o
 - `PRIVACY.md` names Tally. "No network requests" is now "no network requests by itself".
 - The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
 
+
+## D038 · 2026-10-11 · Quick add: scan a label and name suggestions
+
+Owner decision, with agent detail. The owner said that typing is tiring and that a user who types for a while gives up. The study is `docs/research/2026-10-11-quick-add.md`. It changes spec 3 P03 and 5.2.
+
+The rule: a scanned or suggested value is a proposal. The user sees it on the edit screen and saves it with the normal "Save". A proposal never sets the type, the amount, or a reminder time (spec 2.1).
+
+Scan Label:
+
+- The edit screen of a new item starts with one row, "Scan Label", above the name. The row shows a camera symbol, a small sparkle symbol beside the title, and the line "Point the camera at the bottle." The symbols take the app tint.
+- A tap opens the live scanner of the system, VisionKit `DataScannerViewController`, with text recognition, highlights, and guidance. It runs on the iPhone.
+- The card at the bottom says "Tap the name on the label". A tap on a text puts it on the card as the name. A second tap adds a second line of the name. Each part has a remove button when the name has two or more parts, and "Clear" removes the name. "Use This Name" gives the name to the edit screen. The name limit is four parts.
+- Maru cleans the text: it removes trademark signs and footnote marks, it makes a space from a dot between two parts ("D3·K2" becomes "D3 K2"), and it makes one space from each run of spaces and line breaks. A removed sign never joins two words. A text in capitals only becomes readable, for example "VITAMIN D3" becomes "Vitamin D3". Short codes such as "B12", "CoQ10", "5-HTP", and "NAC" keep their form. A text with a lowercase letter keeps its letters.
+- When the text that the camera saw has exactly one form word, the form row offers it, for example "Use Softgel". The form changes only after a tap. "Softgel capsules" counts as a softgel. Maru has no gummy form, so "gummies" gives no proposal.
+- No photo is stored. Only the name that the user chose and the form words go to the edit screen. Nothing goes to the network or to a log.
+- The camera permission comes with the first tap on "Scan Label" (spec 2.2). A user who refuses gets no second message. When the camera is off for Maru at a later tap, an alert has one sentence and a button to the Settings app. A device with no scanner support does not show the row.
+- The row shows only for a new item and for a replacement product. The edit screen of a stored item does not have it.
+- The amount is not part of the scan in this version. A second tap target on the card makes each tap ambiguous: it can mean "more of the name" or "the amount". A strength on a label is also not the amount that the user takes (spec 2.1). The user types the amount.
+- The scanner is a kept wrapper (D026): VisionKit has no SwiftUI view for the live scanner. The wrapper holds the system view controller and adds no custom drawing.
+
+Name suggestions:
+
+- Two text files in the app hold the names: 941 supplement names and 789 medicine names. Some have aliases for the search. The agent wrote them from general knowledge. They are not a copy of a database. Each list is in the order of how common a name is.
+- The medicine list holds generic names of common prescription and over-the-counter medicines, and well-known brand names. This is an owner decision: everything that a user can need must be there, and a suggestion is only a suggestion. The lists are a typing aid. They are not medical information, and they hold no strength, no dose, and no use of a medicine.
+- The lists favor the names of the United States. They also have the common names of the United Kingdom, Canada, and Australia, for example "Paracetamol" and "Salbutamol".
+- An alias is only another spelling or a clear abbreviation of the same name, for example "Vit D" for "Vitamin D" or "HCTZ" for "Hydrochlorothiazide". Each other name is its own entry: a brand, a second name of the same substance, a regional spelling, a salt, and a formulation. So a tap never changes one product, one formulation, or one substance into another. "Effexor" and "Effexor XR" are two entries.
+- The lists hold names of products and substances. They hold no entry that is a strength, a use, or a category, such as "Low-Dose Aspirin", "Laxative", or "Joint Support".
+- The search ignores case, accents, spaces, hyphens, and dots. It starts at two characters. The order is: a name of the user's own items, a match at the start of a name, a match at the start of a word, a match in a word. An alias counts one rank lower than a name, and only from the start of a word. In one rank, the names of the type on the screen come first: medicine names when the type is "Medication", supplement names when it is "Supplement". The type only orders the rows. A tap never changes the type.
+- Up to four rows show under the name field while the field has the focus. A tap fills the name and closes the keyboard. The rows come and go with the layout motion (D030). This is the form of Mail and Reminders: proposals in the list, under the field. A keyboard toolbar with chips cuts long names and does not follow the largest text sizes. `.searchable` changes the look of the form.
+- The lists load when the edit screen opens, off the main thread, and never at launch (spec 9). A search of the names takes about 1.5 ms in a debug build on the Mac.
+
+Rejected:
+
+- A barcode lookup on the network. Each lookup tells a server which product the user has. That breaks "no network requests by itself" and spec 10.
+- A cloud vision model. The photo of a label leaves the iPhone, and Maru then needs a server, a consent screen, and a new privacy label.
+- The on-device language model, for now. Only a part of the iPhones has it, and it can return a value that is not on the label. The tap flow works on every iPhone that Maru supports. The study keeps it as the second step.
+- Only supplement names in the list. This was the first plan, because a wrong medicine suggestion looked like a safety risk. The owner decided to include medicine names.
+- A check for an item with the same name after a scan (T05). Not in this version. A name of the user's own items shows first in the suggestions.
+
+Tests (D016): two new tests in `MaruCore`. One for the cleaning of label text and the form proposal, one for the search order and its edge cases.
+
+Not verified: no build ran on a Mac of the maintainer, and nobody saw the screens. The scan needs a check on a real iPhone with real bottles.
