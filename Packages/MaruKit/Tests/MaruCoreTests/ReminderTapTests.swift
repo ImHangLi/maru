@@ -96,6 +96,28 @@ struct ReminderTapTests {
         #expect(candidates.map(\.plannedDate) == [Fixtures.date(2026, 3, 2), Fixtures.date(2026, 2, 23)])
     }
 
+    @Test func followUpAfterMidnightTakesTheDoseOfTheDayBeforeUntilOneOClock() throws {
+        let schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(23, 30)])
+        // The follow-up of the 23:30 dose of 1 March comes at 00:00 on 2 March in Shanghai.
+        let now = Fixtures.instant("2026-03-01T15:00:00Z")
+        let plan = FollowUpPlan(
+            setting: FollowUpSetting(count: .one, interval: .minutes30),
+            reminders: ReminderPlan(items: [item], schedules: [schedule], now: now, deviceTimeZone: Fixtures.shanghai),
+            items: [item], schedules: [schedule], stored: [], closed: [], now: now, deviceTimeZone: Fixtures.shanghai
+        )
+        let request = try #require(plan.requests.first { $0.threadIdentifier == "followup|Asia/Shanghai|2026-03-01|23:30" })
+        let delivered = DeliveredReminder(deliveredAt: request.fireDate, userInfo: request.userInfo, triggerWeekday: nil)
+        func target(at now: String) -> PlannedOccurrence? {
+            ReminderTapResolver(now: Fixtures.instant(now), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil)
+                .takenTarget(of: delivered, items: [item], schedules: [schedule])
+        }
+
+        // At 00:10 the "Taken" action records the dose of 1 March, not a dose of 2 March.
+        #expect(target(at: "2026-03-01T16:10:00Z")?.plannedDate == Fixtures.date(2026, 3, 1))
+        // At 01:10 it records nothing, and a tap asks the user.
+        #expect(target(at: "2026-03-01T17:10:00Z") == nil)
+    }
+
     @Test func deviceZoneChangeAfterTheDeliveryAsksForTheDate() {
         let schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(8)], timeZonePolicy: .followsDevice)
         // Delivered at 08:00 on 2 March in Apia. The engine saw Apia since before the delivery.

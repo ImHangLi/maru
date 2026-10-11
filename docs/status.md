@@ -7,7 +7,7 @@ Maru was developed in a private repository before it became public. Issue number
 ## Current state
 
 - The app and the package build. CI builds and tests the package and builds the app for the iOS Simulator.
-- Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, an optional follow-up reminder, and as-needed items.
+- Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, optional follow-up reminders, and as-needed items.
 - The first release is in English (D017).
 - The design rules are in `docs/design.md`. Native SwiftUI components only (D026).
 - Maru does not integrate with Apple Health in V1 (D022).
@@ -16,12 +16,13 @@ Maru was developed in a private repository before it became public. Issue number
 - Smart completion for supplements is in code (D043): a supplement name from the built-in list sets the usual form until the user chooses one, and the amount, the reminder, and the note show candidates that fill nothing until a tap. The list has 103 supplements. Nobody saw the screen yet.
 - History has a graph of squares above the timeline (D041): one square per day, three levels of the tint by the share taken, and 13, 26, or 52 weeks. A touch or a drag selects a day, and the timeline scrolls to it. Nobody saw it on a display yet. The drag, the haptic, the dark-mode levels, and VoiceOver need a check on a real iPhone.
 - Today rows show the time on the second line (D044): the set time of an open row, the intake time of a taken row, and "Skipped". Nobody saw the rows on a display yet.
+- The user sets the follow-ups (D039): 1, 2, 3, or 5 times, or "Until Recorded" with at most 12 for each dose, also across a change of the setting, and 5 minutes to 1 hour between them. Follow-ups continue after midnight until 01:00, and their "Taken" action records the dose of the day before. Nobody saw them on a device yet. They need a check on a real iPhone: the times, the stop after a record, the group in Notification Center, a Focus, and the action after midnight.
 - Three flow gaps against Apple Health Medications are closed in code (D033): a change of a record time in three taps, an archive in three taps with one confirmation, and a delete of an item with its records. Nobody saw them on a display yet.
 
 ## Next
 
 1. Merge the "every other day" schedule (D036, pull request #49).
-2. Check the "Taken" action of a reminder on a real iPhone (D034). Time-sensitive reminders wait for the Apple Developer Program (D007, D034).
+2. Check the follow-ups and "Until Recorded" on a real iPhone (D039), with the "Taken" action of a reminder (D034). Time-sensitive reminders wait for the Apple Developer Program (D007, D034).
 3. A question after a time zone change (`docs/research/2026-10-11-apple-health-gap.md`).
 4. A Home Screen widget that records a dose.
 5. Acceptance on a real iPhone: one week of daily use by the maintainer.

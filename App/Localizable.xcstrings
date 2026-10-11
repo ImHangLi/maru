@@ -76,6 +76,33 @@
         }
       }
     },
+    "1 hr" : {
+      "comment" : "Settings: a time between follow-up reminders."
+    },
+    "1 Time" : {
+      "comment" : "Settings: a number of follow-up reminders for each dose."
+    },
+    "10 min" : {
+      "comment" : "Settings: a time between follow-up reminders."
+    },
+    "15 min" : {
+      "comment" : "Settings: a time between follow-up reminders."
+    },
+    "2 Times" : {
+      "comment" : "Settings: a number of follow-up reminders for each dose."
+    },
+    "3 Times" : {
+      "comment" : "Settings: a number of follow-up reminders for each dose."
+    },
+    "30 min" : {
+      "comment" : "Settings: a time between follow-up reminders."
+    },
+    "5 min" : {
+      "comment" : "Settings: a time between follow-up reminders."
+    },
+    "5 Times" : {
+      "comment" : "Settings: a number of follow-up reminders for each dose."
+    },
     "A newer version of Maru saved your data. Maru did not change or delete it." : {
       "comment" : "Storage problem: the text when a newer version of the app saved the data."
     },
@@ -93,15 +120,6 @@
     },
     "Adds a reminder time at %@." : {
       "comment" : "Edit screen: the VoiceOver hint of a time candidate of the smart completion, for example Evening. The placeholder is the time, for example 8:00 PM."
-    },
-    "After 1 hr" : {
-
-    },
-    "After 15 min" : {
-
-    },
-    "After 30 min" : {
-
     },
     "All recorded" : {
 
@@ -217,6 +235,9 @@
     "Evening" : {
       "comment" : "Today: the title of the group of items with a planned time from 17:00."
     },
+    "Every" : {
+      "comment" : "Settings: the label of the picker for the time between follow-up reminders. The value follows, for example “10 min”."
+    },
     "Every day" : {
       "comment" : "Edit screen: the days of a plan that reminds on all seven days."
     },
@@ -327,6 +348,9 @@
     },
     "Maru kept your unsaved changes." : {
       "comment" : "Edit screen: the text “Maru kept your unsaved changes.”."
+    },
+    "Maru reminds you up to %lld times for each dose, until %@ at the latest." : {
+      "comment" : "Settings: the footer of “Until Recorded”. iPhone has no reminder that repeats with no end, so Maru states the limit. The first placeholder is the number 12. The second is the time of the next day at which the reminders of a dose stop, for example “1:00 AM”."
     },
     "Maru reads only the name." : {
       "comment" : "Label scan: the line under the prompt before the user taps a text. The scan reads no amount and no time."
@@ -440,7 +464,7 @@
 
     },
     "Off" : {
-      "comment" : "Settings: notifications are off, or the follow-up reminder is off."
+      "comment" : "Settings: notifications are off, or the follow-up reminders are off."
     },
     "On" : {
       "comment" : "Settings: notifications are allowed."
@@ -509,7 +533,7 @@
 
     },
     "Remind Again" : {
-      "comment" : "Settings: the label of the optional follow-up reminder picker."
+      "comment" : "Settings: the label of the picker for the number of follow-up reminders."
     },
     "Reminder" : {
       "comment" : "Edit screen: the text “Reminder”."
@@ -744,6 +768,9 @@
     },
     "Unlock your iPhone, then try again. Your entries are still here." : {
       "comment" : "Edit screen: the text “Unlock your iPhone, then try again. Your entries are still here.”."
+    },
+    "Until Recorded" : {
+      "comment" : "Settings: follow-up reminders come until the user records the dose, up to a limit that the footer states."
     },
     "Update Maru to open your data" : {
       "comment" : "Storage problem: the title when a newer version of the app saved the data."
