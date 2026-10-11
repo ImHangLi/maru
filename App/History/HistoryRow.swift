@@ -243,9 +243,8 @@ struct HistoryEntryRow: View {
 
     /// The time alone on the day of the dose, else with the date, for example "Oct 11, 9:12 PM".
     private func text(of instant: Date) -> String {
-        var style = LocalDate(instant, in: zone) == plannedDate
-            ? Date.FormatStyle(date: .omitted, time: .shortened)
-            : Date.FormatStyle.dateTime.month(.abbreviated).day().hour().minute()
+        guard LocalDate(instant, in: zone) != plannedDate else { return instant.formatted(.rowTime(in: timeZone)) }
+        var style = Date.FormatStyle.dateTime.month(.abbreviated).day().hour().minute()
         style.timeZone = timeZone
         return instant.formatted(style)
     }

@@ -49,7 +49,7 @@ Spec §16 requires domain and database tests, real-device notification records, 
 
 Owner decision. The Today screen uses variant B (one card per time slot). The accent color is orange, not green. The owner asked for less text and a style near Superpower, Everlab, and Anthropic: a warm neutral surface, one accent, and a serif for the large text. The study is in `docs/research/2026-10-10-visual-direction.md`. The exact orange and the refined layout (prototype variant B2) wait for the owner's answer. Write `docs/design.md` after that answer.
 
-## D011 · 2026-10-10 · Apple system style for the Today screen
+## D011 · 2026-10-10 · Apple system style for the Today screen (row time added by D044)
 
 Owner decision. The owner rejected prototype variant B2. This decision supersedes the style part of D010 (warm surface and serif). The orange accent and the grouping by time slot stay.
 
@@ -293,7 +293,7 @@ Owner decision. Maru becomes a public repository under the MIT license. This rep
 - The repository holds no personal health data, no local paths, and no credentials. Records refer to private work only as history, without links to private branches or local files.
 - `docs/process.md` applies to every contributor. The rules for agents that work for the maintainer are in `AGENTS.md`.
 
-## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults (row time added by D044)
 
 Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
 
@@ -446,7 +446,7 @@ Owner decision. Settings has a "Send Feedback" button at the end. It opens the o
 - The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
 
 
-## D038 · 2026-10-11 · Quick add: scan a label and name suggestions
+## D038 · 2026-10-11 · Quick add: scan a label and name suggestions (scan card partly replaced by D042)
 
 Owner decision, with agent detail. The owner said that typing is tiring and that a user who types for a while gives up. The study is `docs/research/2026-10-11-quick-add.md`. It changes spec 3 P03 and 5.2.
 
@@ -602,3 +602,42 @@ Maintainer decisions.
 
 - Agents work in a token-efficient way. The rules are in `docs/process.md`, "Token budget for agents". Fewer subagents, short briefs, and a model review only for changes that can affect records or reminders.
 - Follow-ups past midnight end at 01:00 at the latest (D039). The maintainer left the choice to the agent. The reason: a bedtime dose with no record must not ring for most of the night.
+
+## D044 · 2026-10-11 · Today rows show the time
+
+Owner decision: "Each Today row shows the name and the amount. If the item has a reminder, also show its set time, on the second line, as small gray text." The section headers stay words such as "Morning", not clock times (D011).
+
+This replaces two points in part: the recorded time of D011 moves back to the row, and a recorded row of D032 B differs from an open row by the circle and the time.
+
+- The second line of a row has the amount, then the time, in the list form of the user's language: "2 capsules, 8:00 AM". With no amount, it has only the time: "8:00 AM". The time follows the 12 or 24 hour setting of the user.
+- An open row shows the time that the user set. A taken row shows the time of the intake: "2 capsules, Taken at 8:07 AM", the words of the correction dialog and the as-needed doses. A skipped row shows "2 capsules, Skipped".
+- A medication that keeps another time zone (D019, spec 8.5) shows its set time with the city, as the edit screen does: "9:00 AM Shanghai time".
+- An item with its reminders off still shows its set time, because the time puts the row in its part of the day. "Reminders off" stays under it (T07).
+- As-needed rows do not change. They have no set time, and each dose of today already shows its time under the item.
+- VoiceOver reads the name and the second line as one label: "Vitamin D, 2 capsules, 8:00 AM".
+- One shared time format, `Date.FormatStyle.rowTime(in:)`, replaces the four copies in Today, the as-needed doses, the reminder choice, and History.
+
+Not verified: no build ran on a Mac of the maintainer, and nobody saw the rows on a display.
+
+## D042 · 2026-10-11 · Scan Label word choice and edit
+
+Owner feedback after a test of "Scan Label" on the iPhone. The scanner returns a whole line or block for one tap, so the name came with other words: the strength, "Dietary Supplement", and the count. The owner also wanted to change the name on the scan screen, so that the scan is not a one-way step. This replaces the card of D038 after the first tap: the large name and the remove buttons for each part. The rest of D038 stays.
+
+- The scan reads only the name in this version. The card before the first tap says "Tap the name on the label" and "Maru reads only the name."
+- After a tap, the card shows each word of the text as a button, in reading order. A second tapped text adds its words after the first words, in the order of the taps. The limit of four texts stays.
+- The words that look like the name are chosen at the start. The rule is in `LabelText.words(in:)` in `MaruCore`, with the stock phrases in one list:
+  - A number with a unit or a count is not chosen: "1000 IU", "5 mg", "90ct", "50 Billion CFU".
+  - A stock phrase is not chosen: "Dietary Supplement", "Supplement", "Capsules", "Softgels", "Tablets", "Gummies", "Serving", "Supports", "Count", "Ct", "Net", "Value", "Pack", "Bottle", "Formula", "Advanced", "High Potency", "Extra Strength", and a few more.
+  - A number with no unit is chosen only after a chosen word and when no unit, count, or stock phrase follows it. So "Omega 3" keeps its "3". "Magnesium 400" also keeps "400", and the user removes it with one tap.
+  - A sign such as "+" is chosen only between two chosen words, as in "D3 + K2".
+  - Each other word is chosen.
+- A tap on a word adds it to the name or removes it. A word is a system toggle in the button style (`.toggleStyle(.button)`, `.bordered`). A chosen word shows the on state of the system, in the tint, and has the selected trait for VoiceOver.
+- Under the words, a text field holds the name. The edit rule: the field shows the chosen words. Typing changes only the field. A tap on a word, or on a new text on the label, sets the field to the chosen words again. "Clear" empties the words and the field. "Use This Name" gives the field text to the edit screen, and it is off while the field is empty.
+- The cleaning of D038 applies to the chosen words as one text: signs, capitals, and short codes. The buttons show the words as the label prints them. Typed text stays as the user typed it.
+- The words wrap in rows. SwiftUI has no wrapping layout for iOS 17, so a small `Layout` in `LabelScanView.swift` places the system buttons. It draws nothing (D026).
+- Motion: the card grows with the layout motion when a text is added. A word changes with the state motion (D030).
+- The form proposal of D038 does not change. It uses all the text that the camera saw.
+
+Tests (D016): one new test in `MaruCore` for the choice of words. The old part of the cleaning test for the name from two texts is gone with its function.
+
+Not verified: no app build on a Mac of the maintainer. CI builds the app. Nobody saw the card. The default choice needs a check on a real iPhone with real bottles.

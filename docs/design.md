@@ -1,12 +1,12 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, and D041 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, and D044 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
 1. Simpler than Apple Health Medications in every flow that both apps have (D021). Count screens and taps.
 2. Apple system style: native SwiftUI system components only, the system font only, system colors (D011, D012, D026). A custom control needs a recorded reason.
-3. Few words. A row shows the name and the amount. The circle shows the state (D011).
+3. Few words. A row shows the name, the amount, and the time. The circle shows the state (D011, D044).
 4. Do not choose for the user: no default amount and no default reminder time (spec §2.1). The type, the form, and the color of a new item are not health choices, so they have a start value that the user can change (D032).
 5. No repeated information, and no "·" separator in any text of the app. Use natural words or a second line (D032).
 6. No gray text for a state. A title or a name looks the same in each state (D032).
@@ -41,8 +41,9 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A gear button at the top left opens the settings sheet. An add button sits at the top right (D020). Both tabs have them. Today also has a History button with a calendar symbol, beside the add button (D026).
 - One list section per time slot, in time order. The section header is the slot name, for example "Morning", not a clock time (D011).
 - The header has "Record All", which records every open item of the slot as taken, in one transaction (D021). It shows only when the slot has two or more open items.
-- Row: the form icon in the item color, the name, an optional amount on a second line, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
-- A recorded row and an open row differ only by the circle. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032).
+- Row: the form icon in the item color, the name, a second line in small gray text, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
+- The second line has the amount and the time that the user set: "2 capsules, 8:00 AM", or "8:00 AM" with no amount. A taken row shows the intake time: "2 capsules, Taken at 8:07 AM". A skipped row shows "2 capsules, Skipped". A medication that keeps another time zone names the city: "9:00 AM Shanghai time" (D044).
+- A recorded row and an open row differ only by the circle and the time. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032, D044).
 - A finished slot folds to its header the next time the user returns to the app. The header shows a chevron and no check mark. The title looks the same folded and open. A tap opens it. A second tap folds it. Only a finished slot folds (D012, D032).
 - The record that finishes a slot folds it after about 0.7 seconds, so the user sees the last check first. The fold uses the layout motion, the same as a tap on the header (D028, D030).
 - Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
@@ -142,8 +143,8 @@ One motion language for the whole app (D030). The same kind of change uses the s
 | State | A fade of 0.2 seconds, with the system replace effect on a symbol | A change in place, with no move | The same fade. A symbol cross-fades with no scale |
 | Attention | A fade of 1.2 seconds | The opening highlight of the current slot title | The same fade |
 
-- Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days.
-- State applies to: the record circle and the as-needed record button. The chevron and "Record All" in a slot header. The mark of an as-needed dose.
+- Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
+- State applies to: the record circle and the as-needed record button. The chevron and "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042).
 - The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. The scroll of the timeline to a selected day uses the layout motion, the same as the scroll to the slot of a tapped reminder.
 - A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.
 - The system owns the motion of sheets, pushes, menus, alerts, dialogs, swipe actions, pickers, switches, and the keyboard. Maru does not change it.
@@ -169,7 +170,9 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - The plan line is the footer of the reminder section. It states the full schedule, for example "Every day at 8:00 AM, with no end date", or the problem that keeps Save off. An amount has its own line above it.
 - A new item has no amount and no time (spec §2.1, D032). The form has no "choose a type" hint.
 - A new item starts with the row "Scan Label", above the name (D038). It has a camera symbol at the start, a small sparkle symbol beside the title, and the line "Point the camera at the bottle." The symbols take the app tint. No tutorial and no pop-up.
-- The scanner is a system sheet with "Cancel" at the top left. The camera fills it, and the system marks the text that it finds. A card at the bottom, on the system material, holds one decision at a time. First the prompt "Tap the name on the label". After a tap: the name in large bold text, "Use This Name" as a large button in the tint, "Clear", and the line "Tap more text to add it to the name." A name of two or more parts shows one remove button for each part.
+- The scanner is a system sheet with "Cancel" at the top left. The camera fills it, and the system marks the text that it finds. A card at the bottom, on the system material, holds one decision at a time. First the prompt "Tap the name on the label" with the line "Maru reads only the name." After a tap (D042): the words of the text as capsule buttons in rows, the line "Tap a word to add or remove it.", a text field with the name, "Use This Name" as a large button in the tint, "Clear", and the line "Tap more text to add it to the name."
+- A word is a system toggle in the button style. A chosen word shows the on state of the system, in the tint. The words that look like the name start chosen. A number with a unit, a count, and a stock phrase such as "Dietary Supplement" start not chosen (D042).
+- The field shows the chosen words. The user can type in it. A tap on a word or on a new text sets the field to the chosen words again.
 - "Use This Name" closes the scanner and fills the name. The scan fills no amount and no time. When the label shows exactly one form, a row under the form menu offers it, for example "Use Softgel".
 - While the user types the name, up to four names from the built-in lists show as rows under the name field, in the tint, as buttons of a form. A tap fills the name and closes the keyboard. The rows go when the field loses the focus. They only propose a name.
 - The scanner is a kept wrapper of the system scanner view (D026, D038).

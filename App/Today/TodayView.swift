@@ -135,7 +135,6 @@ private struct TodayContent: View {
             layout.append(group.part)
             for entry in group.entries {
                 layout.append(entry.id)
-                layout.append(entry.amount != nil)
                 layout.append(entry.look.remindersOff)
             }
         }

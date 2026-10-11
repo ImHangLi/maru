@@ -4,6 +4,9 @@
     "%@ %@" : {
       "comment" : "Edit screen: a reminder time on the device with its days, when the kept zone of a medication is on another day. Example: Sun 6:00 PM."
     },
+    "%@ %@ time" : {
+      "comment" : "Today: the reminder time of a medication that keeps another time zone. Example: 9:00 AM Shanghai time."
+    },
     "%@ %@ time (%@ here for now)" : {
       "comment" : "Edit screen: the times of a medication in its kept zone. Example: 9:00 AM Shanghai time (6:00 PM here for now). \"For now\" because a clock change in either zone can move the local time or day later."
     },
@@ -340,6 +343,9 @@
     "Maru kept your unsaved changes." : {
       "comment" : "Edit screen: the text “Maru kept your unsaved changes.”."
     },
+    "Maru reads only the name." : {
+      "comment" : "Label scan: the line under the prompt before the user taps a text. The scan reads no amount and no time."
+    },
     "Maru sets the reminders of the next 7 dose days each time you open it." : {
       "comment" : "Item detail: the footer of a plan that repeats every second day when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open."
     },
@@ -365,10 +371,10 @@
       "comment" : "Edit screen: the text “My own note”."
     },
     "Name" : {
-      "comment" : "Edit screen: the text “Name”."
+      "comment" : "Edit screen and label scan: the label of the name field."
     },
     "Name: %@" : {
-      "comment" : "Label scan: the VoiceOver text of the chosen name. The placeholder is the name."
+      "comment" : "Label scan: the VoiceOver announcement of the name after a tap on a text. The placeholder is the name."
     },
     "New Product" : {
       "comment" : "Edit screen: the title when the user replaces an item with a new product."
@@ -547,9 +553,6 @@
     "Remove" : {
       "comment" : "Edit screen: the text “Remove”."
     },
-    "Remove %@" : {
-      "comment" : "Label scan: the VoiceOver text of the button that removes one part of the name. The placeholder is the part."
-    },
     "Repeat" : {
       "comment" : "Edit screen: the text “Repeat”."
     },
@@ -658,8 +661,11 @@
     "Tap + to add a supplement or medication." : {
 
     },
+    "Tap a word to add or remove it." : {
+      "comment" : "Label scan: the helper line under the words of the tapped text."
+    },
     "Tap more text to add it to the name." : {
-      "comment" : "Label scan: the helper line under the chosen name."
+      "comment" : "Label scan: the helper line at the bottom of the card after the first tap."
     },
     "Tap the name on the label" : {
       "comment" : "Label scan: the prompt on the card before the user taps a text."
