@@ -292,9 +292,13 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 隔天一次（D036）：系统的可重复日历触发无法表达“每隔一天”。这类安排改用带日期的一次性请求：每个钟点预排接下来 7 个应服日，一个应服日一条，与每天/每周的 series 一起计入 48 条请求预算，预算先分给每天/每周的重复请求，再分给带日期的请求；同一钟点的 7 条要么全部排入，要么都不排并显示“未设置”，不只排前几天。引擎每次运行（保存后、启动、回到前台）补齐到 7 个应服日，做法与后续提示相同。局限必须明说：用户一直不打开 App，这类提醒在最后一个已排应服日（上次运行时排定的第 7 个应服日）之后停止；每天/每周的重复提醒不受影响。项目详情在提醒状态下写明这一点，不显示无条件的“已开启”。同一钟点既有每天的项目又有隔天的项目时，应服日发两条通知：重复请求只含每天的项目，带日期的请求只含当天应服的隔天项目；任何通知都不在非应服日写出某个项目的名称。
 
+> Amendment (2026-10-12, D047): One fire time gives one notification that names the open items. A dose that is recorded (taken or skipped) before its time does not remind: the repeating request of that weekday is replaced by weekly requests for the other weekdays, and by dated requests for the next two dates of that weekday. A daily or weekly item and an every-other-day item at one time share one dated request on a due day. Each run (launch, return to the front, save, record, undo) compiles again, and after the time passes the plan has the repeating request again. Without room in the budget of 48, the plain requests stay. The limits are in `docs/decisions.md` D047.
+
 没有常驻 timer、假后台音频、依赖每晚后台刷新、APNs 续命或逐日服务端推送。计划本身可以持续存在，实际通知显示仍受系统权限、专注模式、摘要、关机等影响；不宣传必达、永不漏服或自动绕过静音。
 
 ### 8.2 重复通知的内容与局限
+
+> Amendment (2026-10-12, D047): The limit below changed. A dose that is recorded before its time no longer gets the reminder of that time. The text of a request still never says that a dose is not taken. D047 gives the rule, the room, and the limits. Spec 8.1 has the new rule.
 
 重复本地通知的内容不是每次执行前实时查询数据库。首版基线是中性“查看你设定的 08:00 安排”，默认锁屏不显示药名。
 

@@ -316,16 +316,17 @@ extension AppModel {
             // Today can show a dose of another day, for example of yesterday in a fixed zone (spec 8.5).
             refresh()
         }
-        refreshFollowUps()
+        refreshReminders()
     }
 
-    /// A record, a skip, an undo, or a new time changes which slot times are open. Only the follow-ups depend
-    /// on the records, so the series reminders do not run again (spec 8.2).
-    func refreshFollowUps() {
+    /// A record, a skip, an undo, or a new time changes which slot times are open. The reminders and the follow-ups
+    /// depend on the records, so both run again. A dose that is recorded before its time leaves the reminder
+    /// of that time, and an undo before the time brings it back (spec 8.2, D047).
+    func refreshReminders() {
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
         Task.detached { [store] in
-            await store.refreshFollowUps(at: now, deviceTimeZone: deviceTimeZone)
+            _ = try? await store.reconcileReminders(at: now, deviceTimeZone: deviceTimeZone)
         }
     }
 

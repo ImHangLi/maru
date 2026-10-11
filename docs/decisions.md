@@ -383,7 +383,7 @@ Owner decisions after the study in `docs/research/2026-10-11-user-feedback-cn.md
 - The first release answers the common questions directly, as a FAQ: `docs/faq.md`. The owner's words for the product: one single, separate, easy place for this job. A record is simple. A missed record is fine. The app exists to lower the mental load.
 - Do not build the app on the maintainer's Mac. CI is the build check. One local device build is acceptable for an install on the maintainer's iPhone.
 
-## D036 · 2026-10-11 · Every other day: rule and reminders
+## D036 · 2026-10-11 · Every other day: rule and reminders (two notifications at one time replaced by D047)
 
 Agent decision, under the owner decision D035. It changes spec 2.1, 8.1, 8.2, 8.3, 8.5, and 15 (new acceptance ID T51, and a note on T22).
 
@@ -755,3 +755,33 @@ Owner: "We do not handle the time zone. The widget is to be done. Show me the de
 - The Home Screen widget stays. The owner sees a design before the build starts.
 - The one week of daily use on the owner's iPhone started on 2026-10-12.
 - TestFlight waits for the owner. The Apple Developer Program costs money, so it is a maintainer decision.
+
+## D047 · 2026-10-12 · One reminder for each fire time, and no reminder for a dose that is recorded
+
+Agent decision, after two owner requests. First bug: the reminder was set to 9:00, the owner recorded the dose at 8:45, and the 9:00 notification still came. Second request: two or more items at one clock time give one notification that names the open items. This changes the limit of spec 8.2 and the two notifications of D036. It adds amendment notes to spec 8.1 and 8.2.
+
+The rule:
+
+- A record before the fire time (taken or skipped) closes its dose. A closed dose is not named, and it does not remind. When every dose of a time is closed, that time has no notification today.
+- A repeating request cannot skip one date. So a weekday that needs another text leaves the repeating requests. The other weekdays keep their weekly requests (weekday, hour, and minute). The weekday that left gets one dated request for each of its next two dates that still have a time to come, with the text of that date. A time of every day with a record gives six weekly requests, one dated request for today with the open items, and one for the same weekday next week.
+- Every run compiles again: launch, return to the front, save, a record, and an undo. After the fire time passes, the plan has the one repeating request again. An undo before the time brings today back.
+- A dated request with a closed member names only the open members. It carries their slot IDs (`openSlots`), so a tap and the "Taken" action find only the open doses. It has the "Taken" action when exactly one item is open (D034). The revision stays the revision of all members that are due on its date, so the tap resolver checks the identity as before (spec 8.3).
+- A daily or weekly item and an every-other-day item at the same time give one notification on a day when both are due. Each weekday of the time that has such a date in the next 14 days gets dated requests, so no notification names an item on a day when it is not due (D036).
+- Two items at one time in different time zone rules give one series when a named zone equals the device zone now and a version that follows the device has the same time. The merged series follows the device zone. This is the trade-off: when the device moves to another zone, the medication reminder moves with it. The owner dropped the time zone question (D046).
+- Room: the plan keeps the plain requests of every time first, counted as if no dose were closed, so a record or an undo never changes which groups fit. The new requests use only the room that is left in the budget of 48. With no room, the time keeps its plain request, and the notification still comes. A record never removes the reminder of another plan.
+
+Limits, to state in the settings text later:
+
+- A weekday that left the repeating requests reminds on two dates. Then it stops until the app runs again. So with no run for seven days, the daily item loses that weekday. The review raised this limit, and the lead agent accepted it, because the app runs whenever the user records early.
+- A daily item and an every-other-day item at the same time have dated requests for 14 days and no repeating request. With no run for 14 days, both stop. The record of the "Taken" action from a notification does not run the engine. The next launch or return does.
+- A follow-up still has its own group for each zone rule. The follow-ups of the zones that D047 joins are not joined yet.
+
+Agent detail:
+
+- `ReminderPlan` gets `closed`. `LocalStore` reads it from the occurrence state in the same read as the plan.
+- `ReminderSeries` gets `done` and the key `openSlots`. The plan function `rework` builds the weekly and dated requests of one time.
+- The tap resolver gets the rule `dated` (every version that is due on the date), and a series of the device accepts the named zone that equals the device zone.
+- The app runs the reminder engine, and then the follow-ups, after each record and each undo.
+- One test in `MaruCore` (D016) covers the plan rule. The test of D036 changed: a daily and an every-other-day item at one time now give one request for each date.
+
+Not verified: no app build ran on the Mac of the maintainer, and nobody saw a notification. It needs a check on a real iPhone.

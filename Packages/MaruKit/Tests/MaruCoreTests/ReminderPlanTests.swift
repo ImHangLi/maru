@@ -29,23 +29,20 @@ struct ReminderPlanTests {
             schedules: [
                 Fixtures.schedule(itemID: items[0].id, times: [Fixtures.time(8), Fixtures.time(20)]),
                 Fixtures.schedule(itemID: items[1].id, times: [Fixtures.time(8)]),
-                // The same time in the zone of the device is another series. It moves when the device moves.
+                // The same time in the zone of the device joins the series of the device (D047).
                 Fixtures.schedule(itemID: items[2].id, times: [Fixtures.time(8)], timeZonePolicy: .followsDevice),
             ]
         )
 
-        #expect(
-            plan.requests.map(\.identifier)
-                == ["series|Asia/Shanghai|08:00|daily", "series|Asia/Shanghai|20:00|daily", "series|device|08:00|daily"]
-        )
-        #expect(plan.series.map(\.members.count) == [2, 1, 1])
-        // The trigger is the wall-clock time in the named zone. It has no weekday and no date.
-        var morning = DateComponents()
-        morning.timeZone = TimeZone(identifier: "Asia/Shanghai")
-        morning.hour = 8
-        morning.minute = 0
-        #expect(plan.requests[0].trigger.dateComponents == morning)
-        #expect(plan.requests[2].trigger.dateComponents == DateComponents(hour: 8, minute: 0))
+        #expect(plan.requests.map(\.identifier) == ["series|device|08:00|daily", "series|Asia/Shanghai|20:00|daily"])
+        #expect(plan.series.map(\.members.count) == [3, 1])
+        // The trigger is the wall-clock time. A named zone keeps its zone. It has no weekday and no date.
+        var evening = DateComponents()
+        evening.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        evening.hour = 20
+        evening.minute = 0
+        #expect(plan.requests[1].trigger.dateComponents == evening)
+        #expect(plan.requests[0].trigger.dateComponents == DateComponents(hour: 8, minute: 0))
     }
 
     @Test func weeklyRuleGivesOneRequestForEachWeekdayAndNoDayGetsTwo() throws {
@@ -84,15 +81,14 @@ struct ReminderPlanTests {
             itemID: items[1].id, times: [Fixtures.time(8)], everyOtherDayFrom: Fixtures.date(2026, 3, 3)
         )
         // 08:00 on 2 March in Shanghai, a day with no dose of the second item.
-        let plan = compile(items: items, schedules: [daily, alternate])
+        let plan = compile(items: items, schedules: [alternate])
         let dates = [3, 5, 7, 9, 11, 13, 15].map { String(format: "2026-03-%02d", $0) }
-        #expect(plan.requests.map(\.identifier) == ["series|Asia/Shanghai|08:00|daily"] + dates.map { "series|Asia/Shanghai|08:00|\($0)" })
-        #expect(plan.requests.count <= ReminderPlan.requestBudget)
-        #expect(plan.needs[alternate.id] == .requests(Set(plan.requests.dropFirst().map(\.identifier))))
-        // The repeating request never names the item of every second day. Each request stands for one item (D034).
-        #expect(plan.requests.map { $0.content.names ?? [] } == [["Zinc"]] + Array(repeating: ["Iron"], count: 7))
-        #expect(plan.requests.map(\.content.hasTakenAction) == Array(repeating: true, count: 8))
-        let first = plan.requests[1]
+        #expect(plan.requests.map(\.identifier) == dates.map { "series|Asia/Shanghai|08:00|\($0)" })
+        #expect(plan.needs[alternate.id] == .requests(Set(plan.requests.map(\.identifier))))
+        // Each request stands for one item (D034).
+        #expect(plan.requests.map { $0.content.names ?? [] } == Array(repeating: ["Iron"], count: 7))
+        #expect(plan.requests.map(\.content.hasTakenAction) == Array(repeating: true, count: 7))
+        let first = plan.requests[0]
         #expect(!first.trigger.repeats)
         var morning = DateComponents()
         morning.timeZone = TimeZone(identifier: "Asia/Shanghai")
@@ -110,11 +106,15 @@ struct ReminderPlanTests {
         #expect(small.requests.map(\.identifier) == ["series|Asia/Shanghai|08:00|daily"])
         #expect(small.needs[alternate.id] == .blocked(.overLimit))
 
-        // A tap on each of the two reminders of 3 March finds only its own item (spec 8.3).
+        // With a daily item at the same time, the dated request of 3 March names both items (D047).
+        // A tap on it finds both doses. A tap on the request of the every-other-day item alone finds only its own (spec 8.3).
+        let joined = compile(items: items, schedules: [daily, alternate])
+        let both = try #require(joined.requests.first { $0.userInfo[ReminderRequest.dueDateKey] == "2026-03-03" })
+        #expect(both.content.names == ["Zinc", "Iron"])
         let resolver = ReminderTapResolver(
             now: Fixtures.instant("2026-03-03T00:01:00Z"), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
         )
-        for (request, schedule) in [(plan.requests[0], daily), (first, alternate)] {
+        for (request, slots) in [(both, daily.slots + alternate.slots), (first, alternate.slots)] {
             let delivered = DeliveredReminder(
                 deliveredAt: Fixtures.instant("2026-03-03T00:00:00Z"), userInfo: request.userInfo, triggerWeekday: nil
             )
@@ -122,9 +122,50 @@ struct ReminderPlanTests {
                 Issue.record("The reminder did not resolve.")
                 continue
             }
-            #expect(found.map(\.slotID) == schedule.slots.map(\.id))
-            #expect(found.map(\.plannedDate) == [Fixtures.date(2026, 3, 3)])
+            #expect(found.map(\.slotID) == slots.map(\.id))
+            #expect(found.map(\.plannedDate) == Array(repeating: Fixtures.date(2026, 3, 3), count: slots.count))
         }
+    }
+
+    /// A record before the time takes today out of the repeating request, and an item that is due on some days
+    /// joins the one request of its time (D047). 2 March 2026 is a Monday, and the run is at 08:00.
+    @Test func recordBeforeTheTimeAndEveryOtherDayItemKeepOneRequestForEachFireTime() throws {
+        let items = [Fixtures.item(name: "Iron"), Fixtures.item(name: "Zinc")]
+        let both = items.map { Fixtures.schedule(itemID: $0.id, times: [Fixtures.time(9)]) }
+        func closed(_ schedule: Schedule) -> Set<OccurrenceKey> {
+            [OccurrenceKey(slotID: schedule.slots[0].id, plannedDate: Fixtures.date(2026, 3, 2))]
+        }
+        func plan(_ schedules: [Schedule], closed: Set<OccurrenceKey> = [], budget: Int = ReminderPlan.requestBudget) -> ReminderPlan {
+            ReminderPlan(
+                items: items, schedules: schedules, now: Fixtures.instant("2026-03-02T00:00:00Z"),
+                deviceTimeZone: Fixtures.shanghai, closed: closed, requestBudget: budget
+            )
+        }
+
+        // No record: the one daily request.
+        #expect(plan(both).requests.map(\.identifier) == ["series|Asia/Shanghai|09:00|daily"])
+
+        // Iron is recorded: the other six weekdays repeat. Monday names only Zinc, with the action, and next Monday names both.
+        let partial = plan(both, closed: closed(both[0])).requests
+        #expect(Array(partial.map(\.identifier).prefix(6)) == (2...7).map { "series|Asia/Shanghai|09:00|\($0)" })
+        #expect(partial.dropFirst(6).map { $0.content.names ?? [] } as [[String]] == [["Zinc"], ["Iron", "Zinc"]])
+        #expect(partial[6].content.hasTakenAction && partial[6].trigger.date == Fixtures.date(2026, 3, 2))
+        #expect(partial[6].userInfo[ReminderRequest.openSlotsKey] == both[1].slots[0].id.rawValue.uuidString)
+
+        // Both are recorded: Monday has no request until next Monday.
+        let all = plan(both, closed: closed(both[0]).union(closed(both[1]))).requests
+        #expect(all.count == 7 && all[6].trigger.date == Fixtures.date(2026, 3, 9))
+
+        // No room: the request of the plan stays, and no other request goes away.
+        #expect(plan(both, closed: closed(both[0]), budget: 6).requests.map(\.identifier) == ["series|Asia/Shanghai|09:00|daily"])
+
+        // A daily item and an every-other-day item at one time: each date has one dated request, and a day names
+        // an every-other-day item only when it is due.
+        let alternate = Fixtures.schedule(itemID: items[1].id, times: [Fixtures.time(9)], everyOtherDayFrom: Fixtures.date(2026, 3, 2))
+        let mixed = plan([both[0], alternate]).requests
+        #expect(mixed.count == 14)
+        #expect(Array(mixed.prefix(3).map { $0.content.names ?? [] }) == [["Iron", "Zinc"], ["Iron"], ["Iron", "Zinc"]])
+        #expect(Set(mixed.map(\.trigger.date)).count == 14)
     }
 
     @Test func requestHoldsTheSeriesAndTheRevisionAndNothingOfAnItem() throws {
