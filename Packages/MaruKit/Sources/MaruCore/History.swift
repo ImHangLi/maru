@@ -56,6 +56,31 @@ public struct StoredHistoryDose: Hashable, Sendable {
     }
 }
 
+/// A stored planned dose of the graph range: its key and what its record says (D041).
+public struct StoredDoseState: Hashable, Sendable {
+    public let key: OccurrenceKey
+    /// The dose has an event, also when the last event is an undo.
+    public let hasEvents: Bool
+    public let isTaken: Bool
+
+    public init(key: OccurrenceKey, hasEvents: Bool, isTaken: Bool) {
+        self.key = key
+        self.hasEvents = hasEvents
+        self.isTaken = isTaken
+    }
+}
+
+/// The planned doses of one day and how many of them are taken (D041).
+public struct HistoryDayCount: Hashable, Sendable {
+    public let scheduled: Int
+    public let taken: Int
+
+    public init(scheduled: Int, taken: Int) {
+        self.scheduled = scheduled
+        self.taken = taken
+    }
+}
+
 /// The rules of the history screen (spec 3 P05, spec 4, D019).
 ///
 /// The history reads by records, not by occurrence rows:
@@ -76,32 +101,22 @@ public enum History {
         asNeeded: [HistoryAsNeededDose] = [],
         deviceTimeZone: NamedTimeZone
     ) -> [HistoryDay] {
-        let activeItems = Set(items.filter { !$0.isArchived }.map(\.id))
         let storedByKey = Dictionary(stored.map { ($0.occurrence.key, $0) }, uniquingKeysWith: { first, _ in first })
-        let active = schedules.filter { activeItems.contains($0.itemID) }
+        let active = activeSchedules(schedules, items: items)
         return dates.compactMap { date in
             var doses: [HistoryDose] = []
-            var keys = Set<OccurrenceKey>()
             for dose in stored where dose.occurrence.plannedDate == date && !dose.record.events.isEmpty {
-                keys.insert(dose.occurrence.key)
                 doses.append(HistoryDose(occurrence: dose.occurrence, isStored: true, itemID: dose.itemID, record: dose.record))
             }
-            for schedule in active {
-                for plan in schedule.plannedOccurrences(on: date, deviceTimeZone: deviceTimeZone)
-                where keys.insert(plan.key).inserted {
-                    if let dose = storedByKey[plan.key] {
-                        doses.append(HistoryDose(occurrence: dose.occurrence, isStored: true, itemID: dose.itemID, record: dose.record))
-                    } else {
-                        let occurrence = plan.occurrence(id: OccurrenceID())
-                        doses.append(
-                            HistoryDose(
-                                occurrence: occurrence,
-                                isStored: false,
-                                itemID: schedule.itemID,
-                                record: OccurrenceRecord(occurrenceID: occurrence.id)
-                            )
-                        )
-                    }
+            let recorded = Set(doses.map(\.occurrence.key))
+            for (itemID, plan) in plannedDoses(on: date, besides: recorded, schedules: active, deviceTimeZone: deviceTimeZone) {
+                if let dose = storedByKey[plan.key] {
+                    doses.append(HistoryDose(occurrence: dose.occurrence, isStored: true, itemID: dose.itemID, record: dose.record))
+                } else {
+                    let occurrence = plan.occurrence(id: OccurrenceID())
+                    doses.append(
+                        HistoryDose(occurrence: occurrence, isStored: false, itemID: itemID, record: OccurrenceRecord(occurrenceID: occurrence.id))
+                    )
                 }
             }
             let asNeeded = asNeeded.filter { $0.occurrence.plannedDate == date && !$0.record.events.isEmpty }
@@ -110,6 +125,52 @@ public enum History {
             let ordered = doses.enumerated().sorted { ($0.element.occurrence.plannedTime, $0.offset) < ($1.element.occurrence.plannedTime, $1.offset) }
             return HistoryDay(date: date, doses: ordered.map(\.element), asNeeded: asNeeded)
         }
+    }
+
+    /// The planned doses of each date and how many of them are taken, for the graph of the history page (D041).
+    /// A day has the same doses as in `days`, so the graph and the timeline agree. A skipped dose is not taken.
+    /// An as-needed dose has no plan, so it does not count. A date with no dose has no entry.
+    public static func counts(
+        _ dates: [LocalDate],
+        items: [Item],
+        schedules: [Schedule],
+        stored: [StoredDoseState],
+        deviceTimeZone: NamedTimeZone
+    ) -> [LocalDate: HistoryDayCount] {
+        let active = activeSchedules(schedules, items: items)
+        let recordedByDate = Dictionary(grouping: stored.filter(\.hasEvents), by: \.key.plannedDate)
+        var counts: [LocalDate: HistoryDayCount] = [:]
+        for date in dates {
+            let recorded = recordedByDate[date] ?? []
+            let planned = plannedDoses(on: date, besides: Set(recorded.map(\.key)), schedules: active, deviceTimeZone: deviceTimeZone)
+            let scheduled = recorded.count + planned.count
+            guard scheduled > 0 else { continue }
+            counts[date] = HistoryDayCount(scheduled: scheduled, taken: recorded.filter(\.isTaken).count)
+        }
+        return counts
+    }
+
+    /// An archived item gets no planned dose. Its records still show.
+    private static func activeSchedules(_ schedules: [Schedule], items: [Item]) -> [Schedule] {
+        let activeItems = Set(items.filter { !$0.isArchived }.map(\.id))
+        return schedules.filter { activeItems.contains($0.itemID) }
+    }
+
+    /// The doses of the plan of a date that are not in `recorded`, the stored doses of the date with an event.
+    private static func plannedDoses(
+        on date: LocalDate,
+        besides recorded: Set<OccurrenceKey>,
+        schedules: [Schedule],
+        deviceTimeZone: NamedTimeZone
+    ) -> [(itemID: ItemID, plan: PlannedOccurrence)] {
+        var keys = recorded
+        var doses: [(itemID: ItemID, plan: PlannedOccurrence)] = []
+        for schedule in schedules {
+            for plan in schedule.plannedOccurrences(on: date, deviceTimeZone: deviceTimeZone) where keys.insert(plan.key).inserted {
+                doses.append((schedule.itemID, plan))
+            }
+        }
+        return doses
     }
 
     /// The first date that can have a dose: the first schedule version of any item, or the first stored record.

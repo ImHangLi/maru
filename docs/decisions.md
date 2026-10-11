@@ -488,6 +488,59 @@ Tests (D016): two new tests in `MaruCore`. One for the cleaning of label text an
 
 Not verified: no build ran on a Mac of the maintainer, and nobody saw the screens. The scan needs a check on a real iPhone with real bottles.
 
+## D041 · 2026-10-11 · History graph
+
+Owner decision, with agent detail. It brings the passive history heatmap of D006 forward from milestone B. It changes spec 3 P05.
+
+Owner:
+
+- The History page gets a graph of squares at the top, in the style of the GitHub contribution graph. The timeline of D032 stays under it.
+- Three levels of color, by the share of the planned doses of a day that are taken.
+- The graph grows with use. It starts at 13 weeks. A one-week step and a step of a few weeks are too small, so they are gone.
+- No title and no count on the card. A title such as "Last 3 Weeks" says that Maru did not keep the older days, but Maru keeps every day from the first one.
+- No black border on the selected day. The selection uses the most minimal form in the style of the app.
+- Motion stays restrained and the same as on the other pages (D030). Where no motion is needed, there is none.
+
+Agent detail:
+
+- One square for each day, with a corner of 22% of the side. One column is one week, and the rows are the weekdays in the first weekday order of the user's calendar. Time runs from left to right, so today is at the right end of the filled part.
+- The steps: 13 weeks from the week of the first day, 26 weeks when 13 are full, and 52 weeks, as two bands of 26 with the older band above, when 26 are full. The graph takes the next step on the first day of a week that does not fit. After 52 weeks it shows the last 52 weeks and moves one column each week. The older days stay in the timeline. The first day is the first schedule version or the first record, as for the timeline.
+- The graph fills the width of the card. The gap is a fixed share of the side, 0.19 at 13 columns and 0.3 at 26, so the squares keep their shape on each screen width.
+- The levels: "all" when every planned dose is taken, "most" when more than half are taken, and "some" for half or less. These are the tint at 100%, 60%, and 30% over the card. A skipped dose is not taken. An as-needed dose does not count. Half counts as "some", so one of two doses is not "most".
+- A planned day with nothing taken is a quiet neutral (the tertiary system fill). A day with nothing planned, for example an off day of an every-other-day item, is a fainter neutral (the quaternary system fill), so it does not look like a miss. A day that is not here yet is a faint outline. A day before the first day has no square. So a new user sees calm, even outlines with the first squares filled.
+- Today has no mark. It is the last filled square, so its place is clear, and a second ring would compete with the selection ring.
+- The labels: short month names above the column where a month starts, in the secondary color. A label that would touch another one does not show. "M W F" at the left only at 13 weeks, and not at the accessibility text sizes. No legend, no count, and no sentence.
+- Selection: a thin ring in the tint, with a gap of 1 point, and a small date label in the place of the month labels over the selected column, for example "Tue, Aug 18". No dark border, no shadow, no magnifier, and no motion. A light selection haptic comes when the selected day changes.
+- A touch or a drag selects the nearest day, so the finger does not need to hit a square. A day that is not here yet gives today. A tap on the selected day clears the selection.
+- At the end of the touch the timeline scrolls so that the section of the selected day is first under the graph. It loads older pages until it has that day. A day with no rows gives the nearest older day with rows. A clear scrolls back to today. On iOS 18 and later, a scroll of the timeline by hand clears the selection. iOS 17 has no scroll phase, so there the selection stays until a tap.
+- The graph stays above the timeline and does not scroll with it. A drag inside a scrolling list competes with the scroll of the list, and the results differ by iOS version. Out of the list, the drag and the scroll never compete for one touch. The timeline also scrolls under a graph that stays on the display, as the list of days under the month in Calendar. The cost is the height of the card: 238 points at 13 weeks and 272 points at 52 weeks on a screen of 402 points.
+- The data: one read for the range of 52 weeks. One query reads every stored planned dose of the range with its state. `History.counts` decides which doses belong to a day with the same function as the timeline (D019, D032, D036), so the graph and the timeline cannot disagree. The read runs when History opens, off the main thread, never at launch (spec 9). It takes about 27 ms for 3,640 doses in a debug build on the Mac. A commit, a return to the app, and a delete of an item read it again. No schema change.
+- The page shows its first content when the timeline and the graph are read, so the graph does not push the timeline down.
+- VoiceOver reads the graph as one element. The value is a summary, for example "Since August 10. Days with all taken: 40. Most: 3. Some: 2. None: 1.", or the selected day with "2 of 3 taken". Swipe up or down moves the selected day, and the timeline follows.
+- Kept custom control (D026): SwiftUI has no heat map. One `Canvas` draws the squares and the labels, and one drag gesture selects. Swift Charts can draw squares with rectangle marks, but it gives no ring with a gap for the selection, and its labels follow the axes, not the start of a month.
+
+Rejected:
+
+- Round dots and large circles. They read as a list of points, and the owner chose squares.
+- A calendar of large cells, and steps of one week or of a few weeks with weeks as rows. The owner found them too small, and they need a turn from rows to columns.
+- One strip for each item. It shows which item is missed and makes the page a report card.
+- A title with a duration, or with month names. A duration says that older days are gone.
+- A count of days. A count can drop after a correction, and the owner asked for none.
+- A streak, or any count of days in a row (D006, D021).
+- A dark border on the selected day, a shadow, a magnifier bubble, and a band behind the selected week.
+- A tint ring on today. It competes with the selection ring.
+
+Tests (D016): one new test, for the day counts with an every-other-day item and a skipped dose.
+
+Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The levels in dark mode, the drag, the haptic, and VoiceOver need a check on a real iPhone.
+
+## D045 · 2026-10-11 · Lean agent work and the follow-up end after midnight
+
+Maintainer decisions.
+
+- Agents work in a token-efficient way. The rules are in `docs/process.md`, "Token budget for agents". Fewer subagents, short briefs, and a model review only for changes that can affect records or reminders.
+- Follow-ups past midnight end at 01:00 at the latest (D039). The maintainer left the choice to the agent. The reason: a bedtime dose with no record must not ring for most of the night.
+
 ## D042 · 2026-10-11 · Scan Label word choice and edit
 
 Owner feedback after a test of "Scan Label" on the iPhone. The scanner returns a whole line or block for one tap, so the name came with other words: the strength, "Dietary Supplement", and the count. The owner also wanted to change the name on the scan screen, so that the scan is not a one-way step. This replaces the card of D038 after the first tap: the large name and the remove buttons for each part. The rest of D038 stays.

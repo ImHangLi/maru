@@ -9,8 +9,9 @@ struct HistoryView: View {
 
     var body: some View {
         Group {
-            // The first days show complete, with no entrance (D030).
-            if let days = model.history.days {
+            // The first days show complete, with no entrance (D030). They wait for the first read of the
+            // graph too, so the graph does not push them down.
+            if let days = model.history.days, model.history.graphDidLoad {
                 HistoryList(days: days)
             } else {
                 // A retry of the banner can show its error also before the first read ends.
@@ -101,6 +102,10 @@ struct HistoryView: View {
 private struct HistoryList: View {
     @Environment(AppModel.self) private var model
     let days: [HistoryDay]
+    /// The day that the graph selected (D041). Only the graph sets it.
+    @State private var selection: LocalDate?
+    /// The selected day that the timeline did not scroll to yet, because an older page still loads.
+    @State private var scrollTarget: LocalDate?
 
     var body: some View {
         // A day with only open doses of today has no row, so it has no section.
@@ -144,6 +149,28 @@ private struct HistoryList: View {
             .listStyle(.insetGrouped)
             // A row that comes or goes moves the list (D030).
             .motion(.layout, value: sections.flatMap { $0.entries.map(\.id) })
+            .safeAreaInset(edge: .top, spacing: 0) {
+                if let graph = model.history.graph {
+                    HistoryGraphView(graph: graph, counts: model.history.graphCounts, selection: $selection) {
+                        if let selection {
+                            model.showHistory(through: selection)
+                            scrollTarget = selection
+                            scroll(to: selection, sections, scroller)
+                        } else if let first = sections.first?.date {
+                            // No selection: the timeline starts at today again.
+                            scrollTarget = nil
+                            withMotion(.layout) { scroller.scrollTo(first, anchor: .top) }
+                        }
+                    }
+                    .padding(.horizontal, Tile.margin)
+                    .padding(.vertical, 8)
+                    .background(Color(.systemGroupedBackground))
+                }
+            }
+            .onChange(of: sections.map(\.date)) {
+                if let scrollTarget { scroll(to: scrollTarget, sections, scroller) }
+            }
+            .modifier(ClearsSelectionOnScroll(selection: $selection))
             #if DEBUG
             .onAppear {
                 // `-MaruHistory older`: scroll to the oldest loaded day. The simulator cannot scroll.
@@ -163,6 +190,16 @@ private struct HistoryList: View {
         }
     }
 
+    /// Scrolls the timeline to the selected day, so its section comes first under the graph. A day with no row
+    /// gives the nearest older day with rows. The scroll waits while the page of that day loads.
+    private func scroll(to target: LocalDate, _ sections: [(date: LocalDate, entries: [HistoryEntry])], _ scroller: ScrollViewProxy) {
+        guard let today = model.history.today else { return }
+        let isLoaded = today.days(since: target) < model.history.loadedDayCount || !model.history.hasEarlier
+        guard isLoaded, let section = sections.first(where: { $0.date <= target }) ?? sections.last else { return }
+        scrollTarget = nil
+        withMotion(.layout) { scroller.scrollTo(section.date, anchor: .top) }
+    }
+
     /// "Today", "Yesterday", then the weekday and the date, for example "Friday, October 9" (spec 13.2).
     private func title(of date: LocalDate) -> String {
         if let today = model.history.today {
@@ -170,6 +207,22 @@ private struct HistoryList: View {
             if date == today.adding(days: -1) { return String(localized: "Yesterday") }
         }
         return date.noon.formatted(Date.FormatStyle.dateTime.weekday(.wide).month(.wide).day().timeZone(.utc))
+    }
+}
+
+/// A scroll of the timeline by hand clears the selection of the graph (D041). iOS 17 has no scroll phase,
+/// so there the selection stays until a tap on the selected day.
+private struct ClearsSelectionOnScroll: ViewModifier {
+    @Binding var selection: LocalDate?
+
+    func body(content: Content) -> some View {
+        if #available(iOS 18, *) {
+            content.onScrollPhaseChange { _, phase in
+                if phase == .interacting { selection = nil }
+            }
+        } else {
+            content
+        }
     }
 }
 
@@ -182,7 +235,7 @@ extension LocalDate {
     }
 }
 
-private extension Date.FormatStyle {
+extension Date.FormatStyle {
     func timeZone(_ zone: TimeZone) -> Date.FormatStyle {
         var style = self
         style.timeZone = zone
@@ -190,6 +243,6 @@ private extension Date.FormatStyle {
     }
 }
 
-private extension TimeZone {
+extension TimeZone {
     static let utc = TimeZone(identifier: "UTC")!
 }
