@@ -22,18 +22,16 @@ Maru was developed in a private repository before it became public. Issue number
 
 ## Next
 
-1. Merge the "every other day" schedule (D036, pull request #49).
-2. Check the follow-ups and "Until Recorded" on a real iPhone (D039), with the "Taken" action of a reminder (D034). Time-sensitive reminders wait for the Apple Developer Program (D007, D034).
-3. A question after a time zone change (`docs/research/2026-10-11-apple-health-gap.md`).
-4. A Home Screen widget that records a dose.
-5. Acceptance on a real iPhone: one week of daily use by the maintainer.
-6. Check the export, the backup, and the restore on a real iPhone (D040). The pull request has the steps.
-7. A backup with a passphrase (D040, milestone B).
-8. Milestone B: TestFlight. The bundle ID freeze and the Apple Developer Program come first (D005, D007).
+1. Check on the maintainer's iPhone, in one session: the History graph, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.
+2. A question after a time zone change (`docs/research/2026-10-11-apple-health-gap.md`).
+3. A Home Screen widget that records a dose.
+4. Acceptance on a real iPhone: one week of daily use by the maintainer.
+5. A backup with a passphrase (D040, milestone B).
+6. Milestone B: TestFlight. The bundle ID freeze and the Apple Developer Program come first (D005, D007). Time-sensitive reminders also wait for the program (D034).
 
 ## Open cleanup proposals
 
-These need a maintainer decision or wait for pull request #49. The list with evidence is in the pull request "Remove dead code and stale content".
+These need a maintainer decision. The list with evidence is in the earlier private pull request "Remove dead code and stale content".
 
 - Model parts with no caller in the app: `ProductVersion`, `ScheduleVersion.productVersionID`, and `Item.imageReference`. Their tables and columns stay in the schema.
 - Debug launch arguments with no recorded use: `-MaruTab`, `-MaruHistory`, `-MaruSettings`, `-MaruTap`, `-MaruStorageError`, `-MaruSampleHistory`, and `-MaruSampleData one`.
