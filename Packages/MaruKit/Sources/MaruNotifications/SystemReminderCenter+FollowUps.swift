@@ -49,47 +49,67 @@ extension UNNotificationRequest {
 
 /// The follow-up setting in `UserDefaults.standard`. No interval means off (spec 4).
 ///
-/// The interval key is the key of the one delay of D021. A value from before D039 has no count,
-/// so it means one follow-up after that time. The time of the last change holds no health data (D014).
+/// The setting and the time of its last change live in one value under one key, so one write changes both.
+/// A stop of the app can never leave a new setting with an old confirmed time (D039). The keys from before
+/// this value are read only when the value is missing: the interval key of D021, with no count meaning one
+/// follow-up, and the change key. The value holds no health data (D014).
 public struct DefaultsFollowUpSetting: FollowUpSettingStore {
+    static let valueKey = "reminders.followUp.v2"
     static let key = "reminders.followUpMinutes"
     static let countKey = "reminders.followUpCount"
     static let changedKey = "reminders.followUpChanged"
+    /// The engine confirms and the settings screen saves from different tasks. The lock makes each read and write of the value one step.
+    private static let lock = NSLock()
 
     public init() {}
 
     public func load() -> FollowUpSetting? {
-        let defaults = UserDefaults.standard
-        guard let interval = FollowUpInterval(rawValue: defaults.integer(forKey: Self.key)) else { return nil }
-        let count = (defaults.object(forKey: Self.countKey) as? Int).flatMap(FollowUpCount.init)
-        return FollowUpSetting(count: count ?? .one, interval: interval)
+        Self.lock.withLock { Self.read().setting }
     }
 
     public func changed() -> Date? {
-        UserDefaults.standard.object(forKey: Self.changedKey) as? Date
+        Self.lock.withLock { Self.read().changed }
     }
 
     public func save(_ setting: FollowUpSetting?) {
-        let defaults = UserDefaults.standard
-        let isChange = load() != setting
-        // The mark comes before the setting too: if the app stops between the writes, the next run still sees an
-        // unconfirmed change and counts the old follow-ups.
-        if isChange { defaults.set(Date.distantFuture, forKey: Self.changedKey) }
-        if let setting {
-            defaults.set(setting.interval.rawValue, forKey: Self.key)
-            defaults.set(setting.count.rawValue, forKey: Self.countKey)
-        } else {
-            defaults.removeObject(forKey: Self.key)
-            defaults.removeObject(forKey: Self.countKey)
+        Self.lock.withLock {
+            let current = Self.read()
+            guard current.setting != setting else { return }
+            // "Off" also counts: the old follow-ups can still come until the engine confirms their removal.
+            Self.write(setting: setting, changed: .distantFuture)
         }
-        // "Off" also counts: the old follow-ups can still come until the engine confirms their removal.
-        // The mark comes after the setting again, so an engine run that confirms between the writes cannot keep the old setting.
-        if isChange { defaults.set(Date.distantFuture, forKey: Self.changedKey) }
     }
 
     public func confirmChange() -> Date {
-        let now = Date()
-        UserDefaults.standard.set(now, forKey: Self.changedKey)
-        return now
+        Self.lock.withLock {
+            let now = Date()
+            let current = Self.read()
+            // A save after the engine read the mark wrote a new mark. That change stays unconfirmed for the next run.
+            if current.changed == .distantFuture { Self.write(setting: current.setting, changed: now) }
+            return now
+        }
+    }
+
+    private static func read() -> (setting: FollowUpSetting?, changed: Date?) {
+        let defaults = UserDefaults.standard
+        if let value = defaults.dictionary(forKey: valueKey) {
+            let interval = (value["minutes"] as? Int).flatMap(FollowUpInterval.init)
+            let count = (value["count"] as? Int).flatMap(FollowUpCount.init)
+            return (interval.map { FollowUpSetting(count: count ?? .one, interval: $0) }, value["changed"] as? Date)
+        }
+        let interval = FollowUpInterval(rawValue: defaults.integer(forKey: key))
+        let count = (defaults.object(forKey: countKey) as? Int).flatMap(FollowUpCount.init)
+        return (interval.map { FollowUpSetting(count: count ?? .one, interval: $0) }, defaults.object(forKey: changedKey) as? Date)
+    }
+
+    private static func write(setting: FollowUpSetting?, changed: Date) {
+        var value: [String: Any] = ["changed": changed]
+        if let setting {
+            value["minutes"] = setting.interval.rawValue
+            value["count"] = setting.count.rawValue
+        }
+        let defaults = UserDefaults.standard
+        defaults.set(value, forKey: valueKey)
+        for old in [key, countKey, changedKey] { defaults.removeObject(forKey: old) }
     }
 }

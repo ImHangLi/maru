@@ -29,6 +29,7 @@ enum DebugStore {
     static let clearWait = Duration.seconds(3)
     /// Every key that the settings sheet writes (D023). The follow-up keys are the keys of `DefaultsFollowUpSetting`.
     private static let preferenceKeys = [
+        "reminders.followUp.v2",
         "reminders.followUpMinutes",
         "reminders.followUpCount",
         "reminders.followUpChanged",

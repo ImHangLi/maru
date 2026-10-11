@@ -497,7 +497,7 @@ The setting:
 - "Remind Again" has two menu rows in one section. The first row is the number: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between reminders: 5, 10, 15, or 30 minutes, or 1 hour. It shows only when the number is not "Off".
 - The setting is off by default (spec 4). When the user turns it on, the time starts at 30 minutes. That is the middle delay of D021 and the delay of the follow-up of Apple Health.
 - An install from before keeps its behavior. Its stored delay is the time between reminders, and a stored value with no number means "1 Time". So "After 30 min" becomes "1 Time" and "30 min". The new key is `reminders.followUpCount` in `UserDefaults.standard` (D014). "Off" removes both keys.
-- Each change of the setting, "Off" too, keeps one time in `reminders.followUpChanged`: the time at which the engine confirmed the removal of the old follow-ups. It holds no health data.
+- Each change of the setting, "Off" too, keeps one time: the time at which the engine confirmed the removal of the old follow-ups. The setting and this time are one value under one key, `reminders.followUp.v2`, so one write changes both, and a stop of the app cannot leave a new setting with an old time. It holds no health data.
 - The footer of "Until Recorded" states the limit and the last time: "Maru reminds you up to 12 times for each dose, until 1:00 AM at the latest." The time uses the time format of the device. The other choices keep "Only for items that you did not record."
 
 The schedule rule:
