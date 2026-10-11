@@ -50,6 +50,8 @@ final class AppModel {
     var history = HistoryState()
     /// The state of the settings sheet. See `AppModel+Settings.swift`.
     var settings = SettingsState()
+    /// The state of "Your Data" in settings. See `AppModel+Backup.swift`.
+    var transfer = DataTransferState()
     /// The first time of day of each item with an active plan, for the order of My Items. `nil` before the
     /// first read. See `MyListView.swift`.
     var listTimes: [ItemID: WallClockTime]?

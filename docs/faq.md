@@ -22,6 +22,14 @@ No. You can add as many items as you want. Maru has no account and no paywall on
 
 On your iPhone. Maru has no server and makes no network requests by itself. The feedback form in Settings is a web page that opens only when you tap it. Read `PRIVACY.md` for the details.
 
+## Can I take my records with me?
+
+Yes. "Export Records" in Settings makes a CSV file with every record. Numbers and Excel open it. You choose where the file goes. Maru sends nothing by itself.
+
+## How do I move to a new iPhone?
+
+On the old iPhone, tap "Back Up" in Settings and save the file, for example to iCloud Drive. On the new iPhone, tap "Restore from Backup…" and pick the file. The restore replaces the data of Maru on the new iPhone. The file is not encrypted, so keep it private. A transfer or a backup of the whole iPhone by iOS can also bring the data of Maru. Maru has no sync between two devices.
+
 ## Does Maru count my stock or tell me to buy more?
 
 No. Maru reminds and records. It does not track stock. This keeps the app small and quick.

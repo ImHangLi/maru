@@ -8,8 +8,10 @@ public struct LocalStore: Sendable {
     static let fileName = "maru.sqlite"
     /// A first launch builds the database under this name with a UUID at the end. See `create`.
     static let temporaryPrefix = fileName + ".new-"
+    /// A restore keeps the replaced database under this name with a UUID at the end. See `restore(_:)`.
+    static let previousPrefix = fileName + ".previous-"
     /// One open at a time in the process. See `init`.
-    private static let opening = NSLock()
+    static let opening = NSLock()
 
     /// The directory that holds the database file and the files that SQLite keeps next to it.
     let directory: URL
@@ -18,7 +20,8 @@ public struct LocalStore: Sendable {
     /// Opens the database in `directory`, and creates it when the directory has none.
     ///
     /// A failure is a typed error. The database files stay as they are: nothing is deleted, replaced, or rebuilt,
-    /// and a failed open never gives an empty store (spec 7.3, T37).
+    /// and a failed open never gives an empty store (spec 7.3, T37). Only a restore that the user confirms
+    /// replaces the database. See `restore(_:)`.
     public init(directory: URL) throws(StorageError) {
         try self.init(directory: directory, migrator: Schema.migrator)
     }
@@ -43,6 +46,14 @@ public struct LocalStore: Sendable {
             throw StorageError(error)
         }
         writer = try Self.open(database, migrator: migrator)
+        // A restore that stopped early can leave the replaced database. It goes only after a database opened.
+        Self.removeFiles(in: directory, prefix: Self.previousPrefix)
+    }
+
+    /// The store of a database that is open. See `restore(_:)`.
+    init(directory: URL, writer: DatabasePool) {
+        self.directory = directory
+        self.writer = writer
     }
 
     /// Tells a first launch from a database that lost its file or its content.
@@ -75,8 +86,10 @@ public struct LocalStore: Sendable {
     /// and gives it the final name after the migrations complete.
     ///
     /// A launch that stops before the move leaves no file with the final name, so the next launch is
-    /// a first launch again. A temporary file never holds user data, because no store exists before the move.
-    /// So the temporary files are the only files that the store removes.
+    /// a first launch again. A temporary file of a first launch never holds user data, because no store exists
+    /// before the move. A temporary file of a restore holds a copy of a backup file, and the backup file stays
+    /// where the user keeps it (D040). So the store removes the temporary files, and the database that a confirmed
+    /// restore replaced. No other file.
     private static func create(_ database: URL, migrator: DatabaseMigrator) throws(StorageError) {
         let directory = database.deletingLastPathComponent()
         let temporary = directory.appendingPathComponent(temporaryPrefix + UUID().uuidString)
@@ -121,16 +134,20 @@ public struct LocalStore: Sendable {
 
     static let fullSync: @Sendable (Int32) -> Int32 = { fcntl($0, F_FULLFSYNC) }
 
-    private static func removeTemporaryFiles(in directory: URL) {
+    static func removeTemporaryFiles(in directory: URL) {
+        removeFiles(in: directory, prefix: temporaryPrefix)
+    }
+
+    static func removeFiles(in directory: URL, prefix: String) {
         let fileManager = FileManager.default
         let names = (try? fileManager.contentsOfDirectory(atPath: directory.path)) ?? []
-        for name in names where name.hasPrefix(temporaryPrefix) {
+        for name in names where name.hasPrefix(prefix) {
             try? fileManager.removeItem(at: directory.appendingPathComponent(name))
         }
     }
 
     /// Opens the database file and applies the migrations.
-    private static func open(_ file: URL, migrator: DatabaseMigrator) throws(StorageError) -> DatabasePool {
+    static func open(_ file: URL, migrator: DatabaseMigrator) throws(StorageError) -> DatabasePool {
         let pool: DatabasePool
         do {
             var configuration = Configuration()
@@ -188,7 +205,7 @@ public struct LocalStore: Sendable {
         files(of: directory.appendingPathComponent(fileName))
     }
 
-    private static func files(of database: URL) -> [URL] {
+    static func files(of database: URL) -> [URL] {
         [database, URL(fileURLWithPath: database.path + "-wal"), URL(fileURLWithPath: database.path + "-shm")]
     }
 

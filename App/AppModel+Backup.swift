@@ -1,0 +1,186 @@
+import Foundation
+import MaruCore
+import MaruDatabase
+import MaruNotifications
+
+/// The state of "Your Data" in settings (D040).
+struct DataTransferState {
+    /// A file that waits for the share sheet.
+    struct SharedFile: Identifiable {
+        let id = UUID()
+        let url: URL
+    }
+
+    enum Failure: Equatable {
+        case fileNotMade, notABackup, newerBackup, notRestored
+    }
+
+    var shared: SharedFile?
+    /// A file is in the making, a backup is in the check, or a restore runs. The rows wait.
+    var isWorking = false
+    /// A checked backup that waits for the one confirmation.
+    var staged: StagedBackup?
+    var failure: Failure?
+}
+
+extension AppModel {
+    /// "Export Records": makes the CSV file, then the share sheet shows it. Maru sends nothing by itself.
+    func exportRecords() {
+        share { store, now in
+            guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw StorageError.invalidData }
+            return try await store.exportRecords(at: now, deviceTimeZone: deviceTimeZone)
+        }
+    }
+
+    /// "Back Up": makes the backup file with the database and the settings, then the share sheet shows it.
+    func backUp() {
+        let settings = BackupSettings.current()
+        share { store, now in
+            try await store.backUp(at: now, settings: settings)
+        }
+    }
+
+    private func share(_ make: @escaping @Sendable (AppStore, Date) async throws -> URL) {
+        guard !transfer.isWorking else { return }
+        transfer.isWorking = true
+        Task { [store] in
+            do {
+                transfer.shared = DataTransferState.SharedFile(url: try await make(store, Date()))
+            } catch {
+                transfer.failure = .fileNotMade
+            }
+            transfer.isWorking = false
+        }
+    }
+
+    /// The share sheet closed. The file holds health data, so it does not stay (spec 10).
+    func shareDidEnd() {
+        Task { [store] in
+            await store.removeExports()
+        }
+    }
+
+    /// The user picked a file for a restore. The check changes nothing. A file that passes waits for
+    /// the confirmation, and each other file gets a plain message (T38).
+    func checkBackup(at file: URL) {
+        guard !transfer.isWorking else { return }
+        transfer.isWorking = true
+        Task { [store] in
+            // The file picker gives access to a file outside the app only between these two calls.
+            let isScoped = file.startAccessingSecurityScopedResource()
+            defer {
+                if isScoped { file.stopAccessingSecurityScopedResource() }
+            }
+            do throws(StorageError) {
+                transfer.staged = try await store.stage(backup: file)
+            } catch {
+                transfer.failure = Self.restoreFailure(error)
+            }
+            transfer.isWorking = false
+        }
+    }
+
+    func cancelRestore() {
+        guard let staged = transfer.staged else { return }
+        transfer.staged = nil
+        Task { [store] in
+            await store.discard(staged)
+        }
+    }
+
+    /// Runs the confirmed restore: the backup replaces the database, and nothing merges (D040).
+    ///
+    /// After a failure the old data is in place, and the pages read it again. After a success, every page
+    /// reads the new data, the settings of the backup apply, and one run of the notification queue sets the
+    /// reminders of the restored plans (T39). The user confirmed plans with reminders, so this run can ask
+    /// for the notification permission, as the run after a save does (spec 2.2).
+    func restore() {
+        guard let staged = transfer.staged, !transfer.isWorking else { return }
+        transfer.staged = nil
+        transfer.isWorking = true
+        Task { [store] in
+            defer { transfer.isWorking = false }
+            do throws(StorageError) {
+                try await store.restore(staged)
+            } catch {
+                transfer.failure = Self.restoreFailure(error)
+                refresh()
+                return
+            }
+            BackupSettings.apply(staged.settings)
+            forgetReplacedData()
+            // Today shows the restored data. No message says so (D028).
+            settings.isPresented = false
+            selectedTab = .today
+            refresh()
+            let now = Date()
+            guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
+            reminderRunDidEnd(
+                try? await store.reconcileReminders(at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: true)
+            )
+            var told = Set<ReminderStatus>()
+            for (id, status) in reminderStatus where told.insert(status).inserted {
+                report(status, of: id, removes: false)
+            }
+        }
+    }
+
+    /// Forgets what the model keeps about the items and the doses of the database that a restore replaced:
+    /// the events that the store did not confirm, the open pages, the kept drafts, and the reminder states.
+    private func forgetReplacedData() {
+        // The timers of Today stay: the day change and the opening highlight do not belong to the data.
+        var today = TodayState()
+        today.dayChange = self.today.dayChange
+        today.highlightRun = self.today.highlightRun
+        self.today = today
+        resetHistory()
+        // A read of the history that started before the restore does not show.
+        history.readCount += 1
+        editor = nil
+        endRequest = nil
+        reminderStatus = [:]
+        reminderAlerts = []
+        DraftFile.removeAll()
+    }
+
+    private static func restoreFailure(_ error: StorageError) -> DataTransferState.Failure {
+        switch error {
+        case .newerSchema: .newerBackup
+        case .corrupt, .invalidData, .migrationFailed: .notABackup
+        default: .notRestored
+        }
+    }
+}
+
+/// The settings that a backup carries (D040). They are in `UserDefaults` and not in the database (D014).
+/// A key or a value that this version of the app does not know changes nothing.
+private enum BackupSettings {
+    private static let appColor = "appColor"
+    private static let reminderNames = "reminderNames"
+    private static let remindAgainMinutes = "remindAgainMinutes"
+
+    static func current() -> [String: String] {
+        [
+            appColor: UserDefaults.standard.string(forKey: DisplaySetting.appColor) ?? ItemColor.pink.rawValue,
+            reminderNames: DefaultsReminderPrivacy().load().rawValue,
+            // 0 means off.
+            remindAgainMinutes: String(DefaultsFollowUpSetting().load()?.rawValue ?? 0),
+        ]
+    }
+
+    static func apply(_ settings: [String: String]) {
+        if let color = settings[appColor].flatMap(ItemColor.init(rawValue:)) {
+            UserDefaults.standard.set(color.rawValue, forKey: DisplaySetting.appColor)
+        }
+        if let privacy = settings[reminderNames].flatMap(ReminderPrivacy.init(rawValue:)) {
+            DefaultsReminderPrivacy().save(privacy)
+        }
+        if let minutes = settings[remindAgainMinutes].flatMap({ Int($0) }) {
+            if minutes == 0 {
+                DefaultsFollowUpSetting().save(nil)
+            } else if let delay = FollowUpDelay(rawValue: minutes) {
+                DefaultsFollowUpSetting().save(delay)
+            }
+        }
+    }
+}

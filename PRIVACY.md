@@ -25,7 +25,20 @@ Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) i
 
 Reminders are local notifications. iOS schedules and shows them on your iPhone, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.
 
-## Backups
+## Export and backup files
+
+Settings has "Export Records", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first two.
+
+- The record export is a CSV file. It has your item names, your amounts, and your records.
+- The backup is a full copy of the database and of three settings: the app color, the names in reminders, and "Remind Again".
+- The files are not encrypted. Anyone with a file can read it.
+- Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.
+- Maru keeps the file in a protected temporary folder and removes it when the share sheet closes.
+- A restore reads the backup file that you pick. It replaces the data of Maru on the iPhone, after you confirm. The backup file stays where you keep it.
+
+`docs/export-format.md` describes both files.
+
+## iPhone backups
 
 Your iPhone backup, in iCloud or on a computer, can include Maru's data, the same as other app data. Apple's backup settings control this.
 

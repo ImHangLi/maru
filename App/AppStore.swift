@@ -106,6 +106,36 @@ actor AppStore {
         return try await run.value
     }
 
+    /// Replaces the database with a checked backup that the user confirmed (D040).
+    ///
+    /// The change waits in the notification queue, so no run of an engine reads the old database when it
+    /// closes. Each engine keeps the store that it started with, so both are made again for the new database.
+    /// After a failure the old database is in place, and the next call opens it again.
+    func restore(_ backup: StagedBackup) async throws(StorageError) {
+        let previous = updates
+        let run = Task { () -> StorageError? in
+            await previous?.value
+            return self.replaceDatabase(with: backup)
+        }
+        updates = Task { _ = await run.value }
+        if let error = await run.value { throw error }
+    }
+
+    /// `nil` after a success.
+    private func replaceDatabase(with backup: StagedBackup) -> StorageError? {
+        engine = nil
+        followUps = nil
+        do throws(StorageError) {
+            opened = try open().restore(backup)
+            return nil
+        } catch {
+            // The store is closed. Its files are the old ones.
+            opened?.discard(backup)
+            opened = nil
+            return error
+        }
+    }
+
     /// Sets the follow-ups again from the records. A failed run changes nothing, and the next trigger runs again.
     ///
     /// The refresh waits for the notification updates before it. It always runs, also behind a queued full run:

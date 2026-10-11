@@ -24,65 +24,75 @@ extension LocalStore {
         deviceTimeZone: NamedTimeZone
     ) async throws(StorageError) -> HistoryPage {
         try await read { db in
-            let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-            let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-                .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
-            let newest = today.adding(days: -1)
-            let oldest = today.adding(days: -max(days, 1))
-            // The join to the slot is a LEFT JOIN, so an as-needed dose (no slot, D021) loads too. Its item is
-            // `occurrence.itemID`, so the item of the schedule has its own name.
-            var stored: [StoredHistoryDose] = []
-            var asNeeded: [HistoryAsNeededDose] = []
-            let rows = try Row.fetchAll(
-                db,
-                sql: """
-                    SELECT occurrence.*, schedule.itemID AS scheduleItemID
-                    FROM occurrence
-                        LEFT JOIN scheduleSlot ON scheduleSlot.id = occurrence.slotID
-                        LEFT JOIN schedule ON schedule.id = scheduleSlot.scheduleID
-                    WHERE occurrence.plannedDate BETWEEN ? AND ?
-                    ORDER BY occurrence.rowid
-                    """,
-                arguments: [try oldest.text, try newest.text]
-            )
-            for row in rows {
-                let slotID: String? = try row.decode(forColumn: "slotID")
-                if slotID == nil {
-                    let occurrence = try Self.decodeAsNeededOccurrence(row)
-                    asNeeded.append(
-                        HistoryAsNeededDose(occurrence: occurrence, record: try Self.fetchCheckedRecord(db, occurrenceID: occurrence.id))
-                    )
-                } else {
-                    let occurrence = try Self.decodeOccurrence(row)
-                    stored.append(
-                        StoredHistoryDose(
-                            occurrence: occurrence,
-                            itemID: try ItemID(text: row.decode(forColumn: "scheduleItemID")),
-                            record: try Self.fetchCheckedRecord(db, occurrenceID: occurrence.id)
-                        )
-                    )
-                }
-            }
-            // The events, not the projection, set the bound. A record with a missing projection row stays
-            // reachable, so its page reads it and reports `invalidData` (spec 7.3).
-            let firstRecord = try String.fetchOne(
-                db,
-                sql: """
-                    SELECT MIN(occurrence.plannedDate)
-                    FROM occurrence
-                    WHERE EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
-                    """
-            ).map(LocalDate.init(text:))
-            let earliest = History.earliestDate(schedules: schedules, stored: firstRecord.map { [$0] } ?? [])
-            let dates = (1...max(days, 1)).map { today.adding(days: -$0) }.filter { date in earliest.map { date >= $0 } ?? false }
-            return HistoryPage(
-                days: History.days(
-                    dates, items: items, schedules: schedules, stored: stored, asNeeded: asNeeded, deviceTimeZone: deviceTimeZone
-                ),
-                items: items,
-                hasEarlier: earliest.map { $0 < oldest } ?? false
-            )
+            try Self.historyPage(db, before: today, days: days, deviceTimeZone: deviceTimeZone)
         }
+    }
+
+    /// The read of `history(before:days:deviceTimeZone:)`. The record export reads its pages in one read (D040).
+    static func historyPage(
+        _ db: Database,
+        before today: LocalDate,
+        days: Int,
+        deviceTimeZone: NamedTimeZone
+    ) throws -> HistoryPage {
+        let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
+        let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
+            .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+        let newest = today.adding(days: -1)
+        let oldest = today.adding(days: -max(days, 1))
+        // The join to the slot is a LEFT JOIN, so an as-needed dose (no slot, D021) loads too. Its item is
+        // `occurrence.itemID`, so the item of the schedule has its own name.
+        var stored: [StoredHistoryDose] = []
+        var asNeeded: [HistoryAsNeededDose] = []
+        let rows = try Row.fetchAll(
+            db,
+            sql: """
+                SELECT occurrence.*, schedule.itemID AS scheduleItemID
+                FROM occurrence
+                    LEFT JOIN scheduleSlot ON scheduleSlot.id = occurrence.slotID
+                    LEFT JOIN schedule ON schedule.id = scheduleSlot.scheduleID
+                WHERE occurrence.plannedDate BETWEEN ? AND ?
+                ORDER BY occurrence.rowid
+                """,
+            arguments: [try oldest.text, try newest.text]
+        )
+        for row in rows {
+            let slotID: String? = try row.decode(forColumn: "slotID")
+            if slotID == nil {
+                let occurrence = try Self.decodeAsNeededOccurrence(row)
+                asNeeded.append(
+                    HistoryAsNeededDose(occurrence: occurrence, record: try Self.fetchCheckedRecord(db, occurrenceID: occurrence.id))
+                )
+            } else {
+                let occurrence = try Self.decodeOccurrence(row)
+                stored.append(
+                    StoredHistoryDose(
+                        occurrence: occurrence,
+                        itemID: try ItemID(text: row.decode(forColumn: "scheduleItemID")),
+                        record: try Self.fetchCheckedRecord(db, occurrenceID: occurrence.id)
+                    )
+                )
+            }
+        }
+        // The events, not the projection, set the bound. A record with a missing projection row stays
+        // reachable, so its page reads it and reports `invalidData` (spec 7.3).
+        let firstRecord = try String.fetchOne(
+            db,
+            sql: """
+                SELECT MIN(occurrence.plannedDate)
+                FROM occurrence
+                WHERE EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
+                """
+        ).map(LocalDate.init(text:))
+        let earliest = History.earliestDate(schedules: schedules, stored: firstRecord.map { [$0] } ?? [])
+        let dates = (1...max(days, 1)).map { today.adding(days: -$0) }.filter { date in earliest.map { date >= $0 } ?? false }
+        return HistoryPage(
+            days: History.days(
+                dates, items: items, schedules: schedules, stored: stored, asNeeded: asNeeded, deviceTimeZone: deviceTimeZone
+            ),
+            items: items,
+            hasEarlier: earliest.map { $0 < oldest } ?? false
+        )
     }
 
     /// Records the first event of a past dose that no generation run stored (spec 3 P05). One transaction stores

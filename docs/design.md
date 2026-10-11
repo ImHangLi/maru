@@ -96,6 +96,10 @@ One confirmation for each, and no second dialog before it (D033).
 - "Remind Again" is one menu row. Its value says the delay after the first reminder: "Off", "After 15 min", "After 30 min", or "After 1 hr" (D032).
 - A footer or a helper text is one short sentence (D032).
 - "Display" has only "App Color". The strikethrough setting is gone (D032).
+- "Your Data" is the section before "Send Feedback" (D040). It has three rows: "Export Records", "Back Up", and "Restore from Backup…". A tap on one of the first two opens the system share sheet with the file. The third opens the system file picker.
+- The footer of "Your Data" has two sentences, because it must say that the files are not encrypted.
+- A restore has one alert, "Replace All Data?", with a destructive button "Replace". After a restore, the sheet closes and Today shows the restored data. No message says so (D028). A failure is a system alert that says that the data did not change.
+- The share sheet is the one of UIKit, `UIActivityViewController`, in a system sheet. `ShareLink` needs the file before the tap and does not say when the sheet closes, and Maru must remove the file then (D026, D040).
 
 ## Motion
 

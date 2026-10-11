@@ -103,7 +103,7 @@ All statements about Maru describe the code on `main`. Nobody verified them with
 | Time Sensitive reminders | Apple Health and others | Part of the same wish | Planned, after the Apple Developer Program membership (D034) |
 | Apple Watch app | Apple Health, Medisafe | Frequent outside China | Planned later (roadmap) |
 | Home Screen or Lock Screen widget | Medisafe has a Lock Screen widget | Frequent in both studies | In progress |
-| Backup, export, and sync | Apple Health has iCloud sync. Medisafe has a server | Medium | Encrypted export is planned for milestone B. Sync is on the later list |
+| Backup, export, and sync | Apple Health has iCloud sync. Medisafe has a server | Medium | A CSV export of the records, and a backup and a restore, are in code (D040). Nobody checked them on a real iPhone yet. The backup is not encrypted: a backup with a passphrase is planned for milestone B. Sync is on the later list |
 | Every other day, cycles, every X hours, an end date | Apple Health, Pill Reminder - All in One, EveryDose | Frequent | Every other day is in progress. The others are later or out of scope |
 | Stock and refill | Medisafe, MyTherapy, Pill Reminder - All in One, EveryDose Plus | About 27 mentions in the two studies, plus 14 reviews | Not planned (D035) |
 | Family sharing and profiles | Medisafe, MyTherapy, EveryDose | Medium | Not planned (spec §1) |
@@ -147,7 +147,8 @@ Check each claim again against the build that ships.
 | "The only private reminder", or "the only free one" | Apple Health is free and has no account. Many new apps make the same promise |
 | "Breaks through Focus or silent mode" | Time Sensitive reminders are not done (D034). Critical Alerts are out (D021) |
 | "Every other day", "widget", or "feedback in the app" | In progress. Claim them only when they are in the released build |
-| "Backup", "sync", "Apple Watch", "refill reminders", "family sharing" | Not in the app |
+| "Sync", "Apple Watch", "refill reminders", "family sharing" | Not in the app |
+| "Export your records" or "back up and restore" | In code (D040). Claim them only when they are in the released build. Do not say "encrypted backup" |
 | "Works with Apple Health" | Maru does not use HealthKit (D022) |
 | "Checks interactions" or "tells you when to take it" | Maru gives no medical advice (spec §1) |
 | A competitor's name in the store text | App Review can reject metadata that names other apps. I did not read the current guideline text |
@@ -171,7 +172,7 @@ Check each claim again against the build that ships.
 2. **Apple's "every other day" has a public bug.** Maru builds the same schedule now. A correct result is a claim that Maru can prove, and a wrong day is the same harm. Test it more than the other schedules.
 3. **Reliability is the second complaint in reviews.** A small scope protects Maru, but only real use proves it. Keep the one-week device test before any public claim.
 4. **MyTherapy now has ads.** The market scan called it free with no ads. "No ads" is a stronger point than the plan assumed.
-5. **Users who leave Medisafe ask for an export first.** A readable export before the public release lowers the fear of a second lock-in.
+5. **Users who leave Medisafe ask for an export first.** A readable export before the public release lowers the fear of a second lock-in. Status: in code (D040).
 6. **Apple Watch is asked for much more outside China.** It stays on the later list. It is the first thing that users of Apple Health and Medisafe will miss.
 7. **Stock is asked for in both studies.** D035 keeps it out. The requests come from users with prescriptions, not from supplement users. Say on the store page that Maru does not count stock.
 8. **Maru's promise is not unique.** At least 5 new apps in the Reddit sample promise "free, local, no account". The proof points that few of them have are the public source code, the tap counts, and the honest record states.

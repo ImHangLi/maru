@@ -55,6 +55,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.menu)
                 }
+                DataSection()
                 FeedbackSection()
                 #if DEBUG
                 DebugSection()
