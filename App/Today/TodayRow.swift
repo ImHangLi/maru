@@ -1,11 +1,12 @@
 import MaruCore
 import SwiftUI
 
-/// One row: the form icon, the name with the optional amount under it, and the record circle.
+/// One row: the form icon, the name with a second line under it, and the record circle. The second line has
+/// the amount and the time that the user set, or the time of the record (D044).
 ///
 /// Only the circle records. The name area is a separate area and never records (spec 3 P01).
-/// A recorded row differs from an open row only by the circle (D032). It keeps its place, so nothing moves
-/// under the finger (spec 4).
+/// A recorded row differs from an open row only by the circle and the time (D032, D044). It keeps its place,
+/// so nothing moves under the finger (spec 4).
 /// A swipe and a long press offer the same operations as the circle, plus the details and the edit screen.
 /// They use the same record transaction, so the row changes only after the commit (spec 7.2, D028).
 struct TodayRow: View {
@@ -31,11 +32,9 @@ struct TodayRow: View {
                     // Names wrap and never truncate (spec 5.3).
                     Text(entry.look.name)
                         .foregroundStyle(.primary)
-                    if let amount = entry.amount {
-                        Text(amount)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
+                    Text(verbatim: entry.detailText(in: timeZone))
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                     // The reminders are off, and the row stays so the user can still record it (T07).
                     if entry.look.remindersOff {
                         RemindersOffLabel()
@@ -47,7 +46,7 @@ struct TodayRow: View {
                 .contentShape(Rectangle())
                 // Two VoiceOver stops, like the two touch areas: the name, then the record circle (spec 3 P01).
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(entry.accessibilityName)
+                .accessibilityLabel(Text(verbatim: "\(entry.look.name), \(entry.detailText(in: timeZone))"))
                 .accessibilityValue(entry.look.remindersOff ? Text("Reminders off") : Text(verbatim: ""))
             }
             // The record circle is the end of the row, so the row has no chevron.
@@ -171,25 +170,15 @@ private struct RecordButton: View {
             Button("Undo", role: .destructive) { model.undo(entry) }
         }
         .sheet(isPresented: $showsTimeEditor) {
-            ChangeTimeSheet(name: entry.look.name, time: takenAt ?? .now) { model.changeTime(entry, to: $0) }
+            ChangeTimeSheet(name: entry.look.name, time: entry.takenAt ?? .now) { model.changeTime(entry, to: $0) }
         }
         .accessibilityLabel(accessibilityLabel(look))
         .accessibilityValue(accessibilityState(look))
         .accessibilityHint(accessibilityHint(look))
     }
 
-    private var takenAt: Date? {
-        entry.record.currentEvent.flatMap { $0.action == .taken ? $0.occurredAt : nil }
-    }
-
-    private var time: Date.FormatStyle {
-        var style = Date.FormatStyle(date: .omitted, time: .shortened)
-        style.timeZone = timeZone
-        return style
-    }
-
     private var dialogTitle: Text {
-        if let takenAt { Text("Taken at \(takenAt.formatted(time))") } else { Text("Skipped") }
+        if let takenAt = entry.takenAt { Text("Taken at \(takenAt.formatted(.rowTime(in: timeZone)))") } else { Text("Skipped") }
     }
 
     /// The action and the item, so the circle differs from the name area: "Record Vitamin D".
@@ -205,7 +194,7 @@ private struct RecordButton: View {
     private func accessibilityState(_ look: RecordLook) -> Text {
         switch look {
         case .open: Text("Not recorded")
-        case .taken: takenAt.map { Text("Taken at \($0.formatted(time))") } ?? Text("Taken")
+        case .taken: entry.takenAt.map { Text("Taken at \($0.formatted(.rowTime(in: timeZone)))") } ?? Text("Taken")
         case .skipped: Text("Skipped")
         case .notSaved: Text("Not saved")
         }
@@ -336,5 +325,30 @@ extension TodaySnapshot.Entry {
         amount.map { "\(look.name), \($0)" } ?? look.name
     }
 
-    var accessibilityName: Text { Text(verbatim: accessibilityNameText) }
+    var takenAt: Date? {
+        record.currentEvent.flatMap { $0.action == .taken ? $0.occurredAt : nil }
+    }
+
+    /// The second line of the row: the amount, then the time that the user set, or the record (D044).
+    /// For example "2 capsules, 8:00 AM", "2 capsules, Taken at 8:07 AM", or "Skipped".
+    func detailText(in timeZone: TimeZone) -> String {
+        let state = switch record.status {
+        case .unrecorded: plannedTimeText(in: timeZone)
+        case .taken: takenAt.map { String(localized: "Taken at \($0.formatted(.rowTime(in: timeZone)))") }
+            ?? String(localized: "Taken")
+        case .skipped: String(localized: "Skipped")
+        }
+        return ([amount].compactMap(\.self) + [state]).formatted(.list(type: .and, width: .narrow))
+    }
+
+    /// The time that the user set. A medication that keeps another time zone names the city of that zone,
+    /// as the edit screen does (spec 8.5).
+    private func plannedTimeText(in timeZone: TimeZone) -> String {
+        let time = SchedulePreview.format(hour: occurrence.plannedTime.hour, minute: occurrence.plannedTime.minute)
+        guard occurrence.timeZone.identifier != timeZone.identifier else { return time }
+        return String(
+            localized: "\(time) \(SchedulePreview.city(occurrence.timeZone)) time",
+            comment: "Today: the reminder time of a medication that keeps another time zone. Example: 9:00 AM Shanghai time."
+        )
+    }
 }

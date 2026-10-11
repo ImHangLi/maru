@@ -109,9 +109,7 @@ struct ReminderChoiceSheet: View {
     }
 
     private func timeFormat(_ candidate: ReminderChoice.Candidate) -> Date.FormatStyle {
-        var style = Date.FormatStyle(date: .omitted, time: .shortened)
-        style.timeZone = timeZone(candidate)
-        return style
+        .rowTime(in: timeZone(candidate))
     }
 
     private func timeZone(_ candidate: ReminderChoice.Candidate) -> TimeZone {

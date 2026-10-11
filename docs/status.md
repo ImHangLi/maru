@@ -13,6 +13,7 @@ Maru was developed in a private repository before it became public. Issue number
 - Maru does not integrate with Apple Health in V1 (D022).
 - An "every other day" schedule is in code (D036). Its reminders are dated requests for the next 7 due dates, and they need a check on a real iPhone.
 - Quick add is in code (D038): "Scan Label" on the add screen reads a name from a label with the camera, on the iPhone, and the name field proposes names from two built-in lists (941 supplement names, 789 medicine names). Nobody saw the screens yet, and the scan needs a check on a real iPhone with real bottles.
+- Today rows show the time on the second line (D044): the set time of an open row, the intake time of a taken row, and "Skipped". Nobody saw the rows on a display yet.
 - Three flow gaps against Apple Health Medications are closed in code (D033): a change of a record time in three taps, an archive in three taps with one confirmation, and a delete of an item with its records. Nobody saw them on a display yet.
 
 ## Next
@@ -30,7 +31,6 @@ These need a maintainer decision or wait for pull request #49. The list with evi
 
 - Model parts with no caller in the app: `ProductVersion`, `ScheduleVersion.productVersionID`, and `Item.imageReference`. Their tables and columns stay in the schema.
 - Debug launch arguments with no recorded use: `-MaruTab`, `-MaruHistory`, `-MaruSettings`, `-MaruTap`, `-MaruStorageError`, `-MaruSampleHistory`, and `-MaruSampleData one`.
-- The time format of a row exists in four views. One shared helper can replace them.
 
 ## Known gaps
 

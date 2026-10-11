@@ -1,12 +1,12 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, and D038 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, and D044 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
 1. Simpler than Apple Health Medications in every flow that both apps have (D021). Count screens and taps.
 2. Apple system style: native SwiftUI system components only, the system font only, system colors (D011, D012, D026). A custom control needs a recorded reason.
-3. Few words. A row shows the name and the amount. The circle shows the state (D011).
+3. Few words. A row shows the name, the amount, and the time. The circle shows the state (D011, D044).
 4. Do not choose for the user: no default amount and no default reminder time (spec §2.1). The type, the form, and the color of a new item are not health choices, so they have a start value that the user can change (D032).
 5. No repeated information, and no "·" separator in any text of the app. Use natural words or a second line (D032).
 6. No gray text for a state. A title or a name looks the same in each state (D032).
@@ -41,8 +41,9 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A gear button at the top left opens the settings sheet. An add button sits at the top right (D020). Both tabs have them. Today also has a History button with a calendar symbol, beside the add button (D026).
 - One list section per time slot, in time order. The section header is the slot name, for example "Morning", not a clock time (D011).
 - The header has "Record All", which records every open item of the slot as taken, in one transaction (D021). It shows only when the slot has two or more open items.
-- Row: the form icon in the item color, the name, an optional amount on a second line, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
-- A recorded row and an open row differ only by the circle. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032).
+- Row: the form icon in the item color, the name, a second line in small gray text, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
+- The second line has the amount and the time that the user set: "2 capsules, 8:00 AM", or "8:00 AM" with no amount. A taken row shows the intake time: "2 capsules, Taken at 8:07 AM". A skipped row shows "2 capsules, Skipped". A medication that keeps another time zone names the city: "9:00 AM Shanghai time" (D044).
+- A recorded row and an open row differ only by the circle and the time. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032, D044).
 - A finished slot folds to its header the next time the user returns to the app. The header shows a chevron and no check mark. The title looks the same folded and open. A tap opens it. A second tap folds it. Only a finished slot folds (D012, D032).
 - The record that finishes a slot folds it after about 0.7 seconds, so the user sees the last check first. The fold uses the layout motion, the same as a tap on the header (D028, D030).
 - Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
