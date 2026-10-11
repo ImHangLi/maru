@@ -212,7 +212,8 @@ actor AppStore {
     func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         generation: Int,
-        currentPlan: OccurrenceGeneration? = nil
+        currentPlan: OccurrenceGeneration? = nil,
+        restoreEpoch: Int? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         let store: LocalStore
         do throws(StorageError) {
@@ -220,7 +221,7 @@ actor AppStore {
         } catch {
             throw .storage(error)
         }
-        let records = try await store.record(events, generation: generation, currentPlan: currentPlan)
+        let records = try await store.record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch)
         #if DEBUG
         // The "failed write" scenario: the commit is stored, and the caller gets `unavailable` (D014).
         if debug.failsNextRecord, DebugStore.directory != nil {

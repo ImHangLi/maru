@@ -66,9 +66,10 @@ extension LocalStore {
     public func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         generation: Int = 0,
-        currentPlan: OccurrenceGeneration? = nil
+        currentPlan: OccurrenceGeneration? = nil,
+        restoreEpoch: Int? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        try await record(events, generation: generation, currentPlan: currentPlan, sync: Self.fullSync)
+        try await record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch, sync: Self.fullSync)
     }
 
     /// `sync` is for tests. See `flush`.
@@ -86,9 +87,14 @@ extension LocalStore {
         inserting occurrences: [Occurrence] = [],
         generation: Int = 0,
         currentPlan: OccurrenceGeneration? = nil,
+        restoreEpoch: Int? = nil,
         sync: @Sendable (Int32) -> Int32
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        try await commitRecord(generation: generation, sync: sync) { db in
+        let directory = directory
+        return try await commitRecord(generation: generation, sync: sync) { db in
+            // The widget read the data at this epoch. A restore changes it while it holds the writer, so the check
+            // and the write are in order with it (D048).
+            if let restoreEpoch, Self.restoreEpoch(in: directory) != restoreEpoch { throw RecordFailure.replaced }
             for occurrence in occurrences {
                 try Self.insert(occurrence, db)
             }

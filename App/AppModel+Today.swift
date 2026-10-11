@@ -13,6 +13,8 @@ struct PendingEvent: Equatable, Sendable {
     /// The record must still be in the plan of now: an active item, a slot of the plan, and the planned schedule
     /// version. The widget sets it, because its button can be old (D048).
     var requiresCurrentPlan = false
+    /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
+    var restoreEpoch: Int?
 }
 
 /// Why a record on Today gave no success. The page shows it in an alert.
@@ -290,7 +292,8 @@ extension AppModel {
         return try await store.record(
             events.map { ($0.event, $0.scheduleVersionID) },
             generation: generation,
-            currentPlan: OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
+            currentPlan: OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone),
+            restoreEpoch: events.first?.restoreEpoch
         )
     }
 

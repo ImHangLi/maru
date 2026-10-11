@@ -34,9 +34,11 @@ extension AppModel {
     /// In every other case, and when the database is locked or the commit fails, it records nothing, never
     /// shows a success, and asks the system to open Maru (spec 7.2).
     func takeFromWidget(_ intent: TakeDoseIntent) async throws {
+        // The generation comes before the first await. A restore that ends after this line changes the generation
+        // of the store, so the record is refused (D040). A restore that ended before it changed the epoch.
+        let generation = dataGeneration
         let now = Date()
         let epoch = await store.restoreEpoch()
-        let generation = dataGeneration
         if epoch == intent.epoch, intent.epoch % 2 == 0,
            let occurrenceID = UUID(uuidString: intent.occurrenceID).map({ OccurrenceID($0) }),
            let versionID = UUID(uuidString: intent.scheduleVersionID).map({ ScheduleVersionID($0) }),
@@ -46,7 +48,12 @@ extension AppModel {
            ) {
             switch target {
             case .alreadyTaken:
-                if await store.flushCommits() {
+                // A restore can replace the data after the lookup. Report success only when the same data
+                // still has the dose as recorded.
+                if await store.flushCommits(),
+                   generation == dataGeneration,
+                   await store.restoreEpoch() == intent.epoch,
+                   (try? await store.widgetTarget(of: occurrenceID, scheduleVersionID: versionID, at: Date())) == .alreadyTaken {
                     await finishWidgetRecord(deviceTimeZone: deviceTimeZone)
                     return
                 }
@@ -64,6 +71,7 @@ extension AppModel {
                     scheduleVersionID: occurrence.scheduleVersionID
                 )
                 event.requiresCurrentPlan = true
+                event.restoreEpoch = intent.epoch
                 if await commitAndWait([event], generation: generation) {
                     await finishWidgetRecord(deviceTimeZone: deviceTimeZone)
                     return
