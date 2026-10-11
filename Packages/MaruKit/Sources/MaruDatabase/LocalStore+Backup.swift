@@ -27,7 +27,7 @@ public struct StagedBackup: Sendable {
 
 /// A restore that replaced the data. See `LocalStore.restore(_:)`.
 public struct RestoreResult: Sendable {
-    /// The generation of the restored data. Pass it with each record that the caller reads from now on.
+    /// The generation of the restored data. Pass it with each write that the caller reads for from now on.
     public let generation: Int
     /// `false` when the storage medium did not confirm the commit. The data is replaced all the same.
     public let isFlushed: Bool
@@ -206,8 +206,8 @@ extension LocalStore {
     /// The barrier waits for each read and write that runs, and holds back each new one until the commit.
     ///
     /// The call throws only when the old data is in place. After the commit it returns, also when the flush
-    /// to the storage medium fails, and the generation of the data goes up by one. From then on, a record with
-    /// an older generation is refused (see `commitRecord`).
+    /// to the storage medium fails, and the generation of the data goes up by one. From then on, a write with
+    /// an older generation is refused (see `checkedWrite`). This is the one write that changes the generation.
     public func restore(_ backup: StagedBackup) async throws(StorageError) -> RestoreResult {
         defer { discard(backup) }
         let before = generation.withLock { $0 }

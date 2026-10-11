@@ -5,8 +5,9 @@ import MaruCore
 extension LocalStore {
     /// Stores an occurrence. The same value again changes nothing. Another occurrence with the same ID
     /// or the same key (slot and plan date) is `StorageError.conflict` (T17).
-    public func save(_ occurrence: Occurrence) async throws(StorageError) {
-        try await write { db in
+    /// `generation` is the generation of the data that the caller read. See `checkedWrite`.
+    public func save(_ occurrence: Occurrence, generation: Int = 0) async throws(StorageError) {
+        try await write(generation: generation) { db in
             try Self.insert(occurrence, db)
         }
     }
@@ -101,25 +102,22 @@ extension LocalStore {
 
     /// Runs one record transaction, and returns only after the storage medium has the commit.
     ///
-    /// A `generation` that is not the current one is `RecordFailure.replaced`. A restore runs on the same writer,
-    /// so the check and the write are in order with it: no event of the old data goes into the restored data.
+    /// A `generation` that is not the current one is `RecordFailure.replaced`. See `checkedWrite`.
     func commitRecord<T: Sendable>(
         generation: Int,
         sync: @Sendable (Int32) -> Int32,
         _ updates: @Sendable (Database) throws -> T
     ) async throws(RecordFailure) -> T {
-        let current = self.generation
         do {
-            let result = try await writer.write { db in
-                guard current.withLock({ $0 }) == generation else { throw RecordFailure.replaced }
-                return try updates(db)
-            }
+            let result = try await checkedWrite(generation: generation, updates)
             // The commit synced the WAL file to the drive. Wait until the drive wrote it to the storage medium.
             // A failed flush is no success, also when another sync call works.
             guard Self.flush(walFile, sync: sync) else { throw StorageError.unavailable }
             return result
         } catch let failure as RecordFailure {
             throw failure
+        } catch StorageError.replaced {
+            throw .replaced
         } catch {
             throw .storage(StorageError(error))
         }

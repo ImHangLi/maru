@@ -23,6 +23,8 @@ public enum StorageError: Error, Equatable, Sendable {
     case unavailable
     /// The task was cancelled before the transaction committed.
     case cancelled
+    /// A restore replaced the data after the caller read it (D040). Nothing was written. Read the data again.
+    case replaced
     /// Another failure. `sqliteCode` is the primary SQLite result code, when SQLite reported one.
     case failed(sqliteCode: Int32?)
 

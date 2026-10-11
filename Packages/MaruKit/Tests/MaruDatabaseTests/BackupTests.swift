@@ -66,17 +66,23 @@ struct BackupTests {
         #expect(try await reopened.status(of: evening.id) == .skipped)
     }
 
-    @Test func aRecordThatWasReadBeforeARestoreIsRefused() async throws {
+    @Test func aWriteThatWasReadBeforeARestoreIsRefused() async throws {
         let (store, seed) = try await storeWithABackup()
         let history = try await store.history(of: seed.occurrence.id)
         let undo = Fixtures.event(for: seed.occurrence, .undo, supersedes: history.events.last?.id)
-        // The backup has the same IDs, so the stale undo matches a dose of the restored data.
+        var archived = try #require(try await store.item(id: seed.item.id))
+        archived.isArchived = true
+        // The backup has the same IDs, so the stale undo and the stale archive match the restored data.
         let restored = try await store.restore(try store.stage(backup: backupFile))
 
         await #expect(throws: RecordFailure.replaced) {
             try await store.record([(undo, seed.versionID)], generation: restored.generation - 1)
         }
+        await #expect(throws: StorageError.replaced) {
+            try await store.save(archived, generation: restored.generation - 1)
+        }
         #expect(try await store.history(of: seed.occurrence.id) == history)
+        #expect(try await store.items() == [seed.item])
         try await store.record([(undo, seed.versionID)], generation: restored.generation)
         #expect(try await store.status(of: seed.occurrence.id) == .unrecorded)
     }

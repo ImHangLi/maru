@@ -124,7 +124,7 @@ final class AppModel {
                     try? await store.loadSampleData(at: now, deviceTimeZone: deviceTimeZone)
                 }
                 #endif
-                content = .loaded(try await store.snapshot(at: now, deviceTimeZone: deviceTimeZone))
+                content = .loaded(try await store.snapshot(at: now, deviceTimeZone: deviceTimeZone, generation: generation))
             } catch {
                 content = .failed(error)
             }
@@ -139,6 +139,8 @@ final class AppModel {
             needsRefresh = false
             return refresh()
         }
+        // A restore committed, and the model did not take its generation yet. The restore reads again then.
+        if case .failed(.replaced) = content { return }
         var content = content
         if case var .loaded(snapshot) = content, snapshot.today != nil {
             snapshot.today?.apply(heldRecords)

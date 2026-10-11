@@ -69,6 +69,7 @@ extension AppModel {
     /// Save adds the new item and archives the old one in one transaction. The old item keeps its name and
     /// its records, so a past record still names the product of that time.
     func openEditorForNewProduct(_ itemID: ItemID) {
+        let generation = dataGeneration
         Task {
             do {
                 let stored = try await store.editorContext(for: itemID)
@@ -76,10 +77,12 @@ extension AppModel {
                 let context = try await store.editorContext(for: nil)
                 let start = ItemDraft.replacing(item, schedule: stored.schedule)
                 // The copy of the old item is the start, so Cancel closes the screen with no question.
-                var session = EditorSession(context: context, original: start, start: start, isRestored: false)
+                var session = EditorSession(
+                    context: context, original: start, start: start, isRestored: false, generation: generation
+                )
                 session.replaced = (item, stored.schedule)
                 if let kept = DraftFile.load(key: session.draftKey), kept != start {
-                    session = EditorSession(context: context, original: start, start: kept, isRestored: true)
+                    session = EditorSession(context: context, original: start, start: kept, isRestored: true, generation: generation)
                     session.replaced = (item, stored.schedule)
                 }
                 editor = session
@@ -90,16 +93,29 @@ extension AppModel {
     }
 
     /// Turns the reminders of an item off or on. Off keeps the item on Today and My Items, and the user can
-    /// still record it (T07). A failure throws, and the store is unchanged.
+    /// still record it (T07). A failure throws, and the store is unchanged. After a restore the store refuses
+    /// the change, and the pages read again (D040).
     func setReminders(on isOn: Bool, for item: Item) async throws {
-        let schedule = try await store.setReminders(on: isOn, for: item.id)
+        let schedule: Schedule?
+        do throws(StorageError) {
+            schedule = try await store.setReminders(on: isOn, for: item.id, generation: dataGeneration)
+        } catch .replaced {
+            return refresh()
+        }
         await finishChange(isOn ? .remindersOn : .remindersOff, schedule: schedule, mayAsk: isOn && !item.isArchived)
     }
 
     /// Archives an item, or restores it. Archive cancels the future reminders and keeps the records (T08).
-    /// A failure throws, and the store is unchanged.
+    /// A failure throws, and the store is unchanged. After a restore the store refuses the change, and the pages
+    /// read again (D040).
     func setArchived(_ isArchived: Bool, for itemID: ItemID) async throws {
-        guard let result = try await store.setArchived(isArchived, for: itemID) else {
+        let result: (item: Item, schedule: Schedule?)?
+        do throws(StorageError) {
+            result = try await store.setArchived(isArchived, for: itemID, generation: dataGeneration)
+        } catch .replaced {
+            return refresh()
+        }
+        guard let result else {
             refresh()
             return
         }
@@ -131,12 +147,19 @@ extension AppModel {
     }
 
     /// Deletes an item with its plan and its records, in one transaction (D033). The user confirmed it, so it
-    /// is not a recovery from an error (spec 7.3). A failure throws, and the store is unchanged.
+    /// is not a recovery from an error (spec 7.3). A failure throws, and the store is unchanged. After a restore
+    /// the store refuses the delete, and the pages read again (D040).
     ///
     /// After the commit, the kept drafts of the item go, and one run of the notification queue removes its
     /// reminders and its follow-ups. A removal that the run did not confirm gets the alert of an archive (spec 8.1).
     func deleteItem(_ itemID: ItemID) async throws {
-        guard let (schedules, versions) = try await store.deleteItem(itemID) else {
+        let deleted: (schedules: [ScheduleID], versions: [ScheduleVersionID])?
+        do throws(StorageError) {
+            deleted = try await store.deleteItem(itemID, generation: dataGeneration)
+        } catch .replaced {
+            return refresh()
+        }
+        guard let (schedules, versions) = deleted else {
             refresh()
             return
         }

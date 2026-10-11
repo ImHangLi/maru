@@ -5,8 +5,9 @@ extension LocalStore {
     /// Stores a schedule. Slots and versions are append-only: the save adds the new ones and updates
     /// `isEnabled` and `endDate`. A schedule that does not extend the stored one is `StorageError.conflict`.
     /// A schedule that does not load again as the same value is `StorageError.invalidData`, and nothing changes.
-    public func save(_ schedule: Schedule) async throws(StorageError) {
-        try await write { db in
+    /// `generation` is the generation of the data that the caller read. See `checkedWrite`.
+    public func save(_ schedule: Schedule, generation: Int = 0) async throws(StorageError) {
+        try await write(generation: generation) { db in
             try Self.upsert(schedule, db)
         }
     }

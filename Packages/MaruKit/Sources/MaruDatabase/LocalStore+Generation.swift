@@ -18,12 +18,14 @@ extension LocalStore {
     /// - Parameters:
     ///   - now: The clock of the run.
     ///   - deviceTimeZone: The time zone of the device, for the schedule versions that follow it.
+    ///   - generation: The generation of the data that the caller read. See `checkedWrite`.
     @discardableResult
     public func generateOccurrences(
         at now: Date,
-        deviceTimeZone: NamedTimeZone
+        deviceTimeZone: NamedTimeZone,
+        generation: Int = 0
     ) async throws(StorageError) -> [Occurrence] {
-        try await generate(at: now, deviceTimeZone: deviceTimeZone).occurrences
+        try await generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation).occurrences
     }
 
     /// The result of one generation run.
@@ -36,8 +38,10 @@ extension LocalStore {
     }
 
     /// Runs `generateOccurrences(at:deviceTimeZone:)`, and also returns the time zones of the plans that it read.
-    public func generate(at now: Date, deviceTimeZone: NamedTimeZone) async throws(StorageError) -> GenerationRun {
-        try await write { db in
+    public func generate(
+        at now: Date, deviceTimeZone: NamedTimeZone, generation dataGeneration: Int = 0
+    ) async throws(StorageError) -> GenerationRun {
+        try await write(generation: dataGeneration) { db in
             let generation = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
             let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
             let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")

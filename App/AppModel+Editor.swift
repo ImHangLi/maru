@@ -11,6 +11,8 @@ struct EditorSession: Identifiable {
     /// The draft that the screen shows first: the original, or a draft that the app kept after it stopped.
     let start: ItemDraft
     let isRestored: Bool
+    /// The generation of the data that the screen read (D040). A save after a restore writes nothing.
+    let generation: Int
     /// The item that a save replaces, with its schedule (T06). The draft is then a new item.
     var replaced: (item: Item, schedule: Schedule?)?
 
@@ -36,15 +38,20 @@ enum EditorOpenError: Error {
 extension AppModel {
     /// Opens the edit screen for a new item (`nil`) or for a stored item (spec 3 P03).
     func openEditor(for itemID: ItemID?) {
+        let generation = dataGeneration
         Task {
             do {
                 let context = try await store.editorContext(for: itemID)
                 if itemID != nil, context.item == nil { throw EditorOpenError.itemNotFound }
                 let original = context.item.map { ItemDraft(item: $0, schedule: context.schedule) }
                     ?? ItemDraft(color: context.newItemColor)
-                var session = EditorSession(context: context, original: original, start: original, isRestored: false)
+                var session = EditorSession(
+                    context: context, original: original, start: original, isRestored: false, generation: generation
+                )
                 if let kept = DraftFile.load(key: session.draftKey), kept != original {
-                    session = EditorSession(context: context, original: original, start: kept, isRestored: true)
+                    session = EditorSession(
+                        context: context, original: original, start: kept, isRestored: true, generation: generation
+                    )
                 }
                 editor = session
             } catch {
@@ -64,7 +71,8 @@ extension AppModel {
     /// in place, and then runs the reminder engine (spec 8.1). Asking for the notification permission comes
     /// only with a reminder that the user confirmed with this save (spec 2.2).
     ///
-    /// A failure throws and leaves the screen open with the draft, and the store unchanged.
+    /// A failure throws and leaves the screen open with the draft, and the store unchanged. After a restore the
+    /// store refuses the save, the screen closes, and the pages read again (D040).
     func save(_ draft: ItemDraft, in session: EditorSession) async throws {
         let now = Date()
         let deviceTimeZone = NamedTimeZone(device: .current, at: now)
@@ -75,10 +83,17 @@ extension AppModel {
             now: now,
             deviceTimeZone: deviceTimeZone
         )
-        if let replaced = session.replaced {
-            try await store.replace(replaced.item.id, with: item, schedule: schedule)
-        } else {
-            try await store.save(item, schedule: schedule)
+        do throws(StorageError) {
+            if let replaced = session.replaced {
+                try await store.replace(replaced.item.id, with: item, schedule: schedule, generation: session.generation)
+            } else {
+                try await store.save(item, schedule: schedule, generation: session.generation)
+            }
+        } catch .replaced {
+            // A restore replaced the data that the screen read. The draft belongs to the old data.
+            DraftFile.remove(key: session.draftKey)
+            if editor?.id == session.id { editor = nil }
+            return refresh()
         }
 
         DraftFile.remove(key: session.draftKey)

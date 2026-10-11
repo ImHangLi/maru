@@ -47,13 +47,14 @@ extension AppStore {
     }
 
     /// One transaction for the item and its schedule (spec 7.2). It returns after the commit.
-    func save(_ item: Item, schedule: Schedule?) async throws(StorageError) {
-        try await open().save(item, schedule: schedule)
+    /// `generation` is the generation of the data that the edit screen read (D040).
+    func save(_ item: Item, schedule: Schedule?, generation: Int) async throws(StorageError) {
+        try await open().save(item, schedule: schedule, generation: generation)
     }
 
     /// One transaction for the new item, its schedule, and the archive of the old item (T06).
-    func replace(_ oldItemID: ItemID, with item: Item, schedule: Schedule?) async throws(StorageError) {
-        try await open().replace(oldItemID, with: item, schedule: schedule)
+    func replace(_ oldItemID: ItemID, with item: Item, schedule: Schedule?, generation: Int) async throws(StorageError) {
+        try await open().replace(oldItemID, with: item, schedule: schedule, generation: generation)
     }
 
     /// Makes the system reminders agree with the saved plan, and returns the state of one schedule (spec 8.1).

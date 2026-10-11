@@ -163,7 +163,8 @@ actor AppStore {
     ///
     /// It reads the items, the slots, and the records of today's occurrences, and no older intake history (spec 7.3).
     /// With no `deviceTimeZone` it generates nothing, and the snapshot has no Today.
-    func snapshot(at now: Date, deviceTimeZone: NamedTimeZone?) async throws(StorageError) -> Snapshot {
+    /// `generation` is the generation of the data that the model read (D040).
+    func snapshot(at now: Date, deviceTimeZone: NamedTimeZone?, generation: Int) async throws(StorageError) -> Snapshot {
         let store = try open()
         let interval = Signposts.signposter.beginInterval("ReadToday")
         var counts = (occurrences: 0, items: 0)
@@ -177,7 +178,7 @@ actor AppStore {
         counts.items = items.count
         var today: TodaySnapshot?
         if let deviceTimeZone {
-            let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone)
+            let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
             counts.occurrences = run.occurrences.count
             let itemIDs = try await store.itemIDsBySlot()
             // An archived item leaves Today, also with a record of today. The record stays in the history (T08).
