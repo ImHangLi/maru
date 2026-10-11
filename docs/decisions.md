@@ -549,3 +549,10 @@ Not done, and why:
 - An automatic backup on a schedule.
 
 Tests (D016): three new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A name with a comma, a quotation mark, and a line break stays one CSV field.
+
+## D045 · 2026-10-11 · Lean agent work and the follow-up end after midnight
+
+Maintainer decisions.
+
+- Agents work in a token-efficient way. The rules are in `docs/process.md`, "Token budget for agents". Fewer subagents, short briefs, and a model review only for changes that can affect records or reminders.
+- Follow-ups past midnight end at 01:00 at the latest (D039). The maintainer left the choice to the agent. The reason: a bedtime dose with no record must not ring for most of the night.
