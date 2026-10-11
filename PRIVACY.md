@@ -17,6 +17,12 @@ Maru asks iOS to encrypt the database file while your iPhone is locked. When Mar
 - It does not read your contacts, your location, or the advertising identifier.
 - It does not read from or write to Apple Health.
 
+## Camera
+
+Maru uses the camera only while you scan a label on the add screen. Your iPhone reads the text, and Maru keeps only the name that you tap. Maru saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label".
+
+The name suggestions on the add screen come from a list inside the app. The name suggestions are a typing aid. They are not medical advice.
+
 ## Feedback
 
 Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.

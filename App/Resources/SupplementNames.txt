@@ -1,0 +1,946 @@
+# Common supplement names for the name suggestions of the add screen (D038).
+# One name on each line, then its aliases after "|". The order is from the most common name down.
+# An alias is only another spelling or a clear abbreviation of the same name. Each other name is its own entry.
+# No entry is a strength, a use, or a category. One exception: a word that labels print as the product name, such as "Pre-Workout".
+# Written from general knowledge. It is a typing aid, not medical information.
+Vitamin D3 | Vit D3
+Cholecalciferol
+Vitamin D | Vit D
+Multivitamin | Multi
+Vitamin C | Vit C
+Ascorbic Acid
+Magnesium | Mag
+Omega-3
+Omega-3 Fatty Acids
+Fish Oil
+Vitamin B12 | Vit B12
+Cobalamin
+Zinc
+Calcium
+Iron
+Probiotic | Probiotics
+Melatonin
+Creatine
+Protein Powder
+Vitamin D3 + K2 | Vitamin D3 with K2
+B Complex
+Vitamin B Complex
+Collagen
+Magnesium Glycinate
+Magnesium Bisglycinate
+Biotin
+Vitamin B7
+Vitamin H
+Folic Acid
+Vitamin B9
+Ashwagandha
+Turmeric
+Vitamin E | Vit E
+Vitamin K2 | Vit K2
+Menaquinone
+Vitamin A | Vit A
+Vitamin B6 | Vit B6
+Pyridoxine
+CoQ10
+Coenzyme Q10
+Ubiquinone
+Creatine Monohydrate
+Whey Protein
+Prenatal Vitamin | Prenatal
+Prenatal Multivitamin
+Electrolytes
+Fiber
+Fibre
+Psyllium Husk
+Psyllium
+Magnesium Citrate
+Calcium + Vitamin D | Calcium with Vitamin D
+Elderberry
+Sambucus
+Glucosamine
+Apple Cider Vinegar | ACV
+Curcumin
+L-Theanine
+Theanine
+Collagen Peptides
+Hydrolyzed Collagen
+Vitamin K | Vit K
+Potassium
+Krill Oil
+Cod Liver Oil
+Lutein
+Green Tea Extract
+Ginseng
+Echinacea
+Milk Thistle
+NAC
+N-Acetyl Cysteine
+N-Acetyl L-Cysteine
+Berberine
+Selenium
+Iodine
+Folate
+Methylfolate
+L-Methylfolate
+5-MTHF
+Niacin
+Vitamin B3
+Vitamin B1
+Thiamine
+Thiamin
+Vitamin B2
+Riboflavin
+Vitamin B5
+Pantothenic Acid
+Flaxseed Oil
+Flax Oil
+Linseed Oil
+Evening Primrose Oil
+EPO
+Glucosamine Chondroitin
+Hyaluronic Acid
+Ginkgo Biloba
+Ginkgo
+Spirulina
+Cranberry
+Garlic
+Ginger
+Valerian Root
+Valerian
+Magnesium Oxide
+Zinc Picolinate
+Iron Bisglycinate
+Ferrous Bisglycinate
+Calcium Citrate
+Calcium Carbonate
+Chromium
+Lion's Mane
+Rhodiola Rosea
+Rhodiola
+5-HTP
+5-Hydroxytryptophan
+GABA
+Glycine
+L-Glutamine
+Glutamine
+BCAA | BCAAs
+Branched Chain Amino Acids
+Pre-Workout
+Beta-Alanine
+L-Carnitine
+Carnitine
+Acetyl-L-Carnitine | ALCAR
+L-Arginine
+Arginine
+L-Citrulline
+Citrulline
+L-Lysine
+Lysine
+L-Tyrosine
+Tyrosine
+Taurine
+Alpha Lipoic Acid
+ALA
+Quercetin
+Resveratrol
+Maca
+Maca Root
+Saw Palmetto
+Black Seed Oil
+Nigella Sativa
+Oregano Oil
+Oil of Oregano
+Digestive Enzymes
+Greens Powder
+Super Greens
+Chlorella
+Inositol
+Myo-Inositol
+Choline
+DHA
+EPA
+Algae Oil
+Algal Oil
+Vegan Omega-3
+MSM
+Chondroitin
+Boron
+Copper
+Manganese
+Molybdenum
+Magnesium L-Threonate
+Magnesium Threonate
+Magnesium Malate
+Magnesium Taurate
+Magnesium Chloride
+Magnesium Sulfate
+Epsom Salt
+Magnesium Complex
+Zinc Gluconate
+Zinc Citrate
+Zinc Bisglycinate
+Zinc Glycinate
+Zinc + Copper
+Zinc + Vitamin C
+Vitamin C + Zinc
+Iron + Vitamin C
+Ferrous Sulfate
+Ferrous Sulphate
+Ferrous Fumarate
+Ferrous Gluconate
+Liquid Iron
+Calcium Magnesium Zinc | Cal Mag Zinc
+Calcium Magnesium | Cal Mag
+Potassium Citrate
+Potassium Chloride
+Potassium Gluconate
+Chromium Picolinate
+Vitamin C + Rose Hips | Vitamin C with Rose Hips
+Liposomal Vitamin C
+Buffered Vitamin C
+Ester-C
+Vitamin C + Bioflavonoids
+Methylcobalamin
+Methyl B12
+Cyanocobalamin
+Methylated B Complex
+Methyl B Complex
+Benfotiamine
+Niacinamide
+Nicotinamide
+P5P
+Pyridoxal 5-Phosphate
+Vitamin K1
+Phylloquinone
+Vitamin K2 MK-7
+MK-7
+Vitamin D2
+Ergocalciferol
+Beta-Carotene
+Mixed Tocopherols
+Tocotrienols
+Women's Multivitamin | Womens Multi
+Men's Multivitamin | Mens Multi
+Kids Multivitamin
+Children's Multivitamin
+Senior Multivitamin
+50+ Multivitamin
+Multivitamin Gummies
+Multimineral
+Trace Minerals
+Hair Skin and Nails | Hair, Skin & Nails
+AREDS 2
+AREDS
+Lutein + Zeaxanthin | Lutein and Zeaxanthin
+Zeaxanthin
+Astaxanthin
+Lycopene
+Bilberry
+Omega-3-6-9
+Omega-3 Fish Oil
+Salmon Oil
+Hemp Seed Oil
+Hemp Oil
+MCT Oil
+Coconut Oil
+Borage Oil
+Sea Buckthorn Oil
+CLA
+Conjugated Linoleic Acid
+Lecithin
+Sunflower Lecithin
+Soy Lecithin
+Phosphatidylserine
+Phosphatidylcholine
+Probiotic + Prebiotic
+Synbiotic
+Prebiotic
+Prebiotic Fiber
+Lactobacillus Acidophilus
+Acidophilus
+Lactobacillus Rhamnosus GG | LGG
+Bifidobacterium
+Saccharomyces Boulardii | S. Boulardii
+Women's Probiotic
+Kids Probiotic
+Children's Probiotic
+Spore Probiotic
+Bacillus Coagulans
+Inulin
+Acacia Fiber
+Glucomannan
+Konjac
+Methylcellulose
+Wheat Dextrin
+Fiber Gummies
+Lactase
+Lactase Enzyme
+Bromelain
+Papaya Enzyme
+Papain
+Betaine HCl
+Betaine Hydrochloride
+Ox Bile
+Peppermint Oil
+Activated Charcoal
+Aloe Vera
+Slippery Elm
+Marshmallow Root
+DGL
+Deglycyrrhizinated Licorice
+Licorice Root
+Zinc Carnosine
+Colostrum
+Bone Broth Protein
+Casein Protein
+Casein
+Whey Protein Isolate
+Whey Isolate
+Plant Protein
+Vegan Protein
+Pea Protein
+Soy Protein
+Hemp Protein
+Rice Protein
+Collagen Protein
+Mass Gainer
+Weight Gainer
+EAA | EAAs
+Essential Amino Acids
+Citrulline Malate
+HMB
+Betaine
+Trimethylglycine
+TMG
+Creatine HCl
+Electrolyte Powder
+Hydration Powder
+Sodium
+Salt Tablets
+Caffeine
+Caffeine Pills
+Beet Root
+Beet Root Powder
+Tart Cherry
+D-Ribose
+Ribose
+L-Leucine
+Leucine
+L-Tryptophan
+Tryptophan
+L-Methionine
+Methionine
+L-Cysteine
+Cysteine
+L-Histidine
+Histidine
+L-Ornithine
+Ornithine
+L-Proline
+Proline
+L-Serine
+Serine
+L-Phenylalanine
+Phenylalanine
+DLPA
+L-Glutathione
+Glutathione
+Liposomal Glutathione
+Carnosine
+L-Carnosine
+Creatine Gummies
+Magnesium Glycinate + L-Theanine
+Melatonin Gummies
+Magnesium Spray
+Magnesium Oil
+Chamomile
+Lemon Balm
+Passionflower
+Lavender
+Hops
+Kava
+Holy Basil
+Tulsi
+Reishi
+Cordyceps
+Chaga
+Turkey Tail
+Shiitake
+Maitake
+Mushroom Complex
+Mushroom Blend
+Bacopa Monnieri
+Bacopa
+Brahmi
+Gotu Kola
+Panax Ginseng
+Korean Ginseng
+Asian Ginseng
+American Ginseng
+Siberian Ginseng
+Eleuthero
+Schisandra
+Astragalus
+Mucuna Pruriens
+Mucuna
+Tongkat Ali
+Longjack
+Fenugreek
+Tribulus Terrestris
+Tribulus
+Horny Goat Weed
+Epimedium
+Shilajit
+Boswellia
+Frankincense
+Devil's Claw
+White Willow Bark
+Cat's Claw
+Turmeric + Black Pepper | Turmeric with Black Pepper
+Turmeric Curcumin
+Turmeric + Ginger
+Black Pepper Extract
+Piperine
+BioPerine
+Cinnamon
+Ceylon Cinnamon
+Bitter Melon
+Gymnema Sylvestre
+Gymnema
+Chromium + Cinnamon
+Garcinia Cambogia
+Green Coffee Bean
+Raspberry Ketones
+African Mango
+Hoodia
+Triphala
+Amla
+Indian Gooseberry
+Shatavari
+Guggul
+Neem
+Moringa
+Wheatgrass
+Barley Grass
+Kelp
+Sea Moss
+Irish Moss
+Bladderwrack
+Alfalfa
+Nettle Leaf
+Stinging Nettle
+Nettle Root
+Dandelion Root
+Dandelion
+Burdock Root
+Artichoke Extract
+Artichoke
+Olive Leaf Extract
+Olive Leaf
+Grape Seed Extract
+Pine Bark Extract
+Pycnogenol
+Hawthorn
+Hawthorn Berry
+Hibiscus
+Garlic Extract
+Aged Garlic
+Odorless Garlic
+Red Yeast Rice
+Plant Sterols
+Phytosterols
+Beta-Sitosterol
+Policosanol
+Nattokinase
+Serrapeptase
+Bergamot
+Citrus Bergamot
+Citrus Bioflavonoids
+Bioflavonoids
+Rutin
+Hesperidin
+Diosmin
+Horse Chestnut
+Butcher's Broom
+Cranberry Extract
+D-Mannose
+Uva Ursi
+Pumpkin Seed Oil
+Pygeum
+Lycopene + Saw Palmetto
+Black Cohosh
+Red Clover
+Dong Quai
+Chasteberry
+Vitex
+Wild Yam
+Soy Isoflavones
+Isoflavones
+DIM
+Diindolylmethane
+Calcium D-Glucarate
+Myo-Inositol + D-Chiro-Inositol
+D-Chiro-Inositol
+Prenatal DHA
+Prenatal Gummies
+Postnatal Vitamin | Postnatal
+Raspberry Leaf
+St. John's Wort | Saint John's Wort
+SAMe
+S-Adenosyl Methionine
+Saffron
+Huperzine A
+Alpha-GPC
+Citicoline
+CDP-Choline
+Vinpocetine
+DMAE
+Uridine
+PQQ
+NMN
+Nicotinamide Mononucleotide
+NR
+Nicotinamide Riboside
+NAD+
+Spermidine
+Fisetin
+Pterostilbene
+Urolithin A
+Sulforaphane
+Broccoli Sprout Extract
+Apigenin
+Luteolin
+EGCG
+Matcha
+Green Tea
+Yerba Mate
+Guarana
+Cocoa Extract
+Cacao
+Acai
+Goji Berry
+Goji
+Pomegranate Extract
+Pomegranate
+Blueberry Extract
+Noni
+Mangosteen
+Camu Camu
+Acerola
+Acerola Cherry
+Rose Hips | Rosehip
+Sea Buckthorn
+Aronia
+Chokeberry
+Black Currant
+Beta-Glucan
+Zinc Lozenges
+Vitamin C Gummies
+Elderberry Gummies
+Elderberry Syrup
+Andrographis
+Pelargonium
+Umckaloabo
+Propolis
+Bee Propolis
+Bee Pollen
+Royal Jelly
+Manuka Honey
+Monolaurin
+Lauric Acid
+Lactoferrin
+Oregano
+Thyme
+Goldenseal
+Echinacea + Goldenseal
+Mullein
+Ivy Leaf
+Eucalyptus
+Lysine + Vitamin C
+Glucosamine Sulfate
+Glucosamine Sulphate
+Glucosamine HCl
+Glucosamine Chondroitin MSM
+Glucosamine MSM
+Collagen Type II
+UC-II
+Undenatured Collagen
+Marine Collagen
+Bovine Collagen
+Multi Collagen
+Collagen + Vitamin C
+Collagen Gummies
+Eggshell Membrane
+Green-Lipped Mussel
+Shark Cartilage
+Cetyl Myristoleate
+CMO
+Silica
+Horsetail
+Bamboo Extract
+Keratin
+Biotin Gummies
+Ceramides
+Vitamin D Drops
+Vitamin D Gummies
+Vitamin D3 Drops
+Vegan Vitamin D3
+Vitamin B12 Drops
+Liquid B12
+Vitamin B12 Lozenges
+Sublingual B12
+Vitamin B12 Spray
+Liquid Multivitamin
+Liquid Calcium
+Liquid Magnesium
+Liquid Zinc
+Liquid Vitamin C
+Liquid Chlorophyll
+Chlorophyll
+Chlorophyllin
+Iodine + Kelp
+Potassium Iodide
+Selenium + Zinc
+Selenomethionine
+Calcium Hydroxyapatite
+MCHA
+Coral Calcium
+Strontium
+Vanadium
+Lithium Orotate
+Fulvic Acid
+Humic Acid
+Zeolite
+Bentonite Clay
+Diatomaceous Earth
+Baking Soda
+Sodium Bicarbonate
+Electrolyte Tablets
+Oral Rehydration Salts | ORS
+Coconut Water Powder
+Ubiquinol
+CoQ10 + PQQ
+Carnitine + CoQ10
+D-Limonene
+Omega-7
+Omega-3 Gummies
+Kids Omega-3
+Children's DHA
+Kids DHA
+Kids Vitamin D
+Kids Vitamin C
+Kids Calcium
+Kids Iron
+Kids Zinc
+Kids Melatonin
+Kids Fiber
+Infant Vitamin D Drops
+Baby Vitamin D Drops
+Infant Probiotic Drops
+Baby Probiotic Drops
+Infant Iron Drops
+Gripe Water
+Fluoride
+Teen Multivitamin
+Vegan Multivitamin
+Vegan B12
+Vegan Iron
+Vegan Protein Powder
+Nutritional Yeast
+Brewer's Yeast
+Wheat Germ Oil
+Lecithin Granules
+Flaxseed
+Ground Flaxseed
+Linseed
+Chia Seeds
+Chia
+Hemp Hearts
+Hemp Seeds
+Psyllium Capsules
+Oat Bran
+Chicory Root
+Resistant Starch
+Butyrate
+Sodium Butyrate
+Tributyrin
+L-Glutamine Powder
+Aloe Vera Juice
+Ginger Root
+Ginger Chews
+Fennel
+Peppermint
+Caraway Oil
+Artichoke + Ginger
+Charcoal Tablets
+Senna Tea
+Cascara Sagrada
+Prune Extract
+Magnesium Hydroxide
+Kombucha
+Kefir
+Apple Cider Vinegar Gummies | ACV Gummies
+Berberine + Cinnamon
+Alpha Lipoic Acid + Acetyl-L-Carnitine
+R-Lipoic Acid | R-ALA
+Benfotiamine + Alpha Lipoic Acid
+Banaba Leaf
+Fenugreek + Cinnamon
+White Kidney Bean Extract
+Chitosan
+Ketone Salts
+BHB
+Exogenous Ketones
+MCT Powder
+Keto Electrolytes
+L-Carnitine Liquid
+Carnitine Tartrate
+L-Carnitine L-Tartrate
+ZMA
+DHEA
+7-Keto DHEA
+7-Keto
+Pregnenolone
+D-Aspartic Acid
+DAA
+Boron + Zinc
+Ecdysterone
+Beta-Ecdysterone
+Turkesterone
+Arginine AKG | AAKG
+Agmatine
+Glycerol
+Sodium Citrate
+Beta-Alanine + Creatine
+Dextrose
+Maltodextrin
+Cyclic Dextrin
+Caffeine + L-Theanine
+Theacrine
+TeaCrine
+Ginkgo + Ginseng
+Rhodiola + Ashwagandha
+Adaptogen Blend
+CBD Oil
+CBD
+CBD Gummies
+Hemp Extract
+Magnolia Bark
+Phosphatidylserine + Ashwagandha
+L-Theanine + Magnesium
+GABA + L-Theanine
+Glycine + Magnesium
+Tart Cherry + Melatonin
+Valerian + Hops
+Skullcap
+California Poppy
+Jujube
+Ziziphus
+Oat Straw
+Catuaba
+Damiana
+Yohimbe
+Yohimbine
+Muira Puama
+Ginkgo + Bacopa
+Butterbur
+Feverfew
+Magnesium + B6
+Eyebright
+Quercetin + Bromelain
+Quercetin + Zinc
+Stinging Nettle + Quercetin
+Spirulina + Chlorella
+Black Elderberry + Zinc
+Vitamin C + D + Zinc
+Vitamin D + Calcium + Magnesium
+Vitamin D + Magnesium
+Vitamin D + Omega-3
+Vitamin A + D | Vitamin A and D
+Vitamin E + Selenium
+Vitamin E Oil
+Vitamin ADK
+ADK
+Vitamin B1 + B6 + B12
+Vitamin B6 + B12 + Folic Acid
+Vitamin B12 + Folate
+Vitamin B Complex + Vitamin C
+Iron + Folic Acid
+Iron + B12
+Heme Iron
+Iron Polysaccharide
+Polysaccharide Iron Complex
+Carbonyl Iron
+Slow Release Iron
+Calcium Lactate
+Calcium Gluconate
+Calcium Chews
+Calcium + Vitamin K2
+Calcium + Magnesium + Vitamin D
+Magnesium Orotate
+Magnesium Aspartate
+Magnesium Lactate
+Magnesium Gummies
+Magnesium Powder
+Magnesium Bisglycinate Chelate
+Zinc Acetate
+Zinc Sulfate
+Zinc Sulphate
+Zinc Orotate
+Zinc Gummies
+Copper Bisglycinate
+Copper Glycinate
+Manganese Bisglycinate
+Chromium GTF
+GTF Chromium
+Iodine Drops
+Lugol's Iodine
+Sea Kelp
+Bone Broth
+Fenugreek + Blessed Thistle
+Blessed Thistle
+Goat's Rue
+Sunflower Lecithin Capsules
+Caprylic Acid
+Pau d'Arco
+Grapefruit Seed Extract
+Berberine + Oregano
+Black Walnut
+Wormwood
+Artemisia
+Clove
+Garlic + Parsley
+Parsley
+Chlorella Tablets
+Modified Citrus Pectin
+Citrus Pectin
+Apple Pectin
+Alginate
+Calcium Bentonite
+Milk Thistle + Dandelion
+Silymarin
+TUDCA
+Choline + Inositol
+Choline Bitartrate
+Artichoke + Milk Thistle
+Schisandra + Milk Thistle
+Glutathione + NAC
+NAC + Glycine
+GlyNAC
+Alpha-Ketoglutarate
+AKG
+Calcium AKG
+Trimethylglycine + B12
+Methionine + Inositol + Choline
+MIC
+Superoxide Dismutase
+SOD
+Catalase
+Ergothioneine
+Hydroxytyrosol
+Olive Oil
+Extra Virgin Olive Oil
+Fish Oil + Vitamin D
+Fish Oil + CoQ10
+Enteric Coated Fish Oil
+Liquid Fish Oil
+Cod Liver Oil Capsules
+Calamari Oil
+Squid Oil
+Seal Oil
+Perilla Oil
+Chia Seed Oil
+Evening Primrose + Borage Oil
+GLA
+Gamma-Linolenic Acid
+Ahiflower Oil
+Black Cumin Seed
+Pumpkin Seed Extract
+Sesame Oil
+Sesamin
+Rice Bran Oil
+Gamma Oryzanol
+Squalene
+Bovine Colostrum
+Beef Liver
+Desiccated Liver
+Beef Organs
+Organ Complex
+Bone Marrow
+Thymus Extract
+Glandular
+Cartilage
+Oyster Extract
+Deer Antler Velvet
+Cordyceps + Reishi
+Lion's Mane + Cordyceps
+Mushroom Coffee
+Chaga Tea
+Ashwagandha Gummies
+Ashwagandha KSM-66
+KSM-66
+Ashwagandha + Magnesium
+Turmeric Gummies
+Ginger + Turmeric Shots
+Boswellia + Turmeric
+Tart Cherry Extract
+Tart Cherry Juice
+Celery Seed
+Cherry Extract
+Devil's Claw + Boswellia
+Palmitoylethanolamide
+PEA
+Capsaicin
+Cayenne
+White Peony
+Rehmannia
+Dan Shen
+Ginkgo + Hawthorn
+He Shou Wu
+Fo-Ti
+Goji + Schisandra
+Cistanche
+Jiaogulan
+Gynostemma
+Dang Gui
+Ban Lan Gen
+Isatis Root
+Yin Qiao
+Pi Pa Gao
+Loquat Syrup
+Ganoderma
+Lingzhi
+American Ginseng Tea
+Ginseng + Royal Jelly
+Bird's Nest
+Cordyceps Sinensis
+Tian Qi
+Notoginseng
+San Qi
+Huang Qi
+Chrysanthemum
+Honeysuckle
+Monk Fruit
+Luo Han Guo
+Hawthorn Berry Tea
+Kudzu
+Pueraria
+Tulsi Tea
+Brahmi + Ashwagandha
+Arjuna
+Boswellia Serrata
+Chyawanprash
+Trikatu
+Giloy
+Guduchi
+Haritaki
+Bhringraj
+Kutki
+Punarnava
+Manjistha
+Shankhpushpi
+Vidanga
+Isabgol
+Hing
+Asafoetida
+Ajwain
