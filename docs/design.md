@@ -93,7 +93,8 @@ One confirmation for each, and no second dialog before it (D033).
 
 ## Settings
 
-- "Remind Again" is one menu row. Its value says the delay after the first reminder: "Off", "After 15 min", "After 30 min", or "After 1 hr" (D032).
+- "Remind Again" is two menu rows in one section (D039). The first row is the number of follow-ups: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between them: "5 min", "10 min", "15 min", "30 min", or "1 hr". It comes and goes with the layout motion, and it shows only when the number is not "Off".
+- "Until Recorded" has a limit, and the footer states the number: "Maru reminds you up to 12 times for each dose, on the same day."
 - A footer or a helper text is one short sentence (D032).
 - "Display" has only "App Color". The strikethrough setting is gone (D032).
 

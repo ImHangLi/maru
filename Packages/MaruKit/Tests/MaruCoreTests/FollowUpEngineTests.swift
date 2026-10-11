@@ -38,9 +38,9 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
         shown[identifier] = texts[identifier]
     }
 
-    func followUpPlan(delay: FollowUpDelay?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone) -> FollowUpPlan {
+    func followUpPlan(setting: FollowUpSetting?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone) -> FollowUpPlan {
         FollowUpPlan(
-            delay: delay,
+            setting: setting,
             reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy),
             items: items,
             schedules: schedules,
@@ -76,8 +76,8 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
         identifiers.forEach { shown[$0] = nil }
     }
 
-    nonisolated func load() -> FollowUpDelay? { .minutes30 }
-    nonisolated func save(_ delay: FollowUpDelay?) {}
+    nonisolated func load() -> FollowUpSetting? { FollowUpSetting(count: .one, interval: .minutes30) }
+    nonisolated func save(_ setting: FollowUpSetting?) {}
     nonisolated func load() -> Set<String> { [] }
     nonisolated func save(_ identifiers: Set<String>) {}
     nonisolated func load() -> ReminderPrivacy { .showNames }
@@ -85,7 +85,7 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
     nonisolated func text(for content: ReminderContent) -> ReminderText { Fixtures.text(for: content) }
 }
 
-@Suite("Follow-up reminder (spec 4, 8.2, D021)")
+@Suite("Follow-up reminder (spec 4, 8.2, D021, D039)")
 struct FollowUpEngineTests {
     @Test func recordedOccurrenceHasNoPendingOrDeliveredFollowUpAfterARefresh() async throws {
         let phone = FollowUpPhone()
@@ -184,5 +184,65 @@ struct FollowUpEngineTests {
         let pending = await phone.pending
         #expect(pending.keys.contains("followup|device@America/Chicago|2026-03-02|08:00"))
         #expect(!pending.keys.contains("followup|device@America/New_York|2026-03-02|08:00"))
+    }
+
+    @Test func followUpsComeAtTheIntervalAndStopAtTheCountTheNextDoseAndTheEndOfTheDay() {
+        // One item at 08:00 and 12:00, and one item at 23:00. 07:00 in Shanghai on 2 March.
+        let twice = Fixtures.item()
+        let late = Fixtures.item()
+        let items = [twice, late]
+        let schedules = [
+            Fixtures.schedule(itemID: twice.id, times: [Fixtures.time(8), Fixtures.time(12)]),
+            Fixtures.schedule(itemID: late.id, times: [Fixtures.time(23)]),
+        ]
+        let now = Fixtures.instant("2026-03-01T23:00:00Z")
+        /// The follow-ups of 2 March at each slot time, as minutes after the slot time.
+        func minutes(_ count: FollowUpCount, _ interval: FollowUpInterval) -> [String: [Int]] {
+            let plan = FollowUpPlan(
+                setting: FollowUpSetting(count: count, interval: interval),
+                reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: Fixtures.shanghai),
+                items: items, schedules: schedules, stored: [], closed: [], now: now, deviceTimeZone: Fixtures.shanghai
+            )
+            var result: [String: [Int]] = [:]
+            for request in plan.requests where request.userInfo[FollowUpRequest.plannedDateKey] == "2026-03-02" {
+                let time = String(request.threadIdentifier.suffix(5))
+                let slot = Fixtures.instant("2026-03-02T00:00:00Z").addingTimeInterval((Double(time.prefix(2))! - 8) * 3_600)
+                result[time, default: []].append(Int(request.fireDate.timeIntervalSince(slot) / 60))
+            }
+            return result
+        }
+
+        // A count: three follow-ups, one hour apart. 23:00 gets none, because 00:00 is the next day.
+        #expect(minutes(.three, .minutes60) == ["08:00": [60, 120, 180], "12:00": [60, 120, 180]])
+        // "Until Recorded": 08:00 stops before the 12:00 dose of the same item, 12:00 stops at the limit of 12,
+        // and 23:00 stops at the end of the day.
+        #expect(minutes(.untilRecorded, .minutes30) == [
+            "08:00": Array(1...7).map { $0 * 30 }, "12:00": Array(1...12).map { $0 * 30 }, "23:00": [30],
+        ])
+    }
+
+    @Test func followUpsShareTheRoomThatTheSeriesRequestsLeave() throws {
+        // Eight slot times on six weekdays use the 48 series requests. 07:00 in Shanghai on Monday 2 March.
+        let item = Fixtures.item()
+        let weekdays: Set<Weekday> = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday]
+        let schedule = Fixtures.schedule(
+            itemID: item.id, times: (8...15).map { Fixtures.time($0) }, weeklyRule: try WeeklyRule(weekdays: weekdays)
+        )
+        let now = Fixtures.instant("2026-03-01T23:00:00Z")
+        let reminders = ReminderPlan(items: [item], schedules: [schedule], now: now, deviceTimeZone: Fixtures.shanghai)
+        let plan = FollowUpPlan(
+            setting: FollowUpSetting(count: .untilRecorded, interval: .minutes10),
+            reminders: reminders, items: [item], schedules: [schedule], stored: [], closed: [],
+            now: now, deviceTimeZone: Fixtures.shanghai
+        )
+
+        // Every series request keeps its room, and the follow-ups get the other 14.
+        #expect(reminders.requests.count == ReminderPlan.requestBudget)
+        #expect(plan.requests.count == ReminderPlan.systemLimit - FollowUpPlan.reserve - ReminderPlan.requestBudget)
+        // Each slot time of today wants five or more. Each one gets its first, then the six nearest get a second.
+        let counts = Dictionary(grouping: plan.requests, by: \.threadIdentifier).mapValues(\.count)
+        #expect(counts.count == 8)
+        #expect(counts.values.sorted() == [1, 1, 2, 2, 2, 2, 2, 2])
+        #expect(counts["followup|Asia/Shanghai|2026-03-02|15:00"] == 1)
     }
 }

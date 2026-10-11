@@ -9,7 +9,10 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
-    @State private var followUp: FollowUpDelay?
+    /// `nil` means off.
+    @State private var followUpCount: FollowUpCount?
+    /// 30 minutes until the user picks one: the middle delay of D021, and the delay of Apple Health.
+    @State private var followUpInterval = FollowUpInterval.minutes30
     @State private var showsNames = true
 
     var body: some View {
@@ -29,21 +32,46 @@ struct SettingsView: View {
                 }
                 Section {
                     Picker("Remind Again", selection: Binding(
-                        get: { followUp },
-                        set: {
-                            followUp = $0
-                            model.setFollowUpDelay($0)
+                        get: { followUpCount },
+                        set: { count in
+                            // The interval row comes and goes with "Off" (D039).
+                            withMotion(.layout) { followUpCount = count }
+                            model.setFollowUp(count.map { FollowUpSetting(count: $0, interval: followUpInterval) })
                         }
                     )) {
-                        Text("Off").tag(FollowUpDelay?.none)
-                        Text("After 15 min").tag(FollowUpDelay?.some(.minutes15))
-                        Text("After 30 min").tag(FollowUpDelay?.some(.minutes30))
-                        Text("After 1 hr").tag(FollowUpDelay?.some(.minutes60))
+                        Text("Off").tag(FollowUpCount?.none)
+                        Text("1 Time").tag(FollowUpCount?.some(.one))
+                        Text("2 Times").tag(FollowUpCount?.some(.two))
+                        Text("3 Times").tag(FollowUpCount?.some(.three))
+                        Text("5 Times").tag(FollowUpCount?.some(.five))
+                        Text("Until Recorded").tag(FollowUpCount?.some(.untilRecorded))
                     }
                     // The menu button keeps the tint that it had before. A new identity redraws it in the new app color.
                     .id(appColor)
+                    if followUpCount != nil {
+                        Picker("Every", selection: Binding(
+                            get: { followUpInterval },
+                            set: { interval in
+                                followUpInterval = interval
+                                model.setFollowUp(followUpCount.map { FollowUpSetting(count: $0, interval: interval) })
+                            }
+                        )) {
+                            Text("5 min").tag(FollowUpInterval.minutes5)
+                            Text("10 min").tag(FollowUpInterval.minutes10)
+                            Text("15 min").tag(FollowUpInterval.minutes15)
+                            Text("30 min").tag(FollowUpInterval.minutes30)
+                            Text("1 hr").tag(FollowUpInterval.minutes60)
+                        }
+                        .id([appColor.rawValue, "interval"])
+                    }
                 } footer: {
-                    Text("Only for items that you did not record.")
+                    // iPhone has no reminder that repeats until Maru stops it, so "Until Recorded" has a limit.
+                    // The footer states it (D039).
+                    if followUpCount == .untilRecorded {
+                        Text("Maru reminds you up to \(FollowUpCount.untilRecordedLimit) times for each dose, on the same day.")
+                    } else {
+                        Text("Only for items that you did not record.")
+                    }
                 }
                 Section("Display") {
                     // A system menu of the eight colors (D025, D026).
@@ -80,7 +108,9 @@ struct SettingsView: View {
         // The sheet sets the tint again, so every control in it changes at once with a new app color.
         .tint(appColor.tint)
         .onAppear {
-            followUp = model.followUpDelay
+            let followUp = model.followUpSetting
+            followUpCount = followUp?.count
+            if let followUp { followUpInterval = followUp.interval }
             showsNames = model.showsNamesInReminders
         }
         // A return from the Settings app shows the new permission (T14).

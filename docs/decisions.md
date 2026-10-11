@@ -145,7 +145,7 @@ Owner decisions, with two agent recommendations that the owner asked for.
 - Settings entry (agent recommendation, the owner asked): a gear button at the top left of both tabs that opens a sheet. Not a third tab. Reasons: settings are rare, a tab is for a place the user goes every day, Apple's own apps (Health, Fitness, App Store) put the same kind of entry in a top corner, and two tabs keep the bar calm. A reminder problem such as notifications turned off shows on Today itself (spec §2.2), so the user does not need to find settings to learn about it. The add button sits at the top right of both tabs. This keeps the two tabs of spec §1.
 - New optional setting: the tab bar shows icons with no words. Off by default. The names stay for VoiceOver.
 
-## D021 · 2026-10-11 · Direction after Apple Health Medications, no app accent, item colors, header wash (wash removed by D024, no accent setting replaced by D025)
+## D021 · 2026-10-11 · Direction after Apple Health Medications, no app accent, item colors, header wash (wash removed by D024, no accent setting replaced by D025, one follow-up replaced by D039)
 
 Owner decision, after the hands-on test in `docs/research/2026-10-11-apple-health-medications.md`. The owner accepted the recommendation: continue milestone A with a narrower positioning. The owner set three requirements for every flow: not tedious, intuitive, and simple. The owner asked for the Apple Health features that Maru should have, each in a simpler flow. The owner left the wash color and the details to the agent and went offline, so the agent made the choices below.
 
@@ -293,7 +293,7 @@ Owner decision. Maru becomes a public repository under the MIT license. This rep
 - The repository holds no personal health data, no local paths, and no credentials. Records refer to private work only as history, without links to private branches or local files.
 - `docs/process.md` applies to every contributor. The rules for agents that work for the maintainer are in `AGENTS.md`.
 
-## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039)
 
 Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
 
@@ -445,3 +445,59 @@ Owner decision. Settings has a "Send Feedback" button at the end. It opens the o
 - `PRIVACY.md` names Tally. "No network requests" is now "no network requests by itself".
 - The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
 
+## D039 · 2026-10-11 · More follow-ups, and "Until Recorded" with a stated limit
+
+Owner decision, with agent detail. Two studies of user feedback found one top wish: a reminder that comes again until the user confirms (`docs/research/evidence.md`, sections 1 and 7). The owner: users ask for this, so Maru must have it. The user chooses how many times, and can choose "until I confirm". The owner left the time between reminders to the agent. This replaces the one follow-up of D021 and the "Remind Again" row of D032. It changes spec 4.
+
+The setting:
+
+- "Remind Again" has two menu rows in one section. The first row is the number: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between reminders: 5, 10, 15, or 30 minutes, or 1 hour. It shows only when the number is not "Off".
+- The setting is off by default (spec 4). When the user turns it on, the time starts at 30 minutes. That is the middle delay of D021 and the delay of the follow-up of Apple Health.
+- An install from before keeps its behavior. Its stored delay is the time between reminders, and a stored value with no number means "1 Time". So "After 30 min" becomes "1 Time" and "30 min". The new key is `reminders.followUpCount` in `UserDefaults.standard` (D014). "Off" removes both keys.
+- The footer of "Until Recorded" states the limit: "Maru reminds you up to 12 times for each dose, on the same day." The other choices keep "Only for items that you did not record."
+
+The schedule rule:
+
+- The first follow-up comes one interval after the dose time. Each next one comes one interval after the one before.
+- A follow-up names only the items of that time with no record, as before (D029). A record, a skip, an archive, a delete, or an edit changes or removes the pending follow-ups at the next run of the engine, and the run removes a delivered follow-up with old text.
+- A follow-up reminds for an item only before the end of the day of the dose, and before the next dose time of the same item. After that, Today does not show the dose as open, and the "Taken" action records only a dose of today (D034). This rule applies to every number, not only to "Until Recorded". So a follow-up that D021 sent after midnight does not come now.
+- When the items of one time stop at different moments, a later follow-up names only the items that it still reminds for.
+- Each follow-up of a time with exactly one item has the "Taken" action with the identity check of D034.
+- A plan of every other day gets follow-ups only on its due days, because a day with no dose has no occurrence (D036). An as-needed item has no time, so it gets none.
+- The first follow-up keeps the identifier of D021. A later one adds its number. All follow-ups of one dose time have one thread identifier, so Notification Center shows them as one group.
+
+"Until Recorded" and its limit:
+
+- iOS has no local notification that starts at a later time and repeats until the app stops it. A repeating time interval trigger counts from the time of the add. The app does not run in the background (spec 8.1). So "Until Recorded" is dated requests: at most 12 for each dose time.
+- 12 comes from the system limit. iOS keeps at most 64 pending requests for one app. Four dose times of one day with 12 follow-ups each use 48 requests. With 4 series requests and a reserve of 2, the total is 54 of 64. So a plan with up to four times gets the full number for every dose of the next 24 hours, and 10 requests stay free for later doses or a plan of every other day. With 12, the reminders last 1 hour at 5 minutes, 2 hours at 10 minutes, and 6 hours at 30 minutes.
+- Each open of Maru and each record sets the follow-ups again, as before. The "Taken" action also does this.
+- Maru does not claim reminders with no end. The settings text states the number.
+
+The budget:
+
+- The series requests keep their budget of 48 (spec 8.4, D036). The follow-ups no longer have a fixed 16. They get the system limit minus a reserve of 2 and minus the series requests of the plan: 64 - 2 - 3 = 59 for a plan with three daily times, and 14 for a plan that uses all 48.
+- The reserve is for the test notification of Settings, and for one new series request that the engine adds before it removes the old one.
+- The follow-ups never take the room of a first reminder. The plan computes the room from the series requests that it wants. The engine checks the pending requests again before each add. When a save needs more room, the series engine removes the latest follow-ups first, as before.
+- The split is fair. The dose times whose next follow-up comes in the same 24 hours share the room. Each gets one follow-up in turn, the nearest first, then each gets one more. Then the dose times of the next 24 hours get the room that is left. So one dose time never takes the room of the others, and the nearest doses come first.
+- A dose time can get fewer follow-ups than the setting says when the plan has many times. The footer says "up to". The Reminder state in the item detail is the state of the first reminder only, and it stays true, because a follow-up never takes the room of a first reminder.
+
+Rejected:
+
+- An interval of 1 minute. It reads as an alarm that the user can not stop, and 12 requests then cover only 12 minutes.
+- An alarm through AlarmKit, for now. It is a different product: a full-screen alarm with its own permission. Maru stays a quiet reminder (spec 4).
+- A claim of reminders with no end. A fixed number that the page states is true. "Until Recorded" with no stated limit is not.
+- A repeating time interval trigger. It can not start at a dose time in the future, and it continues after a record until the app runs.
+- One limit for all follow-ups of the fixed 16. Three dose times with 12 follow-ups each need 36.
+- Critical Alerts stay out (D021). Time-sensitive reminders wait for the Apple Developer Program (D034).
+
+What the Apple documentation says, read on 2026-10-11:
+
+- The limit of 64 is on the page of the old API: "the system keeps the soonest-firing 64 notifications (with automatically rescheduled notifications counting as a single notification) and discards the rest" ([`UILocalNotification`](https://developer.apple.com/documentation/uikit/uilocalnotification)). The pages of `UNUserNotificationCenter` state no number. Maru keeps 64 as the limit and stays 2 below it.
+- A repeating time interval trigger needs 60 seconds or more, and the app must remove it to stop it ([`init(timeInterval:repeats:)`](https://developer.apple.com/documentation/usernotifications/untimeintervalnotificationtrigger/init(timeinterval:repeats:))).
+- Notifications with the same thread identifier show as one group ([`threadIdentifier`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent/threadidentifier)).
+- The default level, `active`, does not pass a Focus or the scheduled summary. Only `timeSensitive` does, and the user can turn that off ([`active`](https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/active), [`timeSensitive`](https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/timesensitive)). So with a Focus or the summary on, the follow-ups can come late and together. Spec 8.1 still forbids a promise of delivery.
+- The system picks the notification that the summary features by its [`relevanceScore`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent/relevancescore). Maru does not set it.
+
+Tests (D016): two new tests. The follow-up times with the stop rules for a number and for "Until Recorded", and the split of the room next to 48 series requests.
+
+Not verified: no check on a real iPhone yet. Open points are the group in Notification Center, the behavior of many requests at 5 minutes, and the summary and a Focus.

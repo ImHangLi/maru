@@ -14,6 +14,10 @@ Nothing happens. Maru has no streaks and no penalties. A record is there to help
 
 Today keeps each recorded item in view with its mark. History shows every day, with what you took, what you skipped, and what has no record.
 
+## Can Maru keep reminding me?
+
+Yes. In Settings, "Remind Again" sends more reminders for a dose that you did not record. You choose how many, and how long between them, from 5 minutes to 1 hour. "Until Recorded" reminds you up to 12 times for each dose, on the same day, and stops when you record. iPhone does not let an app remind with no end, so Maru states the number. Maru is not an alarm: a Focus or silent mode can hold a reminder.
+
 ## Is there a limit on the number of items?
 
 No. You can add as many items as you want. Maru has no account and no paywall on the core.

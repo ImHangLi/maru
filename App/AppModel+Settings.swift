@@ -25,7 +25,7 @@ struct SettingsState {
 
 extension AppModel {
     /// The follow-up setting. It starts off (spec 4).
-    var followUpDelay: FollowUpDelay? {
+    var followUpSetting: FollowUpSetting? {
         DefaultsFollowUpSetting().load()
     }
 
@@ -42,9 +42,9 @@ extension AppModel {
         }
     }
 
-    /// Saves the setting, then sets the follow-ups again in the notification queue (spec 4, D021).
-    func setFollowUpDelay(_ delay: FollowUpDelay?) {
-        DefaultsFollowUpSetting().save(delay)
+    /// Saves the setting, then sets the follow-ups again in the notification queue (spec 4, D021, D039).
+    func setFollowUp(_ setting: FollowUpSetting?) {
+        DefaultsFollowUpSetting().save(setting)
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
         Task { [store] in

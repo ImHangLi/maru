@@ -3,12 +3,12 @@ import GRDB
 import MaruCore
 
 extension LocalStore: FollowUpSource {
-    /// The follow-ups that the stored plan and records ask for (D021). `FollowUpPlan` has the rules.
+    /// The follow-ups that the stored plan and records ask for (D021, D039). `FollowUpPlan` has the rules.
     ///
     /// One read gives the items, the schedules, and the stored occurrences with their state, so the plan is the state of one commit.
     /// An occurrence is closed when its projection row says taken or skipped. An undo deletes that row (spec 7.2).
     public func followUpPlan(
-        delay: FollowUpDelay?,
+        setting: FollowUpSetting?,
         privacy: ReminderPrivacy,
         at now: Date,
         deviceTimeZone: NamedTimeZone
@@ -39,7 +39,7 @@ extension LocalStore: FollowUpSource {
                 if try row.decode(forColumn: "isClosed") as Bool { closed.insert(occurrence.key) }
             }
             return FollowUpPlan(
-                delay: delay,
+                setting: setting,
                 reminders: ReminderPlan(
                     items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy
                 ),

@@ -35,6 +35,8 @@ extension UNNotificationRequest {
         content.body = text.body
         content.sound = .default
         content.userInfo = request.userInfo
+        // The follow-ups of one slot time show as one group in Notification Center (D039).
+        content.threadIdentifier = request.threadIdentifier
         if request.content.hasTakenAction { content.categoryIdentifier = ReminderAction.categoryIdentifier }
         self.init(
             identifier: request.identifier,
@@ -45,21 +47,31 @@ extension UNNotificationRequest {
     }
 }
 
-/// The follow-up setting in `UserDefaults.standard`. No value means off (spec 4).
+/// The follow-up setting in `UserDefaults.standard`. No interval means off (spec 4).
+///
+/// The interval key is the key of the one delay of D021. A value from before D039 has no count,
+/// so it means one follow-up after that time.
 public struct DefaultsFollowUpSetting: FollowUpSettingStore {
     static let key = "reminders.followUpMinutes"
+    static let countKey = "reminders.followUpCount"
 
     public init() {}
 
-    public func load() -> FollowUpDelay? {
-        FollowUpDelay(rawValue: UserDefaults.standard.integer(forKey: Self.key))
+    public func load() -> FollowUpSetting? {
+        let defaults = UserDefaults.standard
+        guard let interval = FollowUpInterval(rawValue: defaults.integer(forKey: Self.key)) else { return nil }
+        let count = (defaults.object(forKey: Self.countKey) as? Int).flatMap(FollowUpCount.init)
+        return FollowUpSetting(count: count ?? .one, interval: interval)
     }
 
-    public func save(_ delay: FollowUpDelay?) {
-        if let delay {
-            UserDefaults.standard.set(delay.rawValue, forKey: Self.key)
+    public func save(_ setting: FollowUpSetting?) {
+        let defaults = UserDefaults.standard
+        if let setting {
+            defaults.set(setting.interval.rawValue, forKey: Self.key)
+            defaults.set(setting.count.rawValue, forKey: Self.countKey)
         } else {
-            UserDefaults.standard.removeObject(forKey: Self.key)
+            defaults.removeObject(forKey: Self.key)
+            defaults.removeObject(forKey: Self.countKey)
         }
     }
 }

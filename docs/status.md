@@ -7,17 +7,18 @@ Maru was developed in a private repository before it became public. Issue number
 ## Current state
 
 - The app and the package build. CI builds and tests the package and builds the app for the iOS Simulator.
-- Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, an optional follow-up reminder, and as-needed items.
+- Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, optional follow-up reminders, and as-needed items.
 - The first release is in English (D017).
 - The design rules are in `docs/design.md`. Native SwiftUI components only (D026).
 - Maru does not integrate with Apple Health in V1 (D022).
 - An "every other day" schedule is in code (D036). Its reminders are dated requests for the next 7 due dates, and they need a check on a real iPhone.
+- The user sets the follow-ups (D039): 1, 2, 3, or 5 times, or "Until Recorded" with at most 12 for each dose, and 5 minutes to 1 hour between them. Nobody saw them on a device yet. They need a check on a real iPhone: the times, the stop after a record, the group in Notification Center, and a Focus.
 - Three flow gaps against Apple Health Medications are closed in code (D033): a change of a record time in three taps, an archive in three taps with one confirmation, and a delete of an item with its records. Nobody saw them on a display yet.
 
 ## Next
 
 1. Merge the "every other day" schedule (D036, pull request #49).
-2. Check the "Taken" action of a reminder on a real iPhone (D034). Time-sensitive reminders wait for the Apple Developer Program (D007, D034).
+2. Check the follow-ups and "Until Recorded" on a real iPhone (D039), with the "Taken" action of a reminder (D034). Time-sensitive reminders wait for the Apple Developer Program (D007, D034).
 3. A question after a time zone change (`docs/research/2026-10-11-apple-health-gap.md`).
 4. A Home Screen widget that records a dose.
 5. Acceptance on a real iPhone: one week of daily use by the maintainer.
