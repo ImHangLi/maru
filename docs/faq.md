@@ -28,7 +28,7 @@ No. Maru reminds and records. It does not track stock. This keeps the app small 
 
 ## Can Maru tell me what to take or how much?
 
-No. Maru does not give medical advice. You enter what you take, and Maru reminds you. The name suggestions on the add screen are a typing aid. They are not medical advice.
+No. Maru does not give medical advice. You enter what you take, and Maru reminds you. The name suggestions on the add screen are a typing aid. For common supplements, the add screen also shows amounts, times, and notes from common labels. They fill nothing until you tap, and they are not medical advice.
 
 ## Does the label scan send a photo anywhere?
 

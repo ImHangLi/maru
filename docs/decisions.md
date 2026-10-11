@@ -69,7 +69,7 @@ Owner decision, after the study in `docs/research/2026-10-10-visual-direction.md
 - Finished slots: when every item of a slot has a record, the slot shows as one line the next time the user returns to the app. A tap on the title opens it, and a second tap folds it. Only a finished slot folds.
 - These settings (accent, recorded-row style) join the scope of issue #11. The Today behavior joins issue #7.
 
-## D013 · 2026-10-11 · White surface, row content, and text size (white surface replaced by D021)
+## D013 · 2026-10-11 · White surface, row content, and text size (white surface replaced by D021, form choice changed by D043)
 
 Owner decision, after three rounds of surface options (see `docs/research/2026-10-10-visual-direction.md`).
 
@@ -446,7 +446,7 @@ Owner decision. Settings has a "Send Feedback" button at the end. It opens the o
 - The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
 
 
-## D038 · 2026-10-11 · Quick add: scan a label and name suggestions
+## D038 · 2026-10-11 · Quick add: scan a label and name suggestions (form proposal changed by D043)
 
 Owner decision, with agent detail. The owner said that typing is tiring and that a user who types for a while gives up. The study is `docs/research/2026-10-11-quick-add.md`. It changes spec 3 P03 and 5.2.
 
@@ -487,3 +487,37 @@ Rejected:
 Tests (D016): two new tests in `MaruCore`. One for the cleaning of label text and the form proposal, one for the search order and its edge cases.
 
 Not verified: no build ran on a Mac of the maintainer, and nobody saw the screens. The scan needs a check on a real iPhone with real bottles.
+
+## D043 · 2026-10-12 · Smart completion for supplements
+
+Owner decision, with agent detail. It changes spec 2.1 and 3 P03 in part.
+
+Owner: "Only for supplements we give candidates. That is the safest. This is not medical advice, it is smart completion, a different concept. We never lock anything. The user keeps the choice." After the user enters or picks a supplement name, the form changes to the usual form of that supplement, and the user can change it. The amount, the reminder, and the note each show candidates.
+
+Rules:
+
+- Supplements only. When the type is "Medication", or the name is in the medicine list, the screen shows no form, amount, time, or note candidates. A change of the type to "Medication" removes the candidates at once. The values in the draft stay.
+- The name must be a supplement name of the built-in list or one of its aliases, in full. The match ignores case, accents, spaces, hyphens, and dots, as the name suggestions do (D038). A longer name, for example a brand with a supplement name in it, gets no candidates. So "Kids Zinc Drops" never gets the candidates of "Zinc".
+- The candidates follow the name when the name field loses the focus: after a tap on a name suggestion, after "Use This Name" in the scan, or when the user leaves the field. So the form does not change at each key press.
+- Form: the app sets the usual form only while the user did not choose a form on this screen. A choice in the form menu, or a tap on a form proposal, counts as a choice. A stored item, a replacement product, and a kept draft start with a chosen form. After a choice, a different usual form shows as a one-tap proposal under the form menu, for example "Use Softgel". The app never changes a form that the user picked.
+- The form on a scanned label follows the same rule, and it comes before the usual form, because it is the form of this product. This changes D038: a scanned form now sets the form of a supplement while the user did not choose one. For a medication the scanned form stays a one-tap proposal, as in D038.
+- Amount, reminder time, and note: candidates only. Each is a small system button with the bordered style, under its field. Nothing fills until the user taps. The buttons stand in one row, or in a column when the row does not fit, for example at the large text sizes.
+- An amount candidate fills the amount field. The amounts show while the field is blank or holds one of them. An amount that the user typed hides them.
+- A time candidate has the slot word of Today: "Morning", "Noon", or "Evening". A tap adds a reminder time, as "Add a Time" does. The time is the earliest time in that part of the day that the user already confirmed for a supplement, else 8:00, 12:00, or 20:00. The time row shows the time, and the user can change it or remove it. A candidate hides when the draft has a time in its part of the day. The example time of spec 2.1 for the time wheel stays.
+- A note candidate sets the note: "With food" and "On an empty stomach" are the presets of the note menu. Another text becomes "My own note" with that text. The note candidates show only while the note is "None".
+- The footer under the note says "Suggestions come from common labels. Check your own label." It shows while a candidate shows.
+- The edit screen of a stored item shows no candidates until the user changes the name.
+
+Content:
+
+- `App/Resources/SupplementCompletions.txt` holds 103 entries. One line per supplement: name, form, amounts, times, note, and source, separated by "|". Each name is in `SupplementNames.txt`, so its aliases match too.
+- The values are common US label directions, two NIH Office of Dietary Supplements fact sheet points (vitamin D absorbs better with a meal that has fat, and calcium carbonate absorbs best with food), and one FDA label rule (psyllium with a full glass of water, 21 CFR 201.319). The agent wrote them from general knowledge. They are not a copy of a database.
+- A field stays empty when no convention is clear. Examples: no usual form for magnesium, biotin, B complex, or vitamin K2, because their forms differ by brand. No note for iron, because sources differ: it absorbs best on an empty stomach, but many people take it with food against stomach upset. Times only for melatonin, valerian, and magnesium, in the evening.
+- The list loads with the name lists, when the edit screen opens, never at launch (spec 9). Nothing goes to the network.
+
+Agent detail:
+
+- `SmartCompletion` in `MaruCore` holds the candidates, the filter of the candidates that the draft already has, and the form rule. `NameIndex.completion(for:category:)` finds them. `DayPart` moves from the app to `MaruCore`, so the time rule is in the package.
+- One test in `MaruCore` (D016): the match, the medication rule, the filter, the time rule, and the form rule.
+
+Not verified: no app build ran on the Mac of the maintainer, and nobody saw the screen. The candidates need a check on a real iPhone.

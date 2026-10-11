@@ -2,8 +2,8 @@ import Foundation
 
 /// The built-in lists of common supplement and medicine names, ready for a search while the user types (D038).
 ///
-/// The lists hold names only. A match proposes a name and nothing else: no type, no amount, and no time.
-/// The lists are a typing aid. They are not medical information.
+/// A match proposes a name and nothing else: no type, no amount, and no time. The lists are a typing aid.
+/// They are not medical information. A third list gives the smart completion of common supplements (D043).
 /// Build the index one time, off the main thread. A search reads it and is quick enough for each key press.
 public struct NameIndex: Sendable {
     /// A name or an alias in the form that the search compares.
@@ -62,20 +62,51 @@ public struct NameIndex: Sendable {
     }
 
     private let entries: [Entry]
+    /// The smart completion of each supplement, by the compact form of its name.
+    private let completions: [String: SmartCompletion]
 
-    /// Reads the two lists. Each line is one name, then its aliases after "|". The order is from the most
-    /// common name down. A line that starts with "#" is a comment.
-    public init(supplements: String, medications: String = "") {
+    /// Reads the lists. In the name lists, each line is one name, then its aliases after "|". The order is
+    /// from the most common name down. In the completion list, each line is a name and its fields after "|".
+    /// A line that starts with "#" is a comment.
+    public init(supplements: String, medications: String = "", completions: String = "") {
         entries = Self.entries(in: supplements, category: .supplement)
             + Self.entries(in: medications, category: .medication)
+        self.completions = Dictionary(
+            Self.lines(of: completions).map { (Key($0[0]).compact, SmartCompletion(fields: $0)) },
+            uniquingKeysWith: { first, _ in first }
+        )
+    }
+
+    private static func lines(of list: String) -> [[String]] {
+        list.split(whereSeparator: \.isNewline).compactMap { line in
+            let fields = line.split(separator: "|", omittingEmptySubsequences: false)
+                .map { $0.trimmingCharacters(in: .whitespaces) }
+            guard let name = fields.first, !name.isEmpty, !name.hasPrefix("#") else { return nil }
+            return fields
+        }
     }
 
     private static func entries(in list: String, category: ItemCategory) -> [Entry] {
-        list.split(whereSeparator: \.isNewline).compactMap { line in
-            let fields = line.split(separator: "|").map { $0.trimmingCharacters(in: .whitespaces) }
-            guard let name = fields.first, !name.isEmpty, !name.hasPrefix("#") else { return nil }
-            return Entry(name: name, category: category, keys: fields.map(Key.init))
+        lines(of: list).map { fields in
+            Entry(name: fields[0], category: category, keys: fields.filter { !$0.isEmpty }.map(Key.init))
         }
+    }
+
+    /// The smart completion for the name in the field (D043).
+    ///
+    /// Only for a supplement: the type on the screen is "Supplement", and the name is a supplement name or one
+    /// of its aliases, in full. The match ignores case, accents, spaces, hyphens, and dots. A name that is also
+    /// a medicine name gets none, and so does a longer name such as a brand with a supplement name in it.
+    public func completion(for text: String, category: ItemCategory) -> SmartCompletion? {
+        guard category == .supplement else { return nil }
+        let query = Key(text).compact
+        guard !query.isEmpty else { return nil }
+        var listName: String?
+        for entry in entries where entry.keys.contains(where: { $0.compact == query }) {
+            guard entry.category == .supplement else { return nil }
+            if listName == nil { listName = entry.keys.first?.compact }
+        }
+        return completions[listName ?? query]
     }
 
     /// The names to propose for the text in the name field.

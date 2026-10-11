@@ -45,7 +45,8 @@ struct ItemDraft: Codable, Equatable {
     var name = ""
     /// A new item starts as a supplement, and the user can change it (D032).
     var category = ItemCategory.supplement
-    /// A new item starts as a capsule, and the user can change it. The app does not guess it from the name (D013, D032).
+    /// A new item starts as a capsule, and the user can change it (D032). Until the user chooses a form, the edit
+    /// screen sets the usual form of a known supplement, or the form on a scanned label (D043).
     var form = ItemForm.capsule
     var color: ItemColor
     /// Free text, for example "1 capsule" or "1000 IU". Blank means no amount. There is no default (spec 2.1).

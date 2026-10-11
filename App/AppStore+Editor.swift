@@ -9,32 +9,37 @@ struct EditorContext: Sendable {
     let schedule: Schedule?
     /// The color of a new item: the first one that no active item uses (D021).
     let newItemColor: ItemColor
-    /// The time at which the time wheel of a new supplement starts (spec 2.1): the earliest time that the user
-    /// already confirmed for an active supplement, else 08:00. It counts only after "Add" (D032).
-    let exampleTime: WallClockTime
+    /// The times that the user already confirmed for an active supplement, from the earliest.
+    let supplementTimes: [WallClockTime]
     /// The names of the user's other items, active items first. The name suggestions show them first (D038).
     let itemNames: [String]
+}
+
+extension EditorContext {
+    /// The time at which the time wheel of a new supplement starts (spec 2.1): the earliest time that the user
+    /// already confirmed for an active supplement, else 08:00. It counts only after "Add" (D032).
+    var exampleTime: WallClockTime {
+        supplementTimes.first ?? DayPart.morning.time(confirmed: [])
+    }
 }
 
 extension AppStore {
     func editorContext(for itemID: ItemID?) async throws(StorageError) -> EditorContext {
         let store = try open()
         let items = try await store.items()
-        var exampleTime = try! WallClockTime(hour: 8, minute: 0)
-        var confirmed: [WallClockTime] = []
+        var confirmed: Set<WallClockTime> = []
         for item in items where item.category == .supplement && !item.isArchived {
             for schedule in try await store.schedules(of: item.id) where schedule.isEnabled {
-                confirmed += schedule.versions.last?.slotTimes.map(\.time) ?? []
+                confirmed.formUnion(schedule.versions.last?.slotTimes.map(\.time) ?? [])
             }
         }
-        if let earliest = confirmed.min() { exampleTime = earliest }
         let item = itemID.flatMap { id in items.first { $0.id == id } }
         let schedule = if let item { try await store.schedules(of: item.id).first } else { Schedule?.none }
         return EditorContext(
             item: item,
             schedule: schedule,
             newItemColor: .forNewItem(among: items),
-            exampleTime: exampleTime,
+            supplementTimes: confirmed.sorted(),
             itemNames: (items.filter { !$0.isArchived } + items.filter(\.isArchived))
                 .filter { $0.id != itemID }
                 .map(\.name)
