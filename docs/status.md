@@ -23,11 +23,9 @@ Maru was developed in a private repository before it became public. Issue number
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the History graph, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.
-2. A question after a time zone change (`docs/research/2026-10-11-apple-health-gap.md`).
-3. A Home Screen widget that records a dose.
-4. Acceptance on a real iPhone: one week of daily use by the maintainer.
-5. A backup with a passphrase (D040, milestone B).
-6. Milestone B: TestFlight. The bundle ID freeze and the Apple Developer Program come first (D005, D007). Time-sensitive reminders also wait for the program (D034).
+2. A Home Screen widget. The maintainer sees the design first (D046).
+3. Acceptance on a real iPhone: one week of daily use by the maintainer. It started on 2026-10-12.
+4. Milestone B: TestFlight. The maintainer starts it. The bundle ID freeze and the Apple Developer Program come first (D005, D007). Time-sensitive reminders also wait for the program (D034).
 
 ## Open cleanup proposals
 

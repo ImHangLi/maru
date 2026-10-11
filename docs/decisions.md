@@ -553,7 +553,7 @@ Tests (D016): two new tests. The limit of a dose across a change of the interval
 
 Not verified: no check on a real iPhone yet. Open points are the group in Notification Center, the behavior of many requests at 5 minutes, the summary and a Focus, and the "Taken" action of a follow-up after midnight.
 
-## D040 · 2026-10-11 · Export of records, and backup and restore
+## D040 · 2026-10-11 · Export of records, and backup and restore (passphrase part changed by D046)
 
 Owner decision, with agent detail. The feedback studies found that Maru had no export, no backup, and no sync, and that a user who leaves another app asks first if the history can come too (`docs/research/evidence.md`, theme 11). The owner: do these, simple, minimal, and in the style of Maru. It changes spec 7.3, T38, and T39. `docs/export-format.md` has both file formats.
 
@@ -745,3 +745,13 @@ Agent detail:
 - One test in `MaruCore` (D016): the match, the medication rule, the filter, the time rule, and the form rule.
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw the screen. The candidates need a check on a real iPhone.
+
+## D046 · 2026-10-12 · Scope trim: no time zone question, no passphrase backup
+
+Owner: "We do not handle the time zone. The widget is to be done. Show me the design first. The backup with a password is not needed. The one week on the real phone: OK, I already use it. TestFlight I will do later."
+
+- The question after a time zone change (`docs/research/2026-10-11-apple-health-gap.md`, row 25) is dropped. Reminders keep the current behavior of spec §8.5.
+- The backup with a passphrase is dropped from milestone B. This changes D040: the backup stays not encrypted. The user keeps the file in a safe place.
+- The Home Screen widget stays. The owner sees a design before the build starts.
+- The one week of daily use on the owner's iPhone started on 2026-10-12.
+- TestFlight waits for the owner. The Apple Developer Program costs money, so it is a maintainer decision.
