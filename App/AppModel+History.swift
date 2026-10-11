@@ -47,6 +47,15 @@ struct HistoryState {
     /// Counts the commits. A read that started before a commit can show the state before it, so its result
     /// does not show, and the page reads again.
     var commitGeneration = 0
+    /// The graph at the top of the page (D041). `nil` until its first read ends, and when there is no plan and
+    /// no record. A failed read shows no graph. The timeline shows the error.
+    var graph: HistoryGraph?
+    var graphCounts: [LocalDate: HistoryDayCount] = [:]
+    /// The first read of the graph ended. The page shows its first content after it, so the graph does not
+    /// push the timeline down.
+    var graphDidLoad = false
+    /// Only the result of the last read of the graph shows.
+    var graphReadCount = 0
 }
 
 extension AppModel {
@@ -57,13 +66,16 @@ extension AppModel {
         resetHistory()
         history.isOpen = true
         loadHistory()
+        loadHistoryGraph()
     }
 
     /// Closes the page and forgets its days. The unconfirmed events stay in `today`.
     func resetHistory() {
         let readCount = history.readCount
+        let graphReadCount = history.graphReadCount
         history = HistoryState()
         history.readCount = readCount
+        history.graphReadCount = graphReadCount
     }
 
     /// The end of the list came on the display. One page of older days loads at a time.
@@ -71,6 +83,39 @@ extension AppModel {
         guard history.dayCount == history.loadedDayCount else { return }
         history.dayCount += HistoryState.daysPerPage
         loadHistory()
+    }
+
+    /// The graph selected a day. The timeline loads pages of older days until it has that day.
+    func showHistory(through date: LocalDate) {
+        guard let today = history.today, history.loadFailure == nil else { return }
+        let days = today.days(since: date) + 1
+        guard days > history.dayCount else { return }
+        history.dayCount = (days + HistoryState.daysPerPage - 1) / HistoryState.daysPerPage * HistoryState.daysPerPage
+        loadHistory()
+    }
+
+    /// Reads the counts of the graph off the main thread (spec 9). A commit reads them again.
+    func loadHistoryGraph() {
+        let now = Date()
+        guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else {
+            history.graphDidLoad = true
+            return
+        }
+        let today = LocalDate(now, in: deviceTimeZone)
+        // The calendar of the user gives the first weekday. `Calendar` counts from Sunday = 1.
+        let firstWeekday = Weekday(rawValue: (Calendar.current.firstWeekday + 5) % 7 + 1) ?? .monday
+        history.graphReadCount += 1
+        let read = history.graphReadCount
+        Task {
+            let oldest = HistoryGraph.oldestStart(today: today, firstWeekday: firstWeekday)
+            let counts = try? await store.historyCounts(from: oldest, through: today, deviceTimeZone: deviceTimeZone)
+            guard history.graphReadCount == read else { return }
+            if let counts {
+                history.graph = counts.firstDay.map { HistoryGraph(today: today, firstDay: $0, firstWeekday: firstWeekday) }
+                history.graphCounts = counts.days
+            }
+            history.graphDidLoad = true
+        }
     }
 
     func loadHistory() {
@@ -281,6 +326,7 @@ extension AppModel {
     /// Every commit calls this, also one of Today or of the reminder choice, because a dose can show on both pages.
     func historyDidCommit(_ records: [OccurrenceRecord]) {
         history.commitGeneration += 1
+        if history.isOpen { loadHistoryGraph() }
         let byID = Dictionary(records.map { ($0.occurrenceID, $0) }, uniquingKeysWith: { _, last in last })
         history.days = history.days?.map { day in
             var day = day

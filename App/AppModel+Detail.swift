@@ -193,7 +193,10 @@ extension AppModel {
             return day
         }
         history.looks[itemID] = nil
-        if history.isOpen { loadHistory() }
+        if history.isOpen {
+            loadHistory()
+            loadHistoryGraph()
+        }
     }
 
     /// After the commit: read the store again, so the pages show the change in place, then run the one
