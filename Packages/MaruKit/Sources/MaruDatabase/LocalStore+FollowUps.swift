@@ -9,6 +9,7 @@ extension LocalStore: FollowUpSource {
     /// An occurrence is closed when its projection row says taken or skipped. An undo deletes that row (spec 7.2).
     public func followUpPlan(
         setting: FollowUpSetting?,
+        earlier: [FollowUpPeriod],
         privacy: ReminderPrivacy,
         at now: Date,
         deviceTimeZone: NamedTimeZone
@@ -40,6 +41,7 @@ extension LocalStore: FollowUpSource {
             }
             return FollowUpPlan(
                 setting: setting,
+                earlier: earlier,
                 reminders: ReminderPlan(
                     items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy
                 ),

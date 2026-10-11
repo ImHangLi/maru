@@ -331,8 +331,8 @@
     "Maru kept your unsaved changes." : {
       "comment" : "Edit screen: the text “Maru kept your unsaved changes.”."
     },
-    "Maru reminds you up to %lld times for each dose, on the same day." : {
-      "comment" : "Settings: the footer of “Until Recorded”. iPhone has no reminder that repeats with no end, so Maru states the limit. The placeholder is the number 12."
+    "Maru reminds you up to %lld times for each dose, until %@ at the latest." : {
+      "comment" : "Settings: the footer of “Until Recorded”. iPhone has no reminder that repeats with no end, so Maru states the limit. The first placeholder is the number 12. The second is the time of the next day at which the reminders of a dose stop, for example “1:00 AM”."
     },
     "Maru sets the reminders of the next 7 dose days each time you open it." : {
       "comment" : "Item detail: the footer of a plan that repeats every second day when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open."

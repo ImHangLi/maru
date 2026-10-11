@@ -224,7 +224,8 @@ extension ReminderTapResolver {
     /// and no clock change. Its revision names the slots and the schedule versions of its members, so a reminder
     /// from before a plan change does not resolve. A dated request follows the same rules, with the date that it carries (D036).
     /// A follow-up has no revision. It carries its plan date and the ID of its one item. Its date must be today,
-    /// the device zone must be certain for a series that follows the device, and the dose must be of that item.
+    /// or the day before until `FollowUpPlan.latestTime`. The device zone must be certain for a series that
+    /// follows the device, and the dose must be of that item.
     /// A follow-up with no item ID gives `nil`.
     /// The reminder must then have exactly one item. The caller checks the stored occurrence, its schedule
     /// version for a follow-up, and its record.
@@ -240,7 +241,8 @@ extension ReminderTapResolver {
         return candidates.count == 1 ? candidates[0] : nil
     }
 
-    /// The doses that the plan of now has at the time and on the date of a follow-up, when the date is today.
+    /// The doses that the plan of now has at the time and on the date of a follow-up, when the action can
+    /// still record a dose of that date (`FollowUpPlan.takesDose`).
     /// Only the schedules of the item that the follow-up was made for count.
     private func followUpCandidates(_ reminder: DeliveredReminder, items: [Item], schedules: [Schedule]) -> [PlannedOccurrence] {
         let dateParts = (reminder.userInfo[FollowUpRequest.plannedDateKey] ?? "").split(separator: "-").compactMap { Int($0) }
@@ -253,7 +255,7 @@ extension ReminderTapResolver {
         let zone = series.timeZone ?? deviceTimeZone
         let zoneIsKnown = series.timeZone != nil
             || observedTimeZone.map { $0.timeZone == deviceTimeZone && $0.since < reminder.deliveredAt } == true
-        guard zoneIsKnown, date == LocalDate(now, in: zone) else { return [] }
+        guard zoneIsKnown, FollowUpPlan.takesDose(on: date, at: now, in: zone) else { return [] }
         let activeItems = Set(items.filter { !$0.isArchived }.map(\.id))
         // A follow-up comes only for a schedule that reminds.
         let reminding = schedules.filter { activeItems.contains($0.itemID) && $0.isEnabled && $0.endDate == nil }

@@ -143,7 +143,7 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环、按指标改变�
 - 未记录一天或一周：直接今天；旧状态不变，不先展示欠账清单。
 - 很久后回来：可进入“核对当前安排”；不强制补旧记录，不复活已关闭的提醒。
 - 只要提醒的人：不打卡不加频、不自动降频，不触发营销召回。
-- 默认每个已确认时点一条提示，不无限追问。后续提示默认关闭；用户可自选次数（1、2、3、5 次或“直到记录”）和间隔（5、10、15、30 分钟或 1 小时）（D039）。“直到记录”也有上限：系统最多保留 64 条待发请求，App 不在后台运行，所以每个时点最多 12 条，只在服用当天、同一项目的下一个时点之前发出；设置中写明这个数字，不宣称无限提醒。
+- 默认每个已确认时点一条提示，不无限追问。后续提示默认关闭；用户可自选次数（1、2、3、5 次或“直到记录”）和间隔（5、10、15、30 分钟或 1 小时）（D039）。“直到记录”也有上限：系统最多保留 64 条待发请求，App 不在后台运行，所以每个时点最多 12 条；中途修改设置也不超过 12 条，已发出的照算。后续提示在同一项目的下一个时点之前、且最晚到次日 01:00 之前发出，所以深夜的时点也有后续提示；设置中写明这个数字和时间，不宣称无限提醒。
 - 同一时点可以合并提示，但不为合并移动用户的安排，也不表示药品被证明可同服。
 - 记录完成后不跳到下一个页面、不播放必须等待的动画，不让列表突然重排导致误点。
 - 再次查看时必须区分“没有记录”和“确认没有服用”。
@@ -313,6 +313,8 @@ A delete of one item with its records, which the user asks for and confirms, is 
 数据库在锁屏受保护不可访问时，必须要求解锁；不能为了锁屏一键快感降低健康数据保护，或在未写入时声称成功。
 
 > Amendment (2026-10-11, D034): A reminder or a follow-up for exactly one item has a "Taken" action. The system asks for an unlock first, then Maru records in the background. The action records only when the rules of this section give exactly one open dose of today. In every other case it records nothing, a notification says "Not recorded", and Maru shows the confirmation when the user opens it. A reminder for two or more items has no action.
+
+> Amendment (2026-10-11, D039): A follow-up of a dose of the day before has the "Taken" action until 01:00, and the action records that dose. The follow-up carries its plan date and its item, so Maru does not guess the date. After 01:00 the action records nothing, and a tap shows the confirmation. Today still shows only the doses of today (D019).
 
 ### 8.4 有结束日期的次要能力
 

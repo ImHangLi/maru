@@ -66,9 +66,11 @@ struct SettingsView: View {
                     }
                 } footer: {
                     // iPhone has no reminder that repeats until Maru stops it, so "Until Recorded" has a limit.
-                    // The footer states it (D039).
+                    // The footer states it, and the time at which the follow-ups of a dose stop (D039).
                     if followUpCount == .untilRecorded {
-                        Text("Maru reminds you up to \(FollowUpCount.untilRecordedLimit) times for each dose, on the same day.")
+                        let latest = FollowUpPlan.latestTime
+                        let time = SchedulePreview.format(hour: latest.hour, minute: latest.minute)
+                        Text("Maru reminds you up to \(FollowUpCount.untilRecordedLimit) times for each dose, until \(time) at the latest.")
                     } else {
                         Text("Only for items that you did not record.")
                     }

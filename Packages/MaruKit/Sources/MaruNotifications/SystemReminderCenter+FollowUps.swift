@@ -50,10 +50,11 @@ extension UNNotificationRequest {
 /// The follow-up setting in `UserDefaults.standard`. No interval means off (spec 4).
 ///
 /// The interval key is the key of the one delay of D021. A value from before D039 has no count,
-/// so it means one follow-up after that time.
+/// so it means one follow-up after that time. The earlier settings are JSON. They hold no health data (D014).
 public struct DefaultsFollowUpSetting: FollowUpSettingStore {
     static let key = "reminders.followUpMinutes"
     static let countKey = "reminders.followUpCount"
+    static let earlierKey = "reminders.followUpEarlier"
 
     public init() {}
 
@@ -64,8 +65,21 @@ public struct DefaultsFollowUpSetting: FollowUpSettingStore {
         return FollowUpSetting(count: count ?? .one, interval: interval)
     }
 
+    public func earlier() -> [FollowUpPeriod] {
+        UserDefaults.standard.data(forKey: Self.earlierKey)
+            .flatMap { try? JSONDecoder().decode([FollowUpPeriod].self, from: $0) } ?? []
+    }
+
     public func save(_ setting: FollowUpSetting?) {
         let defaults = UserDefaults.standard
+        let old = load()
+        if old != setting {
+            let now = Date()
+            let kept = earlier().filter { $0.end > now.addingTimeInterval(-FollowUpPlan.periodsKept) }
+            if let data = try? JSONEncoder().encode(kept + [FollowUpPeriod(setting: old, end: now)]) {
+                defaults.set(data, forKey: Self.earlierKey)
+            }
+        }
         if let setting {
             defaults.set(setting.interval.rawValue, forKey: Self.key)
             defaults.set(setting.count.rawValue, forKey: Self.countKey)

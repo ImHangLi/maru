@@ -496,13 +496,16 @@ The setting:
 - "Remind Again" has two menu rows in one section. The first row is the number: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between reminders: 5, 10, 15, or 30 minutes, or 1 hour. It shows only when the number is not "Off".
 - The setting is off by default (spec 4). When the user turns it on, the time starts at 30 minutes. That is the middle delay of D021 and the delay of the follow-up of Apple Health.
 - An install from before keeps its behavior. Its stored delay is the time between reminders, and a stored value with no number means "1 Time". So "After 30 min" becomes "1 Time" and "30 min". The new key is `reminders.followUpCount` in `UserDefaults.standard` (D014). "Off" removes both keys.
-- The footer of "Until Recorded" states the limit: "Maru reminds you up to 12 times for each dose, on the same day." The other choices keep "Only for items that you did not record."
+- Each change of the setting adds the setting before it and the time of the change to `reminders.followUpEarlier`. "Off" also counts. The list keeps 4 days. It holds no health data.
+- The footer of "Until Recorded" states the limit and the last time: "Maru reminds you up to 12 times for each dose, until 1:00 AM at the latest." The time uses the time format of the device. The other choices keep "Only for items that you did not record."
 
 The schedule rule:
 
 - The first follow-up comes one interval after the dose time. Each next one comes one interval after the one before.
 - A follow-up names only the items of that time with no record, as before (D029). A record, a skip, an archive, a delete, or an edit changes or removes the pending follow-ups at the next run of the engine, and the run removes a delivered follow-up with old text.
-- A follow-up reminds for an item only before the end of the day of the dose, and before the next dose time of the same item. After that, Today does not show the dose as open, and the "Taken" action records only a dose of today (D034). This rule applies to every number, not only to "Until Recorded". So a follow-up that D021 sent after midnight does not come now.
+- A follow-up reminds for an item only before 01:00 of the day after the dose, and before the next dose time of the same item. This rule applies to every number, not only to "Until Recorded". So a dose at 23:30 with 30 minutes gets follow-ups at 00:00 and 00:30.
+- 01:00 and not 03:00: a dose late in the evening gets follow-ups, and a dose at bedtime does not get them all night. The owner agreed to follow-ups after midnight if the change is small and does not hurt other users. For any dose, the change adds at most one hour of follow-ups after midnight, inside the same limit.
+- Until 01:00, the "Taken" action of a follow-up of the day before records that dose (D034). The follow-up carries its plan date, its item, and its schedule version, so the date is not a guess. After 01:00 the action records nothing. A tap on such a follow-up opens the confirmation, with the dose of the day before as a candidate (spec 8.3). Today still shows only the doses of today (D019). The record shows in the history.
 - When the items of one time stop at different moments, a later follow-up names only the items that it still reminds for.
 - Each follow-up of a time with exactly one item has the "Taken" action with the identity check of D034.
 - A plan of every other day gets follow-ups only on its due days, because a day with no dose has no occurrence (D036). An as-needed item has no time, so it gets none.
@@ -513,6 +516,8 @@ The schedule rule:
 - iOS has no local notification that starts at a later time and repeats until the app stops it. A repeating time interval trigger counts from the time of the add. The app does not run in the background (spec 8.1). So "Until Recorded" is dated requests: at most 12 for each dose time.
 - 12 comes from the system limit. iOS keeps at most 64 pending requests for one app. Four dose times of one day with 12 follow-ups each use 48 requests. With 4 series requests and a reserve of 2, the total is 54 of 64. So a plan with up to four times gets the full number for every dose of the next 24 hours, and 10 requests stay free for later doses or a plan of every other day. With 12, the reminders last 1 hour at 5 minutes, 2 hours at 10 minutes, and 6 hours at 30 minutes.
 - Each open of Maru and each record sets the follow-ups again, as before. The "Taken" action also does this.
+- The limit is for each dose, also across a change of the setting. The plan counts the follow-ups that the earlier settings set for the dose before now: the instants of each interval in the time that it was in force, at most its number. The setting of now gets only the rest. Example: a dose at 08:00 gets 12 at 5 minutes until 09:00. A change to 10 minutes at 09:01 adds none. A change at 08:31 adds 6, from 08:40 to 09:30. The count can be higher than the real number, for example after a record, so a dose can then get fewer, never more.
+- The rolling split of the room can add a future request, remove it, and add it again at later runs. This follows the split rule below, and it is accepted.
 - Maru does not claim reminders with no end. The settings text states the number.
 
 The budget:
@@ -540,6 +545,6 @@ What the Apple documentation says, read on 2026-10-11:
 - The default level, `active`, does not pass a Focus or the scheduled summary. Only `timeSensitive` does, and the user can turn that off ([`active`](https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/active), [`timeSensitive`](https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/timesensitive)). So with a Focus or the summary on, the follow-ups can come late and together. Spec 8.1 still forbids a promise of delivery.
 - The system picks the notification that the summary features by its [`relevanceScore`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent/relevancescore). Maru does not set it.
 
-Tests (D016): two new tests. The follow-up times with the stop rules for a number and for "Until Recorded", and the split of the room next to 48 series requests.
+Tests (D016): four new tests. The follow-up times with the stop rules for a number and for "Until Recorded", the split of the room next to 48 series requests, the limit of a dose across a change of the interval, and the "Taken" action of a follow-up after midnight.
 
-Not verified: no check on a real iPhone yet. Open points are the group in Notification Center, the behavior of many requests at 5 minutes, and the summary and a Focus.
+Not verified: no check on a real iPhone yet. Open points are the group in Notification Center, the behavior of many requests at 5 minutes, the summary and a Focus, and the "Taken" action of a follow-up after midnight.

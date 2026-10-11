@@ -13,7 +13,8 @@ public protocol FollowUpCenter: ReminderCenter {
 /// Where the engine reads the follow-ups that the saved plan and the records ask for.
 public protocol FollowUpSource: Sendable {
     func followUpPlan(
-        setting: FollowUpSetting?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone
+        setting: FollowUpSetting?, earlier: [FollowUpPeriod], privacy: ReminderPrivacy, at now: Date,
+        deviceTimeZone: NamedTimeZone
     ) async throws -> FollowUpPlan
 }
 
@@ -21,6 +22,9 @@ public protocol FollowUpSource: Sendable {
 public protocol FollowUpSettingStore: Sendable {
     /// `nil` means off. A new install has no value, so the setting starts off (spec 4).
     func load() -> FollowUpSetting?
+    /// The settings before the one of `load`, in the order of their changes, for at least `FollowUpPlan.periodsKept`.
+    func earlier() -> [FollowUpPeriod]
+    /// Saves the setting. A change adds the setting before it to `earlier`.
     func save(_ setting: FollowUpSetting?)
 }
 
@@ -109,7 +113,7 @@ public actor FollowUpEngine {
     private func run(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
         let plan = try await source.followUpPlan(
-            setting: setting.load(), privacy: privacy, at: now, deviceTimeZone: deviceTimeZone
+            setting: setting.load(), earlier: setting.earlier(), privacy: privacy, at: now, deviceTimeZone: deviceTimeZone
         )
         let authorization = await center.authorization()
         // Remove before add, the other order from `ReminderEngine`. A moved slot time or a new setting changes

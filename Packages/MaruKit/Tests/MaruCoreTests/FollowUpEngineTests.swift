@@ -38,9 +38,12 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
         shown[identifier] = texts[identifier]
     }
 
-    func followUpPlan(setting: FollowUpSetting?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone) -> FollowUpPlan {
+    func followUpPlan(
+        setting: FollowUpSetting?, earlier: [FollowUpPeriod], privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone
+    ) -> FollowUpPlan {
         FollowUpPlan(
             setting: setting,
+            earlier: earlier,
             reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy),
             items: items,
             schedules: schedules,
@@ -77,6 +80,7 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
     }
 
     nonisolated func load() -> FollowUpSetting? { FollowUpSetting(count: .one, interval: .minutes30) }
+    nonisolated func earlier() -> [FollowUpPeriod] { [] }
     nonisolated func save(_ setting: FollowUpSetting?) {}
     nonisolated func load() -> Set<String> { [] }
     nonisolated func save(_ identifiers: Set<String>) {}
@@ -186,7 +190,7 @@ struct FollowUpEngineTests {
         #expect(!pending.keys.contains("followup|device@America/New_York|2026-03-02|08:00"))
     }
 
-    @Test func followUpsComeAtTheIntervalAndStopAtTheCountTheNextDoseAndTheEndOfTheDay() {
+    @Test func followUpsComeAtTheIntervalAndStopAtTheCountTheNextDoseAndOneOClock() {
         // One item at 08:00 and 12:00, and one item at 23:00. 07:00 in Shanghai on 2 March.
         let twice = Fixtures.item()
         let late = Fixtures.item()
@@ -212,13 +216,37 @@ struct FollowUpEngineTests {
             return result
         }
 
-        // A count: three follow-ups, one hour apart. 23:00 gets none, because 00:00 is the next day.
-        #expect(minutes(.three, .minutes60) == ["08:00": [60, 120, 180], "12:00": [60, 120, 180]])
+        // A count: three follow-ups, one hour apart. 23:00 gets one, at 00:00, because they stop at 01:00.
+        #expect(minutes(.three, .minutes60) == ["08:00": [60, 120, 180], "12:00": [60, 120, 180], "23:00": [60]])
         // "Until Recorded": 08:00 stops before the 12:00 dose of the same item, 12:00 stops at the limit of 12,
-        // and 23:00 stops at the end of the day.
+        // and 23:00 stops before 01:00 of the next day.
         #expect(minutes(.untilRecorded, .minutes30) == [
-            "08:00": Array(1...7).map { $0 * 30 }, "12:00": Array(1...12).map { $0 * 30 }, "23:00": [30],
+            "08:00": Array(1...7).map { $0 * 30 }, "12:00": Array(1...12).map { $0 * 30 }, "23:00": [30, 60, 90],
         ])
+    }
+
+    @Test func aChangeOfTheIntervalKeepsTheLimitOfTheDose() {
+        // One item at 08:00. "Until Recorded" every 5 minutes, then every 10 minutes from the change.
+        let item = Fixtures.item()
+        let schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(8)])
+        let slot = Fixtures.instant("2026-03-02T00:00:00Z")
+        /// The follow-ups of the 08:00 dose on 2 March after a change at `change`, as minutes after 08:00.
+        func minutes(change: String) -> [Int] {
+            let now = Fixtures.instant(change)
+            let plan = FollowUpPlan(
+                setting: FollowUpSetting(count: .untilRecorded, interval: .minutes10),
+                earlier: [FollowUpPeriod(setting: FollowUpSetting(count: .untilRecorded, interval: .minutes5), end: now)],
+                reminders: ReminderPlan(items: [item], schedules: [schedule], now: now, deviceTimeZone: Fixtures.shanghai),
+                items: [item], schedules: [schedule], stored: [], closed: [], now: now, deviceTimeZone: Fixtures.shanghai
+            )
+            return plan.requests.filter { $0.threadIdentifier == "followup|Asia/Shanghai|2026-03-02|08:00" }
+                .map { Int($0.fireDate.timeIntervalSince(slot) / 60) }
+        }
+
+        // At 09:01 the 12 follow-ups of 08:05 to 09:00 came, so no more come.
+        #expect(minutes(change: "2026-03-02T01:01:00Z") == [])
+        // At 08:31 six came, from 08:05 to 08:30. The other six come every 10 minutes.
+        #expect(minutes(change: "2026-03-02T00:31:00Z") == [40, 50, 60, 70, 80, 90])
     }
 
     @Test func followUpsShareTheRoomThatTheSeriesRequestsLeave() throws {

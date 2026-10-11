@@ -16,7 +16,7 @@ Today keeps each recorded item in view with its mark. History shows every day, w
 
 ## Can Maru keep reminding me?
 
-Yes. In Settings, "Remind Again" sends more reminders for a dose that you did not record. You choose how many, and how long between them, from 5 minutes to 1 hour. "Until Recorded" reminds you up to 12 times for each dose, on the same day, and stops when you record. iPhone does not let an app remind with no end, so Maru states the number. Maru is not an alarm: a Focus or silent mode can hold a reminder.
+Yes. In Settings, "Remind Again" sends more reminders for a dose that you did not record. You choose how many, and how long between them, from 5 minutes to 1 hour. "Until Recorded" reminds you up to 12 times for each dose, until 1:00 AM at the latest, and stops when you record. A change of the setting does not add more than 12 for a dose. iPhone does not let an app remind with no end, so Maru states the number. Maru is not an alarm: a Focus or silent mode can hold a reminder.
 
 ## Is there a limit on the number of items?
 
