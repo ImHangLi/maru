@@ -76,6 +76,9 @@ public struct ReminderRequest: Hashable, Sendable {
     public static let scheduleRevisionKey = "scheduleRevision"
     /// The plan date of a dated request, as `YYYY-MM-DD`. A repeating request does not have it.
     public static let dueDateKey = "dueDate"
+    /// The slot IDs that a dated request still reminds for, separated by commas. A request has it only when
+    /// a record closed a member before the time (D047). A repeating request does not have it.
+    public static let openSlotsKey = "openSlots"
 
     public let identifier: String
     public let trigger: ReminderTrigger
@@ -137,6 +140,8 @@ public struct ReminderSeries: Hashable, Sendable {
     let showsNames: Bool
     /// The instant of the time on the date of a dated series. `nil` for a repeating series.
     let fireDate: Date?
+    /// The members of a dated series that a record closed before its time. The request names only the others (D047).
+    let done: Set<ScheduleSlotID>
 
     init(
         timeZone: NamedTimeZone?,
@@ -146,7 +151,8 @@ public struct ReminderSeries: Hashable, Sendable {
         fireDate: Date? = nil,
         members: [Member],
         entries: [Entry] = [],
-        showsNames: Bool = true
+        showsNames: Bool = true,
+        done: Set<ScheduleSlotID> = []
     ) {
         self.id = Self.identifierPrefix + (timeZone?.identifier ?? "device")
             + String(format: "|%02d:%02d", time.hour, time.minute)
@@ -158,6 +164,7 @@ public struct ReminderSeries: Hashable, Sendable {
         self.members = members
         self.entries = entries
         self.showsNames = showsNames
+        self.done = done
         // FNV-1a over the members in a fixed order. It only tells two member lists apart. It protects nothing.
         let text = members.map { "\($0.slotID.rawValue)=\($0.scheduleVersionID.rawValue)" }.sorted().joined(separator: ";")
         let hash = text.utf8.reduce(0xcbf2_9ce4_8422_2325 as UInt64) { ($0 ^ UInt64($1)) &* 0x100_0000_01b3 }
@@ -167,22 +174,27 @@ public struct ReminderSeries: Hashable, Sendable {
     /// One daily request when the series reminds on every day with the same text. Otherwise one request
     /// for each weekday, because a request has one fixed text, and a day must not name an item that it does not have.
     ///
-    /// A dated series has one request for its date. It names each of its items once, and it has the
-    /// "Taken" action when it has exactly one item (D034).
+    /// A dated series has one request for its date. It names each of its open items once, and it has the
+    /// "Taken" action when it has exactly one open item (D034, D047).
     public var requests: [ReminderRequest] {
         if let date {
             var seen = Set<ItemID>()
-            let names = entries.filter { seen.insert($0.itemID).inserted }.map(\.name)
+            let open = zip(members, entries).filter { !done.contains($0.0.slotID) }
+            let names = open.map(\.1).filter { seen.insert($0.itemID).inserted }.map(\.name)
+            var userInfo = [
+                ReminderRequest.seriesIDKey: id,
+                ReminderRequest.scheduleRevisionKey: revision,
+                ReminderRequest.dueDateKey: date.dayText,
+            ]
+            if !done.isEmpty {
+                userInfo[ReminderRequest.openSlotsKey] = open.map { $0.0.slotID.rawValue.uuidString }.sorted().joined(separator: ",")
+            }
             return [
                 ReminderRequest(
                     identifier: id + "|" + date.dayText,
                     trigger: ReminderTrigger(time: time, weekday: nil, date: date, timeZone: timeZone),
                     content: ReminderContent(kind: .due, names: showsNames ? names : nil, hasTakenAction: names.count == 1),
-                    userInfo: [
-                        ReminderRequest.seriesIDKey: id,
-                        ReminderRequest.scheduleRevisionKey: revision,
-                        ReminderRequest.dueDateKey: date.dayText,
-                    ],
+                    userInfo: userInfo,
                     fireDate: fireDate
                 ),
             ]
@@ -287,12 +299,14 @@ public struct ReminderPlan: Hashable, Sendable {
     ///   - now: The clock of the run.
     ///   - deviceTimeZone: The time zone of the device, for the date of the versions that follow it.
     ///   - privacy: Whether the text names the items (D029).
+    ///   - closed: The keys of the occurrences that have a current taken or skipped event (D047).
     public init(
         items: [Item],
         schedules: [Schedule],
         now: Date,
         deviceTimeZone: NamedTimeZone,
         privacy: ReminderPrivacy = .showNames,
+        closed: Set<OccurrenceKey> = [],
         requestBudget: Int = ReminderPlan.requestBudget
     ) {
         struct Key: Hashable {
@@ -312,6 +326,22 @@ public struct ReminderPlan: Hashable, Sendable {
             case let .fixed(zone): zone
             case .followsDevice: nil
             }
+        }
+        /// The version that is in force at `now`, by the rule of `Schedule.version(on:)`.
+        func inForce(_ schedule: Schedule) -> ScheduleVersion? {
+            schedule.versions.last { $0.effectiveFrom <= LocalDate(now, in: seriesTimeZone(of: $0) ?? deviceTimeZone) }
+        }
+        // A named zone that equals the device zone now joins the series of the device when a version that follows
+        // the device has the same time. So one time gives one request. The reminder of that item then follows
+        // the device to another zone. The owner dropped the time zone question (D046, D047).
+        let deviceTimes = Set(
+            schedules.filter { $0.isEnabled && $0.endDate == nil }.compactMap(inForce).flatMap { version in
+                version.timeZonePolicy == .followsDevice ? version.slotTimes.map(\.time) : []
+            }
+        )
+        func keyTimeZone(of version: ScheduleVersion, at time: WallClockTime) -> NamedTimeZone? {
+            if case let .fixed(zone) = version.timeZonePolicy, zone == deviceTimeZone, deviceTimes.contains(time) { return nil }
+            return seriesTimeZone(of: version)
         }
         let activeItems = Dictionary(
             items.filter { !$0.isArchived }.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first }
@@ -333,15 +363,12 @@ public struct ReminderPlan: Hashable, Sendable {
                 needs[schedule.id] = .blocked(.endDate)
                 continue
             }
-            let inForce = schedule.versions.last {
-                $0.effectiveFrom <= LocalDate(now, in: seriesTimeZone(of: $0) ?? deviceTimeZone)
-            }
-            guard let version = inForce else {
+            guard let version = inForce(schedule) else {
                 needs[schedule.id] = .blocked(.notStarted)
                 continue
             }
-            let timeZone = seriesTimeZone(of: version)
             for slotTime in version.slotTimes {
+                let timeZone = keyTimeZone(of: version, at: slotTime.time)
                 let key = Key(timeZone: timeZone, time: slotTime.time, isDated: version.everyOtherDayFrom != nil)
                 if units[key] == nil {
                     keys.append(key)
@@ -384,8 +411,13 @@ public struct ReminderPlan: Hashable, Sendable {
             let ordered = units[key]!.sorted { first, second in
                 if let first = first.date, let second = second.date { first < second } else { false }
             }
-            let series = ordered.map { unit in
-                ReminderSeries(
+            let series = ordered.compactMap { unit -> ReminderSeries? in
+                // A dated request names only the members that no record closed. With none left, it has no request (D047).
+                let done = Set(members[unit]!.map(\.slotID)).filter { slot in
+                    unit.date.map { closed.contains(OccurrenceKey(slotID: slot, plannedDate: $0)) } ?? false
+                }
+                guard done.count < members[unit]!.count else { return nil }
+                return ReminderSeries(
                     timeZone: key.timeZone,
                     time: key.time,
                     weekdays: weekdays[unit] ?? [],
@@ -393,7 +425,8 @@ public struct ReminderPlan: Hashable, Sendable {
                     fireDate: fireDates[unit],
                     members: members[unit]!,
                     entries: entries[unit] ?? [],
-                    showsNames: privacy == .showNames
+                    showsNames: privacy == .showNames,
+                    done: done
                 )
             }
             let count = series.reduce(0) { $0 + $1.requests.count }
@@ -401,8 +434,79 @@ public struct ReminderPlan: Hashable, Sendable {
             used += count
             kept[key] = series
         }
+        /// The requests of one repeating series, with the weekdays on which a record or an every-other-day item
+        /// changes who is named. The next two dates of such a weekday get dated requests, and the weekday leaves
+        /// the repeating requests, because a repeating request cannot skip one date. Each run sets them again,
+        /// so a weekday with no run for seven days reminds one more time and then stops (D047).
+        /// `nil` when no weekday needs this.
+        func rework(_ key: Key, dated: [ReminderSeries]) -> [ReminderSeries]? {
+            typealias Pair = (member: ReminderSeries.Member, entry: ReminderSeries.Entry)
+            let own = Unit(key: key)
+            let zone = key.timeZone ?? deviceTimeZone
+            let today = LocalDate(now, in: zone)
+            let repeating = Array(zip(members[own] ?? [], entries[own] ?? []).map { Pair($0.0, $0.1) })
+            let datedUnits = units[Key(timeZone: key.timeZone, time: key.time, isDated: true)] ?? []
+            let datedDates = Set(dated.compactMap(\.date))
+            func due(on date: LocalDate) -> [Pair] {
+                let more = datedUnits.first { $0.date == date && datedDates.contains(date) }
+                    .map { unit in Array(zip(members[unit]!, entries[unit]!).map { Pair($0.0, $0.1) }) } ?? []
+                return repeating.filter { $0.entry.weekdays.contains(date.weekday) } + more
+            }
+            func isOpen(_ pair: Pair, on date: LocalDate) -> Bool {
+                !closed.contains(OccurrenceKey(slotID: pair.member.slotID, plannedDate: date))
+            }
+            func instant(_ date: LocalDate) -> Date { zone.resolve(key.time, on: date).earliestInstant }
+            /// The first two dates of a weekday from today that have not passed.
+            func dates(of weekday: Weekday) -> [LocalDate] {
+                let first = (0..<7).map { today.adding(days: $0) }.first { $0.weekday == weekday }!
+                return [first, first.adding(days: 7)].filter { instant($0) > now }
+            }
+            let all = weekdays[own] ?? []
+            let changed = all.filter { weekday in
+                let expected = Set(repeating.filter { $0.entry.weekdays.contains(weekday) }.map(\.member.slotID))
+                return !dates(of: weekday).allSatisfy { date in
+                    Set(due(on: date).filter { isOpen($0, on: date) }.map(\.member.slotID)) == expected
+                }
+            }
+            guard !changed.isEmpty else { return nil }
+            let names = privacy == .showNames
+            var result = [
+                ReminderSeries(
+                    timeZone: key.timeZone, time: key.time, weekdays: all.subtracting(changed),
+                    members: repeating.map(\.member), entries: repeating.map(\.entry), showsNames: names
+                ),
+            ]
+            for date in changed.flatMap(dates(of:)).sorted() {
+                let pairs = due(on: date)
+                let done = Set(pairs.filter { !isOpen($0, on: date) }.map(\.member.slotID))
+                guard done.count < pairs.count else { continue }
+                result.append(
+                    ReminderSeries(
+                        timeZone: key.timeZone, time: key.time, weekdays: [], date: date, fireDate: instant(date),
+                        members: pairs.map(\.member), entries: pairs.map(\.entry), showsNames: names, done: done
+                    )
+                )
+            }
+            // An every-other-day date on a weekday that the repeating series does not use stays as it is.
+            return result + dated.filter { $0.date.map { !all.contains($0.weekday) } ?? false }
+        }
+        // A time with a record before it, or with a daily and an every-other-day item, gets the requests of
+        // `rework` when they fit in the room that is left. The others keep their plain requests (D047).
+        var shared: [Key: [ReminderSeries]] = [:]
+        for key in keys where !key.isDated {
+            let dated = Key(timeZone: key.timeZone, time: key.time, isDated: true)
+            let before = (kept[key] ?? []) + (kept[dated] ?? [])
+            guard kept[key] != nil, let reworked = rework(key, dated: kept[dated] ?? []),
+                  used - before.requestCount + reworked.requestCount <= requestBudget
+            else { continue }
+            used += reworked.requestCount - before.requestCount
+            kept[key] = reworked
+            if kept[dated] != nil { kept[dated] = [] }
+            shared[key] = reworked
+            shared[dated] = reworked
+        }
         for (scheduleID, keys) in keysOfSchedule {
-            let series = keys.compactMap { kept[$0] }
+            let series = keys.compactMap { shared[$0] ?? kept[$0] }
             needs[scheduleID] = series.count == keys.count
                 ? .requests(Set(series.joined().flatMap(\.requests).map(\.identifier)))
                 : .blocked(.overLimit)
@@ -410,4 +514,8 @@ public struct ReminderPlan: Hashable, Sendable {
         self.series = keys.flatMap { kept[$0] ?? [] }
         self.needs = needs
     }
+}
+
+private extension Array where Element == ReminderSeries {
+    var requestCount: Int { reduce(0) { $0 + $1.requests.count } }
 }

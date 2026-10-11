@@ -122,7 +122,7 @@ public struct ReminderTapResolver: Sendable {
     ///   - schedules: Every schedule with its full version history.
     public func resolve(_ reminder: DeliveredReminder, items: [Item], schedules: [Schedule]) -> ReminderTapResolution {
         guard let seriesID = reminder.userInfo[ReminderRequest.seriesIDKey],
-              let series = SeriesKey(seriesID: seriesID)
+              let series = SeriesKey(seriesID: seriesID, deviceTimeZone: deviceTimeZone)
         else { return .notSeries }
         let revision = reminder.userInfo[ReminderRequest.scheduleRevisionKey]
         // A repeating request stands for the slots with a weekly rule. A follow-up stands for every slot of its time.
@@ -154,12 +154,22 @@ public struct ReminderTapResolver: Sendable {
                 doubts.insert(.delayed)
             }
             let reminding = schedules.filter { $0.isEnabled && $0.endDate == nil }
-            let isCurrent = revision != nil
-                && revision == series.revision(on: date, schedules: reminding, rule: .everyOtherDay)
+            // The dated request of an every-other-day item stands for those items. A dated request that
+            // replaces a repeating request, or that joins both kinds, stands for every item due on its date (D047).
+            let matched = [SeriesKey.Rule.everyOtherDay, .dated].first {
+                revision != nil && revision == series.revision(on: date, schedules: reminding, rule: $0)
+            }
+            let isCurrent = matched != nil
             if !isCurrent { doubts.insert(.olderPlan) }
-            let candidates = series.candidates(
-                on: date, schedules: isCurrent ? reminding : schedules, zone: zone, current: isCurrent, rule: .everyOtherDay
+            var candidates = series.candidates(
+                on: date, schedules: isCurrent ? reminding : schedules, zone: zone, current: isCurrent,
+                rule: matched ?? .everyOtherDay
             )
+            // A record before the time closed some members. The request names and stands for the open ones only.
+            if isCurrent, let open = reminder.userInfo[ReminderRequest.openSlotsKey] {
+                let slots = Set(open.split(separator: ",").map(String.init))
+                candidates = candidates.filter { slots.contains($0.slotID.rawValue.uuidString) }
+            }
             if candidates.isEmpty { doubts.insert(.noMatch) }
             return doubts.isEmpty ? .resolved(candidates) : .confirm(candidates: candidates, doubts: doubts)
         }
@@ -247,7 +257,7 @@ extension ReminderTapResolver {
     private func followUpCandidates(_ reminder: DeliveredReminder, items: [Item], schedules: [Schedule]) -> [PlannedOccurrence] {
         let dateParts = (reminder.userInfo[FollowUpRequest.plannedDateKey] ?? "").split(separator: "-").compactMap { Int($0) }
         guard let seriesID = reminder.userInfo[ReminderRequest.seriesIDKey],
-              let series = SeriesKey(seriesID: seriesID),
+              let series = SeriesKey(seriesID: seriesID, deviceTimeZone: deviceTimeZone),
               let itemID = reminder.userInfo[FollowUpRequest.itemIDKey],
               dateParts.count == 3,
               let date = try? LocalDate(year: dateParts[0], month: dateParts[1], day: dateParts[2])
@@ -271,8 +281,12 @@ private struct SeriesKey {
     /// `nil` means the time zone of the device.
     let timeZone: NamedTimeZone?
     let time: WallClockTime
+    /// A series of the device also holds the versions with a named zone that equals this zone,
+    /// as `ReminderPlan` joins them (D047).
+    let deviceTimeZone: NamedTimeZone
 
-    init?(seriesID: String) {
+    init?(seriesID: String, deviceTimeZone: NamedTimeZone) {
+        self.deviceTimeZone = deviceTimeZone
         let parts = seriesID.split(separator: "|", omittingEmptySubsequences: false)
         guard parts.count == 3, "\(parts[0])|" == ReminderSeries.identifierPrefix else { return nil }
         let clock = parts[2].split(separator: ":")
@@ -293,16 +307,18 @@ private struct SeriesKey {
     enum Rule {
         case weekly
         case everyOtherDay
+        /// Every version that is due on the date, with any repeat rule (D047).
+        case dated
     }
 
     /// Whether a version reminds in the time zone rule of this series, with the repeat rule. `nil` means each rule.
     func matches(_ version: ScheduleVersion, rule: Rule?) -> Bool {
         let inZone = switch version.timeZonePolicy {
-        case let .fixed(zone): zone == timeZone
+        case let .fixed(zone): zone == timeZone || (timeZone == nil && zone == deviceTimeZone)
         case .followsDevice: timeZone == nil
         }
         return switch rule {
-        case nil: inZone
+        case nil, .dated: inZone
         case .weekly: inZone && version.everyOtherDayFrom == nil
         case .everyOtherDay: inZone && version.everyOtherDayFrom != nil
         }

@@ -43,7 +43,8 @@ extension LocalStore: FollowUpSource {
                 setting: setting,
                 changed: changed,
                 reminders: ReminderPlan(
-                    items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy
+                    items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy,
+                    closed: closed
                 ),
                 items: items,
                 schedules: schedules,
