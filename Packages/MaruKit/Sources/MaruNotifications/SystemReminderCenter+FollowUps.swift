@@ -67,8 +67,8 @@ public struct DefaultsFollowUpSetting: FollowUpSettingStore {
         Self.lock.withLock { Self.read().setting }
     }
 
-    public func changed() -> Date? {
-        Self.lock.withLock { Self.read().changed }
+    public func snapshot() -> (setting: FollowUpSetting?, changed: Date?) {
+        Self.lock.withLock { Self.read() }
     }
 
     public func save(_ setting: FollowUpSetting?) {
@@ -80,13 +80,14 @@ public struct DefaultsFollowUpSetting: FollowUpSettingStore {
         }
     }
 
-    public func confirmChange() -> Date {
+    public func confirmChange() -> (setting: FollowUpSetting?, changed: Date) {
         Self.lock.withLock {
-            let now = Date()
             let current = Self.read()
-            // A save after the engine read the mark wrote a new mark. That change stays unconfirmed for the next run.
-            if current.changed == .distantFuture { Self.write(setting: current.setting, changed: now) }
-            return now
+            // A confirmed time stays. Only an unconfirmed change gets the time of now.
+            guard current.changed == .distantFuture else { return (current.setting, current.changed ?? Date()) }
+            let now = Date()
+            Self.write(setting: current.setting, changed: now)
+            return (current.setting, now)
         }
     }
 

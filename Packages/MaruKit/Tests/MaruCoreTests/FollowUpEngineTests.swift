@@ -80,8 +80,8 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
     }
 
     nonisolated func load() -> FollowUpSetting? { FollowUpSetting(count: .one, interval: .minutes30) }
-    nonisolated func changed() -> Date? { nil }
-    nonisolated func confirmChange() -> Date { .distantPast }
+    nonisolated func snapshot() -> (setting: FollowUpSetting?, changed: Date?) { (load(), nil) }
+    nonisolated func confirmChange() -> (setting: FollowUpSetting?, changed: Date) { (load(), .distantPast) }
     nonisolated func save(_ setting: FollowUpSetting?) {}
     nonisolated func load() -> Set<String> { [] }
     nonisolated func save(_ identifiers: Set<String>) {}
