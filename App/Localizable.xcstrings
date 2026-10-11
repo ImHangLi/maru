@@ -118,6 +118,9 @@
     "Add a time to save the amount." : {
       "comment" : "Edit screen: the footer of the amount when the item has an amount and no time. The amount belongs to the reminder plan."
     },
+    "Adds a reminder time at %@." : {
+      "comment" : "Edit screen: the VoiceOver hint of a time candidate of the smart completion, for example Evening. The placeholder is the time, for example 8:00 PM."
+    },
     "All recorded" : {
 
     },
@@ -252,6 +255,9 @@
     },
     "Every other day at %@, starting tomorrow, with no end date" : {
       "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times."
+    },
+    "Fills the amount." : {
+      "comment" : "Edit screen: the VoiceOver hint of an amount candidate of the smart completion, for example 1 softgel."
     },
     "Fills the name." : {
       "comment" : "Edit screen: the VoiceOver hint of a name suggestion under the name field."
@@ -583,6 +589,9 @@
     "Send a Test Notification" : {
       "comment" : "Settings: a button that sends one test notification in a few seconds."
     },
+    "Sets the note." : {
+      "comment" : "Edit screen: the VoiceOver hint of a note candidate of the smart completion, for example With food."
+    },
     "Settings" : {
       "comment" : "Settings: the title of the sheet and the label of the gear button."
     },
@@ -621,6 +630,9 @@
     },
     "Starting Tomorrow" : {
       "comment" : "Repeat page: the first day of a plan that repeats every second day is tomorrow."
+    },
+    "Suggestions come from common labels. Check your own label." : {
+      "comment" : "Edit screen: the footer under the candidates of the smart completion for a known supplement."
     },
     "Supplement" : {
       "comment" : "Edit screen: the text “Supplement”."
