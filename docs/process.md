@@ -38,6 +38,19 @@ A pull request alone cannot make these decisions. A maintainer makes them and re
 1. Read the issue, `docs/status.md`, and only the spec sections that the issue cites.
 2. Implement. Build the package and the app. For a UI change, run the app in a simulator and capture screenshots.
 3. Open a pull request. The description lists the covered acceptance IDs, the evidence, and the checks that did not run.
-4. Get a review from a second reviewer: a person, or a different model than the one that wrote the change. Fix real findings. A fix needs a new test only if the defect can lose, double, or wipe a record (D016).
+4. Get a review when "Token budget for agents" asks for one: a person, or a different model than the one that wrote the change. Fix real findings. A fix needs a new test only if the defect can lose, double, or wipe a record (D016).
 5. Merge when CI passes and the review has no open blocking finding.
 6. Update `docs/status.md`.
+
+## Token budget for agents
+
+The maintainer asked for a lean, token-efficient way of work (D045).
+
+- The lead agent makes a small change itself. A small change touches about three files or fewer, or only text, assets, or docs.
+- Use a subagent only for a large change with its own worktree. Run at most two implementation subagents at the same time.
+- Keep a subagent brief short. Point to the spec sections, decisions, and files. Do not paste them.
+- Review by risk:
+  - A change to records, the database, reminders, or the tap resolver gets one review by a different model. A second round runs only for an open blocking finding, and it checks only that finding.
+  - A change to UI, text, assets, or docs gets no model review. CI and the check on the maintainer's iPhone are the review.
+- Batch the device install. Install one build after a group of merges, not after each merge.
+- Keep one decision record for the group of small decisions that one maintainer message gives.
