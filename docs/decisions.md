@@ -467,7 +467,7 @@ Scan Label:
 
 Name suggestions:
 
-- Two text files in the app hold the names: 941 supplement names and 789 medicine names. Some have aliases for the search. The agent wrote them from general knowledge. They are not a copy of a database. Each list is in the order of how common a name is.
+- Two text files in the app hold the names: 941 supplement names and 789 medicine names. Some have aliases for the search. They come from general knowledge of common labels. They are not a copy of a database. Each list is in the order of how common a name is.
 - The medicine list holds generic names of common prescription and over-the-counter medicines, and well-known brand names. This is an owner decision: everything that a user can need must be there, and a suggestion is only a suggestion. The lists are a typing aid. They are not medical information, and they hold no strength, no dose, and no use of a medicine.
 - The lists favor the names of the United States. They also have the common names of the United Kingdom, Canada, and Australia, for example "Paracetamol" and "Salbutamol".
 - An alias is only another spelling or a clear abbreviation of the same name, for example "Vit D" for "Vitamin D" or "HCTZ" for "Hydrochlorothiazide". Each other name is its own entry: a brand, a second name of the same substance, a regional spelling, a salt, and a formulation. So a tap never changes one product, one formulation, or one substance into another. "Effexor" and "Effexor XR" are two entries.
@@ -603,7 +603,7 @@ Rules:
 Content:
 
 - `App/Resources/SupplementCompletions.txt` holds 103 entries. One line per supplement: name, form, amounts, times, note, and source, separated by "|". Each name is in `SupplementNames.txt`, so its aliases match too.
-- The values are common US label directions, two NIH Office of Dietary Supplements fact sheet points (vitamin D absorbs better with a meal that has fat, and calcium carbonate absorbs best with food), and one FDA label rule (psyllium with a full glass of water, 21 CFR 201.319). The agent wrote them from general knowledge. They are not a copy of a database.
+- The values are common US label directions, two NIH Office of Dietary Supplements fact sheet points (vitamin D absorbs better with a meal that has fat, and calcium carbonate absorbs best with food), and one FDA label rule (psyllium with a full glass of water, 21 CFR 201.319). They come from general knowledge of common labels. They are not a copy of a database.
 - A field stays empty when no convention is clear. Examples: no usual form for magnesium, biotin, B complex, or vitamin K2, because their forms differ by brand. No note for iron, because sources differ: it absorbs best on an empty stomach, but many people take it with food against stomach upset. Times only for melatonin, valerian, and magnesium, in the evening.
 - The list loads with the name lists, when the edit screen opens, never at launch (spec 9). Nothing goes to the network.
 

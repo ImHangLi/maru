@@ -401,7 +401,11 @@ struct ItemEditorView: View {
             completion = nil
             return
         }
-        guard !nameIsFocused else { return }
+        // While the user types, a candidate of the earlier name must not stay, for example after a change to a medication name.
+        guard !nameIsFocused else {
+            completion = nil
+            return
+        }
         let isNamedHere = session.isNew || draft.trimmedName != session.original.trimmedName
         completion = isNamedHere ? names.completion(for: draft.name, category: draft.category) : nil
     }
