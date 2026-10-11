@@ -268,6 +268,8 @@ struct HistoryGraphLayout {
     /// The cell nearest to a point, also a point between two squares or outside the graph.
     func nearestCell(to point: CGPoint) -> (column: Int, row: Int) {
         let band = bands == 2 && point.y > labelTop(band: 1) - Self.bandSpacing / 2 ? 1 : 0
+        // At width 0 there is no square to choose. A division by zero would trap in the conversion to Int.
+        guard pitch > 0 else { return (band * columnsPerBand, 0) }
         let local = Int(((point.x - leading - side / 2) / pitch).rounded())
         let row = Int(((point.y - squaresTop(band: band) - side / 2) / pitch).rounded())
         return (band * columnsPerBand + min(max(local, 0), columnsPerBand - 1), min(max(row, 0), 6))
