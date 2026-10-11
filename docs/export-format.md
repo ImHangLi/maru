@@ -10,7 +10,7 @@ A file for a person: a CSV file that Numbers and Excel open. The name is `Maru R
 - Each line ends with CR LF. The first line is the header (RFC 4180).
 - A field with a comma, a quotation mark, or a line break is in quotation marks. A quotation mark in such a field is written two times.
 - The words in the header, in "Type", and in "State" are fixed English text. They do not change with the language of the iPhone.
-- Maru writes a name and an amount as you typed them. It does not change a text that starts with `=`, `+`, `-`, or `@`. A spreadsheet app can read such a text as a formula.
+- A field that starts with `=`, `+`, `-`, `@`, a tab, or a carriage return gets an apostrophe (`'`) in front. A spreadsheet app can run such a text as a formula, and the apostrophe makes it plain text. The name and the amount in Maru do not change.
 
 One line is one dose, with the state that is valid now. The lines are in the order of the date, then of the planned time. The as-needed doses of a date come after its planned doses.
 
@@ -28,7 +28,7 @@ One line is one dose, with the state that is valid now. The lines are in the ord
 Which doses are in the file:
 
 - Every dose that History shows: a dose with a record, and a planned dose with no record.
-- The doses of today that have a record. A dose of today with no record is not in the file, because the day did not end.
+- The doses of today or of a later date that have a record. A dose in a fixed time zone, or a dose of a stay in another zone, can have a date after the date of the iPhone. A dose of today or a later date with no record is not in the file, because the day did not end.
 - A record that you took back counts as no record. An as-needed dose that you took back is not in the file.
 - The recorded doses of an archived item are in the file. The doses of a deleted item are not.
 

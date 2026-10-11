@@ -56,7 +56,7 @@ extension AppModel {
     /// The share sheet closed. The file holds health data, so it does not stay (spec 10).
     func shareDidEnd() {
         Task { [store] in
-            await store.removeExports()
+            store.removeExports()
         }
     }
 
@@ -88,10 +88,11 @@ extension AppModel {
         }
     }
 
-    /// Runs the confirmed restore: the backup replaces the database, and nothing merges (D040).
+    /// Runs the confirmed restore: the backup replaces the data, and nothing merges (D040).
     ///
-    /// After a failure the old data is in place, and the pages read it again. After a success, every page
-    /// reads the new data, the settings of the backup apply, and one run of the notification queue sets the
+    /// After a failure the old data is in place, and the pages read it again. After a success, the model
+    /// forgets the old data before the settings sheet closes, so no row of the old data takes a tap. Then every
+    /// page reads the new data, the settings of the backup apply, and one run of the notification queue sets the
     /// reminders of the restored plans (T39). The user confirmed plans with reminders, so this run can ask
     /// for the notification permission, as the run after a save does (spec 2.2).
     func restore() {
@@ -107,8 +108,8 @@ extension AppModel {
                 refresh()
                 return
             }
-            BackupSettings.apply(staged.settings)
             forgetReplacedData()
+            BackupSettings.apply(staged.settings)
             // Today shows the restored data. No message says so (D028).
             settings.isPresented = false
             selectedTab = .today
@@ -128,6 +129,9 @@ extension AppModel {
     /// Forgets what the model keeps about the items and the doses of the database that a restore replaced:
     /// the events that the store did not confirm, the open pages, the kept drafts, and the reminder states.
     private func forgetReplacedData() {
+        // Each read and operation that started before ends with no effect.
+        dataGeneration += 1
+        content = .loading
         // The timers of Today stay: the day change and the opening highlight do not belong to the data.
         var today = TodayState()
         today.dayChange = self.today.dayChange

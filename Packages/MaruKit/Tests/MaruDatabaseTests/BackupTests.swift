@@ -39,6 +39,9 @@ struct BackupTests {
         let lines = try await store.exportedDoses(through: today, deviceTimeZone: Fixtures.shanghai)
         #expect(lines.filter { $0.status == .taken }.count == 2)
         #expect(lines.contains { $0.status == .unrecorded })
+        // A record with a date after the device date is in the file too, for example after travel to the west.
+        let west = try await store.exportedDoses(through: Fixtures.date(2026, 2, 28), deviceTimeZone: Fixtures.shanghai)
+        #expect(west.filter { $0.status == .taken }.count == 2)
 
         // The other device has an item of its own. A restore replaces it and does not merge.
         let other = TestDirectory()
@@ -46,15 +49,16 @@ struct BackupTests {
         try await old.save(try Item(category: .medication, name: "Old", form: .tablet, color: .blue))
         let staged = try old.stage(backup: backupFile)
         #expect(staged.settings == ["appColor": "mint"])
-        let restored = try old.restore(staged)
+        try await old.restore(staged)
 
-        #expect(try await restored.items() == [seed.item])
-        #expect(try await restored.schedule(id: seed.schedule.id) == seed.schedule)
-        #expect(try await restored.history(of: seed.occurrence.id) == store.history(of: seed.occurrence.id))
-        #expect(try await restored.exportedDoses(through: today, deviceTimeZone: Fixtures.shanghai) == lines)
+        // The store stays open, and its reads give the restored data.
+        #expect(try await old.items() == [seed.item])
+        #expect(try await old.schedule(id: seed.schedule.id) == seed.schedule)
+        #expect(try await old.history(of: seed.occurrence.id) == store.history(of: seed.occurrence.id))
+        #expect(try await old.exportedDoses(through: today, deviceTimeZone: Fixtures.shanghai) == lines)
         #expect(try temporaryFiles(in: other).isEmpty)
-        // A new open reads the restored database, and the restored store takes a new record.
-        try restored.writer.close()
+        // A new open reads the restored database, and it takes a new record.
+        try old.writer.close()
         let reopened = try LocalStore(directory: other.url)
         let evening = Fixtures.occurrence(slotID: seed.evening, in: seed.schedule)
         try await reopened.save(evening)

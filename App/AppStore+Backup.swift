@@ -5,7 +5,7 @@ import MaruDatabase
 /// The files of "Your Data" in settings: the record export, and the backup (D040).
 extension AppStore {
     /// The folder of a file that waits for the share sheet. The file holds health data, so the folder
-    /// has one file at most, and `removeExports` empties it when the share sheet closes (spec 10).
+    /// has one file at most, and `removeExports` empties it when the share sheet closes and at launch (spec 10).
     private static let exportDirectory = URL.temporaryDirectory.appending(path: "Export", directoryHint: .isDirectory)
 
     /// Writes the record export, a CSV file, and returns it. `docs/export-format.md` has the format.
@@ -24,7 +24,7 @@ extension AppStore {
         return file
     }
 
-    func removeExports() {
+    nonisolated func removeExports() {
         try? FileManager.default.removeItem(at: Self.exportDirectory)
     }
 

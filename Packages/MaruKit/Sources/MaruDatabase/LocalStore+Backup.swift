@@ -186,60 +186,30 @@ extension LocalStore {
         }
     }
 
-    /// Replaces the database of the store with a staged backup, and returns the store of the new database (D040).
+    /// Replaces every row of the database of the store with the rows of a staged backup (D040).
     ///
     /// The user asks for this and confirms it. It is not a recovery from an error (spec 7.3), and it does
-    /// not merge: every item and record of the old database goes.
+    /// not merge: every item and record of the old database goes. The call removes the staged files,
+    /// also after an error.
     ///
-    /// This store is closed after the call, also after an error. Use the returned store, or open the
-    /// directory again after an error.
-    ///
-    /// The database file always is the complete old database or the complete new one:
-    /// 1. A checkpoint moves every commit to the old database file. Then the store closes. The WAL file must
-    ///    be empty now. A WAL file with content of the old database next to the new file would damage it.
-    /// 2. The old database gets a second name. One atomic rename gives the staged database the name of the
-    ///    database. A stop before the rename leaves the old database, and a stop after it leaves the new one.
-    /// 3. The new database opens. If the open fails, the second name gives the old database its name back.
-    /// 4. The second name goes. The next open removes each temporary file that a stop left. The old database
-    ///    has a name of its own, and only an open that works removes it. So a failure of step 3 never loses it.
-    public func restore(_ backup: StagedBackup) throws(StorageError) -> LocalStore {
-        // No open of the directory runs during the change of the files.
-        Self.opening.lock()
-        defer { Self.opening.unlock() }
-        let database = files[0]
-        let sidecars = files.dropFirst()
+    /// The SQLite online backup copies the staged database into the open database in one write transaction.
+    /// No file changes its name, and the store stays open. A stop of the app or an error before the commit
+    /// rolls the transaction back, so the database has the complete old data or the complete new data.
+    /// The barrier waits for each read and write that runs, and holds back each new one until the commit.
+    public func restore(_ backup: StagedBackup) async throws(StorageError) {
+        defer { discard(backup) }
         do {
-            try writer.barrierWriteWithoutTransaction { db in
-                _ = try db.checkpoint(.truncate)
+            let staged = try DatabaseQueue(path: backup.file.path)
+            defer { try? staged.close() }
+            try await writer.barrierWriteWithoutTransaction { db in
+                try staged.read { source in
+                    try source.backup(to: db)
+                }
             }
-            try writer.close()
+            // The commit synced the WAL file to the drive. Wait until the drive wrote it to the storage medium.
+            guard Self.flush(walFile) else { throw StorageError.unavailable }
         } catch {
             throw StorageError(error)
-        }
-        guard Self.isEmpty(walFile) else { throw .unavailable }
-        let fileManager = FileManager.default
-        for file in sidecars {
-            try? fileManager.removeItem(at: file)
-        }
-        let previous = directory.appendingPathComponent(Self.previousPrefix + UUID().uuidString)
-        guard link(database.path, previous.path) == 0 else { throw .unavailable }
-        guard rename(backup.file.path, database.path) == 0 else {
-            unlink(previous.path)
-            throw .unavailable
-        }
-        do throws(StorageError) {
-            guard Self.flush(directory) else { throw .unavailable }
-            let restored = LocalStore(directory: directory, writer: try Self.open(database, migrator: Schema.migrator))
-            Self.removeTemporaryFiles(in: directory)
-            Self.removeFiles(in: directory, prefix: Self.previousPrefix)
-            return restored
-        } catch {
-            // The failed open can leave a WAL file of the new database. It must not stay next to the old one.
-            for file in sidecars {
-                try? fileManager.removeItem(at: file)
-            }
-            guard rename(previous.path, database.path) == 0, Self.flush(directory) else { throw .unavailable }
-            throw error
         }
     }
 

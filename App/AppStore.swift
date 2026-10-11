@@ -106,34 +106,31 @@ actor AppStore {
         return try await run.value
     }
 
-    /// Replaces the database with a checked backup that the user confirmed (D040).
+    /// Replaces the data with a checked backup that the user confirmed (D040). The store removes the staged files.
     ///
-    /// The change waits in the notification queue, so no run of an engine reads the old database when it
-    /// closes. Each engine keeps the store that it started with, so both are made again for the new database.
-    /// After a failure the old database is in place, and the next call opens it again.
+    /// The change waits in the notification queue, so no run of an engine reads the database while it changes.
+    /// The engines are made again after the change, so no engine keeps a state of the old data.
+    /// After a failure the old data is in place.
     func restore(_ backup: StagedBackup) async throws(StorageError) {
         let previous = updates
         let run = Task { () -> StorageError? in
             await previous?.value
-            return self.replaceDatabase(with: backup)
+            return await self.replaceData(with: backup)
         }
         updates = Task { _ = await run.value }
         if let error = await run.value { throw error }
     }
 
     /// `nil` after a success.
-    private func replaceDatabase(with backup: StagedBackup) -> StorageError? {
-        engine = nil
-        followUps = nil
+    private func replaceData(with backup: StagedBackup) async -> StorageError? {
         do throws(StorageError) {
-            opened = try open().restore(backup)
-            return nil
+            try await open().restore(backup)
         } catch {
-            // The store is closed. Its files are the old ones.
-            opened?.discard(backup)
-            opened = nil
             return error
         }
+        engine = nil
+        followUps = nil
+        return nil
     }
 
     /// Sets the follow-ups again from the records. A failed run changes nothing, and the next trigger runs again.

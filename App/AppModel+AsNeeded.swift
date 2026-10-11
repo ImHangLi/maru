@@ -258,11 +258,15 @@ extension AppModel {
         today.asNeeded.inFlight[id] = .some(held)
         today.asNeeded.inFlightLooks[id] = look
         if isNew { today.asNeeded.recordingItems.insert(itemID) }
+        let generation = dataGeneration
         Task {
             do throws(RecordFailure) {
                 let record = try await store.recordAsNeeded(pending.event, occurrence: pending.occurrence)
+                // A restore replaced the rows of this dose. The model forgot it.
+                guard generation == dataGeneration else { return }
                 didCommitAsNeeded(record, pending)
             } catch {
+                guard generation == dataGeneration else { return }
                 didFailAsNeeded(UnconfirmedAsNeeded(pending: pending, confirmed: held, look: look), error)
             }
             today.asNeeded.inFlight[id] = nil

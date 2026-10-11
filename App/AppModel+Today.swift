@@ -251,6 +251,7 @@ extension AppModel {
     @discardableResult
     private func run(_ events: [PendingEvent]) async -> Bool {
         let ids = Set(events.map(\.event.occurrenceID))
+        let generation = dataGeneration
         var committed = false
         do throws(RecordFailure) {
             // A backfill is one event, with its occurrence in the same transaction.
@@ -259,9 +260,12 @@ extension AppModel {
             } else {
                 try await store.record(events.map { ($0.event, $0.scheduleVersionID) })
             }
+            // A restore replaced the rows of these events. The model forgot them.
+            guard generation == dataGeneration else { return false }
             didCommit(records, backfilled: events.compactMap(\.backfill))
             committed = true
         } catch {
+            guard generation == dataGeneration else { return false }
             didFail(events, error)
         }
         today.inFlight.subtract(ids)

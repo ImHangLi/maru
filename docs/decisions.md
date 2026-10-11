@@ -502,11 +502,11 @@ Owner:
 Agent detail, the record export:
 
 - A CSV file with one line for each dose and the state that is valid now: date, planned time, item, type, amount, state, time taken, and time zone. An action that the user took back is not a line of its own.
-- The lines are the doses of History (D019), and the recorded doses of today. So the file and the History page never disagree.
+- The lines are the doses of History (D019), and every recorded dose of today or a later date. A dose in a fixed time zone, or a dose of a stay in another zone, can have a date after the date of the iPhone. So the file has every record, and it never disagrees with the History page.
 - UTF-8 with a byte order mark, because Excel reads a CSV file without the mark in a local encoding. Numbers reads both.
 - The words of the file are fixed English text, so a file reads the same on every iPhone.
 - No choice of a range. The file has all records. A range is one more control for a file that stays small.
-- Maru does not change a text that starts with `=`, `+`, `-`, or `@`. The text is the user's own, and a changed name is a wrong record. `docs/export-format.md` says so.
+- A field that starts with `=`, `+`, `-`, `@`, a tab, or a carriage return gets an apostrophe in front (OWASP, CSV injection). A spreadsheet app can run such a text as a formula. The apostrophe makes it plain text. The stored name and amount do not change. `docs/export-format.md` says so.
 
 Agent detail, the backup:
 
@@ -522,9 +522,9 @@ Agent detail, the restore:
 4. Maru applies the later migrations to this new database, then reads every item, schedule, occurrence, and record through the checks of a normal load, and runs the integrity check and the foreign key check of SQLite.
 5. Until here, the database of the app did not change. A failure removes the temporary files and shows a plain message.
 6. One alert asks: "Replace All Data?". It says that the backup replaces every item and record on this iPhone.
-7. The swap: a checkpoint moves every commit to the database file, and the store closes. The old file gets a second name. One atomic rename gives the new database the name of the database. Then the new database opens. If the open fails, the second name gives the old database its name back.
-8. A stop of the app at any moment leaves the complete old database or the complete new one. The next open removes the temporary files. The old database has a name of its own, and only an open that works removes it. So a failed swap never loses it.
-9. After the swap, the settings of the backup apply, the model forgets what it kept about the old data, the settings sheet closes, and every page reads again. One run of the notification queue sets the reminders of the restored plans and removes the old ones. This run can ask for the notification permission, because the user confirmed plans with reminders (spec 2.2). Without this, a new iPhone gets no reminder until the first save.
+7. The copy: the SQLite online backup copies the new database into the open database of the app, in one write transaction. No file changes its name, and the store stays open. A stop of the app or an error before the commit rolls the transaction back, so the old data stays complete. The next open removes the temporary files.
+8. The first version renamed the files. A review found two paths that lost data or broke the open store: a failed rename back after a failed flush, and a stop between the two file names. The online backup has no such path.
+9. After the copy, the model forgets what it kept about the old data, and Today shows no rows. Then the settings of the backup apply, the settings sheet closes, and every page reads again. A read or a record that started before the copy changes nothing in the model when it ends, because its IDs can belong to the old data. So no row of the old data records against a restored item. One run of the notification queue sets the reminders of the restored plans and removes the old ones. This run can ask for the notification permission, because the user confirmed plans with reminders (spec 2.2). Without this, a new iPhone gets no reminder until the first save.
 
 - Spec 7.3 forbids a clear and a rebuild of the database to recover from an error. That rule stays. A restore that the user asks for and confirms is a different thing, as the delete of an item is (D033). Spec 7.3 now says so.
 - Spec 7.3 said that an import must not turn on its reminders before a check, so that no reminder comes two times. A restore replaces all data, so one iPhone never has two copies. Two iPhones with the same data both remind. That is the choice of the user.
@@ -540,15 +540,16 @@ The screens:
 - "Your Data" is a section of Settings, before "Send Feedback". Export: 2 taps to the share sheet, from Today. Backup: 2 taps. Restore: 2 taps to the file picker, 1 tap on the file, and 1 tap on "Replace".
 - The share sheet is `UIActivityViewController` in a system sheet. `ShareLink` needs the file before the tap, and it gives no sign when the sheet closes. Maru makes the file after the tap and removes it when the sheet closes. This is the one use of the UIKit share sheet (D026).
 - The file picker lets the user pick every file, so a backup with a changed name still restores. The check refuses each other file.
-- The files wait in a temporary folder with complete file protection. The folder has one file at most. The sheet closes when the user shares the file or closes it, and then the file goes.
+- The files wait in a temporary folder with complete file protection. The folder has one file at most. The sheet closes when the user shares the file or closes it, and then the file goes. A file that stays after a stop of the app goes at the next launch.
 
 Not done, and why:
 
 - A restore from the storage problem page. That page shows when the database does not open, and a restore there needs a design that keeps the damaged file (spec 7.3).
 - A merge of a backup with the data on the iPhone, and an import from another app.
 - An automatic backup on a schedule.
+- A stop of the app right after the copy and before the settings apply keeps the old settings with the restored data. The window is a few milliseconds, and a setting is easy to set again. A safe order needs the settings in the database (D014).
 
-Tests (D016): three new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A name with a comma, a quotation mark, and a line break stays one CSV field.
+Tests (D016): three new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A name with a comma, a quotation mark, and a line break stays one CSV field, and a text that starts like a formula gets an apostrophe.
 
 ## D045 · 2026-10-11 · Lean agent work and the follow-up end after midnight
 

@@ -6,11 +6,12 @@ extension LocalStore {
     /// How many days one read of the history covers in the record export.
     private static let exportPageDays = 90
 
-    /// Every dose that the history shows, and the recorded doses of `today`, the oldest first (D040).
+    /// Every dose that the history shows, and every recorded dose of `today` or a later date, the oldest first (D040).
     ///
     /// The rules of `History` decide the lines: a dose with a record, and a planned dose with no record.
-    /// A dose of today with no record is not a line, because the day did not end. An as-needed dose that
-    /// the user took back is not a line, because it has no plan.
+    /// A dose of today or a later date with no record is not a line, because the day did not end. An as-needed
+    /// dose that the user took back is not a line, because it has no plan. A dose in a fixed time zone, or a dose
+    /// of a stay in another zone, can have a date after the device date. Its record is a line too.
     ///
     /// One read gives every line, so a record that commits during the export is in all of the file or in none of it.
     public func exportedDoses(through today: LocalDate, deviceTimeZone: NamedTimeZone) async throws(StorageError) -> [ExportedDose] {
@@ -21,9 +22,17 @@ extension LocalStore {
                 guard let dose = Dose(try row.decode(forColumn: "dose")) else { throw StorageError.invalidData }
                 amounts[try ScheduleVersionID(text: row.decode(forColumn: "id"))] = dose
             }
+            let lastRecord = try String.fetchOne(
+                db,
+                sql: """
+                    SELECT MAX(occurrence.plannedDate)
+                    FROM occurrence
+                    WHERE EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
+                    """
+            ).map(LocalDate.init(text:))
             // The newest day first, as the history reads.
             var days: [[ExportedDose]] = []
-            var before = today.adding(days: 1)
+            var before = max(today, lastRecord ?? today).adding(days: 1)
             while true {
                 let page = try Self.historyPage(db, before: before, days: Self.exportPageDays, deviceTimeZone: deviceTimeZone)
                 let items = Dictionary(page.items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })

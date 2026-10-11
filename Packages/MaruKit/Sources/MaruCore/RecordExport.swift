@@ -64,9 +64,16 @@ public enum RecordExport {
         return "\u{FEFF}" + lines.map { $0.map(field).joined(separator: ",") + "\r\n" }.joined()
     }
 
+    /// A field that starts with `=`, `+`, `-`, `@`, a tab, or a carriage return gets an apostrophe in front,
+    /// so a spreadsheet app shows it as text and does not run it as a formula (OWASP). The stored text does not change.
+    ///
     /// A field with a comma, a quotation mark, or a line break goes in quotation marks, and each quotation
-    /// mark in it is written two times (RFC 4180). The text itself does not change.
+    /// mark in it is written two times (RFC 4180).
     private static func field(_ text: String) -> String {
+        var text = text
+        if let first = text.unicodeScalars.first, ["=", "+", "-", "@", "\t", "\r"].contains(first) {
+            text = "'" + text
+        }
         guard text.unicodeScalars.contains(where: { [",", "\"", "\r", "\n"].contains($0) }) else { return text }
         return "\"" + text.replacingOccurrences(of: "\"", with: "\"\"") + "\""
     }
