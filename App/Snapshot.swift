@@ -162,20 +162,6 @@ struct TodaySnapshot: Equatable, Sendable {
     }
 }
 
-/// The part of the day of a planned time. Today groups its rows by it and shows no clock time (D011).
-enum DayPart: CaseIterable, Sendable {
-    case morning, noon, evening
-
-    /// Morning ends at 11:00, and evening starts at 17:00. Issue #7 can move these limits.
-    init(_ time: WallClockTime) {
-        self = switch time.hour {
-        case ..<11: .morning
-        case ..<17: .noon
-        default: .evening
-        }
-    }
-}
-
 extension NamedTimeZone {
     /// The time zone of the device as the domain accepts it.
     ///

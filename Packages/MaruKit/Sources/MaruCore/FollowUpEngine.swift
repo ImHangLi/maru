@@ -13,15 +13,24 @@ public protocol FollowUpCenter: ReminderCenter {
 /// Where the engine reads the follow-ups that the saved plan and the records ask for.
 public protocol FollowUpSource: Sendable {
     func followUpPlan(
-        delay: FollowUpDelay?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone
+        setting: FollowUpSetting?, changed: Date?, privacy: ReminderPrivacy, at now: Date,
+        deviceTimeZone: NamedTimeZone
     ) async throws -> FollowUpPlan
 }
 
 /// Where the follow-up setting is kept. It is a preference, so it is not in the health database (D014).
 public protocol FollowUpSettingStore: Sendable {
     /// `nil` means off. A new install has no value, so the setting starts off (spec 4).
-    func load() -> FollowUpDelay?
-    func save(_ delay: FollowUpDelay?)
+    func load() -> FollowUpSetting?
+    /// The setting and the time of its last change, read in one step, so the two always belong together.
+    /// The time is the time after the engine confirmed the removal of the old follow-ups.
+    /// `Date.distantFuture` from a change until that confirmation. `nil` when no change is known (D039).
+    func snapshot() -> (setting: FollowUpSetting?, changed: Date?)
+    /// Saves the setting. A change sets the change time to `Date.distantFuture`.
+    func save(_ setting: FollowUpSetting?)
+    /// Sets an unconfirmed change time to the time of now. Returns the setting and the time in one step.
+    /// The engine calls it when the system holds no old follow-up.
+    func confirmChange() -> (setting: FollowUpSetting?, changed: Date)
 }
 
 /// What one refresh found after its changes.
@@ -29,25 +38,26 @@ public struct FollowUpOutcome: Hashable, Sendable {
     public let authorization: ReminderAuthorization
     /// The follow-ups that the system holds.
     public let scheduled: Int
-    /// Wanted follow-ups that the system does not hold: no room next to the series requests, not registered, or blocked by an open removal.
-    /// A later refresh tries again. The series reminders do not depend on them.
+    /// Follow-ups of the plan that the system does not hold: no room next to the other requests, not registered,
+    /// or blocked by an open removal. A later refresh tries again. The series reminders do not depend on them.
     public let notScheduled: Int
     /// The system still holds a follow-up that the engine removed. Do not show a removal as done (spec 8.1).
     public let removalPending: Bool
 }
 
-/// Keeps the optional follow-ups of the next seven days in the system (D021).
+/// Keeps the optional follow-ups of the next seven days in the system (D021, D039).
 ///
-/// A follow-up is one one-time request for one slot time on one date. It is set only while a slot at that time
-/// has an open occurrence. The series reminders stay repeating requests and are not changed here (spec 8.1).
+/// A follow-up is one one-time request for one slot time on one date. A slot time can have more than one.
+/// They are set only while a slot at that time has an open occurrence. The series reminders are not changed
+/// here (spec 8.1).
 ///
 /// Call `refresh` at these points. Each call recomputes everything, so one more call is never wrong:
 /// - after each `ReminderEngine.reconcile`, also at launch and when the app comes back to the foreground
 ///   (issues #6, #7, #11). The reconcile can remove follow-ups to make room, and this call sets them again;
 /// - after each save of an item or a schedule (issue #8);
 /// - after each record, skip, or undo, also from a notification action (issue #5, #7). This removes the
-///   pending and the delivered follow-up of a slot time that has no open occurrence now, and the delivered
-///   follow-up that still names a recorded item;
+///   pending and the delivered follow-ups of a slot time that has no open occurrence now, and the delivered
+///   follow-ups that still name a recorded item;
 /// - after the user changes the setting (issue #11);
 /// - after the device time zone changes.
 ///
@@ -58,11 +68,11 @@ public struct FollowUpOutcome: Hashable, Sendable {
 /// When the app does not run for seven days, the last follow-up passes and no new one comes.
 /// The series reminders continue. The settings text must state this (D021).
 public actor FollowUpEngine {
-    /// The most follow-ups that the system holds at one time: the system limit minus the budget of the series
-    /// requests. A run of the series engine can add its new requests before it removes the old ones, so the total
-    /// can pass the limit for a short time. Then `ReminderEngine` removes follow-ups first, and the next refresh
-    /// sets them again (spec 8.4).
-    static let limit = ReminderPlan.systemLimit - ReminderPlan.requestBudget
+    /// The most requests that the system holds after a run adds a follow-up: the system limit minus the reserve.
+    /// The plan has only the follow-ups that fit next to its series requests. A run of the series engine can add
+    /// more new requests than the reserve before it removes the old ones. Then `ReminderEngine` removes
+    /// follow-ups first, and the next refresh sets them again (spec 8.4).
+    static let limit = ReminderPlan.systemLimit - FollowUpPlan.reserve
 
     private let source: any FollowUpSource
     private let center: any FollowUpCenter
@@ -93,8 +103,9 @@ public actor FollowUpEngine {
 
     /// Makes the pending and the delivered follow-ups agree with the plan, the records, and the setting.
     ///
-    /// Runs do not overlap, as in `ReminderEngine`. An error from the source stops the run before it changes
-    /// a request. The run never asks for the notification permission. The series engine does that.
+    /// Runs do not overlap, as in `ReminderEngine`. An error from the source stops the run before it adds
+    /// a request. After a change of the setting, the run removes the old follow-ups before it reads the source.
+    /// The run never asks for the notification permission. The series engine does that.
     public func refresh(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let previous = lastRun
         let run = Task {
@@ -107,12 +118,28 @@ public actor FollowUpEngine {
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
+        var now = now
+        // The plan uses one snapshot. A setting and a change time from two reads could belong to two saves.
+        var (current, changed) = setting.snapshot()
+        // After a change of the setting, every old follow-up goes before the plan (D039). An old one can come
+        // until the system confirms its removal, so the time of the change is the time after the confirmation.
+        // The plan counts the old follow-ups of a dose up to that time. Until then the plan sets no follow-up,
+        // also when a run stops before the confirmation.
+        if changed == .distantFuture {
+            await remove(Array(Self.followUps(await pendingAfterRemoval()).keys))
+            if Self.followUps(await pendingAfterRemoval()).isEmpty {
+                let confirmed = setting.confirmChange()
+                current = confirmed.setting
+                changed = confirmed.changed
+                now = max(now, confirmed.changed)
+            }
+        }
         let plan = try await source.followUpPlan(
-            delay: setting.load(), privacy: privacy, at: now, deviceTimeZone: deviceTimeZone
+            setting: current, changed: changed, privacy: privacy, at: now, deviceTimeZone: deviceTimeZone
         )
         let authorization = await center.authorization()
-        // Remove before add, the other order from `ReminderEngine`. A moved slot time changes every follow-up
-        // of the next seven days, and the old and the new requests together can pass the system limit.
+        // Remove before add, the other order from `ReminderEngine`. A moved slot time or a new setting changes
+        // every follow-up of the next seven days, and the old and the new requests together can pass the system limit.
         // Then the system can reject or drop a wanted request, also a series request.
         let before = await pendingAfterRemoval()
         let kept = Dictionary(
@@ -124,7 +151,7 @@ public actor FollowUpEngine {
         if authorization == .authorized {
             let current = Self.followUps(pending)
             // A request that the system still holds, also one with an open removal, takes room.
-            var room = max(0, min(Self.limit - current.count, ReminderPlan.systemLimit - pending.count))
+            var room = max(0, Self.limit - pending.count)
             for request in Self.fitting(plan.requests, pending: pending)
             where !isCurrent(current[request.identifier], request) && !unremoved.contains(request.identifier) {
                 // A request with the same identifier replaces the pending one and takes no more room.
@@ -142,7 +169,7 @@ public actor FollowUpEngine {
         let neutral = center.text(for: ReminderContent(kind: .due, names: nil))
         let delivered = await center.delivered().filter { shown in
             if shown.identifier.hasPrefix(FollowUpRequest.identifierPrefix) {
-                return shown.text != plan.openGroups[shown.identifier].map(center.text(for:))
+                return shown.text != plan.open[shown.identifier].map(center.text(for:))
             }
             return privacy == .hideNames && shown.identifier.hasPrefix(ReminderSeries.identifierPrefix)
                 && shown.text != neutral
@@ -161,11 +188,11 @@ public actor FollowUpEngine {
     }
 
     /// The nearest requests that fit next to the other requests of the app. The series requests come first
-    /// (spec 8.4): the follow-ups get at most `limit`, and never more than the system limit minus every
-    /// pending request that is not a follow-up.
+    /// (spec 8.4): the follow-ups never get more than `limit` minus every pending request that is not a follow-up.
+    /// The plan leaves this room, so the cut is only for a request that the plan does not know.
     private static func fitting(_ requests: [FollowUpRequest], pending: [PendingReminder]) -> ArraySlice<FollowUpRequest> {
         let others = pending.count - followUps(pending).count
-        return requests.prefix(max(0, min(limit, ReminderPlan.systemLimit - others)))
+        return requests.prefix(max(0, limit - others))
     }
 
     /// The pending follow-ups by identifier.

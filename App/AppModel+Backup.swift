@@ -179,13 +179,17 @@ private enum BackupSettings {
     private static let appColor = "appColor"
     private static let reminderNames = "reminderNames"
     private static let remindAgainMinutes = "remindAgainMinutes"
+    private static let remindAgainCount = "remindAgainCount"
 
     static func current() -> [String: String] {
-        [
+        let followUp = DefaultsFollowUpSetting().load()
+        return [
             appColor: UserDefaults.standard.string(forKey: DisplaySetting.appColor) ?? ItemColor.pink.rawValue,
             reminderNames: DefaultsReminderPrivacy().load().rawValue,
             // 0 means off.
-            remindAgainMinutes: String(DefaultsFollowUpSetting().load()?.rawValue ?? 0),
+            remindAgainMinutes: String(followUp?.interval.rawValue ?? 0),
+            // 0 means "Until Recorded".
+            remindAgainCount: String(followUp?.count.rawValue ?? 1),
         ]
     }
 
@@ -197,10 +201,12 @@ private enum BackupSettings {
             DefaultsReminderPrivacy().save(privacy)
         }
         if let minutes = settings[remindAgainMinutes].flatMap({ Int($0) }) {
+            // A missing count means "1 Time", as for an install from before D039.
+            let count = settings[remindAgainCount].flatMap { Int($0) }.flatMap(FollowUpCount.init(rawValue:)) ?? .one
             if minutes == 0 {
                 DefaultsFollowUpSetting().save(nil)
-            } else if let delay = FollowUpDelay(rawValue: minutes) {
-                DefaultsFollowUpSetting().save(delay)
+            } else if let interval = FollowUpInterval(rawValue: minutes) {
+                DefaultsFollowUpSetting().save(FollowUpSetting(count: count, interval: interval))
             }
         }
     }

@@ -38,9 +38,12 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
         shown[identifier] = texts[identifier]
     }
 
-    func followUpPlan(delay: FollowUpDelay?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone) -> FollowUpPlan {
+    func followUpPlan(
+        setting: FollowUpSetting?, changed: Date?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone
+    ) -> FollowUpPlan {
         FollowUpPlan(
-            delay: delay,
+            setting: setting,
+            changed: changed,
             reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy),
             items: items,
             schedules: schedules,
@@ -76,8 +79,10 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
         identifiers.forEach { shown[$0] = nil }
     }
 
-    nonisolated func load() -> FollowUpDelay? { .minutes30 }
-    nonisolated func save(_ delay: FollowUpDelay?) {}
+    nonisolated func load() -> FollowUpSetting? { FollowUpSetting(count: .one, interval: .minutes30) }
+    nonisolated func snapshot() -> (setting: FollowUpSetting?, changed: Date?) { (load(), nil) }
+    nonisolated func confirmChange() -> (setting: FollowUpSetting?, changed: Date) { (load(), .distantPast) }
+    nonisolated func save(_ setting: FollowUpSetting?) {}
     nonisolated func load() -> Set<String> { [] }
     nonisolated func save(_ identifiers: Set<String>) {}
     nonisolated func load() -> ReminderPrivacy { .showNames }
@@ -85,7 +90,7 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
     nonisolated func text(for content: ReminderContent) -> ReminderText { Fixtures.text(for: content) }
 }
 
-@Suite("Follow-up reminder (spec 4, 8.2, D021)")
+@Suite("Follow-up reminder (spec 4, 8.2, D021, D039)")
 struct FollowUpEngineTests {
     @Test func recordedOccurrenceHasNoPendingOrDeliveredFollowUpAfterARefresh() async throws {
         let phone = FollowUpPhone()
@@ -184,5 +189,31 @@ struct FollowUpEngineTests {
         let pending = await phone.pending
         #expect(pending.keys.contains("followup|device@America/Chicago|2026-03-02|08:00"))
         #expect(!pending.keys.contains("followup|device@America/New_York|2026-03-02|08:00"))
+    }
+
+    @Test func aChangeOfTheIntervalKeepsTheLimitOfTheDose() {
+        // One item at 08:00 in Shanghai. "Until Recorded" every 5 minutes, then every 30 minutes.
+        let item = Fixtures.item()
+        let schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(8)])
+        let slot = Fixtures.instant("2026-03-02T00:00:00Z")
+        /// The follow-ups of the 08:00 dose on 2 March, as minutes after 08:00, when the engine confirms
+        /// the removal of the old follow-ups `seconds` after 08:00.
+        func minutes(confirmedAt seconds: Double) -> [Int] {
+            let now = slot.addingTimeInterval(seconds)
+            let plan = FollowUpPlan(
+                setting: FollowUpSetting(count: .untilRecorded, interval: .minutes30), changed: now,
+                reminders: ReminderPlan(items: [item], schedules: [schedule], now: now, deviceTimeZone: Fixtures.shanghai),
+                items: [item], schedules: [schedule], stored: [], closed: [], now: now, deviceTimeZone: Fixtures.shanghai
+            )
+            return plan.requests.filter { $0.threadIdentifier == "followup|Asia/Shanghai|2026-03-02|08:00" }
+                .map { Int($0.fireDate.timeIntervalSince(slot) / 60) }
+        }
+
+        // The change is at 08:59:59.8. The removal is confirmed before 09:00: 11 old ones came, and one new one comes.
+        #expect(minutes(confirmedAt: 3_599.9) == [60])
+        // The old 09:00 one came during the removal: 12 came, so no new one comes.
+        #expect(minutes(confirmedAt: 3_600.5) == [])
+        // Confirmed at 08:31: at most 6 came, so 6 come every 30 minutes.
+        #expect(minutes(confirmedAt: 1_860) == [60, 90, 120, 150, 180, 210])
     }
 }

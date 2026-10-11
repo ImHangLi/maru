@@ -238,8 +238,8 @@ public enum ReminderProblem: Hashable, Sendable {
 public struct ReminderPlan: Hashable, Sendable {
     /// The system keeps at most 64 pending local notifications for one app.
     public static let systemLimit = 64
-    /// The requests that the series can use, repeating and dated together. The other 16 stay free for
-    /// the follow-ups (spec 8.4).
+    /// The requests that the series can use, repeating and dated together. The follow-ups use the room
+    /// that the series requests of the plan do not need, minus `FollowUpPlan.reserve` (spec 8.4, D039).
     public static let requestBudget = 48
     /// A plan that repeats every second day gets dated requests for this many due dates at each of its times,
     /// from the date of the run (D036). Each run sets them again. So its reminders stop after the last of

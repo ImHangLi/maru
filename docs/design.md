@@ -1,13 +1,13 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, and D044 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, and D044 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
 1. Simpler than Apple Health Medications in every flow that both apps have (D021). Count screens and taps.
 2. Apple system style: native SwiftUI system components only, the system font only, system colors (D011, D012, D026). A custom control needs a recorded reason.
 3. Few words. A row shows the name, the amount, and the time. The circle shows the state (D011, D044).
-4. Do not choose for the user: no default amount and no default reminder time (spec §2.1). The type, the form, and the color of a new item are not health choices, so they have a start value that the user can change (D032).
+4. Do not choose for the user: no default amount and no default reminder time (spec §2.1). The type, the form, and the color of a new item are not health choices, so they have a start value that the user can change (D032). A known supplement gets amount, time, and note candidates that fill nothing until a tap (D043).
 5. No repeated information, and no "·" separator in any text of the app. Use natural words or a second line (D032).
 6. No gray text for a state. A title or a name looks the same in each state (D032).
 
@@ -125,7 +125,8 @@ One confirmation for each, and no second dialog before it (D033).
 
 ## Settings
 
-- "Remind Again" is one menu row. Its value says the delay after the first reminder: "Off", "After 15 min", "After 30 min", or "After 1 hr" (D032).
+- "Remind Again" is two menu rows in one section (D039). The first row is the number of follow-ups: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between them: "5 min", "10 min", "15 min", "30 min", or "1 hr". It comes and goes with the layout motion, and it shows only when the number is not "Off".
+- "Until Recorded" has a limit, and the footer states the number and the last time: "Maru reminds you up to 12 times for each dose, until 1:00 AM at the latest." The time uses the time format of the device.
 - A footer or a helper text is one short sentence (D032).
 - "Display" has only "App Color". The strikethrough setting is gone (D032).
 - "Your Data" is the section before "Send Feedback" (D040). It has three rows: "Export Records", "Back Up", and "Restore from Backup…". A tap on one of the first two opens the system share sheet with the file. The third opens the system file picker.
@@ -143,7 +144,7 @@ One motion language for the whole app (D030). The same kind of change uses the s
 | State | A fade of 0.2 seconds, with the system replace effect on a symbol | A change in place, with no move | The same fade. A symbol cross-fades with no scale |
 | Attention | A fade of 1.2 seconds | The opening highlight of the current slot title | The same fade |
 
-- Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
+- Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form, including the candidates of the smart completion. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
 - State applies to: the record circle and the as-needed record button. The chevron and "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042).
 - The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. The scroll of the timeline to a selected day uses the layout motion, the same as the scroll to the slot of a tapped reminder.
 - A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.
@@ -160,7 +161,7 @@ Maru does not animate:
 
 ## Forms and icons
 
-Six own icons, two tones of one color, as template images: capsule, tablet, softgel, powder scoop, drop, and a jar for an unknown form (D013). The user picks the form. The app does not guess it. For release, convert them to custom SF Symbols. The source SVG files are in `App/Icons.xcassets`.
+Six own icons, two tones of one color, as template images: capsule, tablet, softgel, powder scoop, drop, and a jar for an unknown form (D013). The user picks the form. Until the user picks one, a known supplement name or a scanned label sets it (D043). For release, convert them to custom SF Symbols. The source SVG files are in `App/Icons.xcassets`.
 
 ## Add and edit
 
@@ -173,9 +174,11 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - The scanner is a system sheet with "Cancel" at the top left. The camera fills it, and the system marks the text that it finds. A card at the bottom, on the system material, holds one decision at a time. First the prompt "Tap the name on the label" with the line "Maru reads only the name." After a tap (D042): the words of the text as capsule buttons in rows, the line "Tap a word to add or remove it.", a text field with the name, "Use This Name" as a large button in the tint, "Clear", and the line "Tap more text to add it to the name."
 - A word is a system toggle in the button style. A chosen word shows the on state of the system, in the tint. The words that look like the name start chosen. A number with a unit, a count, and a stock phrase such as "Dietary Supplement" start not chosen (D042).
 - The field shows the chosen words. The user can type in it. A tap on a word or on a new text sets the field to the chosen words again.
-- "Use This Name" closes the scanner and fills the name. The scan fills no amount and no time. When the label shows exactly one form, a row under the form menu offers it, for example "Use Softgel".
+- "Use This Name" closes the scanner and fills the name. The scan fills no amount and no time. When the label shows exactly one form, it counts as the form of the product (D043).
 - While the user types the name, up to four names from the built-in lists show as rows under the name field, in the tint, as buttons of a form. A tap fills the name and closes the keyboard. The rows go when the field loses the focus. They only propose a name.
 - The scanner is a kept wrapper of the system scanner view (D026, D038).
+- Smart completion (D043): when the name of a supplement is a name of the built-in list, in full, the form changes to the form of the scanned label, else to the usual form. This happens only while the user did not choose a form on the screen. After that, a different form shows as a row under the form menu, for example "Use Softgel". A medication gets only the scanned form, as that row.
+- Under the amount field, the "Add a Time" button, and the note menu, a known supplement shows candidates as small bordered system buttons in one row: for example "1 softgel" and "2 softgels", "Evening", and "With food". A row that does not fit becomes a column. A tap fills the field or adds the time. Nothing fills before a tap. The footer under the note says "Suggestions come from common labels. Check your own label." The candidates come and go with the layout motion. A change of the type to "Medication" removes them at once.
 - "Add a Time" opens a sheet with a time wheel. The time counts only after "Add" (spec §2.1). For the first time of a supplement the wheel starts at a time that the user already confirmed for a supplement, else at 8:00.
 - "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day" and "Every Other Day". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and it has no date picker (D036).
 - The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date".

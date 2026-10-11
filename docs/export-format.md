@@ -52,7 +52,8 @@ The settings:
 |---|---|
 | `appColor` | The app color: `pink`, `orange`, `yellow`, `green`, `mint`, `blue`, `purple`, or `brown` |
 | `reminderNames` | `showNames` or `hideNames` |
-| `remindAgainMinutes` | `0` for off, or `15`, `30`, or `60` |
+| `remindAgainMinutes` | The time between follow-ups in minutes: `0` for off, or `5`, `10`, `15`, `30`, or `60` |
+| `remindAgainCount` | The number of follow-ups: `1`, `2`, `3`, or `5`, or `0` for "Until Recorded". A backup with no such row restores "1 Time" |
 
 A backup does not hold the notification permission, the pending reminders, or an unsaved draft. They belong to one iPhone.
 

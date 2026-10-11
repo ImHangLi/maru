@@ -35,6 +35,8 @@ extension UNNotificationRequest {
         content.body = text.body
         content.sound = .default
         content.userInfo = request.userInfo
+        // The follow-ups of one slot time show as one group in Notification Center (D039).
+        content.threadIdentifier = request.threadIdentifier
         if request.content.hasTakenAction { content.categoryIdentifier = ReminderAction.categoryIdentifier }
         self.init(
             identifier: request.identifier,
@@ -45,21 +47,70 @@ extension UNNotificationRequest {
     }
 }
 
-/// The follow-up setting in `UserDefaults.standard`. No value means off (spec 4).
+/// The follow-up setting in `UserDefaults.standard`. No interval means off (spec 4).
+///
+/// The setting and the time of its last change live in one value under one key, so one write changes both.
+/// A stop of the app can never leave a new setting with an old confirmed time (D039). The keys from before
+/// this value are read only when the value is missing: the interval key of D021, with no count meaning one
+/// follow-up, and the change key. The value holds no health data (D014).
 public struct DefaultsFollowUpSetting: FollowUpSettingStore {
+    static let valueKey = "reminders.followUp.v2"
     static let key = "reminders.followUpMinutes"
+    static let countKey = "reminders.followUpCount"
+    static let changedKey = "reminders.followUpChanged"
+    /// The engine confirms and the settings screen saves from different tasks. The lock makes each read and write of the value one step.
+    private static let lock = NSLock()
 
     public init() {}
 
-    public func load() -> FollowUpDelay? {
-        FollowUpDelay(rawValue: UserDefaults.standard.integer(forKey: Self.key))
+    public func load() -> FollowUpSetting? {
+        Self.lock.withLock { Self.read().setting }
     }
 
-    public func save(_ delay: FollowUpDelay?) {
-        if let delay {
-            UserDefaults.standard.set(delay.rawValue, forKey: Self.key)
-        } else {
-            UserDefaults.standard.removeObject(forKey: Self.key)
+    public func snapshot() -> (setting: FollowUpSetting?, changed: Date?) {
+        Self.lock.withLock { Self.read() }
+    }
+
+    public func save(_ setting: FollowUpSetting?) {
+        Self.lock.withLock {
+            let current = Self.read()
+            guard current.setting != setting else { return }
+            // "Off" also counts: the old follow-ups can still come until the engine confirms their removal.
+            Self.write(setting: setting, changed: .distantFuture)
         }
+    }
+
+    public func confirmChange() -> (setting: FollowUpSetting?, changed: Date) {
+        Self.lock.withLock {
+            let current = Self.read()
+            // A confirmed time stays. Only an unconfirmed change gets the time of now.
+            guard current.changed == .distantFuture else { return (current.setting, current.changed ?? Date()) }
+            let now = Date()
+            Self.write(setting: current.setting, changed: now)
+            return (current.setting, now)
+        }
+    }
+
+    private static func read() -> (setting: FollowUpSetting?, changed: Date?) {
+        let defaults = UserDefaults.standard
+        if let value = defaults.dictionary(forKey: valueKey) {
+            let interval = (value["minutes"] as? Int).flatMap(FollowUpInterval.init)
+            let count = (value["count"] as? Int).flatMap(FollowUpCount.init)
+            return (interval.map { FollowUpSetting(count: count ?? .one, interval: $0) }, value["changed"] as? Date)
+        }
+        let interval = FollowUpInterval(rawValue: defaults.integer(forKey: key))
+        let count = (defaults.object(forKey: countKey) as? Int).flatMap(FollowUpCount.init)
+        return (interval.map { FollowUpSetting(count: count ?? .one, interval: $0) }, defaults.object(forKey: changedKey) as? Date)
+    }
+
+    private static func write(setting: FollowUpSetting?, changed: Date) {
+        var value: [String: Any] = ["changed": changed]
+        if let setting {
+            value["minutes"] = setting.interval.rawValue
+            value["count"] = setting.count.rawValue
+        }
+        let defaults = UserDefaults.standard
+        defaults.set(value, forKey: valueKey)
+        for old in [key, countKey, changedKey] { defaults.removeObject(forKey: old) }
     }
 }

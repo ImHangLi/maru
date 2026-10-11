@@ -1,0 +1,129 @@
+# Smart completion for common supplements (D043). The add screen shows these values as candidates only.
+# Nothing fills until the user taps. Only for supplements: a medication gets no candidate.
+#
+# One supplement on each line, with six fields after the name, separated by "|":
+#   name | form | amounts | times | note | source
+# - name: a name in SupplementNames.txt. Its aliases there match too.
+# - form: capsule, tablet, softgel, powder, or drop. Empty when no one form is usual.
+# - amounts: one to three amounts in the style of the amount field, separated by ";".
+# - times: morning, noon, or evening, separated by ";". Only for a widely stated time of day.
+# - note: "with food", "empty stomach", or a short text. Only for a widely stated direction.
+# - source: where the convention comes from. "label" is a common direction on US labels.
+#   "ODS" is a fact sheet of the NIH Office of Dietary Supplements. "FDA" is a required label text.
+# An empty field means no candidate: when a convention is not clear, the field stays empty.
+# Written from general knowledge of common labels. It is not medical advice, and it is not a copy of a database.
+#
+# Vitamins
+Vitamin D3 | softgel | 1 softgel; 1000 IU; 2000 IU | | with food | ODS (fat in a meal helps absorption); label
+Cholecalciferol | softgel | 1 softgel; 1000 IU; 2000 IU | | with food | ODS; label
+Vitamin D | softgel | 1 softgel; 1000 IU; 2000 IU | | with food | ODS; label
+Vitamin D3 + K2 | | | | with food | label (fat-soluble vitamins)
+Vitamin K2 | | | | with food | label (fat-soluble vitamin)
+Vitamin E | softgel | 1 softgel | | with food | label (fat-soluble vitamin)
+Vitamin A | softgel | 1 softgel | | with food | label (fat-soluble vitamin)
+Multivitamin | tablet | 1 tablet; 2 tablets | | with food | label
+Women's Multivitamin | tablet | 1 tablet; 2 tablets | | with food | label
+Men's Multivitamin | tablet | 1 tablet; 2 tablets | | with food | label
+Senior Multivitamin | tablet | 1 tablet | | with food | label
+50+ Multivitamin | tablet | 1 tablet | | with food | label
+Vitamin C | tablet | 1 tablet; 500 mg; 1000 mg | | | label
+Vitamin B12 | tablet | 1 tablet; 1000 mcg | | | label
+Methylcobalamin | tablet | 1 tablet; 1000 mcg | | | label
+Cyanocobalamin | tablet | 1 tablet; 1000 mcg | | | label
+Vitamin B6 | tablet | 1 tablet | | | label
+Vitamin B1 | tablet | 1 tablet | | | label
+Thiamine | tablet | 1 tablet | | | label
+Niacin | tablet | 1 tablet | | with food | label (less flushing with food)
+Folic Acid | tablet | 1 tablet; 400 mcg | | | ODS; label
+Methylfolate | capsule | 1 capsule | | | label
+L-Methylfolate | capsule | 1 capsule | | | label
+#
+# Minerals
+Magnesium | | | evening | | common practice
+Magnesium Glycinate | capsule | 1 capsule; 2 capsules | evening | | label; common practice
+Magnesium Bisglycinate | capsule | 1 capsule; 2 capsules | evening | | label; common practice
+Magnesium Oxide | tablet | 1 tablet | | | label
+Calcium | tablet | 1 tablet; 2 tablets | | | label
+Calcium Carbonate | tablet | 1 tablet; 2 tablets | | with food | ODS (carbonate is absorbed best with food)
+Calcium Citrate | tablet | 1 tablet; 2 tablets | | | ODS (with or without food)
+Calcium + Vitamin D | tablet | 1 tablet; 2 tablets | | | label
+Calcium Magnesium Zinc | tablet | | | | label
+Zinc | tablet | 1 tablet | | | label
+Zinc Gluconate | tablet | 1 tablet | | | label
+Zinc Picolinate | capsule | 1 capsule | | | label
+Iron | tablet | 1 tablet | | | label (sources differ on food, so no note)
+Ferrous Sulfate | tablet | 1 tablet; 325 mg | | | label (sources differ on food, so no note)
+Ferrous Sulphate | tablet | 1 tablet; 325 mg | | | label (sources differ on food, so no note)
+Iron Bisglycinate | capsule | 1 capsule | | | label
+Ferrous Bisglycinate | capsule | 1 capsule | | | label
+Potassium | tablet | 1 tablet | | | label
+#
+# Oils
+Fish Oil | softgel | 1 softgel; 2 softgels | | with food | label
+Omega-3 | softgel | 1 softgel; 2 softgels | | with food | label
+Omega-3 Fatty Acids | softgel | 1 softgel; 2 softgels | | with food | label
+Omega-3 Fish Oil | softgel | 1 softgel; 2 softgels | | with food | label
+Krill Oil | softgel | 1 softgel; 2 softgels | | with food | label
+Salmon Oil | softgel | 1 softgel; 2 softgels | | with food | label
+Algae Oil | softgel | 1 softgel; 2 softgels | | with food | label
+Algal Oil | softgel | 1 softgel; 2 softgels | | with food | label
+Vegan Omega-3 | softgel | 1 softgel; 2 softgels | | with food | label
+Flaxseed Oil | softgel | 1 softgel | | | label
+Evening Primrose Oil | softgel | 1 softgel | | | label
+CoQ10 | softgel | 1 softgel; 100 mg | | with food | label (fat-soluble)
+Coenzyme Q10 | softgel | 1 softgel; 100 mg | | with food | label (fat-soluble)
+Lutein | softgel | 1 softgel | | | label
+#
+# Powders
+Creatine | powder | 5 g; 1 scoop | | | label
+Creatine Monohydrate | powder | 5 g; 1 scoop | | | label
+Protein Powder | powder | 1 scoop | | | label
+Whey Protein | powder | 1 scoop | | | label
+Collagen | powder | 1 scoop; 2 scoops | | | label
+Collagen Peptides | powder | 1 scoop; 2 scoops | | | label
+Hydrolyzed Collagen | powder | 1 scoop; 2 scoops | | | label
+Electrolytes | powder | 1 packet; 1 scoop | | | label
+Psyllium Husk | powder | 1 tsp; 1 tbsp | | With a full glass of water | FDA (21 CFR 201.319)
+Psyllium | powder | 1 tsp; 1 tbsp | | With a full glass of water | FDA (21 CFR 201.319)
+Greens Powder | powder | 1 scoop | | | label
+Super Greens | powder | 1 scoop | | | label
+L-Glutamine | powder | 5 g; 1 scoop | | | label
+Glutamine | powder | 5 g; 1 scoop | | | label
+BCAA | powder | 1 scoop | | | label
+Pre-Workout | powder | 1 scoop | | Before a workout | label
+Beta-Alanine | powder | 1 scoop | | | label
+#
+# Sleep
+Melatonin | tablet | 1 tablet | evening | Before bed | label
+Valerian Root | capsule | 1 capsule; 2 capsules | evening | Before bed | label
+Valerian | capsule | 1 capsule; 2 capsules | evening | Before bed | label
+#
+# Herbs and other capsules
+Probiotic | capsule | 1 capsule | | | label
+Ashwagandha | capsule | 1 capsule; 2 capsules | | | label
+Turmeric | capsule | 1 capsule; 2 capsules | | | label
+Curcumin | capsule | 1 capsule; 2 capsules | | | label
+Glucosamine | tablet | 1 tablet; 2 tablets | | | label
+Glucosamine Chondroitin | tablet | 1 tablet; 2 tablets | | | label
+L-Theanine | capsule | 1 capsule | | | label
+Theanine | capsule | 1 capsule | | | label
+Green Tea Extract | capsule | 1 capsule | | with food | label (liver warning on many labels)
+Ginseng | capsule | 1 capsule | | | label
+Echinacea | capsule | 1 capsule | | | label
+Milk Thistle | capsule | 1 capsule | | | label
+NAC | capsule | 1 capsule; 600 mg | | | label
+N-Acetyl Cysteine | capsule | 1 capsule; 600 mg | | | label
+N-Acetyl L-Cysteine | capsule | 1 capsule; 600 mg | | | label
+Berberine | capsule | 1 capsule | | with food | label
+Hyaluronic Acid | capsule | 1 capsule | | | label
+Ginger | capsule | 1 capsule | | | label
+Lion's Mane | capsule | 1 capsule; 2 capsules | | | label
+Rhodiola Rosea | capsule | 1 capsule | | | label
+Rhodiola | capsule | 1 capsule | | | label
+5-HTP | capsule | 1 capsule | | | label
+GABA | capsule | 1 capsule | | | label
+Acetyl-L-Carnitine | capsule | 1 capsule | | | label
+Quercetin | capsule | 1 capsule | | | label
+Resveratrol | capsule | 1 capsule | | | label
+Digestive Enzymes | capsule | 1 capsule | | with food | label
+Magnesium L-Threonate | capsule | | | | label

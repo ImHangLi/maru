@@ -8,7 +8,8 @@ import VisionKit
 ///
 /// The order is name, type, form, color, amount, times, note. The plan line under the times states the whole plan.
 /// A new item has "Scan Label" above the name, and the name field proposes names from the built-in lists (D038).
-/// Both only propose: the user sees each value here before the save.
+/// Both only propose: the user sees each value here before the save. A known supplement name gives candidates
+/// for the amount, the time, and the note, and it sets the usual form until the user chooses one (D043).
 /// Save is at the top right, as in every system sheet (D026). Apple Health needs seven screens for one
 /// medication. Maru needs this one (D021).
 struct ItemEditorView: View {
@@ -32,13 +33,19 @@ struct ItemEditorView: View {
     @State private var scansLabel = false
     @State private var scanFailed = false
     @State private var cameraIsOff = false
-    /// The form words of the last label scan. They propose a form. They never set it.
+    /// The form words of the last label scan. They give the form until the user chooses one (D043).
     @State private var scannedForms: Set<LabelForm> = []
+    /// The smart completion of the name (D043). `nil` for a medication or a name that the list does not have.
+    @State private var completion: SmartCompletion?
+    /// The user chose a form on this screen, so the app changes it no more. A stored item, a replacement,
+    /// and a kept draft start with a chosen form.
+    @State private var formIsChosen: Bool
 
     init(session: EditorSession) {
         self.session = session
         _draft = State(initialValue: session.start)
         _showsRestored = State(initialValue: session.isRestored)
+        _formIsChosen = State(initialValue: !session.isNew || session.replaced != nil || session.isRestored)
     }
 
     private var hasChanges: Bool { draft != session.original }
@@ -109,7 +116,13 @@ struct ItemEditorView: View {
                 Alert(title: Text("Maru couldn’t save"), message: Text(error.message))
             }
             .task { names = await NameList.index.value }
-            .onChange(of: suggestionInput) { updateSuggestions() }
+            .onChange(of: nameInput) {
+                updateSuggestions()
+                updateCompletion()
+            }
+            .onChange(of: formStep) {
+                if case let .set(form) = formStep { draft.form = form }
+            }
         }
         // Only unsaved changes ask before the screen closes (spec 3 P03).
         .interactiveDismissDisabled(hasChanges)
@@ -135,18 +148,39 @@ struct ItemEditorView: View {
             draft.note == .custom,
             suggestions.count,
             proposedForm?.rawValue ?? "",
+            candidates?.amounts.count ?? 0,
+            candidates?.times.count ?? 0,
+            candidates?.notes.count ?? 0,
         ]
     }
 
-    /// What the name suggestions depend on.
-    private var suggestionInput: [AnyHashable] {
+    /// What the name suggestions and the smart completion depend on.
+    private var nameInput: [AnyHashable] {
         [draft.name, draft.category, nameIsFocused, names != nil]
     }
 
-    /// The form to propose after a scan, when it is not the form of the draft.
+    /// The form of the scanned label, else the usual form of the supplement. The app sets it while the user did
+    /// not choose a form. After that, and for a medication, it is a one-tap proposal (D038, D043).
+    private var formStep: SmartCompletion.FormStep {
+        SmartCompletion.formStep(
+            usual: completion?.form,
+            scanned: LabelText.proposedForm(from: scannedForms),
+            current: draft.form,
+            mayChange: !formIsChosen && draft.category == .supplement
+        )
+    }
+
     private var proposedForm: ItemForm? {
-        let form = LabelText.proposedForm(from: scannedForms)
-        return form == draft.form ? nil : form
+        if case let .propose(form) = formStep { form } else { nil }
+    }
+
+    /// The amounts, times, and note that the draft does not have yet.
+    private var candidates: SmartCompletion? {
+        completion?.open(
+            amount: draft.amount,
+            times: draft.times.compactMap { try? WallClockTime(hour: $0.hour, minute: $0.minute) },
+            hasNote: draft.note != .none
+        )
     }
 
     // MARK: Sections
@@ -220,7 +254,7 @@ struct ItemEditorView: View {
     /// System menus of the six forms (D013) and the eight item colors (D021). The value shows the icon or the color.
     private var formSection: some View {
         Section {
-            Picker("Form", selection: $draft.form) {
+            Picker("Form", selection: chosenForm) {
                 ForEach(ItemForm.allCases, id: \.self) { form in
                     Label { Text(form.title) } icon: { form.image }
                         .tag(form)
@@ -228,7 +262,10 @@ struct ItemEditorView: View {
             }
             .pickerStyle(.menu)
             if let form = proposedForm {
-                Button(form.useTitle) { draft.form = form }
+                Button(form.useTitle) {
+                    draft.form = form
+                    formIsChosen = true
+                }
             }
             Picker("Color", selection: $draft.color) {
                 ForEach(ItemColor.allCases, id: \.self) { color in
@@ -243,6 +280,11 @@ struct ItemEditorView: View {
     private var amountSection: some View {
         Section {
             TextField("For example 1000 IU", text: $draft.amount)
+            if let amounts = candidates?.amounts, !amounts.isEmpty {
+                CandidateRow(candidates: amounts, title: { Text(verbatim: $0) }, hint: { _ in Text("Fills the amount.") }) {
+                    draft.amount = $0
+                }
+            }
         } header: {
             Text("Amount (Optional)")
         } footer: {
@@ -261,6 +303,18 @@ struct ItemEditorView: View {
                 }
             }
             Button("Add a Time", systemImage: "plus") { addsTime = true }
+            if let parts = candidates?.times, !parts.isEmpty {
+                CandidateRow(candidates: parts) { part in
+                    Text(part.title)
+                } hint: { part in
+                    let time = part.time(confirmed: session.context.supplementTimes)
+                    return Text("Adds a reminder time at \(SchedulePreview.format(hour: time.hour, minute: time.minute)).")
+                } choose: { part in
+                    let time = part.time(confirmed: session.context.supplementTimes)
+                    draft.times.append(ItemDraft.Time(id: UUID(), hour: time.hour, minute: time.minute))
+                    draft.times = draft.sortedTimes
+                }
+            }
             if !draft.times.isEmpty {
                 NavigationLink {
                     RepeatList(
@@ -307,10 +361,54 @@ struct ItemEditorView: View {
             if draft.note == .custom {
                 TextField("Your note", text: $draft.noteText, axis: .vertical)
             }
+            if let notes = candidates?.notes, !notes.isEmpty {
+                CandidateRow(candidates: notes, title: \.title, hint: { _ in Text("Sets the note.") }, choose: useNote)
+            }
+        } footer: {
+            // One sentence under the last candidates says where they come from (D043).
+            if let candidates, !candidates.hasNoCandidates {
+                Text("Suggestions come from common labels. Check your own label.")
+            }
         }
     }
 
     // MARK: Actions
+
+    /// The form menu. A choice of the user stops the app from changing the form (D043).
+    private var chosenForm: Binding<ItemForm> {
+        Binding {
+            draft.form
+        } set: { form in
+            draft.form = form
+            formIsChosen = true
+        }
+    }
+
+    private func useNote(_ note: IntakeNote) {
+        switch note {
+        case .preset(.withFood): draft.note = .withFood
+        case .preset(.emptyStomach): draft.note = .emptyStomach
+        case let .text(text):
+            draft.note = .custom
+            draft.noteText = text
+        }
+    }
+
+    /// The completion follows the name when the user leaves the field or picks a name, so the form does not
+    /// change at each key press. A medication loses the candidates at once. The values of the draft stay.
+    private func updateCompletion() {
+        guard draft.category == .supplement, let names else {
+            completion = nil
+            return
+        }
+        // While the user types, a candidate of the earlier name must not stay, for example after a change to a medication name.
+        guard !nameIsFocused else {
+            completion = nil
+            return
+        }
+        let isNamedHere = session.isNew || draft.trimmedName != session.original.trimmedName
+        completion = isNamedHere ? names.completion(for: draft.name, category: draft.category) : nil
+    }
 
     /// A stored plan keeps at least one time. The store keeps every version, and the end of a stored plan
     /// belongs to the item detail (issue #9).
@@ -362,8 +460,8 @@ struct ItemEditorView: View {
         }
     }
 
-    /// The name from the scan goes to the draft as text that the user can edit. The scan sets no amount,
-    /// no time, and no form.
+    /// The name from the scan goes to the draft as text that the user can edit. The scan sets no amount and
+    /// no time. Its form counts as described at `formStep`.
     private func use(_ scan: LabelScan) {
         draft.name = scan.name
         scannedForms = scan.forms
@@ -393,8 +491,44 @@ struct ItemEditorView: View {
     }
 }
 
+/// Candidates of the smart completion as small bordered buttons in one row, or in a column when the row
+/// does not fit (D043). Nothing fills until a tap.
+private struct CandidateRow<Candidate: Hashable>: View {
+    let candidates: [Candidate]
+    let title: (Candidate) -> Text
+    let hint: (Candidate) -> Text
+    let choose: (Candidate) -> Void
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(spacing: 8) { buttons }
+            VStack(alignment: .leading, spacing: 8) { buttons }
+        }
+    }
+
+    private var buttons: some View {
+        ForEach(candidates, id: \.self) { candidate in
+            Button { choose(candidate) } label: { title(candidate) }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .accessibilityHint(hint(candidate))
+        }
+    }
+}
+
+private extension IntakeNote {
+    /// The words of the note menu, or the text of a note.
+    var title: Text {
+        switch self {
+        case .preset(.withFood): Text("With food")
+        case .preset(.emptyStomach): Text("On an empty stomach")
+        case let .text(text): Text(verbatim: text)
+        }
+    }
+}
+
 private extension ItemForm {
-    /// The form proposal after a label scan, for example "Use Softgel".
+    /// The form proposal, for example "Use Softgel".
     var useTitle: LocalizedStringKey {
         switch self {
         case .capsule, .unknown: "Use Capsule"
