@@ -39,11 +39,11 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
     }
 
     func followUpPlan(
-        setting: FollowUpSetting?, earlier: [FollowUpPeriod], privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone
+        setting: FollowUpSetting?, changed: Date?, privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone
     ) -> FollowUpPlan {
         FollowUpPlan(
             setting: setting,
-            earlier: earlier,
+            changed: changed,
             reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy),
             items: items,
             schedules: schedules,
@@ -80,7 +80,8 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, FollowUpSettingStor
     }
 
     nonisolated func load() -> FollowUpSetting? { FollowUpSetting(count: .one, interval: .minutes30) }
-    nonisolated func earlier() -> [FollowUpPeriod] { [] }
+    nonisolated func changed() -> Date? { nil }
+    nonisolated func confirmChange() -> Date { .distantPast }
     nonisolated func save(_ setting: FollowUpSetting?) {}
     nonisolated func load() -> Set<String> { [] }
     nonisolated func save(_ identifiers: Set<String>) {}
@@ -190,52 +191,17 @@ struct FollowUpEngineTests {
         #expect(!pending.keys.contains("followup|device@America/New_York|2026-03-02|08:00"))
     }
 
-    @Test func followUpsComeAtTheIntervalAndStopAtTheCountTheNextDoseAndOneOClock() {
-        // One item at 08:00 and 12:00, and one item at 23:00. 07:00 in Shanghai on 2 March.
-        let twice = Fixtures.item()
-        let late = Fixtures.item()
-        let items = [twice, late]
-        let schedules = [
-            Fixtures.schedule(itemID: twice.id, times: [Fixtures.time(8), Fixtures.time(12)]),
-            Fixtures.schedule(itemID: late.id, times: [Fixtures.time(23)]),
-        ]
-        let now = Fixtures.instant("2026-03-01T23:00:00Z")
-        /// The follow-ups of 2 March at each slot time, as minutes after the slot time.
-        func minutes(_ count: FollowUpCount, _ interval: FollowUpInterval) -> [String: [Int]] {
-            let plan = FollowUpPlan(
-                setting: FollowUpSetting(count: count, interval: interval),
-                reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: Fixtures.shanghai),
-                items: items, schedules: schedules, stored: [], closed: [], now: now, deviceTimeZone: Fixtures.shanghai
-            )
-            var result: [String: [Int]] = [:]
-            for request in plan.requests where request.userInfo[FollowUpRequest.plannedDateKey] == "2026-03-02" {
-                let time = String(request.threadIdentifier.suffix(5))
-                let slot = Fixtures.instant("2026-03-02T00:00:00Z").addingTimeInterval((Double(time.prefix(2))! - 8) * 3_600)
-                result[time, default: []].append(Int(request.fireDate.timeIntervalSince(slot) / 60))
-            }
-            return result
-        }
-
-        // A count: three follow-ups, one hour apart. 23:00 gets one, at 00:00, because they stop at 01:00.
-        #expect(minutes(.three, .minutes60) == ["08:00": [60, 120, 180], "12:00": [60, 120, 180], "23:00": [60]])
-        // "Until Recorded": 08:00 stops before the 12:00 dose of the same item, 12:00 stops at the limit of 12,
-        // and 23:00 stops before 01:00 of the next day.
-        #expect(minutes(.untilRecorded, .minutes30) == [
-            "08:00": Array(1...7).map { $0 * 30 }, "12:00": Array(1...12).map { $0 * 30 }, "23:00": [30, 60, 90],
-        ])
-    }
-
     @Test func aChangeOfTheIntervalKeepsTheLimitOfTheDose() {
-        // One item at 08:00. "Until Recorded" every 5 minutes, then every 10 minutes from the change.
+        // One item at 08:00 in Shanghai. "Until Recorded" every 5 minutes, then every 30 minutes.
         let item = Fixtures.item()
         let schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(8)])
         let slot = Fixtures.instant("2026-03-02T00:00:00Z")
-        /// The follow-ups of the 08:00 dose on 2 March after a change at `change`, as minutes after 08:00.
-        func minutes(change: String) -> [Int] {
-            let now = Fixtures.instant(change)
+        /// The follow-ups of the 08:00 dose on 2 March, as minutes after 08:00, when the engine confirms
+        /// the removal of the old follow-ups `seconds` after 08:00.
+        func minutes(confirmedAt seconds: Double) -> [Int] {
+            let now = slot.addingTimeInterval(seconds)
             let plan = FollowUpPlan(
-                setting: FollowUpSetting(count: .untilRecorded, interval: .minutes10),
-                earlier: [FollowUpPeriod(setting: FollowUpSetting(count: .untilRecorded, interval: .minutes5), end: now)],
+                setting: FollowUpSetting(count: .untilRecorded, interval: .minutes30), changed: now,
                 reminders: ReminderPlan(items: [item], schedules: [schedule], now: now, deviceTimeZone: Fixtures.shanghai),
                 items: [item], schedules: [schedule], stored: [], closed: [], now: now, deviceTimeZone: Fixtures.shanghai
             )
@@ -243,34 +209,11 @@ struct FollowUpEngineTests {
                 .map { Int($0.fireDate.timeIntervalSince(slot) / 60) }
         }
 
-        // At 09:01 the 12 follow-ups of 08:05 to 09:00 came, so no more come.
-        #expect(minutes(change: "2026-03-02T01:01:00Z") == [])
-        // At 08:31 six came, from 08:05 to 08:30. The other six come every 10 minutes.
-        #expect(minutes(change: "2026-03-02T00:31:00Z") == [40, 50, 60, 70, 80, 90])
-    }
-
-    @Test func followUpsShareTheRoomThatTheSeriesRequestsLeave() throws {
-        // Eight slot times on six weekdays use the 48 series requests. 07:00 in Shanghai on Monday 2 March.
-        let item = Fixtures.item()
-        let weekdays: Set<Weekday> = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday]
-        let schedule = Fixtures.schedule(
-            itemID: item.id, times: (8...15).map { Fixtures.time($0) }, weeklyRule: try WeeklyRule(weekdays: weekdays)
-        )
-        let now = Fixtures.instant("2026-03-01T23:00:00Z")
-        let reminders = ReminderPlan(items: [item], schedules: [schedule], now: now, deviceTimeZone: Fixtures.shanghai)
-        let plan = FollowUpPlan(
-            setting: FollowUpSetting(count: .untilRecorded, interval: .minutes10),
-            reminders: reminders, items: [item], schedules: [schedule], stored: [], closed: [],
-            now: now, deviceTimeZone: Fixtures.shanghai
-        )
-
-        // Every series request keeps its room, and the follow-ups get the other 14.
-        #expect(reminders.requests.count == ReminderPlan.requestBudget)
-        #expect(plan.requests.count == ReminderPlan.systemLimit - FollowUpPlan.reserve - ReminderPlan.requestBudget)
-        // Each slot time of today wants five or more. Each one gets its first, then the six nearest get a second.
-        let counts = Dictionary(grouping: plan.requests, by: \.threadIdentifier).mapValues(\.count)
-        #expect(counts.count == 8)
-        #expect(counts.values.sorted() == [1, 1, 2, 2, 2, 2, 2, 2])
-        #expect(counts["followup|Asia/Shanghai|2026-03-02|15:00"] == 1)
+        // The change is at 08:59:59.8. The removal is confirmed before 09:00: 11 old ones came, and one new one comes.
+        #expect(minutes(confirmedAt: 3_599.9) == [60])
+        // The old 09:00 one came during the removal: 12 came, so no new one comes.
+        #expect(minutes(confirmedAt: 3_600.5) == [])
+        // Confirmed at 08:31: at most 6 came, so 6 come every 30 minutes.
+        #expect(minutes(confirmedAt: 1_860) == [60, 90, 120, 150, 180, 210])
     }
 }

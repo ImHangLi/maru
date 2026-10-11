@@ -497,7 +497,7 @@ The setting:
 - "Remind Again" has two menu rows in one section. The first row is the number: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between reminders: 5, 10, 15, or 30 minutes, or 1 hour. It shows only when the number is not "Off".
 - The setting is off by default (spec 4). When the user turns it on, the time starts at 30 minutes. That is the middle delay of D021 and the delay of the follow-up of Apple Health.
 - An install from before keeps its behavior. Its stored delay is the time between reminders, and a stored value with no number means "1 Time". So "After 30 min" becomes "1 Time" and "30 min". The new key is `reminders.followUpCount` in `UserDefaults.standard` (D014). "Off" removes both keys.
-- Each change of the setting adds the setting before it and the time of the change to `reminders.followUpEarlier`. "Off" also counts. The list keeps 4 days. It holds no health data.
+- Each change of the setting, "Off" too, keeps one time in `reminders.followUpChanged`: the time at which the engine confirmed the removal of the old follow-ups. It holds no health data.
 - The footer of "Until Recorded" states the limit and the last time: "Maru reminds you up to 12 times for each dose, until 1:00 AM at the latest." The time uses the time format of the device. The other choices keep "Only for items that you did not record."
 
 The schedule rule:
@@ -517,7 +517,10 @@ The schedule rule:
 - iOS has no local notification that starts at a later time and repeats until the app stops it. A repeating time interval trigger counts from the time of the add. The app does not run in the background (spec 8.1). So "Until Recorded" is dated requests: at most 12 for each dose time.
 - 12 comes from the system limit. iOS keeps at most 64 pending requests for one app. Four dose times of one day with 12 follow-ups each use 48 requests. With 4 series requests and a reserve of 2, the total is 54 of 64. So a plan with up to four times gets the full number for every dose of the next 24 hours, and 10 requests stay free for later doses or a plan of every other day. With 12, the reminders last 1 hour at 5 minutes, 2 hours at 10 minutes, and 6 hours at 30 minutes.
 - Each open of Maru and each record sets the follow-ups again, as before. The "Taken" action also does this.
-- The limit is for each dose, also across a change of the setting. The plan counts the follow-ups that the earlier settings set for the dose before now: the instants of each interval in the time that it was in force, at most its number. The setting of now gets only the rest. Example: a dose at 08:00 gets 12 at 5 minutes until 09:00. A change to 10 minutes at 09:01 adds none. A change at 08:31 adds 6, from 08:40 to 09:30. The count can be higher than the real number, for example after a record, so a dose can then get fewer, never more.
+- The limit is for each dose, also across a change of the setting. A dose before the last change gets the worst case: one follow-up came for each 5 minutes from the dose time to the change, at most 12. The setting of now gets only the rest, after the change. A dose after the change gets the setting of now.
+- After a change, the engine removes every old follow-up first. An old one can come until the system confirms the removal, so the time of the change is the time after that confirmation. Until then, the plan sets no follow-up. A run that stops before the confirmation leaves the change open for the next run.
+- Example: a dose at 08:00 gets 12 at 5 minutes until 09:00. A change to 30 minutes, confirmed at 08:31, adds 6, from 09:00 to 11:30. A change confirmed after 09:00 adds none.
+- Accepted: a dose before a change can get fewer follow-ups than the setting says, because the plan does not know which old follow-ups came. It never gets more than 12. A change of the setting during a dose is rare.
 - The rolling split of the room can add a future request, remove it, and add it again at later runs. This follows the split rule below, and it is accepted.
 - Maru does not claim reminders with no end. The settings text states the number.
 
@@ -546,7 +549,7 @@ What the Apple documentation says, read on 2026-10-11:
 - The default level, `active`, does not pass a Focus or the scheduled summary. Only `timeSensitive` does, and the user can turn that off ([`active`](https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/active), [`timeSensitive`](https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/timesensitive)). So with a Focus or the summary on, the follow-ups can come late and together. Spec 8.1 still forbids a promise of delivery.
 - The system picks the notification that the summary features by its [`relevanceScore`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent/relevancescore). Maru does not set it.
 
-Tests (D016): four new tests. The follow-up times with the stop rules for a number and for "Until Recorded", the split of the room next to 48 series requests, the limit of a dose across a change of the interval, and the "Taken" action of a follow-up after midnight.
+Tests (D016): two new tests. The limit of a dose across a change of the interval near the limit, and the "Taken" action of a follow-up after midnight.
 
 Not verified: no check on a real iPhone yet. Open points are the group in Notification Center, the behavior of many requests at 5 minutes, the summary and a Focus, and the "Taken" action of a follow-up after midnight.
 

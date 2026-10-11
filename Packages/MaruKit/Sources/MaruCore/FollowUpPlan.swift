@@ -42,21 +42,6 @@ public struct FollowUpSetting: Hashable, Sendable, Codable {
     }
 }
 
-/// A follow-up setting before a change, and the time of the change (D039). The setting was in force
-/// from the change before it to `end`. `nil` is off.
-///
-/// The plan counts the follow-ups that an earlier setting set for a dose, so a change of the setting
-/// never gives a dose more follow-ups than the limit of the setting of now.
-public struct FollowUpPeriod: Hashable, Sendable, Codable {
-    public let setting: FollowUpSetting?
-    public let end: Date
-
-    public init(setting: FollowUpSetting?, end: Date) {
-        self.setting = setting
-        self.end = end
-    }
-}
-
 /// One slot time on one date in one time zone: every occurrence of one series rule that fires at the same instant.
 ///
 /// A follow-up belongs to such a group and not to one occurrence, as a series reminder does. So two items
@@ -138,8 +123,9 @@ public struct FollowUpRequest: Hashable, Sendable {
 /// So a dose late in the evening also gets follow-ups. Until `latestTime`, the "Taken" action of such
 /// a follow-up records the dose of the day before (D034, D039).
 ///
-/// The limit is for each dose, also across a change of the setting. The follow-ups that earlier settings
-/// set for a dose count, so a change gives the dose only the rest of the limit.
+/// A dose never gets more than `FollowUpCount.untilRecordedLimit` follow-ups, also across a change of the setting.
+/// A dose before the last change gets only the rest of that limit after the worst case of the follow-ups
+/// that came before the change. So it can get fewer follow-ups than the setting says, never more than the limit.
 ///
 /// It is a value of its inputs and reads no system state.
 public struct FollowUpPlan: Hashable, Sendable {
@@ -153,9 +139,6 @@ public struct FollowUpPlan: Hashable, Sendable {
     /// One hour after midnight: a dose late in the evening gets follow-ups, and a dose at bedtime
     /// does not get them all night.
     public static let latestTime = try! WallClockTime(hour: 1, minute: 0)
-    /// How long the plan needs an earlier setting: longer than the follow-ups of a dose from the start
-    /// of the occurrence window. A shorter `earlier` gives the same plan.
-    public static let periodsKept: TimeInterval = 4 * 86_400
 
     /// The requests that the plan wants and that have room, nearest first. See `share`.
     public let requests: [FollowUpRequest]
@@ -166,8 +149,9 @@ public struct FollowUpPlan: Hashable, Sendable {
     /// - Parameters:
     ///   - setting: `nil` when the setting is off. The plan then has no request and no open follow-up,
     ///     so the engine removes every pending and every delivered follow-up.
-    ///   - earlier: The settings before `setting`, in the order of their changes. The last `end` is the time
-    ///     from which `setting` is in force. Empty when no change is known.
+    ///   - changed: The time of the last change of the setting, when the system held no follow-up of an earlier
+    ///     setting any more. `nil` when no change is known. `Date.distantFuture` while the removal is not confirmed:
+    ///     then a dose gets no follow-up.
     ///   - reminders: The series plan of the same read. A follow-up comes only for a schedule whose
     ///     series reminder is set up, so a paused, archived, ended, or blocked schedule gets none.
     ///     The follow-ups get only the room that the series requests of this plan do not need.
@@ -178,7 +162,7 @@ public struct FollowUpPlan: Hashable, Sendable {
     ///   - privacy: Whether the text names the open items (D029).
     public init(
         setting: FollowUpSetting?,
-        earlier: [FollowUpPeriod] = [],
+        changed: Date? = nil,
         reminders: ReminderPlan,
         items: [Item],
         schedules: [Schedule],
@@ -255,7 +239,6 @@ public struct FollowUpPlan: Hashable, Sendable {
             }
             return (itemID, versions.first!)
         }
-        let start = earlier.last?.end ?? .distantPast
         let step = Double(setting.interval.rawValue * 60)
         let end = now.addingTimeInterval(Double(Self.days) * 86_400)
         var contents: [String: ReminderContent] = [:]
@@ -275,11 +258,15 @@ public struct FollowUpPlan: Hashable, Sendable {
                     return (name: item.name, stop: min(latest, next ?? latest))
                 }
             let single = single(of: group)
-            // The setting of now sets the follow-ups from `start` on, at most the rest of the limit.
-            let first = max(1, Int((start.timeIntervalSince(slotInstant) / step).rounded(.up)))
-            let left = setting.count.limit - Self.count(of: slotInstant, in: earlier, before: now)
+            // A dose before the last change can have follow-ups of earlier settings. Each interval is a multiple of
+            // 5 minutes, so at most one came for each 5 minutes from the slot time to `changed`. The setting of now
+            // gets only the rest of the limit, and only after `changed`. A later dose gets the setting of now.
+            let came = changed.map { min(FollowUpCount.untilRecordedLimit, max(0, Int($0.timeIntervalSince(slotInstant) / 300))) } ?? 0
+            let left = min(setting.count.limit, FollowUpCount.untilRecordedLimit - came)
+            var counted = 0
             var future: [FollowUpRequest] = []
-            for number in 1...max(setting.count.limit, first + left - 1) {
+            for number in 1... {
+                guard counted < left || number <= setting.count.limit else { break }
                 let fireDate = slotInstant.addingTimeInterval(Double(number) * step)
                 let due = items.filter { $0.stop > fireDate }
                 // The instants only grow, so a later follow-up has no item too.
@@ -292,7 +279,9 @@ public struct FollowUpPlan: Hashable, Sendable {
                 let identifier = group.identifier(of: number)
                 // A delivered follow-up of an earlier setting can have this number. It stays while its text is true.
                 contents[identifier] = content
-                guard number >= first, number < first + left, fireDate > now, fireDate <= end else { continue }
+                guard counted < left, fireDate > changed ?? .distantPast else { continue }
+                counted += 1
+                guard fireDate > now, fireDate <= end else { continue }
                 var userInfo = [
                     ReminderRequest.seriesIDKey: group.seriesID,
                     FollowUpRequest.plannedDateKey: group.dateText,
@@ -329,23 +318,6 @@ public struct FollowUpPlan: Hashable, Sendable {
     public static func takesDose(on date: LocalDate, at now: Date, in zone: NamedTimeZone) -> Bool {
         let today = LocalDate(now, in: zone)
         return date == today || (date == today.adding(days: -1) && now < latestInstant(of: date, in: zone))
-    }
-
-    /// The most follow-ups that the earlier settings set for the dose at `slotInstant` before `now`.
-    /// A setting counts the instants of its interval in its period, at most its limit. The real number
-    /// can be lower, for example after a record, so the dose then gets fewer follow-ups, never more.
-    static func count(of slotInstant: Date, in earlier: [FollowUpPeriod], before now: Date) -> Int {
-        var start = Date.distantPast
-        var count = 0
-        for period in earlier {
-            defer { start = period.end }
-            guard let setting = period.setting else { continue }
-            let step = Double(setting.interval.rawValue * 60)
-            let first = max(1, Int((start.timeIntervalSince(slotInstant) / step).rounded(.up)))
-            let last = Int((min(period.end, now).timeIntervalSince(slotInstant) / step).rounded(.up)) - 1
-            count += min(setting.count.limit, max(0, last - first + 1))
-        }
-        return count
     }
 
     /// The requests that get room, nearest first (D039).

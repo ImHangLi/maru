@@ -99,7 +99,7 @@ All statements about Maru describe the code on `main`. Nobody verified them with
 
 | Gap | Who has it | How often users ask | Maru's state |
 |---|---|---|---|
-| A reminder that repeats until the user confirms, or an alarm that passes silent mode | Medisafe, MyTherapy, Pillo, and Apple Health with Critical Alerts | The most frequent wish about function in the world study | In progress (D039): "Until Recorded" sends up to 12 follow-ups for each dose, on the same day. It is not an alarm, and it does not pass silent mode or a Focus |
+| A reminder that repeats until the user confirms, or an alarm that passes silent mode | Medisafe, MyTherapy, Pillo, and Apple Health with Critical Alerts | The most frequent wish about function in the world study | In progress (D039): "Until Recorded" sends up to 12 follow-ups for each dose, until 01:00 of the next day at the latest. It is not an alarm, and it does not pass silent mode or a Focus |
 | Time Sensitive reminders | Apple Health and others | Part of the same wish | Planned, after the Apple Developer Program membership (D034) |
 | Apple Watch app | Apple Health, Medisafe | Frequent outside China | Planned later (roadmap) |
 | Home Screen or Lock Screen widget | Medisafe has a Lock Screen widget | Frequent in both studies | In progress |
@@ -145,7 +145,7 @@ Check each claim again against the build that ships.
 | "More reliable than" a named app | Maru has no release and no crash data. The competitor problems are user reports |
 | "Better than Apple Health" with no limit | Apple has more functions. The honest form is "fewer taps to record", after a count on a device |
 | "The only private reminder", or "the only free one" | Apple Health is free and has no account. Many new apps make the same promise |
-| "Reminds you until you take it", with no limit | "Until Recorded" sends at most 12 follow-ups for each dose, on the same day (D039). State the number |
+| "Reminds you until you take it", with no limit | "Until Recorded" sends at most 12 follow-ups for each dose, until 01:00 of the next day at the latest (D039). State the number |
 | "Breaks through Focus or silent mode" | Time Sensitive reminders are not done (D034). Critical Alerts are out (D021) |
 | "Every other day", "widget", or "feedback in the app" | In progress. Claim them only when they are in the released build |
 | "Backup", "sync", "Apple Watch", "refill reminders", "family sharing" | Not in the app |

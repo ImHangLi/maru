@@ -13,7 +13,7 @@ public protocol FollowUpCenter: ReminderCenter {
 /// Where the engine reads the follow-ups that the saved plan and the records ask for.
 public protocol FollowUpSource: Sendable {
     func followUpPlan(
-        setting: FollowUpSetting?, earlier: [FollowUpPeriod], privacy: ReminderPrivacy, at now: Date,
+        setting: FollowUpSetting?, changed: Date?, privacy: ReminderPrivacy, at now: Date,
         deviceTimeZone: NamedTimeZone
     ) async throws -> FollowUpPlan
 }
@@ -22,10 +22,13 @@ public protocol FollowUpSource: Sendable {
 public protocol FollowUpSettingStore: Sendable {
     /// `nil` means off. A new install has no value, so the setting starts off (spec 4).
     func load() -> FollowUpSetting?
-    /// The settings before the one of `load`, in the order of their changes, for at least `FollowUpPlan.periodsKept`.
-    func earlier() -> [FollowUpPeriod]
-    /// Saves the setting. A change adds the setting before it to `earlier`.
+    /// The time of the last change of the setting, after the engine confirmed the removal of the old follow-ups.
+    /// `Date.distantFuture` from a change until that confirmation. `nil` when no change is known (D039).
+    func changed() -> Date?
+    /// Saves the setting. A change sets `changed` to `Date.distantFuture`.
     func save(_ setting: FollowUpSetting?)
+    /// Sets `changed` to the time of now and returns it. The engine calls it when the system holds no old follow-up.
+    func confirmChange() -> Date
 }
 
 /// What one refresh found after its changes.
@@ -98,8 +101,9 @@ public actor FollowUpEngine {
 
     /// Makes the pending and the delivered follow-ups agree with the plan, the records, and the setting.
     ///
-    /// Runs do not overlap, as in `ReminderEngine`. An error from the source stops the run before it changes
-    /// a request. The run never asks for the notification permission. The series engine does that.
+    /// Runs do not overlap, as in `ReminderEngine`. An error from the source stops the run before it adds
+    /// a request. After a change of the setting, the run removes the old follow-ups before it reads the source.
+    /// The run never asks for the notification permission. The series engine does that.
     public func refresh(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let previous = lastRun
         let run = Task {
@@ -112,8 +116,22 @@ public actor FollowUpEngine {
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
+        var now = now
+        var changed = setting.changed()
+        // After a change of the setting, every old follow-up goes before the plan (D039). An old one can come
+        // until the system confirms its removal, so the time of the change is the time after the confirmation.
+        // The plan counts the old follow-ups of a dose up to that time. Until then the plan sets no follow-up,
+        // also when a run stops before the confirmation.
+        if changed == .distantFuture {
+            await remove(Array(Self.followUps(await pendingAfterRemoval()).keys))
+            if Self.followUps(await pendingAfterRemoval()).isEmpty {
+                let confirmed = setting.confirmChange()
+                changed = confirmed
+                now = max(now, confirmed)
+            }
+        }
         let plan = try await source.followUpPlan(
-            setting: setting.load(), earlier: setting.earlier(), privacy: privacy, at: now, deviceTimeZone: deviceTimeZone
+            setting: setting.load(), changed: changed, privacy: privacy, at: now, deviceTimeZone: deviceTimeZone
         )
         let authorization = await center.authorization()
         // Remove before add, the other order from `ReminderEngine`. A moved slot time or a new setting changes

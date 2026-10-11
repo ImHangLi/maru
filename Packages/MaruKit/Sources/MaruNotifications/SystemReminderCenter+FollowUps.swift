@@ -50,11 +50,11 @@ extension UNNotificationRequest {
 /// The follow-up setting in `UserDefaults.standard`. No interval means off (spec 4).
 ///
 /// The interval key is the key of the one delay of D021. A value from before D039 has no count,
-/// so it means one follow-up after that time. The earlier settings are JSON. They hold no health data (D014).
+/// so it means one follow-up after that time. The time of the last change holds no health data (D014).
 public struct DefaultsFollowUpSetting: FollowUpSettingStore {
     static let key = "reminders.followUpMinutes"
     static let countKey = "reminders.followUpCount"
-    static let earlierKey = "reminders.followUpEarlier"
+    static let changedKey = "reminders.followUpChanged"
 
     public init() {}
 
@@ -65,21 +65,13 @@ public struct DefaultsFollowUpSetting: FollowUpSettingStore {
         return FollowUpSetting(count: count ?? .one, interval: interval)
     }
 
-    public func earlier() -> [FollowUpPeriod] {
-        UserDefaults.standard.data(forKey: Self.earlierKey)
-            .flatMap { try? JSONDecoder().decode([FollowUpPeriod].self, from: $0) } ?? []
+    public func changed() -> Date? {
+        UserDefaults.standard.object(forKey: Self.changedKey) as? Date
     }
 
     public func save(_ setting: FollowUpSetting?) {
         let defaults = UserDefaults.standard
-        let old = load()
-        if old != setting {
-            let now = Date()
-            let kept = earlier().filter { $0.end > now.addingTimeInterval(-FollowUpPlan.periodsKept) }
-            if let data = try? JSONEncoder().encode(kept + [FollowUpPeriod(setting: old, end: now)]) {
-                defaults.set(data, forKey: Self.earlierKey)
-            }
-        }
+        let isChange = load() != setting
         if let setting {
             defaults.set(setting.interval.rawValue, forKey: Self.key)
             defaults.set(setting.count.rawValue, forKey: Self.countKey)
@@ -87,5 +79,14 @@ public struct DefaultsFollowUpSetting: FollowUpSettingStore {
             defaults.removeObject(forKey: Self.key)
             defaults.removeObject(forKey: Self.countKey)
         }
+        // "Off" also counts: the old follow-ups can still come until the engine confirms their removal.
+        // The mark comes after the setting, so an engine run that confirms after the mark reads the new setting.
+        if isChange { defaults.set(Date.distantFuture, forKey: Self.changedKey) }
+    }
+
+    public func confirmChange() -> Date {
+        let now = Date()
+        UserDefaults.standard.set(now, forKey: Self.changedKey)
+        return now
     }
 }

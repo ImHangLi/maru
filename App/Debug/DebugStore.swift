@@ -31,7 +31,7 @@ enum DebugStore {
     private static let preferenceKeys = [
         "reminders.followUpMinutes",
         "reminders.followUpCount",
-        "reminders.followUpEarlier",
+        "reminders.followUpChanged",
     ]
 
     /// What this launch did. The first use applies the request, so each read of the store directory comes after it.
