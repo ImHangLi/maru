@@ -6,7 +6,7 @@ public struct DeliveredReminder: Hashable, Sendable {
     /// the time of an intake.
     public let deliveredAt: Date
     /// The `userInfo` of the request. A series request has `ReminderRequest.seriesIDKey` and
-    /// `ReminderRequest.scheduleRevisionKey`.
+    /// `ReminderRequest.scheduleRevisionKey`. A dated request also has `ReminderRequest.dueDateKey` (D036).
     public let userInfo: [String: String]
     /// The weekday of the request trigger, or `nil` for a request that fires every day.
     /// A weekly request fires only on its weekday, so the planned date has this weekday.
@@ -125,6 +125,8 @@ public struct ReminderTapResolver: Sendable {
               let series = SeriesKey(seriesID: seriesID)
         else { return .notSeries }
         let revision = reminder.userInfo[ReminderRequest.scheduleRevisionKey]
+        // A repeating request stands for the slots with a weekly rule. A follow-up stands for every slot of its time.
+        let rule: SeriesKey.Rule? = reminder.userInfo[FollowUpRequest.plannedDateKey] == nil ? .weekly : nil
         // A series that follows the device fired in the zone that the device had then. That zone is the zone of now
         // only when the engine saw the zone of now before the delivery, and no other zone since.
         let zone = series.timeZone ?? deviceTimeZone
@@ -137,6 +139,31 @@ public struct ReminderTapResolver: Sendable {
         let deliveryDate = LocalDate(reminder.deliveredAt, in: zone)
         let today = LocalDate(now, in: zone)
 
+        // A dated request carries its plan date, so the resolver does not read the date from the delivery (D036).
+        // Its members are the slots that repeat every second day and are due on that date.
+        if let dueDate = reminder.userInfo[ReminderRequest.dueDateKey] {
+            guard let date = LocalDate(dayText: dueDate) else { return .notSeries }
+            let planned = zone.resolve(series.time, on: date)
+            let lag = reminder.deliveredAt.timeIntervalSince(planned.earliestInstant)
+            var doubts = Set<ReminderTapDoubt>()
+            if date != today { doubts.insert(.otherDay) }
+            if planned.needsReview { doubts.insert(.clockChange) }
+            if !zoneIsKnown {
+                doubts.insert(.zoneChange)
+            } else if !(-Self.earlyTolerance...Self.onTimeTolerance).contains(lag) {
+                doubts.insert(.delayed)
+            }
+            let reminding = schedules.filter { $0.isEnabled && $0.endDate == nil }
+            let isCurrent = revision != nil
+                && revision == series.revision(on: date, schedules: reminding, rule: .everyOtherDay)
+            if !isCurrent { doubts.insert(.olderPlan) }
+            let candidates = series.candidates(
+                on: date, schedules: isCurrent ? reminding : schedules, zone: zone, current: isCurrent, rule: .everyOtherDay
+            )
+            if candidates.isEmpty { doubts.insert(.noMatch) }
+            return doubts.isEmpty ? .resolved(candidates) : .confirm(candidates: candidates, doubts: doubts)
+        }
+
         // On time: the delivery is at the planned instant of its date, or of the date before for a time near midnight.
         // A daily request delayed by almost exactly a day also looks on time. The user still sees the date and records.
         for date in [deliveryDate, deliveryDate.adding(days: -1)] where zoneIsKnown && onTriggerWeekday(date) {
@@ -148,10 +175,10 @@ public struct ReminderTapResolver: Sendable {
             if planned.needsReview { doubts.insert(.clockChange) }
             // The plan registers only the schedules that remind. With the revision of that plan, the members are certain.
             let reminding = schedules.filter { $0.isEnabled && $0.endDate == nil }
-            let isCurrent = revision != nil && revision == series.revision(on: date, schedules: reminding)
+            let isCurrent = revision != nil && revision == series.revision(on: date, schedules: reminding, rule: .weekly)
             if !isCurrent { doubts.insert(.olderPlan) }
             let candidates = series.candidates(
-                on: date, schedules: isCurrent ? reminding : schedules, zone: zone, current: isCurrent
+                on: date, schedules: isCurrent ? reminding : schedules, zone: zone, current: isCurrent, rule: rule
             )
             if candidates.isEmpty { doubts.insert(.noMatch) }
             return doubts.isEmpty ? .resolved(candidates) : .confirm(candidates: candidates, doubts: doubts)
@@ -168,9 +195,11 @@ public struct ReminderTapResolver: Sendable {
                     ? planned <= reminder.deliveredAt
                     : abs(planned.timeIntervalSince(reminder.deliveredAt)) <= Self.zoneSpread
             }
-            .filter { !series.candidates(on: $0, schedules: schedules, zone: zone, current: false).isEmpty }
+            .filter { !series.candidates(on: $0, schedules: schedules, zone: zone, current: false, rule: rule).isEmpty }
             .prefix(zoneIsKnown ? Self.delayedDates : .max)
-        let candidates = dates.flatMap { series.candidates(on: $0, schedules: schedules, zone: zone, current: false) }
+        let candidates = dates.flatMap {
+            series.candidates(on: $0, schedules: schedules, zone: zone, current: false, rule: rule)
+        }
         var doubts: Set<ReminderTapDoubt> = [zoneIsKnown ? .delayed : .zoneChange]
         if dates.contains(where: { $0 != today }) { doubts.insert(.otherDay) }
         if candidates.isEmpty { doubts.insert(.noMatch) }
@@ -193,7 +222,7 @@ extension ReminderTapResolver {
     ///
     /// A series reminder must resolve with no doubt, by the rules of `resolve`: on time, today, the plan of now,
     /// and no clock change. Its revision names the slots and the schedule versions of its members, so a reminder
-    /// from before a plan change does not resolve.
+    /// from before a plan change does not resolve. A dated request follows the same rules, with the date that it carries (D036).
     /// A follow-up has no revision. It carries its plan date and the ID of its one item. Its date must be today,
     /// the device zone must be certain for a series that follows the device, and the dose must be of that item.
     /// A follow-up with no item ID gives `nil`.
@@ -228,7 +257,7 @@ extension ReminderTapResolver {
         let activeItems = Set(items.filter { !$0.isArchived }.map(\.id))
         // A follow-up comes only for a schedule that reminds.
         let reminding = schedules.filter { activeItems.contains($0.itemID) && $0.isEnabled && $0.endDate == nil }
-        let candidates = series.candidates(on: date, schedules: reminding, zone: zone, current: true)
+        let candidates = series.candidates(on: date, schedules: reminding, zone: zone, current: true, rule: nil)
         // A dose of another item at this time means that the plan changed. Then the action records nothing.
         let ownSlots = Set(reminding.filter { $0.itemID.rawValue.uuidString == itemID }.flatMap(\.slots).map(\.id))
         return candidates.allSatisfy { ownSlots.contains($0.slotID) } ? candidates : []
@@ -257,19 +286,34 @@ private struct SeriesKey {
         self.time = time
     }
 
-    /// Whether a version reminds in the time zone rule of this series.
-    func matches(_ policy: TimeZonePolicy) -> Bool {
-        switch policy {
+    /// The repeat rule of the versions that a request stands for. A repeating request and a dated request
+    /// at the same time have different members (D036).
+    enum Rule {
+        case weekly
+        case everyOtherDay
+    }
+
+    /// Whether a version reminds in the time zone rule of this series, with the repeat rule. `nil` means each rule.
+    func matches(_ version: ScheduleVersion, rule: Rule?) -> Bool {
+        let inZone = switch version.timeZonePolicy {
         case let .fixed(zone): zone == timeZone
         case .followsDevice: timeZone == nil
+        }
+        return switch rule {
+        case nil: inZone
+        case .weekly: inZone && version.everyOtherDayFrom == nil
+        case .everyOtherDay: inZone && version.everyOtherDayFrom != nil
         }
     }
 
     /// The revision that `ReminderPlan` gives this series on a date, with the version in force on the date.
-    /// Pass the schedules that remind. The members of every weekday count, as in `ReminderSeries`.
-    func revision(on date: LocalDate, schedules: [Schedule]) -> String? {
+    /// Pass the schedules that remind. For a repeating series, the members of every weekday count, as in
+    /// `ReminderSeries`. For a dated series, only the members that are due on the date count.
+    func revision(on date: LocalDate, schedules: [Schedule], rule: Rule) -> String? {
         let members = schedules.flatMap { schedule in
-            guard let version = schedule.version(on: date), matches(version.timeZonePolicy) else {
+            guard let version = schedule.version(on: date), matches(version, rule: rule),
+                  rule == .weekly || version.isDue(on: date)
+            else {
                 return [ReminderSeries.Member]()
             }
             return version.slotTimes.filter { $0.time == time }.map {
@@ -286,10 +330,12 @@ private struct SeriesKey {
     /// Without it, the slot can also have the time in the version of the day before, because the system can still
     /// hold a request of that version. The occurrence then has the time of the plan of today, as a stored
     /// occurrence with no intake follows the plan (D019).
-    func candidates(on date: LocalDate, schedules: [Schedule], zone: NamedTimeZone, current: Bool) -> [PlannedOccurrence] {
+    func candidates(
+        on date: LocalDate, schedules: [Schedule], zone: NamedTimeZone, current: Bool, rule: Rule?
+    ) -> [PlannedOccurrence] {
         schedules.flatMap { schedule in
             let versions = current ? [schedule.version(on: date)] : [schedule.version(on: date), schedule.version(on: date.adding(days: -1))]
-            let slots = Set(versions.compactMap { $0 }.filter { matches($0.timeZonePolicy) }.flatMap { version in
+            let slots = Set(versions.compactMap { $0 }.filter { matches($0, rule: rule) }.flatMap { version in
                 version.slotTimes.filter { $0.time == time }.map(\.slotID)
             })
             return schedule.plannedOccurrences(on: date, deviceTimeZone: zone).filter { slots.contains($0.slotID) }

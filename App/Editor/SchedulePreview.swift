@@ -3,14 +3,18 @@ import MaruCore
 
 /// The text under the reminder times that states the whole plan, for example "Every day at 08:00, 20:00, with no end date" (spec 2.1, T03).
 enum SchedulePreview {
-    /// - Parameter otherZone: The zone that a medication keeps, only when it is not the zone of the device (spec 8.5).
-    static func text(for draft: ItemDraft, problem: DraftProblem?, otherZone: NamedTimeZone?) -> String {
+    /// - Parameters:
+    ///   - otherZone: The zone that a medication keeps, only when it is not the zone of the device (spec 8.5).
+    ///   - today: Today in the zone of the plan. A plan of every second day that starts today or tomorrow says so.
+    static func text(for draft: ItemDraft, problem: DraftProblem?, otherZone: NamedTimeZone?, today: LocalDate?) -> String {
         switch problem {
         case .noName:
             // Save stays off until the name has text. The line still shows the plan (D026).
             break
         case .noWeekday:
             return String(localized: "Choose at least one day.", comment: "Edit screen: the preview line when no weekday is on.")
+        case .noFirstDay:
+            return chooseFirstDay
         case .duplicateTime:
             return String(localized: "Two times are the same.", comment: "Edit screen: the preview line when two reminder times are equal.")
         case .noTimeZone:
@@ -34,13 +38,17 @@ enum SchedulePreview {
                 comment: "Edit screen: the preview line for an item with no time. Maru sends no notification for it."
             )
         }
+        // With no name, the line still shows the plan, and a plan of every second day needs its first day.
+        let start = draft.everyOtherDay?.start?.date
+        if draft.everyOtherDay != nil, start == nil { return chooseFirstDay }
         var times = draft.sortedTimes.map { format(hour: $0.hour, minute: $0.minute) }
             .formatted(.list(type: .and, width: .narrow))
         if let otherZone {
             let local = draft.sortedTimes.map { localTime(hour: $0.hour, minute: $0.minute, in: otherZone) }
             // A time can fall on another day here, for example 9:00 am Monday in Shanghai is Sunday evening in
             // Los Angeles. Then each local time names its own days. Every day has no shift to show.
-            let showsDays = draft.weekdays.count < Weekday.allCases.count && local.contains { $0.dayShift != 0 }
+            let showsDays = draft.everyOtherDay == nil && draft.weekdays.count < Weekday.allCases.count
+                && local.contains { $0.dayShift != 0 }
             let here = local.map { time in
                 guard showsDays else { return time.text }
                 let days = days(Set(draft.weekdays.map { $0.shifted(by: time.dayShift) }))
@@ -55,11 +63,25 @@ enum SchedulePreview {
                 comment: "Edit screen: the times of a medication in its kept zone. Example: 9:00 AM Shanghai time (6:00 PM here for now). \"For now\" because a clock change in either zone can move the local time or day later."
             )
         }
-        let days = days(draft.weekdays)
-        let plan = String(
-            localized: "\(days) at \(times), with no end date",
-            comment: "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times."
-        )
+        let plan: String
+        if let start, let today, start == today {
+            plan = String(
+                localized: "Every other day at \(times), starting today, with no end date",
+                comment: "Edit screen: the preview line of a plan that repeats every second day from today. The placeholder is the times."
+            )
+        } else if let start, let today, start == today.adding(days: 1) {
+            plan = String(
+                localized: "Every other day at \(times), starting tomorrow, with no end date",
+                comment: "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times."
+            )
+        } else {
+            // A plan of every second day that started before today has no first day to name.
+            let days = days(draft.weekdays, everyOtherDay: start != nil)
+            plan = String(
+                localized: "\(days) at \(times), with no end date",
+                comment: "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times."
+            )
+        }
         guard let dose = Dose(draft.amount) else { return plan }
         // The amount has its own line.
         return "\(dose.text.trimmingCharacters(in: .whitespaces))\n\(plan)"
@@ -109,6 +131,19 @@ enum SchedulePreview {
 
     private static var timeStyle: Date.FormatStyle {
         Date.FormatStyle(date: .omitted, time: .shortened, calendar: utcCalendar, timeZone: .gmt)
+    }
+
+    private static var chooseFirstDay: String {
+        String(
+            localized: "Choose the first day.",
+            comment: "Edit screen: the preview line and the hint when a plan repeats every second day and has no first day yet."
+        )
+    }
+
+    /// The repeat rule of a plan in words: "Every other day", "Every day", or its weekdays (D036).
+    static func days(_ weekdays: Set<Weekday>, everyOtherDay: Bool) -> String {
+        guard everyOtherDay else { return days(weekdays) }
+        return String(localized: "Every other day", comment: "The days of a plan that repeats every second day.")
     }
 
     static func days(_ weekdays: Set<Weekday>) -> String {

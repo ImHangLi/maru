@@ -55,13 +55,13 @@ struct RecoveryTests {
 
     @Test func migratorNeverErasesTheDatabase() {
         #expect(!Schema.migrator.eraseDatabaseOnSchemaChange)
-        #expect(Schema.migrator.migrations == ["v1", "v2", "v3"])
+        #expect(Schema.migrator.migrations == ["v1", "v2", "v3", "v4"])
     }
 
     @Test func failedMigrationReturnsATypedErrorAndKeepsTheData() async throws {
         let (seed, taken) = try await storeARecord()
         // The migration changes and deletes data, and then fails.
-        let broken = migrator(adding: "v4") { db in
+        let broken = migrator(adding: "v5") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
             try db.execute(sql: "DELETE FROM occurrenceState")
             try db.execute(sql: "UPDATE item SET name = 'changed'")
@@ -72,7 +72,7 @@ struct RecoveryTests {
         }
         #expect(try fileNames().contains(LocalStore.fileName))
 
-        // The database is at version 3 with all its data. It is not empty and not rebuilt.
+        // The database is at version 4 with all its data. It is not empty and not rebuilt.
         let store = try LocalStore(directory: directory.url)
         #expect(try await store.items() == [seed.item])
         #expect(try await store.schedule(id: seed.schedule.id) == seed.schedule)
@@ -80,7 +80,7 @@ struct RecoveryTests {
         let (applied, hasExtraTable) = try await store.writer.read { db in
             (try Schema.migrator.appliedMigrations(db), try db.tableExists("extra"))
         }
-        #expect(applied == ["v1", "v2", "v3"])
+        #expect(applied == ["v1", "v2", "v3", "v4"])
         #expect(!hasExtraTable)
     }
 
@@ -113,7 +113,7 @@ struct RecoveryTests {
                 """,
                 [fishOil.id.text]
             )
-            try await store.save(schedule)
+            try await store.saveBeforeVersion4(schedule)
             try await store.save(occurrence)
             try await store.record(taken, scheduleVersionID: occurrence.scheduleVersionID)
             try store.writer.close()
@@ -144,7 +144,8 @@ struct RecoveryTests {
         let taken = Fixtures.event(for: occurrences[1], .taken)
         do {
             let store = try LocalStore(directory: directory.url, migrator: version2)
-            try await store.save(item, schedule: schedule)
+            try await store.save(item)
+            try await store.saveBeforeVersion4(schedule)
             for occurrence in occurrences {
                 // The insert of `save` names no item column, so it runs on version 2.
                 try await store.save(occurrence)
@@ -166,6 +167,51 @@ struct RecoveryTests {
         let event = IntakeEvent(occurrenceID: dose.id, action: .taken, occurredAt: Date(), recordedAt: Date(), source: .app)
         try await store.recordAsNeeded(event, occurrence: dose)
         #expect(try await store.asNeededOccurrence(id: dose.id) == dose)
+    }
+
+    /// A database of version 3 keeps every schedule and record after `v4`, with the weekdays that it had,
+    /// and then takes a schedule that repeats every second day (D036).
+    @Test func version3SchedulesStayAfterTheEveryOtherDayMigration() async throws {
+        var version3 = DatabaseMigrator()
+        for (identifier, sql) in [("v1", Schema.v1), ("v2", Schema.v2), ("v3", Schema.v3)] {
+            version3.registerMigration(identifier) { db in
+                try db.execute(sql: sql)
+            }
+        }
+        let item = try Item(category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
+        var (schedule, morning, _) = Fixtures.twiceDailySchedule(itemID: item.id)
+        let occurrence = Fixtures.occurrence(slotID: morning, in: schedule)
+        let taken = Fixtures.event(for: occurrence, .taken)
+        do {
+            let store = try LocalStore(directory: directory.url, migrator: version3)
+            try await store.save(item)
+            try await store.saveBeforeVersion4(schedule)
+            try await store.save(occurrence)
+            try await store.record(taken, scheduleVersionID: occurrence.scheduleVersionID)
+            try store.writer.close()
+        }
+
+        let store = try LocalStore(directory: directory.url)
+        #expect(try await store.schedule(id: schedule.id) == schedule)
+        #expect(schedule.versions[0].everyOtherDayFrom == nil)
+        try await store.expectConsistent(occurrence, events: [taken], status: .taken)
+        // An edit to every second day is a new version. It loads with its start date, and the old version stays.
+        try schedule.appendVersion(
+            ScheduleVersion(
+                scheduleID: schedule.id,
+                effectiveFrom: Fixtures.date(2026, 3, 2),
+                weeklyRule: .everyDay,
+                everyOtherDayFrom: Fixtures.date(2026, 3, 3),
+                slotTimes: schedule.versions[0].slotTimes,
+                timeZonePolicy: .fixed(Fixtures.shanghai)
+            )
+        )
+        try await store.save(schedule)
+        #expect(try await store.schedule(id: schedule.id) == schedule)
+        // A start date with some weekdays only breaks the rule of the domain. The database rejects it.
+        await #expect(throws: (any Error).self) {
+            try await store.execute("UPDATE scheduleVersion SET weekdays = '135' WHERE everyOtherDayFrom IS NOT NULL")
+        }
     }
 
     // MARK: First launch
@@ -238,7 +284,7 @@ struct RecoveryTests {
     }
 
     @Test func databaseFromANewerAppIsReportedAndLeftInPlace() async throws {
-        let newer = migrator(adding: "v4") { db in
+        let newer = migrator(adding: "v5") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
         }
         let seed: Seed

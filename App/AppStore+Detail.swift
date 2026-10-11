@@ -14,12 +14,21 @@ struct ItemDetail: Equatable, Sendable {
         let event: IntakeEvent
     }
 
+    /// The day of the next dose of a plan that repeats every second day (D036).
+    struct NextDose: Equatable, Sendable {
+        let date: LocalDate
+        /// 0 for today and 1 for tomorrow.
+        let daysFromToday: Int
+    }
+
     /// The number of days that the recent records cover, today included.
     static let recentDays = 7
 
     let item: Item
     /// `nil` for an item with no time (T02).
     let schedule: Schedule?
+    /// `nil` for a plan that does not repeat every second day.
+    let nextDose: NextDose?
     /// Taken and skipped occurrences of the last `recentDays` days, newest first. An undone record does not show.
     let recent: [Recent]
 }
@@ -47,7 +56,27 @@ extension AppStore {
                 }
             }
             .sorted { ($0.plannedDate, $0.plannedTime, $0.event.occurredAt) > ($1.plannedDate, $1.plannedTime, $1.event.occurredAt) }
-        return ItemDetail(item: item, schedule: schedule, recent: recent)
+        let nextDose = schedule.flatMap { schedule in
+            deviceTimeZone.flatMap { Self.nextDose(of: schedule, at: now, deviceTimeZone: $0) }
+        }
+        return ItemDetail(item: item, schedule: schedule, nextDose: nextDose, recent: recent)
+    }
+
+    /// The first date from today on which a plan of every second day has a time that is still to come.
+    /// It reads the plan and not the records: a dose of today that the user recorded early still counts
+    /// until its time. So today after the last time gives the day after tomorrow.
+    private static func nextDose(of schedule: Schedule, at now: Date, deviceTimeZone: NamedTimeZone) -> ItemDetail.NextDose? {
+        guard let version = schedule.versions.last, version.everyOtherDayFrom != nil else { return nil }
+        let zone = if case let .fixed(zone) = version.timeZonePolicy { zone } else { deviceTimeZone }
+        let today = LocalDate(now, in: zone)
+        for days in 0...6 {
+            let date = today.adding(days: days)
+            let isToCome = schedule.plannedOccurrences(on: date, deviceTimeZone: deviceTimeZone).contains {
+                $0.timeZone.resolve($0.plannedTime, on: date).earliestInstant > now
+            }
+            if isToCome { return ItemDetail.NextDose(date: date, daysFromToday: days) }
+        }
+        return nil
     }
 
     /// Turns the reminders of the item on or off. The item stays on Today and My Items, and the user can still

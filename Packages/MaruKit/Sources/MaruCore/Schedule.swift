@@ -6,6 +6,8 @@ public enum ScheduleError: Error, Equatable, Sendable {
     case versionBeforeLatest
     case conflictingVersion(ScheduleVersionID)
     case noVersion
+    /// A version that repeats every second day has no weekday rule other than every day.
+    case weekdaysWithEveryOtherDay
 }
 
 /// A stable identity for one daily dose point, such as "the morning one".
@@ -35,6 +37,9 @@ public struct ScheduleVersion: Hashable, Sendable {
     /// The version applies from this date until the next version takes over.
     public let effectiveFrom: LocalDate
     public let weeklyRule: WeeklyRule
+    /// The start date of a version that repeats every second day (D036). `nil` means that `weeklyRule` decides.
+    /// The date can be before or after `effectiveFrom`: an edit of the time keeps it, so the rhythm stays.
+    public let everyOtherDayFrom: LocalDate?
     public let slotTimes: [SlotTime]
     /// The dose per intake as the user typed it. `nil` means no dose. There is no default dose.
     public let dose: Dose?
@@ -46,12 +51,14 @@ public struct ScheduleVersion: Hashable, Sendable {
         scheduleID: ScheduleID,
         effectiveFrom: LocalDate,
         weeklyRule: WeeklyRule,
+        everyOtherDayFrom: LocalDate? = nil,
         slotTimes: [SlotTime],
         dose: Dose? = nil,
         timeZonePolicy: TimeZonePolicy,
         productVersionID: ProductVersionID? = nil
     ) throws {
         guard !slotTimes.isEmpty else { throw ScheduleError.noSlotTimes }
+        guard everyOtherDayFrom == nil || weeklyRule == .everyDay else { throw ScheduleError.weekdaysWithEveryOtherDay }
         var seen = Set<ScheduleSlotID>()
         for slotTime in slotTimes where !seen.insert(slotTime.slotID).inserted {
             throw ScheduleError.duplicateSlot(slotTime.slotID)
@@ -60,6 +67,7 @@ public struct ScheduleVersion: Hashable, Sendable {
         self.scheduleID = scheduleID
         self.effectiveFrom = effectiveFrom
         self.weeklyRule = weeklyRule
+        self.everyOtherDayFrom = everyOtherDayFrom
         self.slotTimes = slotTimes
         self.dose = dose
         self.timeZonePolicy = timeZonePolicy
@@ -68,6 +76,16 @@ public struct ScheduleVersion: Hashable, Sendable {
 
     public func time(for slotID: ScheduleSlotID) -> WallClockTime? {
         slotTimes.first { $0.slotID == slotID }?.time
+    }
+
+    /// Whether the repeat rule has a dose on a date (spec 8.5, D036).
+    ///
+    /// A version that repeats every second day is due on its start date and on each date an even number of
+    /// calendar days after it. The rule counts calendar dates of the plan, and not hours. So a clock change
+    /// or another time zone does not move the rhythm, and a missed or skipped dose does not move it.
+    public func isDue(on date: LocalDate) -> Bool {
+        guard let start = everyOtherDayFrom else { return weeklyRule.weekdays.contains(date.weekday) }
+        return date >= start && date.days(since: start).isMultiple(of: 2)
     }
 }
 
@@ -137,6 +155,7 @@ public struct Schedule: Hashable, Sendable {
             scheduleID: id,
             effectiveFrom: effectiveFrom,
             weeklyRule: latest.weeklyRule,
+            everyOtherDayFrom: latest.everyOtherDayFrom,
             slotTimes: slotTimes,
             dose: latest.dose,
             timeZonePolicy: latest.timeZonePolicy,

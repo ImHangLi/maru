@@ -2,14 +2,8 @@ import Foundation
 import Testing
 @testable import MaruCore
 
-@Suite("Preferences, scope, and item color (spec 1, 8.2, 11.3, D021)")
+@Suite("Scope and item color (spec 1, D021)")
 struct ModelRuleTests {
-    // MARK: Preferences
-
-    @Test func defaultPreferencesAreConservative() {
-        #expect(Preferences.default.analyticsConsent == .notAsked)
-    }
-
     // MARK: No inventory (spec 1, T09)
 
     @Test func noTypeCarriesInventoryFields() throws {
@@ -22,7 +16,6 @@ struct ModelRuleTests {
             try #require(schedule.versions.first),
             occurrence,
             Fixtures.event(for: occurrence, .taken),
-            Preferences.default,
         ]
         let banned = ["inventory", "stock", "remaining", "bottle", "supply", "refill", "quantity", "count", "pills"]
         for value in values {

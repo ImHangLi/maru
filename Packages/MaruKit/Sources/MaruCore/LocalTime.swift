@@ -52,6 +52,26 @@ extension LocalDate {
         LocalDate(instantInUTC().addingTimeInterval(Double(days) * 86_400), in: .utc)
     }
 
+    /// The number of calendar days from `other` to this date. It is negative when this date is the earlier one.
+    /// A date has no time zone, so a day of 23 or 25 hours counts as one day.
+    public func days(since other: LocalDate) -> Int {
+        Int((instantInUTC().timeIntervalSince(other.instantInUTC()) / 86_400).rounded())
+    }
+
+    /// `YYYY-MM-DD`, for a request identifier and its `userInfo`.
+    var dayText: String {
+        String(format: "%04d-%02d-%02d", year, month, day)
+    }
+
+    /// Reads `dayText` back. `nil` for other text.
+    init?(dayText: String) {
+        let parts = dayText.split(separator: "-", omittingEmptySubsequences: false).map { Int($0) }
+        guard parts.count == 3, let year = parts[0], let month = parts[1], let day = parts[2],
+              let date = try? LocalDate(year: year, month: month, day: day)
+        else { return nil }
+        self = date
+    }
+
     public var weekday: Weekday {
         // The calendar counts from Sunday = 1. `Weekday` counts from Monday = 1.
         Weekday(rawValue: (utcCalendar.component(.weekday, from: instantInUTC()) + 5) % 7 + 1)!

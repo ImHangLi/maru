@@ -14,7 +14,7 @@ The `.xcodeproj` is generated from `project.yml` and is not in Git, so parallel 
 
 Owner decision. Agents own files, records, and routine decisions. The owner gates are in `docs/process.md`.
 
-## D004 · 2026-10-10 · CI builds only the package
+## D004 · 2026-10-10 · CI builds only the package (superseded by D031)
 
 Superseded by D031.
 
@@ -41,11 +41,11 @@ Owner decision. Use free on-device provisioning during milestone A. Buy the memb
 
 The owner chats in one thread. Each issue runs in a subagent that works in its own Git worktree. Do not open separate top-level chat threads unless the owner asks.
 
-## D009 · 2026-10-10 · Tests follow spec §16
+## D009 · 2026-10-10 · Tests follow spec §16 (narrowed by D016)
 
 Spec §16 requires domain and database tests, real-device notification records, and performance results. Add tests for domain, database, and scheduling logic in `Packages/MaruKit`.
 
-## D010 · 2026-10-10 · Today screen follows the time cards, with an orange accent
+## D010 · 2026-10-10 · Today screen follows the time cards, with an orange accent (style replaced by D011, orange accent replaced by D018)
 
 Owner decision. The Today screen uses variant B (one card per time slot). The accent color is orange, not green. The owner asked for less text and a style near Superpower, Everlab, and Anthropic: a warm neutral surface, one accent, and a serif for the large text. The study is in `docs/research/2026-10-10-visual-direction.md`. The exact orange and the refined layout (prototype variant B2) wait for the owner's answer. Write `docs/design.md` after that answer.
 
@@ -58,7 +58,7 @@ Owner decision. The owner rejected prototype variant B2. This decision supersede
 - Use fewer words. A row shows the name and the dose. The circle shows the state. The intake note and the recorded time move to the detail sheet and the correction dialog.
 - Design references are good Apple-style apps of any category, not only health apps.
 
-## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028)
+## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028, accent picker replaced by D021 and D025, dim and strikethrough removed by D032)
 
 Owner decision, after the study in `docs/research/2026-10-10-visual-direction.md`.
 
@@ -69,7 +69,7 @@ Owner decision, after the study in `docs/research/2026-10-10-visual-direction.md
 - Finished slots: when every item of a slot has a record, the slot shows as one line the next time the user returns to the app. A tap on the title opens it, and a second tap folds it. Only a finished slot folds.
 - These settings (accent, recorded-row style) join the scope of issue #11. The Today behavior joins issue #7.
 
-## D013 · 2026-10-11 · White surface, row content, and text size
+## D013 · 2026-10-11 · White surface, row content, and text size (white surface replaced by D021)
 
 Owner decision, after three rounds of surface options (see `docs/research/2026-10-10-visual-direction.md`).
 
@@ -111,7 +111,7 @@ Owner decision. The owner said that the app has too many tests (137 after three 
 
 Owner decision. The first release is in English. This includes the App Store screenshots and all store text. Simplified Chinese is optional and can follow later. This replaces "ship `en` and `zh-Hans` first" in `AGENTS.md`. Chat with the owner stays in Chinese.
 
-## D018 · 2026-10-11 · Pink default accent, day ring, and final small points
+## D018 · 2026-10-11 · Pink default accent, day ring, and final small points (ring removed by D026, My List and current slot points replaced by D020)
 
 Owner decision.
 
@@ -134,7 +134,7 @@ Agent decisions from issue #3 (PR #16), after two review rounds by a different m
 - The store has no schema change. The resolved instant is computed, not stored.
 - Open point for the history screen (#10): rows that are no longer planned and have no record stay in the database, so history must read by records.
 
-## D020 · 2026-10-11 · Ring, opening highlight, My List, palette, and settings entry (ring and icon-only tab setting removed by D026)
+## D020 · 2026-10-11 · Ring, opening highlight, My List, palette, and settings entry (ring and icon-only tab setting removed by D026, palette replaced by D021, My List form replaced by D032)
 
 Owner decisions, with two agent recommendations that the owner asked for.
 
@@ -145,7 +145,7 @@ Owner decisions, with two agent recommendations that the owner asked for.
 - Settings entry (agent recommendation, the owner asked): a gear button at the top left of both tabs that opens a sheet. Not a third tab. Reasons: settings are rare, a tab is for a place the user goes every day, Apple's own apps (Health, Fitness, App Store) put the same kind of entry in a top corner, and two tabs keep the bar calm. A reminder problem such as notifications turned off shows on Today itself (spec §2.2), so the user does not need to find settings to learn about it. The add button sits at the top right of both tabs. This keeps the two tabs of spec §1.
 - New optional setting: the tab bar shows icons with no words. Off by default. The names stay for VoiceOver.
 
-## D021 · 2026-10-11 · Direction after Apple Health Medications, no app accent, item colors, header wash (wash removed by D024)
+## D021 · 2026-10-11 · Direction after Apple Health Medications, no app accent, item colors, header wash (wash removed by D024, no accent setting replaced by D025)
 
 Owner decision, after the hands-on test in `docs/research/2026-10-11-apple-health-medications.md`. The owner accepted the recommendation: continue milestone A with a narrower positioning. The owner set three requirements for every flow: not tedious, intuitive, and simple. The owner asked for the Apple Health features that Maru should have, each in a simpler flow. The owner left the wash color and the details to the agent and went offline, so the agent made the choices below.
 
@@ -173,7 +173,7 @@ Not added: Critical Alerts (Apple grants this entitlement only on request, and s
 
 Agent decision, after the study in `docs/research/2026-10-11-healthkit-medications-api.md`. An app can only read the medications that the user allows and their dose events. It cannot write a dose, and it cannot read schedule times. So Maru cannot be a faster front end for Health. Option 2 of D021 is closed. An optional read-only name import stays a later candidate. It needs a device test of the entitlement first.
 
-## D023 · 2026-10-11 · Settings sheet and preference storage
+## D023 · 2026-10-11 · Settings sheet and preference storage (display settings removed by D026 and D032, foreground rule replaced by D027, no-names rule replaced by D029, feedback row added by D037)
 
 Agent decisions from issue #11.
 
@@ -204,7 +204,7 @@ Owner decision. The owner asked for a setting that changes the accent color of t
 - In light mode, orange, yellow, green, and mint have less than 3:1 contrast on white. As the tint, they get a darker value with the same hue that reaches 3:1. Dark mode uses the system colors.
 - A label on a filled tint, such as a check mark, a weekday letter, or the Save text, is white or black. White stays when it has at least 3:1 contrast on the fill. Otherwise the label is black. The rule checks the light and the dark value of the fill separately, so yellow, orange, green, and mint get black labels in dark mode. The color circles on the edit screen use the same rule.
 
-## D026 · 2026-10-11 · Native components only (notices removed by D028)
+## D026 · 2026-10-11 · Native components only (notices removed by D028, header check mark removed by D032)
 
 Owner decisions after use on the device. The owner asked to remove every control that is not a native component.
 
@@ -382,6 +382,59 @@ Owner decisions after the study in `docs/research/2026-10-11-user-feedback-cn.md
 - Stock, refill, and expiry stay out of scope (spec section 1), although about 13 mentions asked for them.
 - The first release answers the common questions directly, as a FAQ: `docs/faq.md`. The owner's words for the product: one single, separate, easy place for this job. A record is simple. A missed record is fine. The app exists to lower the mental load.
 - Do not build the app on the maintainer's Mac. CI is the build check. One local device build is acceptable for an install on the maintainer's iPhone.
+
+## D036 · 2026-10-11 · Every other day: rule and reminders
+
+Agent decision, under the owner decision D035. It changes spec 2.1, 8.1, 8.2, 8.3, 8.5, and 15 (new acceptance ID T51, and a note on T22).
+
+The rule:
+
+- A schedule version can have a start date for "every other day". A dose is due on the start date and on each date an even number of calendar days after it.
+- The rule counts calendar dates in the calendar and the time zone of the plan. It does not count hours. So a clock change and a time zone change do not move the rhythm. A missed or skipped dose does not move it.
+- The start date is in the schedule version. An edit of a time or of the amount makes a new version with the same start date, so the rhythm stays. A change of the rhythm or of the first day makes a new version from today with a new start date. Past records do not change.
+- A day with no dose has no occurrence. So the item is not on Today, and History shows no "No record" row for it. The three-day window and the history rules of D019 did not change.
+- Only this rule. No cycles, no changing amounts, and no interval in hours (spec 1).
+
+The database:
+
+- Migration `v4` adds one column, `scheduleVersion.everyOtherDayFrom`. A version from before has `NULL` and loads unchanged. A check keeps every weekday on a version with a start date, as the domain does.
+
+The reminders:
+
+- iOS has no repeating trigger for "every second day". A calendar trigger repeats by its components, and no component means "each second date".
+- A plan of every other day gets dated requests: one request that fires one time, for each of its next 7 due dates at each of its times. Each run of the reminder engine sets them again: after a save, at a launch, and on a return to the front. Follow-ups work the same way.
+- The dated requests are series requests. They use the identifier prefix, the budget of 48, the comparison of text and action, the removal ledger, and the room rules of the engine with no change. Their identifier ends with the date. The trigger is a calendar trigger with a date and `repeats: false`.
+- The repeating requests get the budget first, then the dated requests. So a change of one plan to every other day never removes the daily reminder of another plan. The 7 requests of one time fit in the budget together, or none of them is set. Then the schedule shows "Not Set" with "too many times". A plan never has a reminder on some of its dates only.
+- The limit: the last request is for the seventh due date from the last run. When the user does not open Maru before that date, the reminders of this plan stop after it. The repeating reminders of the other plans continue. Follow-ups stop after 7 days in the same way (D021). The difference is that a follow-up is optional, and this is the first reminder of the plan.
+- The item detail states the limit. When the reminder is "On" for such a plan, the footer says: "Maru sets the reminders of the next 7 dose days each time you open it." Spec 8.2 rejects a short queue that fails with no notice. This queue is the one exception, because the page states its length.
+- A daily item and an every-other-day item at the same time give two notifications on a due day, not one. The repeating request names only the daily item. The dated request names only the items that are due on its date. One grouped notification needs the daily item in a dated request too. Then the daily reminder also stops when the user does not open Maru, or the repeating request names an item on a day with no dose. Two notifications keep the daily reminder with no limit, and no notification names an item on a day when it is not due. Each of the two is for one item, so each has the "Taken" action (D034).
+- Two every-other-day items at the same time on the same dates share one request, as two daily items do.
+- A dated request carries the series ID, the schedule revision, and its plan date. The tap resolver reads the date from the request and not from the delivery time. The other rules of spec 8.3 stay: another day, a late delivery, an uncertain device zone, an older plan, or a clock change opens the confirmation. The revision of a dated request names only the slots that are due on its date. The revision of a repeating request names only the slots with a weekly rule. So the "Taken" action keeps its identity check (D034).
+- A follow-up is dated already, so it did not change. One follow-up names every open item of its time, also an every-other-day item on its due day.
+- A dated request can fire in the time of a run. The engine does not report a request as not registered when its fire time passed before the run read the pending requests. The run reads the clock at that read, after every wait. A request whose time is still to come must be pending, also when the time is near.
+- The reminder text did not change (D029), and the String Catalog of `MaruNotifications` has no new text.
+
+The screens:
+
+- The repeat page has "Every Day" and "Every Other Day" in the first section. Under it are the seven days, or the two choices "Starting Today" and "Starting Tomorrow". No date picker.
+- The app picks no first day (spec 2.1). Save stays off, and the plan line says "Choose the first day.", until the user chooses.
+- The draft keeps a start date, and not the words "today" or "tomorrow". It is the stored start date of the plan, or the calendar date that a first-day choice had at the tap. Only a tap on a first-day choice changes it, and the tap reads the date at that moment. So a save after midnight, or a draft that comes back on a later day, keeps the rhythm.
+- On an edit of a stored plan, the check mark is on "Starting Today" when today has a dose by the start date, else on "Starting Tomorrow". A tap on the row with the check mark changes nothing.
+- The plan line of a plan that starts today or tomorrow reads "Every other day at 8:00 AM, starting tomorrow, with no end date". A plan that started before today reads "Every other day at 8:00 AM, with no end date". The item detail shows "Every other day" and a row "Next Dose" with "Today", "Tomorrow", or a weekday. "Next Dose" reads the plan and not the records. After the last time of a due day it shows the day after tomorrow.
+- A tile of My Items has no plan line (D032), so My Items did not change.
+
+Rejected:
+
+- One grouped notification for a daily item and an every-other-day item. See above.
+- Two weekly requests, or any set of repeating requests. No set of weekday triggers gives every second day, because a week has seven days.
+- A repeating time-interval trigger of 48 hours. It counts hours, so a clock change moves it by one hour, and a time zone change moves it more. It also has no start date in the future.
+- A top-up in the background (`BGAppRefreshTask`). Spec 8.1 forbids a reminder that depends on a background refresh, and iOS gives no guarantee for one.
+- More than 7 due dates. Each time of such a plan uses 7 of the 48 requests. 14 dates halve the number of times that fit, for a longer limit that still exists.
+- A default first day. Spec 2.1 lets a draft show "every day", but the first day decides on which days the user takes the item.
+- A date picker for the first day. Two choices cover the need, and D035 asks for this schedule only.
+
+Tests (D016): three new tests. The rhythm across a clock change, the dated requests with their dates and the budget, and the migration.
+- Accepted limit, from the third review round: when the system clock moves back during the last read of the pending requests, a request that fired in that moment can count as missing, and the item shows "Not Set" until the next run of the engine. The next run corrects it. No record and no reminder is lost, so this stays as it is.
 
 ## D037 · 2026-10-11 · Feedback through a web form
 

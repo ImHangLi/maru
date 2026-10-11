@@ -78,6 +78,7 @@ struct ItemDetailView: View {
             }
             ScheduleSection(
                 schedule: detail.schedule,
+                nextDose: item.isArchived ? nil : detail.nextDose,
                 status: detail.schedule.flatMap { model.reminderStatus[$0.id] },
                 asksForReminder: detail.schedule?.isEnabled == true && !item.isArchived
             )
@@ -177,12 +178,15 @@ private struct DetailHeader: View {
     }
 }
 
-/// The plan that applies now: the time of each slot under its slot name, the days, the amount, the
+/// The plan that applies now: the time of each slot under its slot name, the days, the next dose of a plan
+/// that repeats every second day (D036), the amount, the
 /// kept time zone of a medication when the device is in another zone (spec 8.5), and the state of the
 /// reminder in the system (spec 8.1, T03). A save shows no message, so a failed reminder stays visible here.
 private struct ScheduleSection: View {
     @Environment(\.openURL) private var openURL
     let schedule: Schedule?
+    /// The day of the next dose of a plan that repeats every second day. `nil` for every other plan.
+    let nextDose: ItemDetail.NextDose?
     /// `nil` until a run of the reminder engine reports this schedule.
     let status: ReminderStatus?
     /// The plan asks for a reminder: its reminders are on, and the item is not archived.
@@ -213,7 +217,20 @@ private struct ScheduleSection: View {
                 }
             }
             LabeledContent("Days") {
-                Text(verbatim: SchedulePreview.days(version.weeklyRule.weekdays))
+                Text(
+                    verbatim: SchedulePreview.days(
+                        version.weeklyRule.weekdays, everyOtherDay: version.everyOtherDayFrom != nil
+                    )
+                )
+            }
+            if let nextDose {
+                LabeledContent("Next Dose") {
+                    switch nextDose.daysFromToday {
+                    case 0: Text("Today")
+                    case 1: Text("Tomorrow")
+                    default: Text(verbatim: weekday(nextDose.date))
+                    }
+                }
             }
             if let dose = version.dose {
                 LabeledContent("Amount") { Text(verbatim: dose.text) }
@@ -228,6 +245,15 @@ private struct ScheduleSection: View {
             Text("No times set")
                 .foregroundStyle(.secondary)
         }
+    }
+
+    /// A plan date has no time and no zone, so it uses a fixed time in UTC, as the edit screen does.
+    private func weekday(_ date: LocalDate) -> String {
+        let calendar = SchedulePreview.utcCalendar
+        let value = calendar.date(from: DateComponents(year: date.year, month: date.month, day: date.day)) ?? .now
+        var style = Date.FormatStyle.dateTime.weekday(.wide)
+        style.timeZone = .gmt
+        return value.formatted(style)
     }
 
     /// "On" only when the system holds every request. A plan with reminders off shows no row: the header says it.
@@ -253,6 +279,9 @@ private struct ScheduleSection: View {
         case .tooMany?: "The plan has too many times for iPhone."
         case .notSet?: "Maru tries again when you open it."
         case .notConfirmed?: "Maru checks again when you open it."
+        // iPhone has no repeating reminder for every second day, so "On" has a limit here. The page states it (D036).
+        case .set? where schedule?.versions.last?.everyOtherDayFrom != nil:
+            "Maru sets the reminders of the next 7 dose days each time you open it."
         case .set?, .off?, .notAsked?, nil: nil
         }
     }

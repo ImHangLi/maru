@@ -72,13 +72,13 @@ extension Occurrence {
 
 extension Schedule {
     /// The occurrences that the schedule plans for one date: one for each slot of the version in force.
-    /// It plans nothing before the first version, after the end date, or on a weekday that the rule does not have.
+    /// It plans nothing before the first version, after the end date, or on a date that the repeat rule does not have.
     ///
     /// The time zone is the named zone of a fixed policy, or `deviceTimeZone` when the version follows the device.
     /// `isEnabled` turns the reminders off. The user can still record, so it does not change the plan (T07).
     public func plannedOccurrences(on date: LocalDate, deviceTimeZone: NamedTimeZone) -> [PlannedOccurrence] {
         if let endDate, date > endDate { return [] }
-        guard let version = version(on: date), version.weeklyRule.weekdays.contains(date.weekday) else { return [] }
+        guard let version = version(on: date), version.isDue(on: date) else { return [] }
         let timeZone = switch version.timeZonePolicy {
         case let .fixed(zone): zone
         case .followsDevice: deviceTimeZone

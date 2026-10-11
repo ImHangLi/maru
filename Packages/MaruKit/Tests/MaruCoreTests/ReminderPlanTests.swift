@@ -76,6 +76,57 @@ struct ReminderPlanTests {
         #expect(named.requests.map { $0.content.names ?? [] }.prefix(3) == [["Iron", "Zinc"], ["Zinc"], ["Iron", "Zinc"]])
     }
 
+    /// A plan of every second day gets one dated request for each of its next seven due dates (D036).
+    @Test func everyOtherDayGivesDatedRequestsForItsDueDatesInsideTheBudget() throws {
+        let items = [Fixtures.item(name: "Zinc"), Fixtures.item(name: "Iron")]
+        let daily = Fixtures.schedule(itemID: items[0].id, times: [Fixtures.time(8)])
+        let alternate = Fixtures.schedule(
+            itemID: items[1].id, times: [Fixtures.time(8)], everyOtherDayFrom: Fixtures.date(2026, 3, 3)
+        )
+        // 08:00 on 2 March in Shanghai, a day with no dose of the second item.
+        let plan = compile(items: items, schedules: [daily, alternate])
+        let dates = [3, 5, 7, 9, 11, 13, 15].map { String(format: "2026-03-%02d", $0) }
+        #expect(plan.requests.map(\.identifier) == ["series|Asia/Shanghai|08:00|daily"] + dates.map { "series|Asia/Shanghai|08:00|\($0)" })
+        #expect(plan.requests.count <= ReminderPlan.requestBudget)
+        #expect(plan.needs[alternate.id] == .requests(Set(plan.requests.dropFirst().map(\.identifier))))
+        // The repeating request never names the item of every second day. Each request stands for one item (D034).
+        #expect(plan.requests.map { $0.content.names ?? [] } == [["Zinc"]] + Array(repeating: ["Iron"], count: 7))
+        #expect(plan.requests.map(\.content.hasTakenAction) == Array(repeating: true, count: 8))
+        let first = plan.requests[1]
+        #expect(!first.trigger.repeats)
+        var morning = DateComponents()
+        morning.timeZone = TimeZone(identifier: "Asia/Shanghai")
+        (morning.year, morning.month, morning.day, morning.hour, morning.minute) = (2026, 3, 3, 8, 0)
+        #expect(first.trigger.dateComponents == morning)
+        #expect(first.userInfo[ReminderRequest.dueDateKey] == "2026-03-03")
+        #expect(first.fireDate == Fixtures.instant("2026-03-03T00:00:00Z"))
+
+        // After 08:00 on a due date, that date has no request, and the seven requests start at the next due date.
+        let later = compile(items: items, schedules: [alternate], at: "2026-03-03T00:00:01Z")
+        #expect(later.requests.map { $0.userInfo[ReminderRequest.dueDateKey] } == [5, 7, 9, 11, 13, 15, 17].map { String(format: "2026-03-%02d", $0) })
+        // The dated requests of a time fit together or not at all, so no date is left out with no notice.
+        // The repeating request gets the budget first, also when its plan is the later one.
+        let small = compile(items: items, schedules: [alternate, daily], requestBudget: 7)
+        #expect(small.requests.map(\.identifier) == ["series|Asia/Shanghai|08:00|daily"])
+        #expect(small.needs[alternate.id] == .blocked(.overLimit))
+
+        // A tap on each of the two reminders of 3 March finds only its own item (spec 8.3).
+        let resolver = ReminderTapResolver(
+            now: Fixtures.instant("2026-03-03T00:01:00Z"), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
+        )
+        for (request, schedule) in [(plan.requests[0], daily), (first, alternate)] {
+            let delivered = DeliveredReminder(
+                deliveredAt: Fixtures.instant("2026-03-03T00:00:00Z"), userInfo: request.userInfo, triggerWeekday: nil
+            )
+            guard case let .resolved(found) = resolver.resolve(delivered, items: items, schedules: [daily, alternate]) else {
+                Issue.record("The reminder did not resolve.")
+                continue
+            }
+            #expect(found.map(\.slotID) == schedule.slots.map(\.id))
+            #expect(found.map(\.plannedDate) == [Fixtures.date(2026, 3, 3)])
+        }
+    }
+
     @Test func requestHoldsTheSeriesAndTheRevisionAndNothingOfAnItem() throws {
         let item = Fixtures.item()
         var schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(8)])

@@ -137,37 +137,6 @@ extension LocalStore {
         }
     }
 
-    /// Stores a product version. A version is immutable: the same value again changes nothing,
-    /// and another value with the same ID is `StorageError.conflict`.
-    public func save(_ version: ProductVersion) async throws(StorageError) {
-        try await write { db in
-            try db.execute(
-                sql: """
-                    INSERT INTO productVersion (id, itemID, name, specification, source, verifiedAt, effectiveFrom)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (id) DO NOTHING
-                    """,
-                arguments: [
-                    version.id.text, version.itemID.text, version.name, version.specification,
-                    version.source.rawValue, version.verifiedAt.storedSeconds, version.effectiveFrom.text,
-                ]
-            )
-            let stored = try Row.fetchOne(db, sql: "SELECT * FROM productVersion WHERE id = ?", arguments: [version.id.text])
-            guard try stored.map(Self.decodeProductVersion) == version else { throw StorageError.conflict }
-        }
-    }
-
-    /// The product versions of an item, in the order of the first save.
-    public func productVersions(of itemID: ItemID) async throws(StorageError) -> [ProductVersion] {
-        try await read { db in
-            try Row.fetchAll(
-                db,
-                sql: "SELECT * FROM productVersion WHERE itemID = ? ORDER BY rowid",
-                arguments: [itemID.text]
-            ).map(Self.decodeProductVersion)
-        }
-    }
-
     private static func fetchItem(_ db: Database, id: ItemID) throws -> Item? {
         try Row.fetchOne(db, sql: "SELECT * FROM item WHERE id = ?", arguments: [id.text]).map(decodeItem)
     }
@@ -193,18 +162,6 @@ extension LocalStore {
                 intakeNote: note
             )
         }
-    }
-
-    private static func decodeProductVersion(_ row: Row) throws -> ProductVersion {
-        ProductVersion(
-            id: try ProductVersionID(text: row.decode(forColumn: "id")),
-            itemID: try ItemID(text: row.decode(forColumn: "itemID")),
-            name: try row.decode(forColumn: "name"),
-            specification: try row.decode(forColumn: "specification"),
-            source: try ProductSource(text: row.decode(forColumn: "source")),
-            verifiedAt: Date(storedSeconds: try row.decode(forColumn: "verifiedAt")),
-            effectiveFrom: try LocalDate(text: row.decode(forColumn: "effectiveFrom"))
-        )
     }
 
     /// Builds a domain value from stored data. A domain rule that rejects the data means `invalidData`.

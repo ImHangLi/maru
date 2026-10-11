@@ -143,6 +143,9 @@ public struct ReminderOutcome: Hashable, Sendable {
 /// follows: after each save, at each launch, and when the app comes back to the foreground. A run compares
 /// the plan with the pending requests and changes only the difference. A run that stops early leaves
 /// a difference, and the next run removes it. The only state on disk is the set of open removals in the `RemovalLedger`.
+///
+/// A repeating request needs no later run. A dated request of a plan that repeats every second day does:
+/// each run adds the requests of the new due dates, as `FollowUpEngine` does for the follow-ups (D036).
 public actor ReminderEngine {
     /// How many times a run reads the pending requests to see that a removal is complete.
     public static let removalChecks = 10
@@ -155,24 +158,30 @@ public actor ReminderEngine {
     private let ledger: any RemovalLedger
     private let privacy: any ReminderPrivacyStore
     private let zoneRecord: (any TimeZoneRecord)?
+    /// The clock at the time of the call. A run reads it when it reads the pending requests, after every wait.
+    private let clock: @Sendable () -> Date
     private var lastRun: Task<Void, Never>?
     /// The identifiers that the engine removed and that the system still held at the last read.
     /// The ledger has a copy, so a new start of the app also waits for a removal of the process before it.
     private var unremoved: Set<String>
 
-    /// - Parameter zoneRecord: Gets the device time zone of each successful run, for the notification tap (spec 8.3).
+    /// - Parameters:
+    ///   - zoneRecord: Gets the device time zone of each successful run, for the notification tap (spec 8.3).
+    ///   - clock: The clock of the system. A run uses it only to see that the time of a dated request passed.
     public init(
         source: any ReminderPlanSource,
         center: any ReminderCenter,
         ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
-        zoneRecord: (any TimeZoneRecord)? = nil
+        zoneRecord: (any TimeZoneRecord)? = nil,
+        clock: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.source = source
         self.center = center
         self.ledger = ledger
         self.privacy = privacy
         self.zoneRecord = zoneRecord
+        self.clock = clock
         unremoved = ledger.load()
     }
 
@@ -241,7 +250,14 @@ public actor ReminderEngine {
         if !removedFirst { await remove(changes.remove) }
         // An addition with no room waits for the next run. Its schedule is not confirmed, and it is not a failure.
         let deferred = Set(additions.map(\.identifier)).subtracting(fitting.map(\.identifier))
-        let open = ReminderChanges(wanted: wanted, pending: await pendingAfterRemoval(), text: center.text(for:)).add
+        // A dated request whose time passed is not pending, because the system delivered it (D036).
+        // The clock is read at the read of the pending requests, and not taken from `now`: the caller can
+        // wait in a queue before the run, and the run waits for the system. A request whose time is
+        // still to come must be pending: a time that is near does not show a delivery.
+        let pendingNow = await pendingAfterRemoval()
+        let readAt = clock()
+        let open = ReminderChanges(wanted: wanted, pending: pendingNow, text: center.text(for:)).add
+            .filter { request in request.fireDate.map { $0 > readAt } ?? true }
         return ReminderOutcome(
             plan: plan,
             authorization: authorization,

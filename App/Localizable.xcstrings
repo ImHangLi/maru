@@ -151,6 +151,9 @@
     "Choose at least one day." : {
       "comment" : "Edit screen: the preview line when no weekday is on."
     },
+    "Choose the first day." : {
+      "comment" : "Edit screen: the preview line and the hint when a plan repeats every second day and has no first day yet."
+    },
     "Color" : {
       "comment" : "Edit screen: the text “Color”."
     },
@@ -198,6 +201,21 @@
     },
     "Every day" : {
       "comment" : "Edit screen: the days of a plan that reminds on all seven days."
+    },
+    "Every Day" : {
+      "comment" : "Repeat page: the choice of a plan that reminds on all seven days."
+    },
+    "Every Other Day" : {
+      "comment" : "Repeat page: the choice of a plan that repeats every second day."
+    },
+    "Every other day" : {
+      "comment" : "The days of a plan that repeats every second day."
+    },
+    "Every other day at %@, starting today, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every second day from today. The placeholder is the times."
+    },
+    "Every other day at %@, starting tomorrow, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times."
     },
     "For example 1000 IU" : {
       "comment" : "Edit screen: the placeholder of the optional amount field. The amount is free text, and IU is one of the units."
@@ -283,6 +301,9 @@
     "Maru kept your unsaved changes." : {
       "comment" : "Edit screen: the text “Maru kept your unsaved changes.”."
     },
+    "Maru sets the reminders of the next 7 dose days each time you open it." : {
+      "comment" : "Item detail: the footer of a plan that repeats every second day when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open."
+    },
     "Maru stops its reminders and hides it from Today and My Items. Your records stay. This is not advice to stop taking it." : {
 
     },
@@ -309,6 +330,9 @@
     },
     "New Product" : {
       "comment" : "Edit screen: the title when the user replaces an item with a new product."
+    },
+    "Next Dose" : {
+      "comment" : "Item detail: the label of the day of the next dose of a plan that repeats every second day. The value is Today, Tomorrow, or a weekday."
     },
     "No History Yet" : {
 
@@ -532,6 +556,12 @@
     "Start Over" : {
       "comment" : "Edit screen: the text “Start Over”."
     },
+    "Starting Today" : {
+      "comment" : "Repeat page: the first day of a plan that repeats every second day is today."
+    },
+    "Starting Tomorrow" : {
+      "comment" : "Repeat page: the first day of a plan that repeats every second day is tomorrow."
+    },
     "Supplement" : {
       "comment" : "Edit screen: the text “Supplement”."
     },
@@ -612,6 +642,9 @@
     },
     "Today changed" : {
 
+    },
+    "Tomorrow" : {
+      "comment" : "Item detail: the next dose of a plan that repeats every second day is tomorrow."
     },
     "Tries to save it again." : {
 

@@ -38,5 +38,5 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
-        # App/Icons.xcassets holds the form icons and no app icon yet.
+        # The app icon is in App/Assets.xcassets. App/Icons.xcassets holds the form icons.
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

@@ -51,6 +51,7 @@ enum Fixtures {
         itemID: ItemID,
         times: [WallClockTime],
         weeklyRule: WeeklyRule = .everyDay,
+        everyOtherDayFrom: LocalDate? = nil,
         timeZonePolicy: TimeZonePolicy = .fixed(shanghai)
     ) -> Schedule {
         var schedule = Schedule(itemID: itemID, isEnabled: true)
@@ -59,6 +60,7 @@ enum Fixtures {
             scheduleID: schedule.id,
             effectiveFrom: date(2026, 1, 1),
             weeklyRule: weeklyRule,
+            everyOtherDayFrom: everyOtherDayFrom,
             slotTimes: slotTimes,
             timeZonePolicy: timeZonePolicy
         )

@@ -179,10 +179,14 @@ struct ItemEditorView: View {
             Button("Add a Time", systemImage: "plus") { addsTime = true }
             if !draft.times.isEmpty {
                 NavigationLink {
-                    WeekdayList(weekdays: $draft.weekdays)
+                    RepeatList(
+                        weekdays: $draft.weekdays,
+                        everyOtherDay: $draft.everyOtherDay,
+                        today: { draft.today(keptZoneFrom: session.zoneSchedule) }
+                    )
                 } label: {
                     LabeledContent {
-                        Text(SchedulePreview.days(draft.weekdays))
+                        Text(SchedulePreview.days(draft.weekdays, everyOtherDay: draft.everyOtherDay != nil))
                     } label: {
                         if let city = otherZone.map(SchedulePreview.city) {
                             Text("Repeat (\(city) Time)")
@@ -201,7 +205,9 @@ struct ItemEditorView: View {
 
     /// The plan line. With no time it says that there is no reminder.
     private var timesFooter: some View {
-        let preview = SchedulePreview.text(for: draft, problem: problem, otherZone: otherZone)
+        let preview = SchedulePreview.text(
+            for: draft, problem: problem, otherZone: otherZone, today: draft.today(keptZoneFrom: session.zoneSchedule)
+        )
         return Text(preview)
             .accessibilityLabel(Text("Plan: \(preview)"))
     }
@@ -318,35 +324,106 @@ private struct TimeRow: View {
     }
 }
 
-/// The seven days as a system list with check marks, like the repeat days of an alarm in Clock.
-/// All seven on means every day (spec 2.1: visible and the user can change it).
-private struct WeekdayList: View {
+/// The repeat rule as a system list with check marks, like the repeat days of an alarm in Clock.
+///
+/// The first section has "Every Day" and "Every Other Day". Under it are the seven days, or the first day
+/// of a plan that repeats every second day (D036). All seven days on means every day (spec 2.1: visible
+/// and the user can change it). The app picks no first day: the user chooses today or tomorrow.
+///
+/// A choice stores the calendar date that it has at the tap. The check mark is on the day that has a dose
+/// by the start date of the draft, so a stored plan shows its rhythm, and no tap is needed to keep it.
+///
+/// The page can stay open across midnight. So a tap reads the date again, and the page reads it again
+/// each minute for the check marks.
+private struct RepeatList: View {
     @Binding var weekdays: Set<Weekday>
+    @Binding var everyOtherDay: ItemDraft.EveryOtherDay?
+    /// Today in the zone of the plan, at the time of the call. `nil` when the device zone has no region name.
+    let today: () -> LocalDate?
+
+    /// The plan of the draft has a dose on the date.
+    private func isDue(_ date: LocalDate?) -> Bool {
+        guard let date, let start = everyOtherDay?.start?.date else { return false }
+        return date >= start && date.days(since: start).isMultiple(of: 2)
+    }
+
+    /// Starts the plan today or tomorrow, by the date at the time of the tap, when that date has no dose yet.
+    /// A tap on the row with the check mark changes nothing.
+    private func start(daysFromToday days: Int) {
+        guard let date = today()?.adding(days: days), !isDue(date) else { return }
+        everyOtherDay = ItemDraft.EveryOtherDay(start: ItemDraft.Day(date))
+    }
 
     var body: some View {
+        // Each minute gives a new body, so the check marks follow the date.
+        TimelineView(.everyMinute) { _ in
+            list
+        }
+        .navigationTitle("Repeat")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private var list: some View {
         List {
-            ForEach(SchedulePreview.orderedWeekdays, id: \.self) { day in
-                let isOn = weekdays.contains(day)
-                Button {
-                    if isOn { weekdays.remove(day) } else { weekdays.insert(day) }
-                } label: {
-                    HStack {
-                        Text(Calendar.current.standaloneWeekdaySymbols[day.rawValue % 7])
-                            .foregroundStyle(Color.primary)
-                        Spacer()
-                        if isOn {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(.tint)
-                                .fontWeight(.semibold)
+            Section {
+                CheckRow(title: Text("Every Day"), isOn: everyOtherDay == nil && weekdays.count == Weekday.allCases.count) {
+                    everyOtherDay = nil
+                    weekdays = Set(Weekday.allCases)
+                }
+                CheckRow(title: Text("Every Other Day"), isOn: everyOtherDay != nil) {
+                    if everyOtherDay == nil { everyOtherDay = ItemDraft.EveryOtherDay(start: nil) }
+                }
+            }
+            if let rule = everyOtherDay {
+                let date = today()
+                Section {
+                    CheckRow(title: Text("Starting Today"), isOn: isDue(date)) { start(daysFromToday: 0) }
+                    CheckRow(title: Text("Starting Tomorrow"), isOn: isDue(date?.adding(days: 1))) {
+                        start(daysFromToday: 1)
+                    }
+                } footer: {
+                    if rule.start?.date == nil {
+                        Text("Choose the first day.")
+                    }
+                }
+            } else {
+                Section {
+                    ForEach(SchedulePreview.orderedWeekdays, id: \.self) { day in
+                        let isOn = weekdays.contains(day)
+                        CheckRow(title: Text(verbatim: Calendar.current.standaloneWeekdaySymbols[day.rawValue % 7]), isOn: isOn) {
+                            if isOn { weekdays.remove(day) } else { weekdays.insert(day) }
                         }
                     }
                 }
-                .accessibilityAddTraits(isOn ? .isSelected : [])
             }
         }
         .listStyle(.insetGrouped)
-        .navigationTitle("Repeat")
-        .navigationBarTitleDisplayMode(.inline)
+        // The section under the rule and its footer come and go with the layout motion (D030).
+        // A check mark changes with no motion, as in Clock.
+        .motion(.layout, value: [everyOtherDay != nil, everyOtherDay?.start != nil])
+    }
+}
+
+/// One row with a check mark at the end when it is on.
+private struct CheckRow: View {
+    let title: Text
+    let isOn: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                title
+                    .foregroundStyle(Color.primary)
+                Spacer()
+                if isOn {
+                    Image(systemName: "checkmark")
+                        .foregroundStyle(.tint)
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+        .accessibilityAddTraits(isOn ? .isSelected : [])
     }
 }
 

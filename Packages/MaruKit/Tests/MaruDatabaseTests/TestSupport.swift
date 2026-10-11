@@ -108,6 +108,39 @@ extension LocalStore {
         return Seed(item: item, schedule: schedule, morning: morning, evening: evening, occurrence: occurrence)
     }
 
+    /// Stores a schedule in a database from before `v4`, which has no start date of every second day.
+    /// `save` names that column, so a migration test writes the rows of the older schema with this.
+    func saveBeforeVersion4(_ schedule: Schedule) async throws {
+        try await execute(
+            "INSERT INTO schedule (id, itemID, isEnabled, endDate) VALUES (?, ?, ?, NULL)",
+            [schedule.id.text, schedule.itemID.text, schedule.isEnabled]
+        )
+        for (position, slot) in schedule.slots.enumerated() {
+            try await execute(
+                "INSERT INTO scheduleSlot (id, scheduleID, position) VALUES (?, ?, ?)", [slot.id.text, schedule.id.text, position]
+            )
+        }
+        for (position, version) in schedule.versions.enumerated() {
+            guard case let .fixed(zone) = version.timeZonePolicy else { continue }
+            try await execute(
+                """
+                INSERT INTO scheduleVersion (id, scheduleID, position, effectiveFrom, weekdays, dose, timeZonePolicy, timeZone)
+                VALUES (?, ?, ?, ?, ?, ?, 'fixed', ?)
+                """,
+                [
+                    version.id.text, schedule.id.text, position, try version.effectiveFrom.text, version.weeklyRule.text,
+                    version.dose?.text, zone.identifier,
+                ]
+            )
+            for (slotPosition, slotTime) in version.slotTimes.enumerated() {
+                try await execute(
+                    "INSERT INTO scheduleVersionSlot (scheduleVersionID, slotID, position, time) VALUES (?, ?, ?, ?)",
+                    [version.id.text, slotTime.slotID.text, slotPosition, slotTime.time.text]
+                )
+            }
+        }
+    }
+
     /// Runs raw SQL on the database. Tests use it to inject faults and to read tables directly.
     func execute(_ sql: String, _ arguments: StatementArguments = StatementArguments()) async throws {
         try await writer.writeWithoutTransaction { db in

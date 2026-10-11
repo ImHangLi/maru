@@ -16,6 +16,9 @@ enum Schema {
         migrator.registerMigration("v3") { db in
             try db.execute(sql: v3)
         }
+        migrator.registerMigration("v4") { db in
+            try db.execute(sql: v4)
+        }
         return migrator
     }
 
@@ -160,5 +163,13 @@ enum Schema {
         DROP TABLE occurrence;
         ALTER TABLE newOccurrence RENAME TO occurrence;
         CREATE INDEX occurrence_asNeeded ON occurrence(plannedDate, itemID) WHERE itemID IS NOT NULL;
+        """
+
+    /// The start date of a schedule version that repeats every second day (D036). A version stored before
+    /// this migration has `NULL`, so it keeps its weekdays and loads unchanged. A version with a start date
+    /// has every weekday, as `ScheduleVersion` requires.
+    static let v4 = """
+        ALTER TABLE scheduleVersion ADD COLUMN everyOtherDayFrom TEXT
+            CHECK (everyOtherDayFrom IS NULL OR weekdays = '1234567');
         """
 }

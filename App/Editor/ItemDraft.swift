@@ -17,6 +17,29 @@ struct ItemDraft: Codable, Equatable {
         case none, withFood, emptyStomach, custom
     }
 
+    /// A plan that repeats every second day (D036).
+    struct EveryOtherDay: Codable, Equatable {
+        /// The start date: the stored one of the plan, or the calendar date that a first-day choice had at the
+        /// moment of the tap. It is a date and not "today" or "tomorrow", so a save on a later day, or a draft
+        /// that comes back on a later day, keeps the rhythm. `nil` until the user chooses: the app picks no day.
+        var start: Day?
+    }
+
+    /// A calendar date in a form that the draft file keeps.
+    struct Day: Codable, Equatable {
+        var year: Int
+        var month: Int
+        var day: Int
+
+        init(_ date: LocalDate) {
+            year = date.year
+            month = date.month
+            day = date.day
+        }
+
+        var date: LocalDate? { try? LocalDate(year: year, month: month, day: day) }
+    }
+
     var itemID: UUID
     var scheduleID: UUID
     var name = ""
@@ -29,6 +52,9 @@ struct ItemDraft: Codable, Equatable {
     var amount = ""
     var times: [Time] = []
     var weekdays = Set(Weekday.allCases)
+    /// `nil` means that the plan repeats on `weekdays`. Else it repeats every second day, and the weekdays do not count.
+    /// It is optional, so a draft file from before D036 still loads.
+    var everyOtherDay: EveryOtherDay?
     var note = Note.none
     var noteText = ""
 
@@ -39,7 +65,8 @@ struct ItemDraft: Codable, Equatable {
         self.color = color
     }
 
-    /// The stored item and the version of its schedule that applies now.
+    /// The stored item and the version of its schedule that applies now. A plan of every second day keeps
+    /// its stored start date.
     init(item: Item, schedule: Schedule?) {
         itemID = item.id.rawValue
         scheduleID = schedule?.id.rawValue ?? UUID()
@@ -59,6 +86,7 @@ struct ItemDraft: Codable, Equatable {
             amount = version.dose?.text ?? ""
             times = version.slotTimes.map { Time(id: $0.slotID.rawValue, hour: $0.time.hour, minute: $0.time.minute) }
             weekdays = version.weeklyRule.weekdays
+            everyOtherDay = version.everyOtherDayFrom.map { EveryOtherDay(start: Day($0)) }
         }
     }
 
@@ -92,6 +120,12 @@ struct ItemDraft: Codable, Equatable {
         category == .supplement
     }
 
+    /// Today in the zone of the plan: the kept zone of a medication, else the zone of the device.
+    /// A first-day choice stores this date, or the date after it. `nil` when the device zone has no region name.
+    func today(keptZoneFrom schedule: Schedule?, now: Date = .now) -> LocalDate? {
+        (keptTimeZone(from: schedule) ?? NamedTimeZone(device: .current, at: now)).map { LocalDate(now, in: $0) }
+    }
+
     /// The named zone that a medication keeps from its stored plan (spec 8.5). `nil` for a supplement or a new plan.
     func keptTimeZone(from schedule: Schedule?) -> NamedTimeZone? {
         guard !followsDevice, case let .fixed(zone)? = schedule?.versions.last?.timeZonePolicy else { return nil }
@@ -103,6 +137,8 @@ struct ItemDraft: Codable, Equatable {
 enum DraftProblem: Equatable {
     case noName
     case noWeekday
+    /// The plan repeats every second day, and the user did not choose its first day yet.
+    case noFirstDay
     case duplicateTime
     /// The device time zone has no region name, so a medication time has no zone to keep (spec 8.5).
     case noTimeZone
@@ -121,7 +157,8 @@ extension ItemDraft {
     ) -> DraftProblem? {
         if trimmedName.isEmpty { return .noName }
         guard !times.isEmpty else { return nil }
-        if weekdays.isEmpty { return .noWeekday }
+        if everyOtherDay == nil, weekdays.isEmpty { return .noWeekday }
+        if let everyOtherDay, everyOtherDay.start?.date == nil { return .noFirstDay }
         if hasDuplicateTimes { return .duplicateTime }
         if deviceTimeZone == nil { return .noTimeZone }
         do {
@@ -138,6 +175,9 @@ extension ItemDraft {
     ///
     /// With no time, a new item has no schedule: it is a list-only item with no reminder (T02).
     /// A change of the times, the days, or the amount appends a schedule version that applies from today.
+    /// A plan of every second day starts on the date in the draft: the stored start date, or the date of a
+    /// first-day choice. The date of the save does not change it, so an edit of a time or of the amount does
+    /// not move the rhythm, also when the save comes on a later day (D036).
     /// Milestone A offers no later start date and no end date (T10). An old version never changes (spec 7.1).
     /// `zoneSchedule` is the plan of a replaced item: a medication that replaces it keeps that zone (spec 8.5).
     func build(
@@ -176,25 +216,34 @@ extension ItemDraft {
             if !known.contains(slotID) { try schedule.addSlot(id: slotID) }
             return SlotTime(slotID: slotID, time: try WallClockTime(hour: time.hour, minute: time.minute))
         }
-        let weeklyRule = try WeeklyRule(weekdays: weekdays)
+        let zone = if case let .fixed(zone) = timeZonePolicy { zone } else { deviceTimeZone }
+        let today = LocalDate(now, in: zone)
+        let weeklyRule = try everyOtherDay == nil ? WeeklyRule(weekdays: weekdays) : .everyDay
+        var everyOtherDayFrom = everyOtherDay?.start?.date
+        guard everyOtherDay == nil || everyOtherDayFrom != nil else { throw DraftBuildError.noFirstDay }
+        // A choice that gives the due dates of the stored plan is no change of the plan.
+        if let first = everyOtherDayFrom, let stored = latest?.everyOtherDayFrom,
+           first >= stored, first.days(since: stored).isMultiple(of: 2) {
+            everyOtherDayFrom = stored
+        }
         let dose = Dose(amount)
         if let latest,
            latest.weeklyRule == weeklyRule,
+           latest.everyOtherDayFrom == everyOtherDayFrom,
            latest.slotTimes == slotTimes,
            latest.dose == dose,
            latest.timeZonePolicy == timeZonePolicy {
             return (item, schedule)
         }
-        let zone = if case let .fixed(zone) = timeZonePolicy { zone } else { deviceTimeZone }
         // A change applies from today. A version never starts before the one before it (spec 7.1), and a stored
         // version never changes, so a change that cannot start today is not saved.
-        let today = LocalDate(now, in: zone)
         if let latest, today < latest.effectiveFrom { throw DraftBuildError.laterVersion(latest.effectiveFrom) }
         try schedule.appendVersion(
             ScheduleVersion(
                 scheduleID: schedule.id,
                 effectiveFrom: today,
                 weeklyRule: weeklyRule,
+                everyOtherDayFrom: everyOtherDayFrom,
                 slotTimes: slotTimes,
                 dose: dose,
                 timeZonePolicy: timeZonePolicy,
@@ -207,6 +256,7 @@ extension ItemDraft {
 
 enum DraftBuildError: Error {
     case noTimeZone
+    case noFirstDay
     case laterVersion(LocalDate)
 }
 

@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, and D033 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, and D036 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -33,6 +33,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A failure uses a system alert. A failed reminder after a save or a change also gets an alert. Notifications that are off show as a row on Today and My Items, with no alert.
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
+- For a plan of every other day, "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036).
 
 ## Today
 
@@ -106,7 +107,7 @@ One motion language for the whole app (D030). The same kind of change uses the s
 | State | A fade of 0.2 seconds, with the system replace effect on a symbol | A change in place, with no move | The same fade. A symbol cross-fades with no scale |
 | Attention | A fade of 1.2 seconds | The opening highlight of the current slot title | The same fade |
 
-- Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days.
+- Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days.
 - State applies to: the record circle and the as-needed record button. The chevron and "Record All" in a slot header. The mark of an as-needed dose.
 - A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.
 - The system owns the motion of sheets, pushes, menus, alerts, dialogs, swipe actions, pickers, switches, and the keyboard. Maru does not change it.
@@ -132,7 +133,9 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - The plan line is the footer of the reminder section. It states the full schedule, for example "Every day at 8:00 AM, with no end date", or the problem that keeps Save off. An amount has its own line above it.
 - A new item has no amount and no time (spec §2.1, D032). The form has no "choose a type" hint.
 - "Add a Time" opens a sheet with a time wheel. The time counts only after "Add" (spec §2.1). For the first time of a supplement the wheel starts at a time that the user already confirmed for a supplement, else at 8:00.
-- The repeat days are a list with check marks, as in Clock.
+- "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day" and "Every Other Day". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and it has no date picker (D036).
+- The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date".
+- The item detail shows "Every other day" under "Days", and a row "Next Dose" with "Today", "Tomorrow", or a weekday (D036).
 
 ## Text and accessibility
 

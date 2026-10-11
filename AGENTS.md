@@ -2,7 +2,7 @@
 
 Maru is a local-first iPhone app for daily supplements and simple medication schedules that the user confirms. It reminds on time, shows what to take now, and keeps a trustworthy record.
 
-`docs/spec.md` is the source of truth for scope, data model, and acceptance. Read only the sections that your task needs. Section numbers and acceptance IDs (`T01`–`T50`) are stable references.
+`docs/spec.md` is the source of truth for scope, data model, and acceptance. Read only the sections that your task needs. Section numbers and acceptance IDs (`T01`–`T51`) are stable references.
 
 ## Working mode
 
@@ -32,7 +32,9 @@ swift build --package-path Packages/MaruKit
 xcodebuild -project Maru.xcodeproj -scheme Maru -destination 'generic/platform=iOS Simulator' build
 ```
 
-Use XcodeBuildMCP to run the app in a simulator, take screenshots, and read logs.
+On the maintainer's Mac, run only the `swift` commands. Do not build the app or run a simulator there. The CI `app` job is the build check. One local device build is acceptable for an install on the maintainer's iPhone.
+
+On another Mac, use XcodeBuildMCP to run the app in a simulator, take screenshots, and read logs.
 
 ## Rules that the spec makes non-negotiable
 
@@ -49,6 +51,16 @@ Use XcodeBuildMCP to run the app in a simulator, take screenshots, and read logs
 - Write code, comments, commit messages, and docs in English. Product copy lives in String Catalogs. Ship `en` first. `zh-Hans` is optional and can follow (D017).
 - Use SwiftUI system controls and Swift 6 strict concurrency.
 - "Maru" is the working brand. Keep the bundle ID, display name, and marketing strings separate (spec §13.3).
+
+## Keep the repository lean
+
+- Write no code for a future need. Add a type, a field, or a store function in the change that first calls it.
+- When a decision removes a feature, remove its code, strings, assets, tests, and settings keys in the same change.
+- When a change makes a comment, `docs/status.md`, or `project.yml` false, correct it in the same change.
+- When a decision replaces a part of an older decision, name the new ID in the heading of the older one.
+- Before you add a helper, search `App/` and `Packages/` for one that does the same job.
+- Keep debug tools in `App/Debug/` or `App/DebugLaunch.swift`, inside `#if DEBUG`. Add a launch argument only for a named use, and remove it when the use ends.
+- Write no test for a default value, or for the same path with other literals (D016).
 
 ## Definition of done
 

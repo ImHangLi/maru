@@ -100,7 +100,7 @@ extension AppStore {
         guard let tap = DebugLaunch.tap else { return nil }
         // Only the `userInfo` matters here. Neutral text keeps one daily request for a series of every day (D029).
         let plan = try? await open().reminderPlan(at: now, deviceTimeZone: deviceTimeZone, privacy: .hideNames)
-        let request = plan?.requests.first { $0.trigger.time == tap.time && $0.trigger.weekday == nil }
+        let request = plan?.requests.first { $0.trigger.time == tap.time && $0.trigger.weekday == nil && $0.trigger.repeats }
         let seriesID = "series|device|\(String(format: "%02d:%02d", tap.time.hour, tap.time.minute))"
         let planned = deviceTimeZone.resolve(tap.time, on: LocalDate(now, in: deviceTimeZone)).earliestInstant
         return DeliveredReminder(

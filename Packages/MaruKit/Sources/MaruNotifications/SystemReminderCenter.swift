@@ -66,7 +66,8 @@ extension ReminderAuthorization {
 }
 
 extension UNNotificationRequest {
-    /// A repeating calendar request. The text is fixed here, in the language of now (spec 8.2, D029).
+    /// A calendar request: it repeats, or it fires one time on its date (D036).
+    /// The text is fixed here, in the language of now (spec 8.2, D029).
     convenience init(_ request: ReminderRequest, locale: Locale = .current) {
         let content = UNMutableNotificationContent()
         let text = request.content.text(locale: locale)
@@ -78,7 +79,9 @@ extension UNNotificationRequest {
         self.init(
             identifier: request.identifier,
             content: content,
-            trigger: UNCalendarNotificationTrigger(dateMatching: request.trigger.dateComponents, repeats: true)
+            trigger: UNCalendarNotificationTrigger(
+                dateMatching: request.trigger.dateComponents, repeats: request.trigger.repeats
+            )
         )
     }
 }
