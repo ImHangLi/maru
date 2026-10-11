@@ -72,6 +72,9 @@ public struct DefaultsFollowUpSetting: FollowUpSettingStore {
     public func save(_ setting: FollowUpSetting?) {
         let defaults = UserDefaults.standard
         let isChange = load() != setting
+        // The mark comes before the setting too: if the app stops between the writes, the next run still sees an
+        // unconfirmed change and counts the old follow-ups.
+        if isChange { defaults.set(Date.distantFuture, forKey: Self.changedKey) }
         if let setting {
             defaults.set(setting.interval.rawValue, forKey: Self.key)
             defaults.set(setting.count.rawValue, forKey: Self.countKey)
@@ -80,7 +83,7 @@ public struct DefaultsFollowUpSetting: FollowUpSettingStore {
             defaults.removeObject(forKey: Self.countKey)
         }
         // "Off" also counts: the old follow-ups can still come until the engine confirms their removal.
-        // The mark comes after the setting, so an engine run that confirms after the mark reads the new setting.
+        // The mark comes after the setting again, so an engine run that confirms between the writes cannot keep the old setting.
         if isChange { defaults.set(Date.distantFuture, forKey: Self.changedKey) }
     }
 
