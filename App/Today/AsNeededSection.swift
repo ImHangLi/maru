@@ -239,14 +239,8 @@ private struct AsNeededDoseRow: View {
     }
 
     private var statusText: Text {
-        let time = dose.time.map { $0.formatted(timeFormat) } ?? ""
+        let time = dose.time.map { $0.formatted(.rowTime(in: timeZone)) } ?? ""
         return dose.record.status == .skipped ? Text("Skipped at \(time)") : Text("Taken at \(time)")
-    }
-
-    private var timeFormat: Date.FormatStyle {
-        var style = Date.FormatStyle(date: .omitted, time: .shortened)
-        style.timeZone = timeZone
-        return style
     }
 
     private var startOfDay: Date {

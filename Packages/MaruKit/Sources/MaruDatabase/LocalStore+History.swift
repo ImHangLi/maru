@@ -2,6 +2,14 @@ import Foundation
 import GRDB
 import MaruCore
 
+/// The planned doses of each day of the graph range and how many of them are taken (D041).
+public struct HistoryCounts: Sendable {
+    /// The first date that can have a dose. `nil` when there is no plan and no record.
+    public let firstDay: LocalDate?
+    /// Only days with a planned dose.
+    public let days: [LocalDate: HistoryDayCount]
+}
+
 /// Some days of the history, newest first (spec 3 P05).
 public struct HistoryPage: Sendable {
     /// Only days with a dose. A day with nothing planned and nothing recorded does not show.
@@ -63,17 +71,7 @@ extension LocalStore {
                     )
                 }
             }
-            // The events, not the projection, set the bound. A record with a missing projection row stays
-            // reachable, so its page reads it and reports `invalidData` (spec 7.3).
-            let firstRecord = try String.fetchOne(
-                db,
-                sql: """
-                    SELECT MIN(occurrence.plannedDate)
-                    FROM occurrence
-                    WHERE EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
-                    """
-            ).map(LocalDate.init(text:))
-            let earliest = History.earliestDate(schedules: schedules, stored: firstRecord.map { [$0] } ?? [])
+            let earliest = try Self.firstDay(db, schedules: schedules)
             let dates = (1...max(days, 1)).map { today.adding(days: -$0) }.filter { date in earliest.map { date >= $0 } ?? false }
             return HistoryPage(
                 days: History.days(
@@ -83,6 +81,69 @@ extension LocalStore {
                 hasEarlier: earliest.map { $0 < oldest } ?? false
             )
         }
+    }
+
+    /// The counts of the days from `oldest` to `today` for the graph (D041). `History.counts` has the rules,
+    /// so a day has the same doses as in the timeline.
+    ///
+    /// One query reads every stored planned dose of the range with its state, so a year reads fast. The state
+    /// comes from the projection. The timeline checks the projection against the events (spec 7.3).
+    public func historyCounts(
+        from oldest: LocalDate,
+        through today: LocalDate,
+        deviceTimeZone: NamedTimeZone
+    ) async throws(StorageError) -> HistoryCounts {
+        try await read { db in
+            let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
+            let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
+                .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+            guard let firstDay = try Self.firstDay(db, schedules: schedules) else {
+                return HistoryCounts(firstDay: nil, days: [:])
+            }
+            let from = max(oldest, firstDay)
+            guard from <= today else { return HistoryCounts(firstDay: firstDay, days: [:]) }
+            let stored = try Row.fetchAll(
+                db,
+                sql: """
+                    SELECT occurrence.slotID, occurrence.plannedDate, occurrenceState.status,
+                        EXISTS (SELECT 1 FROM intakeEvent WHERE intakeEvent.occurrenceID = occurrence.id) AS hasEvents
+                    FROM occurrence
+                        LEFT JOIN occurrenceState ON occurrenceState.occurrenceID = occurrence.id
+                    WHERE occurrence.slotID IS NOT NULL AND occurrence.plannedDate BETWEEN ? AND ?
+                    """,
+                arguments: [try from.text, try today.text]
+            ).map { row in
+                let status: String? = try row.decode(forColumn: "status")
+                return StoredDoseState(
+                    key: OccurrenceKey(
+                        slotID: try ScheduleSlotID(text: row.decode(forColumn: "slotID")),
+                        plannedDate: try LocalDate(text: row.decode(forColumn: "plannedDate"))
+                    ),
+                    hasEvents: try row.decode(forColumn: "hasEvents"),
+                    isTaken: try status.map(IntakeAction.init(text:)) == .taken
+                )
+            }
+            let dates = (0...today.days(since: from)).map { from.adding(days: $0) }
+            return HistoryCounts(
+                firstDay: firstDay,
+                days: History.counts(dates, items: items, schedules: schedules, stored: stored, deviceTimeZone: deviceTimeZone)
+            )
+        }
+    }
+
+    /// The first date that can have a dose: the first schedule version, or the first record.
+    /// The events, not the projection, set the bound. A record with a missing projection row stays
+    /// reachable, so its page reads it and reports `invalidData` (spec 7.3).
+    private static func firstDay(_ db: Database, schedules: [Schedule]) throws -> LocalDate? {
+        let firstRecord = try String.fetchOne(
+            db,
+            sql: """
+                SELECT MIN(occurrence.plannedDate)
+                FROM occurrence
+                WHERE EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
+                """
+        ).map(LocalDate.init(text:))
+        return History.earliestDate(schedules: schedules, stored: firstRecord.map { [$0] } ?? [])
     }
 
     /// Records the first event of a past dose that no generation run stored (spec 3 P05). One transaction stores
