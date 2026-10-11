@@ -243,6 +243,7 @@ final class AppModel {
         } else if history.isOpen {
             // The day can be another one.
             loadHistory()
+            loadHistoryGraph()
         }
         today.isReturning = true
         needsReconcile = true

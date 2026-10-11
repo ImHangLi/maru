@@ -14,6 +14,7 @@ Maru was developed in a private repository before it became public. Issue number
 - An "every other day" schedule is in code (D036). Its reminders are dated requests for the next 7 due dates, and they need a check on a real iPhone.
 - Quick add is in code (D038): "Scan Label" on the add screen reads a name from a label with the camera, on the iPhone, and the name field proposes names from two built-in lists (941 supplement names, 789 medicine names). Nobody saw the screens yet, and the scan needs a check on a real iPhone with real bottles.
 - An export of the records as a CSV file, and a backup and a restore, are in code (D040). `docs/export-format.md` has the formats. The files are not encrypted. Nobody ran them on a real iPhone yet: the share sheet, the file picker, and a restore after a new install need that check.
+- History has a graph of squares above the timeline (D041): one square per day, three levels of the tint by the share taken, and 13, 26, or 52 weeks. A touch or a drag selects a day, and the timeline scrolls to it. Nobody saw it on a display yet. The drag, the haptic, the dark-mode levels, and VoiceOver need a check on a real iPhone.
 - Three flow gaps against Apple Health Medications are closed in code (D033): a change of a record time in three taps, an archive in three taps with one confirmation, and a delete of an item with its records. Nobody saw them on a display yet.
 
 ## Next

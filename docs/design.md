@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, and D038 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, and D041 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -23,7 +23,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## Surface
 
-- Every page is a system grouped list or form. The one custom card is the tile of My Items (D026, D032).
+- Every page is a system grouped list or form. The custom cards are the tile of My Items and the graph of History (D026, D032, D041).
 - Today and My Items use the plain grouped background, with no header wash (D024).
 - Every page is the gray grouped background with white cards, as in Apple Health and Settings. This includes a page that loads or shows an error (D028).
 
@@ -55,7 +55,38 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## History
 
-One timeline in a system grouped list (spec §3 P05, D032). Today opens it from the History button.
+A graph of squares at the top, and one timeline in a system grouped list under it (spec §3 P05, D032, D041). Today opens it from the History button.
+
+### Graph
+
+- One square for each day. One column is one week. The rows are the weekdays, in the first weekday order of the user's calendar. Time runs from left to right, and today is at the right end of the filled part.
+- No title, no legend, no count, and no sentence. The navigation title "History" is the only title.
+- Steps: 13 weeks from the week of the first day. 26 weeks when 13 are full. 52 weeks when 26 are full, as two bands of 26 columns with the older band above. The step changes on the first day of a week that does not fit. After 52 weeks the graph shows the last 52 weeks.
+- The graph fills the card width. Side = (width − left labels) ÷ (columns + (columns − 1) × gap share). The gap share is 0.19 at 13 columns and 0.3 at 26 columns. The corner is 22% of the side, continuous.
+- Sizes on a screen of 402 points (graph width 338): 13 weeks, side 21.2 and gap 4.0. 26 weeks, side 10.1 and gap 3.0. On a screen of 320 points (graph width 256): 13 weeks, side 15.8 and gap 3.0. 26 weeks, side 7.6 and gap 2.3. 52 weeks uses the sizes of 26.
+- The card: the grouped card color, the corner of an inset grouped cell, margins of 16 points, and padding of 16 points. It stays above the timeline on the grouped background and does not scroll. Its height on 402 points is 222 points at 13 weeks, 138 at 26, and 256 at 52.
+- Levels by the share of the planned doses of the day that are taken. A skipped dose is not taken. An as-needed dose does not count.
+
+| Day | Look |
+|---|---|
+| Every planned dose taken ("all") | The tint |
+| More than half taken ("most") | The tint at 60% |
+| Half or less taken ("some") | The tint at 30% |
+| Planned, nothing taken | The tertiary system fill |
+| Nothing planned | The quaternary system fill |
+| Not here yet | An outline of 1 point in the tertiary system fill |
+| Before the first day | No square |
+
+- The tint is the app tint of D025, with the darker light values of orange, yellow, green, and mint. Over a white card the luminance contrast of "all" to "most" is 1.5:1 or more for each of the eight colors, and 1.9:1 or more over the dark card. Each step from "some" to "most" is 1.35:1 or more in light mode.
+- Today has no mark. Its place at the end of the filled squares is clear.
+- Month labels: the short month name above the column where the month starts, in the caption 2 style and the secondary color. When no month starts in the first three columns of a band, the first column gets its month. A label that would touch the one before it does not show. Weekday letters for Monday, Wednesday, and Friday at the left, only at 13 weeks and not at the accessibility text sizes.
+- The squares keep their size at every text size. The labels grow.
+- Selection: a ring of 1.5 points in the tint, with a gap of 1 point around the square. The date of the day, for example "Tue, Aug 18", in semibold caption 2 in the label row over its column. Month labels under it do not show. No dark border, no shadow, no magnifier, and no band behind the week.
+- A touch or a drag selects the nearest day. A day that is not here yet gives today. A tap on the selected day clears it. A light selection haptic comes when the selected day changes.
+- At the end of the touch, the timeline scrolls so that the selected day is the first section under the graph. Older days load as needed. A day with no rows gives the nearest older day. A clear scrolls back to today. A scroll by hand clears the selection (iOS 18 and later).
+- VoiceOver reads the graph as one adjustable element: a summary of the days by level, or the selected day with "2 of 3 taken". Swipe up or down moves the day.
+
+### Timeline
 
 - Newest first, one section per day: "Today", "Yesterday", then the weekday and the date. The day is the day of the dose.
 - One row per action of the user: taken, skipped, time changed, or undone. An undone action and a replaced action stay in the list.
@@ -113,12 +144,13 @@ One motion language for the whole app (D030). The same kind of change uses the s
 
 - Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days.
 - State applies to: the record circle and the as-needed record button. The chevron and "Record All" in a slot header. The mark of an as-needed dose.
+- The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. The scroll of the timeline to a selected day uses the layout motion, the same as the scroll to the slot of a tapped reminder.
 - A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.
 - The system owns the motion of sheets, pushes, menus, alerts, dialogs, swipe actions, pickers, switches, and the keyboard. Maru does not change it.
 
 Maru does not animate:
 
-- The first content of a page: Today at a launch, the item detail, and the first days of History. The page shows complete, with no entrance (spec §9).
+- The first content of a page: Today at a launch, the item detail, and the first days and the graph of History. The page shows complete, with no entrance (spec §9).
 - Text that changes its value in place: a time, a count, the plan line, a status word.
 - The app color. A new tint shows at once on every control.
 - The check mark of a repeat day, as in Clock.

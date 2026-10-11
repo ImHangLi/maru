@@ -121,8 +121,8 @@ extension AppModel {
     }
 }
 
-/// The measures of an inset grouped list cell, so a tile looks like a card of Today.
-private enum Tile {
+/// The measures of an inset grouped list cell, so a tile, and the graph of History, look like a card of Today.
+enum Tile {
     static let margin: CGFloat = 16
     static let spacing: CGFloat = 12
     static var shape: RoundedRectangle {
