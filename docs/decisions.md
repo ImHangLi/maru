@@ -768,11 +768,11 @@ The rule:
 - A dated request with a closed member names only the open members. It carries their slot IDs (`openSlots`), so a tap and the "Taken" action find only the open doses. It has the "Taken" action when exactly one item is open (D034). The revision stays the revision of all members that are due on its date, so the tap resolver checks the identity as before (spec 8.3).
 - A daily or weekly item and an every-other-day item at the same time give one notification on a day when both are due. Each weekday of the time that has such a date in the next 14 days gets dated requests, so no notification names an item on a day when it is not due (D036).
 - Two items at one time in different time zone rules give one series when a named zone equals the device zone now and a version that follows the device has the same time. The merged series follows the device zone. This is the trade-off: when the device moves to another zone, the medication reminder moves with it. The owner dropped the time zone question (D046).
-- Room: the plan keeps the plain requests of every time first. The new requests use only the room that is left in the budget of 48. With no room, the time keeps its plain request, and the notification still comes. A record never removes the reminder of another plan.
+- Room: the plan keeps the plain requests of every time first, counted as if no dose were closed, so a record or an undo never changes which groups fit. The new requests use only the room that is left in the budget of 48. With no room, the time keeps its plain request, and the notification still comes. A record never removes the reminder of another plan.
 
 Limits, to state in the settings text later:
 
-- A weekday that left the repeating requests reminds on two dates. Then it stops until the app runs again. So with no run for seven days, the daily item loses that weekday.
+- A weekday that left the repeating requests reminds on two dates. Then it stops until the app runs again. So with no run for seven days, the daily item loses that weekday. The review raised this limit, and the lead agent accepted it, because the app runs whenever the user records early.
 - A daily item and an every-other-day item at the same time have dated requests for 14 days and no repeating request. With no run for 14 days, both stop. The record of the "Taken" action from a notification does not run the engine. The next launch or return does.
 - A follow-up still has its own group for each zone rule. The follow-ups of the zones that D047 joins are not joined yet.
 

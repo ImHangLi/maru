@@ -181,6 +181,7 @@ public struct ReminderSeries: Hashable, Sendable {
             var seen = Set<ItemID>()
             let open = zip(members, entries).filter { !done.contains($0.0.slotID) }
             let names = open.map(\.1).filter { seen.insert($0.itemID).inserted }.map(\.name)
+            guard !open.isEmpty else { return [] }
             var userInfo = [
                 ReminderRequest.seriesIDKey: id,
                 ReminderRequest.scheduleRevisionKey: revision,
@@ -411,12 +412,12 @@ public struct ReminderPlan: Hashable, Sendable {
             let ordered = units[key]!.sorted { first, second in
                 if let first = first.date, let second = second.date { first < second } else { false }
             }
-            let series = ordered.compactMap { unit -> ReminderSeries? in
-                // A dated request names only the members that no record closed. With none left, it has no request (D047).
+            let series = ordered.map { unit -> ReminderSeries in
+                // A dated request names only the members that no record closed. With none left, it has no request.
+                // The budget counts it in full, so a record or an undo never changes which groups fit (D047).
                 let done = Set(members[unit]!.map(\.slotID)).filter { slot in
                     unit.date.map { closed.contains(OccurrenceKey(slotID: slot, plannedDate: $0)) } ?? false
                 }
-                guard done.count < members[unit]!.count else { return nil }
                 return ReminderSeries(
                     timeZone: key.timeZone,
                     time: key.time,
@@ -429,7 +430,7 @@ public struct ReminderPlan: Hashable, Sendable {
                     done: done
                 )
             }
-            let count = series.reduce(0) { $0 + $1.requests.count }
+            let count = series.baselineCount
             guard used + count <= requestBudget else { continue }
             used += count
             kept[key] = series
@@ -456,10 +457,12 @@ public struct ReminderPlan: Hashable, Sendable {
                 !closed.contains(OccurrenceKey(slotID: pair.member.slotID, plannedDate: date))
             }
             func instant(_ date: LocalDate) -> Date { zone.resolve(key.time, on: date).earliestInstant }
-            /// The first two dates of a weekday from today that have not passed.
+            /// The first two dates of a weekday from today that have not passed, and every date of an
+            /// every-other-day request on that weekday. A dated request stays until a new one covers its members.
             func dates(of weekday: Weekday) -> [LocalDate] {
                 let first = (0..<7).map { today.adding(days: $0) }.first { $0.weekday == weekday }!
-                return [first, first.adding(days: 7)].filter { instant($0) > now }
+                let own = [first, first.adding(days: 7)] + datedDates.filter { $0.weekday == weekday }
+                return Set(own).filter { instant($0) > now }.sorted()
             }
             let all = weekdays[own] ?? []
             let changed = all.filter { weekday in
@@ -497,9 +500,9 @@ public struct ReminderPlan: Hashable, Sendable {
             let dated = Key(timeZone: key.timeZone, time: key.time, isDated: true)
             let before = (kept[key] ?? []) + (kept[dated] ?? [])
             guard kept[key] != nil, let reworked = rework(key, dated: kept[dated] ?? []),
-                  used - before.requestCount + reworked.requestCount <= requestBudget
+                  used - before.baselineCount + reworked.requestCount <= requestBudget
             else { continue }
-            used += reworked.requestCount - before.requestCount
+            used += reworked.requestCount - before.baselineCount
             kept[key] = reworked
             if kept[dated] != nil { kept[dated] = [] }
             shared[key] = reworked
@@ -518,4 +521,6 @@ public struct ReminderPlan: Hashable, Sendable {
 
 private extension Array where Element == ReminderSeries {
     var requestCount: Int { reduce(0) { $0 + $1.requests.count } }
+    /// The requests that the series have when no record closes a dose (D047).
+    var baselineCount: Int { reduce(0) { $0 + ($1.date == nil ? $1.requests.count : 1) } }
 }
