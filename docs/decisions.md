@@ -487,3 +487,10 @@ Rejected:
 Tests (D016): two new tests in `MaruCore`. One for the cleaning of label text and the form proposal, one for the search order and its edge cases.
 
 Not verified: no build ran on a Mac of the maintainer, and nobody saw the screens. The scan needs a check on a real iPhone with real bottles.
+
+## D045 · 2026-10-11 · Lean agent work and the follow-up end after midnight
+
+Maintainer decisions.
+
+- Agents work in a token-efficient way. The rules are in `docs/process.md`, "Token budget for agents". Fewer subagents, short briefs, and a model review only for changes that can affect records or reminders.
+- Follow-ups past midnight end at 01:00 at the latest (D039). The maintainer left the choice to the agent. The reason: a bedtime dose with no record must not ring for most of the night.
