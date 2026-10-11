@@ -25,15 +25,6 @@ struct DebugSection: View {
     }
 }
 
-/// `-MaruSettings debug` opens the debug menu at launch, for screenshots.
-struct DebugMenuDestination: ViewModifier {
-    @State private var isPresented = DebugLaunch.settings == "debug"
-
-    func body(content: Content) -> some View {
-        content.navigationDestination(isPresented: $isPresented) { DebugMenuView() }
-    }
-}
-
 /// The test-data tool of spec 14 A. A load or a reset closes the app, and the next launch uses the other store.
 struct DebugMenuView: View {
     @Environment(AppModel.self) private var model

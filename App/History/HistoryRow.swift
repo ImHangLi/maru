@@ -76,9 +76,6 @@ struct HistoryEntryRow: View {
         .sheet(isPresented: $showsTimeEditor) {
             ChangeTimeSheet(name: item?.name ?? "", time: suggestedTime, earliest: dayStart, latest: latestTime, save: saveTime)
         }
-        #if DEBUG
-        .onAppear(perform: showDebugDemo)
-        #endif
         .accessibilityElement(children: .combine)
         .accessibilityHint(state == .none ? Text(verbatim: "") : Text("Swipe or touch and hold to change it."))
     }
@@ -161,18 +158,6 @@ struct HistoryEntryRow: View {
         case let .asNeeded(dose): model.changeTime(dose, to: time)
         }
     }
-
-    #if DEBUG
-    private func showDebugDemo() {
-        guard !DebugLaunch.didShowHistoryDemo else { return }
-        switch (DebugLaunch.history, state) {
-        case ("correct", .taken), ("backfill", .open):
-            DebugLaunch.didShowHistoryDemo = true
-            showsTimeEditor = true
-        default: break
-        }
-    }
-    #endif
 
     // MARK: Dose
 

@@ -40,22 +40,6 @@ public struct ObservedTimeZone: Hashable, Sendable {
     }
 }
 
-/// Where the engine keeps the device time zone of its runs. It must keep it after the app stops,
-/// because a tap can start the app. A zone identifier is not health data.
-public protocol TimeZoneRecord: Sendable {
-    func load() -> ObservedTimeZone?
-    func save(_ observed: ObservedTimeZone)
-}
-
-extension TimeZoneRecord {
-    /// Records the zone of a successful run. The time changes only when the zone changes, so a run that
-    /// a tap starts does not hide that the zone stayed the same since before the delivery.
-    func observe(_ timeZone: NamedTimeZone, at now: Date) {
-        guard load()?.timeZone != timeZone else { return }
-        save(ObservedTimeZone(timeZone: timeZone, since: now))
-    }
-}
-
 /// Why the app asks the user to confirm the date and the items of a tapped reminder (spec 8.3, T15, T24).
 public enum ReminderTapDoubt: Hashable, Sendable {
     /// The planned date is not today. The tap must not record a new occurrence of today (T15).
@@ -108,7 +92,7 @@ public struct ReminderTapResolver: Sendable {
 
     public let now: Date
     public let deviceTimeZone: NamedTimeZone
-    /// What `TimeZoneRecord.load()` returns. `nil` when the engine did not complete a run.
+    /// What `DefaultsTimeZoneRecord.load()` returns. `nil` when the engine did not complete a run.
     public let observedTimeZone: ObservedTimeZone?
 
     public init(now: Date, deviceTimeZone: NamedTimeZone, observedTimeZone: ObservedTimeZone?) {

@@ -16,7 +16,7 @@ struct PersistenceTests {
             category: .medication, name: "Metformin", form: .tablet, color: .blue, intakeNote: .preset(.withFood)
         )
         let other = try Item(
-            category: .unknown, name: "鱼油", form: .softgel, color: .orange, imageReference: "images/1.heic"
+            category: .unknown, name: "鱼油", form: .softgel, color: .orange
         )
         try await store.save(item)
         try await store.save(other)

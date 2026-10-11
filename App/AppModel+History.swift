@@ -108,7 +108,7 @@ extension AppModel {
         let read = history.graphReadCount
         Task {
             let oldest = HistoryGraph.oldestStart(today: today, firstWeekday: firstWeekday)
-            let counts = try? await store.historyCounts(from: oldest, through: today, deviceTimeZone: deviceTimeZone)
+            let counts = try? await store.open().historyCounts(from: oldest, through: today, deviceTimeZone: deviceTimeZone)
             guard history.graphReadCount == read else { return }
             if let counts {
                 history.graph = counts.firstDay.map { HistoryGraph(today: today, firstDay: $0, firstWeekday: firstWeekday) }
@@ -132,7 +132,7 @@ extension AppModel {
         Task {
             do throws(StorageError) {
                 // The timeline starts at today, so the read ends at the day after it.
-                let page = try await store.history(before: today.adding(days: 1), days: days, deviceTimeZone: deviceTimeZone)
+                let page = try await store.open().history(before: today.adding(days: 1), days: days, deviceTimeZone: deviceTimeZone)
                 guard history.readCount == read else { return }
                 guard history.commitGeneration == generation else { return loadHistory() }
                 showHistory(page, today: today, dayCount: days)

@@ -113,18 +113,17 @@ extension LocalStore {
         try db.execute(
             sql: """
                 INSERT INTO item (
-                    id, category, name, form, color, isArchived, imageReference, intakeNotePreset, intakeNoteText
+                    id, category, name, form, color, isArchived, intakeNotePreset, intakeNoteText
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (id) DO UPDATE SET
                     category = excluded.category, name = excluded.name, form = excluded.form,
                     color = excluded.color, isArchived = excluded.isArchived,
-                    imageReference = excluded.imageReference, intakeNotePreset = excluded.intakeNotePreset,
-                    intakeNoteText = excluded.intakeNoteText
+                    intakeNotePreset = excluded.intakeNotePreset, intakeNoteText = excluded.intakeNoteText
                 """,
             arguments: [
                 item.id.text, item.category.rawValue, item.name, item.form.rawValue, item.color.rawValue,
-                item.isArchived, item.imageReference, preset, text,
+                item.isArchived, preset, text,
             ]
         )
         // The load path checks the row with the domain rules. A failure rolls back the write.
@@ -165,7 +164,6 @@ extension LocalStore {
                 form: ItemForm(text: row.decode(forColumn: "form")),
                 color: ItemColor(text: row.decode(forColumn: "color")),
                 isArchived: row.decode(forColumn: "isArchived"),
-                imageReference: row.decode(forColumn: "imageReference"),
                 intakeNote: note
             )
         }

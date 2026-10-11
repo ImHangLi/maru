@@ -171,13 +171,6 @@ private struct HistoryList: View {
                 if let scrollTarget { scroll(to: scrollTarget, sections, scroller) }
             }
             .modifier(ClearsSelectionOnScroll(selection: $selection))
-            #if DEBUG
-            .onAppear {
-                // `-MaruHistory older`: scroll to the oldest loaded day. The simulator cannot scroll.
-                guard DebugLaunch.history == "older", let last = sections.last?.date else { return }
-                Task { @MainActor in scroller.scrollTo(last, anchor: .top) }
-            }
-            #endif
         }
         .overlay {
             if sections.isEmpty, !model.history.hasEarlier, model.history.loadFailure == nil {

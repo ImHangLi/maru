@@ -42,9 +42,6 @@ actor AppStore {
         let interval = Signposts.signposter.beginInterval("OpenDatabase")
         defer { Signposts.signposter.endInterval("OpenDatabase", interval) }
         #if DEBUG
-        if let error = DebugLaunch.storageError { throw error }
-        #endif
-        #if DEBUG
         // A debug scenario uses its own store, so the real database is never changed (spec 7.3).
         let directory = DebugStore.directory ?? Self.directory
         #else
@@ -207,6 +204,15 @@ actor AppStore {
         )
     }
 
+    /// The open store for a record transaction. An open failure becomes `RecordFailure.storage`.
+    private func openForRecord() throws(RecordFailure) -> LocalStore {
+        do throws(StorageError) {
+            return try open()
+        } catch {
+            throw .storage(error)
+        }
+    }
+
     /// The record transaction for the events that the user chose on Today (spec 7.2).
     /// `generation` is the generation of the data that the model read (D040).
     func record(
@@ -215,12 +221,7 @@ actor AppStore {
         currentPlan: OccurrenceGeneration? = nil,
         restoreEpoch: Int? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        let store: LocalStore
-        do throws(StorageError) {
-            store = try open()
-        } catch {
-            throw .storage(error)
-        }
+        let store = try openForRecord()
         let records = try await store.record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch)
         #if DEBUG
         // The "failed write" scenario: the commit is stored, and the caller gets `unavailable` (D014).
@@ -268,26 +269,11 @@ extension AppStore {
 }
 
 extension AppStore {
-    /// The days of the history before a date, newest first (spec 3 P05).
-    func history(before today: LocalDate, days: Int, deviceTimeZone: NamedTimeZone) async throws(StorageError) -> HistoryPage {
-        try await open().history(before: today, days: days, deviceTimeZone: deviceTimeZone)
-    }
-
-    /// The counts of the days of the graph, from `oldest` to today (D041).
-    func historyCounts(from oldest: LocalDate, through today: LocalDate, deviceTimeZone: NamedTimeZone) async throws(StorageError) -> HistoryCounts {
-        try await open().historyCounts(from: oldest, through: today, deviceTimeZone: deviceTimeZone)
-    }
-
     /// The first event of a past dose that no generation run stored, with its occurrence, in one transaction.
     func recordBackfill(
         _ event: IntakeEvent, occurrence: Occurrence, generation: Int
     ) async throws(RecordFailure) -> OccurrenceRecord {
-        let store: LocalStore
-        do throws(StorageError) {
-            store = try open()
-        } catch {
-            throw .storage(error)
-        }
+        let store = try openForRecord()
         return try await store.recordBackfill(event, occurrence: occurrence, generation: generation)
     }
 }

@@ -247,8 +247,7 @@ extension ItemDraft {
                 everyOtherDayFrom: everyOtherDayFrom,
                 slotTimes: slotTimes,
                 dose: dose,
-                timeZonePolicy: timeZonePolicy,
-                productVersionID: latest?.productVersionID
+                timeZonePolicy: timeZonePolicy
             )
         )
         return (item, schedule)
