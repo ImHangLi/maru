@@ -533,3 +533,10 @@ Rejected:
 Tests (D016): one new test, for the day counts with an every-other-day item and a skipped dose.
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The levels in dark mode, the drag, the haptic, and VoiceOver need a check on a real iPhone.
+
+## D045 · 2026-10-11 · Lean agent work and the follow-up end after midnight
+
+Maintainer decisions.
+
+- Agents work in a token-efficient way. The rules are in `docs/process.md`, "Token budget for agents". Fewer subagents, short briefs, and a model review only for changes that can affect records or reminders.
+- Follow-ups past midnight end at 01:00 at the latest (D039). The maintainer left the choice to the agent. The reason: a bedtime dose with no record must not ring for most of the night.
