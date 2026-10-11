@@ -4,6 +4,9 @@
     "%@ %@" : {
       "comment" : "Edit screen: a reminder time on the device with its days, when the kept zone of a medication is on another day. Example: Sun 6:00 PM."
     },
+    "%@ %@ time" : {
+      "comment" : "Today: the reminder time of a medication that keeps another time zone. Example: 9:00 AM Shanghai time."
+    },
     "%@ %@ time (%@ here for now)" : {
       "comment" : "Edit screen: the times of a medication in its kept zone. Example: 9:00 AM Shanghai time (6:00 PM here for now). \"For now\" because a clock change in either zone can move the local time or day later."
     },
