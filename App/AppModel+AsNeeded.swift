@@ -249,7 +249,8 @@ extension AppModel {
     func commitAsNeeded(_ pending: AsNeededEvent, look: TodaySnapshot.ItemLook) {
         let id = pending.occurrence.id
         let itemID = pending.occurrence.itemID
-        guard !today.asNeeded.inFlight.keys.contains(id) else { return }
+        // A restore replaces the data while it runs (D040).
+        guard !transfer.isRestoring, !today.asNeeded.inFlight.keys.contains(id) else { return }
         // A dose with an event that the store did not confirm takes only that same event again (D014).
         if let stored = today.asNeeded.unconfirmed[id], stored.pending != pending { return }
         // Only the first event of a dose revises nothing. A correction always revises the shown event.
@@ -258,11 +259,17 @@ extension AppModel {
         today.asNeeded.inFlight[id] = .some(held)
         today.asNeeded.inFlightLooks[id] = look
         if isNew { today.asNeeded.recordingItems.insert(itemID) }
+        let generation = dataGeneration
         Task {
             do throws(RecordFailure) {
-                let record = try await store.recordAsNeeded(pending.event, occurrence: pending.occurrence)
+                let record = try await store.recordAsNeeded(
+                    pending.event, occurrence: pending.occurrence, generation: generation
+                )
+                // A restore replaced the rows of this dose. The model forgot it.
+                guard generation == dataGeneration else { return }
                 didCommitAsNeeded(record, pending)
             } catch {
+                guard generation == dataGeneration else { return }
                 didFailAsNeeded(UnconfirmedAsNeeded(pending: pending, confirmed: held, look: look), error)
             }
             today.asNeeded.inFlight[id] = nil
@@ -318,6 +325,9 @@ extension AppModel {
             forget(pending)
             show(AsNeededFailure(kind: .changed, pending: nil))
             refreshAfterAsNeededChange()
+        case .replaced:
+            // A restore replaced the data. Nothing was written, and the model forgets the old data next (D040).
+            break
         }
     }
 
@@ -335,13 +345,15 @@ extension AppModel {
 
 extension AppStore {
     /// The record transaction of an as-needed dose (spec 7.2, D021).
-    func recordAsNeeded(_ event: IntakeEvent, occurrence: AsNeededOccurrence) async throws(RecordFailure) -> OccurrenceRecord {
+    func recordAsNeeded(
+        _ event: IntakeEvent, occurrence: AsNeededOccurrence, generation: Int
+    ) async throws(RecordFailure) -> OccurrenceRecord {
         let store: LocalStore
         do throws(StorageError) {
             store = try open()
         } catch {
             throw .storage(error)
         }
-        return try await store.recordAsNeeded(event, occurrence: occurrence)
+        return try await store.recordAsNeeded(event, occurrence: occurrence, generation: generation)
     }
 }

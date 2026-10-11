@@ -1,5 +1,6 @@
 import Foundation
 import GRDB
+import os
 
 /// The on-device database of items, schedules, occurrences, and intake events.
 ///
@@ -14,11 +15,15 @@ public struct LocalStore: Sendable {
     /// The directory that holds the database file and the files that SQLite keeps next to it.
     let directory: URL
     let writer: DatabasePool
+    /// The number of restores since the store opened. A write that a caller read for before a restore is refused.
+    /// See `restore(_:)` and `checkedWrite`.
+    let generation = OSAllocatedUnfairLock(initialState: 0)
 
     /// Opens the database in `directory`, and creates it when the directory has none.
     ///
     /// A failure is a typed error. The database files stay as they are: nothing is deleted, replaced, or rebuilt,
-    /// and a failed open never gives an empty store (spec 7.3, T37).
+    /// and a failed open never gives an empty store (spec 7.3, T37). Only a restore that the user confirms
+    /// replaces the data. See `restore(_:)`.
     public init(directory: URL) throws(StorageError) {
         try self.init(directory: directory, migrator: Schema.migrator)
     }
@@ -75,8 +80,9 @@ public struct LocalStore: Sendable {
     /// and gives it the final name after the migrations complete.
     ///
     /// A launch that stops before the move leaves no file with the final name, so the next launch is
-    /// a first launch again. A temporary file never holds user data, because no store exists before the move.
-    /// So the temporary files are the only files that the store removes.
+    /// a first launch again. A temporary file of a first launch never holds user data, because no store exists
+    /// before the move. A temporary file of a restore holds a copy of a backup file, and the backup file stays
+    /// where the user keeps it (D040). So the temporary files are the only files that the store removes.
     private static func create(_ database: URL, migrator: DatabaseMigrator) throws(StorageError) {
         let directory = database.deletingLastPathComponent()
         let temporary = directory.appendingPathComponent(temporaryPrefix + UUID().uuidString)
@@ -121,7 +127,7 @@ public struct LocalStore: Sendable {
 
     static let fullSync: @Sendable (Int32) -> Int32 = { fcntl($0, F_FULLFSYNC) }
 
-    private static func removeTemporaryFiles(in directory: URL) {
+    static func removeTemporaryFiles(in directory: URL) {
         let fileManager = FileManager.default
         let names = (try? fileManager.contentsOfDirectory(atPath: directory.path)) ?? []
         for name in names where name.hasPrefix(temporaryPrefix) {
@@ -188,7 +194,7 @@ public struct LocalStore: Sendable {
         files(of: directory.appendingPathComponent(fileName))
     }
 
-    private static func files(of database: URL) -> [URL] {
+    static func files(of database: URL) -> [URL] {
         [database, URL(fileURLWithPath: database.path + "-wal"), URL(fileURLWithPath: database.path + "-shm")]
     }
 
@@ -200,12 +206,26 @@ public struct LocalStore: Sendable {
         }
     }
 
-    /// Runs `updates` in one transaction. An error rolls back every change that `updates` made.
-    func write<T: Sendable>(_ updates: @Sendable (Database) throws -> T) async throws(StorageError) -> T {
+    /// Runs `updates` in one transaction with the check of `checkedWrite`. An error rolls back every change that `updates` made.
+    func write<T: Sendable>(generation: Int, _ updates: @Sendable (Database) throws -> T) async throws(StorageError) -> T {
         do {
-            return try await writer.write(updates)
+            return try await checkedWrite(generation: generation, updates)
         } catch {
             throw StorageError(error)
+        }
+    }
+
+    /// The one write transaction of the store, except the restore (D040).
+    ///
+    /// `generation` is the generation of the data that the caller read: 0, or the generation that the last
+    /// `restore(_:)` gave. Another value throws `StorageError.replaced` before any change. The restore runs on
+    /// the same writer, so the check and the write are in order with it: no value of the old data goes into
+    /// the restored data.
+    func checkedWrite<T: Sendable>(generation: Int, _ updates: @Sendable (Database) throws -> T) async throws -> T {
+        let current = self.generation
+        return try await writer.write { db in
+            guard current.withLock({ $0 }) == generation else { throw StorageError.replaced }
+            return try updates(db)
         }
     }
 }

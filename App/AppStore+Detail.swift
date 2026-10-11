@@ -81,25 +81,28 @@ extension AppStore {
 
     /// Turns the reminders of the item on or off. The item stays on Today and My Items, and the user can still
     /// record it (T07). It returns the schedule, or `nil` when the item has no schedule.
-    func setReminders(on isOn: Bool, for itemID: ItemID) async throws(StorageError) -> Schedule? {
+    /// `generation` is the generation of the data that the model read (D040).
+    func setReminders(on isOn: Bool, for itemID: ItemID, generation: Int) async throws(StorageError) -> Schedule? {
         let store = try open()
         guard var schedule = try await store.schedules(of: itemID).first else { return nil }
         guard schedule.isEnabled != isOn else { return schedule }
         schedule.isEnabled = isOn
-        try await store.save(schedule)
+        try await store.save(schedule, generation: generation)
         return schedule
     }
 
     /// Archives or restores the item. The records stay (T08). It returns the item and its schedule, if any.
+    /// `generation` is the generation of the data that the model read (D040).
     func setArchived(
         _ isArchived: Bool,
-        for itemID: ItemID
+        for itemID: ItemID,
+        generation: Int
     ) async throws(StorageError) -> (item: Item, schedule: Schedule?)? {
         let store = try open()
         guard var item = try await store.item(id: itemID) else { return nil }
         if item.isArchived != isArchived {
             item.isArchived = isArchived
-            try await store.save(item)
+            try await store.save(item, generation: generation)
         }
         return (item, try await store.schedules(of: itemID).first)
     }
@@ -107,8 +110,9 @@ extension AppStore {
     /// Deletes the item with its schedules and its records, in one transaction (D033). It returns the IDs of
     /// the deleted schedules and of their versions, or `nil` when the store has no such item.
     func deleteItem(
-        _ itemID: ItemID
+        _ itemID: ItemID,
+        generation: Int
     ) async throws(StorageError) -> (schedules: [ScheduleID], versions: [ScheduleVersionID])? {
-        try await open().deleteItem(itemID)
+        try await open().deleteItem(itemID, generation: generation)
     }
 }

@@ -12,14 +12,17 @@ extension LocalStore {
     /// The read writes no event. The caller records with `record`, the transaction of the record circle,
     /// and the event revises the last event of the returned record, so a second event is rejected (T18).
     ///
-    /// - Parameter observedTimeZone: What `TimeZoneRecord.load()` returns.
+    /// - Parameters:
+    ///   - observedTimeZone: What `TimeZoneRecord.load()` returns.
+    ///   - generation: The generation of the data that the caller read. See `checkedWrite`.
     public func actionTarget(
         of reminder: DeliveredReminder,
         at now: Date,
         deviceTimeZone: NamedTimeZone,
-        observedTimeZone: ObservedTimeZone?
+        observedTimeZone: ObservedTimeZone?,
+        generation: Int = 0
     ) async throws(StorageError) -> ReminderActionTarget {
-        _ = try await generate(at: now, deviceTimeZone: deviceTimeZone)
+        _ = try await generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
         return try await read { db -> ReminderActionTarget in
             let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
             let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")

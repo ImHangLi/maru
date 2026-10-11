@@ -5,8 +5,9 @@ import MaruCore
 extension LocalStore {
     /// Inserts the item, or updates the fields of the stored item with the same ID.
     /// An item that does not load again as the same value is `StorageError.invalidData`, and nothing changes.
-    public func save(_ item: Item) async throws(StorageError) {
-        try await write { db in
+    /// `generation` is the generation of the data that the caller read. See `checkedWrite`.
+    public func save(_ item: Item, generation: Int = 0) async throws(StorageError) {
+        try await write(generation: generation) { db in
             try Self.upsert(item, db)
         }
     }
@@ -15,8 +16,9 @@ extension LocalStore {
     /// The rules of `save(_:)` for an item and for a schedule apply. With no schedule, only the item changes.
     ///
     /// The same values again change nothing, so a second tap on Save does not double the item.
-    public func save(_ item: Item, schedule: Schedule?) async throws(StorageError) {
-        try await write { db in
+    /// `generation` is the generation of the data that the caller read. See `checkedWrite`.
+    public func save(_ item: Item, schedule: Schedule?, generation: Int = 0) async throws(StorageError) {
+        try await write(generation: generation) { db in
             try Self.upsert(item, db)
             if let schedule {
                 guard schedule.itemID == item.id else { throw StorageError.conflict }
@@ -31,8 +33,11 @@ extension LocalStore {
     ///
     /// A missing old item, or a new item with the ID of the old one, is `StorageError.conflict`, and nothing changes.
     /// The same values again change nothing, so a second tap on Save does not add a second item.
-    public func replace(_ oldItemID: ItemID, with item: Item, schedule: Schedule?) async throws(StorageError) {
-        try await write { db in
+    /// `generation` is the generation of the data that the caller read. See `checkedWrite`.
+    public func replace(
+        _ oldItemID: ItemID, with item: Item, schedule: Schedule?, generation: Int = 0
+    ) async throws(StorageError) {
+        try await write(generation: generation) { db in
             guard item.id != oldItemID, var old = try Self.fetchItem(db, id: oldItemID) else {
                 throw StorageError.conflict
             }
@@ -54,12 +59,14 @@ extension LocalStore {
     /// The projection rows go with the events of the same occurrences, so the event history and the projection
     /// agree for every occurrence that stays. No other item changes. A failure rolls back every delete.
     ///
+    /// - Parameter generation: The generation of the data that the caller read. See `checkedWrite`.
     /// - Returns: The IDs of the deleted schedules and of their versions, or `nil` when the store has no such item.
     @discardableResult
     public func deleteItem(
-        _ id: ItemID
+        _ id: ItemID,
+        generation: Int = 0
     ) async throws(StorageError) -> (schedules: [ScheduleID], versions: [ScheduleVersionID])? {
-        try await write { db in
+        try await write(generation: generation) { db in
             let item: StatementArguments = ["item": id.text]
             guard try Bool.fetchOne(db, sql: "SELECT EXISTS (SELECT 1 FROM item WHERE id = :item)", arguments: item) == true else {
                 return nil

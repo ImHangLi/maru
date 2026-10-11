@@ -34,6 +34,11 @@ enum DraftFile {
         try? FileManager.default.removeItem(at: url(key))
     }
 
+    /// Removes every kept draft. A restore replaces the items that the drafts belong to (D040).
+    static func removeAll() {
+        try? FileManager.default.removeItem(at: directory)
+    }
+
     private static func url(_ key: String) -> URL {
         directory.appending(path: "\(key).json")
     }

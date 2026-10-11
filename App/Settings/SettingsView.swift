@@ -85,6 +85,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.menu)
                 }
+                DataSection()
                 FeedbackSection()
                 #if DEBUG
                 DebugSection()
@@ -102,11 +103,15 @@ struct SettingsView: View {
             .modifier(DebugMenuDestination())
             #endif
             .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Done") { dismiss() }
+                // A restore replaces the data while it runs. The sheet stays until it ends (D040).
+                if !model.transfer.isRestoring {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button("Done") { dismiss() }
+                    }
                 }
             }
         }
+        .interactiveDismissDisabled(model.transfer.isRestoring)
         // The sheet sets the tint again, so every control in it changes at once with a new app color.
         .tint(appColor.tint)
         .onAppear {

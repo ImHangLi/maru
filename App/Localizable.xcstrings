@@ -103,6 +103,12 @@
     "5 Times" : {
       "comment" : "Settings: a number of follow-up reminders for each dose."
     },
+    "A backup moves everything to a new iPhone. The files have your item names and records and are not encrypted, so share them only with people you trust." : {
+      "comment" : "Settings: the footer of “Your Data”."
+    },
+    "A newer version of Maru made this backup. Update Maru, then try again. Your data did not change." : {
+      "comment" : "Settings: the alert for a backup file from a newer version of the app."
+    },
     "A newer version of Maru saved your data. Maru did not change or delete it." : {
       "comment" : "Storage problem: the text when a newer version of the app saved the data."
     },
@@ -150,6 +156,9 @@
     },
     "As Needed" : {
 
+    },
+    "Back Up" : {
+      "comment" : "Settings: the button that makes a backup file and opens the share sheet."
     },
     "Blue" : {
       "comment" : "Item form or color name: the text “Blue”."
@@ -256,6 +265,12 @@
     "Every other day at %@, starting tomorrow, with no end date" : {
       "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times."
     },
+    "Export Records" : {
+      "comment" : "Settings: the button that makes a spreadsheet file of the records and opens the share sheet."
+    },
+    "File Not Made" : {
+      "comment" : "Settings: the title of the alert for a record export or a backup that failed."
+    },
     "Fills the amount." : {
       "comment" : "Edit screen: the VoiceOver hint of an amount candidate of the smart completion, for example 1 softgel."
     },
@@ -325,11 +340,20 @@
     "Maru checks again when you open it." : {
       "comment" : "Item detail footer and alert message: the system did not confirm the reminder change yet."
     },
+    "Maru couldn’t confirm that your iPhone saved it. If your data looks wrong later, restore the backup again." : {
+      "comment" : "Settings: the alert for a restore that replaced the data, when the storage did not confirm the save."
+    },
+    "Maru couldn’t make the file. Try again." : {
+      "comment" : "Settings: the alert for a record export or a backup that failed."
+    },
     "Maru couldn’t read the history. Try again." : {
 
     },
     "Maru couldn’t read this item." : {
       "comment" : "Item detail: the text when the item does not read from the store."
+    },
+    "Maru couldn’t restore this backup. Your data did not change." : {
+      "comment" : "Settings: the alert for a restore that failed."
     },
     "Maru couldn’t save" : {
       "comment" : "Edit screen: the text “Maru couldn’t save”."
@@ -429,6 +453,9 @@
     },
     "Not Confirmed" : {
       "comment" : "Item detail: the value of the Reminder row when the system did not confirm a change yet."
+    },
+    "Not Restored" : {
+      "comment" : "Settings: the title of the alert for a backup file that Maru did not restore."
     },
     "Not Set" : {
       "comment" : "Item detail: the value of the Reminder row when the system holds no reminder."
@@ -565,6 +592,12 @@
     "Repeat (%@ Time)" : {
       "comment" : "Edit screen: the label of the weekday buttons when the days are in the kept zone of a medication, for example Repeat (Shanghai Time)."
     },
+    "Replace" : {
+      "comment" : "The destructive button of the restore confirmation."
+    },
+    "Replace All Data?" : {
+      "comment" : "The title of the restore confirmation."
+    },
     "Replace with a New Product…" : {
       "comment" : "Item detail: the menu button that opens the edit screen for a new item that replaces this one. The old item is archived and keeps its records. The amount is empty."
     },
@@ -573,6 +606,12 @@
     },
     "Restore %@" : {
       "comment" : "Archived list: the VoiceOver label of the restore button. The placeholder is the item name."
+    },
+    "Restore from Backup…" : {
+      "comment" : "Settings: the button that opens the file picker for a backup file."
+    },
+    "Restored" : {
+      "comment" : "Settings: the title of the alert for a restore that replaced the data, when the storage did not confirm the save."
     },
     "Save" : {
       "comment" : "Edit screen: the text “Save”."
@@ -697,6 +736,12 @@
     "The test comes in about 5 seconds." : {
 
     },
+    "This backup replaces every item and record on this iPhone. You can’t undo this." : {
+      "comment" : "The message of the restore confirmation."
+    },
+    "This file is not a Maru backup, or it is damaged. Your data did not change." : {
+      "comment" : "Settings: the alert for a file that is not a backup or is damaged."
+    },
     "This item changed. Check it, then try again." : {
 
     },
@@ -819,6 +864,9 @@
     },
     "You can still record without reminders." : {
 
+    },
+    "Your Data" : {
+      "comment" : "Settings: the header of the section with the record export, the backup, and the restore."
     },
     "Your data file is damaged. Maru did not change or delete it." : {
       "comment" : "Storage problem: the text for a damaged data file."

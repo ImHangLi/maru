@@ -50,6 +50,12 @@ final class AppModel {
     var history = HistoryState()
     /// The state of the settings sheet. See `AppModel+Settings.swift`.
     var settings = SettingsState()
+    /// The state of "Your Data" in settings. See `AppModel+Backup.swift`.
+    var transfer = DataTransferState()
+    /// The generation of the data that the store gave at the last restore (D040). A read or an operation that
+    /// started before a restore changes nothing in the model when it ends, because its IDs and values can belong
+    /// to the replaced data. Each record passes it to the store, and the store refuses an old one.
+    var dataGeneration = 0
     /// The first time of day of each item with an active plan, for the order of My Items. `nil` before the
     /// first read. See `MyListView.swift`.
     var listTimes: [ItemID: WallClockTime]?
@@ -69,6 +75,8 @@ final class AppModel {
     init() {
         store = AppStore()
         launch = Signposts.signposter.beginInterval("Launch")
+        // A file of the share sheet stays when the app stops before the sheet closes (spec 10).
+        Task.detached(priority: .background) { [store] in store.removeExports() }
         #if DEBUG
         // Applies a request of the debug menu before the first read opens a store.
         if let problem = DebugStore.launch.problem { debugNotice = DebugMessage(text: problem, isProblem: true) }
@@ -104,6 +112,7 @@ final class AppModel {
         }
         // A detached task starts at once. A task of the main actor starts when the main thread is free,
         // and at launch that is after the system builds the first frame.
+        let generation = dataGeneration
         load = Task.detached { [store] in
             let content: Content
             do throws(StorageError) {
@@ -115,16 +124,23 @@ final class AppModel {
                     try? await store.loadSampleData(at: now, deviceTimeZone: deviceTimeZone)
                 }
                 #endif
-                content = .loaded(try await store.snapshot(at: now, deviceTimeZone: deviceTimeZone))
+                content = .loaded(try await store.snapshot(at: now, deviceTimeZone: deviceTimeZone, generation: generation))
             } catch {
                 content = .failed(error)
             }
-            await self.show(content)
+            await self.show(content, generation: generation)
         }
     }
 
-    private func show(_ content: Content) {
+    private func show(_ content: Content, generation: Int) {
         load = nil
+        // A read that started before a restore shows the replaced data. Read again.
+        guard generation == dataGeneration else {
+            needsRefresh = false
+            return refresh()
+        }
+        // A restore committed, and the model did not take its generation yet. The restore reads again then.
+        if case .failed(.replaced) = content { return }
         var content = content
         if case var .loaded(snapshot) = content, snapshot.today != nil {
             snapshot.today?.apply(heldRecords)

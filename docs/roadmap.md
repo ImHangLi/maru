@@ -21,7 +21,7 @@ Evidence: `docs/research/2026-10-market-scan.md`.
 | Milestone | Result | Exit condition |
 |---|---|---|
 | A. Self-use | Manual add, open-ended reminders, Today, record, history, undo and correct, change time, turn off | The owner uses it daily on a real iPhone for one week. Spec §14 A checks pass |
-| B. TestFlight | Optional photo, widget, en and zh-Hans, accessibility, encrypted export, analytics consent, feedback | External testers use it. Spec §14 B checks pass |
+| B. TestFlight | Optional photo, widget, en and zh-Hans, accessibility, encrypted backup, analytics consent, feedback | External testers use it. Spec §14 B checks pass |
 | C. App Store | Review notes, privacy policy, privacy labels, support, store page, supporter purchase | The app is approved and published |
 
 Additions from research (D006):
@@ -30,6 +30,7 @@ Additions from research (D006):
 - Milestone B: a passive history heatmap. No streaks and no penalties.
 - Milestone A (D021): item color, record a whole slot, an optional follow-up reminder (off by default), as-needed items, and IU as a unit.
 - HealthKit Medications (D022): read-only, no dose writes. No integration in V1.
+- Milestone A (D040): an export of the records as a CSV file, and a backup and a restore. The backup is not encrypted. A backup with a passphrase stays in milestone B.
 
 ## Later, only with evidence of real use
 

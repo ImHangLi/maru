@@ -106,6 +106,33 @@ actor AppStore {
         return try await run.value
     }
 
+    /// Replaces the data with a checked backup that the user confirmed (D040). The store removes the staged files.
+    ///
+    /// The change waits in the notification queue, so no run of an engine reads the database while it changes.
+    /// The engines are made again after the change, so no engine keeps a state of the old data.
+    /// After a failure the old data is in place. See `LocalStore.restore(_:)`.
+    func restore(_ backup: StagedBackup) async throws(StorageError) -> RestoreResult {
+        let previous = updates
+        let run = Task { () -> Result<RestoreResult, StorageError> in
+            await previous?.value
+            return await self.replaceData(with: backup)
+        }
+        updates = Task { _ = await run.value }
+        return try await run.value.get()
+    }
+
+    private func replaceData(with backup: StagedBackup) async -> Result<RestoreResult, StorageError> {
+        let result: RestoreResult
+        do throws(StorageError) {
+            result = try await open().restore(backup)
+        } catch {
+            return .failure(error)
+        }
+        engine = nil
+        followUps = nil
+        return .success(result)
+    }
+
     /// Sets the follow-ups again from the records. A failed run changes nothing, and the next trigger runs again.
     ///
     /// The refresh waits for the notification updates before it. It always runs, also behind a queued full run:
@@ -136,7 +163,8 @@ actor AppStore {
     ///
     /// It reads the items, the slots, and the records of today's occurrences, and no older intake history (spec 7.3).
     /// With no `deviceTimeZone` it generates nothing, and the snapshot has no Today.
-    func snapshot(at now: Date, deviceTimeZone: NamedTimeZone?) async throws(StorageError) -> Snapshot {
+    /// `generation` is the generation of the data that the model read (D040).
+    func snapshot(at now: Date, deviceTimeZone: NamedTimeZone?, generation: Int) async throws(StorageError) -> Snapshot {
         let store = try open()
         let interval = Signposts.signposter.beginInterval("ReadToday")
         var counts = (occurrences: 0, items: 0)
@@ -150,7 +178,7 @@ actor AppStore {
         counts.items = items.count
         var today: TodaySnapshot?
         if let deviceTimeZone {
-            let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone)
+            let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
             counts.occurrences = run.occurrences.count
             let itemIDs = try await store.itemIDsBySlot()
             // An archived item leaves Today, also with a record of today. The record stays in the history (T08).
@@ -184,8 +212,10 @@ actor AppStore {
     }
 
     /// The record transaction for the events that the user chose on Today (spec 7.2).
+    /// `generation` is the generation of the data that the model read (D040).
     func record(
-        _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)]
+        _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
+        generation: Int
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         let store: LocalStore
         do throws(StorageError) {
@@ -193,7 +223,7 @@ actor AppStore {
         } catch {
             throw .storage(error)
         }
-        let records = try await store.record(events)
+        let records = try await store.record(events, generation: generation)
         #if DEBUG
         // The "failed write" scenario: the commit is stored, and the caller gets `unavailable` (D014).
         if debug.failsNextRecord, DebugStore.directory != nil {
@@ -251,13 +281,15 @@ extension AppStore {
     }
 
     /// The first event of a past dose that no generation run stored, with its occurrence, in one transaction.
-    func recordBackfill(_ event: IntakeEvent, occurrence: Occurrence) async throws(RecordFailure) -> OccurrenceRecord {
+    func recordBackfill(
+        _ event: IntakeEvent, occurrence: Occurrence, generation: Int
+    ) async throws(RecordFailure) -> OccurrenceRecord {
         let store: LocalStore
         do throws(StorageError) {
             store = try open()
         } catch {
             throw .storage(error)
         }
-        return try await store.recordBackfill(event, occurrence: occurrence)
+        return try await store.recordBackfill(event, occurrence: occurrence, generation: generation)
     }
 }

@@ -553,6 +553,73 @@ Tests (D016): two new tests. The limit of a dose across a change of the interval
 
 Not verified: no check on a real iPhone yet. Open points are the group in Notification Center, the behavior of many requests at 5 minutes, the summary and a Focus, and the "Taken" action of a follow-up after midnight.
 
+## D040 · 2026-10-11 · Export of records, and backup and restore
+
+Owner decision, with agent detail. The feedback studies found that Maru had no export, no backup, and no sync, and that a user who leaves another app asks first if the history can come too (`docs/research/evidence.md`, theme 11). The owner: do these, simple, minimal, and in the style of Maru. It changes spec 7.3, T38, and T39. `docs/export-format.md` has both file formats.
+
+Owner:
+
+- "Export Records": a file that a person can read in Numbers or Excel.
+- "Back Up" and "Restore": a full copy that Maru can read again, for a new iPhone or a new install.
+- A restore replaces the data. It never merges two data sets in this version.
+- No iCloud sync in this change. It needs the Apple Developer Program (D007) and a design of its own.
+
+Agent detail, the record export:
+
+- A CSV file with one line for each dose and the state that is valid now: date, planned time, item, type, amount, state, time taken, and time zone. An action that the user took back is not a line of its own.
+- The lines are the doses of History (D019), and every recorded dose of today or a later date. A dose in a fixed time zone, or a dose of a stay in another zone, can have a date after the date of the iPhone. So the file has every record, and it never disagrees with the History page.
+- UTF-8 with a byte order mark, because Excel reads a CSV file without the mark in a local encoding. Numbers reads both.
+- The words of the file are fixed English text, so a file reads the same on every iPhone.
+- No choice of a range. The file has all records. A range is one more control for a file that stays small.
+- A field that starts with `=`, `+`, `-`, `@`, a tab, or a carriage return gets an apostrophe in front (OWASP, CSV injection). A spreadsheet app can run such a text as a formula. The apostrophe makes it plain text. The stored name and amount do not change. `docs/export-format.md` says so.
+
+Agent detail, the backup:
+
+- One SQLite database file with the extension `.marubackup`. `VACUUM INTO` makes a consistent copy while the app writes. A plain copy of the database file of a live WAL database can miss commits.
+- The file header marks the file: an application ID, and the format version 1. One more table holds three settings: the app color, the names in reminders, and "Remind Again".
+- SQLite, and not JSON: the restore then uses the migrations and the load checks that the store already has. A JSON document needs a second reader and a second writer for every table, and each can differ from the store.
+
+Agent detail, the restore:
+
+1. The user picks a file. Maru copies it to the protected directory of the database, under a temporary name.
+2. Maru checks the application ID and the format version. A file with a migration that this version does not know is refused as "newer".
+3. Maru does not trust the schema of the file. It builds a new database with its own schema, at the migration level of the backup, and copies each row into it under every constraint.
+4. Maru applies the later migrations to this new database, then reads every item, schedule, occurrence, and record through the checks of a normal load, and runs the integrity check and the foreign key check of SQLite.
+5. Until here, the database of the app did not change. A failure removes the temporary files and shows a plain message.
+6. One alert asks: "Replace All Data?". It says that the backup replaces every item and record on this iPhone.
+7. The copy: the SQLite online backup copies the new database into the open database of the app, in one write transaction. No file changes its name, and the store stays open. A stop of the app or an error before the commit rolls the transaction back, so the old data stays complete. The next open removes the temporary files.
+8. The first version renamed the files. A review found two paths that lost data or broke the open store: a failed rename back after a failed flush, and a stop between the two file names. The online backup has no such path.
+9. After the copy, the model forgets what it kept about the old data, and Today shows no rows. Then the settings of the backup apply, the settings sheet closes, and every page reads again. A read or a record that started before the copy changes nothing in the model when it ends, because its IDs can belong to the old data. One run of the notification queue sets the reminders of the restored plans and removes the old ones. This run can ask for the notification permission, because the user confirmed plans with reminders (spec 2.2). Without this, a new iPhone gets no reminder until the first save.
+10. No record of the old data goes into the restored data. A backup can have the same IDs as the data on the iPhone, so a check in the model after the commit is too late. Two guards:
+    - While the restore runs, the settings sheet stays open (no "Done", no swipe), and Today, the history, and the "Taken" action of a reminder record nothing.
+    - The store has a generation of its data, 0 at the open. Only the restore changes it: it raises it by one in its write transaction. Every write of the store passes the generation that the model read with, and one helper compares it in the same write transaction, before any change. The restore and the writes run on the same writer, so a write with the old generation is refused, writes nothing, and the pages read again. This covers every record, an item save or replacement, an archive and a restore from the archive, a delete, reminders on or off, and the generation run of the occurrences.
+11. The flush to the storage medium runs after the commit. When it fails, the data is replaced all the same. The restore is then a success for the model: it forgets the old data, takes the new generation, reads again, and sets the reminders. Settings stays open and says "Restored", and that Maru could not confirm the save. Only an error before the commit says that the data did not change.
+
+- Spec 7.3 forbids a clear and a rebuild of the database to recover from an error. That rule stays. A restore that the user asks for and confirms is a different thing, as the delete of an item is (D033). Spec 7.3 now says so.
+- Spec 7.3 said that an import must not turn on its reminders before a check, so that no reminder comes two times. A restore replaces all data, so one iPhone never has two copies. Two iPhones with the same data both remind. That is the choice of the user.
+
+Encryption:
+
+- The backup and the export are not encrypted in this version. The footer of the section says so, and `PRIVACY.md` says so.
+- A backup with a passphrase needs a key derivation from the passphrase, a file format with a salt and an authentication tag, a passphrase screen, and a wrong-passphrase path. CryptoKit has no key derivation for a passphrase. That work is a change of its own, and a mistake in it loses a backup. It is the next step, in milestone B.
+- The iPhone backup of iOS, in iCloud or on a computer, can already include the data of Maru (`PRIVACY.md`). For most users it is the way to a new iPhone. The file backup is for a user who starts a new iPhone with no transfer, or who wants a copy in a place of their choice.
+
+The screens:
+
+- "Your Data" is a section of Settings, before "Send Feedback". Export: 2 taps to the share sheet, from Today. Backup: 2 taps. Restore: 2 taps to the file picker, 1 tap on the file, and 1 tap on "Replace".
+- The share sheet is `UIActivityViewController` in a system sheet. `ShareLink` needs the file before the tap, and it gives no sign when the sheet closes. Maru makes the file after the tap and removes it when the sheet closes. This is the one use of the UIKit share sheet (D026).
+- The file picker lets the user pick every file, so a backup with a changed name still restores. The check refuses each other file.
+- The files wait in a temporary folder with complete file protection. The folder has one file at most. The sheet closes when the user shares the file or closes it, and then the file goes. A file that stays after a stop of the app goes at the next launch.
+
+Not done, and why:
+
+- A restore from the storage problem page. That page shows when the database does not open, and a restore there needs a design that keeps the damaged file (spec 7.3).
+- A merge of a backup with the data on the iPhone, and an import from another app.
+- An automatic backup on a schedule.
+- A stop of the app right after the copy and before the settings apply keeps the old settings with the restored data. The window is a few milliseconds, and a setting is easy to set again. A safe order needs the settings in the database (D014).
+
+Tests (D016): four new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A record and an archive with the generation from before a restore are refused and change nothing. A name with a comma, a quotation mark, and a line break stays one CSV field, and a text that starts like a formula gets an apostrophe.
+
 ## D041 · 2026-10-11 · History graph
 
 Owner decision, with agent detail. It brings the passive history heatmap of D006 forward from milestone B. It changes spec 3 P05.

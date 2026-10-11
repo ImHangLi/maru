@@ -13,6 +13,7 @@ Maru was developed in a private repository before it became public. Issue number
 - Maru does not integrate with Apple Health in V1 (D022).
 - An "every other day" schedule is in code (D036). Its reminders are dated requests for the next 7 due dates, and they need a check on a real iPhone.
 - Quick add is in code (D038): "Scan Label" on the add screen reads a name from a label with the camera, on the iPhone, and the name field proposes names from two built-in lists (941 supplement names, 789 medicine names). After the first test on the iPhone, the scan card shows the words of a tapped text as buttons, and the user chooses the words and edits the name on the card (D042). Nobody saw the new card yet, and it needs a check on a real iPhone with real bottles.
+- An export of the records as a CSV file, and a backup and a restore, are in code (D040). `docs/export-format.md` has the formats. The files are not encrypted. Nobody ran them on a real iPhone yet: the share sheet, the file picker, and a restore after a new install need that check.
 - Smart completion for supplements is in code (D043): a supplement name from the built-in list sets the usual form until the user chooses one, and the amount, the reminder, and the note show candidates that fill nothing until a tap. The list has 103 supplements. Nobody saw the screen yet.
 - History has a graph of squares above the timeline (D041): one square per day, three levels of the tint by the share taken, and 13, 26, or 52 weeks. A touch or a drag selects a day, and the timeline scrolls to it. Nobody saw it on a display yet. The drag, the haptic, the dark-mode levels, and VoiceOver need a check on a real iPhone.
 - Today rows show the time on the second line (D044): the set time of an open row, the intake time of a taken row, and "Skipped". Nobody saw the rows on a display yet.
@@ -26,7 +27,9 @@ Maru was developed in a private repository before it became public. Issue number
 3. A question after a time zone change (`docs/research/2026-10-11-apple-health-gap.md`).
 4. A Home Screen widget that records a dose.
 5. Acceptance on a real iPhone: one week of daily use by the maintainer.
-6. Milestone B: TestFlight. The bundle ID freeze and the Apple Developer Program come first (D005, D007).
+6. Check the export, the backup, and the restore on a real iPhone (D040). The pull request has the steps.
+7. A backup with a passphrase (D040, milestone B).
+8. Milestone B: TestFlight. The bundle ID freeze and the Apple Developer Program come first (D005, D007).
 
 ## Open cleanup proposals
 

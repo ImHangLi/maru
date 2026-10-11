@@ -185,14 +185,15 @@ extension AppModel {
     /// Runs the record transaction. The page changes only after the commit (spec 7.2, T19).
     func commit(_ events: [PendingEvent]) {
         guard begin(events) else { return }
-        Task { await run(events) }
+        let generation = dataGeneration
+        Task { await run(events, generation: generation) }
     }
 
     /// The same transaction for a caller that waits for its end, for example the "Taken" action of a reminder (D034).
-    /// `true` only after the commit.
-    func commitAndWait(_ events: [PendingEvent]) async -> Bool {
-        guard begin(events) else { return false }
-        return await run(events)
+    /// `generation` is the generation of the data that the caller read the events from. `true` only after the commit.
+    func commitAndWait(_ events: [PendingEvent], generation: Int) async -> Bool {
+        guard generation == dataGeneration, begin(events) else { return false }
+        return await run(events, generation: generation)
     }
 
     /// The banner of Today and of the history: every event that the store did not confirm, also of a dose
@@ -218,9 +219,10 @@ extension AppModel {
         let events = today.pending.values
             .sorted { $0.event.recordedAt < $1.event.recordedAt }
             .filter { begin([$0]) }
+        let generation = dataGeneration
         Task {
             for event in events {
-                await run([event])
+                await run([event], generation: generation)
             }
         }
         for entry in today.asNeeded.unconfirmed.values.sorted(by: { $0.pending.event.recordedAt < $1.pending.event.recordedAt }) {
@@ -232,7 +234,8 @@ extension AppModel {
     /// unconfirmed one of its occurrence.
     private func begin(_ events: [PendingEvent]) -> Bool {
         let ids = Set(events.map(\.event.occurrenceID))
-        guard !events.isEmpty, today.inFlight.isDisjoint(with: ids) else { return false }
+        // A restore replaces the data while it runs (D040).
+        guard !transfer.isRestoring, !events.isEmpty, today.inFlight.isDisjoint(with: ids) else { return false }
         // An occurrence with an event that the store did not confirm takes only that same event again (D014).
         guard events.allSatisfy({ event in today.pending[event.event.occurrenceID].map { $0 == event } ?? true }) else {
             return false
@@ -247,21 +250,25 @@ extension AppModel {
         return true
     }
 
-    /// Returns `true` after the commit.
+    /// Returns `true` after the commit. The store refuses the events when a restore changed the generation
+    /// of the data after the model read them (D040).
     @discardableResult
-    private func run(_ events: [PendingEvent]) async -> Bool {
+    private func run(_ events: [PendingEvent], generation: Int) async -> Bool {
         let ids = Set(events.map(\.event.occurrenceID))
         var committed = false
         do throws(RecordFailure) {
             // A backfill is one event, with its occurrence in the same transaction.
             let records = if events.count == 1, let occurrence = events[0].backfill {
-                [try await store.recordBackfill(events[0].event, occurrence: occurrence)]
+                [try await store.recordBackfill(events[0].event, occurrence: occurrence, generation: generation)]
             } else {
-                try await store.record(events.map { ($0.event, $0.scheduleVersionID) })
+                try await store.record(events.map { ($0.event, $0.scheduleVersionID) }, generation: generation)
             }
+            // A restore replaced the rows of these events. The model forgot them.
+            guard generation == dataGeneration else { return false }
             didCommit(records, backfilled: events.compactMap(\.backfill))
             committed = true
         } catch {
+            guard generation == dataGeneration else { return false }
             didFail(events, error)
         }
         today.inFlight.subtract(ids)
@@ -342,6 +349,9 @@ extension AppModel {
             // The store has another state than the page. Nothing was written. Show the stored state.
             didChange(events)
             show(TodayFailure(kind: .changed, events: []))
+        case .replaced:
+            // A restore replaced the data. Nothing was written, and the model forgets the old data next (D040).
+            break
         }
     }
 

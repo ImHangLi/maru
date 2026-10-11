@@ -136,6 +136,7 @@ extension AppModel {
         let now = Date()
         // With no region name for the device zone, Today says why it shows no items.
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
+        let generation = dataGeneration
         do throws(StorageError) {
             let inputs = try await store.tapInputs()
             let resolver = ReminderTapResolver(
@@ -155,6 +156,8 @@ extension AppModel {
             // With no candidate, Today is the page to open.
             guard !planned.isEmpty else { return }
             let stored = try await store.stored(planned)
+            // A restore replaced the data that the reads saw.
+            guard generation == dataGeneration else { return }
             let candidates = Self.candidates(
                 planned, stored: stored, items: inputs.items, schedules: inputs.schedules, at: now
             )

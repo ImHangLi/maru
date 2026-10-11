@@ -20,8 +20,12 @@ extension AppModel {
     /// reminder shows, and a notification tells the user to open Maru.
     func takeReminder(_ reminder: DeliveredReminder) async {
         let now = Date()
+        // The target comes from this read, so the record carries its generation (D040).
+        let generation = dataGeneration
         if let deviceTimeZone = NamedTimeZone(device: .current, at: now),
-           let target = try? await store.actionTarget(of: reminder, at: now, deviceTimeZone: deviceTimeZone) {
+           let target = try? await store.actionTarget(
+               of: reminder, at: now, deviceTimeZone: deviceTimeZone, generation: generation
+           ) {
             switch target {
             case .alreadyTaken:
                 // The dose has its record. Nothing to do, and nothing to tell.
@@ -40,7 +44,7 @@ extension AppModel {
                     scheduleVersionID: occurrence.scheduleVersionID
                 )
                 // The commit starts the follow-up update, as a record on Today does.
-                if await commitAndWait([event]) { return }
+                if await commitAndWait([event], generation: generation) { return }
             case .none:
                 break
             }
@@ -53,10 +57,14 @@ extension AppModel {
 extension AppStore {
     /// What the "Taken" action of a reminder can record. See `LocalStore.actionTarget`.
     func actionTarget(
-        of reminder: DeliveredReminder, at now: Date, deviceTimeZone: NamedTimeZone
+        of reminder: DeliveredReminder, at now: Date, deviceTimeZone: NamedTimeZone, generation: Int
     ) async throws(StorageError) -> ReminderActionTarget {
         try await open().actionTarget(
-            of: reminder, at: now, deviceTimeZone: deviceTimeZone, observedTimeZone: DefaultsTimeZoneRecord().load()
+            of: reminder,
+            at: now,
+            deviceTimeZone: deviceTimeZone,
+            observedTimeZone: DefaultsTimeZoneRecord().load(),
+            generation: generation
         )
     }
 }

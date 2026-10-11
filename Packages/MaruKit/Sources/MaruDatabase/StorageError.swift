@@ -23,6 +23,8 @@ public enum StorageError: Error, Equatable, Sendable {
     case unavailable
     /// The task was cancelled before the transaction committed.
     case cancelled
+    /// A restore replaced the data after the caller read it (D040). Nothing was written. Read the data again.
+    case replaced
     /// Another failure. `sqliteCode` is the primary SQLite result code, when SQLite reported one.
     case failed(sqliteCode: Int32?)
 
@@ -72,4 +74,6 @@ public enum RecordFailure: Error, Equatable, Sendable {
     case rejected(MaruCore.RecordError)
     /// The database failed. The user can try again. After `unavailable`, the event can already be stored.
     case storage(StorageError)
+    /// A restore replaced the data after the caller read it (D040). Nothing was written. Read the data again.
+    case replaced
 }
