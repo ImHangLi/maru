@@ -21,7 +21,7 @@ Evidence: `docs/research/2026-10-market-scan.md`.
 | Milestone | Result | Exit condition |
 |---|---|---|
 | A. Self-use | Manual add, open-ended reminders, Today, record, history, undo and correct, change time, turn off | The owner uses it daily on a real iPhone for one week. Spec §14 A checks pass |
-| B. TestFlight | Label scan, optional photo, widget, en and zh-Hans, accessibility, encrypted export, analytics consent, feedback | External testers use it. Spec §14 B checks pass |
+| B. TestFlight | Optional photo, widget, en and zh-Hans, accessibility, encrypted export, analytics consent, feedback | External testers use it. Spec §14 B checks pass |
 | C. App Store | Review notes, privacy policy, privacy labels, support, store page, supporter purchase | The app is approved and published |
 
 Additions from research (D006):

@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, and D036 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, and D038 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -132,6 +132,11 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - A system sheet: "Cancel" at the top left, "Save" at the top right. Save is off until the draft is valid (D026).
 - The plan line is the footer of the reminder section. It states the full schedule, for example "Every day at 8:00 AM, with no end date", or the problem that keeps Save off. An amount has its own line above it.
 - A new item has no amount and no time (spec §2.1, D032). The form has no "choose a type" hint.
+- A new item starts with the row "Scan Label", above the name (D038). It has a camera symbol at the start, a small sparkle symbol beside the title, and the line "Point the camera at the bottle." The symbols take the app tint. No tutorial and no pop-up.
+- The scanner is a system sheet with "Cancel" at the top left. The camera fills it, and the system marks the text that it finds. A card at the bottom, on the system material, holds one decision at a time. First the prompt "Tap the name on the label". After a tap: the name in large bold text, "Use This Name" as a large button in the tint, "Clear", and the line "Tap more text to add it to the name." A name of two or more parts shows one remove button for each part.
+- "Use This Name" closes the scanner and fills the name. The scan fills no amount and no time. When the label shows exactly one form, a row under the form menu offers it, for example "Use Softgel".
+- While the user types the name, up to four names from the built-in lists show as rows under the name field, in the tint, as buttons of a form. A tap fills the name and closes the keyboard. The rows go when the field loses the focus. They only propose a name.
+- The scanner is a kept wrapper of the system scanner view (D026, D038).
 - "Add a Time" opens a sheet with a time wheel. The time counts only after "Add" (spec §2.1). For the first time of a supplement the wheel starts at a time that the user already confirmed for a supplement, else at 8:00.
 - "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day" and "Every Other Day". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and it has no date picker (D036).
 - The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date".

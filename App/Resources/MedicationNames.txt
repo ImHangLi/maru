@@ -1,0 +1,795 @@
+# Common medicine names for the name suggestions of the add screen (D038).
+# One name on each line, then its aliases after "|". The order is from the most common name down.
+# An alias is only another spelling or a clear abbreviation of the same name. Each other name is its own entry.
+# No entry is a strength, a use, or a category.
+# Generic names come first, then over-the-counter products, then well-known brand names.
+# Written from general knowledge. It is a typing aid, not medical information.
+Ibuprofen
+Acetaminophen
+Paracetamol
+Aspirin
+Acetylsalicylic Acid
+ASA
+Atorvastatin
+Levothyroxine
+L-Thyroxine
+Metformin
+Lisinopril
+Amlodipine
+Metoprolol
+Omeprazole
+Losartan
+Albuterol
+Salbutamol
+Simvastatin
+Gabapentin
+Sertraline
+Rosuvastatin
+Pantoprazole
+Hydrochlorothiazide | HCTZ
+Escitalopram
+Montelukast
+Fluoxetine
+Amoxicillin
+Prednisone
+Bupropion
+Furosemide
+Frusemide
+Trazodone
+Tamsulosin
+Citalopram
+Duloxetine
+Carvedilol
+Pravastatin
+Meloxicam
+Clopidogrel
+Insulin
+Insulin Glargine
+Venlafaxine
+Cetirizine
+Loratadine
+Naproxen
+Warfarin
+Apixaban
+Rivaroxaban
+Atenolol
+Bisoprolol
+Ramipril
+Valsartan
+Esomeprazole
+Lansoprazole
+Famotidine
+Cyclobenzaprine
+Tramadol
+Alprazolam
+Lorazepam
+Clonazepam
+Diazepam
+Zolpidem
+Amitriptyline
+Mirtazapine
+Paroxetine
+Lamotrigine
+Topiramate
+Levetiracetam
+Pregabalin
+Quetiapine
+Aripiprazole
+Risperidone
+Olanzapine
+Lithium
+Methylphenidate
+Amphetamine-Dextroamphetamine
+Mixed Amphetamine Salts
+Lisdexamfetamine
+Atomoxetine
+Buspirone
+Hydroxyzine
+Propranolol
+Diltiazem
+Nifedipine
+Verapamil
+Spironolactone
+Chlorthalidone
+Triamterene-Hydrochlorothiazide | Triamterene HCTZ
+Lisinopril-Hydrochlorothiazide | Lisinopril HCTZ
+Losartan-Hydrochlorothiazide | Losartan HCTZ
+Enalapril
+Perindopril
+Benazepril
+Candesartan
+Irbesartan
+Olmesartan
+Telmisartan
+Clonidine
+Hydralazine
+Isosorbide Mononitrate
+Nitroglycerin
+Glyceryl Trinitrate
+GTN
+Digoxin
+Amiodarone
+Ezetimibe
+Fenofibrate
+Lovastatin
+Pitavastatin
+Glipizide
+Glimepiride
+Gliclazide
+Glyburide
+Glibenclamide
+Sitagliptin
+Linagliptin
+Empagliflozin
+Dapagliflozin
+Canagliflozin
+Pioglitazone
+Semaglutide
+Liraglutide
+Dulaglutide
+Tirzepatide
+Insulin Lispro
+Insulin Aspart
+Insulin Detemir
+Insulin Degludec
+Insulin NPH
+Isophane Insulin
+Fluticasone
+Budesonide
+Budesonide-Formoterol
+Fluticasone-Salmeterol
+Tiotropium
+Ipratropium
+Levalbuterol
+Beclomethasone
+Beclometasone
+Mometasone
+Fexofenadine
+Levocetirizine
+Desloratadine
+Azelastine
+Benzonatate
+Prednisolone
+Methylprednisolone
+Dexamethasone
+Hydrocortisone
+Triamcinolone
+Azithromycin
+Amoxicillin-Clavulanate
+Amoxicillin-Clavulanic Acid
+Co-Amoxiclav
+Doxycycline
+Cephalexin
+Cefalexin
+Ciprofloxacin
+Levofloxacin
+Sulfamethoxazole-Trimethoprim | SMX-TMP | TMP-SMX
+Co-Trimoxazole
+Nitrofurantoin
+Clindamycin
+Metronidazole
+Penicillin V
+Phenoxymethylpenicillin
+Cefdinir
+Cefuroxime
+Clarithromycin
+Minocycline
+Trimethoprim
+Fluconazole
+Terbinafine
+Nystatin
+Valacyclovir
+Valaciclovir
+Acyclovir
+Aciclovir
+Oseltamivir
+Hydroxychloroquine
+Methotrexate
+Allopurinol
+Colchicine
+Celecoxib
+Diclofenac
+Indomethacin
+Indometacin
+Ketorolac
+Etoricoxib
+Nabumetone
+Baclofen
+Methocarbamol
+Tizanidine
+Oxycodone
+Hydrocodone-Acetaminophen
+Oxycodone-Acetaminophen
+Morphine
+Codeine
+Acetaminophen-Codeine
+Co-Codamol
+Paracetamol-Codeine
+Buprenorphine
+Buprenorphine-Naloxone
+Naltrexone
+Sumatriptan
+Rizatriptan
+Ondansetron
+Metoclopramide
+Promethazine
+Meclizine
+Domperidone
+Dicyclomine
+Dicycloverine
+Hyoscine Butylbromide
+Scopolamine Butylbromide
+Mesalamine
+Mesalazine
+Sucralfate
+Rabeprazole
+Dexlansoprazole
+Ranitidine
+Loperamide
+Lactulose
+Polyethylene Glycol 3350 | PEG 3350
+Macrogol
+Docusate
+Senna
+Sennosides
+Bisacodyl
+Linaclotide
+Ursodiol
+Ursodeoxycholic Acid
+Finasteride
+Dutasteride
+Alfuzosin
+Doxazosin
+Terazosin
+Oxybutynin
+Solifenacin
+Mirabegron
+Tolterodine
+Sildenafil
+Tadalafil
+Testosterone
+Estradiol
+Oestradiol
+Progesterone
+Medroxyprogesterone
+Norethindrone
+Norethisterone
+Levonorgestrel
+Ethinyl Estradiol-Norgestimate
+Ethinyl Estradiol-Levonorgestrel
+Ethinyl Estradiol-Drospirenone
+Birth Control Pill
+Contraceptive Pill
+Conjugated Estrogens
+Raloxifene
+Tamoxifen
+Letrozole
+Anastrozole
+Alendronate
+Alendronic Acid
+Risedronate
+Ibandronate
+Liothyronine
+Methimazole
+Carbimazole
+Propylthiouracil
+Desmopressin
+Cabergoline
+Clomiphene
+Clomifene
+Donepezil
+Memantine
+Rivastigmine
+Carbidopa-Levodopa
+Co-Careldopa
+Levodopa-Carbidopa
+Pramipexole
+Ropinirole
+Rasagiline
+Benztropine
+Benzatropine
+Carbamazepine
+Oxcarbazepine
+Valproate
+Valproic Acid
+Sodium Valproate
+Divalproex
+Phenytoin
+Lacosamide
+Zonisamide
+Nortriptyline
+Doxepin
+Imipramine
+Clomipramine
+Desvenlafaxine
+Fluvoxamine
+Vortioxetine
+Vilazodone
+Agomelatine
+Haloperidol
+Ziprasidone
+Lurasidone
+Paliperidone
+Clozapine
+Brexpiprazole
+Cariprazine
+Dextroamphetamine
+Dexamfetamine
+Dexmethylphenidate
+Guanfacine
+Modafinil
+Armodafinil
+Eszopiclone
+Zopiclone
+Temazepam
+Zaleplon
+Suvorexant
+Ramelteon
+Varenicline
+Nicotine Patch
+Nicotine Gum
+Nicotine Lozenge
+Disulfiram
+Acamprosate
+Methadone
+Dabigatran
+Edoxaban
+Enoxaparin
+Ticagrelor
+Prasugrel
+Dipyridamole
+Bumetanide
+Torsemide
+Torasemide
+Indapamide
+Metolazone
+Eplerenone
+Amiloride
+Sacubitril-Valsartan
+Ivabradine
+Ranolazine
+Flecainide
+Sotalol
+Nebivolol
+Labetalol
+Felodipine
+Lercanidipine
+Amlodipine-Benazepril
+Amlodipine-Valsartan
+Amlodipine-Olmesartan
+Ezetimibe-Simvastatin
+Icosapent Ethyl
+Gemfibrozil
+Niacin Extended-Release
+Colesevelam
+Cholestyramine
+Colestyramine
+Insulin Glulisine
+Insulin Regular
+Metformin Extended-Release | Metformin ER
+Metformin XR
+Metformin-Sitagliptin
+Saxagliptin
+Vildagliptin
+Alogliptin
+Exenatide
+Repaglinide
+Acarbose
+Glucagon
+Umeclidinium-Vilanterol
+Fluticasone-Vilanterol
+Fluticasone-Umeclidinium-Vilanterol
+Formoterol
+Salmeterol
+Mometasone-Formoterol
+Ciclesonide
+Roflumilast
+Theophylline
+Cromolyn
+Sodium Cromoglicate
+Ipratropium-Albuterol
+Epinephrine Auto-Injector
+Adrenaline Auto-Injector
+Omalizumab
+Dupilumab
+Adalimumab
+Etanercept
+Infliximab
+Ustekinumab
+Secukinumab
+Tofacitinib
+Sulfasalazine
+Leflunomide
+Azathioprine
+Mycophenolate
+Tacrolimus
+Cyclosporine
+Ciclosporin
+Febuxostat
+Probenecid
+Denosumab
+Teriparatide
+Zoledronic Acid
+Calcitriol
+Cinacalcet
+Sevelamer
+Epoetin Alfa
+Erythropoietin
+Tretinoin
+Isotretinoin
+Adapalene
+Benzoyl Peroxide
+Clindamycin Gel
+Mupirocin
+Ketoconazole
+Clotrimazole
+Miconazole
+Hydrocortisone Cream
+Betamethasone
+Clobetasol
+Mometasone Cream
+Tacrolimus Ointment
+Permethrin
+Ivermectin
+Albendazole
+Mebendazole
+Latanoprost
+Timolol Eye Drops
+Timolol
+Dorzolamide-Timolol
+Brimonidine
+Bimatoprost
+Travoprost
+Olopatadine Eye Drops
+Olopatadine
+Ketotifen Eye Drops
+Ketotifen
+Artificial Tears
+Lubricant Eye Drops
+Cyclosporine Eye Drops
+Ofloxacin Eye Drops
+Ciprofloxacin Ear Drops
+Carbamide Peroxide Ear Drops
+Emtricitabine-Tenofovir
+Bictegravir-Emtricitabine-Tenofovir
+Dolutegravir
+Tenofovir
+Entecavir
+Lamivudine
+Efavirenz
+Isoniazid
+Rifampin
+Rifampicin
+Ethambutol
+Pyrazinamide
+Atovaquone-Proguanil
+Artemether-Lumefantrine
+Mefloquine
+Chloroquine
+Vancomycin
+Linezolid
+Cefixime
+Cefpodoxime
+Cefaclor
+Erythromycin
+Moxifloxacin
+Tinidazole
+Fosfomycin
+Methenamine
+Itraconazole
+Voriconazole
+Famciclovir
+Imatinib
+Capecitabine
+Bicalutamide
+Abiraterone
+Enzalutamide
+Exemestane
+Hydroxyurea
+Hydroxycarbamide
+Mercaptopurine
+Diphenhydramine
+Doxylamine
+Chlorpheniramine
+Chlorphenamine
+Pseudoephedrine
+Phenylephrine
+Dextromethorphan
+Guaifenesin
+Guaifenesin-Dextromethorphan
+Oxymetazoline Nasal Spray
+Oxymetazoline
+Xylometazoline Nasal Spray
+Xylometazoline
+Saline Nasal Spray
+Fluticasone Nasal Spray
+Triamcinolone Nasal Spray
+Budesonide Nasal Spray
+Cromolyn Nasal Spray
+Children's Acetaminophen
+Children's Paracetamol
+Children's Ibuprofen
+Infant Acetaminophen
+Infant Paracetamol
+Naproxen Sodium
+Acetaminophen-Aspirin-Caffeine
+Ibuprofen-Acetaminophen
+Ibuprofen-Paracetamol
+Diclofenac Gel
+Lidocaine Patch
+Lignocaine Patch
+Lidocaine Cream
+Lignocaine Cream
+Capsaicin Cream
+Aluminum Hydroxide-Magnesium Hydroxide
+Aluminium Hydroxide-Magnesium Hydroxide
+Simethicone
+Simeticone
+Bismuth Subsalicylate
+Milk of Magnesia
+Magnesium Citrate Solution
+Glycerin Suppository
+Oral Rehydration Solution
+Dimenhydrinate
+Cinnarizine
+Bacitracin
+Triple Antibiotic Ointment
+Hydrogen Peroxide
+Calamine Lotion
+Zinc Oxide Cream
+Petroleum Jelly
+Minoxidil
+Salicylic Acid
+Tylenol
+Advil
+Motrin
+Aleve
+Excedrin
+Panadol
+Nurofen
+Calpol
+Voltaren
+Bayer Aspirin
+Lipitor
+Crestor
+Zocor
+Synthroid
+Euthyrox
+Eltroxin
+Glucophage
+Januvia
+Jardiance
+Farxiga
+Forxiga
+Ozempic
+Wegovy
+Rybelsus
+Mounjaro
+Zepbound
+Trulicity
+Victoza
+Saxenda
+Lantus
+Basaglar
+Toujeo
+Humalog
+NovoLog
+NovoRapid
+Tresiba
+Levemir
+Norvasc
+Zestril
+Cozaar
+Diovan
+Entresto
+Toprol-XL
+Lopressor
+Coreg
+Lasix
+Plavix
+Eliquis
+Xarelto
+Coumadin
+Pradaxa
+Brilinta
+Brilique
+Zetia
+Ezetrol
+Nexium
+Prilosec
+Losec
+Protonix
+Prevacid
+Pepcid
+Zantac
+Tums
+Rolaids
+Gaviscon
+Mylanta
+Maalox
+Pepto-Bismol
+Imodium
+MiraLAX
+Dulcolax
+Colace
+Metamucil
+Benefiber
+Gas-X
+Zyrtec
+Claritin
+Allegra
+Xyzal
+Benadryl
+Flonase
+Nasacort
+Rhinocort
+Afrin
+Sudafed
+Mucinex
+Robitussin
+NyQuil
+DayQuil
+Theraflu
+Lemsip
+Strepsils
+Singulair
+Ventolin
+ProAir
+Symbicort
+Advair
+Seretide
+Breo Ellipta
+Trelegy Ellipta
+Spiriva
+Flovent
+Flixotide
+Pulmicort
+EpiPen
+Zoloft
+Lexapro
+Cipralex
+Prozac
+Celexa
+Paxil
+Seroxat
+Cymbalta
+Effexor
+Effexor XR
+Wellbutrin
+Trintellix
+Remeron
+Xanax
+Ativan
+Klonopin
+Rivotril
+Valium
+Ambien
+Stilnox
+Lunesta
+Seroquel
+Abilify
+Zyprexa
+Risperdal
+Latuda
+Rexulti
+Vraylar
+Lamictal
+Keppra
+Topamax
+Depakote
+Tegretol
+Neurontin
+Lyrica
+Adderall
+Vyvanse
+Elvanse
+Ritalin
+Concerta
+Focalin
+Strattera
+Aricept
+Namenda
+Sinemet
+Imitrex
+Imigran
+Maxalt
+Flexeril
+Celebrex
+Mobic
+Ultram
+Percocet
+Norco
+Vicodin
+OxyContin
+Suboxone
+Zofran
+Flomax
+Proscar
+Propecia
+Avodart
+Viagra
+Cialis
+Vesicare
+Myrbetriq
+Betmiga
+Premarin
+Estrace
+Prometrium
+Yaz
+Yasmin
+Mirena
+Nexplanon
+Plan B
+Fosamax
+Boniva
+Prolia
+Evista
+Humira
+Enbrel
+Remicade
+Stelara
+Cosentyx
+Dupixent
+Xeljanz
+Otezla
+Plaquenil
+Zyloprim
+Zyloric
+Uloric
+Amoxil
+Augmentin
+Zithromax
+Z-Pak
+Keflex
+Cipro
+Bactrim
+Septra
+Macrobid
+Flagyl
+Diflucan
+Lamisil
+Valtrex
+Zovirax
+Tamiflu
+Paxlovid
+Truvada
+Descovy
+Biktarvy
+Accutane
+Roaccutane
+Retin-A
+Differin
+Rogaine
+Regaine
+Xalatan
+Lumigan
+Restasis
+Xiidra
+Systane
+Visine
+Nicorette
+NicoDerm
+Chantix
+Champix
+Dramamine
+Unisom
+ZzzQuil
+Tylenol PM
+Advil PM
+Midol
+Icy Hot
+Bengay
+Biofreeze
+Tiger Balm
+Salonpas
+Neosporin
+Polysporin
+Cortizone-10
+Lotrimin
+Monistat
+Canesten
+Preparation H
+Vicks VapoRub
+Aquaphor
+Vaseline
+Pedialyte
