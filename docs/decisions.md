@@ -49,7 +49,7 @@ Spec §16 requires domain and database tests, real-device notification records, 
 
 Owner decision. The Today screen uses variant B (one card per time slot). The accent color is orange, not green. The owner asked for less text and a style near Superpower, Everlab, and Anthropic: a warm neutral surface, one accent, and a serif for the large text. The study is in `docs/research/2026-10-10-visual-direction.md`. The exact orange and the refined layout (prototype variant B2) wait for the owner's answer. Write `docs/design.md` after that answer.
 
-## D011 · 2026-10-10 · Apple system style for the Today screen
+## D011 · 2026-10-10 · Apple system style for the Today screen (row time added by D044)
 
 Owner decision. The owner rejected prototype variant B2. This decision supersedes the style part of D010 (warm surface and serif). The orange accent and the grouping by time slot stay.
 
@@ -293,7 +293,7 @@ Owner decision. Maru becomes a public repository under the MIT license. This rep
 - The repository holds no personal health data, no local paths, and no credentials. Records refer to private work only as history, without links to private branches or local files.
 - `docs/process.md` applies to every contributor. The rules for agents that work for the maintainer are in `AGENTS.md`.
 
-## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039)
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044)
 
 Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
 
@@ -445,7 +445,8 @@ Owner decision. Settings has a "Send Feedback" button at the end. It opens the o
 - `PRIVACY.md` names Tally. "No network requests" is now "no network requests by itself".
 - The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
 
-## D038 · 2026-10-11 · Quick add: scan a label and name suggestions
+
+## D038 · 2026-10-11 · Quick add: scan a label and name suggestions (scan card partly replaced by D042)
 
 Owner decision, with agent detail. The owner said that typing is tiring and that a user who types for a while gives up. The study is `docs/research/2026-10-11-quick-add.md`. It changes spec 3 P03 and 5.2.
 
@@ -548,3 +549,95 @@ What the Apple documentation says, read on 2026-10-11:
 Tests (D016): four new tests. The follow-up times with the stop rules for a number and for "Until Recorded", the split of the room next to 48 series requests, the limit of a dose across a change of the interval, and the "Taken" action of a follow-up after midnight.
 
 Not verified: no check on a real iPhone yet. Open points are the group in Notification Center, the behavior of many requests at 5 minutes, the summary and a Focus, and the "Taken" action of a follow-up after midnight.
+
+## D041 · 2026-10-11 · History graph
+
+Owner decision, with agent detail. It brings the passive history heatmap of D006 forward from milestone B. It changes spec 3 P05.
+
+Owner:
+
+- The History page gets a graph of squares at the top, in the style of the GitHub contribution graph. The timeline of D032 stays under it.
+- Three levels of color, by the share of the planned doses of a day that are taken.
+- The graph grows with use. It starts at 13 weeks. A one-week step and a step of a few weeks are too small, so they are gone.
+- No title and no count on the card. A title such as "Last 3 Weeks" says that Maru did not keep the older days, but Maru keeps every day from the first one.
+- No black border on the selected day. The selection uses the most minimal form in the style of the app.
+- Motion stays restrained and the same as on the other pages (D030). Where no motion is needed, there is none.
+
+Agent detail:
+
+- One square for each day, with a corner of 22% of the side. One column is one week, and the rows are the weekdays in the first weekday order of the user's calendar. Time runs from left to right, so today is at the right end of the filled part.
+- The steps: 13 weeks from the week of the first day, 26 weeks when 13 are full, and 52 weeks, as two bands of 26 with the older band above, when 26 are full. The graph takes the next step on the first day of a week that does not fit. After 52 weeks it shows the last 52 weeks and moves one column each week. The older days stay in the timeline. The first day is the first schedule version or the first record, as for the timeline.
+- The graph fills the width of the card. The gap is a fixed share of the side, 0.19 at 13 columns and 0.3 at 26, so the squares keep their shape on each screen width.
+- The levels: "all" when every planned dose is taken, "most" when more than half are taken, and "some" for half or less. These are the tint at 100%, 60%, and 30% over the card. A skipped dose is not taken. An as-needed dose does not count. Half counts as "some", so one of two doses is not "most".
+- A planned day with nothing taken is a quiet neutral (the tertiary system fill). A day with nothing planned, for example an off day of an every-other-day item, is a fainter neutral (the quaternary system fill), so it does not look like a miss. A day that is not here yet is a faint outline. A day before the first day has no square. So a new user sees calm, even outlines with the first squares filled.
+- Today has no mark. It is the last filled square, so its place is clear, and a second ring would compete with the selection ring.
+- The labels: short month names above the column where a month starts, in the secondary color. A label that would touch another one does not show. "M W F" at the left only at 13 weeks, and not at the accessibility text sizes. No legend, no count, and no sentence.
+- Selection: a thin ring in the tint, with a gap of 1 point, and a small date label in the place of the month labels over the selected column, for example "Tue, Aug 18". No dark border, no shadow, no magnifier, and no motion. A light selection haptic comes when the selected day changes.
+- A touch or a drag selects the nearest day, so the finger does not need to hit a square. A day that is not here yet gives today. A tap on the selected day clears the selection.
+- At the end of the touch the timeline scrolls so that the section of the selected day is first under the graph. It loads older pages until it has that day. A day with no rows gives the nearest older day with rows. A clear scrolls back to today. On iOS 18 and later, a scroll of the timeline by hand clears the selection. iOS 17 has no scroll phase, so there the selection stays until a tap.
+- The graph stays above the timeline and does not scroll with it. A drag inside a scrolling list competes with the scroll of the list, and the results differ by iOS version. Out of the list, the drag and the scroll never compete for one touch. The timeline also scrolls under a graph that stays on the display, as the list of days under the month in Calendar. The cost is the height of the card: 238 points at 13 weeks and 272 points at 52 weeks on a screen of 402 points.
+- The data: one read for the range of 52 weeks. One query reads every stored planned dose of the range with its state. `History.counts` decides which doses belong to a day with the same function as the timeline (D019, D032, D036), so the graph and the timeline cannot disagree. The read runs when History opens, off the main thread, never at launch (spec 9). It takes about 27 ms for 3,640 doses in a debug build on the Mac. A commit, a return to the app, and a delete of an item read it again. No schema change.
+- The page shows its first content when the timeline and the graph are read, so the graph does not push the timeline down.
+- VoiceOver reads the graph as one element. The value is a summary, for example "Since August 10. Days with all taken: 40. Most: 3. Some: 2. None: 1.", or the selected day with "2 of 3 taken". Swipe up or down moves the selected day, and the timeline follows.
+- Kept custom control (D026): SwiftUI has no heat map. One `Canvas` draws the squares and the labels, and one drag gesture selects. Swift Charts can draw squares with rectangle marks, but it gives no ring with a gap for the selection, and its labels follow the axes, not the start of a month.
+
+Rejected:
+
+- Round dots and large circles. They read as a list of points, and the owner chose squares.
+- A calendar of large cells, and steps of one week or of a few weeks with weeks as rows. The owner found them too small, and they need a turn from rows to columns.
+- One strip for each item. It shows which item is missed and makes the page a report card.
+- A title with a duration, or with month names. A duration says that older days are gone.
+- A count of days. A count can drop after a correction, and the owner asked for none.
+- A streak, or any count of days in a row (D006, D021).
+- A dark border on the selected day, a shadow, a magnifier bubble, and a band behind the selected week.
+- A tint ring on today. It competes with the selection ring.
+
+Tests (D016): one new test, for the day counts with an every-other-day item and a skipped dose.
+
+Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The levels in dark mode, the drag, the haptic, and VoiceOver need a check on a real iPhone.
+
+## D045 · 2026-10-11 · Lean agent work and the follow-up end after midnight
+
+Maintainer decisions.
+
+- Agents work in a token-efficient way. The rules are in `docs/process.md`, "Token budget for agents". Fewer subagents, short briefs, and a model review only for changes that can affect records or reminders.
+- Follow-ups past midnight end at 01:00 at the latest (D039). The maintainer left the choice to the agent. The reason: a bedtime dose with no record must not ring for most of the night.
+
+## D044 · 2026-10-11 · Today rows show the time
+
+Owner decision: "Each Today row shows the name and the amount. If the item has a reminder, also show its set time, on the second line, as small gray text." The section headers stay words such as "Morning", not clock times (D011).
+
+This replaces two points in part: the recorded time of D011 moves back to the row, and a recorded row of D032 B differs from an open row by the circle and the time.
+
+- The second line of a row has the amount, then the time, in the list form of the user's language: "2 capsules, 8:00 AM". With no amount, it has only the time: "8:00 AM". The time follows the 12 or 24 hour setting of the user.
+- An open row shows the time that the user set. A taken row shows the time of the intake: "2 capsules, Taken at 8:07 AM", the words of the correction dialog and the as-needed doses. A skipped row shows "2 capsules, Skipped".
+- A medication that keeps another time zone (D019, spec 8.5) shows its set time with the city, as the edit screen does: "9:00 AM Shanghai time".
+- An item with its reminders off still shows its set time, because the time puts the row in its part of the day. "Reminders off" stays under it (T07).
+- As-needed rows do not change. They have no set time, and each dose of today already shows its time under the item.
+- VoiceOver reads the name and the second line as one label: "Vitamin D, 2 capsules, 8:00 AM".
+- One shared time format, `Date.FormatStyle.rowTime(in:)`, replaces the four copies in Today, the as-needed doses, the reminder choice, and History.
+
+Not verified: no build ran on a Mac of the maintainer, and nobody saw the rows on a display.
+
+## D042 · 2026-10-11 · Scan Label word choice and edit
+
+Owner feedback after a test of "Scan Label" on the iPhone. The scanner returns a whole line or block for one tap, so the name came with other words: the strength, "Dietary Supplement", and the count. The owner also wanted to change the name on the scan screen, so that the scan is not a one-way step. This replaces the card of D038 after the first tap: the large name and the remove buttons for each part. The rest of D038 stays.
+
+- The scan reads only the name in this version. The card before the first tap says "Tap the name on the label" and "Maru reads only the name."
+- After a tap, the card shows each word of the text as a button, in reading order. A second tapped text adds its words after the first words, in the order of the taps. The limit of four texts stays.
+- The words that look like the name are chosen at the start. The rule is in `LabelText.words(in:)` in `MaruCore`, with the stock phrases in one list:
+  - A number with a unit or a count is not chosen: "1000 IU", "5 mg", "90ct", "50 Billion CFU".
+  - A stock phrase is not chosen: "Dietary Supplement", "Supplement", "Capsules", "Softgels", "Tablets", "Gummies", "Serving", "Supports", "Count", "Ct", "Net", "Value", "Pack", "Bottle", "Formula", "Advanced", "High Potency", "Extra Strength", and a few more.
+  - A number with no unit is chosen only after a chosen word and when no unit, count, or stock phrase follows it. So "Omega 3" keeps its "3". "Magnesium 400" also keeps "400", and the user removes it with one tap.
+  - A sign such as "+" is chosen only between two chosen words, as in "D3 + K2".
+  - Each other word is chosen.
+- A tap on a word adds it to the name or removes it. A word is a system toggle in the button style (`.toggleStyle(.button)`, `.bordered`). A chosen word shows the on state of the system, in the tint, and has the selected trait for VoiceOver.
+- Under the words, a text field holds the name. The edit rule: the field shows the chosen words. Typing changes only the field. A tap on a word, or on a new text on the label, sets the field to the chosen words again. "Clear" empties the words and the field. "Use This Name" gives the field text to the edit screen, and it is off while the field is empty.
+- The cleaning of D038 applies to the chosen words as one text: signs, capitals, and short codes. The buttons show the words as the label prints them. Typed text stays as the user typed it.
+- The words wrap in rows. SwiftUI has no wrapping layout for iOS 17, so a small `Layout` in `LabelScanView.swift` places the system buttons. It draws nothing (D026).
+- Motion: the card grows with the layout motion when a text is added. A word changes with the state motion (D030).
+- The form proposal of D038 does not change. It uses all the text that the camera saw.
+
+Tests (D016): one new test in `MaruCore` for the choice of words. The old part of the cleaning test for the name from two texts is gone with its function.
+
+Not verified: no app build on a Mac of the maintainer. CI builds the app. Nobody saw the card. The default choice needs a check on a real iPhone with real bottles.

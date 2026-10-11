@@ -10,6 +10,17 @@ public enum LabelForm: Hashable, Sendable {
     case gummy
 }
 
+/// A word of a tapped text on the scan card (D042). A tap on the card adds it to the name or removes it.
+public struct LabelWord: Hashable, Sendable {
+    public let text: String
+    public var isChosen: Bool
+
+    public init(text: String, isChosen: Bool) {
+        self.text = text
+        self.isChosen = isChosen
+    }
+}
+
 /// The rules for text that the user tapped in the label scan (D038).
 ///
 /// The scan only proposes. The user sees each value on the edit screen before the save.
@@ -20,6 +31,16 @@ public enum LabelText {
     /// it makes one space from each run of spaces and line breaks. A text in capitals only becomes readable: "VITAMIN D3" becomes "Vitamin D3".
     /// A text with a lowercase letter keeps its letters, because the label then shows the intended form.
     public static func clean(_ text: String) -> String {
+        var words = plainWords(text)
+        let letters = words.joined().filter(\.isLetter)
+        if !letters.isEmpty, !letters.contains(where: \.isLowercase) {
+            words = words.enumerated().map { readable($0.element, isFirst: $0.offset == 0) }
+        }
+        return words.joined(separator: " ")
+    }
+
+    /// The words of a text with no trademark signs, footnote marks, or dots between parts. The letters stay.
+    private static func plainWords(_ text: String) -> [String] {
         // A removed sign must not join two parts: "D3·K2" is "D3 K2", and "NOW®Foods" is "NOW Foods".
         var plain = String.UnicodeScalarView()
         var joins = false
@@ -36,17 +57,58 @@ public enum LabelText {
             }
             joins = false
         }
-        var words = String(plain).split(separator: " ").map(String.init)
-        let letters = words.joined().filter(\.isLetter)
-        if !letters.isEmpty, !letters.contains(where: \.isLowercase) {
-            words = words.enumerated().map { readable($0.element, isFirst: $0.offset == 0) }
-        }
-        return words.joined(separator: " ")
+        return String(plain).split(separator: " ").map(String.init)
     }
 
-    /// The name from the texts that the user tapped, in the order of the taps.
-    public static func name(from parts: [String]) -> String {
-        clean(parts.joined(separator: " "))
+    /// The words of one tapped text, in reading order, with the letters of the label (D042). The words that
+    /// look like the name are chosen:
+    ///
+    /// - A number with a unit or a count is not chosen: "1000 IU", "5mg", "60 Softgels", "90ct".
+    /// - A stock phrase of a label is not chosen: "Dietary Supplement", "Capsules", "High Potency".
+    /// - A number with no unit is chosen only after a chosen word: "Omega 3".
+    /// - A sign such as "+" is chosen only between two chosen words: "D3 + K2".
+    /// - Each other word is chosen.
+    public static func words(in text: String) -> [LabelWord] {
+        let texts = plainWords(text).compactMap { word -> String? in
+            let text = String(word.reversed().drop(while: { trailingMarks.contains($0) }).reversed())
+            return text.isEmpty ? nil : text
+        }
+        let keys = texts.map(key)
+        var stock = Array(repeating: false, count: keys.count)
+        var index = 0
+        while index < keys.count {
+            let phrase = stockPhrases.first { phrase in
+                index + phrase.count <= keys.count && Array(keys[index..<(index + phrase.count)]) == phrase
+            }
+            let length = phrase?.count ?? 1
+            if phrase != nil { stock.replaceSubrange(index..<(index + length), with: repeatElement(true, count: length)) }
+            index += length
+        }
+
+        var chosen = Array(repeating: true, count: keys.count)
+        for index in keys.indices {
+            let key = keys[index]
+            let previous = index > 0 ? keys[index - 1] : nil
+            if stock[index] || isQuantity(key) {
+                chosen[index] = false
+            } else if isNumber(key) {
+                let next = index + 1 < keys.count ? index + 1 : nil
+                let unitFollows = next.map { stock[$0] || unitWords.contains(keys[$0]) || isQuantity(keys[$0]) } ?? false
+                chosen[index] = index > 0 && chosen[index - 1] && !unitFollows
+            } else if unitWords.contains(key), let previous, isNumber(previous) || unitWords.contains(previous) {
+                chosen[index] = false
+            }
+        }
+        // A sign needs the choice of the word after it.
+        for index in keys.indices where keys[index].isEmpty {
+            chosen[index] = index > 0 && index + 1 < keys.count && chosen[index - 1] && chosen[index + 1]
+        }
+        return zip(texts, chosen).map { LabelWord(text: $0, isChosen: $1) }
+    }
+
+    /// The name from the chosen words, in the order of the card, cleaned as one text.
+    public static func name(from words: [LabelWord]) -> String {
+        clean(words.filter(\.isChosen).map(\.text).joined(separator: " "))
     }
 
     /// The form words in a text of the label.
@@ -75,6 +137,42 @@ public enum LabelText {
         case .drop: .drop
         case .gummy, nil: nil
         }
+    }
+
+    // MARK: Words
+
+    /// The stock phrases of a label. A word in one of them is not chosen for the name (D042).
+    /// A longer phrase comes before a phrase that is a part of it.
+    private static let stockPhrases: [[String]] = [
+        "dietary supplement", "high potency", "extra strength", "maximum strength", "soft gels",
+        "supplement", "supplements", "capsule", "capsules", "caps", "vcaps", "softgel", "softgels", "tablet",
+        "tablets", "caplet", "caplets", "gummy", "gummies", "serving", "servings", "supports", "count", "ct",
+        "net", "value", "pack", "bottle", "formula", "advanced",
+    ].map { $0.split(separator: " ").map(String.init) }
+    /// Units after a number: "1000 IU", "50 Billion CFU".
+    private static let unitWords = Set(units.keys).union(["µg", "billion", "million", "fl"])
+    /// The end of a number and its unit in one word: "5mg", "90ct", "2x".
+    private static let quantityEnds = unitWords.union(["ct", "x", "pk"])
+    /// Punctuation at the end of a word that is not a part of the name: "Ester-C," is "Ester-C".
+    private static let trailingMarks: Set<Character> = [",", ";", ":"]
+
+    /// A word in lowercase, with no punctuation at its start or end. A sign such as "+" gives "".
+    private static func key(_ word: String) -> String {
+        let characters = Array(word.lowercased())
+        guard let start = characters.firstIndex(where: { $0.isLetter || $0.isNumber }),
+              let end = characters.lastIndex(where: { $0.isLetter || $0.isNumber }) else { return "" }
+        return String(characters[start...end])
+    }
+
+    /// "60", "1,000", or "2.5".
+    private static func isNumber(_ key: String) -> Bool {
+        key.first?.isNumber == true && key.allSatisfy { $0.isNumber || $0 == "." || $0 == "," }
+    }
+
+    /// A number and its unit or count in one word: "5mg", "2000iu", "90ct".
+    private static func isQuantity(_ key: String) -> Bool {
+        let digits = key.prefix { $0.isNumber || $0 == "." || $0 == "," }
+        return !digits.isEmpty && quantityEnds.contains(String(key.dropFirst(digits.count)))
     }
 
     // MARK: Capitals

@@ -351,7 +351,10 @@ extension AppModel {
             if let occurrence = pending.backfill { today.backfills[occurrence.key] = nil }
         }
         refresh()
-        if history.isOpen { loadHistory() }
+        if history.isOpen {
+            loadHistory()
+            loadHistoryGraph()
+        }
     }
 
     // MARK: Launch, return, and day change

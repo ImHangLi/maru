@@ -11,7 +11,6 @@ struct QuickAddTests {
         // A text with a lowercase letter keeps its letters.
         #expect(LabelText.clean("Magnesium  Glycinate\t200 mg") == "Magnesium Glycinate 200 mg")
         #expect(LabelText.clean("NOW Foods CoQ10") == "NOW Foods CoQ10")
-        #expect(LabelText.name(from: ["VITAMIN D3", "+ K2"]) == "Vitamin D3 + K2")
         // A removed sign does not join two parts.
         #expect(LabelText.clean("VITAMIN D3·K2 • NOW®FOODS") == "Vitamin D3 K2 Now Foods")
         #expect(LabelText.clean("Ester-C®, 90 ct") == "Ester-C, 90 ct")
@@ -21,6 +20,23 @@ struct QuickAddTests {
         #expect(LabelText.proposedForm(from: LabelText.forms(in: "Tablets or capsules")) == nil)
         #expect(LabelText.proposedForm(from: LabelText.forms(in: "90 Gummies")) == nil)
         #expect(LabelText.proposedForm(from: LabelText.forms(in: "Vitamin C")) == nil)
+    }
+
+    @Test func labelWordsChooseTheNameAndDropAmountsAndStockPhrases() {
+        func chosen(_ text: String) -> String { LabelText.name(from: LabelText.words(in: text)) }
+        let words = LabelText.words(in: "NATURE MADE® VITAMIN D3 1000 IU (25 mcg) Dietary Supplement 300 Softgels")
+        #expect(words.map(\.text)
+            == ["NATURE", "MADE", "VITAMIN", "D3", "1000", "IU", "(25", "mcg)", "Dietary", "Supplement", "300", "Softgels"])
+        #expect(LabelText.name(from: words) == "Nature Made Vitamin D3")
+        #expect(chosen("Fish Oil 1200mg, 90ct") == "Fish Oil")
+        #expect(chosen("Probiotic 50 Billion CFU Capsules") == "Probiotic")
+        #expect(chosen("EXTRA STRENGTH Ester-C, 2 Pack") == "Ester-C")
+        #expect(chosen("High Potency B12 5000 mcg") == "B12")
+        // A number with no unit after a word stays. A sign stays only between two chosen words.
+        #expect(chosen("Omega 3 Fish Oil") == "Omega 3 Fish Oil")
+        #expect(chosen("Vitamin D3 + K2 Gummies") == "Vitamin D3 + K2")
+        #expect(chosen("NAC 600 MG WITH 5-HTP") == "NAC with 5-HTP")
+        #expect(chosen("Dietary Supplement + 60 Tablets") == "")
     }
 
     @Test func suggestionsMatchInOrderAndIgnoreCaseAndPunctuation() {
