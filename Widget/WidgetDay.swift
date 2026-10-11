@@ -26,6 +26,8 @@ struct WidgetDay: Sendable {
         var openCount: Int { doses.filter(\.isOpen).count }
     }
 
+    /// The restore epoch of the data that this day was read from. A tap sends it back (D048).
+    let epoch: Int
     let timeZone: TimeZone
     let slots: [Slot]
     /// The first planned time after the read that is not one of today's rows, for "All done, next 8:00".
@@ -76,7 +78,8 @@ struct WidgetDay: Sendable {
 }
 
 extension WidgetDay {
-    init(_ today: TodaySnapshot, occurrences: [Occurrence], at now: Date) {
+    init(_ today: TodaySnapshot, occurrences: [Occurrence], epoch: Int, at now: Date) {
+        self.epoch = epoch
         timeZone = TimeZone(identifier: today.timeZone.identifier) ?? .current
         slots = today.groups.map { group in
             Slot(
@@ -101,6 +104,7 @@ extension WidgetDay {
 
     /// A day for the gallery and the placeholder. It has no name of the user.
     static let sample = WidgetDay(
+        epoch: 0,
         timeZone: .current,
         slots: [
             Slot(part: .morning, time: Date(), doses: [
@@ -120,5 +124,24 @@ extension Occurrence {
     /// The planned instant of the occurrence. It is not the time of an intake.
     var plannedInstant: Date {
         timeZone.resolve(plannedTime, on: plannedDate).earliestInstant
+    }
+}
+
+extension TodaySnapshot {
+    /// The rows of today from one read of the widget (D048). The widget stores nothing, so the read
+    /// plans the occurrences in memory. See `LocalStore.readForWidget`.
+    init(_ read: WidgetRead, at now: Date, deviceTimeZone: NamedTimeZone) {
+        let looks = Dictionary(uniqueKeysWithValues: read.items.filter { !$0.isArchived }.map {
+            ($0.id, ItemLook(itemID: $0.id, name: $0.name, form: $0.form, color: $0.color))
+        })
+        self.init(
+            now: now,
+            timeZone: deviceTimeZone,
+            occurrences: read.occurrences,
+            planZones: read.planZones,
+            looks: read.itemIDsBySlot.compactMapValues { looks[$0] },
+            doses: read.doses,
+            records: read.records
+        )
     }
 }

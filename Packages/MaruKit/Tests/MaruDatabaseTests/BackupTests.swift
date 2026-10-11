@@ -123,4 +123,16 @@ struct BackupTests {
         #expect(try await store.items() == [seed.item])
         #expect(try await store.schedule(id: seed.schedule.id) == seed.schedule)
     }
+
+    /// A staged file that is gone must not restore as an empty database. The data stays, and the epoch of the
+    /// widgets does not stay open (D048).
+    @Test func aRestoreWithAMissingStagedFileChangesNothing() async throws {
+        let (store, seed) = try await storeWithABackup()
+        let staged = try store.stage(backup: backupFile)
+        for file in LocalStore.files(of: staged.file) { try? FileManager.default.removeItem(at: file) }
+        await #expect(throws: StorageError.self) { try await store.restore(staged) }
+        #expect(try await store.items() == [seed.item])
+        #expect(try await store.records(of: [seed.occurrence.id])[seed.occurrence.id]?.status == .taken)
+        #expect(LocalStore.restoreEpoch(in: directory.url)! % 2 == 0)
+    }
 }

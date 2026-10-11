@@ -42,10 +42,10 @@ private struct TakeNowWidgetView: View {
                     .font(.subheadline.weight(.semibold))
                     if family == .systemMedium {
                         HStack(alignment: .top, spacing: 4) {
-                            ForEach(shown) { dose in column(dose) }
+                            ForEach(shown) { dose in column(dose, epoch: day.epoch) }
                         }
                     } else {
-                        ForEach(shown) { dose in row(dose) }
+                        ForEach(shown) { dose in row(dose, epoch: day.epoch) }
                     }
                     Spacer(minLength: 0)
                 }
@@ -69,9 +69,9 @@ private struct TakeNowWidgetView: View {
         return doses.filter { chosen.contains($0.id) }
     }
 
-    private func row(_ dose: WidgetDay.Dose) -> some View {
+    private func row(_ dose: WidgetDay.Dose, epoch: Int) -> some View {
         HStack(spacing: 6) {
-            control(dose, size: 30)
+            control(dose, size: 30, epoch: epoch)
             VStack(alignment: .leading, spacing: 0) {
                 Text(dose.name)
                     .font(.subheadline.weight(.semibold))
@@ -85,9 +85,9 @@ private struct TakeNowWidgetView: View {
         }
     }
 
-    private func column(_ dose: WidgetDay.Dose) -> some View {
+    private func column(_ dose: WidgetDay.Dose, epoch: Int) -> some View {
         VStack(spacing: 2) {
-            control(dose, size: 44)
+            control(dose, size: 44, epoch: epoch)
             Text(dose.name)
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(dose.isTaken ? .secondary : .primary)
@@ -102,10 +102,10 @@ private struct TakeNowWidgetView: View {
 
     /// An open dose is a button. A taken or skipped dose is only a picture, and the widget has no undo.
     @ViewBuilder
-    private func control(_ dose: WidgetDay.Dose, size: CGFloat) -> some View {
+    private func control(_ dose: WidgetDay.Dose, size: CGFloat, epoch: Int) -> some View {
         let mark = CapsuleMark(isTaken: dose.isTaken, tint: entry.tint.tint, size: size)
         if dose.isOpen {
-            Button(intent: TakeDoseIntent(occurrenceID: dose.id, scheduleVersionID: dose.scheduleVersionID)) {
+            Button(intent: TakeDoseIntent(occurrenceID: dose.id, scheduleVersionID: dose.scheduleVersionID, epoch: epoch)) {
                 mark.frame(minWidth: 40, minHeight: 40)
             }
             .buttonStyle(.plain)

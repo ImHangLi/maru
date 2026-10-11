@@ -211,7 +211,8 @@ actor AppStore {
     /// `generation` is the generation of the data that the model read (D040).
     func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
-        generation: Int
+        generation: Int,
+        currentPlan: OccurrenceGeneration? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         let store: LocalStore
         do throws(StorageError) {
@@ -219,7 +220,7 @@ actor AppStore {
         } catch {
             throw .storage(error)
         }
-        let records = try await store.record(events, generation: generation)
+        let records = try await store.record(events, generation: generation, currentPlan: currentPlan)
         #if DEBUG
         // The "failed write" scenario: the commit is stored, and the caller gets `unavailable` (D014).
         if debug.failsNextRecord, DebugStore.directory != nil {

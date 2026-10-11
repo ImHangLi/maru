@@ -24,14 +24,21 @@ extension AppModel {
     /// The tap on a gray capsule of the "Take Now" widget (D048). The system runs it in this process.
     ///
     /// It records one dose with the transaction of the record circle and the generation check of D040, and then it
-    /// runs the reminders as after a record on Today (D047). The dose must still be the one that the widget showed:
-    /// the same occurrence, the same schedule version, today, and open. A dose that is taken already needs nothing.
+    /// runs the reminders as after a record on Today (D047). Three checks come first:
+    /// - The restore epoch of the data must still be the one that the widget read. A restore changes it, also across a
+    ///   relaunch, so a button from before a restore records nothing.
+    /// - The dose must still be the one that the widget showed: the same occurrence and schedule version, today, and open.
+    /// - The record transaction checks that the item is active and the slot is in the plan of now.
+    /// A dose that is taken already needs no new event. But the first tap can have committed and failed to flush,
+    /// so this path flushes again, and it also waits for the reminder run. A success needs both.
     /// In every other case, and when the database is locked or the commit fails, it records nothing, never
     /// shows a success, and asks the system to open Maru (spec 7.2).
     func takeFromWidget(_ intent: TakeDoseIntent) async throws {
         let now = Date()
+        let epoch = await store.restoreEpoch()
         let generation = dataGeneration
-        if let occurrenceID = UUID(uuidString: intent.occurrenceID).map({ OccurrenceID($0) }),
+        if epoch == intent.epoch, intent.epoch % 2 == 0,
+           let occurrenceID = UUID(uuidString: intent.occurrenceID).map({ OccurrenceID($0) }),
            let versionID = UUID(uuidString: intent.scheduleVersionID).map({ ScheduleVersionID($0) }),
            let deviceTimeZone = NamedTimeZone(device: .current, at: now),
            let target = try? await store.widgetTarget(
@@ -39,9 +46,12 @@ extension AppModel {
            ) {
             switch target {
             case .alreadyTaken:
-                return
+                if await store.flushCommits() {
+                    await finishWidgetRecord(deviceTimeZone: deviceTimeZone)
+                    return
+                }
             case let .open(occurrence, record):
-                let event = PendingEvent(
+                var event = PendingEvent(
                     event: IntakeEvent(
                         occurrenceID: occurrence.id,
                         action: .taken,
@@ -53,9 +63,9 @@ extension AppModel {
                     ),
                     scheduleVersionID: occurrence.scheduleVersionID
                 )
+                event.requiresCurrentPlan = true
                 if await commitAndWait([event], generation: generation) {
-                    // The system can suspend the process after the intent returns, so wait for the reminders here.
-                    _ = try? await store.reconcileReminders(at: Date(), deviceTimeZone: deviceTimeZone)
+                    await finishWidgetRecord(deviceTimeZone: deviceTimeZone)
                     return
                 }
             case .none:
@@ -67,6 +77,11 @@ extension AppModel {
             IntentDialog("Open Maru to record this dose."), continuation: nil
         )
     }
+
+    /// The system can suspend the process after the intent returns, so the intent waits for the reminders.
+    private func finishWidgetRecord(deviceTimeZone: NamedTimeZone) async {
+        _ = try? await store.reconcileReminders(at: Date(), deviceTimeZone: deviceTimeZone)
+    }
 }
 
 extension AppStore {
@@ -75,5 +90,17 @@ extension AppStore {
         of occurrenceID: OccurrenceID, scheduleVersionID: ScheduleVersionID, at now: Date
     ) async throws(StorageError) -> ReminderActionTarget {
         try await open().widgetTarget(of: occurrenceID, scheduleVersionID: scheduleVersionID, at: now)
+    }
+}
+
+extension AppStore {
+    /// The restore epoch of the data, or `nil` when it is not readable. See `LocalStore.restoreEpoch(in:)`.
+    func restoreEpoch() -> Int? {
+        (try? open())?.restoreEpoch
+    }
+
+    /// Flushes the commits to the storage medium again. See `LocalStore.flushCommits`.
+    func flushCommits() -> Bool {
+        (try? open())?.flushCommits() ?? false
     }
 }

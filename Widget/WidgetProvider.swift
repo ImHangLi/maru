@@ -24,8 +24,7 @@ struct NoConfiguration: WidgetConfigurationIntent {
     init() {}
 }
 
-/// Reads today from the database in the App Group (D048). It writes only what the app writes at a launch:
-/// the occurrences of the day. The widget never records here.
+/// Reads today from the database in the App Group (D048). It only reads. The widget never records here.
 struct DayProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> DayEntry {
         DayEntry(date: Date(), content: .day(.sample), tint: AppGroup.appColor)
@@ -55,17 +54,13 @@ struct DayProvider: AppIntentTimelineProvider {
     }
 
     private static func load(at now: Date) async -> WidgetDay? {
+        // A read-only read of one transaction. It creates no file and removes none, and it reads no mix of data
+        // from before and after a restore (D048).
         guard let directory = AppGroup.databaseDirectory,
               let timeZone = NamedTimeZone(device: .current, at: now),
-              // The app moves the database into the container at its first launch. Before that, the widget must
-              // not create an empty one, because the app would then not move the real data (D048).
-              (try? LocalStore.hasDatabase(at: directory)) == true,
-              let store = try? LocalStore(directory: directory),
-              let items = try? await store.items(),
-              let loaded = try? await TodaySnapshot.load(
-                  from: store, items: items, remindersOff: [], at: now, deviceTimeZone: timeZone, generation: 0
-              )
+              let read = try? LocalStore.readForWidget(in: directory, at: now, deviceTimeZone: timeZone)
         else { return nil }
-        return WidgetDay(loaded.snapshot, occurrences: loaded.occurrences, at: now)
+        let today = TodaySnapshot(read, at: now, deviceTimeZone: timeZone)
+        return WidgetDay(today, occurrences: read.occurrences, epoch: read.epoch, at: now)
     }
 }

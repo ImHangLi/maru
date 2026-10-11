@@ -10,6 +10,9 @@ struct PendingEvent: Equatable, Sendable {
     /// The occurrence that a backfill of the history stores with the event, for a past dose that no generation
     /// run stored. A retry sends this same occurrence (D014).
     var backfill: Occurrence?
+    /// The record must still be in the plan of now: an active item, a slot of the plan, and the planned schedule
+    /// version. The widget sets it, because its button can be old (D048).
+    var requiresCurrentPlan = false
 }
 
 /// Why a record on Today gave no success. The page shows it in an alert.
@@ -260,6 +263,14 @@ extension AppModel {
             // A backfill is one event, with its occurrence in the same transaction.
             let records = if events.count == 1, let occurrence = events[0].backfill {
                 [try await store.recordBackfill(events[0].event, occurrence: occurrence, generation: generation)]
+            } else if events.contains(where: \.requiresCurrentPlan) {
+                let now = Date()
+                guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw RecordFailure.storage(.unavailable) }
+                try await store.record(
+                    events.map { ($0.event, $0.scheduleVersionID) },
+                    generation: generation,
+                    currentPlan: OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
+                )
             } else {
                 try await store.record(events.map { ($0.event, $0.scheduleVersionID) }, generation: generation)
             }
