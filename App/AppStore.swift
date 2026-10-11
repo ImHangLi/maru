@@ -245,6 +245,11 @@ extension AppStore {
         try await open().history(before: today, days: days, deviceTimeZone: deviceTimeZone)
     }
 
+    /// The counts of the days of the graph, from `oldest` to today (D041).
+    func historyCounts(from oldest: LocalDate, through today: LocalDate, deviceTimeZone: NamedTimeZone) async throws(StorageError) -> HistoryCounts {
+        try await open().historyCounts(from: oldest, through: today, deviceTimeZone: deviceTimeZone)
+    }
+
     /// The first event of a past dose that no generation run stored, with its occurrence, in one transaction.
     func recordBackfill(_ event: IntakeEvent, occurrence: Occurrence) async throws(RecordFailure) -> OccurrenceRecord {
         let store: LocalStore
