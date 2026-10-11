@@ -43,6 +43,7 @@ extension LocalStore {
     /// A projection that disagrees with the stored history is `StorageError.invalidData`, also for the same event again.
     ///
     /// - Parameter scheduleVersionID: The schedule version of the occurrence that the user saw.
+    /// The call records with generation 0. See `record(_:generation:)`.
     @discardableResult
     public func record(
         _ event: IntakeEvent,
@@ -57,12 +58,15 @@ extension LocalStore {
     /// so the slot is either recorded or left as it was. The same events again write nothing, so the rules
     /// of `RecordFailure` apply to the whole list: after `unavailable`, send the same list again.
     ///
+    /// - Parameter generation: The generation of the data that the caller read: 0, or the generation that
+    ///   the last `restore(_:)` gave. Another value is `RecordFailure.replaced`, and nothing is written.
     /// - Returns: The record of each occurrence, in the order of the events.
     @discardableResult
     public func record(
-        _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)]
+        _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
+        generation: Int = 0
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        try await record(events, sync: Self.fullSync)
+        try await record(events, generation: generation, sync: Self.fullSync)
     }
 
     /// `sync` is for tests. See `flush`.
@@ -78,9 +82,10 @@ extension LocalStore {
     func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         inserting occurrences: [Occurrence] = [],
+        generation: Int = 0,
         sync: @Sendable (Int32) -> Int32
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        try await commitRecord(sync: sync) { db in
+        try await commitRecord(generation: generation, sync: sync) { db in
             for occurrence in occurrences {
                 try Self.insert(occurrence, db)
             }
@@ -95,12 +100,20 @@ extension LocalStore {
     }
 
     /// Runs one record transaction, and returns only after the storage medium has the commit.
+    ///
+    /// A `generation` that is not the current one is `RecordFailure.replaced`. A restore runs on the same writer,
+    /// so the check and the write are in order with it: no event of the old data goes into the restored data.
     func commitRecord<T: Sendable>(
+        generation: Int,
         sync: @Sendable (Int32) -> Int32,
         _ updates: @Sendable (Database) throws -> T
     ) async throws(RecordFailure) -> T {
+        let current = self.generation
         do {
-            let result = try await writer.write(updates)
+            let result = try await writer.write { db in
+                guard current.withLock({ $0 }) == generation else { throw RecordFailure.replaced }
+                return try updates(db)
+            }
             // The commit synced the WAL file to the drive. Wait until the drive wrote it to the storage medium.
             // A failed flush is no success, also when another sync call works.
             guard Self.flush(walFile, sync: sync) else { throw StorageError.unavailable }

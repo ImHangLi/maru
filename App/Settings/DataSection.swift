@@ -28,6 +28,7 @@ struct DataSection: View {
                     case .notABackup: Text("This file is not a Maru backup, or it is damaged. Your data did not change.")
                     case .newerBackup: Text("A newer version of Maru made this backup. Update Maru, then try again. Your data did not change.")
                     case .notRestored: Text("Maru couldn’t restore this backup. Your data did not change.")
+                    case .restoredNotConfirmed: Text("Maru couldn’t confirm that your iPhone saved it. If your data looks wrong later, restore the backup again.")
                     }
                 }
                 .onChange(of: model.transfer.failure) { _, failure in
@@ -60,7 +61,11 @@ struct DataSection: View {
     }
 
     private var failureTitle: Text {
-        shownFailure == .fileNotMade ? Text("File Not Made") : Text("Not Restored")
+        switch shownFailure {
+        case .fileNotMade: Text("File Not Made")
+        case .restoredNotConfirmed: Text("Restored")
+        default: Text("Not Restored")
+        }
     }
 }
 

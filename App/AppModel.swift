@@ -52,8 +52,9 @@ final class AppModel {
     var settings = SettingsState()
     /// The state of "Your Data" in settings. See `AppModel+Backup.swift`.
     var transfer = DataTransferState()
-    /// Counts the restores (D040). A read or an operation that started before a restore changes nothing
-    /// in the model when it ends, because its IDs and values can belong to the replaced data.
+    /// The generation of the data that the store gave at the last restore (D040). A read or an operation that
+    /// started before a restore changes nothing in the model when it ends, because its IDs and values can belong
+    /// to the replaced data. Each record passes it to the store, and the store refuses an old one.
     var dataGeneration = 0
     /// The first time of day of each item with an active plan, for the order of My Items. `nil` before the
     /// first read. See `MyListView.swift`.

@@ -313,6 +313,9 @@
     "Maru checks again when you open it." : {
       "comment" : "Item detail footer and alert message: the system did not confirm the reminder change yet."
     },
+    "Maru couldn’t confirm that your iPhone saved it. If your data looks wrong later, restore the backup again." : {
+      "comment" : "Settings: the alert for a restore that replaced the data, when the storage did not confirm the save."
+    },
     "Maru couldn’t make the file. Try again." : {
       "comment" : "Settings: the alert for a record export or a backup that failed."
     },
@@ -576,6 +579,9 @@
     },
     "Restore from Backup…" : {
       "comment" : "Settings: the button that opens the file picker for a backup file."
+    },
+    "Restored" : {
+      "comment" : "Settings: the title of the alert for a restore that replaced the data, when the storage did not confirm the save."
     },
     "Save" : {
       "comment" : "Edit screen: the text “Save”."

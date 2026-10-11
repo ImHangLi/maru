@@ -162,8 +162,15 @@ extension LocalStore {
     /// The rules of `record(_:scheduleVersionID:)` apply. After `unavailable`, send the same occurrence and the
     /// same event again: the same values again write nothing (D014). Another occurrence with the same slot and
     /// date is `storage(.conflict)`, and nothing is written. Read the history again then.
+    /// See `record(_:generation:)` for `generation`.
     @discardableResult
-    public func recordBackfill(_ event: IntakeEvent, occurrence: Occurrence) async throws(RecordFailure) -> OccurrenceRecord {
-        try await record([(event, occurrence.scheduleVersionID)], inserting: [occurrence], sync: Self.fullSync)[0]
+    public func recordBackfill(
+        _ event: IntakeEvent,
+        occurrence: Occurrence,
+        generation: Int = 0
+    ) async throws(RecordFailure) -> OccurrenceRecord {
+        try await record(
+            [(event, occurrence.scheduleVersionID)], inserting: [occurrence], generation: generation, sync: Self.fullSync
+        )[0]
     }
 }

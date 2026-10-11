@@ -72,4 +72,6 @@ public enum RecordFailure: Error, Equatable, Sendable {
     case rejected(MaruCore.RecordError)
     /// The database failed. The user can try again. After `unavailable`, the event can already be stored.
     case storage(StorageError)
+    /// A restore replaced the data after the caller read it (D040). Nothing was written. Read the data again.
+    case replaced
 }

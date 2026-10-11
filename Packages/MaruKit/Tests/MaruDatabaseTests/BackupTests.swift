@@ -49,7 +49,7 @@ struct BackupTests {
         try await old.save(try Item(category: .medication, name: "Old", form: .tablet, color: .blue))
         let staged = try old.stage(backup: backupFile)
         #expect(staged.settings == ["appColor": "mint"])
-        try await old.restore(staged)
+        _ = try await old.restore(staged)
 
         // The store stays open, and its reads give the restored data.
         #expect(try await old.items() == [seed.item])
@@ -64,6 +64,21 @@ struct BackupTests {
         try await reopened.save(evening)
         try await reopened.record(Fixtures.event(for: evening, .skipped), scheduleVersionID: seed.versionID)
         #expect(try await reopened.status(of: evening.id) == .skipped)
+    }
+
+    @Test func aRecordThatWasReadBeforeARestoreIsRefused() async throws {
+        let (store, seed) = try await storeWithABackup()
+        let history = try await store.history(of: seed.occurrence.id)
+        let undo = Fixtures.event(for: seed.occurrence, .undo, supersedes: history.events.last?.id)
+        // The backup has the same IDs, so the stale undo matches a dose of the restored data.
+        let restored = try await store.restore(try store.stage(backup: backupFile))
+
+        await #expect(throws: RecordFailure.replaced) {
+            try await store.record([(undo, seed.versionID)], generation: restored.generation - 1)
+        }
+        #expect(try await store.history(of: seed.occurrence.id) == history)
+        try await store.record([(undo, seed.versionID)], generation: restored.generation)
+        #expect(try await store.status(of: seed.occurrence.id) == .unrecorded)
     }
 
     @Test func aDamagedOrNewerBackupIsRefusedAndTheDataStays() async throws {

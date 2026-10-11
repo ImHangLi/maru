@@ -25,6 +25,14 @@ public struct StagedBackup: Sendable {
     public let settings: [String: String]
 }
 
+/// A restore that replaced the data. See `LocalStore.restore(_:)`.
+public struct RestoreResult: Sendable {
+    /// The generation of the restored data. Pass it with each record that the caller reads from now on.
+    public let generation: Int
+    /// `false` when the storage medium did not confirm the commit. The data is replaced all the same.
+    public let isFlushed: Bool
+}
+
 extension LocalStore {
     /// Writes a backup of the whole database to `file`, which must not exist (D040).
     ///
@@ -196,21 +204,31 @@ extension LocalStore {
     /// No file changes its name, and the store stays open. A stop of the app or an error before the commit
     /// rolls the transaction back, so the database has the complete old data or the complete new data.
     /// The barrier waits for each read and write that runs, and holds back each new one until the commit.
-    public func restore(_ backup: StagedBackup) async throws(StorageError) {
+    ///
+    /// The call throws only when the old data is in place. After the commit it returns, also when the flush
+    /// to the storage medium fails, and the generation of the data goes up by one. From then on, a record with
+    /// an older generation is refused (see `commitRecord`).
+    public func restore(_ backup: StagedBackup) async throws(StorageError) -> RestoreResult {
         defer { discard(backup) }
+        let before = generation.withLock { $0 }
         do {
             let staged = try DatabaseQueue(path: backup.file.path)
             defer { try? staged.close() }
             try await writer.barrierWriteWithoutTransaction { db in
                 try staged.read { source in
                     try source.backup(to: db)
+                    // The commit replaced the data.
+                    generation.withLock { $0 += 1 }
                 }
             }
-            // The commit synced the WAL file to the drive. Wait until the drive wrote it to the storage medium.
-            guard Self.flush(walFile) else { throw StorageError.unavailable }
         } catch {
-            throw StorageError(error)
+            let after = generation.withLock { $0 }
+            // An error after the commit does not bring the old data back.
+            guard after != before else { throw StorageError(error) }
+            return RestoreResult(generation: after, isFlushed: false)
         }
+        // The commit synced the WAL file to the drive. Wait until the drive wrote it to the storage medium.
+        return RestoreResult(generation: generation.withLock { $0 }, isFlushed: Self.flush(walFile))
     }
 
     /// No file, or a file with no content.

@@ -20,6 +20,8 @@ extension AppModel {
     /// reminder shows, and a notification tells the user to open Maru.
     func takeReminder(_ reminder: DeliveredReminder) async {
         let now = Date()
+        // The target comes from this read, so the record carries its generation (D040).
+        let generation = dataGeneration
         if let deviceTimeZone = NamedTimeZone(device: .current, at: now),
            let target = try? await store.actionTarget(of: reminder, at: now, deviceTimeZone: deviceTimeZone) {
             switch target {
@@ -40,7 +42,7 @@ extension AppModel {
                     scheduleVersionID: occurrence.scheduleVersionID
                 )
                 // The commit starts the follow-up update, as a record on Today does.
-                if await commitAndWait([event]) { return }
+                if await commitAndWait([event], generation: generation) { return }
             case .none:
                 break
             }

@@ -13,11 +13,16 @@ struct DataTransferState {
 
     enum Failure: Equatable {
         case fileNotMade, notABackup, newerBackup, notRestored
+        /// The restore replaced the data, and the storage medium did not confirm it.
+        case restoredNotConfirmed
     }
 
     var shared: SharedFile?
     /// A file is in the making, a backup is in the check, or a restore runs. The rows wait.
     var isWorking = false
+    /// A restore runs. Settings stays open, and Today and the history record nothing until the model forgets
+    /// the replaced data.
+    var isRestoring = false
     /// A checked backup that waits for the one confirmation.
     var staged: StagedBackup?
     var failure: Failure?
@@ -95,23 +100,34 @@ extension AppModel {
     /// page reads the new data, the settings of the backup apply, and one run of the notification queue sets the
     /// reminders of the restored plans (T39). The user confirmed plans with reminders, so this run can ask
     /// for the notification permission, as the run after a save does (spec 2.2).
+    ///
+    /// A restore that committed is a success, also when the storage medium did not confirm it. Settings then
+    /// stays open and says so.
     func restore() {
         guard let staged = transfer.staged, !transfer.isWorking else { return }
         transfer.staged = nil
         transfer.isWorking = true
+        transfer.isRestoring = true
         Task { [store] in
             defer { transfer.isWorking = false }
+            let result: RestoreResult
             do throws(StorageError) {
-                try await store.restore(staged)
+                result = try await store.restore(staged)
             } catch {
+                transfer.isRestoring = false
                 transfer.failure = Self.restoreFailure(error)
                 refresh()
                 return
             }
-            forgetReplacedData()
+            forgetReplacedData(generation: result.generation)
+            transfer.isRestoring = false
             BackupSettings.apply(staged.settings)
-            // Today shows the restored data. No message says so (D028).
-            settings.isPresented = false
+            if result.isFlushed {
+                // Today shows the restored data. No message says so (D028).
+                settings.isPresented = false
+            } else {
+                transfer.failure = .restoredNotConfirmed
+            }
             selectedTab = .today
             refresh()
             let now = Date()
@@ -128,9 +144,10 @@ extension AppModel {
 
     /// Forgets what the model keeps about the items and the doses of the database that a restore replaced:
     /// the events that the store did not confirm, the open pages, the kept drafts, and the reminder states.
-    private func forgetReplacedData() {
-        // Each read and operation that started before ends with no effect.
-        dataGeneration += 1
+    private func forgetReplacedData(generation: Int) {
+        // Each read and operation that started before ends with no effect. The store refuses each record
+        // with the old generation.
+        dataGeneration = generation
         content = .loading
         // The timers of Today stay: the day change and the opening highlight do not belong to the data.
         var today = TodayState()

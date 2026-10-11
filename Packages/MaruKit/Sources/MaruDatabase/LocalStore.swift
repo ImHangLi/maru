@@ -1,5 +1,6 @@
 import Foundation
 import GRDB
+import os
 
 /// The on-device database of items, schedules, occurrences, and intake events.
 ///
@@ -14,6 +15,9 @@ public struct LocalStore: Sendable {
     /// The directory that holds the database file and the files that SQLite keeps next to it.
     let directory: URL
     let writer: DatabasePool
+    /// The number of restores since the store opened. A record that a caller read before a restore is refused.
+    /// See `restore(_:)` and `commitRecord`.
+    let generation = OSAllocatedUnfairLock(initialState: 0)
 
     /// Opens the database in `directory`, and creates it when the directory has none.
     ///

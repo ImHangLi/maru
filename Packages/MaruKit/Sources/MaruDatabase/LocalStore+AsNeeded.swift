@@ -30,22 +30,25 @@ extension LocalStore {
     ///
     /// An occurrence ID that the store has with other content is `storage(.conflict)`. An unknown item is
     /// `storage(.conflict)` too. An event for another occurrence is `rejected(.wrongOccurrence)`.
+    /// See `record(_:generation:)` for `generation`.
     @discardableResult
     public func recordAsNeeded(
         _ event: IntakeEvent,
-        occurrence: AsNeededOccurrence
+        occurrence: AsNeededOccurrence,
+        generation: Int = 0
     ) async throws(RecordFailure) -> OccurrenceRecord {
-        try await recordAsNeeded(event, occurrence: occurrence, sync: Self.fullSync)
+        try await recordAsNeeded(event, occurrence: occurrence, generation: generation, sync: Self.fullSync)
     }
 
     /// `sync` is for tests. See `flush`.
     func recordAsNeeded(
         _ event: IntakeEvent,
         occurrence: AsNeededOccurrence,
+        generation: Int = 0,
         sync: @Sendable (Int32) -> Int32
     ) async throws(RecordFailure) -> OccurrenceRecord {
         guard event.occurrenceID == occurrence.id else { throw .rejected(.wrongOccurrence) }
-        return try await commitRecord(sync: sync) { db in
+        return try await commitRecord(generation: generation, sync: sync) { db in
             try db.execute(
                 sql: """
                     INSERT INTO occurrence (id, itemID, plannedDate, plannedTime, timeZone)
