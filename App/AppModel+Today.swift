@@ -264,13 +264,7 @@ extension AppModel {
             let records = if events.count == 1, let occurrence = events[0].backfill {
                 [try await store.recordBackfill(events[0].event, occurrence: occurrence, generation: generation)]
             } else if events.contains(where: \.requiresCurrentPlan) {
-                let now = Date()
-                guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw RecordFailure.storage(.unavailable) }
-                try await store.record(
-                    events.map { ($0.event, $0.scheduleVersionID) },
-                    generation: generation,
-                    currentPlan: OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
-                )
+                try await recordInCurrentPlan(events, generation: generation)
             } else {
                 try await store.record(events.map { ($0.event, $0.scheduleVersionID) }, generation: generation)
             }
@@ -287,6 +281,17 @@ extension AppModel {
             today.confirmed[id] = nil
         }
         return committed
+    }
+
+    /// The record of the widget: the store also checks the plan of now in the transaction (D048).
+    private func recordInCurrentPlan(_ events: [PendingEvent], generation: Int) async throws(RecordFailure) -> [OccurrenceRecord] {
+        let now = Date()
+        guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw .storage(.unavailable) }
+        return try await store.record(
+            events.map { ($0.event, $0.scheduleVersionID) },
+            generation: generation,
+            currentPlan: OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
+        )
     }
 
     /// The records that a new read must not change: the last confirmed record of each occurrence with a running
