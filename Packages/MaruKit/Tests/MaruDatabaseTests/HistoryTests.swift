@@ -71,6 +71,48 @@ struct HistoryTests {
         #expect(day.doses.allSatisfy { $0.itemID == seed.schedule.itemID })
     }
 
+    /// D041: the graph counts the planned doses of a day and the taken ones, with the rules of the timeline.
+    /// A skipped dose is not taken, and an every-other-day item counts only on its dose days.
+    @Test func dayCountsFollowThePlanOfEachDay() async throws {
+        let directory = TestDirectory()
+        let store = try LocalStore(directory: directory.url)
+        let seed = try await store.seed()
+        try await store.record(Fixtures.event(for: seed.occurrence, .taken), scheduleVersionID: seed.versionID)
+        let skipped = Fixtures.occurrence(slotID: seed.morning, on: Fixtures.date(2026, 3, 2), in: seed.schedule)
+        try await store.save(skipped)
+        try await store.record(Fixtures.event(for: skipped, .skipped), scheduleVersionID: seed.versionID)
+        // Due on March 1 and March 3, not on March 2.
+        let item = try Item(category: .supplement, name: "Iron", form: .tablet, color: .orange)
+        try await store.save(item)
+        var schedule = Schedule(itemID: item.id, isEnabled: true)
+        let slot = try schedule.addSlot().id
+        try schedule.appendVersion(
+            ScheduleVersion(
+                scheduleID: schedule.id,
+                effectiveFrom: Fixtures.date(2026, 3, 1),
+                weeklyRule: .everyDay,
+                everyOtherDayFrom: Fixtures.date(2026, 3, 1),
+                slotTimes: [SlotTime(slotID: slot, time: Fixtures.time(9))],
+                timeZonePolicy: .fixed(Fixtures.shanghai)
+            )
+        )
+        try await store.save(schedule)
+        let iron = Fixtures.occurrence(slotID: slot, on: Fixtures.date(2026, 3, 1), in: schedule)
+        try await store.save(iron)
+        try await store.record(Fixtures.event(for: iron, .taken), scheduleVersionID: iron.scheduleVersionID)
+
+        let counts = try await store.historyCounts(
+            from: Fixtures.date(2026, 3, 1), through: Fixtures.date(2026, 3, 3), deviceTimeZone: Fixtures.shanghai
+        )
+
+        #expect(counts.firstDay == Fixtures.date(2026, 1, 1))
+        #expect(counts.days == [
+            Fixtures.date(2026, 3, 1): HistoryDayCount(scheduled: 3, taken: 2),
+            Fixtures.date(2026, 3, 2): HistoryDayCount(scheduled: 2, taken: 0),
+            Fixtures.date(2026, 3, 3): HistoryDayCount(scheduled: 3, taken: 0),
+        ])
+    }
+
     /// Spec 7.3: an old record with a missing projection row stays reachable. Its page reports `invalidData`.
     @Test func oldRecordWithABrokenProjectionIsReportedNotHidden() async throws {
         let directory = TestDirectory()

@@ -24,6 +24,12 @@
         }
       }
     },
+    "%@, %lld of %lld taken" : {
+      "comment" : "History: the VoiceOver value of the graph for the selected day. Example: Tuesday, August 18, 2 of 3 taken."
+    },
+    "%@, nothing planned" : {
+      "comment" : "History: the VoiceOver value of the graph for a selected day with no planned dose. Example: Saturday, August 22, nothing planned."
+    },
     "%lld changes not saved" : {
       "comment" : "Today and History: the banner of the events that are not saved yet. Example: 1 change not saved.",
       "localizations" : {
@@ -192,6 +198,9 @@
     },
     "Dose of %@" : {
 
+    },
+    "Doses taken each day" : {
+      "comment" : "History: the VoiceOver label of the graph at the top of the page."
     },
     "Drops" : {
       "comment" : "Item form or color name: the text “Drops”."
@@ -564,6 +573,9 @@
     },
     "Show Names in Reminders" : {
       "comment" : "Settings: a switch that adds the item names to reminders."
+    },
+    "Since %@. Days with all taken: %lld. Most: %lld. Some: %lld. None: %lld." : {
+      "comment" : "History: the VoiceOver value of the graph with no selected day. The first placeholder is the first day of the graph, for example August 10. The numbers count the days by the share of the planned doses that are taken."
     },
     "Skip" : {
       "comment" : "Today: a row action that records the dose as skipped."
