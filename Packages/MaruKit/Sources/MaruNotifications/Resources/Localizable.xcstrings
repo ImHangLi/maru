@@ -1,0 +1,94 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld more" : {
+      "comment" : "The last entry of a list of item names in a reminder, for example “Zinc, Creatine, and 2 more”. The placeholder is the number of items not named.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld more"
+          }
+        }
+      }
+    },
+    "Not recorded" : {
+      "comment" : "The title of the notification after the Taken action of a reminder recorded nothing.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not recorded"
+          }
+        }
+      }
+    },
+    "Open Maru to record it." : {
+      "comment" : "The body of the notification after the Taken action of a reminder recorded nothing.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Maru to record it."
+          }
+        }
+      }
+    },
+    "Open Maru to see your plan." : {
+      "comment" : "The body of a reminder with the item names turned off.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Maru to see your plan."
+          }
+        }
+      }
+    },
+    "Still to take" : {
+      "comment" : "The title of a follow-up reminder.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Still to take"
+          }
+        }
+      }
+    },
+    "Taken" : {
+      "comment" : "The action of a reminder for one item. It records the item as taken.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taken"
+          }
+        }
+      }
+    },
+    "This is a test from Maru." : {
+      "comment" : "The text of the test notification from settings.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This is a test from Maru."
+          }
+        }
+      }
+    },
+    "Time to take" : {
+      "comment" : "The title of a reminder.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time to take"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

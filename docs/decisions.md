@@ -1,0 +1,394 @@
+# Decisions
+
+Append new decisions at the end. Do not rewrite old entries.
+
+## D001 · 2026-10-10 · Working brand is "Maru"
+
+Owner decision. "Maru" is short and easy to say in en, zh, ja, de, fr, and es. In Chinese and Japanese, 丸 means pill, and ○ (maru) means "correct" or "done" in Japan. Descriptive names are crowded (Stack, StackDay, SupStack, Pillo, Dosely, Intake). The icon and the App Store subtitle carry the meaning, for example "Maru: Supplement Reminder". A trademark search is not done yet.
+
+## D002 · 2026-10-10 · XcodeGen and a local Swift package
+
+The `.xcodeproj` is generated from `project.yml` and is not in Git, so parallel worktrees do not conflict on it. Platform-neutral logic lives in `Packages/MaruKit` so that builds and tests run without a simulator.
+
+## D003 · 2026-10-10 · The owner works only in chat
+
+Owner decision. Agents own files, records, and routine decisions. The owner gates are in `docs/process.md`.
+
+## D004 · 2026-10-10 · CI builds only the package
+
+Superseded by D031.
+
+macOS runner minutes cost 10x on private repositories. App builds and simulator runs happen locally until the cost is justified.
+
+## D005 · 2026-10-10 · Placeholder bundle ID
+
+`com.imhangli.maru` is a placeholder. Freeze it before the first TestFlight upload.
+
+## D006 · 2026-10-10 · V1 direction confirmed
+
+Owner decision. The positioning, the target users, and milestones A, B, and C in `docs/roadmap.md` are confirmed. V1 adds two items from research:
+
+- A user-entered intake note, for example "with food" or "empty stomach". It is a user note, not app advice. Milestone A.
+- A passive history heatmap with no streaks and no penalties. Milestone B.
+
+The optional single follow-up reminder needs a real-device prototype first (spec §8.2). Build it only if the prototype shows that it works.
+
+## D007 · 2026-10-10 · Apple Developer Program after milestone A
+
+Owner decision. Use free on-device provisioning during milestone A. Buy the membership before TestFlight.
+
+## D008 · 2026-10-10 · Issue work runs in subagents owned by the main chat
+
+The owner chats in one thread. Each issue runs in a subagent that works in its own Git worktree. Do not open separate top-level chat threads unless the owner asks.
+
+## D009 · 2026-10-10 · Tests follow spec §16
+
+Spec §16 requires domain and database tests, real-device notification records, and performance results. Add tests for domain, database, and scheduling logic in `Packages/MaruKit`.
+
+## D010 · 2026-10-10 · Today screen follows the time cards, with an orange accent
+
+Owner decision. The Today screen uses variant B (one card per time slot). The accent color is orange, not green. The owner asked for less text and a style near Superpower, Everlab, and Anthropic: a warm neutral surface, one accent, and a serif for the large text. The study is in `docs/research/2026-10-10-visual-direction.md`. The exact orange and the refined layout (prototype variant B2) wait for the owner's answer. Write `docs/design.md` after that answer.
+
+## D011 · 2026-10-10 · Apple system style for the Today screen
+
+Owner decision. The owner rejected prototype variant B2. This decision supersedes the style part of D010 (warm surface and serif). The orange accent and the grouping by time slot stay.
+
+- Use the Apple system style: San Francisco only, system colors, and the system orange as the accent. No serif, no custom background color, and no colored outline on a card.
+- Do not show clock times such as 08:00 on the Today screen. Show the name of the time slot (for example "Morning"). This differs from spec §3 P01, which asks for the clock time of the current slot. Amend the spec when the owner confirms the final variant.
+- Use fewer words. A row shows the name and the dose. The circle shows the state. The intake note and the recorded time move to the detail sheet and the correction dialog.
+- Design references are good Apple-style apps of any category, not only health apps.
+
+## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028)
+
+Owner decision, after the study in `docs/research/2026-10-10-visual-direction.md`.
+
+- Accent: the default is a bright orange in light mode and a deeper orange in dark mode. The user can pick the accent in settings from a short row of clearly different colors. Each color has a light value and a dark value. Prototype set: orange, pink, green, teal, blue, purple, graphite.
+- Font: the Apple system font only. A custom Latin font leaves Chinese text in the system font, and the owner does not accept that mismatch.
+- Today layout: the cards variant. The list variant is dropped.
+- Recorded rows: the default is dim. A setting adds a strikethrough.
+- Finished slots: when every item of a slot has a record, the slot shows as one line the next time the user returns to the app. A tap on the title opens it, and a second tap folds it. Only a finished slot folds.
+- These settings (accent, recorded-row style) join the scope of issue #11. The Today behavior joins issue #7.
+
+## D013 · 2026-10-11 · White surface, row content, and text size
+
+Owner decision, after three rounds of surface options (see `docs/research/2026-10-10-visual-direction.md`).
+
+- Surface: the system background (white in light mode, black in dark mode) with gray wells. No tinted background, gradient, glow, or custom paper color. Color appears only in the icons, the record mark, and the current slot title. This keeps D011 and replaces every surface experiment after it.
+- Row: a bare dosage-form icon in the accent first, the name, and the record circle last. The six own icons (capsule, tablet, softgel, powder scoop, drop, jar for an unknown form) are accepted. The user picks the form. The app does not guess it.
+- Amount: optional, entered by the user, shown on a second line under the name. The product strength is not on the Today screen.
+- Text size: follow the system setting at every size, including the accessibility sizes. No maximum and no in-app text size control. Recommendation by the agent, pending the owner's objection. Reasons: the people who choose the largest sizes need them most, iOS already has a per-app text size setting, and spec §5.3 forbids smaller text for the sake of layout. The layout adapts: names wrap and never truncate, the icon and the circle have a size limit, and the icon is hidden at the three largest sizes.
+
+## D014 · 2026-10-11 · Database layer
+
+Agent decisions from issue #2 (PR #15), after four review rounds by a different model.
+
+- GRDB 7.11.1 (MIT) lives in a separate package target, `MaruDatabase`. `MaruCore` has no third-party code. Each third-party dependency is recorded in `docs/third-party-licenses.md`.
+- The store reuses the domain rules. Reads and records go through `OccurrenceRecord`, `Schedule`, and the domain initializers. SQL has only keys, foreign keys, unique constraints, and checks.
+- A record returns success only after the transaction commits and `F_FULLFSYNC` succeeds. A weaker flush does not count. The writer runs with `synchronous=FULL` and `fullfsync=ON`. One record costs about 5 ms on a Mac. Ordinary saves do not wait for the full flush.
+- After `unavailable` from a record, the event can already be stored. The caller must keep the same event and schedule version, read the stored state, and retry the same event. It must not show success before a successful retry. This binds issues #5, #6, and #7.
+- File protection is `complete`. A locked device cannot read or write the database, so a notification action must require an unlock (spec §8, §10).
+- The first creation uses a temporary name and an atomic rename. An existing zero-byte database file, or WAL and SHM files with no database file, report `corrupt`. The store never clears and rebuilds (T37).
+- The store has no delete operations. Slots, versions, product versions, and occurrences are immutable in the store.
+- `Preferences` is not in the health database. Issue #11 decides its storage.
+- Not verified, for the real-device issue #13: the flush result and its cost on an iPhone, protection at file creation, and the locked-device failure and recovery. The backup behavior of the database directory is not decided.
+
+## D015 · 2026-10-11 · Today layout is cards
+
+Owner decision. After the layout study (timeline, timeline with a Now mark, stack, ladder, blocks, tiles), the Today screen stays with one card per time slot. Card titles are in the text color, with no accent on the current slot. The other layouts are removed from the prototype. They stay in the prototype history and in `docs/research/2026-10-10-visual-direction.md`.
+
+Addendum, same day: the owner compared "Cards" with "Cards, refined" (a raised record button and a smaller card title, from the X study) and chose the original Cards. The refined variant is removed.
+
+## D016 · 2026-10-11 · Keep tests few
+
+Owner decision. The owner said that the app has too many tests (137 after three backend issues) and asked to cut the ones with no use. This narrows D009.
+
+- Write a test only for a behavior that protects a health record (no lost, doubled, or wiped record) or that an acceptance ID in `docs/spec.md` needs. One test per behavior.
+- Do not write a test for each review finding, for a guarantee of the compiler, for a trivial initializer or default value, or for the same path with other literals.
+- An implementation brief and a review brief state this limit. A reviewer does not ask for more tests unless a required behavior has none.
+- A cleanup pass removes existing tests that do not meet this rule.
+
+## D017 · 2026-10-11 · English first
+
+Owner decision. The first release is in English. This includes the App Store screenshots and all store text. Simplified Chinese is optional and can follow later. This replaces "ship `en` and `zh-Hans` first" in `AGENTS.md`. Chat with the owner stays in Chinese.
+
+## D018 · 2026-10-11 · Pink default accent, day ring, and final small points
+
+Owner decision.
+
+- Default accent: the pink of Apple Health, which is the system pink (#FF2D55 in light mode). The agent named one risk: this pink is close to the system red for errors and destructive actions. The owner accepts it. The user can still pick another accent in settings (D012). The logo and the store material take the pink.
+- Day ring: one small circle beside the "Today" title shows the progress of the day, with no number. It replaces the row of small circles. The exact look (thin line, segments, or fill) waits for the owner's choice in the prototype.
+- Text size: confirmed as in D013. Follow the system at every size, with no maximum and no in-app control.
+- No mark for the current time slot on Today. The owner asked whether it repeats other signals, and the agent agreed that the order of the cards and the open circles are enough.
+- No other change from the last style pass: no bold type and no larger icons.
+- My List uses the same cards as Today, with the group title inside its card. The system list put the group label on a different left edge from the page title, and the owner reported that as a misalignment.
+
+## D019 · 2026-10-11 · Occurrence window and time zone policy
+
+Agent decisions from issue #3 (PR #16), after two review rounds by a different model.
+
+- A generation run covers yesterday, today, and tomorrow in the time zone of each plan. A long time away does not fill the days between (T26).
+- A stored occurrence follows the schedule while it has no intake event and its date is not in the past in its stored zone or in the new zone. It keeps its ID and its key. After the first intake event (an undo also counts), or after its date, it never changes. This is the one exception to "occurrences are immutable in the store" in D014.
+- `Schedule.isEnabled` stops reminders, not occurrences. An archived item gets no new occurrence.
+- The named zone decides the instant. A local time that a clock change removes or repeats gives one occurrence with the plan time that the user confirmed, and it is flagged for review. The app does not move, drop, or double the dose (T25).
+- A `.fixed` plan keeps its zone when the device moves. A `.followsDevice` plan moves the occurrences with no intake event and a date not in the past to the new device zone, and keeps the clock time.
+- The store has no schema change. The resolved instant is computed, not stored.
+- Open point for the history screen (#10): rows that are no longer planned and have no record stay in the database, so history must read by records.
+
+## D020 · 2026-10-11 · Ring, opening highlight, My List, palette, and settings entry (ring and icon-only tab setting removed by D026)
+
+Owner decisions, with two agent recommendations that the owner asked for.
+
+- Day ring: one plain thin ring with no segments and no number. One line with a round end grows around the circle as the records come in. The owner tried a ring with one arc per time slot and went back to the plain ring. This replaces the three ring options in D018.
+- Opening highlight: when the app opens or returns to the front, the title of the current time slot has the accent for about six seconds and then returns to the text color. This replaces "no mark for the current time slot" in D018. Keep the code small.
+- My List goes back to the system grouped list with the group label outside the group. The owner prefers it to cards. Apple's own apps have the same small inset between the page title and the group label (checked on the iOS 27 simulator: "Summary" and "Pinned" in Health), so the inset is kept. This replaces the My List point in D018.
+- Accent palette: pink (default), orange, green, teal, blue, purple, and black. Black replaces gray. In dark mode the black accent is near white, and the check mark on it is black.
+- Settings entry (agent recommendation, the owner asked): a gear button at the top left of both tabs that opens a sheet. Not a third tab. Reasons: settings are rare, a tab is for a place the user goes every day, Apple's own apps (Health, Fitness, App Store) put the same kind of entry in a top corner, and two tabs keep the bar calm. A reminder problem such as notifications turned off shows on Today itself (spec §2.2), so the user does not need to find settings to learn about it. The add button sits at the top right of both tabs. This keeps the two tabs of spec §1.
+- New optional setting: the tab bar shows icons with no words. Off by default. The names stay for VoiceOver.
+
+## D021 · 2026-10-11 · Direction after Apple Health Medications, no app accent, item colors, header wash (wash removed by D024)
+
+Owner decision, after the hands-on test in `docs/research/2026-10-11-apple-health-medications.md`. The owner accepted the recommendation: continue milestone A with a narrower positioning. The owner set three requirements for every flow: not tedious, intuitive, and simple. The owner asked for the Apple Health features that Maru should have, each in a simpler flow. The owner left the wash color and the details to the agent and went offline, so the agent made the choices below.
+
+Direction:
+
+- Maru is a faster and simpler way to remember and record daily supplements and simple medications. It is simpler than Apple Health Medications in every flow that both apps have. Count screens and taps, and keep Maru lower.
+- A study of the HealthKit Medications API runs before milestone B (option 2 of the test note). It does not block milestone A.
+
+Visual decisions (agent choices, easy to change later):
+
+- No accent setting. The app has one fixed tint, the system pink (D018), for controls, the day ring, and the opening highlight. This replaces the accent picker in D012, D018, and D020. Color now comes from each item, as in Apple Health.
+- Header wash: on. One hue, the app pink, with the measured curve of Apple Health and the relative luminance of Apple's colors (0.54 in light mode, 0.09 in dark mode). The page is the gray grouped background with white cards, as in Apple Health. This replaces the white surface of D013. Reason: the owner asked for the wash, and the wash needs the gray page with opaque cards to look as it does in Health.
+
+Apple Health features that milestone A adds, in a simpler form:
+
+1. Item color. Each item has one color from a row of eight clearly different colors: pink, orange, yellow, green, mint, blue, purple, and brown. The form icon on Today and My List takes the item color. A new item gets the first color in the row that no active item uses, and the user can change it in the same edit screen. Apple asks for a shape and three colors on two separate screens. Maru has one row of forms (D013) and one row of colors on the one edit screen (spec §3 P03).
+2. Record a whole slot. A slot card on Today has one control that records every open item in the slot as taken, in one transaction. Apple needs open, plus, "Log All as Taken", and "Done".
+3. Optional follow-up reminder. Off by default (spec §4). When on, one extra reminder comes a set time after the slot (15, 30, or 60 minutes) only if the slot still has an open item. It is one-time requests for the next seven days, refreshed when the app runs. A record removes the follow-up of its occurrence. If the app does not run for seven days, the follow-ups stop and the main reminders continue. The settings text states this limit.
+4. As-needed items. An item with no schedule can be recorded at any time from an "As needed" card at the end of Today. Each record makes its own occurrence at the record time.
+5. IU as an amount unit. Apple Health has no IU, and many vitamin labels use it.
+
+Not added: Critical Alerts (Apple grants this entitlement only on request, and spec §8.1 forbids claims of guaranteed delivery), the Apple Watch app and iCloud sync (later list in `docs/roadmap.md`), and shapes beyond the six forms of D013.
+
+## D022 · 2026-10-11 · No HealthKit Medications integration in V1
+
+Agent decision, after the study in `docs/research/2026-10-11-healthkit-medications-api.md`. An app can only read the medications that the user allows and their dose events. It cannot write a dose, and it cannot read schedule times. So Maru cannot be a faster front end for Health. Option 2 of D021 is closed. An optional read-only name import stays a later candidate. It needs a device test of the entitlement first.
+
+## D023 · 2026-10-11 · Settings sheet and preference storage
+
+Agent decisions from issue #11.
+
+- Preferences live in `UserDefaults.standard`, not in the health database (D014). Display settings use two keys, read with `@AppStorage`. The follow-up setting keeps the key of PR #25. No value means off. Reason: the settings must be readable while the iPhone is locked, and they hold no health data.
+- The sheet has three groups: reminders (permission state, "Open Settings" when off or quiet, and the test), follow-up (Off, 15, 30, or 60 minutes), and display (strikethrough, tab bar icons only). All options are off by default.
+- The permission shows as On, Quiet (provisional), Off, or Not Asked Yet. Maru reads it at each return to the front and never shows the system prompt from settings or Today (spec 2.2, T13, T14).
+- Today shows one small line, "Notifications are off", only while the permission is denied. A tap opens the sheet.
+- The test notification is one one-time request with one fixed identifier, `test|settings`, in about 5 seconds. It runs in the notification queue of `AppStore`. Neither engine removes it, and both count it while it waits. At the system limit, it first removes the latest follow-up, then the follow-ups are set again after it fires. It never removes a series request. It shows as a banner while Maru is in front. A tap on it records nothing.
+- No "show item names on the lock screen" option. Spec 8.2 makes neutral text the baseline and does not require the option. Names would need new content for each series and each follow-up. The sheet states in one line that reminders show only a time.
+- No language row: the first release has only English (D017). No help or feedback row: feedback sending is milestone B.
+
+## D024 · 2026-10-11 · No header wash, app-specific empty text (empty text and tab bar point replaced by D026)
+
+Owner decisions after the first install on a device.
+
+- Remove the pink header wash of D021. Today uses the plain grouped background, the same as My List. The fixed pink tint and the item colors stay.
+- The empty Today page does not read like a to-do list. With no items, it says "Add a supplement or medication with the + button." With items but nothing due today, it says "No doses to take today."
+- The "tab bar icons only" setting must work. A label style has no effect in the tab bar, so the icon-only item uses an image with an accessibility label.
+
+## D025 · 2026-10-11 · App color setting
+
+Owner decision. The owner asked for a setting that changes the accent color of the whole app. This replaces "no accent setting" in D021. The item colors of D021 stay.
+
+- Settings has an "App Color" group between the follow-up group and the display group. It shows the eight item colors as a row of circles, the same as the color row on the edit screen.
+- Pink is the default, so the app does not change for current users.
+- The choice lives in `UserDefaults.standard` under `display.appColor`, read with `@AppStorage` (D023).
+- The choice is the tint of the whole app: buttons, the filled record circle, the day ring, the opening highlight, and the sheets. Item colors are independent of it. Errors and destructive actions stay the system red.
+- In light mode, orange, yellow, green, and mint have less than 3:1 contrast on white. As the tint, they get a darker value with the same hue that reaches 3:1. Dark mode uses the system colors.
+- A label on a filled tint, such as a check mark, a weekday letter, or the Save text, is white or black. White stays when it has at least 3:1 contrast on the fill. Otherwise the label is black. The rule checks the light and the dark value of the fill separately, so yellow, orange, green, and mint get black labels in dark mode. The color circles on the edit screen use the same rule.
+
+## D026 · 2026-10-11 · Native components only (notices removed by D028)
+
+Owner decisions after use on the device. The owner asked to remove every control that is not a native component.
+
+- Use native SwiftUI system components. Use a custom control only when no native one does the same job. Record each kept custom control and the reason.
+- No day ring. Today has no ring beside the title. This replaces the ring of D018 and D020.
+- History opens from a button in the navigation bar of Today, with a calendar symbol and the label "History". The button sits between the gear and the add button.
+- Today is a system grouped list. Each part of the day is a list section with a large header. The current part, "Record All", and the fold of a finished part stay in the header.
+- The empty Today text is a system empty view in the middle of the page. With no item: "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today: "Nothing to Take Today".
+- The add and edit screen has "Cancel" at the top left and "Save" at the top right. Save is off until the draft is valid. The bottom Save button and the "Enter a name to save" hint are gone. The plan line is the footer of the reminder section.
+- Form, color, and app color are system menus. The repeat days are a list with check marks, as in Clock. A new time comes from a sheet with a time wheel.
+- The record circle is an SF Symbol in a button: an empty circle, a filled check, a gray dash, or a red mark. History shows no record as a dashed circle.
+- No "tab bar icons only" setting. The tab bar always shows icons with names. This replaces the setting of D020 and the tab point of D024.
+- Kept custom controls: the save and change notices at the bottom of the page. SwiftUI has no native notice that closes by itself and does not block the page. An alert would block the page and need a tap.
+
+## D027 · 2026-10-11 · Reminders show while Maru is in front
+
+Agent decision, after an owner bug report from the device: "the test notification works, a reminder does not".
+
+- Cause: the notification delegate returned no presentation options for every notification except the test of settings. While Maru was in front at the reminder time, the system dropped the reminder with no banner, no sound, and no entry in Notification Center. The simulator log showed `Received response 0 for willPresentNotification` and `Saving notification: NO`.
+- Every notification of Maru now shows as a banner, in the list, and with sound, also while Maru is in front. This replaces "only the test shows while Maru is in front" in D023.
+- Spec 8.2 allows a foreground check against the records, and T23 asks to avoid a misleading repeated display. Maru does not do that check yet. The reminder text is neutral, so a reminder after a record does not say that a dose is not taken.
+
+## D028 · 2026-10-11 · No toasts, animated fold, and row gestures
+
+Owner decisions after use on the device. The owner asked to follow Apple apps such as Health, and for every interaction to feel smooth and native.
+
+- No toast. Apple Health shows no message after a save. The sheet closes, and the list updates in place. Maru does the same. The save notice and the change notice at the bottom of the page are gone. This replaces the kept custom controls of D026.
+- Errors use a system alert. A reminder that failed after a save or a change gets an alert, because spec §8.1 asks to say "plan saved, reminder not set". The plan is saved, so the alert names only the reminder problem. Notifications that are off get no alert, because Today and My List show "Notifications are off" in place, and T13 forbids repeated questions.
+- The item detail shows the reminder state as a plan row: "On", "Not Set", or "Not Confirmed", with the reason in the footer (T03). The state comes from the last run of the reminder engine. Before the first run of a process, the row does not show.
+- Lost with the notices: "Add Another" (use the add button) and "Restore" after an archive (use the archived list in My List). The archive keeps its confirmation alert.
+- The record that finishes a part of the day folds it after about 0.7 seconds, with the same animation as a tap on the header. Reduce Motion changes it at once. Only a finished part folds. D012 folded a part only on a return to the app. A part that was folded earlier opens first, so it never snaps closed.
+- Today rows have native swipe actions and a context menu. An open row: swipe right "Taken", swipe left "Skip". A taken row: swipe left "Undo". A skipped row: swipe right "Taken", swipe left "Undo". A row that is not saved: swipe right "Try Again". The menu has the same actions, "Change Time…" for a taken row, and "Details" and "Edit". An as-needed item has "Take Now", and a dose has "Undo" and "Change Time…". Every action uses the same domain operation as the circle, so success shows only after the commit (spec §7.2). The record circle stays a separate hit target. VoiceOver lists the swipe actions as actions of the row.
+- The page stays the gray grouped background with white cards, as in Apple Health and Settings. Every page uses it, also while it loads.
+
+## D029 · 2026-10-11 · Reminders say what to take
+
+Owner decision, after use on the device: "The notification does not tell me what to do. I just got 'Check your 12:30 plan'." This replaces the neutral-text baseline of spec 8.2 and the "no show item names option" point of D023.
+
+- Reminders show the item names by default. Settings has a switch, "Show Names in Reminders", in its own group below the reminder group. It is on by default.
+- Wording, as short as possible, with no "·" separator:
+
+  | | Title | Body with names | Body without names |
+  |---|---|---|---|
+  | Reminder | "Time to take" | The items of that time | "Open Maru to see your plan." |
+  | Follow-up | "Still to take" | The items of that time with no record | "Open Maru to see your plan." |
+
+- The names use the list style of the language: "Zinc", "Zinc and Creatine", "Zinc, Creatine, and Iron". More than three items give the first two names and the count of the others: "Zinc, Creatine, and 2 more".
+- No clock time is in the text. iOS shows the delivery time on every notification. A written time can be wrong for a plan in a fixed time zone, and it keeps an old 12-hour or 24-hour format.
+- No amount is in the text. Today shows the amount.
+- The text never says "you have not taken it". The user can record before the time, and a repeating request cannot change its text (spec 8.2). "Still to take" is only on a follow-up. A follow-up is set only while an item of that time is open.
+- A request keeps the text that it got when it was added. So the engines compare the text too:
+  - A pending request is current when its identifier, its `userInfo`, and its title and body match the wanted request. The notification target makes the text in the language of now, so a new name, item, setting, or language gives other text.
+  - Other text gives an add with the same identifier, which replaces the pending request. It takes no new room, and it needs no removal. The request budget, the removal ledger, and the removal checks stay as they were.
+  - The `userInfo` (series ID and schedule revision) and the tap resolver do not change.
+- A delivered notification also keeps its text. Each refresh of the follow-ups removes a delivered follow-up whose text is not the text of its group now, for example after a record of one of its items, a rename, or an archive. A delivered first reminder stays. It was true for its time, and a rule on its text removed valid reminders in review. One exception: when the user hides the names, a delivered first reminder that shows names is removed.
+- A request names only the items of its own day. When the items of one time have different weekdays, the series gets one request for each weekday instead of one daily request. With names off, the text is the same on each day, so such a series keeps one daily request.
+- The per-weekday requests use more of the budget of 48. So a switch of the setting can leave a plan with no reminder. The switch reports the result as a save does: the Reminder state in the item detail and an alert. The engine runs again at launch and on return to the front.
+- Health data rule: the names stay on the device in local notifications. The text is read back from the system only in memory for the comparison, and it is never logged (spec 10).
+- The setting lives in `UserDefaults.standard` under `reminders.hideNames`. No value means names on (D014, D023).
+
+## D030 · 2026-10-11 · One motion language
+
+Owner decision, with agent detail. The owner likes the open and fold animation and asked for the same care on every page: motion where a change needs it, none where it does not, and the same motion for the same kind of change. The earlier report, a finished part that snapped closed while a tap on its header animated, was a consistency problem.
+
+Owner:
+
+- Motion stays restrained. Nothing decorative.
+- The same kind of change uses the same motion on every page. A change that moves the layout must not snap on one page and animate on another.
+
+Agent detail:
+
+- Three cases in `App/Motion.swift`: layout (the `snappy` spring of the fold), state (a fade of 0.2 seconds, with the system replace effect on a symbol), and attention (the fade of 1.2 seconds of the opening highlight). `docs/design.md` "Motion" lists where each one applies. `AppModel.foldAnimation` and the literal durations in the views are gone.
+- Reduce Motion: a layout change shows at once. State and attention are fades with no move, so they stay. A symbol cross-fades with no scale.
+- New motion after an audit of every page: rows and sections that come or go on Today, My List, the archived list, the item detail, History, and Settings. Rows and footers of the add and edit form. The change between an empty page and a list. A finished part that folds on a return to the app. The icon of a Today row now dims with its name. The check mark and "Record All" in a part header fade.
+- The record circle is one image for every state. Before, each state was its own image, and no motion reached the circle, so the system replace effect had nothing to run on.
+- The first content of a page has no entrance: Today at a launch, the item detail, and the first days of History (spec §9). Text values, the app color, the repeat day check marks, and the storage problem page change at once.
+- The system keeps the motion of sheets, pushes, menus, alerts, swipe actions, and pickers.
+- The record rule stays: a row changes only after the commit (spec §7.2). No motion starts at the tap.
+- The row animation of a system list is the one of the system. The layout case starts it, and the system chooses its curve.
+
+## D031 · 2026-10-11 · Open source under the MIT license, and CI builds the app
+
+Owner decision. Maru becomes a public repository under the MIT license. This replaces D004.
+
+- macOS runner minutes are free for public repositories. CI builds the app for the iOS Simulator, in addition to the package build and tests. The app needs Xcode 27, so the app job runs on the `xcode-27` runner image.
+- The repository holds no personal health data, no local paths, and no credentials. Records refer to private work only as history, without links to private branches or local files.
+- `docs/process.md` applies to every contributor. The rules for agents that work for the maintainer are in `AGENTS.md`.
+
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults
+
+Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
+
+- A folded part of the day has the same title look as an open part. No gray text for a state.
+- The header of a finished part has no check mark. The chevron says that the part folds, and only a finished part folds. This replaces the header check mark of D012 and D026.
+- History is one timeline: newest first, grouped by day ("Today", "Yesterday", then the date). Each row is one action: taken, skipped, time changed, or undone. Undone and replaced actions stay in the list. A planned dose of a past day with no record stays in its day as "No record". Older days load when the list ends. The corrections of D014 and D028 stay, with a swipe or a long press on the newest row of a dose.
+- Add item: the kind starts on "Supplement", and the form starts on "Capsule". These two defaults are owner decisions. Spec §2 still forbids a default amount and a default reminder time. The "choose a type" hint is gone.
+- "Remind Again" shows the delay after the first reminder as its value, for example "After 30 min". Its footer is one short sentence.
+- The setting "Strike Through Recorded Items" is gone, with its stored preference. This replaces the strikethrough setting of D012.
+- My List is a grid of tiles, not a list. This replaces the list form of My List in D020. The tile is a kept custom control (D026), because the system has no grid card.
+- Each footer and helper text is one short sentence.
+
+Later owner points in the same round:
+
+- A. No "·" separator in any text of the app. Natural words or a second line replace it. The reminder notification text is not part of this change.
+- B. A recorded row on Today does not dim. It differs from an open row only by the circle. This replaces the dim of D012. A skipped row and a row that is not saved also show their state only in the circle.
+- C. The tab and the page "My List" have the name "My Items". File and type names stay.
+- D. A tile of My Items shows only the form icon, large, in the item color, and the name in a strong weight. It has no plan line and no amount. The plan stays in the item detail. The order is the first time of day of the plan, then the name. As-needed items come last. No section titles.
+
+Agent detail:
+
+- The timeline groups by the day of the dose, so a day still answers "did I take it". The time at the end of a row is the time of the action. The words name the intake time when it differs.
+- The history rule of D019 changes in one point: a dose with an intake event shows also after an undo. No new store read and no schema change.
+- The example time of a new supplement (spec §2.1) is no longer a time in the draft. It is the start value of the time wheel, and it counts only after "Add".
+- My Items reads the plans when the page shows, not at launch, so the startup path does not load the schedules (spec §9).
+- The record mark of a History row is gone: the words say the action. So no symbol changes state in History.
+
+## D033 · 2026-10-11 · Shorter record correction and archive, and delete of an item
+
+Agent decision under the owner's direction: match Apple Health Medications, with simpler flows. The gap study `docs/research/2026-10-11-apple-health-gap.md` found three flows that were not simpler.
+
+- Change the time of a record: three taps, not four or five. The time sheet shows the time wheel at once. The context menu of a recorded row on Today and of the newest row of a dose in History opens the sheet directly with "Change Time…".
+- "Taken Earlier…" is in the context menu of an open row on Today. It opens the same sheet, and "Save" records the dose as taken at the chosen time. It uses the record transaction of the circle, so it needs no new domain code. The wheel does not go past the current time, and the save limits the time to the current time.
+- Archive: three taps and one confirmation. "Archive…" is in the context menu of a Today row and of a My Items tile. The alert keeps its text, which says that archive is not advice to stop (spec §3 P04).
+- "Change or End This Item…" on the item detail opens a system menu, not a dialog. The dialog was a second confirmation before the alert. Its message "Changes start today. Past records stay the same." is gone, because it is not true for a delete.
+- Delete of an item with its records. "Delete Item…" is in the menu of the item detail, on the detail of an archived item, and in the archived list as a swipe action and in the context menu. One alert names the item and says that its plan and its records are deleted and that the user cannot undo this.
+- One store operation and one transaction delete the item, its product versions, its schedules, its occurrences, its intake events, and the projection rows of those occurrences. The event history and the projection of every other occurrence stay as they were. A failure rolls back every row.
+- After the commit, one run of the notification queue removes the reminders and the follow-ups of the item. A removal that the run did not confirm gets the alert of an archive. `ReminderOutcome` now has `removalPending`, because a deleted schedule has no entry in `schedules`.
+- The kept drafts of the item are deleted: the draft of its edit and the draft of its replacement. Every event of the item that the store did not confirm is forgotten, also one that no page shows. History drops the doses of the item at once and reads again, and a History read that started before the delete does not show.
+- Spec §7.3 gets one sentence: a delete that the user asks for and confirms is not the forbidden "clear and rebuild". The "明确不做" list does not forbid a delete, and spec §3 P06 names "privacy and delete".
+- One archive and delete confirmation for the whole app is in `RootView`. Each page asks the model for it.
+- The swipe button "Delete Item…" has no destructive role. With that role the system removes the row before the confirmation.
+- Tests (D016): one new test, for the delete transaction.
+
+## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders
+
+Agent decision, under the owner's direction to match Apple Health Medications (`docs/research/2026-10-11-apple-health-gap.md`, rows 22 and 23).
+
+The "Taken" action:
+
+- A reminder or a follow-up that stands for exactly one item has one action, "Taken". A reminder for two or more items has no action, and a tap opens Today as before. Spec 8.3 forbids a blind record of a group.
+- A first reminder has the action when its day has exactly one item at that time. With the names hidden, a daily request has the action only when each of its days has exactly one item, so the series keeps its one request. A follow-up has the action when its group has exactly one item, open or not.
+- The action has the option `authenticationRequired` and no `foreground` option. The system asks for an unlock, then starts Maru in the background. The database has complete file protection (spec 10).
+- The action uses the tap resolver. A first reminder must resolve with no doubt: on time, today, the plan of now, and no clock change. Its revision is a hash of the slots and the schedule versions of its members, so a reminder from before a plan change does not resolve. A follow-up carries its plan date, so only the date and the device zone are checked. The result must be exactly one item, the stored dose must be of today in its own zone, and it must be open.
+- A follow-up has no revision. With the names hidden, a delivered follow-up keeps its identifier and its text after another item takes its time. So a follow-up with the action carries the ID of its one item and of its schedule version in `userInfo`, and no name. The action records only a dose of that item with that version. A follow-up with no such ID, or with another one, records nothing. The IDs stay in the local notification system and are never logged (spec 10).
+- The record is the transaction of the record circle, with the source `notificationAction`. The event revises the last event that the store read. So a second action, or an action after a record in the app, writes nothing (T18). A dose that is already taken needs no record, and the action ends with no message.
+- After the commit, the follow-ups update as after a record on Today.
+- The handler returns to the system when the record commits or fails, or after 5 seconds, the first of the two. It returns one time on every path. It waits for no notification call of the system: the follow-up update and the "Not recorded" notification run after it. The record is not cancelled at the limit.
+- The action never replaces a skip, and it never sends a second event next to an event that the store did not confirm (D014).
+- When the action can not record, it records nothing. Apple gives a background action no way to open the app. So Maru sends one notification, "Not recorded" and "Open Maru to record it.", which names no item. Maru also prepares what a tap on the reminder shows: the confirmation sheet, or "Unlock to Continue" for a locked database (T40). An open of Maru removes the notification.
+- The request content has a category now. The engines treat a pending request with another action state as not current, and they replace it with an add of the same identifier, as for text (D029). It takes no new room. The budget of 48 and the removal rules do not change. The `userInfo` of a first reminder does not change.
+- The action title and the two notice texts are in the String Catalog of `MaruNotifications`.
+
+Time-sensitive reminders:
+
+- Not done. The interruption level of reminders, follow-ups, and the test notification stays the default level.
+- The level needs the capability "Time Sensitive Notifications". Apple's capability table gives it to the Apple Developer Program and the Enterprise Program, and not to a free Apple Developer account. Maru uses free provisioning until milestone B (D007), so the maintainer's personal team can not sign a build with the entitlement.
+- Do this after the membership: add the capability in `project.yml`, and set the level on the three request types. The WWDC21 session says: enable the capability in Xcode, then set the level on the content. The entitlement key `com.apple.developer.usernotifications.time-sensitive` comes from Apple Developer Forums threads. No Apple reference page that I found states it.
+- The API has no permission request for this level. Apple says that the user can turn off Time Sensitive alerts for an app. How the system first asks the user is not on the pages that I read, and it needs a device check. Spec 8.1 still forbids a promise of delivery.
+- Critical Alerts stay out (D021).
+
+Sources, read on 2026-10-11:
+
+- [Declaring your actionable notification types](https://developer.apple.com/documentation/usernotifications/declaring-your-actionable-notification-types): the system launches the app in the background for an action, and files with complete protection can be unavailable when the device is locked.
+- [Handling notifications and notification-related actions](https://developer.apple.com/documentation/usernotifications/handling-notifications-and-notification-related-actions): an action goes to the app "without bringing the app to the foreground". The page gives no run time.
+- [`authenticationRequired`](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/authenticationrequired) and [`foreground`](https://developer.apple.com/documentation/usernotifications/unnotificationactionoptions/foreground).
+- [`UNNotificationInterruptionLevel.timeSensitive`](https://developer.apple.com/documentation/usernotifications/unnotificationinterruptionlevel/timesensitive).
+- [Supported capabilities (iOS)](https://developer.apple.com/help/account/reference/supported-capabilities-ios).
+- [Send communication and Time Sensitive notifications, WWDC21](https://developer.apple.com/videos/play/wwdc2021/10091/).
+
+## D035 · 2026-10-11 · After the user feedback study: every other day, no stock, and a launch FAQ
+
+Owner decisions after the study in `docs/research/2026-10-11-user-feedback-cn.md`.
+
+- Add an "every other day" schedule. Supplement users asked for it most. It needs a spec change in the schedule rules.
+- Stock, refill, and expiry stay out of scope (spec section 1), although about 13 mentions asked for them.
+- The first release answers the common questions directly, as a FAQ: `docs/faq.md`. The owner's words for the product: one single, separate, easy place for this job. A record is simple. A missed record is fine. The app exists to lower the mental load.
+- Do not build the app on the maintainer's Mac. CI is the build check. One local device build is acceptable for an install on the maintainer's iPhone.
+
+## D037 · 2026-10-11 · Feedback through a web form
+
+Owner decision. Settings has a "Send Feedback" button at the end. It opens the owner's Tally form (https://tally.so/r/jadWkR) in the system browser.
+
+- No server of Maru, no email address of the owner in the app, and no data of the app in the request. The page loads only after a tap.
+- The form asks for a message, and for an email address only if the user wants a reply. It asks the user to leave out health details.
+- `PRIVACY.md` names Tally. "No network requests" is now "no network requests by itself".
+- The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
+

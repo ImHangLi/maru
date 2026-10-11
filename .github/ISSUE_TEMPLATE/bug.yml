@@ -1,0 +1,28 @@
+name: Bug report
+description: Something in Maru does not work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include your own medication names, doses, or other health data. Use a made-up item instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add a daily item at 8:00 AM
+        2. ...
+  - type: input
+    id: version
+    attributes:
+      label: Device, iOS version, and Maru commit
+      placeholder: iPhone 16, iOS 26.1, main at abc1234
+    validations:
+      required: true

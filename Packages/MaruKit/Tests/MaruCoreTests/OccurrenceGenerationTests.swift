@@ -1,0 +1,145 @@
+import Foundation
+import Testing
+@testable import MaruCore
+
+/// Keeps what each run creates and replans, as the database does.
+private struct Shelf {
+    var item = Fixtures.item()
+    var stored: [OccurrenceKey: StoredOccurrence] = [:]
+
+    @discardableResult
+    mutating func run(
+        _ schedule: Schedule,
+        at now: String,
+        device: NamedTimeZone = Fixtures.shanghai
+    ) -> OccurrenceGeneration.Outcome {
+        let generation = OccurrenceGeneration(now: Fixtures.instant(now), deviceTimeZone: device)
+        let outcome = generation.outcome(items: [item], schedules: [schedule], stored: Array(stored.values))
+        for occurrence in outcome.created + outcome.replanned {
+            stored[occurrence.key] = StoredOccurrence(occurrence: occurrence, hasEvents: false)
+        }
+        return outcome
+    }
+
+    /// The occurrence now has an intake event.
+    mutating func record(_ occurrence: Occurrence) {
+        stored[occurrence.key] = StoredOccurrence(occurrence: occurrence, hasEvents: true)
+    }
+}
+
+private extension Array where Element == Occurrence {
+    func of(_ slotID: ScheduleSlotID, on date: LocalDate) -> [Occurrence] {
+        filter { $0.slotID == slotID && $0.plannedDate == date }
+    }
+}
+
+@Suite("Occurrence generation (spec 7.2, 8.5, T25)")
+struct OccurrenceGenerationTests {
+    // 1 March 2026 is a Sunday. The schedule of the fixture has 08:00 and 20:00 in Shanghai, which is UTC+8.
+    let today = Fixtures.date(2026, 3, 1)
+    let tomorrow = Fixtures.date(2026, 3, 2)
+    /// 07:00 and 12:00 on 1 March in Shanghai.
+    let early = "2026-02-28T23:00:00Z"
+    let noon = "2026-03-01T04:00:00Z"
+
+    private func schedule(
+        itemID: ItemID,
+        times: [WallClockTime] = [Fixtures.time(8), Fixtures.time(20)],
+        timeZonePolicy: TimeZonePolicy = .fixed(Fixtures.shanghai)
+    ) throws -> Schedule {
+        var schedule = Schedule(itemID: itemID, isEnabled: true)
+        let slotTimes = try times.map { SlotTime(slotID: try schedule.addSlot().id, time: $0) }
+        try schedule.appendVersion(
+            ScheduleVersion(
+                scheduleID: schedule.id,
+                effectiveFrom: Fixtures.date(2026, 1, 1),
+                weeklyRule: .everyDay,
+                slotTimes: slotTimes,
+                timeZonePolicy: timeZonePolicy
+            )
+        )
+        return schedule
+    }
+
+    // MARK: A schedule change in the middle of a day
+
+    @Test func recordedOccurrenceStaysWhenThePlanDropsItsSlot() throws {
+        var shelf = Shelf()
+        var schedule = try self.schedule(itemID: shelf.item.id)
+        let (morning, evening) = (schedule.slots[0].id, schedule.slots[1].id)
+        let before = shelf.run(schedule, at: early).occurrences
+        let taken = try #require(before.of(morning, on: today).first)
+        shelf.record(taken)
+
+        // From today the schedule has only the evening.
+        try schedule.appendVersion(
+            ScheduleVersion(
+                scheduleID: schedule.id,
+                effectiveFrom: today,
+                weeklyRule: .everyDay,
+                slotTimes: [SlotTime(slotID: evening, time: Fixtures.time(20))],
+                timeZonePolicy: .fixed(Fixtures.shanghai)
+            )
+        )
+        let outcome = shelf.run(schedule, at: noon)
+
+        #expect(outcome.occurrences.of(morning, on: today) == [taken])
+        // The morning of tomorrow has no record. It is not planned now, and nothing removes or changes its row.
+        #expect(outcome.occurrences.of(morning, on: tomorrow).isEmpty)
+        #expect(outcome.replanned.allSatisfy { $0.slotID == evening })
+        #expect(shelf.stored.count == 6)
+        // An archived item keeps the record of today in the same way.
+        shelf.item.isArchived = true
+        #expect(shelf.run(schedule, at: noon).occurrences == [taken])
+    }
+
+    // MARK: Clock changes (T25)
+
+    @Test func localTimeThatTheClockSkipsGivesOneFlaggedOccurrence() throws {
+        var shelf = Shelf()
+        // 02:30 does not come on 8 March 2026 in New York.
+        let skipped = try schedule(itemID: shelf.item.id, times: [Fixtures.time(2, 30)], timeZonePolicy: .fixed(Fixtures.newYork))
+        let spring = shelf.run(skipped, at: "2026-03-08T16:00:00Z", device: Fixtures.newYork).occurrences
+        #expect(spring.map(\.plannedDate) == [Fixtures.date(2026, 3, 7), Fixtures.date(2026, 3, 8), Fixtures.date(2026, 3, 9)])
+        #expect(spring.map(\.resolvedTime.needsReview) == [false, true, false])
+        #expect(spring[1].resolvedTime == .nonexistent(firstValidAfter: Fixtures.instant("2026-03-08T07:00:00Z")))
+        // The plan keeps the time that the user confirmed.
+        #expect(spring.map(\.plannedTime) == Array(repeating: Fixtures.time(2, 30), count: 3))
+        #expect(spring.map(\.timeZone) == Array(repeating: Fixtures.newYork, count: 3))
+    }
+
+    @Test func localTimeThatComesTwoTimesGivesOneFlaggedOccurrence() throws {
+        var shelf = Shelf()
+        // 01:30 comes two times on 1 November 2026 in New York. It is still one occurrence.
+        let repeated = try schedule(itemID: shelf.item.id, times: [Fixtures.time(1, 30)], timeZonePolicy: .fixed(Fixtures.newYork))
+        let autumn = shelf.run(repeated, at: "2026-11-01T16:00:00Z", device: Fixtures.newYork).occurrences
+        #expect(autumn.map(\.plannedDate) == [Fixtures.date(2026, 10, 31), Fixtures.date(2026, 11, 1), Fixtures.date(2026, 11, 2)])
+        #expect(autumn.map(\.resolvedTime.needsReview) == [false, true, false])
+        #expect(
+            autumn[1].resolvedTime
+                == .repeated(first: Fixtures.instant("2026-11-01T05:30:00Z"), second: Fixtures.instant("2026-11-01T06:30:00Z"))
+        )
+        #expect(shelf.run(repeated, at: "2026-11-01T16:00:00Z", device: Fixtures.newYork).created.isEmpty)
+    }
+
+    @Test func zoneWithNoClockChangeGivesOneOccurrenceWithNoFlag() throws {
+        var shelf = Shelf()
+        // Shanghai has no clock change, so nothing is flagged.
+        let plain = try schedule(itemID: shelf.item.id, times: [Fixtures.time(2, 30)])
+        let occurrences = shelf.run(plain, at: "2026-03-08T04:00:00Z").occurrences
+        #expect(occurrences.map(\.plannedDate) == [Fixtures.date(2026, 3, 7), Fixtures.date(2026, 3, 8), Fixtures.date(2026, 3, 9)])
+        #expect(occurrences.map(\.resolvedTime.needsReview) == [false, false, false])
+        // A fixed zone keeps its own dates when the device is on the other side of the date line.
+        // At this instant it is 3 March in Kiritimati and 1 March in Pago Pago.
+        let far = try schedule(
+            itemID: shelf.item.id,
+            times: [Fixtures.time(8)],
+            timeZonePolicy: .fixed(NamedTimeZone(identifier: "Pacific/Kiritimati"))
+        )
+        let device = try NamedTimeZone(identifier: "Pacific/Pago_Pago")
+        #expect(
+            shelf.run(far, at: "2026-03-02T10:30:00Z", device: device).occurrences.map(\.plannedDate)
+                == [Fixtures.date(2026, 3, 2), Fixtures.date(2026, 3, 3), Fixtures.date(2026, 3, 4)]
+        )
+    }
+}

@@ -1,0 +1,258 @@
+import Foundation
+import MaruCore
+import MaruDatabase
+import MaruNotifications
+
+/// The database of the process, and the reads that the two tabs need.
+///
+/// Only `AppModel` uses this type. The actor runs its work outside the main actor (spec 9),
+/// and it opens the database one time (D014).
+actor AppStore {
+    /// The store sets strict file protection on its whole directory (spec 10), so the database has a directory of its own.
+    private static let directory = URL.applicationSupportDirectory.appending(path: "Database", directoryHint: .isDirectory)
+
+    private var opened: LocalStore?
+    private var engine: ReminderEngine?
+    private var followUps: FollowUpEngine?
+    /// The last notification update in the queue. Each update waits for the one before it, so the reminder
+    /// engine and the follow-up engine never change the requests at the same time (spec 8.4).
+    private var updates: Task<Void, Never>?
+    #if DEBUG
+    /// The state of the debug scenarios. See `App/Debug/`.
+    var debug = DebugStoreState()
+
+    /// After a store change, the clear of the old notifications is the first update in the queue (spec 8.4).
+    init() {
+        guard DebugStore.launch.transitionDate != nil else { return }
+        let clear = Task { await DebugStore.clearNotifications() }
+        debug.notificationClear = clear
+        updates = Task { _ = await clear.value }
+    }
+    #endif
+
+    /// The open store. The first call opens the database, and a call after a failed open tries again.
+    ///
+    /// The open can block on a lock, and on a flush at first launch, so it does not run on the main actor.
+    /// A failure leaves the files as they are (spec 7.3, T37).
+    func open() throws(StorageError) -> LocalStore {
+        if let opened { return opened }
+        let interval = Signposts.signposter.beginInterval("OpenDatabase")
+        defer { Signposts.signposter.endInterval("OpenDatabase", interval) }
+        #if DEBUG
+        if let error = DebugLaunch.storageError { throw error }
+        #endif
+        #if DEBUG
+        // A debug scenario uses its own store, so the real database is never changed (spec 7.3).
+        let store = try LocalStore(directory: DebugStore.directory ?? Self.directory)
+        #else
+        let store = try LocalStore(directory: Self.directory)
+        #endif
+        opened = store
+        return store
+    }
+
+    /// The one reminder engine of the process. Its runs do not overlap, so the app must not make a second one.
+    /// Each successful run keeps the device time zone for the notification tap (spec 8.1, 8.3).
+    func reminderEngine() throws(StorageError) -> ReminderEngine {
+        if let engine { return engine }
+        let engine = ReminderEngine(
+            source: try open(),
+            center: SystemReminderCenter(),
+            ledger: DefaultsRemovalLedger(),
+            privacy: DefaultsReminderPrivacy(),
+            zoneRecord: DefaultsTimeZoneRecord()
+        )
+        self.engine = engine
+        return engine
+    }
+
+    /// The one follow-up engine of the process, with a removal ledger of its own (spec 4, 8.2).
+    func followUpEngine() throws(StorageError) -> FollowUpEngine {
+        if let followUps { return followUps }
+        let followUps = FollowUpEngine(
+            source: try open(),
+            center: SystemReminderCenter(),
+            ledger: DefaultsRemovalLedger(key: DefaultsRemovalLedger.followUpKey),
+            setting: DefaultsFollowUpSetting(),
+            privacy: DefaultsReminderPrivacy()
+        )
+        self.followUps = followUps
+        return followUps
+    }
+
+    /// Runs the reminder engine, then the follow-ups. Keep this order: a run can remove follow-ups to make room
+    /// under the system limit, and the refresh sets them again (spec 8.4).
+    ///
+    /// A pending test notification is cancelled first, so it never takes the room of a reminder.
+    ///
+    /// The run waits for the notification updates before it, so no two updates overlap.
+    /// It returns the follow-up outcome too: `nil` when the follow-up refresh failed.
+    func reconcileReminders(
+        at now: Date,
+        deviceTimeZone: NamedTimeZone,
+        mayAskForPermission: Bool = false
+    ) async throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) {
+        let previous = updates
+        let run = Task { () throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) in
+            await previous?.value
+            await TestNotification.cancel()
+            let outcome = try await self.reminderEngine().reconcile(
+                at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
+            )
+            let followUps = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
+            return (outcome, followUps)
+        }
+        updates = Task { _ = try? await run.value }
+        return try await run.value
+    }
+
+    /// Sets the follow-ups again from the records. A failed run changes nothing, and the next trigger runs again.
+    ///
+    /// The refresh waits for the notification updates before it. It always runs, also behind a queued full run:
+    /// a skipped refresh could leave a follow-up for a recorded time if that full run then fails.
+    func refreshFollowUps(at now: Date, deviceTimeZone: NamedTimeZone) async {
+        let previous = updates
+        let run = Task {
+            await previous?.value
+            await TestNotification.cancel()
+            _ = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
+        }
+        updates = run
+        await run.value
+    }
+
+    /// Sends the test notification of settings in the notification queue, so no engine run overlaps it.
+    func sendTestNotification() async -> TestNotification.Result {
+        let previous = updates
+        let run = Task {
+            await previous?.value
+            return await TestNotification.send()
+        }
+        updates = Task { _ = await run.value }
+        return await run.value
+    }
+
+    /// Generates the occurrences around `now`, and builds the projection of the two tabs (spec 9).
+    ///
+    /// It reads the items, the slots, and the records of today's occurrences, and no older intake history (spec 7.3).
+    /// With no `deviceTimeZone` it generates nothing, and the snapshot has no Today.
+    func snapshot(at now: Date, deviceTimeZone: NamedTimeZone?) async throws(StorageError) -> Snapshot {
+        let store = try open()
+        let interval = Signposts.signposter.beginInterval("ReadToday")
+        var counts = (occurrences: 0, items: 0)
+        defer {
+            Signposts.signposter.endInterval(
+                "ReadToday", interval, "\(counts.occurrences) occurrences, \(counts.items) items"
+            )
+        }
+        let items = try await store.items()
+        let remindersOff = try await store.itemIDsWithRemindersOff()
+        counts.items = items.count
+        var today: TodaySnapshot?
+        if let deviceTimeZone {
+            let run = try await store.generate(at: now, deviceTimeZone: deviceTimeZone)
+            counts.occurrences = run.occurrences.count
+            let itemIDs = try await store.itemIDsBySlot()
+            // An archived item leaves Today, also with a record of today. The record stays in the history (T08).
+            let looks = Dictionary(uniqueKeysWithValues: items.filter { !$0.isArchived }.map {
+                ($0.id, TodaySnapshot.ItemLook(
+                    itemID: $0.id, name: $0.name, form: $0.form, color: $0.color,
+                    remindersOff: remindersOff.contains($0.id)
+                ))
+            })
+            let todays = TodaySnapshot.today(run.occurrences, at: now)
+            today = TodaySnapshot(
+                now: now,
+                timeZone: deviceTimeZone,
+                occurrences: run.occurrences,
+                planZones: run.planZones,
+                looks: itemIDs.compactMapValues { looks[$0] },
+                doses: try await store.doses(of: Set(todays.map(\.scheduleVersionID))),
+                records: try await store.records(of: todays.map(\.id))
+            )
+            let date = LocalDate(now, in: deviceTimeZone)
+            today?.asNeeded = AsNeededCard(try await store.asNeeded(on: date), items: items, on: date)
+        }
+        let entries = items.map {
+            ListEntry(id: $0.id, name: $0.name, form: $0.form, color: $0.color, remindersOff: remindersOff.contains($0.id))
+        }
+        return Snapshot(
+            today: today,
+            list: zip(items, entries).filter { !$0.0.isArchived }.map(\.1),
+            archived: zip(items, entries).filter { $0.0.isArchived }.map(\.1)
+        )
+    }
+
+    /// The record transaction for the events that the user chose on Today (spec 7.2).
+    func record(
+        _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)]
+    ) async throws(RecordFailure) -> [OccurrenceRecord] {
+        let store: LocalStore
+        do throws(StorageError) {
+            store = try open()
+        } catch {
+            throw .storage(error)
+        }
+        let records = try await store.record(events)
+        #if DEBUG
+        // The "failed write" scenario: the commit is stored, and the caller gets `unavailable` (D014).
+        if debug.failsNextRecord, DebugStore.directory != nil {
+            debug.failsNextRecord = false
+            throw .storage(.unavailable)
+        }
+        #endif
+        return records
+    }
+}
+
+extension AppStore {
+    /// What the tap resolver reads: every item, also the archived ones, and every schedule with its full
+    /// version history (spec 8.3).
+    func tapInputs() async throws(StorageError) -> (items: [Item], schedules: [Schedule]) {
+        let store = try open()
+        let items = try await store.items()
+        var schedules: [Schedule] = []
+        for item in items {
+            schedules += try await store.schedules(of: item.id)
+        }
+        return (items, schedules)
+    }
+
+    /// The stored occurrence and its record for each planned occurrence that the store has.
+    /// A date that no generation run reached has no stored occurrence.
+    func stored(
+        _ planned: [PlannedOccurrence]
+    ) async throws(StorageError) -> [OccurrenceKey: (occurrence: Occurrence, record: OccurrenceRecord)] {
+        let store = try open()
+        var occurrences: [Occurrence] = []
+        for candidate in planned {
+            if let occurrence = try await store.occurrence(slotID: candidate.slotID, on: candidate.plannedDate) {
+                occurrences.append(occurrence)
+            }
+        }
+        let records = try await store.records(of: occurrences.map(\.id))
+        var result: [OccurrenceKey: (occurrence: Occurrence, record: OccurrenceRecord)] = [:]
+        for occurrence in occurrences {
+            result[occurrence.key] = (occurrence, records[occurrence.id] ?? OccurrenceRecord(occurrenceID: occurrence.id))
+        }
+        return result
+    }
+}
+
+extension AppStore {
+    /// The days of the history before a date, newest first (spec 3 P05).
+    func history(before today: LocalDate, days: Int, deviceTimeZone: NamedTimeZone) async throws(StorageError) -> HistoryPage {
+        try await open().history(before: today, days: days, deviceTimeZone: deviceTimeZone)
+    }
+
+    /// The first event of a past dose that no generation run stored, with its occurrence, in one transaction.
+    func recordBackfill(_ event: IntakeEvent, occurrence: Occurrence) async throws(RecordFailure) -> OccurrenceRecord {
+        let store: LocalStore
+        do throws(StorageError) {
+            store = try open()
+        } catch {
+            throw .storage(error)
+        }
+        return try await store.recordBackfill(event, occurrence: occurrence)
+    }
+}

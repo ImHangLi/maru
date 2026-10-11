@@ -1,0 +1,164 @@
+import GRDB
+
+/// The database schema. A released migration is frozen: change the schema with a new migration (spec 7.3).
+enum Schema {
+    /// The migrations of the app, in order. It never erases the database to apply a change (T37).
+    static var migrator: DatabaseMigrator {
+        var migrator = DatabaseMigrator()
+        migrator.registerMigration("v1") { db in
+            try db.execute(sql: v1)
+        }
+        migrator.registerMigration("v2") { db in
+            try db.execute(sql: v2)
+        }
+        // GRDB runs a migration with foreign key checks off and checks every foreign key before the commit,
+        // so `v3` can replace a table that other tables refer to.
+        migrator.registerMigration("v3") { db in
+            try db.execute(sql: v3)
+        }
+        return migrator
+    }
+
+    /// Encodings: an ID is the UUID string. A date is `YYYY-MM-DD` and a wall-clock time is `HH:MM`.
+    /// An instant is the number of seconds since 2001-01-01 UTC, which keeps the exact `Date` value.
+    /// An enum is its raw value. `position` keeps the append order of the domain arrays.
+    static let v1 = """
+        CREATE TABLE item (
+            id TEXT NOT NULL PRIMARY KEY,
+            category TEXT NOT NULL,
+            name TEXT NOT NULL,
+            isArchived INTEGER NOT NULL,
+            imageReference TEXT,
+            intakeNotePreset TEXT,
+            intakeNoteText TEXT,
+            CHECK (intakeNotePreset IS NULL OR intakeNoteText IS NULL)
+        ) STRICT;
+
+        CREATE TABLE productVersion (
+            id TEXT NOT NULL PRIMARY KEY,
+            itemID TEXT NOT NULL REFERENCES item(id),
+            name TEXT NOT NULL,
+            specification TEXT,
+            source TEXT NOT NULL,
+            verifiedAt REAL NOT NULL,
+            effectiveFrom TEXT NOT NULL
+        ) STRICT;
+        CREATE INDEX productVersion_itemID ON productVersion(itemID);
+
+        CREATE TABLE schedule (
+            id TEXT NOT NULL PRIMARY KEY,
+            itemID TEXT NOT NULL REFERENCES item(id),
+            isEnabled INTEGER NOT NULL,
+            endDate TEXT
+        ) STRICT;
+        CREATE INDEX schedule_itemID ON schedule(itemID);
+
+        CREATE TABLE scheduleSlot (
+            id TEXT NOT NULL PRIMARY KEY,
+            scheduleID TEXT NOT NULL REFERENCES schedule(id),
+            position INTEGER NOT NULL,
+            UNIQUE (scheduleID, position)
+        ) STRICT;
+
+        -- `timeZone` has a value only when `timeZonePolicy` is 'fixed'.
+        CREATE TABLE scheduleVersion (
+            id TEXT NOT NULL PRIMARY KEY,
+            scheduleID TEXT NOT NULL REFERENCES schedule(id),
+            position INTEGER NOT NULL,
+            effectiveFrom TEXT NOT NULL,
+            weekdays TEXT NOT NULL,
+            dose TEXT,
+            timeZonePolicy TEXT NOT NULL,
+            timeZone TEXT,
+            productVersionID TEXT REFERENCES productVersion(id),
+            UNIQUE (scheduleID, position)
+        ) STRICT;
+
+        CREATE TABLE scheduleVersionSlot (
+            scheduleVersionID TEXT NOT NULL REFERENCES scheduleVersion(id),
+            slotID TEXT NOT NULL REFERENCES scheduleSlot(id),
+            position INTEGER NOT NULL,
+            time TEXT NOT NULL,
+            PRIMARY KEY (scheduleVersionID, slotID),
+            UNIQUE (scheduleVersionID, position)
+        ) STRICT;
+
+        -- One occurrence for each slot and plan date (T17).
+        CREATE TABLE occurrence (
+            id TEXT NOT NULL PRIMARY KEY,
+            slotID TEXT NOT NULL REFERENCES scheduleSlot(id),
+            plannedDate TEXT NOT NULL,
+            plannedTime TEXT NOT NULL,
+            timeZone TEXT NOT NULL,
+            scheduleVersionID TEXT NOT NULL REFERENCES scheduleVersion(id),
+            UNIQUE (slotID, plannedDate)
+        ) STRICT;
+
+        -- Append-only. The primary key is the idempotency key of the record transaction (T18).
+        -- An event revises at most one event, and that event belongs to the same occurrence.
+        -- An event is revised at most once, so the history of an occurrence cannot fork.
+        -- An event does not revise itself.
+        CREATE TABLE intakeEvent (
+            id TEXT NOT NULL PRIMARY KEY,
+            occurrenceID TEXT NOT NULL REFERENCES occurrence(id),
+            position INTEGER NOT NULL,
+            action TEXT NOT NULL,
+            occurredAt REAL NOT NULL,
+            recordedAt REAL NOT NULL,
+            source TEXT NOT NULL,
+            supersedes TEXT UNIQUE,
+            UNIQUE (occurrenceID, position),
+            UNIQUE (occurrenceID, id),
+            UNIQUE (occurrenceID, id, action),
+            FOREIGN KEY (occurrenceID, supersedes) REFERENCES intakeEvent(occurrenceID, id),
+            CHECK (supersedes <> id)
+        ) STRICT;
+        -- An occurrence has at most one event that revises nothing.
+        CREATE UNIQUE INDEX intakeEvent_firstEvent ON intakeEvent(occurrenceID) WHERE supersedes IS NULL;
+
+        -- The projection: the one valid state of an occurrence. No row means unrecorded.
+        -- `status` is the action of the event that the row names, so the two cannot differ.
+        -- SQL does not say that the event is the current one. The store checks that on every read.
+        CREATE TABLE occurrenceState (
+            occurrenceID TEXT NOT NULL PRIMARY KEY,
+            eventID TEXT NOT NULL,
+            status TEXT NOT NULL,
+            FOREIGN KEY (occurrenceID, eventID, status) REFERENCES intakeEvent(occurrenceID, id, action)
+        ) STRICT;
+        """
+
+    /// The form and the color of an item (D013, D021). An item stored before this migration gets
+    /// the form `unknown` and the color `pink`. The checks list the raw values of `ItemForm` and `ItemColor`.
+    static let v2 = """
+        ALTER TABLE item ADD COLUMN form TEXT NOT NULL DEFAULT 'unknown'
+            CHECK (form IN ('capsule', 'tablet', 'softgel', 'powder', 'drop', 'unknown'));
+        ALTER TABLE item ADD COLUMN color TEXT NOT NULL DEFAULT 'pink'
+            CHECK (color IN ('pink', 'orange', 'yellow', 'green', 'mint', 'blue', 'purple', 'brown'));
+        """
+
+    /// As-needed occurrences (D021). An occurrence has either a slot and a schedule version, or an item and
+    /// neither of the two. SQLite cannot drop a `NOT NULL` from a column, so the migration copies every row,
+    /// with its `rowid`, to a new table and gives the new table the old name. The copy runs in the transaction
+    /// of the migration, and a failure rolls it back with the old table and its data (spec 7.3).
+    /// The unique key (slot and plan date) stays. SQLite treats each `NULL` slot as distinct, so an item can
+    /// have many as-needed occurrences on one date.
+    static let v3 = """
+        CREATE TABLE newOccurrence (
+            id TEXT NOT NULL PRIMARY KEY,
+            slotID TEXT REFERENCES scheduleSlot(id),
+            plannedDate TEXT NOT NULL,
+            plannedTime TEXT NOT NULL,
+            timeZone TEXT NOT NULL,
+            scheduleVersionID TEXT REFERENCES scheduleVersion(id),
+            itemID TEXT REFERENCES item(id),
+            UNIQUE (slotID, plannedDate),
+            CHECK ((slotID IS NULL) = (scheduleVersionID IS NULL)),
+            CHECK ((slotID IS NULL) = (itemID IS NOT NULL))
+        ) STRICT;
+        INSERT INTO newOccurrence (rowid, id, slotID, plannedDate, plannedTime, timeZone, scheduleVersionID)
+            SELECT rowid, id, slotID, plannedDate, plannedTime, timeZone, scheduleVersionID FROM occurrence;
+        DROP TABLE occurrence;
+        ALTER TABLE newOccurrence RENAME TO occurrence;
+        CREATE INDEX occurrence_asNeeded ON occurrence(plannedDate, itemID) WHERE itemID IS NOT NULL;
+        """
+}

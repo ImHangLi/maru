@@ -1,0 +1,19 @@
+name: Feature request
+description: A change or a feature that you would like.
+labels: [idea]
+body:
+  - type: markdown
+    attributes:
+      value: Maru has a fixed scope. Inventory, accounts, cloud sync, AI chat, streaks, and ads are out of scope on purpose.
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What you try to do, and what gets in the way today.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+      description: How Maru could help.

@@ -1,0 +1,705 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ %@" : {
+      "comment" : "Edit screen: a reminder time on the device with its days, when the kept zone of a medication is on another day. Example: Sun 6:00 PM."
+    },
+    "%@ %@ time (%@ here for now)" : {
+      "comment" : "Edit screen: the times of a medication in its kept zone. Example: 9:00 AM Shanghai time (6:00 PM here for now). \"For now\" because a clock change in either zone can move the local time or day later."
+    },
+    "%@ Time" : {
+      "comment" : "Edit screen: the label of a reminder time in the kept zone of a medication, for example Shanghai Time."
+    },
+    "%@ at %@, with no end date" : {
+      "comment" : "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ at %2$@, with no end date"
+          }
+        }
+      }
+    },
+    "%lld changes not saved" : {
+      "comment" : "Today and History: the banner of the events that are not saved yet. Example: 1 change not saved.",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld change not saved"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld changes not saved"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld changes not saved. Try Again" : {
+      "comment" : "Today and History: the VoiceOver label of the banner that saves every unsaved event again.",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld change not saved. Try Again"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld changes not saved. Try Again"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "A newer version of Maru saved your data. Maru did not change or delete it." : {
+      "comment" : "Storage problem: the text when a newer version of the app saved the data."
+    },
+    "Add" : {
+      "comment" : "Add a Time sheet: the button that adds the picked time."
+    },
+    "Add Item" : {
+      "comment" : "Today and My Items: the add button, and the button of the empty My Items."
+    },
+    "Add a Time" : {
+      "comment" : "Edit screen: the text “Add a Time”."
+    },
+    "Add a time to save the amount." : {
+      "comment" : "Edit screen: the footer of the amount when the item has an amount and no time. The amount belongs to the reminder plan."
+    },
+    "After 1 hr" : {
+
+    },
+    "After 15 min" : {
+
+    },
+    "After 30 min" : {
+
+    },
+    "All recorded" : {
+
+    },
+    "Amount" : {
+      "comment" : "Item detail: the label of the amount that the user typed."
+    },
+    "Amount (Optional)" : {
+      "comment" : "Edit screen: the text “Amount (Optional)”."
+    },
+    "App Color" : {
+      "comment" : "Settings: the header of the row of colors for the whole app. The selected color name follows it."
+    },
+    "Archive" : {
+      "comment" : "The destructive button of the archive confirmation."
+    },
+    "Archive %@?" : {
+      "comment" : "The title of the archive confirmation. The placeholder is the item name."
+    },
+    "Archived" : {
+      "comment" : "The state of an archived item, and the title of the list of archived items."
+    },
+    "Archived items keep their records but get no reminders." : {
+      "comment" : "Archived list: the footer of the list."
+    },
+    "Archive…" : {
+      "comment" : "Today, My Items, and item detail: the menu button that asks to archive the item."
+    },
+    "As Needed" : {
+
+    },
+    "Blue" : {
+      "comment" : "Item form or color name: the text “Blue”."
+    },
+    "Brown" : {
+      "comment" : "Item form or color name: the text “Brown”."
+    },
+    "Cancel" : {
+      "comment" : "Edit screen: the text “Cancel”."
+    },
+    "Can’t Show History" : {
+
+    },
+    "Capsule" : {
+      "comment" : "Item form or color name: the text “Capsule”."
+    },
+    "Change %@" : {
+
+    },
+    "Change Time…" : {
+
+    },
+    "Change or End This Item…" : {
+      "comment" : "Item detail: the row that opens the menu to change the product, turn off reminders, archive, or delete."
+    },
+    "Checking…" : {
+      "comment" : "Settings: the notification permission while the app reads it."
+    },
+    "Choose at least one day." : {
+      "comment" : "Edit screen: the preview line when no weekday is on."
+    },
+    "Color" : {
+      "comment" : "Edit screen: the text “Color”."
+    },
+    "Days" : {
+      "comment" : "Item detail: the label of the days of the plan, for example Every day."
+    },
+    "Delete %@?" : {
+      "comment" : "The title of the delete confirmation. The placeholder is the item name."
+    },
+    "Delete Item" : {
+      "comment" : "The destructive button of the delete confirmation."
+    },
+    "Delete Item…" : {
+      "comment" : "Item detail and archived list: the button that asks to delete the item with its records."
+    },
+    "Details" : {
+      "comment" : "Today: a row action in the swipe and long-press menu. Opens the item detail."
+    },
+    "Discard Changes" : {
+      "comment" : "Edit screen: the text “Discard Changes”."
+    },
+    "Discard your changes?" : {
+      "comment" : "Edit screen: the text “Discard your changes?”."
+    },
+    "Display" : {
+      "comment" : "Settings: the header of the display section."
+    },
+    "Done" : {
+      "comment" : "Closes the settings sheet."
+    },
+    "Dose of %@" : {
+
+    },
+    "Drops" : {
+      "comment" : "Item form or color name: the text “Drops”."
+    },
+    "Edit" : {
+      "comment" : "Item detail: the button that opens the edit screen."
+    },
+    "Edit Item" : {
+      "comment" : "Edit screen: the text “Edit Item”."
+    },
+    "Evening" : {
+      "comment" : "Today: the title of the group of items with a planned time from 17:00."
+    },
+    "Every day" : {
+      "comment" : "Edit screen: the days of a plan that reminds on all seven days."
+    },
+    "For example 1000 IU" : {
+      "comment" : "Edit screen: the placeholder of the optional amount field. The amount is free text, and IU is one of the units."
+    },
+    "Form" : {
+      "comment" : "Edit screen: the text “Form”."
+    },
+    "Free some storage, then try again. Maru did not change or delete your data." : {
+      "comment" : "Storage problem: the text when the disk is full."
+    },
+    "Green" : {
+      "comment" : "Item form or color name: the text “Green”."
+    },
+    "Hides the items." : {
+
+    },
+    "History" : {
+
+    },
+    "History changed" : {
+
+    },
+    "If your iPhone is locked, unlock it and try again. Maru did not change or delete your data." : {
+      "comment" : "Storage problem: the text when the data cannot be read now."
+    },
+    "In iPhone Settings, choose a city for your time zone." : {
+      "comment" : "Today: the text below the time zone title."
+    },
+    "Keep Editing" : {
+      "comment" : "Edit screen: the text “Keep Editing”."
+    },
+    "Last 7 Days" : {
+      "comment" : "Item detail: the title of the section with the recent records."
+    },
+    "Mark as Skipped" : {
+
+    },
+    "Mark as Taken" : {
+
+    },
+    "Maru asks when you save an item with a time." : {
+      "comment" : "Settings footer before the system asked for the notification permission."
+    },
+    "Maru can’t open your data" : {
+      "comment" : "Storage problem: the title when the data file is damaged, or when the update of the data failed."
+    },
+    "Maru can’t open your records while your iPhone is locked. Unlock it, then try again." : {
+
+    },
+    "Maru can’t read your data right now" : {
+      "comment" : "Storage problem: the title when the data can be read later, for example after the user unlocks the device."
+    },
+    "Maru can’t use your time zone" : {
+      "comment" : "Today: the title when the time zone of the device is an offset such as GMT+8 and not a city."
+    },
+    "Maru can’t use your time zone for reminders." : {
+      "comment" : "Edit screen: the preview line when the device time zone is an offset and not a city."
+    },
+    "Maru checks again when you open it." : {
+      "comment" : "Item detail footer and alert message: the system did not confirm the reminder change yet."
+    },
+    "Maru couldn’t read the history. Try again." : {
+
+    },
+    "Maru couldn’t read this item." : {
+      "comment" : "Item detail: the text when the item does not read from the store."
+    },
+    "Maru couldn’t save" : {
+      "comment" : "Edit screen: the text “Maru couldn’t save”."
+    },
+    "Maru couldn’t save this change. Try again." : {
+      "comment" : "Item detail: the message when a change did not save."
+    },
+    "Maru couldn’t save this. Try again." : {
+
+    },
+    "Maru deletes this item, its plan, and all its records. You can’t undo this." : {
+      "comment" : "The message of the delete confirmation."
+    },
+    "Maru did not change or delete your data." : {
+      "comment" : "Storage problem: the text for a failure with no known cause."
+    },
+    "Maru kept your unsaved changes." : {
+      "comment" : "Edit screen: the text “Maru kept your unsaved changes.”."
+    },
+    "Maru stops its reminders and hides it from Today and My Items. Your records stay. This is not advice to stop taking it." : {
+
+    },
+    "Maru tries again when you open it." : {
+      "comment" : "Item detail: the footer of the plan when the reminder is not set yet."
+    },
+    "Medication" : {
+      "comment" : "Edit screen: the text “Medication”."
+    },
+    "Mint" : {
+      "comment" : "Item form or color name: the text “Mint”."
+    },
+    "Morning" : {
+      "comment" : "Today: the title of the group of items with a planned time before 11:00."
+    },
+    "My Items" : {
+
+    },
+    "My own note" : {
+      "comment" : "Edit screen: the text “My own note”."
+    },
+    "Name" : {
+      "comment" : "Edit screen: the text “Name”."
+    },
+    "New Product" : {
+      "comment" : "Edit screen: the title when the user replaces an item with a new product."
+    },
+    "No History Yet" : {
+
+    },
+    "No Items Yet" : {
+      "comment" : "Today: the title of the empty page when the list has no item."
+    },
+    "No archived items." : {
+      "comment" : "Archived list: the text when no item is archived."
+    },
+    "No items yet." : {
+
+    },
+    "No record" : {
+
+    },
+    "No records in the last 7 days." : {
+      "comment" : "Item detail: the text when the item has no record in the last seven days."
+    },
+    "No reminder" : {
+      "comment" : "Edit screen: the preview line for an item with no time. Maru sends no notification for it."
+    },
+    "No times set" : {
+      "comment" : "Item detail: the plan of an item with no reminder time."
+    },
+    "None" : {
+      "comment" : "Edit screen: the text “None”."
+    },
+    "Noon" : {
+      "comment" : "Today: the title of the group of items with a planned time from 11:00 to 17:00."
+    },
+    "Not Asked Yet" : {
+      "comment" : "Settings: the system did not ask for the notification permission yet."
+    },
+    "Not Available" : {
+
+    },
+    "Not Confirmed" : {
+      "comment" : "Item detail: the value of the Reminder row when the system did not confirm a change yet."
+    },
+    "Not Set" : {
+      "comment" : "Item detail: the value of the Reminder row when the system holds no reminder."
+    },
+    "Not changed" : {
+      "comment" : "Item detail: the title of the alert when a change did not save."
+    },
+    "Not recorded" : {
+
+    },
+    "Not saved" : {
+
+    },
+    "Not sure" : {
+      "comment" : "Item form or color name: the text “Not sure”."
+    },
+    "Note" : {
+      "comment" : "Edit screen: the text “Note”."
+    },
+    "Nothing to Take Today" : {
+      "comment" : "Today: the empty page when the list has items but none is due today."
+    },
+    "Notifications" : {
+      "comment" : "Settings: the label of the notification permission row."
+    },
+    "Notifications are off" : {
+      "comment" : "Today: a small line while notifications are off. A tap opens settings."
+    },
+    "Notifications are off for Maru." : {
+      "comment" : "Item detail: the footer of the plan when the reminder is not set because notifications are off."
+    },
+    "OK" : {
+
+    },
+    "Off" : {
+      "comment" : "Settings: notifications are off, or the follow-up reminder is off."
+    },
+    "On" : {
+      "comment" : "Settings: notifications are allowed."
+    },
+    "On an empty stomach" : {
+      "comment" : "Edit screen: the text “On an empty stomach”."
+    },
+    "Only for items that you did not record." : {
+
+    },
+    "Open Settings" : {
+      "comment" : "Settings and item detail: opens the notification settings of Maru."
+    },
+    "Open Today" : {
+
+    },
+    "Opens settings" : {
+      "comment" : "VoiceOver hint of the notifications-off line on Today."
+    },
+    "Opens the details" : {
+      "comment" : "Today and My Items: the VoiceOver hint of the name of an item."
+    },
+    "Orange" : {
+      "comment" : "Item form or color name: the text “Orange”."
+    },
+    "Pink" : {
+      "comment" : "Item form or color name: the text “Pink”."
+    },
+    "Plan" : {
+      "comment" : "Item detail: the title of the section with the times, days, and amount."
+    },
+    "Plan: %@" : {
+      "comment" : "Edit screen: the text “Plan: %@”."
+    },
+    "Powder" : {
+      "comment" : "Item form or color name: the text “Powder”."
+    },
+    "Purple" : {
+      "comment" : "Item form or color name: the text “Purple”."
+    },
+    "Quiet" : {
+      "comment" : "Settings: notifications are delivered quietly to Notification Center, with no sound or banner."
+    },
+    "Record %@" : {
+
+    },
+    "Record All" : {
+
+    },
+    "Record a dose of %@" : {
+
+    },
+    "Record all %lld in %@ as taken" : {
+
+    },
+    "Records a dose now." : {
+
+    },
+    "Records it as taken." : {
+
+    },
+    "Record…" : {
+
+    },
+    "Remind Again" : {
+      "comment" : "Settings: the label of the optional follow-up reminder picker."
+    },
+    "Reminder" : {
+      "comment" : "Edit screen: the text “Reminder”."
+    },
+    "Reminder Not Confirmed" : {
+      "comment" : "Alert title after a save or a change when the system did not confirm the reminder."
+    },
+    "Reminder Not Set" : {
+      "comment" : "Alert title after a save or a change when the reminder failed."
+    },
+    "Reminders" : {
+      "comment" : "Settings: the header of the reminder section."
+    },
+    "Reminders May Still Be On" : {
+      "comment" : "Alert title after reminders off or archive when the system did not confirm the removal."
+    },
+    "Reminders come with no sound or banner." : {
+
+    },
+    "Reminders off" : {
+      "comment" : "Today and My Items: the line under an item whose reminders are off."
+    },
+    "Remove" : {
+      "comment" : "Edit screen: the text “Remove”."
+    },
+    "Repeat" : {
+      "comment" : "Edit screen: the text “Repeat”."
+    },
+    "Repeat (%@ Time)" : {
+      "comment" : "Edit screen: the label of the weekday buttons when the days are in the kept zone of a medication, for example Repeat (Shanghai Time)."
+    },
+    "Replace with a New Product…" : {
+      "comment" : "Item detail: the menu button that opens the edit screen for a new item that replaces this one. The old item is archived and keeps its records. The amount is empty."
+    },
+    "Restore" : {
+      "comment" : "Item detail: the button that brings an archived item back to Today and My Items."
+    },
+    "Restore %@" : {
+      "comment" : "Archived list: the VoiceOver label of the restore button. The placeholder is the item name."
+    },
+    "Save" : {
+      "comment" : "Edit screen: the text “Save”."
+    },
+    "Save %@ again" : {
+
+    },
+    "Send Feedback" : {
+      "comment" : "Settings: a button that opens the feedback form in a web page sheet."
+    },
+    "Send a Test Notification" : {
+      "comment" : "Settings: a button that sends one test notification in a few seconds."
+    },
+    "Settings" : {
+      "comment" : "Settings: the title of the sheet and the label of the gear button."
+    },
+    "Show" : {
+
+    },
+    "Shows the items." : {
+
+    },
+    "Shows ways to change it." : {
+
+    },
+    "Show Names in Reminders" : {
+      "comment" : "Settings: a switch that adds the item names to reminders."
+    },
+    "Skip" : {
+      "comment" : "Today: a row action that records the dose as skipped."
+    },
+    "Skipped" : {
+
+    },
+    "Skipped at %@" : {
+
+    },
+    "Softgel" : {
+      "comment" : "Item form or color name: the text “Softgel”."
+    },
+    "Start Over" : {
+      "comment" : "Edit screen: the text “Start Over”."
+    },
+    "Supplement" : {
+      "comment" : "Edit screen: the text “Supplement”."
+    },
+    "Swipe or touch and hold to change it." : {
+
+    },
+    "Tablet" : {
+      "comment" : "Item form or color name: the text “Tablet”."
+    },
+    "Take Now" : {
+      "comment" : "Today: a row action of an as-needed item. Records one dose now."
+    },
+    "Taken" : {
+
+    },
+    "Taken %@" : {
+      "comment" : "Item detail: a record. The placeholder is the time, for example 8:07 AM."
+    },
+    "Taken at" : {
+
+    },
+    "Taken at %@" : {
+
+    },
+    "Taken Earlier…" : {
+      "comment" : "Today: the menu button of an open row. It opens the time sheet and records the dose as taken at the chosen time."
+    },
+    "Tap + to add a supplement or medication." : {
+
+    },
+    "Test not sent. Notifications are off for Maru." : {
+      "comment" : "Settings footer when the test notification is not allowed."
+    },
+    "Test not sent. Try again." : {
+      "comment" : "Settings footer when the system did not take the test notification."
+    },
+    "Test not sent. Your iPhone can’t hold more reminders." : {
+
+    },
+    "The plan has too many times for iPhone." : {
+      "comment" : "Item detail: the footer of the plan when the plan has more reminder times than iPhone allows."
+    },
+    "The plan is saved. It has too many times for iPhone." : {
+      "comment" : "Alert message after a save when the plan has more reminder times than iPhone allows."
+    },
+    "The plan is saved. Maru tries again when you open it." : {
+      "comment" : "Alert message after a save when the reminder is not set yet."
+    },
+    "The reminders may still be on until Maru checks again." : {
+
+    },
+    "The test comes in about 5 seconds." : {
+
+    },
+    "This item changed. Check it, then try again." : {
+
+    },
+    "This reminder came late, or your time zone changed." : {
+
+    },
+    "This reminder is for another day." : {
+
+    },
+    "This version of Maru can’t open your data. Maru did not change or delete it." : {
+      "comment" : "Storage problem: the text when the update of the data to this app version failed."
+    },
+    "Time" : {
+      "comment" : "Edit screen: the text “Time”."
+    },
+    "Time Zone" : {
+      "comment" : "Item detail: the label of the city whose time a medication keeps."
+    },
+    "Time changed to %@" : {
+
+    },
+    "Today" : {
+      "comment" : "The title of the first tab and of its page."
+    },
+    "Today changed" : {
+
+    },
+    "Tries to save it again." : {
+
+    },
+    "Try Again" : {
+      "comment" : "Storage problem: the button that reads the data again."
+    },
+    "Try again. Your entries are still here." : {
+      "comment" : "Edit screen: the text “Try again. Your entries are still here.”."
+    },
+    "Turn Off Reminders" : {
+      "comment" : "Item detail: the menu button that stops the reminders. The item stays on Today."
+    },
+    "Turn off to keep item names out of reminders." : {
+      "comment" : "Settings footer of the switch Show Names in Reminders."
+    },
+    "Turn On Reminders" : {
+      "comment" : "Item detail: the menu button that starts the reminders again."
+    },
+    "Two times are the same." : {
+      "comment" : "Edit screen: the preview line when two reminder times are equal."
+    },
+    "Type" : {
+      "comment" : "Edit screen: the text “Type”."
+    },
+    "Undo" : {
+
+    },
+    "Undone" : {
+
+    },
+    "Unlock to Continue" : {
+
+    },
+    "Unlock your iPhone, then try again." : {
+
+    },
+    "Unlock your iPhone, then try again. Your entries are still here." : {
+      "comment" : "Edit screen: the text “Unlock your iPhone, then try again. Your entries are still here.”."
+    },
+    "Update Maru to open your data" : {
+      "comment" : "Storage problem: the title when a newer version of the app saved the data."
+    },
+    "We read every message. The form opens a web page." : {
+      "comment" : "Settings: the footer of the feedback button."
+    },
+    "What you record shows here." : {
+
+    },
+    "Which Reminder?" : {
+
+    },
+    "With food" : {
+      "comment" : "Edit screen: the text “With food”."
+    },
+    "Yellow" : {
+      "comment" : "Item form or color name: the text “Yellow”."
+    },
+    "Yesterday" : {
+
+    },
+    "You can change this plan again from %@." : {
+      "comment" : "Edit screen: the preview line when the stored plan starts after today, for example after a flight west. The placeholder is a date."
+    },
+    "You can still record it with reminders off." : {
+
+    },
+    "You can still record without reminders." : {
+
+    },
+    "Your data file is damaged. Maru did not change or delete it." : {
+      "comment" : "Storage problem: the text for a damaged data file."
+    },
+    "Your iPhone is full" : {
+      "comment" : "Storage problem: the title when the disk is full."
+    },
+    "Your iPhone is full. Free some storage, then try again." : {
+
+    },
+    "Your iPhone is full. Free some storage, then try again. Your entries are still here." : {
+      "comment" : "Edit screen: the text “Free some storage, then try again. Your entries are still here.”."
+    },
+    "Your note" : {
+      "comment" : "Edit screen: the text “Your note”."
+    },
+    "Your plan or the clock changed after this reminder was set." : {
+
+    }
+  },
+  "version" : "1.0"
+}
