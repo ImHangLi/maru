@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy | Maru</title>
+<meta name="description" content="Maru keeps your health data on your iPhone. No account, no ads, no analytics, and no network requests by itself.">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://maru.day/privacy.html">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Maru">
+<meta property="og:title" content="Privacy | Maru">
+<meta property="og:description" content="Maru keeps your health data on your iPhone. No account, no ads, no analytics, and no network requests by itself.">
+<meta property="og:url" content="https://maru.day/privacy.html">
+<meta property="og:image" content="https://maru.day/icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Privacy | Maru">
+<meta name="twitter:description" content="Maru keeps your health data on your iPhone. No account, no ads, no analytics, and no network requests by itself.">
+<meta name="twitter:image" content="https://maru.day/icon.png">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+<a class="brand" href="/"><img src="/icon.png" alt="" width="32" height="32"><span>Maru</span></a>
+<nav aria-label="Main"><a href="/faq.html">FAQ</a><a href="/compare.html">Compare</a><a href="/privacy.html" aria-current="page">Privacy</a><a href="/support.html">Support</a></nav>
+</header>
+<main id="main" class="prose">
+<h1>Privacy</h1>
+<p class="lede">Maru keeps your health data on your iPhone. This page describes the app as it is today.</p>
+<p class="note">This page will change before a version adds optional usage statistics or tips.</p>
+<h2>What Maru stores</h2>
+<ul>
+<li>Your items, schedules, notes, and records, in a local SQLite database.</li>
+<li>Your settings, in the app's local preferences.</li>
+<li>An unsaved draft of the add or edit screen, in a local file. Maru deletes it when you save or cancel.</li>
+</ul>
+<p>Maru asks iOS to encrypt the database file while your iPhone is locked. When Maru cannot open your records because the iPhone is locked, it records nothing and asks you to unlock.</p>
+<h2>What Maru does not do</h2>
+<ul>
+<li>It makes no network requests by itself. It has no server and no account.</li>
+<li>It contains no analytics, advertising, or crash-reporting code.</li>
+<li>It does not read your contacts, your location, or the advertising identifier.</li>
+<li>It does not read from or write to Apple Health.</li>
+</ul>
+<h2>Camera</h2>
+<p>Maru uses the camera only while you scan a label on the add screen. Your iPhone reads the text, and Maru keeps only the name that you tap. Maru saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label".</p>
+<p>The name suggestions on the add screen come from a list inside the app. The name suggestions are a typing aid. They are not medical advice.</p>
+<h2>Feedback</h2>
+<p>Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.</p>
+<h2>Notifications</h2>
+<p>Reminders are local notifications. iOS schedules and shows them on your iPhone, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.</p>
+<h2>Export and backup files</h2>
+<p>Settings has "Export Records", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first two.</p>
+<ul>
+<li>The record export is a CSV file. It has your item names, your amounts, and your records.</li>
+<li>The backup is a full copy of the database and of three settings: the app color, the names in reminders, and "Remind Again".</li>
+<li>The files are not encrypted. Anyone with a file can read it.</li>
+<li>Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.</li>
+<li>Maru keeps the file in a protected temporary folder and removes it when the share sheet closes.</li>
+<li>A restore reads the backup file that you pick. It replaces the data of Maru on the iPhone, after you confirm. The backup file stays where you keep it.</li>
+</ul>
+<h2>iPhone backups</h2>
+<p>Your iPhone backup, in iCloud or on a computer, can include Maru's data, the same as other app data. Apple's backup settings control this.</p>
+<h2>Changes</h2>
+<p>A future version may add optional usage statistics. If it does, they will be off until you turn them on, and they will never include item names, doses, or intake times. This page will change before the app does.</p>
+</main>
+<footer class="site-footer">
+<div>
+<a class="brand" href="/"><img src="/icon.png" alt="" width="24" height="24"><span>Maru</span></a>
+<p>Remember what you take. Nothing more.</p>
+</div>
+<nav aria-label="Footer">
+<a href="/faq.html">FAQ</a>
+<a href="/compare.html">Compare</a>
+<a href="/privacy.html">Privacy</a>
+<a href="/support.html">Support</a>
+<a href="https://github.com/ImHangLi/maru">Source on GitHub</a>
+</nav>
+</footer>
+<script src="/site.js" defer></script>
+</body>
+</html>
