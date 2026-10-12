@@ -87,7 +87,7 @@ struct RootView: View {
             showsEnd = true
             model.endRequest = nil
         }
-        .alert("Not changed", isPresented: $model.endFailed) {
+        .alert("Not Changed", isPresented: $model.endFailed) {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Maru couldn’t save this change. Try again.")

@@ -1,7 +1,7 @@
 import Foundation
 import MaruCore
 
-/// The text under the reminder times that states the whole plan, for example "Every day at 08:00, 20:00, with no end date" (spec 2.1, T03).
+/// The text under the reminder times that states the whole plan, for example "Every day at 8:00 AM, with no end date" (spec 2.1, T03).
 enum SchedulePreview {
     /// - Parameters:
     ///   - otherZone: The zone that a medication keeps, only when it is not the zone of the device (spec 8.5).
@@ -87,7 +87,7 @@ enum SchedulePreview {
         return "\(dose.text.trimmingCharacters(in: .whitespaces))\n\(plan)"
     }
 
-    /// A time of day in the format of the user, for example 08:00 or 8:00 AM.
+    /// A time of day in the format of the user, for example 8:00 AM or 20:00.
     static func format(hour: Int, minute: Int) -> String {
         timeDate(hour: hour, minute: minute).formatted(timeStyle)
     }

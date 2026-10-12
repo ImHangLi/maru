@@ -19,7 +19,7 @@ struct HistoryLogView: View {
             UnsavedSection()
             ForEach(shown, id: \.date) { section in
                 Section {
-                    ForEach(section.entries) { HistoryEntryRow(entry: $0, day: section.date) }
+                    ForEach(section.entries) { HistoryEntryRow(entry: $0) }
                 } header: {
                     // The log of a day has the date in its title.
                     if case .item = scope { Text(model.historyTitle(of: section.date)) }
@@ -34,7 +34,7 @@ struct HistoryLogView: View {
                     if failure == .unavailable {
                         Text("Unlock your iPhone, then try again.")
                     } else {
-                        Text("Maru couldn’t read the history. Try again.")
+                        Text("Maru couldn’t read the history.")
                     }
                 }
             } else if isLoading {
@@ -55,7 +55,7 @@ struct HistoryLogView: View {
         .overlay {
             if shown.isEmpty, !isLoading, model.history.loadFailure == nil {
                 ContentUnavailableView {
-                    Text("No Doses")
+                    Label("No Doses", systemImage: "pills")
                 } description: {
                     Text("Nothing planned or recorded.")
                 }
@@ -69,7 +69,7 @@ struct HistoryLogView: View {
     private var title: Text {
         switch scope {
         case let .item(id): Text(verbatim: model.history.looks[id]?.name ?? "")
-        case let .day(date): Text(verbatim: model.historyTitle(of: date))
+        case let .day(date): Text(verbatim: date.shortLabel)
         }
     }
 

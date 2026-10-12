@@ -126,7 +126,7 @@ struct HistoryGraphView: View {
         if let selection, graph.isShown(selection) {
             let cell = graph.cell(of: selection)
             let text = context.resolve(
-                Text(selection.noon.formatted(Date.FormatStyle.dateTime.weekday(.abbreviated).month(.abbreviated).day().timeZone(.utc)))
+                Text(selection.shortLabel)
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.primary)
             )

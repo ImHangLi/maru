@@ -6,7 +6,8 @@ import VisionKit
 
 /// The one edit screen for a new or a stored item (spec 3 P03, docs/design.md "Add and edit").
 ///
-/// The order is name, type, form, color, amount, times, note. The plan line under the times states the whole plan.
+/// The order is name, type, form, color, amount, times and repeat days, note, photo. The plan line under the
+/// times states the whole plan.
 /// A new item has "Scan Label" above the name, and the name field proposes names from the built-in lists (D038).
 /// Both only propose: the user sees each value here before the save. A known supplement name gives candidates
 /// for the amount, the time, and the note, and it sets the usual form until the user chooses one (D043).
@@ -118,7 +119,7 @@ struct ItemEditorView: View {
                 }
             }
             .alert(item: $saveError) { error in
-                Alert(title: Text("Maru couldn’t save"), message: Text(error.message))
+                Alert(title: Text("Maru Couldn’t Save"), message: Text(error.message))
             }
             .task { names = await NameList.index.value }
             .onChange(of: nameInput) {
@@ -343,7 +344,7 @@ struct ItemEditorView: View {
                 }
             }
         } header: {
-            Text("Reminder")
+            Text("Plan")
         } footer: {
             timesFooter
         }
@@ -375,7 +376,7 @@ struct ItemEditorView: View {
         } footer: {
             // One sentence under the last candidates says where they come from (D043).
             if let candidates, !candidates.hasNoCandidates {
-                Text("Suggestions come from common labels. Check your own label.")
+                Text("Suggestions come from common labels, so check your own label.")
             }
         }
     }
@@ -733,6 +734,6 @@ private struct NewTimeSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .smallSheet()
     }
 }

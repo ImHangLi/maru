@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, and D056 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, and D058 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -9,7 +9,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 3. Few words. A row shows the name, the amount, and the time. The circle shows the state (D011, D044).
 4. Do not choose for the user: no default amount and no default reminder time (spec §2.1). The type, the form, and the color of a new item are not health choices, so they have a start value that the user can change (D032). A known supplement gets amount, time, and note candidates that fill nothing until a tap (D043).
 5. No repeated information, and no "·" separator in any text of the app. Use natural words or a second line (D032).
-6. No gray text for a state. A title or a name looks the same in each state (D032).
+6. No gray text for a state. A title or a name looks the same in each state (D032). A state line shows its SF Symbol and the text color, for example "Reminders off", "Notifications off", and "Archived" (D058).
 
 ## Color
 
@@ -26,11 +26,14 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - Every page is a system grouped list or form. The custom cards are the tile of My Items and the graph of History (D026, D032, D041).
 - Today and My Items use the plain grouped background, with no header wash (D024).
 - Every page is the gray grouped background with white cards, as in Apple Health and Settings. This includes a page that loads or shows an error (D028).
+- An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058).
+- A small sheet has the detents medium and large: a time wheel, a short list of choices, and the share sheet. The edit screen and the settings are full sheets. The modifier `smallSheet()` holds the rule (D058).
+- The card margin and the card padding are 16 points (`Tile.margin`). The second line of a list row sits 2 points under the name (D058).
 
 ## Feedback
 
 - No toast and no notice card. A save closes the sheet, and the list shows the change in place, as in Apple Health (D028).
-- A failure uses a system alert. A failed reminder after a save or a change also gets an alert. Notifications that are off show as a row on Today and My Items, with no alert.
+- A failure uses a system alert. Every alert title uses Title Case, for example "Not Saved", "Today Changed", "History Changed", "Not Changed", and "Maru Couldn’t Save" (D058). A failed reminder after a save or a change also gets an alert. Notifications that are off show as the row "Notifications off" on Today and My Items, with no alert.
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
 - The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, and a line under it that counts the days. It has no list of records and no tap. The item log is in History (D057).
@@ -43,14 +46,14 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - One list section per time slot, in time order. The section header is the slot name, for example "Morning", not a clock time (D011).
 - The header has "Record All", which records every open item of the slot as taken, in one transaction (D021). It shows only when the slot has two or more open items.
 - Row: the form icon in the item color, the name, a second line in small gray text, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
-- The second line has the amount and the time that the user set: "2 capsules, 8:00 AM", or "8:00 AM" with no amount. A taken row shows the intake time: "2 capsules, Taken at 8:07 AM". A skipped row shows "2 capsules, Skipped". A medication that keeps another time zone names the city: "9:00 AM Shanghai time" (D044).
+- The second line has the amount and the time that the user set: "2 capsules, 8:00 AM", or "8:00 AM" with no amount. A taken row shows the intake time: "2 capsules, Taken at 8:07 AM". A skipped row shows "2 capsules, Skipped". A skipped as-needed dose says "Skipped" too (D058). A medication that keeps another time zone names the city: "9:00 AM Shanghai time" (D044).
 - A recorded row and an open row differ only by the circle and the time. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032, D044).
 - A slot always shows its rows, also when every row is done. Nothing folds or opens. The header is the plain title, with "Record All" when two or more rows are open (D057).
-- Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
+- The same words name an action in the dialog of the circle, in the menu, and in the swipe: "Taken", "Skip", "Undo", and "Change Time…" (D058). Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
 - A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Take Now". Every action uses the same record transaction as the circle (D028).
 - The menu of a recorded row has "Change Time…". The menu of an open row has "Taken Earlier…". Each opens the time sheet directly. The sheet shows the time wheel at once, and "Save" records the dose as taken at that time. The wheel does not go past the current time. So a change of a record time needs three taps (D033).
-- An "As Needed" section at the end lists items with no schedule. Each row has a record button that records a dose at the current time (D021).
-- With no item, a system empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing to Take Today" (D026).
+- An "As Needed" section at the end lists items with no schedule. Each row has a record button that records a dose at the current time (D021). A dose of today shows under its item as "Taken at 8:07 AM" or "Skipped" in the text color. It lines up with the name, past the icon column, at every text size (D058).
+- With no item, the empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing to Take Today" (D026, D058).
 - Success text and the success haptic come only after the local transaction commits (spec §7.2).
 
 ## History
@@ -81,7 +84,7 @@ A graph of squares at the top, and a section "Last 7 Days" in a system grouped l
 - Today has no mark. Its place at the end of the filled squares is clear.
 - Month labels: the short month name above the column where the month starts, in the caption 2 style and the secondary color. When no month starts in the first three columns of a band, the first column gets its month. A label that would touch the one before it does not show. Weekday letters for Monday, Wednesday, and Friday at the left, only at 13 weeks and not at the accessibility text sizes.
 - The squares keep their size at every text size. The labels grow.
-- Selection: a ring of 1.5 points in the tint, with a gap of 1 point around the square. The date of the day, for example "Tue, Aug 18", in semibold caption 2 in the label row over its column. Month labels under it do not show. No dark border, no shadow, no magnifier, and no band behind the week.
+- Selection: a ring of 1.5 points in the tint, with a gap of 1 point around the square. The date of the day, for example "Tue, Aug 18", in semibold caption 2 in the label row over its column. The title of the log of that day has the same format (D058). Month labels under it do not show. No dark border, no shadow, no magnifier, and no band behind the week.
 - A touch or a drag selects the nearest day. A day that is not here yet gives today. A light selection haptic comes when the selected day changes.
 - At the end of the touch, the log of the selected day opens as a push (D054). The ring stays until the log closes.
 - VoiceOver reads the graph as one adjustable element: a summary of the days by level, or the selected day with "2 of 3 taken". Swipe up or down moves the day. The default action opens the log of the selected day.
@@ -89,7 +92,7 @@ A graph of squares at the top, and a section "Last 7 Days" in a system grouped l
 ### Last 7 Days
 
 - One section with the title "Last 7 Days", under the graph. One row for each item that had a planned dose or a taken as-needed dose in the last 7 days. An archived item shows only when it had one. Order: the first planned time, then the name. As-needed items come last.
-- Row: the form icon in the item color, the name, the part of the day or "As Needed" on a second line, and at the trailing edge a strip of 7 small capsules, oldest at the left and today at the right. The system chevron shows that the row opens.
+- Row: the form icon in the item color, or the item photo (D056, D058), the name, the part of the day or "As Needed" on a second line, and at the trailing edge a strip of 7 small capsules, oldest at the left and today at the right. The system chevron shows that the row opens.
 - Capsule: 0.4 times the height of the body text wide, and 1 times high. Filled in the item color: every planned dose of the day taken, or an as-needed dose taken. The item color at 40%: some taken. A hollow outline of 1.5 points in the item color: planned and none taken. An empty slot of the same width: nothing planned. A skipped dose is not taken.
 - A planned dose of today that is not due yet and has no record counts as nothing planned until its time.
 - At the accessibility text sizes the strip goes under the words.
@@ -103,9 +106,9 @@ The log of an item and the log of a day use the timeline rows below. The log of 
 
 ### Timeline rows
 
-- Newest first, one section per day in the log of an item:  "Today", "Yesterday", then the weekday and the date. The day is the day of the dose.
+- Newest first, one section per day in the log of an item: "Today", "Yesterday", then the weekday and the date in the format "Tue, Aug 18". The day is the day of the dose.
 - One row per action of the user: taken, skipped, time changed, or undone. An undone action and a replaced action stay in the list.
-- Row, like Recents in Phone: the form icon in the item color, the name, the action in plain words under it, and the time of the action at the end. The words name the intake time when it is not the time of the record, for example "Taken at 8:00 AM".
+- Row, like Recents in Phone: the form icon in the item color, or the item photo (D056, D058), the name, the action in plain words under it, and the time of the action at the end. The words name the intake time when it is not the time of the record, for example "Taken at 8:00 AM".
 - A planned dose of a past day with no record shows as "No record", with its part of the day in place of a time. An open dose of today shows on Today only.
 - The newest row of a dose offers the corrections with a swipe and a long press, as on Today: "Taken", "Change Time…", "Skip", "Undo", and "Try Again" for a change that is not saved. A tap on "No record" opens the time of the intake. A replaced row offers none.
 - "Change Time…" opens the same time sheet as on Today, with the time wheel on the display at once (D033).
@@ -122,10 +125,11 @@ A grid of tiles, so the user sees at once which items they have (spec §3 P02, D
 - The name wraps and never truncates. A tile has room for two lines, and a longer name makes its row taller. The tiles of one row have the same height.
 - Order: the first time of day of the plan, then the name. As-needed items come last. No section titles.
 - A tap opens the item detail. A long press opens a context menu with "Edit" and "Archive…".
-- "Archived" is one plain row under the grid. "Notifications are off" is one plain row above it.
+- "Archived" is one plain row under the grid. "Notifications off" is one plain row above it, with the symbol and the text color of the line "Reminders off" (D058).
 - The archived list has "Restore" on each row. A swipe to the left or a long press offers "Delete Item…" (D033).
 - The tile is a kept custom control (D026), because the system has no grid card. It uses the system grouped card color, the continuous corner of an inset grouped list cell (26 points from iOS 26, 10 points before), margins of 16 points, and a gap of 12 points.
-- The empty state is a system empty view.
+- A tile scales to 0.98 while it is pressed (D058).
+- The empty state is a system empty view with a button "Add Item".
 
 ## Archive and delete
 
@@ -139,12 +143,20 @@ One confirmation for each, and no second dialog before it (D033).
 
 ## Settings
 
+The sheet behind the gear button. A "Done" button at the top right closes it. The sections, in order:
+
+- "Reminders": the row "Notifications" with its state ("On", "Quiet", "Off", "Not Asked Yet"), the button "Open Settings" when the state is "Off" or "Quiet", and the button "Send a Test Notification" when a test can arrive. The footer explains a state that needs words.
+- A row with the switch "Show Names in Reminders". Turn it off to keep item names out of the notification text (D029).
+- "Remind Again": described below.
+- "Display": "App Color".
+- A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
+- "Your Data", then "Send Feedback" (D037), then "Support Maru": three optional tips of a consumable purchase. A tip unlocks nothing (D053).
 - "Remind Again" is two menu rows in one section (D039). The first row is the number of follow-ups: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between them: "5 min", "10 min", "15 min", "30 min", or "1 hr". It comes and goes with the layout motion, and it shows only when the number is not "Off".
 - "Until Recorded" has a limit, and the footer states the number and the last time: "Maru reminds you up to 12 times for each dose, until 1:00 AM at the latest." The time uses the time format of the device.
-- A footer or a helper text is one short sentence (D032).
-- "Display" has only "App Color". The strikethrough setting is gone (D032).
+- A footer or a helper text is one short sentence (D032, D058). "Your Data" is the one section that may have two.
+- The strikethrough setting is gone (D032).
 - "Your Data" is the section before "Send Feedback" (D040). It has three rows: "Export Records", "Back Up", and "Restore from Backup…". A tap on one of the first two opens the system share sheet with the file. The third opens the system file picker.
-- The footer of "Your Data" has two sentences, because it must say that the files are not encrypted.
+- The footer of "Your Data" has two sentences, because it must say that the files are not encrypted (D058).
 - A restore has one alert, "Replace All Data?", with a destructive button "Replace". After a restore, the sheet closes and Today shows the restored data. No message says so (D028). A failure is a system alert that says that the data did not change.
 - The share sheet is the one of UIKit, `UIActivityViewController`, in a system sheet. `ShareLink` needs the file before the tap and does not say when the sheet closes, and Maru must remove the file then (D026, D040).
 
@@ -161,27 +173,29 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 
 ## Motion
 
-One motion language for the whole app (D030). The same kind of change uses the same motion on every page. `App/Motion.swift` has the two cases. A view or the model names a case and never a curve or a duration.
+One motion language for the whole app (D030, D058). The same kind of change uses the same motion on every page. `App/Motion.swift` has the cases. A view or the model names a case and never a curve or a duration.
 
 | Case | Motion | Where | With Reduce Motion |
 |---|---|---|---|
 | Layout | The system `snappy` spring | A change that moves the layout | No motion. The change shows at once |
-| State | A fade of 0.2 seconds, with the system replace effect on a symbol | A change in place, with no move | The same fade. A symbol cross-fades with no scale |
+| State | A fade of 0.2 seconds, with the system replace effect on a symbol, and the system numeric text effect on a number | A change in place, with no move | The same fade. A symbol and a number cross-fade with no scale |
+| Press | A scale to 0.98 and back, 0.12 seconds | A press on the record circle, the as-needed record button, and a tile of My Items | No scale. The press shows at once |
+| Fill | A spring of 0.35 seconds with bounce 0.4, from a scale of 0.85 to 1 | The record circle, when it fills after the commit | The fade of the state case, with no scale |
 
 - Layout applies to: a row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form, including the candidates of the smart completion. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
-- State applies to: the record circle and the as-needed record button. "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042).
+- State applies to: the record circle and the as-needed record button. "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042). A number or a time that changes in place: the count of the banner of unsaved changes, the line under the name of a Today row, the time of a dose or of a log row, and the line under the week strip of the item detail.
 - The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. A capsule of the strip of an item row uses the state motion when a record changes it (D054).
-- A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.
+- A record changes a row only after the local transaction commits (spec §7.2). No change of a row starts at the tap. The press scale is the one reaction to the touch.
 - The system owns the motion of sheets, pushes, menus, alerts, dialogs, swipe actions, pickers, switches, and the keyboard. Maru does not change it.
 
 Maru does not animate:
 
 - The first content of a page: Today at a launch, the item detail, and the first days and the graph of History. The page shows complete, with no entrance (spec §9).
-- Text that changes its value in place: a time, a count, the plan line, a status word.
+- Text that changes its value in place and is not a number or a time: the plan line and a status word.
 - The app color. A new tint shows at once on every control.
 - The check mark of a repeat day, as in Clock.
 - The storage problem page. An error shows at once.
-- A tap. No bounce, no scale, no shimmer, no confetti, no animated icon, and no custom transition.
+- A tap, beyond the press and the fill of the table. No shimmer, no confetti, no animated icon, and no custom transition. The press and the fill start after the touch or after the commit and never delay a record (spec §7.2).
 
 ## Forms and icons
 
@@ -202,7 +216,7 @@ An item can have one photo (D056). It is optional, and the form icon stays the f
 One screen (spec §3 P03), in this order: name, type (supplement or medication, starts on "Supplement"), form menu (starts on "Capsule"), color menu, amount (optional, with units including IU), time slots, repeat days, note, photo. Apple Health needs seven screens for the same result. Maru needs one.
 
 - A system sheet: "Cancel" at the top left, "Save" at the top right. Save is off until the draft is valid (D026).
-- The plan line is the footer of the reminder section. It states the full schedule, for example "Every day at 8:00 AM, with no end date", or the problem that keeps Save off. An amount has its own line above it.
+- The section with the times and the repeat rule is named "Plan", as in the item detail (D058). The plan line is its footer. It states the full schedule, for example "Every day at 8:00 AM, with no end date", or the problem that keeps Save off. An amount has its own line above it.
 - A new item has no amount and no time (spec §2.1, D032). The form has no "choose a type" hint.
 - A new item starts with the row "Scan Label", above the name (D038). It has a camera symbol at the start, a small sparkle symbol beside the title, and the line "Point the camera at the bottle." The symbols take the app tint. No tutorial and no pop-up.
 - The scanner is a system sheet with "Cancel" at the top left. The camera fills it, and the system marks the text that it finds. A card at the bottom, on the system material, holds one decision at a time. First the prompt "Tap the name on the label" with the line "Maru reads only the name." After a tap (D042): the words of the text as capsule buttons in rows, the line "Tap a word to add or remove it.", a text field with the name, "Use This Name" as a large button in the tint, "Clear", and the line "Tap more text to add it to the name."

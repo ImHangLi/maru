@@ -12,7 +12,7 @@ struct AsNeededSection: View {
     var body: some View {
         Section {
             ForEach(rows) { row in
-                AsNeededItemRow(row: row, timeZone: timeZone)
+                AsNeededItemRow(row: row)
                 ForEach(row.doses) { AsNeededDoseRow(row: row, dose: $0, timeZone: timeZone) }
             }
         } header: {
@@ -22,7 +22,7 @@ struct AsNeededSection: View {
                 .accessibilityAddTraits(.isHeader)
         }
         .alert(
-            failureTitle,
+            model.today.asNeeded.failure?.kind.alertTitle(changed: "Today Changed") ?? Text("Not Saved"),
             isPresented: Binding(
                 get: { model.today.asNeeded.failure != nil },
                 set: { if !$0 { model.today.asNeeded.failure = nil } }
@@ -36,24 +36,7 @@ struct AsNeededSection: View {
                 Button("OK", role: .cancel) {}
             }
         } message: { failure in
-            failureMessage(failure.kind)
-        }
-    }
-
-    private var failureTitle: Text {
-        if case .changed = model.today.asNeeded.failure?.kind { Text("Today changed") } else { Text("Not saved") }
-    }
-
-    private func failureMessage(_ kind: AsNeededFailure.Kind) -> Text {
-        switch kind {
-        case .notSaved(.unavailable):
-            Text("Unlock your iPhone, then try again.")
-        case .notSaved(.diskFull):
-            Text("Your iPhone is full. Free some storage, then try again.")
-        case .notSaved:
-            Text("Maru couldn’t save this. Try again.")
-        case .changed:
-            Text("This item changed. Check it, then try again.")
+            failure.kind.alertMessage
         }
     }
 }
@@ -66,7 +49,6 @@ private struct AsNeededItemRow: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     let row: AsNeededCard.Row
-    let timeZone: TimeZone
 
     var body: some View {
         HStack(spacing: 12) {
@@ -150,7 +132,7 @@ private struct AsNeededRecordButton: View {
                 .symbolMotion(value: isNotSaved)
                 .accessibilityHidden(true)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.pressScale)
         .accessibilityLabel(isNotSaved ? Text("Save \(row.look.name) again") : Text("Record a dose of \(row.look.name)"))
         .accessibilityHint(isNotSaved ? Text("Tries to save it again.") : Text("Records a dose now."))
     }
@@ -173,26 +155,35 @@ private struct AsNeededDoseRow: View {
         Button {
             if isNotSaved { model.retry(dose) } else { showsCorrection = true }
         } label: {
-            HStack(spacing: 8) {
-                // The label and the value say the state, so VoiceOver reads no image name.
-                Group {
-                    if isNotSaved {
-                        Image(systemName: "exclamationmark.circle").foregroundStyle(.red)
-                    } else {
-                        Image(systemName: dose.record.status == .skipped ? "minus" : "checkmark")
-                            .foregroundStyle(.tertiary)
-                    }
+            HStack(spacing: 12) {
+                // An invisible copy of the form icon of the item row keeps the column of the icon at every text
+                // size, so the dose lines up under the name.
+                if typeSize < .accessibility3 {
+                    FormIcon(form: row.look.form, color: row.look.color, photo: row.look.imageReference)
+                        .frame(minWidth: 32)
+                        .hidden()
                 }
-                .accessibilityHidden(true)
-                statusText
-                    .foregroundStyle(isNotSaved ? .primary : .secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                Spacer(minLength: 0)
+                HStack(spacing: 8) {
+                    // The label and the value say the state, so VoiceOver reads no image name.
+                    Group {
+                        if isNotSaved {
+                            Image(systemName: "exclamationmark.circle").foregroundStyle(.red)
+                        } else {
+                            Image(systemName: dose.record.status == .skipped ? "minus" : "checkmark")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    .accessibilityHidden(true)
+                    // A state shows in the text color, never in gray (design principle 6).
+                    statusText
+                        .foregroundStyle(.primary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .numberMotion(value: dose.time)
+                    Spacer(minLength: 0)
+                }
+                .font(.subheadline)
             }
-            .font(.subheadline)
             .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-            // Under the name, past the icon column.
-            .padding(.leading, typeSize < .accessibility3 ? 44 : 0)
             .contentShape(Rectangle())
             .motion(.state, value: [isNotSaved, dose.record.status == .skipped])
         }
@@ -239,8 +230,10 @@ private struct AsNeededDoseRow: View {
     }
 
     private var statusText: Text {
+        // A skipped dose says only "Skipped", as a skipped row of Today does (D058).
+        if dose.record.status == .skipped { return Text("Skipped") }
         let time = dose.time.map { $0.formatted(.rowTime(in: timeZone)) } ?? ""
-        return dose.record.status == .skipped ? Text("Skipped at \(time)") : Text("Taken at \(time)")
+        return Text("Taken at \(time)")
     }
 
     private var startOfDay: Date {

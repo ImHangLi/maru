@@ -17,6 +17,7 @@ Maru was developed in a private repository before it became public. Issue number
 - Smart completion for supplements is in code (D043): a supplement name from the built-in list sets the usual form until the user chooses one, and the amount, the reminder, and the note show candidates that fill nothing until a tap. The list has 103 supplements. Nobody saw the screen yet.
 - History has a graph of squares (D041): one square per day, three levels of the tint by the share taken, and 13, 26, or 52 weeks. A touch or a drag selects a day, and the end of the touch opens the log of that day (D054). Under the graph, "Last 7 Days" has one row for each item with a strip of 7 capsules, and a tap opens the log of the item (D054). The long timeline left the main page. Nobody saw it on a display yet. The drag, the haptic, the dark-mode levels, the strip at the largest text sizes, the alerts from a log, and VoiceOver need a check on a real iPhone.
 - Today never folds (D057): every part of the day always shows its rows, and its header is the plain title. The item detail shows the same 7-day strip as History in place of the list of records. Nobody saw either on a display yet.
+- A consistency pass is in code (D058): Title Case alert titles, one empty-state pattern, one word for each action, one-sentence footers, states in the text color with a symbol, one sheet size rule, photos in History rows, one day format, named press and fill motion, and a translator comment on every String Catalog key. Nobody built or saw it on a display yet. CI builds the app. It needs a check on a real iPhone: the press scale and the fill spring (also with Reduce Motion), the as-needed dose row at the largest text sizes, and the sheet heights.
 - Today rows show the time on the second line (D044): the set time of an open row, the intake time of a taken row, and "Skipped". Nobody saw the rows on a display yet.
 - The user sets the follow-ups (D039): 1, 2, 3, or 5 times, or "Until Recorded" with at most 12 for each dose, also across a change of the setting, and 5 minutes to 1 hour between them. Follow-ups continue after midnight until 01:00, and their "Taken" action records the dose of the day before. Nobody saw them on a device yet. They need a check on a real iPhone: the times, the stop after a record, the group in Notification Center, a Focus, and the action after midnight.
 - Reminders skip a recorded dose and give one notification for each fire time (D047): a dose recorded before its time does not remind, two items at one time give one notification that names the open items, and a daily item and an every-other-day item share one request on a due day. Nobody saw it on a device yet. It needs a check on a real iPhone: record before the time and no notification, undo before the time and the notification comes, one of two items recorded and the text names the other one with the "Taken" action.
@@ -35,7 +36,7 @@ Maru was developed in a private repository before it became public. Issue number
 ## Known gaps
 
 - Dark Mode, the largest text sizes, and VoiceOver speech need a full check on a device.
-- The String Catalog needs a sync before a second language.
+- The String Catalog keys all have comments (D058). It still needs a sync in Xcode before a second language: the planned languages are zh-Hans, ja, es, de, and ko.
 
 ## Run the app with sample data
 

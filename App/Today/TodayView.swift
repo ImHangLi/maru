@@ -17,7 +17,7 @@ struct TodayView: View {
                             .onAppear { model.todayContentDidAppear() }
                     } else {
                         ContentUnavailableView {
-                            Text("Maru can’t use your time zone")
+                            Label("Maru Can’t Use Your Time Zone", systemImage: "globe")
                         } description: {
                             Text("In iPhone Settings, choose a city for your time zone.")
                         }
@@ -108,7 +108,7 @@ private struct TodayContent: View {
         // The haptic follows the commit, not the tap (spec 7.2).
         .sensoryFeedback(.success, trigger: model.today.commitCount)
         .alert(
-            failureTitle,
+            model.today.failure?.kind.alertTitle(changed: "Today Changed") ?? Text("Not Saved"),
             isPresented: Binding(get: { model.today.failure != nil }, set: { if !$0 { model.today.failure = nil } }),
             presenting: model.today.failure
         ) { failure in
@@ -119,7 +119,7 @@ private struct TodayContent: View {
                 Button("OK", role: .cancel) {}
             }
         } message: { failure in
-            failureMessage(failure.kind)
+            failure.kind.alertMessage
         }
     }
 
@@ -152,22 +152,6 @@ private struct TodayContent: View {
         return format
     }
 
-    private var failureTitle: Text {
-        if case .changed = model.today.failure?.kind { Text("Today changed") } else { Text("Not saved") }
-    }
-
-    private func failureMessage(_ kind: TodayFailure.Kind) -> Text {
-        switch kind {
-        case .notSaved(.unavailable):
-            Text("Unlock your iPhone, then try again.")
-        case .notSaved(.diskFull):
-            Text("Your iPhone is full. Free some storage, then try again.")
-        case .notSaved:
-            Text("Maru couldn’t save this. Try again.")
-        case .changed:
-            Text("This item changed. Check it, then try again.")
-        }
-    }
 }
 
 /// The date under the title, in the system navigation bar (iOS 26 and later).

@@ -25,7 +25,7 @@ struct ArchivedListView: View {
                 .overlay {
                     if snapshot.archived.isEmpty {
                         ContentUnavailableView {
-                            Text("No archived items.")
+                            Label("No Archived Items", systemImage: "archivebox")
                         }
                     }
                 }
@@ -37,7 +37,7 @@ struct ArchivedListView: View {
         .modifier(DebugDataBanner())
         #endif
         .navigationTitle("Archived")
-        .alert("Not changed", isPresented: $restoreFailed) {
+        .alert("Not Changed", isPresented: $restoreFailed) {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Maru couldn’t save this change. Try again.")

@@ -4,6 +4,7 @@ import UIKit
 /// The one motion language of the app (D030, docs/design.md "Motion").
 ///
 /// The same kind of change uses the same case on every page. A change with no case here shows at once.
+/// A view never names a curve or a duration.
 /// System sheets, pushes, menus, alerts, and swipe actions keep the motion of the system.
 enum Motion {
     /// A change that moves the layout: a row or a section that comes or goes,
@@ -11,13 +12,24 @@ enum Motion {
     case layout
     /// A change in place, with no move: the record symbol and a mark in a header.
     case state
+    /// The press of a record circle or a tile: a scale to 0.98 and back (`Motion.pressedScale`).
+    case press
+    /// The record circle fills after the commit: a short spring.
+    case fill
+
+    /// The scale of a control while a finger presses it.
+    static let pressedScale: CGFloat = 0.98
+    /// The scale from which the record circle springs to its size when it fills.
+    static let fillStartScale: CGFloat = 0.85
 
     /// With Reduce Motion nothing moves, so a layout change shows at once (spec 5.3). The state case is a
-    /// fade with no move, and it stays.
+    /// fade with no move, and it stays. The fill case then is the same fade, and the press case shows at once.
     func animation(reduceMotion: Bool) -> Animation? {
         switch self {
         case .layout: reduceMotion ? nil : .snappy
         case .state: .easeInOut(duration: 0.2)
+        case .press: reduceMotion ? nil : .easeOut(duration: 0.12)
+        case .fill: reduceMotion ? .easeInOut(duration: 0.2) : .spring(duration: 0.35, bounce: 0.4)
         }
     }
 }
@@ -38,6 +50,46 @@ extension View {
     /// With Reduce Motion the symbols cross-fade, with no scale.
     func symbolMotion(value: some Equatable) -> some View {
         modifier(SymbolMotionModifier(value: value))
+    }
+
+    /// A number or a time that changes in place: the digits change one by one with the state motion.
+    /// With Reduce Motion the text cross-fades.
+    func numberMotion(value: some Equatable) -> some View {
+        modifier(NumberMotionModifier(value: value))
+    }
+}
+
+/// A button style that scales its label to 0.98 while pressed (docs/design.md "Motion").
+/// With Reduce Motion the label does not scale.
+struct PressScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        PressScaleBody(configuration: configuration)
+    }
+}
+
+extension ButtonStyle where Self == PressScaleButtonStyle {
+    static var pressScale: PressScaleButtonStyle { PressScaleButtonStyle() }
+}
+
+private struct PressScaleBody: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let configuration: ButtonStyleConfiguration
+
+    var body: some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? Motion.pressedScale : 1)
+            .animation(Motion.press.animation(reduceMotion: reduceMotion), value: configuration.isPressed)
+    }
+}
+
+private struct NumberMotionModifier<Value: Equatable>: ViewModifier {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    let value: Value
+
+    func body(content: Content) -> some View {
+        content
+            .contentTransition(reduceMotion ? .opacity : .numericText())
+            .animation(Motion.state.animation(reduceMotion: reduceMotion), value: value)
     }
 }
 

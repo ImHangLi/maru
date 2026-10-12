@@ -17,7 +17,7 @@ struct HistoryItemRow: View {
         } label: {
             HStack(spacing: 12) {
                 if let look {
-                    FormIcon(form: look.form, color: look.color)
+                    FormIcon(form: look.form, color: look.color, photo: look.imageReference)
                         .frame(minWidth: 32)
                 }
                 VStack(alignment: .leading, spacing: 2) {

@@ -167,7 +167,9 @@ extension AppModel {
             return day
         }
         history.looks = Dictionary(uniqueKeysWithValues: page.items.map {
-            ($0.id, TodaySnapshot.ItemLook(itemID: $0.id, name: $0.name, form: $0.form, color: $0.color))
+            ($0.id, TodaySnapshot.ItemLook(
+                itemID: $0.id, name: $0.name, form: $0.form, color: $0.color, imageReference: $0.imageReference
+            ))
         })
         history.hasEarlier = page.hasEarlier
         history.today = today
@@ -218,13 +220,13 @@ extension AppModel {
         }
     }
 
-    /// "Today", "Yesterday", then the weekday and the date, for example "Friday, October 9" (spec 13.2).
+    /// "Today", "Yesterday", then the weekday and the date, for example "Fri, Oct 9" (spec 13.2, D058).
     func historyTitle(of date: LocalDate) -> String {
         if let today = history.today {
             if date == today { return String(localized: "Today") }
             if date == today.adding(days: -1) { return String(localized: "Yesterday") }
         }
-        return date.noon.formatted(Date.FormatStyle.dateTime.weekday(.wide).month(.wide).day().timeZone(.utc))
+        return date.shortLabel
     }
 
     // MARK: Timeline

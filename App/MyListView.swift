@@ -20,8 +20,7 @@ struct MyListView: View {
                             // A save with notifications off shows no alert, so the page says it in place (D028).
                             if model.settings.permission == .denied {
                                 Button { model.openSettings() } label: {
-                                    Label("Notifications are off", systemImage: "bell.slash")
-                                        .foregroundStyle(Color.secondary)
+                                    NotificationsOffLabel()
                                         .modifier(PlainRow())
                                 }
                                 .buttonStyle(.plain)
@@ -58,7 +57,7 @@ struct MyListView: View {
                     .overlay {
                         if snapshot.list.isEmpty && snapshot.archived.isEmpty {
                             ContentUnavailableView {
-                                Text("No items yet.")
+                                Label("No Items Yet", systemImage: "pills")
                             } actions: {
                                 Button("Add Item") { model.openEditor(for: nil) }
                             }
@@ -122,6 +121,7 @@ extension AppModel {
 }
 
 /// The measures of an inset grouped list cell, so a tile, and the graph of History, look like a card of Today.
+/// The margin is also the padding inside a card.
 enum Tile {
     static let margin: CGFloat = 16
     static let spacing: CGFloat = 12
@@ -136,7 +136,7 @@ enum Tile {
 private struct PlainRow: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Tile.margin)
             .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
             .background(Color(.secondarySystemGroupedBackground), in: Tile.shape)
             .contentShape(Tile.shape)
@@ -195,12 +195,12 @@ private struct ItemTile: View {
                 }
                 .font(.headline)
             }
-            .padding(16)
+            .padding(Tile.margin)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .background(Color(.secondarySystemGroupedBackground), in: Tile.shape)
             .contentShape(.contextMenuPreview, Tile.shape)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.pressScale)
         .contextMenu {
             Button("Edit", systemImage: "pencil") { model.openEditor(for: entry.id) }
             Button("Archive…", systemImage: "archivebox") {
