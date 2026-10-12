@@ -56,7 +56,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## History
 
-A graph of squares at the top, and one timeline in a system grouped list under it (spec §3 P05, D032, D041). Today opens it from the History button.
+A graph of squares at the top, and a section "Last 7 Days" in a system grouped list under it, with one row for each item (spec §3 P05, D032, D041, D054). Today opens it from the History button. A row opens the log of the item, and a tap on a day of the graph opens the log of the day.
 
 ### Graph
 
@@ -65,7 +65,7 @@ A graph of squares at the top, and one timeline in a system grouped list under i
 - Steps: 13 weeks from the week of the first day. 26 weeks when 13 are full. 52 weeks when 26 are full, as two bands of 26 columns with the older band above. The step changes on the first day of a week that does not fit. After 52 weeks the graph shows the last 52 weeks.
 - The graph fills the card width. Side = (width − left labels) ÷ (columns + (columns − 1) × gap share). The gap share is 0.19 at 13 columns and 0.3 at 26 columns. The corner is 22% of the side, continuous.
 - Sizes on a screen of 402 points (graph width 338): 13 weeks, side 21.2 and gap 4.0. 26 weeks, side 10.1 and gap 3.0. On a screen of 320 points (graph width 256): 13 weeks, side 15.8 and gap 3.0. 26 weeks, side 7.6 and gap 2.3. 52 weeks uses the sizes of 26.
-- The card: the grouped card color, the corner of an inset grouped cell, margins of 16 points, and padding of 16 points. It stays above the timeline on the grouped background and does not scroll. Its height on 402 points is 222 points at 13 weeks, 138 at 26, and 256 at 52.
+- The card: the grouped card color, the corner of an inset grouped cell, margins of 16 points, and padding of 16 points. It stays above the list on the grouped background and does not scroll. Its height on 402 points is 222 points at 13 weeks, 138 at 26, and 256 at 52.
 - Levels by the share of the planned doses of the day that are taken. A skipped dose is not taken. An as-needed dose does not count.
 
 | Day | Look |
@@ -83,13 +83,28 @@ A graph of squares at the top, and one timeline in a system grouped list under i
 - Month labels: the short month name above the column where the month starts, in the caption 2 style and the secondary color. When no month starts in the first three columns of a band, the first column gets its month. A label that would touch the one before it does not show. Weekday letters for Monday, Wednesday, and Friday at the left, only at 13 weeks and not at the accessibility text sizes.
 - The squares keep their size at every text size. The labels grow.
 - Selection: a ring of 1.5 points in the tint, with a gap of 1 point around the square. The date of the day, for example "Tue, Aug 18", in semibold caption 2 in the label row over its column. Month labels under it do not show. No dark border, no shadow, no magnifier, and no band behind the week.
-- A touch or a drag selects the nearest day. A day that is not here yet gives today. A tap on the selected day clears it. A light selection haptic comes when the selected day changes.
-- At the end of the touch, the timeline scrolls so that the selected day is the first section under the graph. Older days load as needed. A day with no rows gives the nearest older day. A clear scrolls back to today. A scroll by hand clears the selection (iOS 18 and later).
-- VoiceOver reads the graph as one adjustable element: a summary of the days by level, or the selected day with "2 of 3 taken". Swipe up or down moves the day.
+- A touch or a drag selects the nearest day. A day that is not here yet gives today. A light selection haptic comes when the selected day changes.
+- At the end of the touch, the log of the selected day opens as a push (D054). The ring stays until the log closes.
+- VoiceOver reads the graph as one adjustable element: a summary of the days by level, or the selected day with "2 of 3 taken". Swipe up or down moves the day. The default action opens the log of the selected day.
 
-### Timeline
+### Last 7 Days
 
-- Newest first, one section per day: "Today", "Yesterday", then the weekday and the date. The day is the day of the dose.
+- One section with the title "Last 7 Days", under the graph. One row for each item that had a planned dose or a taken as-needed dose in the last 7 days. An archived item shows only when it had one. Order: the first planned time, then the name. As-needed items come last.
+- Row: the form icon in the item color, the name, the part of the day or "As Needed" on a second line, and at the trailing edge a strip of 7 small capsules, oldest at the left and today at the right. The system chevron shows that the row opens.
+- Capsule: 0.4 times the height of the body text wide, and 1 times high. Filled in the item color: every planned dose of the day taken, or an as-needed dose taken. The item color at 40%: some taken. A hollow outline of 1.5 points in the item color: planned and none taken. An empty slot of the same width: nothing planned. A skipped dose is not taken.
+- A planned dose of today that is not due yet and has no record counts as nothing planned until its time.
+- At the accessibility text sizes the strip goes under the words.
+- A capsule that changes after a record fades with the state motion.
+- VoiceOver reads the name, the second line, and a summary such as "Taken on 5 of the last 7 days". The strip is hidden.
+- A tap opens the log of the item. With no row and no graph, the page shows "No History Yet".
+
+### Logs
+
+The log of an item and the log of a day use the timeline rows below. The log of an item lists its days, newest first. The log of a day lists one day and has its date as the title. Undone and replaced actions stay in both.
+
+### Timeline rows
+
+- Newest first, one section per day in the log of an item:  "Today", "Yesterday", then the weekday and the date. The day is the day of the dose.
 - One row per action of the user: taken, skipped, time changed, or undone. An undone action and a replaced action stay in the list.
 - Row, like Recents in Phone: the form icon in the item color, the name, the action in plain words under it, and the time of the action at the end. The words name the intake time when it is not the time of the record, for example "Taken at 8:00 AM".
 - A planned dose of a past day with no record shows as "No record", with its part of the day in place of a time. An open dose of today shows on Today only.
@@ -157,7 +172,7 @@ One motion language for the whole app (D030). The same kind of change uses the s
 
 - Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form, including the candidates of the smart completion. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
 - State applies to: the record circle and the as-needed record button. The chevron and "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042).
-- The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. The scroll of the timeline to a selected day uses the layout motion, the same as the scroll to the slot of a tapped reminder.
+- The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. A capsule of the strip of an item row uses the state motion when a record changes it (D054).
 - A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.
 - The system owns the motion of sheets, pushes, menus, alerts, dialogs, swipe actions, pickers, switches, and the keyboard. Maru does not change it.
 

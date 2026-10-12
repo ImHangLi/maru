@@ -241,6 +241,21 @@
     "Doses taken each day" : {
       "comment" : "History: the VoiceOver label of the graph at the top of the page."
     },
+    "Last 7 Days" : {
+      "comment" : "History: the title of the section with one row for each item of the last 7 days."
+    },
+    "Nothing planned or recorded." : {
+      "comment" : "History: the text of the section of the last 7 days when no item had a planned or recorded dose. Also the text of a log with no dose."
+    },
+    "No Doses" : {
+      "comment" : "History: the title of the log of a day with no planned or recorded dose."
+    },
+    "Taken on %lld of the last 7 days" : {
+      "comment" : "History: the VoiceOver summary of an item row with a dose on each of the last 7 days, or an as-needed item. Example: Taken on 5 of the last 7 days."
+    },
+    "All doses taken on %lld of %lld planned days" : {
+      "comment" : "History: the VoiceOver summary of an item row with planned doses on some of the last 7 days. Example: All doses taken on 2 of 3 planned days."
+    },
     "Drops" : {
       "comment" : "Item form or color name: the text “Drops”."
     },

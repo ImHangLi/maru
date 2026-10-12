@@ -1,18 +1,20 @@
 import MaruCore
 import SwiftUI
 
-/// The history as one timeline: every action of the user, newest first, grouped by day (spec 3 P05, D032).
-/// A planned dose of a past day with no record stays in its day. Older days load when the list ends.
-/// Today opens it from the History button in the bar. It has no streak and no bulk fill (D021).
+/// The history page: the graph, and under it one row for each item of the last 7 days (spec 3 P05, D054).
+/// A row opens the log of the item, and a tap on a day of the graph opens the log of the day. Both logs are
+/// timelines of every action (D032). Today opens the page from the History button in the bar.
+/// It has no streak and no bulk fill (D021).
 struct HistoryView: View {
     @Environment(AppModel.self) private var model
+    @State private var isTop = true
 
     var body: some View {
         Group {
             // The first days show complete, with no entrance (D030). They wait for the first read of the
             // graph too, so the graph does not push them down.
-            if let days = model.history.days, model.history.graphDidLoad {
-                HistoryList(days: days)
+            if model.history.days != nil, model.history.graphDidLoad {
+                HistoryList()
             } else {
                 // A retry of the banner can show its error also before the first read ends.
                 List { UnsavedSection() }
@@ -35,46 +37,64 @@ struct HistoryView: View {
         #endif
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
-        // The haptic follows the commit, not the tap (spec 7.2).
-        .sensoryFeedback(.success, trigger: model.today.commitCount)
-        // On the page, not on the list, so a retry of the banner can show its error also on an empty page.
-        .alert(
-            failureTitle,
-            isPresented: Binding(get: { model.history.failure != nil }, set: { if !$0 { model.history.failure = nil } }),
-            presenting: model.history.failure
-        ) { failure in
-            if case .notSaved = failure.kind {
-                Button("Try Again") { model.retryHistory(failure) }
-                Button("Cancel", role: .cancel) {}
-            } else {
-                Button("OK", role: .cancel) {}
-            }
-        } message: { failure in
-            failureMessage(failure.kind)
-        }
-        .background {
-            // A second alert needs its own view. An as-needed correction sends its own pair again (D014).
-            Color.clear.alert(
-                asNeededFailureTitle,
+        // A log that opens over the page shows the haptic and the alerts itself, so they never come twice.
+        .onAppear { isTop = true }
+        .onDisappear { isTop = false }
+        .modifier(HistoryCorrectionFeedback(isActive: isTop))
+    }
+}
+
+/// The haptic and the alerts of a correction (D014, spec 7.2). The page and each log use it, and only the one
+/// on top is active, so an alert never comes twice.
+struct HistoryCorrectionFeedback: ViewModifier {
+    @Environment(AppModel.self) private var model
+    let isActive: Bool
+
+    func body(content: Content) -> some View {
+        content
+            // The haptic follows the commit, not the tap (spec 7.2).
+            .sensoryFeedback(.success, trigger: model.today.commitCount) { _, _ in isActive }
+            // On the page, not on the list, so a retry of the banner can show its error also on an empty page.
+            .alert(
+                failureTitle,
                 isPresented: Binding(
-                    get: { model.history.asNeededFailure != nil },
-                    set: { if !$0 { model.history.asNeededFailure = nil } }
+                    get: { isActive && model.history.failure != nil },
+                    set: { if !$0 { model.history.failure = nil } }
                 ),
-                presenting: model.history.asNeededFailure
+                presenting: model.history.failure
             ) { failure in
                 if case .notSaved = failure.kind {
-                    Button("Try Again") { model.retry(failure) }
+                    Button("Try Again") { model.retryHistory(failure) }
                     Button("Cancel", role: .cancel) {}
                 } else {
                     Button("OK", role: .cancel) {}
                 }
             } message: { failure in
-                switch failure.kind {
-                case let .notSaved(error): failureMessage(.notSaved(error))
-                case .changed: failureMessage(.changed)
+                failureMessage(failure.kind)
+            }
+            .background {
+                // A second alert needs its own view. An as-needed correction sends its own pair again (D014).
+                Color.clear.alert(
+                    asNeededFailureTitle,
+                    isPresented: Binding(
+                        get: { isActive && model.history.asNeededFailure != nil },
+                        set: { if !$0 { model.history.asNeededFailure = nil } }
+                    ),
+                    presenting: model.history.asNeededFailure
+                ) { failure in
+                    if case .notSaved = failure.kind {
+                        Button("Try Again") { model.retry(failure) }
+                        Button("Cancel", role: .cancel) {}
+                    } else {
+                        Button("OK", role: .cancel) {}
+                    }
+                } message: { failure in
+                    switch failure.kind {
+                    case let .notSaved(error): failureMessage(.notSaved(error))
+                    case .changed: failureMessage(.changed)
+                    }
                 }
             }
-        }
     }
 
     private var failureTitle: Text {
@@ -101,120 +121,67 @@ struct HistoryView: View {
 
 private struct HistoryList: View {
     @Environment(AppModel.self) private var model
-    let days: [HistoryDay]
-    /// The day that the graph selected (D041). Only the graph sets it.
+    /// The day that the graph selected (D041). It stays while the log of the day shows.
     @State private var selection: LocalDate?
-    /// The selected day that the timeline did not scroll to yet, because an older page still loads.
-    @State private var scrollTarget: LocalDate?
+    /// The day whose log shows (D054).
+    @State private var presentedDay: LocalDate?
 
     var body: some View {
-        // A day with only open doses of today has no row, so it has no section.
-        let sections = days.map { (date: $0.date, entries: model.entries(of: $0)) }.filter { !$0.entries.isEmpty }
-        ScrollViewReader { scroller in
-            List {
-                UnsavedSection()
-                ForEach(sections, id: \.date) { section in
-                    Section {
-                        ForEach(section.entries) { HistoryEntryRow(entry: $0, day: section.date) }
-                    } header: {
-                        Text(title(of: section.date))
+        let weeks = model.historyWeeks()
+        List {
+            UnsavedSection()
+            if !weeks.isEmpty || model.history.graph != nil {
+                Section {
+                    if weeks.isEmpty {
+                        Text("Nothing planned or recorded.")
+                            .foregroundStyle(.secondary)
                     }
-                    .id(section.date)
+                    ForEach(weeks, id: \.itemID) { HistoryItemRow(week: $0) }
+                } header: {
+                    Text("Last 7 Days")
                 }
-                // A failed read keeps the days of the last read. The error stays until a read succeeds.
-                if let failure = model.history.loadFailure {
-                    Section {
-                        Button("Try Again") { model.loadHistory() }
-                    } header: {
-                        Text("Can’t Show History")
-                    } footer: {
-                        if failure == .unavailable {
-                            Text("Unlock your iPhone, then try again.")
-                        } else {
-                            Text("Maru couldn’t read the history. Try again.")
-                        }
-                    }
-                } else if model.history.hasEarlier {
-                    // The end of the list loads one more page of days. Each loaded page gives the row a new
-                    // identity, so a row that is still on the display loads the next page.
-                    Section {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .listRowBackground(Color.clear)
-                            .id(model.history.loadedDayCount)
-                            .onAppear { model.showEarlierHistory() }
+            }
+            // A failed read keeps the days of the last read. The error stays until a read succeeds.
+            if let failure = model.history.loadFailure {
+                Section {
+                    Button("Try Again") { model.loadHistory() }
+                } header: {
+                    Text("Can’t Show History")
+                } footer: {
+                    if failure == .unavailable {
+                        Text("Unlock your iPhone, then try again.")
+                    } else {
+                        Text("Maru couldn’t read the history. Try again.")
                     }
                 }
             }
-            .listStyle(.insetGrouped)
-            // A row that comes or goes moves the list (D030).
-            .motion(.layout, value: sections.flatMap { $0.entries.map(\.id) })
-            .safeAreaInset(edge: .top, spacing: 0) {
-                if let graph = model.history.graph {
-                    HistoryGraphView(graph: graph, counts: model.history.graphCounts, selection: $selection) {
-                        if let selection {
-                            model.showHistory(through: selection)
-                            scrollTarget = selection
-                            scroll(to: selection, sections, scroller)
-                        } else if let first = sections.first?.date {
-                            // No selection: the timeline starts at today again.
-                            scrollTarget = nil
-                            withMotion(.layout) { scroller.scrollTo(first, anchor: .top) }
-                        }
-                    }
-                    .padding(.horizontal, Tile.margin)
-                    .padding(.vertical, 8)
-                    .background(Color(.systemGroupedBackground))
+        }
+        .listStyle(.insetGrouped)
+        // A row that comes or goes moves the list (D030).
+        .motion(.layout, value: weeks.map(\.itemID))
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if let graph = model.history.graph {
+                HistoryGraphView(graph: graph, counts: model.history.graphCounts, selection: $selection) {
+                    presentedDay = selection
                 }
+                .padding(.horizontal, Tile.margin)
+                .padding(.vertical, 8)
+                .background(Color(.systemGroupedBackground))
             }
-            .onChange(of: sections.map(\.date)) {
-                if let scrollTarget { scroll(to: scrollTarget, sections, scroller) }
-            }
-            .modifier(ClearsSelectionOnScroll(selection: $selection))
+        }
+        // A day of the graph opens its log. The selection clears when the log closes.
+        .navigationDestination(item: $presentedDay) { HistoryLogView(scope: .day($0)) }
+        .onChange(of: presentedDay) { _, day in
+            if day == nil { selection = nil }
         }
         .overlay {
-            if sections.isEmpty, !model.history.hasEarlier, model.history.loadFailure == nil {
+            if weeks.isEmpty, model.history.graph == nil, model.history.loadFailure == nil {
                 ContentUnavailableView {
                     Text("No History Yet")
                 } description: {
                     Text("What you record shows here.")
                 }
             }
-        }
-    }
-
-    /// Scrolls the timeline to the selected day, so its section comes first under the graph. A day with no row
-    /// gives the nearest older day with rows. The scroll waits while the page of that day loads.
-    private func scroll(to target: LocalDate, _ sections: [(date: LocalDate, entries: [HistoryEntry])], _ scroller: ScrollViewProxy) {
-        guard let today = model.history.today else { return }
-        let isLoaded = today.days(since: target) < model.history.loadedDayCount || !model.history.hasEarlier
-        guard isLoaded, let section = sections.first(where: { $0.date <= target }) ?? sections.last else { return }
-        scrollTarget = nil
-        withMotion(.layout) { scroller.scrollTo(section.date, anchor: .top) }
-    }
-
-    /// "Today", "Yesterday", then the weekday and the date, for example "Friday, October 9" (spec 13.2).
-    private func title(of date: LocalDate) -> String {
-        if let today = model.history.today {
-            if date == today { return String(localized: "Today") }
-            if date == today.adding(days: -1) { return String(localized: "Yesterday") }
-        }
-        return date.noon.formatted(Date.FormatStyle.dateTime.weekday(.wide).month(.wide).day().timeZone(.utc))
-    }
-}
-
-/// A scroll of the timeline by hand clears the selection of the graph (D041). iOS 17 has no scroll phase,
-/// so there the selection stays until a tap on the selected day.
-private struct ClearsSelectionOnScroll: ViewModifier {
-    @Binding var selection: LocalDate?
-
-    func body(content: Content) -> some View {
-        if #available(iOS 18, *) {
-            content.onScrollPhaseChange { _, phase in
-                if phase == .interacting { selection = nil }
-            }
-        } else {
-            content
         }
     }
 }

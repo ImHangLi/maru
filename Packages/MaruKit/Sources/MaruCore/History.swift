@@ -178,3 +178,73 @@ public enum History {
         (schedules.compactMap { $0.versions.first?.effectiveFrom } + stored).min()
     }
 }
+
+/// What one day of the week strip says about one item (D054).
+public enum HistoryDayMark: Hashable, Sendable {
+    /// Nothing planned and no as-needed dose taken.
+    case none
+    /// Planned, and no dose taken.
+    case missed
+    /// Planned, and some doses taken.
+    case some
+    /// Every planned dose taken, or an as-needed dose taken.
+    case all
+}
+
+/// The last 7 days of one item, oldest first (D054).
+public struct HistoryItemWeek: Hashable, Sendable {
+    public let itemID: ItemID
+    /// 7 marks. The last one is today.
+    public let marks: [HistoryDayMark]
+    /// The item had no planned dose in the week.
+    public let isAsNeeded: Bool
+    /// The parts of the day of the planned doses of the week.
+    public let dayParts: [DayPart]
+    /// The earliest planned time of the week. It orders the list. `nil` for an as-needed item.
+    public let firstTime: WallClockTime?
+
+    /// The days with every planned dose taken, or with an as-needed dose taken.
+    public var takenDays: Int { marks.filter { $0 == .all }.count }
+    /// The days with a planned dose. An as-needed item counts all 7 days.
+    public var countedDays: Int { isAsNeeded ? marks.count : marks.filter { $0 != .none }.count }
+}
+
+extension History {
+    /// One entry for each item that had a planned dose or a taken as-needed dose in the 7 days up to `today`.
+    /// `days` has the rules of `days(_:items:schedules:stored:asNeeded:deviceTimeZone:)`, so the strip and the
+    /// timeline cannot disagree. An archived item has only its records there, so it shows only with one.
+    ///
+    /// A planned dose of today with no event and a time after `now` is not due yet. It counts as nothing
+    /// planned until its time, so the strip does not show a miss before the user can take the dose.
+    public static func week(days: [HistoryDay], today: LocalDate, now: Date) -> [HistoryItemWeek] {
+        let dates = (0..<7).map { today.adding(days: $0 - 6) }
+        var planned: [ItemID: [LocalDate: [HistoryDose]]] = [:]
+        var asNeeded: [ItemID: Set<LocalDate>] = [:]
+        for day in days where dates.contains(day.date) {
+            for dose in day.doses {
+                let isDue = !dose.record.events.isEmpty || day.date != today || dose.occurrence.resolvedTime.earliestInstant <= now
+                if isDue { planned[dose.itemID, default: [:]][day.date, default: []].append(dose) }
+            }
+            for dose in day.asNeeded where dose.record.status == .taken {
+                asNeeded[dose.occurrence.itemID, default: []].insert(day.date)
+            }
+        }
+        return Set(planned.keys).union(asNeeded.keys).map { itemID in
+            let byDate = planned[itemID] ?? [:]
+            let marks = dates.map { date -> HistoryDayMark in
+                if let doses = byDate[date] {
+                    let taken = doses.filter { $0.record.status == .taken }.count
+                    return taken == doses.count ? .all : taken == 0 ? .missed : .some
+                }
+                return asNeeded[itemID]?.contains(date) == true ? .all : .none
+            }
+            let doses = byDate.values.flatMap { $0 }
+            let times = doses.map(\.occurrence.plannedTime)
+            return HistoryItemWeek(
+                itemID: itemID, marks: marks, isAsNeeded: doses.isEmpty,
+                dayParts: DayPart.allCases.filter { part in times.contains { DayPart($0) == part } },
+                firstTime: times.min()
+            )
+        }
+    }
+}

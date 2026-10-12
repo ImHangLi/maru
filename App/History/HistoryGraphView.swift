@@ -6,21 +6,19 @@ import SwiftUI
 /// taken. The graph has no title, no legend, and no count.
 ///
 /// A kept custom control (D026): SwiftUI has no heat map. One `Canvas` draws the squares and the labels, and one
-/// drag gesture selects a day. The graph stays above the timeline, out of its scroll, so the drag and the
-/// scroll never compete for one touch.
+/// drag gesture selects a day. The graph stays above the list, out of its scroll, so the drag and the
+/// scroll never compete for one touch. The end of a touch opens the log of the selected day (D054).
 struct HistoryGraphView: View {
     let graph: HistoryGraph
     let counts: [LocalDate: HistoryDayCount]
     @Binding var selection: LocalDate?
-    /// The end of a touch, or a VoiceOver action. The timeline follows the selection then.
+    /// The end of a touch, or the default action of VoiceOver. The log of the selected day opens then.
     let onCommit: () -> Void
 
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     @Environment(\.dynamicTypeSize) private var typeSize
     @ScaledMetric(relativeTo: .caption2) private var labelHeight: CGFloat = 13
     @ScaledMetric(relativeTo: .caption2) private var letterWidth: CGFloat = 10
-    /// The selection when the touch started, so a tap on the selected day clears it.
-    @State private var touchStart: LocalDate??
 
     var body: some View {
         GraphFrame(graph: graph, metrics: metrics) {
@@ -45,10 +43,12 @@ struct HistoryGraphView: View {
         .accessibilityLabel(Text("Doses taken each day"))
         .accessibilityValue(accessibilityValue)
         .accessibilityAdjustableAction { direction in
-            // The first step selects today.
+            // The first step selects today. The default action opens the log of the selected day.
             let day = selection.map { $0.adding(days: direction == .increment ? 1 : -1) } ?? graph.today
             selection = min(max(day, firstShown), graph.today)
-            onCommit()
+        }
+        .accessibilityAction {
+            if selection != nil { onCommit() }
         }
     }
 
@@ -64,19 +64,15 @@ struct HistoryGraphView: View {
     // MARK: Touch
 
     /// A touch selects the day under the finger, and a drag moves the selection. The nearest day counts, so
-    /// the finger does not need to hit a square. A day that is not here yet gives today.
+    /// the finger does not need to hit a square. A day that is not here yet gives today. At the end of the
+    /// touch the log of that day opens.
     private func touch(_ layout: HistoryGraphLayout, outset: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
-                if touchStart == nil { touchStart = .some(selection) }
                 selection = day(at: value.location, in: layout, outset: outset)
             }
             .onEnded { value in
-                let day = day(at: value.location, in: layout, outset: outset)
-                let isTap = hypot(value.translation.width, value.translation.height) < 10
-                // A tap on the selected day clears the selection.
-                selection = isTap && touchStart == .some(day) ? nil : day
-                touchStart = nil
+                selection = day(at: value.location, in: layout, outset: outset)
                 onCommit()
             }
     }
