@@ -7,11 +7,13 @@ struct FeedbackSection: View {
     static let formURL = URL(string: "https://tally.so/r/jadWkR")
 
     @Environment(\.openURL) private var openURL
+    @Environment(AppModel.self) private var model
 
     var body: some View {
         Section {
             Button("Send Feedback") {
                 guard let url = Self.formURL else { return }
+                model.analytics.capture(.feedbackOpened)
                 // The system shows the page in a browser sheet over Maru where it can. On an older system, Safari opens.
                 if #available(iOS 26.0, *) {
                     openURL(url, prefersInApp: true)
