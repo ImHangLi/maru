@@ -191,6 +191,42 @@ extension AppModel {
         return doses.sorted { $0.occurrence.plannedTime < $1.occurrence.plannedTime }
     }
 
+    // MARK: Week
+
+    /// The items of the last 7 days with their strips, in the order of Today: the first planned time, then
+    /// the name, and the as-needed items last (D054). The days of the first page hold the week.
+    func historyWeeks() -> [HistoryItemWeek] {
+        guard let days = history.days, let today = history.today else { return [] }
+        func name(_ week: HistoryItemWeek) -> String { history.looks[week.itemID]?.name ?? "" }
+        func minutes(_ week: HistoryItemWeek) -> Int { week.firstTime.map { $0.hour * 60 + $0.minute } ?? 0 }
+        return History.week(days: days, today: today, now: Date()).sorted { a, b in
+            if a.isAsNeeded != b.isAsNeeded { return !a.isAsNeeded }
+            if minutes(a) != minutes(b) { return minutes(a) < minutes(b) }
+            return name(a).localizedCaseInsensitiveCompare(name(b)) == .orderedAscending
+        }
+    }
+
+    /// The days of a log, newest first. A log of an item keeps only the doses of that item (D054).
+    func historyLogDays(of itemID: ItemID?) -> [HistoryDay] {
+        guard let itemID else { return history.days ?? [] }
+        return (history.days ?? []).map { day in
+            HistoryDay(
+                date: day.date,
+                doses: day.doses.filter { $0.itemID == itemID },
+                asNeeded: day.asNeeded.filter { $0.occurrence.itemID == itemID }
+            )
+        }
+    }
+
+    /// "Today", "Yesterday", then the weekday and the date, for example "Friday, October 9" (spec 13.2).
+    func historyTitle(of date: LocalDate) -> String {
+        if let today = history.today {
+            if date == today { return String(localized: "Today") }
+            if date == today.adding(days: -1) { return String(localized: "Yesterday") }
+        }
+        return date.noon.formatted(Date.FormatStyle.dateTime.weekday(.wide).month(.wide).day().timeZone(.utc))
+    }
+
     // MARK: Timeline
 
     /// The rows of one day, newest first. Every event shows, also an undo and an event that a later one

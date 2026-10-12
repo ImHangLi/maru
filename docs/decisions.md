@@ -295,6 +295,8 @@ Owner decision. Maru becomes a public repository under the MIT license. This rep
 
 ## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, chevron removed by D050)
 
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, timeline on the main History page replaced by D054)
+
 Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
 
 - A folded part of the day has the same title look as an open part. No gray text for a state.
@@ -620,7 +622,7 @@ Not done, and why:
 
 Tests (D016): four new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A record and an archive with the generation from before a restore are refused and change nothing. A name with a comma, a quotation mark, and a line break stays one CSV field, and a text that starts like a formula gets an apostrophe.
 
-## D041 · 2026-10-11 · History graph
+## D041 · 2026-10-11 · History graph (scroll of the timeline to a day replaced by D054)
 
 Owner decision, with agent detail. It brings the passive history heatmap of D006 forward from milestone B. It changes spec 3 P05.
 
@@ -941,3 +943,26 @@ Maintainer decision after use on the device.
 - A tap that opens a finished part of the day keeps it open. It stays open after a return to the app, after a later record, and on the next days, until a tap folds it again.
 - A tap that folds a part removes the choice, so the part folds by itself again (D012, D028).
 - The choice is a display setting in `UserDefaults`, not a record. A backup does not carry it.
+
+## D054 · 2026-10-12 · History rows by item and logs by item and by day
+
+Maintainer decision on 2026-10-12, from the pattern of the Finch app (concept "S2"). It replaces the long timeline on the main page of History (D032) and the scroll of the timeline to a day of the graph (D041).
+
+- Under the graph, one section "Last 7 Days" in the grouped list. One row for each item that had a planned dose or a taken as-needed dose in the last 7 days. An archived item shows only when it had one.
+- Row: the form icon in the item color, the name, the part of the day or "As Needed" on a second line, and at the trailing edge a strip of 7 small capsules. The oldest day is at the left and today is at the right.
+- Capsule of a day: filled in the item color when every planned dose of that day is taken. The item color at 40% when some are taken. A hollow outline when planned doses exist and none is taken. An empty slot of the same width when nothing is planned. An as-needed item shows a filled capsule on a day with a taken dose, and an empty slot on other days.
+- A planned dose of today that is not due yet, with no record, counts as nothing planned until its time. Reason: a miss that shows before the user can take the dose is wrong. A dose with a record counts at once, also before its time.
+- A tap on a row pushes the log of the item: the rows of the timeline, with all corrections, only for that item. Newest first, grouped by day. Older days load as before, 30 days per load.
+- A tap on a day of the graph pushes the log of that day: the rows of the timeline for that day, with all corrections. A push, not a sheet, so the time sheet of a correction does not open over another sheet. The selection ring stays until the log closes.
+- Undone and replaced actions stay in both logs (D032). The main page no longer lists actions.
+- A capsule that changes after a record uses the state motion (D030), which keeps its fade with Reduce Motion.
+- VoiceOver reads the name, the second line, and a summary: "Taken on 5 of the last 7 days", or "All doses taken on 2 of 3 planned days" when the item has no plan on some days. The strip is hidden from VoiceOver. The graph keeps its adjustable element. Its default action opens the log of the selected day.
+
+Agent detail:
+
+- No new store read and no schema change. `History.week` (`MaruCore`) builds the strips from the days that the first page of the timeline reads. That page always holds the last 7 days.
+- The alerts and the success haptic of a correction moved to one modifier. The page and each log use it, and only the one on top is active.
+- A tap on a day no longer clears the selection. The selection clears when the log closes. The scroll phase rule for iOS 18 (D041) is gone.
+- Test (D016): one, for the strip marks with a half-taken day, an as-needed dose, and a dose of today that is not due yet.
+
+Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in dark mode and at the largest text sizes, the push from the graph, the alerts from a log, and VoiceOver need a check on a real iPhone.
