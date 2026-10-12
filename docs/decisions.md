@@ -850,3 +850,18 @@ The maintainer asked for this on 2026-10-12. Users see no change.
 - `AppStore`: one helper opens the store for both record transactions. The `history` and `historyCounts` forwarders are gone.
 - Tests and helpers: `noTypeCarriesInventoryFields`, `DoseTests`, `writerSetting`, and `WidgetDay.hasOpenDose`.
 - `LocalStore+Move.swift` is now `LocalStore+Adopt.swift`.
+
+## D053 · 2026-10-12 · Optional supporter tips with StoreKit 2
+
+The maintainer asked for an optional supporter purchase. Spec 14 C, spec 9, T35, and T48 apply. The agent made these decisions.
+
+- Three consumable tips: `com.imhangli.maru.tip.small`, `.medium`, and `.large`. Settings has a "Support Maru" section with one button for each tip. The button shows `displayName` and `displayPrice` from StoreKit. Prices are set in App Store Connect and not in code.
+- Nothing is locked. A tip is a consumable with no entitlement, so the app stores no purchase state and has no "Restore Purchases" button. A tip never reads or writes health data.
+- `App/Support/SupportStore.swift` is the only code that imports StoreKit. `MaruCore` and `MaruDatabase` do not. The Settings view calls the store.
+- The app starts `Transaction.updates` at launch in an unstructured task. The task waits for the system, so the launch does not wait (T35). The store loads the products only when the section shows.
+- Every transaction is finished. A verified, not refunded transaction shows one line of thanks. A cancel shows nothing. A pending tip shows "waits for approval". A failure or an unverified transaction shows "did not go through". A refund shows nothing. In all cases the app stays as it is (T48).
+- `purchase_result` (spec 11.5) is not sent. The app has no analytics client yet (spec 11.3). Add the event with the analytics client.
+- `Config/Maru.storekit` has the three tips for local tests. `project.yml` defines the `Maru` scheme with this file in the Run action. The other scheme actions keep the default configurations.
+- Copy is English only (D017). The new strings are not in the String Catalog yet. The sync is a known gap in `docs/status.md`.
+
+Not verified: no app build ran on the Mac of the maintainer, and nobody bought a tip. CI builds the app. Needs a check in a simulator or on an iPhone with the StoreKit configuration: a buy, a cancel, a pending tip, a failure, a refund from the StoreKit transaction manager, and a tip that ends after a relaunch. App Store Connect needs the three products before a TestFlight build.
