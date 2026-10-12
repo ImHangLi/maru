@@ -1,6 +1,7 @@
 import CoreImage
 import ImageIO
 import PhotosUI
+import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 import Vision
