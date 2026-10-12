@@ -6,7 +6,7 @@ import UIKit
 /// The same kind of change uses the same case on every page. A change with no case here shows at once.
 /// System sheets, pushes, menus, alerts, and swipe actions keep the motion of the system.
 enum Motion {
-    /// A change that moves the layout: a section that folds or opens, a row or a section that comes or goes,
+    /// A change that moves the layout: a row or a section that comes or goes,
     /// a line that comes or goes in a row, and the change between an empty page and a list.
     case layout
     /// A change in place, with no move: the record symbol and a mark in a header.

@@ -164,9 +164,8 @@ final class AppModel {
             isCurrent = snapshot.isCurrent(at: now, deviceTimeZone: NamedTimeZone(device: .current, at: now))
         }
         if isCurrent {
-            let replacesToday = if case let .loaded(shown) = self.content { shown.today != nil } else { false }
             self.content = content
-            todayDidShow(replacesToday: replacesToday)
+            todayDidShow()
             if case .loaded = content {
                 // The widgets show what is stored, so they read again after each read of the app (D048).
                 WidgetCenter.shared.reloadAllTimelines()
@@ -261,7 +260,6 @@ final class AppModel {
             loadHistory()
             loadHistoryGraph()
         }
-        today.isReturning = true
         needsReconcile = true
         refresh()
     }

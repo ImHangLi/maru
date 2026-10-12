@@ -33,6 +33,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A failure uses a system alert. A failed reminder after a save or a change also gets an alert. Notifications that are off show as a row on Today and My Items, with no alert.
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
+- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, and a line under it that counts the days. It has no list of records and no tap. The item log is in History (D057).
 - For a plan of every other day, "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036).
 
 ## Today
@@ -44,8 +45,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - Row: the form icon in the item color, the name, a second line in small gray text, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
 - The second line has the amount and the time that the user set: "2 capsules, 8:00 AM", or "8:00 AM" with no amount. A taken row shows the intake time: "2 capsules, Taken at 8:07 AM". A skipped row shows "2 capsules, Skipped". A medication that keeps another time zone names the city: "9:00 AM Shanghai time" (D044).
 - A recorded row and an open row differ only by the circle and the time. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032, D044).
-- A finished slot folds to its header the next time the user returns to the app. The header shows no chevron and no check mark (D050). The title looks the same folded and open. A tap opens it. A second tap folds it. A slot that the user opens stays open, also after a return and on the next days, until a tap folds it (D055). Only a finished slot folds (D012, D032).
-- The record that finishes a slot folds it after about 0.7 seconds, so the user sees the last check first. The fold uses the layout motion, the same as a tap on the header (D028, D030).
+- A slot always shows its rows, also when every row is done. Nothing folds or opens. The header is the plain title, with "Record All" when two or more rows are open (D057).
 - Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
 - A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Take Now". Every action uses the same record transaction as the circle (D028).
 - The menu of a recorded row has "Change Time…". The menu of an open row has "Taken Earlier…". Each opens the time sheet directly. The sheet shows the time wheel at once, and "Save" records the dose as taken at that time. The wheel does not go past the current time. So a change of a record time needs three taps (D033).
@@ -165,10 +165,10 @@ One motion language for the whole app (D030). The same kind of change uses the s
 
 | Case | Motion | Where | With Reduce Motion |
 |---|---|---|---|
-| Layout | The system `snappy` spring, the one of the fold | A change that moves the layout | No motion. The change shows at once |
+| Layout | The system `snappy` spring | A change that moves the layout | No motion. The change shows at once |
 | State | A fade of 0.2 seconds, with the system replace effect on a symbol | A change in place, with no move | The same fade. A symbol cross-fades with no scale |
 
-- Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form, including the candidates of the smart completion. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
+- Layout applies to: a row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form, including the candidates of the smart completion. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
 - State applies to: the record circle and the as-needed record button. "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042).
 - The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. A capsule of the strip of an item row uses the state motion when a record changes it (D054).
 - A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.

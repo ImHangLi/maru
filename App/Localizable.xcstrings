@@ -178,9 +178,6 @@
     "Adds a reminder time at %@." : {
       "comment" : "Edit screen: the VoiceOver hint of a time candidate of the smart completion, for example Evening. The placeholder is the time, for example 8:00 PM."
     },
-    "All recorded" : {
-
-    },
     "Amount" : {
       "comment" : "Item detail: the label of the amount that the user typed."
     },
@@ -284,7 +281,7 @@
       "comment" : "History: the VoiceOver label of the graph at the top of the page."
     },
     "Last 7 Days" : {
-      "comment" : "History: the title of the section with one row for each item of the last 7 days."
+      "comment" : "History and item detail: the title of the section with the 7-day strip of each item, or of one item."
     },
     "Nothing planned or recorded." : {
       "comment" : "History: the text of the section of the last 7 days when no item had a planned or recorded dose. Also the text of a log with no dose."
@@ -355,9 +352,6 @@
     "Green" : {
       "comment" : "Item form or color name: the text “Green”."
     },
-    "Hides the items." : {
-
-    },
     "History" : {
 
     },
@@ -372,9 +366,6 @@
     },
     "Keep Editing" : {
       "comment" : "Edit screen: the text “Keep Editing”."
-    },
-    "Last 7 Days" : {
-      "comment" : "Item detail: the title of the section with the recent records."
     },
     "Mark as Skipped" : {
 
@@ -712,9 +703,6 @@
     "Show" : {
 
     },
-    "Shows the items." : {
-
-    },
     "Shows ways to change it." : {
 
     },
@@ -765,9 +753,6 @@
     },
     "Taken" : {
 
-    },
-    "Taken %@" : {
-      "comment" : "Item detail: a record. The placeholder is the time, for example 8:07 AM."
     },
     "Taken at" : {
 

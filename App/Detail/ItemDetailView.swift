@@ -1,8 +1,8 @@
 import MaruCore
 import SwiftUI
 
-/// The detail of one item (spec 3 P04): the name, the form icon, the plan, the note, and the records of the
-/// last seven days. Edit opens the edit screen. The menu "Change or End This Item…" holds the rarer changes.
+/// The detail of one item (spec 3 P04): the name, the form icon, the plan, the note, and the 7-day strip of
+/// the records (D057). Edit opens the edit screen. The menu "Change or End This Item…" holds the rarer changes.
 ///
 /// It never says that the user finished a product, and it has no refill action (T04, T09).
 struct ItemDetailView: View {
@@ -91,7 +91,7 @@ struct ItemDetailView: View {
                     }
                 }
             }
-            RecentSection(recent: detail.recent)
+            WeekSection(week: detail.week, color: item.color.color)
             Section {
                 if item.isArchived {
                     Button("Restore") { change { try await model.setArchived(false, for: item.id) } }
@@ -287,41 +287,29 @@ private struct ScheduleSection: View {
     }
 }
 
-/// The taken and skipped records of the last seven days, newest first (D019). The history tab has the rest.
-private struct RecentSection: View {
-    let recent: [ItemDetail.Recent]
+/// The strip of the last 7 days, the same view and rule as a row of History (D054, D057), and a line that
+/// counts the days. The History tab has the records.
+private struct WeekSection: View {
+    /// `nil` when the item had no planned dose and no taken as-needed dose in the week.
+    let week: HistoryItemWeek?
+    let color: Color
 
     var body: some View {
         Section("Last 7 Days") {
-            if recent.isEmpty {
-                Text("No records in the last 7 days.")
+            VStack(alignment: .leading, spacing: 8) {
+                WeekStrip(marks: week?.marks ?? Array(repeating: HistoryDayMark.none, count: 7), color: color)
+                Text(verbatim: summary)
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            ForEach(recent) { entry in
-                LabeledContent {
-                    switch entry.event.action {
-                    case .taken: Text("Taken \(entry.event.occurredAt.formatted(date: .omitted, time: .shortened))")
-                    default: Text("Skipped")
-                    }
-                } label: {
-                    Text(verbatim: day(entry.plannedDate))
-                    if entry.isAsNeeded {
-                        Text("As Needed")
-                    } else {
-                        Text(DayPart(entry.plannedTime).title)
-                    }
-                }
-                .accessibilityElement(children: .combine)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.vertical, 4)
+            // The strip says nothing to VoiceOver, so the row reads the summary.
+            .accessibilityElement(children: .combine)
         }
     }
 
-    /// A plan date has no time and no zone, so it uses a fixed time in UTC, as the edit screen does.
-    private func day(_ date: LocalDate) -> String {
-        let calendar = SchedulePreview.utcCalendar
-        let value = calendar.date(from: DateComponents(year: date.year, month: date.month, day: date.day)) ?? .now
-        var style = Date.FormatStyle.dateTime.weekday(.abbreviated).month(.abbreviated).day()
-        style.timeZone = .gmt
-        return value.formatted(style)
+    private var summary: String {
+        week?.summary ?? String(localized: "No records in the last 7 days.")
     }
 }
