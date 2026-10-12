@@ -27,6 +27,7 @@ struct PersistenceTests {
         item.form = .unknown
         item.color = .brown
         item.intakeNote = try .custom("After the evening walk")
+        item.imageReference = "photo.png"
         try await store.save(item)
         #expect(try await store.item(id: item.id) == item)
         #expect(try await store.items() == [item, other])

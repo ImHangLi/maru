@@ -38,7 +38,9 @@ struct AsNeededCard: Equatable, Sendable {
     init(_ day: AsNeededDay, items: [Item], on date: LocalDate) {
         self.date = date
         let looks = Dictionary(uniqueKeysWithValues: items.filter { !$0.isArchived }.map {
-            ($0.id, TodaySnapshot.ItemLook(itemID: $0.id, name: $0.name, form: $0.form, color: $0.color))
+            ($0.id, TodaySnapshot.ItemLook(
+                itemID: $0.id, name: $0.name, form: $0.form, color: $0.color, imageReference: $0.imageReference
+            ))
         })
         rows = day.items.compactMap { item in
             looks[item.id].map { Row(itemID: item.id, look: $0, canRecord: true, doses: []) }

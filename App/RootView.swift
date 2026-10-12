@@ -11,6 +11,8 @@ struct RootView: View {
     /// The archive or delete confirmation on the display. It is a copy, so the alert keeps its text while it closes.
     @State private var shownEnd: ItemEndRequest?
     @State private var showsEnd = false
+    /// The one-time notice about usage statistics (spec 11.3, D051).
+    @State private var showsStatisticsNotice = false
 
     var body: some View {
         @Bindable var model = model
@@ -90,6 +92,27 @@ struct RootView: View {
         } message: {
             Text("Maru couldn’t save this change. Try again.")
         }
+        // The notice waits for the edit screen and for the alerts before it.
+        .onChange(of: noticeIsDue, initial: true) { _, isDue in
+            guard isDue else { return }
+            showsStatisticsNotice = true
+            model.analyticsNoticeDidShow()
+        }
+        .alert("Help Improve Maru?", isPresented: $showsStatisticsNotice) {
+            if model.analytics.requiresOptIn {
+                Button("Share Statistics") { model.setSharesUsageStatistics(true) }
+                Button("Not Now", role: .cancel) {}
+            } else {
+                Button("OK", role: .cancel) {}
+                Button("Turn Off") { model.setSharesUsageStatistics(false) }
+            }
+        } message: {
+            if model.analytics.requiresOptIn {
+                Text("Share counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can change this in Settings.")
+            } else {
+                Text("Maru shares counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can turn this off in Settings.")
+            }
+        }
         .onChange(of: nextAlert) { _, alert in
             guard let alert else { return }
             shownAlert = alert
@@ -100,7 +123,12 @@ struct RootView: View {
 
     /// The oldest result that waits, when the display is free for its alert.
     private var nextAlert: ReminderAlert? {
-        editorIsUp || showsAlert ? nil : model.reminderAlerts.first
+        editorIsUp || showsAlert || showsStatisticsNotice ? nil : model.reminderAlerts.first
+    }
+
+    private var noticeIsDue: Bool {
+        model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice
+            && model.reminderAlerts.isEmpty && !model.settings.isPresented
     }
 
     private var storageFailed: Bool {

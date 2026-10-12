@@ -25,7 +25,7 @@ extension TodaySnapshot {
         let looks = Dictionary(uniqueKeysWithValues: items.filter { !$0.isArchived }.map {
             ($0.id, ItemLook(
                 itemID: $0.id, name: $0.name, form: $0.form, color: $0.color,
-                remindersOff: remindersOff.contains($0.id)
+                remindersOff: remindersOff.contains($0.id), imageReference: $0.imageReference
             ))
         })
         let todays = Self.today(run.occurrences, at: now)

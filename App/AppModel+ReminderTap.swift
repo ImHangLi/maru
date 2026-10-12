@@ -67,6 +67,7 @@ extension AppModel {
     /// It never records. A certain reminder scrolls Today to its card and opens it. A reminder that is not
     /// certain asks the user to choose. A reminder of no series opens Today.
     func openReminder(_ reminder: DeliveredReminder) {
+        analytics.markUsed(.notification)
         selectedTab = .today
         today.lockedTap = nil
         today.choice = nil

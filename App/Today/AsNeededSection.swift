@@ -72,7 +72,7 @@ private struct AsNeededItemRow: View {
         HStack(spacing: 12) {
             // At the three largest text sizes the icon gives its width to the name (D013).
             if typeSize < .accessibility3 {
-                FormIcon(form: row.look.form, color: row.look.color)
+                FormIcon(form: row.look.form, color: row.look.color, photo: row.look.imageReference)
                     .frame(minWidth: 32, minHeight: 44)
             }
             // The name area opens the details, like a row of a part of the day (spec 3 P01).

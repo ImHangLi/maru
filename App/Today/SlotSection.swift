@@ -8,7 +8,6 @@ struct SlotSection: View {
     @Environment(AppModel.self) private var model
     let group: TodaySnapshot.Group
     let timeZone: TimeZone
-    let isCurrent: Bool
 
     var body: some View {
         let isFolded = model.isFolded(group)
@@ -17,18 +16,16 @@ struct SlotSection: View {
                 ForEach(group.entries) { TodayRow(entry: $0, timeZone: timeZone) }
             }
         } header: {
-            SlotHeader(group: group, isCurrent: isCurrent, isFolded: isFolded)
+            SlotHeader(group: group, isFolded: isFolded)
         }
     }
 }
 
-/// The name of a part of the day. The current part has the tint for a few seconds after a launch or a
-/// return (D020). With two or more open rows the header has "Record All" (D021). A finished part shows
-/// a disclosure chevron, and the header folds and opens the section. The title looks the same folded and open (D032).
+/// The name of a part of the day, in the text color (D050). With two or more open rows the header has
+/// "Record All" (D021). The header of a finished part folds and opens the section. It has no chevron (D050).
 private struct SlotHeader: View {
     @Environment(AppModel.self) private var model
     let group: TodaySnapshot.Group
-    let isCurrent: Bool
     let isFolded: Bool
 
     var body: some View {
@@ -38,7 +35,7 @@ private struct SlotHeader: View {
             VStack(alignment: .leading) { content }
         }
         .textCase(nil)
-        // The chevron and "Record All" come and go in place, after the commit (spec 7.2, D030).
+        // "Record All" comes and goes in place, after the commit (spec 7.2, D030).
         .motion(.state, value: [model.isFinished(group), recordAllCount >= 2])
     }
 
@@ -51,10 +48,6 @@ private struct SlotHeader: View {
                 HStack {
                     title
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .rotationEffect(.degrees(isFolded ? 0 : 90))
                 }
                 .contentShape(Rectangle())
             }
@@ -83,13 +76,6 @@ private struct SlotHeader: View {
     }
 
     private var title: some View {
-        Text(group.part.title)
-            .foregroundStyle(titleStyle)
-            .motion(.attention, value: model.today.highlightsCurrentPart)
-    }
-
-    private var titleStyle: AnyShapeStyle {
-        if isCurrent && model.today.highlightsCurrentPart { return AnyShapeStyle(.tint) }
-        return AnyShapeStyle(.primary)
+        Text(group.part.title).foregroundStyle(.primary)
     }
 }
