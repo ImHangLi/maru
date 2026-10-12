@@ -58,7 +58,7 @@ Owner decision. The owner rejected prototype variant B2. This decision supersede
 - Use fewer words. A row shows the name and the dose. The circle shows the state. The intake note and the recorded time move to the detail sheet and the correction dialog.
 - Design references are good Apple-style apps of any category, not only health apps.
 
-## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028, accent picker replaced by D021 and D025, dim and strikethrough removed by D032)
+## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028, accent picker replaced by D021 and D025, dim and strikethrough removed by D032, a part that the user opens stays open by D055)
 
 Owner decision, after the study in `docs/research/2026-10-10-visual-direction.md`.
 
@@ -227,7 +227,7 @@ Agent decision, after an owner bug report from the device: "the test notificatio
 - Every notification of Maru now shows as a banner, in the list, and with sound, also while Maru is in front. This replaces "only the test shows while Maru is in front" in D023.
 - Spec 8.2 allows a foreground check against the records, and T23 asks to avoid a misleading repeated display. Maru does not do that check yet. The reminder text is neutral, so a reminder after a record does not say that a dose is not taken.
 
-## D028 · 2026-10-11 · No toasts, animated fold, and row gestures
+## D028 · 2026-10-11 · No toasts, animated fold, and row gestures (a part that the user opens stays open by D055)
 
 Owner decisions after use on the device. The owner asked to follow Apple apps such as Health, and for every interaction to feel smooth and native.
 
@@ -857,3 +857,11 @@ Maintainer decision after use on the device.
 
 - The header of a finished part of the day has no chevron. A tap on the header still folds and opens the section. This replaces the chevron of D032.
 - The title of the current part of the day stays in the text color when the app opens or returns. This removes the opening highlight of D020 and the attention motion of D030.
+
+## D055 · 2026-10-12 · A part that the user opens stays open
+
+Maintainer decision after use on the device.
+
+- A tap that opens a finished part of the day keeps it open. It stays open after a return to the app, after a later record, and on the next days, until a tap folds it again.
+- A tap that folds a part removes the choice, so the part folds by itself again (D012, D028).
+- The choice is a display setting in `UserDefaults`, not a record. A backup does not carry it.

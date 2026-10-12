@@ -128,14 +128,19 @@ extension AppModel {
         group.entries.allSatisfy(isDone)
     }
 
-    /// Only a finished part opens and folds.
+    /// Only a finished part opens and folds. The app keeps the choice: a part that the user opens stays open
+    /// after a return and on the next days, until the user folds it again (D055).
     func toggleFold(_ group: TodaySnapshot.Group) {
         guard isFinished(group) else { return }
+        var kept = KeptOpenParts.read()
         if today.foldedParts.contains(group.part) {
             today.foldedParts.remove(group.part)
+            kept.insert(group.part)
         } else {
             today.foldedParts.insert(group.part)
+            kept.remove(group.part)
         }
+        KeptOpenParts.write(kept)
     }
 
     func isFolded(_ group: TodaySnapshot.Group) -> Bool {
@@ -153,7 +158,7 @@ extension AppModel {
     /// A part that a record finished folds after a short pause, with the same animation as a tap on its title.
     /// It must not fold at once: a part that was folded earlier, for example on another day, opens first (D028).
     private func foldParts(finishedSince before: Set<DayPart>) {
-        let parts = finishedParts.subtracting(before)
+        let parts = finishedParts.subtracting(before).subtracting(KeptOpenParts.read())
         guard !parts.isEmpty else { return }
         today.foldedParts.subtract(parts)
         Task { [weak self] in
@@ -394,7 +399,9 @@ extension AppModel {
         guard case let .loaded(snapshot) = content, let day = snapshot.today else { return }
         if today.isReturning {
             today.isReturning = false
-            let folded = Set(day.groups.filter(isFinished).map(\.part)).subtracting(focusedParts(of: day))
+            let folded = Set(day.groups.filter(isFinished).map(\.part))
+                .subtracting(focusedParts(of: day))
+                .subtracting(KeptOpenParts.read())
             withMotion(replacesToday ? .layout : nil) { today.foldedParts = folded }
         }
         // The page stays in front over midnight: read again at the next midnight of a zone of the content.
@@ -406,4 +413,21 @@ extension AppModel {
             self?.refresh()
         }
     }
+}
+
+/// The parts of the day that the user opened with a tap on the title. They do not fold by themselves (D055).
+/// The value is in `UserDefaults`, because it is a display choice and not a record (D014).
+private enum KeptOpenParts {
+    private static let key = "today.keptOpenParts"
+
+    static func read() -> Set<DayPart> {
+        let names = UserDefaults.standard.stringArray(forKey: key) ?? []
+        return Set(DayPart.allCases.filter { names.contains(name(of: $0)) })
+    }
+
+    static func write(_ parts: Set<DayPart>) {
+        UserDefaults.standard.set(DayPart.allCases.filter(parts.contains).map(name(of:)), forKey: key)
+    }
+
+    private static func name(of part: DayPart) -> String { String(describing: part) }
 }
