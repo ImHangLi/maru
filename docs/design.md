@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, and D050 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, and D056 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -172,9 +172,19 @@ Maru does not animate:
 
 Six own icons, two tones of one color, as template images: capsule, tablet, softgel, powder scoop, drop, and a jar for an unknown form (D013). The user picks the form. Until the user picks one, a known supplement name or a scanned label sets it (D043). For release, convert them to custom SF Symbols. The source SVG files are in `App/Icons.xcassets`.
 
+## Item photo
+
+An item can have one photo (D056). It is optional, and the form icon stays the fallback.
+
+- The photo replaces the form icon on a Today row, on a My Items tile, on the item detail, and on the archived list. It has the size of the icon, with a limit of 44 points in a row and 64 points on a tile, and a corner radius of one fifth of its side. It has no border and no shadow. The color of the item does not tint it.
+- The row shows the form icon first. The photo replaces it with no motion when it loads. A missing file keeps the icon.
+- At the three largest text sizes the row hides the photo, as it hides the icon (D013).
+- The photo is decoration. VoiceOver reads no image name in a row.
+- A new product that replaces an item starts with no photo.
+
 ## Add and edit
 
-One screen (spec §3 P03), in this order: name, type (supplement or medication, starts on "Supplement"), form menu (starts on "Capsule"), color menu, amount (optional, with units including IU), time slots, repeat days, note. Apple Health needs seven screens for the same result. Maru needs one.
+One screen (spec §3 P03), in this order: name, type (supplement or medication, starts on "Supplement"), form menu (starts on "Capsule"), color menu, amount (optional, with units including IU), time slots, repeat days, note, photo. Apple Health needs seven screens for the same result. Maru needs one.
 
 - A system sheet: "Cancel" at the top left, "Save" at the top right. Save is off until the draft is valid (D026).
 - The plan line is the footer of the reminder section. It states the full schedule, for example "Every day at 8:00 AM, with no end date", or the problem that keeps Save off. An amount has its own line above it.
@@ -191,6 +201,7 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - "Add a Time" opens a sheet with a time wheel. The time counts only after "Add" (spec §2.1). For the first time of a supplement the wheel starts at a time that the user already confirmed for a supplement, else at 8:00.
 - "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day" and "Every Other Day". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and it has no date picker (D036).
 - The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date".
+- The last section is "Photo (Optional)" (D056). The rows are "Choose Photo", "Take Photo", and "Remove Photo", with a preview of 56 points above them when the item has a photo. After a pick, a row with a progress view says "Removing the background…". When Maru finds one subject, the switch "Remove Background" shows, and it starts on. With no clear subject, the footer says that the photo stays as it is. Save is never off because of the photo.
 - The item detail shows "Every other day" under "Days", and a row "Next Dose" with "Today", "Tomorrow", or a weekday (D036).
 
 ## Text and accessibility

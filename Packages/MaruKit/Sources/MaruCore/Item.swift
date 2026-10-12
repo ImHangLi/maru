@@ -70,6 +70,9 @@ public struct Item: Hashable, Sendable {
     public var color: ItemColor
     public var isArchived: Bool
     public var intakeNote: IntakeNote?
+    /// The name of the photo file that the app keeps for this item, or `nil` for no photo (D056).
+    /// The core keeps only the name. The app owns the file, and a missing file shows the form icon.
+    public var imageReference: String?
 
     public init(
         id: ItemID = ItemID(),
@@ -78,7 +81,8 @@ public struct Item: Hashable, Sendable {
         form: ItemForm,
         color: ItemColor,
         isArchived: Bool = false,
-        intakeNote: IntakeNote? = nil
+        intakeNote: IntakeNote? = nil,
+        imageReference: String? = nil
     ) throws {
         self.id = id
         self.category = category
@@ -87,6 +91,7 @@ public struct Item: Hashable, Sendable {
         self.color = color
         self.isArchived = isArchived
         self.intakeNote = intakeNote
+        self.imageReference = imageReference
     }
 
     public mutating func rename(_ name: String) throws {

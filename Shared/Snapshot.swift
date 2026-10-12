@@ -22,6 +22,8 @@ struct ListEntry: Identifiable, Equatable, Sendable {
     let name: String
     let form: ItemForm
     let color: ItemColor
+    /// The photo file of the item, or `nil` (D056). The row draws the form icon until the photo loads.
+    let imageReference: String?
     /// The item has a schedule with its reminders off (T07).
     var remindersOff = false
 }
@@ -38,6 +40,8 @@ struct TodaySnapshot: Equatable, Sendable {
         let color: ItemColor
         /// The reminders of the item are off. The row stays, and the user can still record it (T07).
         var remindersOff = false
+        /// The photo file of the item, or `nil` (D056). The app draws it. The widgets draw the form icon.
+        var imageReference: String?
     }
 
     /// One row: one occurrence of today and its record.

@@ -113,17 +113,18 @@ extension LocalStore {
         try db.execute(
             sql: """
                 INSERT INTO item (
-                    id, category, name, form, color, isArchived, intakeNotePreset, intakeNoteText
+                    id, category, name, form, color, isArchived, intakeNotePreset, intakeNoteText, imageReference
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (id) DO UPDATE SET
                     category = excluded.category, name = excluded.name, form = excluded.form,
                     color = excluded.color, isArchived = excluded.isArchived,
-                    intakeNotePreset = excluded.intakeNotePreset, intakeNoteText = excluded.intakeNoteText
+                    intakeNotePreset = excluded.intakeNotePreset, intakeNoteText = excluded.intakeNoteText,
+                    imageReference = excluded.imageReference
                 """,
             arguments: [
                 item.id.text, item.category.rawValue, item.name, item.form.rawValue, item.color.rawValue,
-                item.isArchived, preset, text,
+                item.isArchived, preset, text, item.imageReference,
             ]
         )
         // The load path checks the row with the domain rules. A failure rolls back the write.
@@ -150,6 +151,7 @@ extension LocalStore {
     static func decodeItem(_ row: Row) throws -> Item {
         let preset: String? = try row.decode(forColumn: "intakeNotePreset")
         let text: String? = try row.decode(forColumn: "intakeNoteText")
+        let image: String? = try row.decode(forColumn: "imageReference")
         let note: IntakeNote? = switch (preset, text) {
         case (nil, nil): nil
         case let (preset?, nil): .preset(try IntakeNote.Preset(text: preset))
@@ -164,7 +166,8 @@ extension LocalStore {
                 form: ItemForm(text: row.decode(forColumn: "form")),
                 color: ItemColor(text: row.decode(forColumn: "color")),
                 isArchived: row.decode(forColumn: "isArchived"),
-                intakeNote: note
+                intakeNote: note,
+                imageReference: image
             )
         }
     }

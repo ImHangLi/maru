@@ -1,8 +1,50 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Choose Photo" : {
+      "comment" : "Edit screen: the button that opens the photo library to pick a photo for the item."
+    },
+    "Maru couldn’t read this photo." : {
+      "comment" : "Edit screen: the footer when the chosen file is not an image that Maru can read."
+    },
+    "Maru found no single subject, so the photo stays as it is." : {
+      "comment" : "Edit screen: the footer when the background removal found no subject or more than one. The plain crop stays."
+    },
+    "Share Usage Statistics" : {
+      "comment" : "Settings: the switch for usage statistics."
+    },
+    "Counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. Turning this off clears the data that waits to be sent." : {
+      "comment" : "Settings: the footer of the usage statistics switch."
+    },
+    "Help Improve Maru?" : {
+      "comment" : "The one-time notice about usage statistics: the title."
+    },
+    "Share Statistics" : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that turns the statistics on."
+    },
+    "Not Now" : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that leaves the statistics off."
+    },
+    "Turn Off" : {
+      "comment" : "Usage statistics notice: the button that turns the statistics off."
+    },
+    "Share counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can change this in Settings." : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the message. The statistics are off until the user agrees."
+    },
+    "Maru shares counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can turn this off in Settings." : {
+      "comment" : "Usage statistics notice: the message. The statistics are on by default outside the EU, the UK, and Switzerland."
+    },
     "Open Maru to record this dose." : {
       "comment" : "Widget: the prompt after a tap on a capsule that could not record. The system then opens the app."
+    },
+    "Photo" : {
+      "comment" : "Edit screen: the VoiceOver label of the photo of the item."
+    },
+    "Photo (Optional)" : {
+      "comment" : "Edit screen: the header of the section with the photo of the item."
+    },
+    "Reading the photo…" : {
+      "comment" : "Edit screen: the status while Maru reads the chosen photo."
     },
     "Record a Dose" : {
       "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts."
@@ -595,6 +637,15 @@
     "Remove" : {
       "comment" : "Edit screen: the text “Remove”."
     },
+    "Remove Background" : {
+      "comment" : "Edit screen: the switch that shows the item photo with its background removed. Off keeps the plain crop."
+    },
+    "Remove Photo" : {
+      "comment" : "Edit screen: the button that removes the photo of the item. The form icon shows again."
+    },
+    "Removing the background…" : {
+      "comment" : "Edit screen: the status while Maru finds the subject of the photo."
+    },
     "Repeat" : {
       "comment" : "Edit screen: the text “Repeat”."
     },
@@ -694,6 +745,9 @@
     "Take Now" : {
       "comment" : "Today: a row action of an as-needed item. Records one dose now."
     },
+    "Take Photo" : {
+      "comment" : "Edit screen: the button that opens the camera to take a photo for the item."
+    },
     "Taken" : {
 
     },
@@ -774,6 +828,9 @@
     },
     "To scan a label, allow the camera for Maru in Settings." : {
       "comment" : "Edit screen: the text of the alert when the camera is off for Maru."
+    },
+    "To take a photo, allow the camera for Maru in Settings." : {
+      "comment" : "Edit screen: the message of the alert when the camera is off for Maru and the user taps Take Photo."
     },
     "Today" : {
       "comment" : "The title of the first tab and of its page."
