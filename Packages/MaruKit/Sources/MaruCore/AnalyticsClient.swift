@@ -30,7 +30,9 @@ public struct AnalyticsPreference {
         "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU",
         "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
         "IS", "LI", "NO", "GB", "CH",
-        "GF", "GP", "MQ", "RE", "YT",
+        "GF", "GP", "MQ", "RE", "YT", "MF", "AX",
+        // Territories with the UK GDPR or a law of the same kind.
+        "GI", "JE", "GG", "IM",
     ]
 
     public static func requiresOptIn(regionCode: String?) -> Bool {
