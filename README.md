@@ -40,7 +40,7 @@ Why not Apple Health or an alarm? What if I forget to record? Read [the short an
 
 ## Privacy
 
-Maru stores everything on your iPhone. Your items and records are in a local database, protected by iOS file encryption. It makes no network requests by itself and contains no analytics. The only web page is the feedback form, which opens when you tap it. Reminders are local notifications. Read [PRIVACY.md](PRIVACY.md) for the details.
+Maru stores everything on your iPhone. Your items and records are in a local database, protected by iOS file encryption. It has no account. A build with an analytics key can send simple usage statistics that never include item names, doses, or intake times. They are on by default outside the EU, the EEA, the UK, and Switzerland, and a switch in Settings turns them off. The only web page is the feedback form, which opens when you tap it. Reminders are local notifications. Read [PRIVACY.md](PRIVACY.md) for the details.
 
 ## Build
 

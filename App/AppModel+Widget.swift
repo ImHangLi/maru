@@ -7,6 +7,7 @@ extension AppModel {
     /// A tap on a widget opens Today at the slot of the link (D048). The link has no health data.
     func openWidgetLink(_ url: URL) {
         guard url.scheme == "maru", url.host() == "today" else { return }
+        analytics.markUsed(.widget)
         selectedTab = .today
         resetHistory()
         pendingWidgetPart = url.pathComponents.dropFirst().first.flatMap(DayPart.init(linkName:))
@@ -34,6 +35,7 @@ extension AppModel {
     /// In every other case, and when the database is locked or the commit fails, it records nothing, never
     /// shows a success, and asks the system to open Maru (spec 7.2).
     func takeFromWidget(_ intent: TakeDoseIntent) async throws {
+        analytics.markUsed(.widget)
         // The generation comes before the first await. A restore that ends after this line changes the generation
         // of the store, so the record is refused (D040). A restore that ended before it changed the epoch.
         let generation = dataGeneration

@@ -149,10 +149,9 @@ extension AppModel {
         // with the old generation.
         dataGeneration = generation
         content = .loading
-        // The timers of Today stay: the day change and the opening highlight do not belong to the data.
+        // The day change timer of Today stays: it does not belong to the data.
         var today = TodayState()
         today.dayChange = self.today.dayChange
-        today.highlightRun = self.today.highlightRun
         self.today = today
         resetHistory()
         // A read of the history that started before the restore does not show.
