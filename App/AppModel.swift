@@ -1,4 +1,5 @@
 import Foundation
+import MaruAnalytics
 import MaruCore
 import MaruDatabase
 import Observation
@@ -45,6 +46,10 @@ final class AppModel {
 
     /// Only the operations of the model use the store. A view calls an operation (spec 6).
     let store: AppStore
+    /// Product analytics (spec 11). It never holds an item name, a dose, an intake time, or an ID. See `AppModel+Analytics.swift`.
+    let analytics = AppModel.makeAnalytics()
+    /// The one-time notice about usage statistics waits for the display.
+    var analyticsNotice = false
     /// The state of the Today page that is not in the store. See `AppModel+Today.swift`.
     var today = TodayState()
     /// The history page, open over Today. See `AppModel+History.swift`.
@@ -145,6 +150,7 @@ final class AppModel {
         }
         // A restore committed, and the model did not take its generation yet. The restore reads again then.
         if case .failed(.replaced) = content { return }
+        if case let .failed(error) = content { reportCoreError(.read, error) }
         var content = content
         if case var .loaded(snapshot) = content, snapshot.today != nil {
             snapshot.today?.apply(heldRecords)
@@ -239,6 +245,8 @@ final class AppModel {
     /// A short return keeps the page. A return after `sessionTimeout` is a new session and opens Today (spec 1).
     /// Each return reads again, because the day or the time zone can be another one.
     func didBecomeActive() {
+        // The summary of an earlier day. It queues in memory, and the sender runs off the main thread.
+        analytics.sendPendingUsage()
         // The user can change the permission in the Settings app while Maru is away (T14).
         readNotificationPermission()
         // The first activation of a process has no time in the background. `refresh` already runs.

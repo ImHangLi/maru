@@ -119,6 +119,7 @@ extension AppModel {
     }
 
     func loadHistory() {
+        analytics.markUsed(.history)
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else {
             history.days = []

@@ -313,6 +313,7 @@ extension AppModel {
     }
 
     private func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
+        analytics.markUsed(.record)
         let finishedBefore = finishedParts
         for record in records {
             today.pending[record.occurrenceID] = nil

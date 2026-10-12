@@ -14,6 +14,7 @@ struct SettingsView: View {
     /// 30 minutes until the user picks one: the middle delay of D021, and the delay of Apple Health.
     @State private var followUpInterval = FollowUpInterval.minutes30
     @State private var showsNames = true
+    @State private var sharesStatistics = false
 
     var body: some View {
         NavigationStack {
@@ -85,6 +86,19 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.menu)
                 }
+                if model.analyticsIsAvailable {
+                    Section {
+                        Toggle("Share Usage Statistics", isOn: Binding(
+                            get: { sharesStatistics },
+                            set: {
+                                sharesStatistics = $0
+                                model.setSharesUsageStatistics($0)
+                            }
+                        ))
+                    } footer: {
+                        Text("Counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. Turning this off clears the data that waits to be sent.")
+                    }
+                }
                 DataSection()
                 FeedbackSection()
                 #if DEBUG
@@ -116,6 +130,7 @@ struct SettingsView: View {
             followUpCount = followUp?.count
             if let followUp { followUpInterval = followUp.interval }
             showsNames = model.showsNamesInReminders
+            sharesStatistics = model.sharesUsageStatistics
         }
         // A return from the Settings app shows the new permission (T14).
         .onChange(of: scenePhase) { _, phase in

@@ -19,6 +19,7 @@ extension AppModel {
     /// Maru can not come to the front from a background action. So the model prepares what a tap on the
     /// reminder shows, and a notification tells the user to open Maru.
     func takeReminder(_ reminder: DeliveredReminder) async {
+        analytics.markUsed(.notification)
         let now = Date()
         // The target comes from this read, so the record carries its generation (D040).
         let generation = dataGeneration

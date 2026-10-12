@@ -94,11 +94,16 @@ extension AppModel {
             DraftFile.remove(key: session.draftKey)
             if editor?.id == session.id { editor = nil }
             return refresh()
+        } catch {
+            reportCoreError(.save, error)
+            throw error
         }
 
         DraftFile.remove(key: session.draftKey)
         if editor?.id == session.id { editor = nil }
         refresh()
+        analytics.capture(.itemSaved)
+        offerAnalyticsNotice()
 
         // A replacement with no time still runs the queue: the archived old item can hold a series and
         // follow-ups. The result then reports the removal of those.
