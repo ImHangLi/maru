@@ -4,16 +4,6 @@ import MaruDatabase
 
 /// What the detail page of one item shows (spec 3 P04).
 struct ItemDetail: Equatable, Sendable {
-    /// One recorded occurrence or as-needed dose: its date and time, and the event that is valid now.
-    struct Recent: Identifiable, Equatable, Sendable {
-        let id: OccurrenceID
-        let plannedDate: LocalDate
-        let plannedTime: WallClockTime
-        /// `true` for an as-needed dose (D021). It has no slot, so it shows no part of the day.
-        let isAsNeeded: Bool
-        let event: IntakeEvent
-    }
-
     /// The day of the next dose of a plan that repeats every second day (D036).
     struct NextDose: Equatable, Sendable {
         let date: LocalDate
@@ -21,45 +11,30 @@ struct ItemDetail: Equatable, Sendable {
         let daysFromToday: Int
     }
 
-    /// The number of days that the recent records cover, today included.
-    static let recentDays = 7
-
     let item: Item
     /// `nil` for an item with no time (T02).
     let schedule: Schedule?
     /// `nil` for a plan that does not repeat every second day.
     let nextDose: NextDose?
-    /// Taken and skipped occurrences of the last `recentDays` days, newest first. An undone record does not show.
-    let recent: [Recent]
+    /// The strip of the last 7 days (D054). `nil` when the item had no planned dose and no taken as-needed dose.
+    let week: HistoryItemWeek?
 }
 
 extension AppStore {
-    /// The item, its schedule, and its recent records. `nil` when the store has no such item.
-    ///
-    /// The records come from the intake events, not from the plan, so a time that the user changed
-    /// still shows its record (D019).
+    /// The item, its schedule, and its week strip. `nil` when the store has no such item.
     func detail(of itemID: ItemID, at now: Date, deviceTimeZone: NamedTimeZone?) async throws(StorageError) -> ItemDetail? {
         let store = try open()
         guard let item = try await store.item(id: itemID) else { return nil }
         let schedule = try await store.schedules(of: itemID).first
-        let since = LocalDate(now, in: deviceTimeZone ?? .utc).adding(days: 1 - ItemDetail.recentDays)
-        let occurrences = try await store.recordedOccurrences(of: itemID, since: since)
-        let doses = try await store.recordedAsNeededOccurrences(of: itemID, since: since)
-        let records = try await store.records(of: occurrences.map(\.id) + doses.map(\.id))
-        let scheduled = occurrences.map { ($0.id, $0.plannedDate, $0.plannedTime, false) }
-        let asNeeded = doses.map { ($0.id, $0.plannedDate, $0.plannedTime, true) }
-        // An item can have both kinds in the range, for example after the user removed its times.
-        let recent = (scheduled + asNeeded)
-            .compactMap { id, date, time, isAsNeeded in
-                records[id]?.currentEvent.map {
-                    ItemDetail.Recent(id: id, plannedDate: date, plannedTime: time, isAsNeeded: isAsNeeded, event: $0)
-                }
-            }
-            .sorted { ($0.plannedDate, $0.plannedTime, $0.event.occurredAt) > ($1.plannedDate, $1.plannedTime, $1.event.occurredAt) }
+        // The same days and the same rule as the rows of History, so the strip cannot disagree with them (D054).
+        let zone = deviceTimeZone ?? .utc
+        let today = LocalDate(now, in: zone)
+        let page = try await store.history(before: today.adding(days: 1), days: 7, deviceTimeZone: zone)
+        let week = History.week(days: page.days, today: today, now: now).first { $0.itemID == itemID }
         let nextDose = schedule.flatMap { schedule in
             deviceTimeZone.flatMap { Self.nextDose(of: schedule, at: now, deviceTimeZone: $0) }
         }
-        return ItemDetail(item: item, schedule: schedule, nextDose: nextDose, recent: recent)
+        return ItemDetail(item: item, schedule: schedule, nextDose: nextDose, week: week)
     }
 
     /// The first date from today on which a plan of every second day has a time that is still to come.

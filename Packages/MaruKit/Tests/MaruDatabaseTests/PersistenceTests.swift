@@ -108,8 +108,7 @@ struct PersistenceTests {
         #expect(try await store.items() == [archived, new])
         #expect(try await store.schedules(of: seed.item.id) == [seed.schedule])
         #expect(try await store.schedules(of: new.id) == [schedule])
-        #expect(try await store.recordedOccurrences(of: seed.item.id, since: Fixtures.date(2026, 1, 1)) == [seed.occurrence])
-        #expect(try await store.recordedOccurrences(of: new.id, since: Fixtures.date(2026, 1, 1)).isEmpty)
+        #expect(try await store.records(of: [seed.occurrence.id])[seed.occurrence.id]?.events.count == 1)
         await #expect(throws: StorageError.conflict) { try await store.replace(ItemID(), with: new, schedule: nil) }
     }
 

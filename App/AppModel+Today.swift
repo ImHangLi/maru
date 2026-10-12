@@ -48,18 +48,12 @@ struct TodayState {
     /// ends, so a read in that time can show the new event before a success. The page shows this record
     /// until the transaction ends (spec 7.2, D014, T19).
     var confirmed: [OccurrenceID: OccurrenceRecord] = [:]
-    /// The finished parts of the day that show one line. Set when the page shows after a launch or a return,
-    /// by a tap on a title, and a short time after the record that finishes a part (D012, D028).
-    var foldedParts: Set<DayPart> = []
     /// Counts the commits, for the success haptic. It changes only after a commit (spec 7.2).
     var commitCount = 0
     var failure: TodayFailure?
-    /// The next content that shows comes from a launch or a return to the app.
-    var isReturning = true
     /// Refreshes Today when the day changes while the app stays in front.
     var dayChange: Task<Void, Never>?
-    /// The rows of a tapped reminder. Today scrolls to their card and keeps it open until the app leaves the front,
-    /// or until the user records every row of it (D028).
+    /// The rows of a tapped reminder. Today scrolls to their card until the app leaves the front (D028).
     var focus: TodayFocus?
     /// The pages over Today. A row action of the context menu opens the detail of its item here (D028).
     var path: [ItemID] = []
@@ -121,54 +115,6 @@ extension AppModel {
     /// Only a retry that succeeds makes it done (D014, T19).
     func isDone(_ entry: TodaySnapshot.Entry) -> Bool {
         !entry.isOpen && today.pending[entry.id] == nil
-    }
-
-    /// Every row of the part is done. Only a finished part folds.
-    func isFinished(_ group: TodaySnapshot.Group) -> Bool {
-        group.entries.allSatisfy(isDone)
-    }
-
-    /// Only a finished part opens and folds. The app keeps the choice: a part that the user opens stays open
-    /// after a return and on the next days, until the user folds it again (D055).
-    func toggleFold(_ group: TodaySnapshot.Group) {
-        guard isFinished(group) else { return }
-        var kept = KeptOpenParts.read()
-        if today.foldedParts.contains(group.part) {
-            today.foldedParts.remove(group.part)
-            kept.insert(group.part)
-        } else {
-            today.foldedParts.insert(group.part)
-            kept.remove(group.part)
-        }
-        KeptOpenParts.write(kept)
-    }
-
-    func isFolded(_ group: TodaySnapshot.Group) -> Bool {
-        isFinished(group) && today.foldedParts.contains(group.part)
-    }
-
-    /// The pause between the record that finishes a part and its fold, so the user sees the last check first.
-    private static let foldDelay = Duration.milliseconds(700)
-
-    private var finishedParts: Set<DayPart> {
-        guard case let .loaded(snapshot) = content, let day = snapshot.today else { return [] }
-        return Set(day.groups.filter(isFinished).map(\.part))
-    }
-
-    /// A part that a record finished folds after a short pause, with the same animation as a tap on its title.
-    /// It must not fold at once: a part that was folded earlier, for example on another day, opens first (D028).
-    private func foldParts(finishedSince before: Set<DayPart>) {
-        let parts = finishedParts.subtracting(before).subtracting(KeptOpenParts.read())
-        guard !parts.isEmpty else { return }
-        today.foldedParts.subtract(parts)
-        Task { [weak self] in
-            try? await Task.sleep(for: Self.foldDelay)
-            guard let self else { return }
-            // An undo in the pause leaves the part open.
-            let ready = parts.intersection(finishedParts)
-            guard !ready.isEmpty else { return }
-            withMotion(.layout) { today.foldedParts.formUnion(ready) }
-        }
     }
 
     // MARK: Record transaction
@@ -316,7 +262,6 @@ extension AppModel {
 
     private func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
         analytics.markUsed(.record)
-        let finishedBefore = finishedParts
         for record in records {
             today.pending[record.occurrenceID] = nil
         }
@@ -330,7 +275,6 @@ extension AppModel {
         today.choice?.apply(records)
         historyDidCommit(records)
         today.commitCount += 1
-        foldParts(finishedSince: finishedBefore)
         if backfilled.isEmpty {
             // A read that started before the commit can show the old state, so read again after it.
             refreshAfterRunningRead()
@@ -393,18 +337,8 @@ extension AppModel {
     // MARK: Launch, return, and day change
 
     /// Runs each time new content shows.
-    ///
-    /// - Parameter replacesToday: The page showed a day before this content. A part that folds on a return
-    ///   then uses the layout motion, like a tap on its title. At a launch the page shows folded (D030).
-    func todayDidShow(replacesToday: Bool) {
+    func todayDidShow() {
         guard case let .loaded(snapshot) = content, let day = snapshot.today else { return }
-        if today.isReturning {
-            today.isReturning = false
-            let folded = Set(day.groups.filter(isFinished).map(\.part))
-                .subtracting(focusedParts(of: day))
-                .subtracting(KeptOpenParts.read())
-            withMotion(replacesToday ? .layout : nil) { today.foldedParts = folded }
-        }
         // The page stays in front over midnight: read again at the next midnight of a zone of the content.
         today.dayChange?.cancel()
         let interval = day.expiresAt.timeIntervalSinceNow + 1
@@ -414,21 +348,4 @@ extension AppModel {
             self?.refresh()
         }
     }
-}
-
-/// The parts of the day that the user opened with a tap on the title. They do not fold by themselves (D055).
-/// The value is in `UserDefaults`, because it is a display choice and not a record (D014).
-private enum KeptOpenParts {
-    private static let key = "today.keptOpenParts"
-
-    static func read() -> Set<DayPart> {
-        let names = UserDefaults.standard.stringArray(forKey: key) ?? []
-        return Set(DayPart.allCases.filter { names.contains(name(of: $0)) })
-    }
-
-    static func write(_ parts: Set<DayPart>) {
-        UserDefaults.standard.set(DayPart.allCases.filter(parts.contains).map(name(of:)), forKey: key)
-    }
-
-    private static func name(of part: DayPart) -> String { String(describing: part) }
 }

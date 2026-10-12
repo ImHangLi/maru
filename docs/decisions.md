@@ -58,7 +58,7 @@ Owner decision. The owner rejected prototype variant B2. This decision supersede
 - Use fewer words. A row shows the name and the dose. The circle shows the state. The intake note and the recorded time move to the detail sheet and the correction dialog.
 - Design references are good Apple-style apps of any category, not only health apps.
 
-## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028, accent picker replaced by D021 and D025, dim and strikethrough removed by D032, a part that the user opens stays open by D055)
+## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028, accent picker replaced by D021 and D025, dim and strikethrough removed by D032, a part that the user opens stays open by D055, folding removed by D057)
 
 Owner decision, after the study in `docs/research/2026-10-10-visual-direction.md`.
 
@@ -227,7 +227,7 @@ Agent decision, after an owner bug report from the device: "the test notificatio
 - Every notification of Maru now shows as a banner, in the list, and with sound, also while Maru is in front. This replaces "only the test shows while Maru is in front" in D023.
 - Spec 8.2 allows a foreground check against the records, and T23 asks to avoid a misleading repeated display. Maru does not do that check yet. The reminder text is neutral, so a reminder after a record does not say that a dose is not taken.
 
-## D028 · 2026-10-11 · No toasts, animated fold, and row gestures (a part that the user opens stays open by D055)
+## D028 · 2026-10-11 · No toasts, animated fold, and row gestures (a part that the user opens stays open by D055, folding removed by D057)
 
 Owner decisions after use on the device. The owner asked to follow Apple apps such as Health, and for every interaction to feel smooth and native.
 
@@ -293,9 +293,9 @@ Owner decision. Maru becomes a public repository under the MIT license. This rep
 - The repository holds no personal health data, no local paths, and no credentials. Records refer to private work only as history, without links to private branches or local files.
 - `docs/process.md` applies to every contributor. The rules for agents that work for the maintainer are in `AGENTS.md`.
 
-## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, chevron removed by D050)
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, chevron removed by D050, folding removed by D057)
 
-## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, timeline on the main History page replaced by D054)
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, timeline on the main History page replaced by D054, folding removed by D057)
 
 Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
 
@@ -929,14 +929,14 @@ Backup (D040):
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw the screen. CI builds the app. The background removal, the camera, and the real size of a row need a check on a real iPhone. The Simulator may fail the background removal and then shows the crop. Check with a bottle on a table, with a bottle in a hand, and with two bottles, for T29. Check a missing file and a locked iPhone.
 
-## D050 · 2026-10-12 · Plain slot header: no chevron, no opening highlight
+## D050 · 2026-10-12 · Plain slot header: no chevron, no opening highlight (folding removed by D057)
 
 Maintainer decision after use on the device.
 
 - The header of a finished part of the day has no chevron. A tap on the header still folds and opens the section. This replaces the chevron of D032.
 - The title of the current part of the day stays in the text color when the app opens or returns. This removes the opening highlight of D020 and the attention motion of D030.
 
-## D055 · 2026-10-12 · A part that the user opens stays open
+## D055 · 2026-10-12 · A part that the user opens stays open (folding removed by D057)
 
 Maintainer decision after use on the device.
 
@@ -966,3 +966,17 @@ Agent detail:
 - Test (D016): one, for the strip marks with a half-taken day, an as-needed dose, and a dose of today that is not due yet.
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in dark mode and at the largest text sizes, the push from the graph, the alerts from a log, and VoiceOver need a check on a real iPhone.
+
+## D057 · 2026-10-12 · Today never folds, and the item detail shows the week strip
+
+Maintainer decision on 2026-10-12, after use on the device.
+
+- Every part of the day on Today always shows its rows. A part folds never: not after a launch, not after a return to the app, not after the last record, and not by a tap on its header. This replaces the fold rules of D012, D028, D032, D050, and D055.
+- The header of every part is the plain title. "Record All" stays on a part with two or more open rows (D021).
+- The choice of D055 and its `UserDefaults` key are gone. The app does not read the old key, and a stale value does no harm.
+- A tapped reminder still scrolls to its part (D028). The scroll was the only use of the focus that remains.
+- In the item detail, the section "Last 7 Days" shows the strip of 7 capsules of D054 in place of the list of records. One view draws the strip in History and in the detail. `History.week` computes it, so the two cannot disagree. A line under the strip counts the days, for example "Taken on 5 of the last 7 days".
+- The detail has no tap on the strip. The log of an item needs the History page state, and the detail does not hold it. The History tab has the item log.
+- The store reads `recordedOccurrences` and `recordedAsNeededOccurrences` are gone, because only the old list used them.
+
+Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in the detail at the largest text sizes and with VoiceOver need a check on a real iPhone.

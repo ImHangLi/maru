@@ -120,17 +120,8 @@ extension AppModel {
         ])
     }
 
-    /// The parts of the day with a focused row.
-    func focusedParts(of day: TodaySnapshot) -> Set<DayPart> {
-        guard let keys = today.focus?.keys else { return [] }
-        return Set(day.groups.filter { $0.entries.contains { keys.contains($0.occurrence.key) } }.map(\.part))
-    }
-
     func focus(_ keys: Set<OccurrenceKey>) {
         today.focus = TodayFocus(keys: keys)
-        if case let .loaded(snapshot) = content, let day = snapshot.today {
-            today.foldedParts.subtract(focusedParts(of: day))
-        }
     }
 
     private func resolve(_ reminder: DeliveredReminder) async {
