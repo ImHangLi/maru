@@ -416,6 +416,8 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 
 ### 11.3 同意及生命周期
 
+> D051 changes the default: analytics is on by default outside the EU, the EEA, the UK, and Switzerland, with a one-time notice and a switch in Settings. In those regions the user opts in first. The rules below apply to the opt-in regions.
+
 - 分析默认关闭。首项计划保存后可在合适位置一次性提供可忽略的“帮助改进 App”说明，设置中始终可改；不在启动前阻断使用。
 - 同意前不初始化第三方 SDK、不建立第三方识别身份、不发配置请求；也不事后补传同意前的使用历史。
 - 仅同意后生成独立安装标识。它是可关联的假名标识，不是匿名证明；不能关联邮件、药品 ItemID 或其他应用身份。

@@ -9,6 +9,7 @@ let package = Package(
         .library(name: "MaruCore", targets: ["MaruCore"]),
         .library(name: "MaruDatabase", targets: ["MaruDatabase"]),
         .library(name: "MaruNotifications", targets: ["MaruNotifications"]),
+        .library(name: "MaruAnalytics", targets: ["MaruAnalytics"]),
     ],
     dependencies: [
         // Pinned to one release. See docs/third-party-licenses.md before you change the version.
@@ -23,7 +24,10 @@ let package = Package(
         ),
         // The only target that imports UserNotifications. The reminder rules are in `MaruCore`.
         .target(name: "MaruNotifications", dependencies: ["MaruCore"], resources: [.process("Resources")]),
+        // The only sender of analytics events. It uses URLSession and no vendor SDK (D052).
+        .target(name: "MaruAnalytics", dependencies: ["MaruCore"]),
         .testTarget(name: "MaruCoreTests", dependencies: ["MaruCore"]),
+        .testTarget(name: "MaruAnalyticsTests", dependencies: ["MaruCore", "MaruAnalytics"]),
         .testTarget(name: "MaruNotificationsTests", dependencies: ["MaruCore", "MaruNotifications"]),
         .testTarget(
             name: "MaruDatabaseTests",

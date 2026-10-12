@@ -10,6 +10,30 @@
     "Maru found no single subject, so the photo stays as it is." : {
       "comment" : "Edit screen: the footer when the background removal found no subject or more than one. The plain crop stays."
     },
+    "Share Usage Statistics" : {
+      "comment" : "Settings: the switch for usage statistics."
+    },
+    "Counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. Turning this off clears the data that waits to be sent." : {
+      "comment" : "Settings: the footer of the usage statistics switch."
+    },
+    "Help Improve Maru?" : {
+      "comment" : "The one-time notice about usage statistics: the title."
+    },
+    "Share Statistics" : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that turns the statistics on."
+    },
+    "Not Now" : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that leaves the statistics off."
+    },
+    "Turn Off" : {
+      "comment" : "Usage statistics notice: the button that turns the statistics off."
+    },
+    "Share counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can change this in Settings." : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the message. The statistics are off until the user agrees."
+    },
+    "Maru shares counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can turn this off in Settings." : {
+      "comment" : "Usage statistics notice: the message. The statistics are on by default outside the EU, the UK, and Switzerland."
+    },
     "Open Maru to record this dose." : {
       "comment" : "Widget: the prompt after a tap on a capsule that could not record. The system then opens the app."
     },

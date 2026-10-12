@@ -13,10 +13,29 @@ Maru asks iOS to encrypt the database file while your iPhone is locked. When Mar
 
 ## What Maru does not do
 
-- It makes no network requests by itself. It has no server and no account.
-- It contains no analytics, advertising, or crash-reporting code.
+- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the request of the App Store for the tip prices when you open Settings.
+- It contains no advertising or crash-reporting code.
 - It does not read your contacts, your location, or the advertising identifier.
 - It does not read from or write to Apple Health.
+
+## Usage statistics
+
+A build of Maru that has an analytics project key can send simple usage statistics to PostHog. A build with no key has no switch and sends nothing. This section applies to a build with a key.
+
+- Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".
+- Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on in the notice or in Settings.
+- How Maru picks the rule: it uses the region setting of your iPhone, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or an iPhone with another region setting, gets the rule of that setting.
+- What Maru sends: only these events and fields.
+  - `setup_step`: that an item was saved.
+  - `daily_usage_summary`: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
+  - `core_error`: whether a save or a read failed, with one of five fixed codes.
+  - `feedback_entry`: that you tapped "Send Feedback".
+  - `purchase_result`: a fixed product and result. Maru has no purchase yet, so it sends none.
+- What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
+- Each request also has the app version, the major version of iOS, and a random install ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location.
+- No session recording, no screen capture, and no automatic capture of taps or screens.
+- If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage flags. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
+- Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
 
 ## Camera
 
@@ -38,6 +57,10 @@ The name suggestions on the add screen come from a list inside the app. The name
 ## Feedback
 
 Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.
+
+## Tips
+
+Settings has a "Support Maru" section with three optional tips. A tip unlocks nothing. The purchase goes through the App Store. Apple handles your payment and your Apple Account, and Maru gets no payment data or account data. Maru does not send item names, doses, or records with a tip. Maru loads the tip prices from the App Store only when you open Settings.
 
 ## Notifications
 
@@ -62,4 +85,4 @@ Your iPhone backup, in iCloud or on a computer, can include Maru's data and the 
 
 ## Changes
 
-A future version may add optional usage statistics. If it does, they will be off until you turn them on, and they will never include item names, doses, or intake times. This file will change before the app does.
+This file will change before the app does.

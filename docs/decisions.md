@@ -107,7 +107,7 @@ Owner decision. The owner said that the app has too many tests (137 after three 
 - An implementation brief and a review brief state this limit. A reviewer does not ask for more tests unless a required behavior has none.
 - A cleanup pass removes existing tests that do not meet this rule.
 
-## D017 · 2026-10-11 · English first
+## D017 · 2026-10-11 · English first (replaced by D051 for the first public release)
 
 Owner decision. The first release is in English. This includes the App Store screenshots and all store text. Simplified Chinese is optional and can follow later. This replaces "ship `en` and `zh-Hans` first" in `AGENTS.md`. Chat with the owner stays in Chinese.
 
@@ -850,6 +850,48 @@ The maintainer asked for this on 2026-10-12. Users see no change.
 - `AppStore`: one helper opens the store for both record transactions. The `history` and `historyCounts` forwarders are gone.
 - Tests and helpers: `noTypeCarriesInventoryFields`, `DoseTests`, `writerSetting`, and `WidgetDay.hasOpenDose`.
 - `LocalStore+Move.swift` is now `LocalStore+Adopt.swift`.
+
+## D051 · 2026-10-12 · Release plan: full V1 scope, store name, six languages, analytics on by default
+
+Maintainer decisions for the App Store release. The plan is in `docs/release-plan.md`. The research is in `docs/research/2026-10-12-store-name-and-languages.md`.
+
+- Scope: the full milestones B and C. The first release has analytics, a supporter purchase, the optional photo, and six languages. This replaces the trimmed scope that the agent recommended.
+- Store name: "Maru: Know What You Took". Subtitle: "Supplement & Pill Reminder". "Did I Take It?" is in the names of six or more apps.
+- Languages: en, zh-Hans, ja, es, de, and ko. This replaces "English first" of D017 for the first public release. The China mainland storefront waits, because it needs an ICP filing.
+- Analytics: on by default, with a one-time notice and a switch in Settings. In the EU, the EEA, the UK, and Switzerland, the user opts in first (GDPR and the ePrivacy rules). This changes spec §11.3. All other rules of spec §11 stay: no names, doses, intake times, or item IDs leave the device.
+- Marketing: a landing page on an own domain. The maintainer buys the domain.
+
+## D053 · 2026-10-12 · Optional supporter tips with StoreKit 2
+
+The maintainer asked for an optional supporter purchase. Spec 14 C, spec 9, T35, and T48 apply. The agent made these decisions.
+
+- Three consumable tips: `com.imhangli.maru.tip.small`, `.medium`, and `.large`. Settings has a "Support Maru" section with one button for each tip. The button shows `displayName` and `displayPrice` from StoreKit. Prices are set in App Store Connect and not in code.
+- Nothing is locked. A tip is a consumable with no entitlement, so the app stores no purchase state and has no "Restore Purchases" button. A tip never reads or writes health data.
+- `App/Support/SupportStore.swift` is the only code that imports StoreKit. `MaruCore` and `MaruDatabase` do not. The Settings view calls the store.
+- The app starts `Transaction.updates` at launch in an unstructured task. The task waits for the system, so the launch does not wait (T35). The store loads the products only when the section shows.
+- Every transaction is finished. A verified, not refunded transaction shows one line of thanks. A cancel shows nothing. A pending tip shows "waits for approval". A failure or an unverified transaction shows "did not go through". A refund shows nothing. In all cases the app stays as it is (T48).
+- `purchase_result` (spec 11.5) is not sent. The app has no analytics client yet (spec 11.3). Add the event with the analytics client.
+- `Config/Maru.storekit` has the three tips for local tests. `project.yml` defines the `Maru` scheme with this file in the Run action. The other scheme actions keep the default configurations.
+- Copy is English only (D017). The new strings are not in the String Catalog yet. The sync is a known gap in `docs/status.md`.
+
+Not verified: no app build ran on the Mac of the maintainer, and nobody bought a tip. CI builds the app. Needs a check in a simulator or on an iPhone with the StoreKit configuration: a buy, a cancel, a pending tip, a failure, a refund from the StoreKit transaction manager, and a tip that ends after a relaunch. App Store Connect needs the three products before a TestFlight build.
+
+## D052 · 2026-10-12 · Product analytics: allowlist, region default, own sender
+
+Agent decisions for the analytics part of D051. They follow spec §10 and §11. Spec §11.3 says "off by default". D051 replaces that with the region rule below.
+
+- Transport: a minimal `URLSession` sender to the PostHog capture API (`POST {host}/batch`), in the new `MaruAnalytics` target. It is not the PostHog iOS SDK. The SDK has many automatic captures and integrations, and spec §11.4 asks to disable all of them and to audit the network traffic. A sender with no automatic capture needs no such audit, and it adds no dependency, so `docs/third-party-licenses.md` has no change. Each event has `$process_person_profile: false` and `$geoip_disable: true`.
+- Allowlist: `AnalyticsEvent` in `MaruCore` holds the schema of spec §11.5. Its init rejects an unknown event, an unknown field, and a value outside the allowed values (T45). The app builds events with factories that take enums. A test sends each factory result through the checked init.
+- Fields that the spec lists but the app does not send yet: `setup_step` has only `step = item_saved`, with no scan or timing field. `daily_usage_summary` has four flags: record, history, notification, widget. It has no "edit" flag. `feedback_entry` has no "sent" field, because the app cannot know if the user sent the form. `purchase_result` is in the schema, and no code sends it, because Maru has no purchase yet. Add a field in the change that first sends it.
+- Region: `Locale.current.region`. The opt-in set is the EU member states, Iceland, Liechtenstein, Norway, the UK, Switzerland, six outermost regions of France, Åland, Gibraltar, Jersey, Guernsey, and the Isle of Man. A missing region gets the opt-in rule. The limit: the region setting is not the place of the user.
+- Default "on" starts only after the one-time notice shows (after the first item save, when no sheet or alert is open). In an opt-in region the same notice asks, and the answer "Not Now" leaves it off. An explicit choice in Settings always wins.
+- A build with an empty key (the default) has no switch, no notice, no client, and no network request. The key and the host come from the build settings `MARU_ANALYTICS_KEY` and `MARU_ANALYTICS_HOST`, through two Info.plist keys. The default host is the PostHog US cloud. Change it for an EU project.
+- Daily summary: local flags in `UserDefaults`, one bit for each part and day. The summary of a day goes out on the next day that the app runs. A day with no flag has no summary. `day_index` counts from the first flag after analytics became active, not from the install.
+- Off (T43): the client stops, the memory queue clears, the install ID goes, and the local flags go. A new ID is made at the next opt-in. The client cannot delete data on the server, because the spec forbids an admin key in the app. A deletion request needs the install ID, and the app does not show it yet. This is an open gap.
+- Queue (T44): in memory only, at most 100 events, at most 3 days old, 20 events for each request, sent 5 seconds after the first event. After a failed request nothing is sent for 5 minutes. No timer wakes the device. A refused batch (4xx other than 408 and 429) is dropped.
+- Open items for the maintainer: turn on "Discard client IP data" in the PostHog project. Choose the host region. Check the privacy label and the Privacy Manifest of the build. Review the opt-in list and the notice text. This change did not translate the new strings.
+
+Not verified: the app build and the screens. CI builds the app. The send to a real PostHog project and a packet capture (T42) need a key and a device.
 
 ## D056 · 2026-10-12 · Optional item photo
 
