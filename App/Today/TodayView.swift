@@ -69,7 +69,7 @@ private struct TodayContent: View {
                 UnsavedSection()
                 NotificationsOffSection()
                 ForEach(today.groups) { group in
-                    SlotSection(group: group, timeZone: timeZone, isCurrent: group.part == currentPart)
+                    SlotSection(group: group, timeZone: timeZone)
                         .id(group.part)
                 }
                 if !asNeededRows.isEmpty {
@@ -150,17 +150,6 @@ private struct TodayContent: View {
         var format = Date.FormatStyle.dateTime.weekday(.wide).month(.wide).day()
         format.timeZone = timeZone
         return format
-    }
-
-    /// The part of the day of the clock now, or the next part that has a section.
-    private var currentPart: DayPart? {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
-        let clock = calendar.dateComponents([.hour, .minute], from: .now)
-        guard let time = try? WallClockTime(hour: clock.hour ?? 0, minute: clock.minute ?? 0) else { return nil }
-        let order = DayPart.allCases
-        let now = order.firstIndex(of: DayPart(time))!
-        return today.groups.map(\.part).first { order.firstIndex(of: $0)! >= now }
     }
 
     private var failureTitle: Text {

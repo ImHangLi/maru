@@ -11,16 +11,13 @@ enum Motion {
     case layout
     /// A change in place, with no move: the record symbol and a mark in a header.
     case state
-    /// The slow fade of the opening highlight on the current part of the day (D020).
-    case attention
 
-    /// With Reduce Motion nothing moves, so a layout change shows at once (spec 5.3). The other two cases
-    /// are fades with no move, and they stay.
+    /// With Reduce Motion nothing moves, so a layout change shows at once (spec 5.3). The state case is a
+    /// fade with no move, and it stays.
     func animation(reduceMotion: Bool) -> Animation? {
         switch self {
         case .layout: reduceMotion ? nil : .snappy
         case .state: .easeInOut(duration: 0.2)
-        case .attention: .easeOut(duration: 1.2)
         }
     }
 }

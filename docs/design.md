@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, and D056 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, and D056 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -14,7 +14,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 ## Color
 
 - One app tint for the whole app. The user picks it from the eight item colors in Settings, under "App Color" (D025). The default is pink, the system pink (#FF2D55 in light mode).
-- The tint marks: buttons, the record circle when filled, and the opening highlight of the current slot title. Sheets get the same tint.
+- The tint marks: buttons, and the record circle when filled. A slot title stays in the text color (D050). Sheets get the same tint.
 - In light mode, the tint has at least 3:1 contrast on white. Orange, yellow, green, and mint are darker when they are the tint: #D97F00, #B49000, #2CAA4C, and #00A69F. Dark mode uses the system colors. The item colors do not change.
 - A label on a filled tint, such as the check mark of the record circle, is white when white has at least 3:1 contrast on the fill. Otherwise it is black (D025).
 - Item colors: pink, orange, yellow, green, mint, blue, purple, brown. Use the system colors with the same names, and a system-like brown. Each color has a light value and a dark value. The item color appears only on the form icon. It is never the only signal of a state (spec §5.3).
@@ -44,12 +44,11 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - Row: the form icon in the item color, the name, a second line in small gray text, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
 - The second line has the amount and the time that the user set: "2 capsules, 8:00 AM", or "8:00 AM" with no amount. A taken row shows the intake time: "2 capsules, Taken at 8:07 AM". A skipped row shows "2 capsules, Skipped". A medication that keeps another time zone names the city: "9:00 AM Shanghai time" (D044).
 - A recorded row and an open row differ only by the circle and the time. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032, D044).
-- A finished slot folds to its header the next time the user returns to the app. The header shows a chevron and no check mark. The title looks the same folded and open. A tap opens it. A second tap folds it. Only a finished slot folds (D012, D032).
+- A finished slot folds to its header the next time the user returns to the app. The header shows no chevron and no check mark (D050). The title looks the same folded and open. A tap opens it. A second tap folds it. A slot that the user opens stays open, also after a return and on the next days, until a tap folds it (D055). Only a finished slot folds (D012, D032).
 - The record that finishes a slot folds it after about 0.7 seconds, so the user sees the last check first. The fold uses the layout motion, the same as a tap on the header (D028, D030).
 - Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
 - A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Take Now". Every action uses the same record transaction as the circle (D028).
 - The menu of a recorded row has "Change Time…". The menu of an open row has "Taken Earlier…". Each opens the time sheet directly. The sheet shows the time wheel at once, and "Save" records the dose as taken at that time. The wheel does not go past the current time. So a change of a record time needs three taps (D033).
-- When the app opens or returns to the front, the title of the current slot takes the tint for about six seconds (D020).
 - An "As Needed" section at the end lists items with no schedule. Each row has a record button that records a dose at the current time (D021).
 - With no item, a system empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing to Take Today" (D026).
 - Success text and the success haptic come only after the local transaction commits (spec §7.2).
@@ -147,16 +146,15 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 
 ## Motion
 
-One motion language for the whole app (D030). The same kind of change uses the same motion on every page. `App/Motion.swift` has the three cases. A view or the model names a case and never a curve or a duration.
+One motion language for the whole app (D030). The same kind of change uses the same motion on every page. `App/Motion.swift` has the two cases. A view or the model names a case and never a curve or a duration.
 
 | Case | Motion | Where | With Reduce Motion |
 |---|---|---|---|
 | Layout | The system `snappy` spring, the one of the fold | A change that moves the layout | No motion. The change shows at once |
 | State | A fade of 0.2 seconds, with the system replace effect on a symbol | A change in place, with no move | The same fade. A symbol cross-fades with no scale |
-| Attention | A fade of 1.2 seconds | The opening highlight of the current slot title | The same fade |
 
 - Layout applies to: a slot that folds or opens, by a tap, after its last record, or on a return to the app. A row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form, including the candidates of the smart completion. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
-- State applies to: the record circle and the as-needed record button. The chevron and "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042).
+- State applies to: the record circle and the as-needed record button. "Record All" in a slot header. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042).
 - The History graph has no motion. A change of step happens when the page opens. The selection ring and the date label change at once, as a text value does. The scroll of the timeline to a selected day uses the layout motion, the same as the scroll to the slot of a tapped reminder.
 - A record changes a row only after the local transaction commits (spec §7.2). No motion starts at the tap.
 - The system owns the motion of sheets, pushes, menus, alerts, dialogs, swipe actions, pickers, switches, and the keyboard. Maru does not change it.

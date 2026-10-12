@@ -58,7 +58,7 @@ Owner decision. The owner rejected prototype variant B2. This decision supersede
 - Use fewer words. A row shows the name and the dose. The circle shows the state. The intake note and the recorded time move to the detail sheet and the correction dialog.
 - Design references are good Apple-style apps of any category, not only health apps.
 
-## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028, accent picker replaced by D021 and D025, dim and strikethrough removed by D032)
+## D012 · 2026-10-11 · Accent choice, system font, recorded rows, and finished slots (fold after a record by D028, accent picker replaced by D021 and D025, dim and strikethrough removed by D032, a part that the user opens stays open by D055)
 
 Owner decision, after the study in `docs/research/2026-10-10-visual-direction.md`.
 
@@ -134,7 +134,7 @@ Agent decisions from issue #3 (PR #16), after two review rounds by a different m
 - The store has no schema change. The resolved instant is computed, not stored.
 - Open point for the history screen (#10): rows that are no longer planned and have no record stay in the database, so history must read by records.
 
-## D020 · 2026-10-11 · Ring, opening highlight, My List, palette, and settings entry (ring and icon-only tab setting removed by D026, palette replaced by D021, My List form replaced by D032)
+## D020 · 2026-10-11 · Ring, opening highlight, My List, palette, and settings entry (ring and icon-only tab setting removed by D026, palette replaced by D021, My List form replaced by D032, opening highlight removed by D050)
 
 Owner decisions, with two agent recommendations that the owner asked for.
 
@@ -227,7 +227,7 @@ Agent decision, after an owner bug report from the device: "the test notificatio
 - Every notification of Maru now shows as a banner, in the list, and with sound, also while Maru is in front. This replaces "only the test shows while Maru is in front" in D023.
 - Spec 8.2 allows a foreground check against the records, and T23 asks to avoid a misleading repeated display. Maru does not do that check yet. The reminder text is neutral, so a reminder after a record does not say that a dose is not taken.
 
-## D028 · 2026-10-11 · No toasts, animated fold, and row gestures
+## D028 · 2026-10-11 · No toasts, animated fold, and row gestures (a part that the user opens stays open by D055)
 
 Owner decisions after use on the device. The owner asked to follow Apple apps such as Health, and for every interaction to feel smooth and native.
 
@@ -293,7 +293,7 @@ Owner decision. Maru becomes a public repository under the MIT license. This rep
 - The repository holds no personal health data, no local paths, and no credentials. Records refer to private work only as history, without links to private branches or local files.
 - `docs/process.md` applies to every contributor. The rules for agents that work for the maintainer are in `AGENTS.md`.
 
-## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044)
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, chevron removed by D050)
 
 Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
 
@@ -926,3 +926,18 @@ Backup (D040):
 - The draft file of the edit screen does not hold a photo. After the app stops, the user chooses the photo again.
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw the screen. CI builds the app. The background removal, the camera, and the real size of a row need a check on a real iPhone. The Simulator may fail the background removal and then shows the crop. Check with a bottle on a table, with a bottle in a hand, and with two bottles, for T29. Check a missing file and a locked iPhone.
+
+## D050 · 2026-10-12 · Plain slot header: no chevron, no opening highlight
+
+Maintainer decision after use on the device.
+
+- The header of a finished part of the day has no chevron. A tap on the header still folds and opens the section. This replaces the chevron of D032.
+- The title of the current part of the day stays in the text color when the app opens or returns. This removes the opening highlight of D020 and the attention motion of D030.
+
+## D055 · 2026-10-12 · A part that the user opens stays open
+
+Maintainer decision after use on the device.
+
+- A tap that opens a finished part of the day keeps it open. It stays open after a return to the app, after a later record, and on the next days, until a tap folds it again.
+- A tap that folds a part removes the choice, so the part folds by itself again (D012, D028).
+- The choice is a display setting in `UserDefaults`, not a record. A backup does not carry it.
