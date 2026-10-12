@@ -107,7 +107,7 @@ Owner decision. The owner said that the app has too many tests (137 after three 
 - An implementation brief and a review brief state this limit. A reviewer does not ask for more tests unless a required behavior has none.
 - A cleanup pass removes existing tests that do not meet this rule.
 
-## D017 · 2026-10-11 · English first
+## D017 · 2026-10-11 · English first (replaced by D051 for the first public release)
 
 Owner decision. The first release is in English. This includes the App Store screenshots and all store text. Simplified Chinese is optional and can follow later. This replaces "ship `en` and `zh-Hans` first" in `AGENTS.md`. Chat with the owner stays in Chinese.
 
@@ -850,6 +850,16 @@ The maintainer asked for this on 2026-10-12. Users see no change.
 - `AppStore`: one helper opens the store for both record transactions. The `history` and `historyCounts` forwarders are gone.
 - Tests and helpers: `noTypeCarriesInventoryFields`, `DoseTests`, `writerSetting`, and `WidgetDay.hasOpenDose`.
 - `LocalStore+Move.swift` is now `LocalStore+Adopt.swift`.
+
+## D051 · 2026-10-12 · Release plan: full V1 scope, store name, six languages, analytics on by default
+
+Maintainer decisions for the App Store release. The plan is in `docs/release-plan.md`. The research is in `docs/research/2026-10-12-store-name-and-languages.md`.
+
+- Scope: the full milestones B and C. The first release has analytics, a supporter purchase, the optional photo, and six languages. This replaces the trimmed scope that the agent recommended.
+- Store name: "Maru: Know What You Took". Subtitle: "Supplement & Pill Reminder". "Did I Take It?" is in the names of six or more apps.
+- Languages: en, zh-Hans, ja, es, de, and ko. This replaces "English first" of D017 for the first public release. The China mainland storefront waits, because it needs an ICP filing.
+- Analytics: on by default, with a one-time notice and a switch in Settings. In the EU, the EEA, the UK, and Switzerland, the user opts in first (GDPR and the ePrivacy rules). This changes spec §11.3. All other rules of spec §11 stay: no names, doses, intake times, or item IDs leave the device.
+- Marketing: a landing page on an own domain. The maintainer buys the domain.
 
 ## D053 · 2026-10-12 · Optional supporter tips with StoreKit 2
 
