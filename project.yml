@@ -15,6 +15,23 @@ settings:
 packages:
   MaruKit:
     path: Packages/MaruKit
+schemes:
+  # The Run action uses a StoreKit configuration for local tests of the tips (D053).
+  Maru:
+    build:
+      targets:
+        Maru: all
+    run:
+      config: Debug
+      storeKitConfiguration: Config/Maru.storekit
+    test:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
 targets:
   Maru:
     type: application
@@ -42,6 +59,8 @@ targets:
         INFOPLIST_KEY_NSCameraUsageDescription: Maru uses the camera to read the name on a label. Photos are not saved.
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        # Maru uses only the encryption of iOS, so the upload needs no export compliance document.
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
         # The App Group holds the database that the widgets read (D048). The Info.plist adds the link scheme of a widget tap.

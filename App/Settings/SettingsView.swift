@@ -101,6 +101,7 @@ struct SettingsView: View {
                 }
                 DataSection()
                 FeedbackSection()
+                SupportSection()
                 #if DEBUG
                 DebugSection()
                 #endif
