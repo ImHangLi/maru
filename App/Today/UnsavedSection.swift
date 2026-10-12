@@ -22,9 +22,10 @@ struct UnsavedSection: View {
                         Label {
                             Text("\(count) changes not saved")
                                 .foregroundStyle(Color.primary)
+                                .numberMotion(value: count)
                         } icon: {
                             Image(systemName: "exclamationmark.circle.fill")
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(.red)
                         }
                     }
                 }

@@ -10,12 +10,9 @@ struct AsNeededEvent: Equatable, Sendable {
 
 /// Why an as-needed record gave no success. The card shows it in an alert.
 struct AsNeededFailure: Identifiable, Equatable {
-    enum Kind: Equatable {
-        /// Nothing is confirmed. "Try Again" sends the same pair again.
-        case notSaved(StorageError)
-        /// The stored state is not the one that the card showed. The page reads again.
-        case changed
-    }
+    /// The same two cases as on Today: nothing is confirmed, "Try Again" sends the same pair again, or the stored
+    /// state is not the one that the card showed and the page reads again.
+    typealias Kind = TodayFailure.Kind
 
     let id = UUID()
     let kind: Kind

@@ -22,7 +22,7 @@ struct FeedbackSection: View {
                 }
             }
         } footer: {
-            Text("We read every message. The form opens a web page.")
+            Text("The form opens a web page, and we read every message.")
         }
     }
 }

@@ -25,10 +25,10 @@ struct StorageProblemView: View {
 
     private var title: LocalizedStringKey {
         switch error {
-        case .corrupt, .migrationFailed: "Maru can’t open your data"
-        case .newerSchema: "Update Maru to open your data"
-        case .diskFull: "Your iPhone is full"
-        default: "Maru can’t read your data right now"
+        case .corrupt, .migrationFailed: "Maru Can’t Open Your Data"
+        case .newerSchema: "Update Maru to Open Your Data"
+        case .diskFull: "Your iPhone Is Full"
+        default: "Maru Can’t Read Your Data Right Now"
         }
     }
 

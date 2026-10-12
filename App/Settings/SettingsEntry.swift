@@ -20,11 +20,19 @@ struct NotificationsOffSection: View {
         if model.settings.permission == .denied {
             Section {
                 Button { model.openSettings() } label: {
-                    Label("Notifications are off", systemImage: "bell.slash")
-                        .foregroundStyle(Color.secondary)
+                    NotificationsOffLabel()
                 }
                 .accessibilityHint(Text("Opens settings"))
             }
         }
+    }
+}
+
+/// The words of the notice while notifications are off. Today and My Items use it. Like the line
+/// "Reminders off", it states the state in the text color with a symbol (design principle 6).
+struct NotificationsOffLabel: View {
+    var body: some View {
+        Label("Notifications off", systemImage: "bell.slash")
+            .foregroundStyle(Color.primary)
     }
 }

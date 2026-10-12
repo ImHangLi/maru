@@ -13,8 +13,8 @@
     "Share Usage Statistics" : {
       "comment" : "Settings: the switch for usage statistics."
     },
-    "Counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. Turning this off clears the data that waits to be sent." : {
-      "comment" : "Settings: the footer of the usage statistics switch."
+    "Maru shares counts of what you use, and never item names, doses, or times." : {
+      "comment" : "Settings: the footer of the usage statistics switch. One sentence."
     },
     "Help Improve Maru?" : {
       "comment" : "The one-time notice about usage statistics: the title."
@@ -194,7 +194,7 @@
       "comment" : "The title of the archive confirmation. The placeholder is the item name."
     },
     "Archived" : {
-      "comment" : "The state of an archived item, and the title of the list of archived items."
+      "comment" : "The state of an archived item in the item detail, and the title of the list of archived items."
     },
     "Archived items keep their records but get no reminders." : {
       "comment" : "Archived list: the footer of the list."
@@ -203,7 +203,7 @@
       "comment" : "Today, My Items, and item detail: the menu button that asks to archive the item."
     },
     "As Needed" : {
-
+      "comment" : "Today: the title of the section of items with no schedule. History: the second line of an item that the user takes only when needed. It is not a time of day."
     },
     "Back Up" : {
       "comment" : "Settings: the button that makes a backup file and opens the share sheet."
@@ -218,16 +218,16 @@
       "comment" : "Edit screen: the text “Cancel”."
     },
     "Can’t Show History" : {
-
+      "comment" : "History: the title when the days did not read from the store."
     },
     "Capsule" : {
       "comment" : "Item form or color name: the text “Capsule”."
     },
     "Change %@" : {
-
+      "comment" : "VoiceOver label of the record circle of a recorded dose. The placeholder is the item name. Change means to correct a record, for example Change Vitamin D."
     },
     "Change Time…" : {
-
+      "comment" : "Menu item, button, and swipe action that open a sheet to set the time when a dose was taken. The ellipsis means that a sheet follows."
     },
     "Change or End This Item…" : {
       "comment" : "Item detail: the row that opens the menu to change the product, turn off reminders, archive, or delete."
@@ -275,7 +275,7 @@
       "comment" : "Closes the settings sheet."
     },
     "Dose of %@" : {
-
+      "comment" : "VoiceOver label of the row of one as-needed dose. The placeholder is the item name."
     },
     "Doses taken each day" : {
       "comment" : "History: the VoiceOver label of the graph at the top of the page."
@@ -353,10 +353,10 @@
       "comment" : "Item form or color name: the text “Green”."
     },
     "History" : {
-
+      "comment" : "The title of the History page, and the button on Today that opens it. It lists what the user took, not a medical history."
     },
-    "History changed" : {
-
+    "History Changed" : {
+      "comment" : "Alert title in History and its logs when the stored record is not the one that the page showed."
     },
     "If your iPhone is locked, unlock it and try again. Maru did not change or delete your data." : {
       "comment" : "Storage problem: the text when the data cannot be read now."
@@ -367,28 +367,22 @@
     "Keep Editing" : {
       "comment" : "Edit screen: the text “Keep Editing”."
     },
-    "Mark as Skipped" : {
-
-    },
-    "Mark as Taken" : {
-
-    },
     "Maru asks when you save an item with a time." : {
       "comment" : "Settings footer before the system asked for the notification permission."
     },
-    "Maru can’t open your data" : {
+    "Maru Can’t Open Your Data" : {
       "comment" : "Storage problem: the title when the data file is damaged, or when the update of the data failed."
     },
     "Maru can’t open your records while your iPhone is locked. Unlock it, then try again." : {
-
+      "comment" : "Alert message when the user taps a reminder while the iPhone is locked and Maru cannot read the records."
     },
-    "Maru can’t read your data right now" : {
+    "Maru Can’t Read Your Data Right Now" : {
       "comment" : "Storage problem: the title when the data can be read later, for example after the user unlocks the device."
     },
     "Maru Can’t Use the Camera" : {
       "comment" : "Edit screen: the title of the alert when the camera is off for Maru."
     },
-    "Maru can’t use your time zone" : {
+    "Maru Can’t Use Your Time Zone" : {
       "comment" : "Today: the title when the time zone of the device is an offset such as GMT+8 and not a city."
     },
     "Maru can’t use your time zone for reminders." : {
@@ -403,23 +397,23 @@
     "Maru couldn’t make the file. Try again." : {
       "comment" : "Settings: the alert for a record export or a backup that failed."
     },
-    "Maru couldn’t read the history. Try again." : {
-
+    "Maru couldn’t read the history." : {
+      "comment" : "History: the footer of the error section when the days did not read, other than a locked iPhone."
     },
     "Maru couldn’t read this item." : {
-      "comment" : "Item detail: the text when the item does not read from the store."
+      "comment" : "Item detail: the description under the title Can’t Show Item."
     },
     "Maru couldn’t restore this backup. Your data did not change." : {
       "comment" : "Settings: the alert for a restore that failed."
     },
-    "Maru couldn’t save" : {
-      "comment" : "Edit screen: the text “Maru couldn’t save”."
+    "Maru Couldn’t Save" : {
+      "comment" : "Edit screen: the title of the alert when the item did not save. The message under it says that the entries are still on the screen."
     },
     "Maru couldn’t save this change. Try again." : {
       "comment" : "Item detail: the message when a change did not save."
     },
     "Maru couldn’t save this. Try again." : {
-
+      "comment" : "Alert message when a record or a correction did not save. The word this means the change that the user just made."
     },
     "Maru deletes this item, its plan, and all its records. You can’t undo this." : {
       "comment" : "The message of the delete confirmation."
@@ -440,7 +434,7 @@
       "comment" : "Item detail: the footer of a plan that repeats every second day when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open."
     },
     "Maru stops its reminders and hides it from Today and My Items. Your records stay. This is not advice to stop taking it." : {
-
+      "comment" : "Message of the archive confirmation. The word it means the item that the title names. Archive hides an item, and the records stay."
     },
     "Maru tries again when you open it." : {
       "comment" : "Item detail: the footer of the plan when the reminder is not set yet."
@@ -455,7 +449,7 @@
       "comment" : "Today: the title of the group of items with a planned time before 11:00."
     },
     "My Items" : {
-
+      "comment" : "The title of the second tab and of its page: the list of the supplements and medications that the user added."
     },
     "My own note" : {
       "comment" : "Edit screen: the text “My own note”."
@@ -473,19 +467,16 @@
       "comment" : "Item detail: the label of the day of the next dose of a plan that repeats every second day. The value is Today, Tomorrow, or a weekday."
     },
     "No History Yet" : {
-
+      "comment" : "History: the title of the empty page when nothing is planned or recorded."
     },
     "No Items Yet" : {
-      "comment" : "Today: the title of the empty page when the list has no item."
+      "comment" : "Today and My Items: the title of the empty page when the user has no item."
     },
-    "No archived items." : {
-      "comment" : "Archived list: the text when no item is archived."
-    },
-    "No items yet." : {
-
+    "No Archived Items" : {
+      "comment" : "Archived list: the title of the empty page when no item is archived."
     },
     "No record" : {
-
+      "comment" : "History: the words of a planned dose of a past day that has no record. It is not the same as skipped."
     },
     "No records in the last 7 days." : {
       "comment" : "Item detail: the text when the item has no record in the last seven days."
@@ -506,7 +497,7 @@
       "comment" : "Settings: the system did not ask for the notification permission yet."
     },
     "Not Available" : {
-
+      "comment" : "Reminder choice sheet: shown in place of an action when no record can be made for that date. It has a symbol and no tap."
     },
     "Not Confirmed" : {
       "comment" : "Item detail: the value of the Reminder row when the system did not confirm a change yet."
@@ -517,14 +508,14 @@
     "Not Set" : {
       "comment" : "Item detail: the value of the Reminder row when the system holds no reminder."
     },
-    "Not changed" : {
-      "comment" : "Item detail: the title of the alert when a change did not save."
+    "Not Changed" : {
+      "comment" : "Alert title when a change of an item did not save: a restore from the archive, a reminder switch, an archive, or a delete."
     },
     "Not recorded" : {
-
+      "comment" : "VoiceOver value of the record circle of a dose that has no record yet."
     },
     "Not saved" : {
-
+      "comment" : "The state of a change that the store did not confirm, in a row of Today or History. Sentence case, because it is a state and not an alert title."
     },
     "Not sure" : {
       "comment" : "Item form or color name: the text “Not sure”."
@@ -533,19 +524,19 @@
       "comment" : "Edit screen: the text “Note”."
     },
     "Nothing to Take Today" : {
-      "comment" : "Today: the empty page when the list has items but none is due today."
+      "comment" : "Today: the title of the empty page when the user has items but none is due today."
     },
     "Notifications" : {
       "comment" : "Settings: the label of the notification permission row."
     },
-    "Notifications are off" : {
-      "comment" : "Today: a small line while notifications are off. A tap opens settings."
+    "Notifications off" : {
+      "comment" : "Today and My Items: a plain row while notifications are off for Maru. A tap opens settings. It matches the line Reminders off."
     },
     "Notifications are off for Maru." : {
       "comment" : "Item detail: the footer of the plan when the reminder is not set because notifications are off."
     },
     "OK" : {
-
+      "comment" : "The button that closes an alert."
     },
     "Off" : {
       "comment" : "Settings: notifications are off, or the follow-up reminders are off."
@@ -557,13 +548,13 @@
       "comment" : "Edit screen: the text “On an empty stomach”."
     },
     "Only for items that you did not record." : {
-
+      "comment" : "Settings: the footer under Remind Again. A follow-up reminder comes only for a dose that has no record."
     },
     "Open Settings" : {
       "comment" : "Settings, item detail, and edit screen: opens the settings of Maru in the Settings app."
     },
     "Open Today" : {
-
+      "comment" : "Reminder choice sheet: the button at the top left that closes the sheet and shows Today."
     },
     "Opens settings" : {
       "comment" : "VoiceOver hint of the notifications-off line on Today."
@@ -578,7 +569,7 @@
       "comment" : "Item form or color name: the text “Pink”."
     },
     "Plan" : {
-      "comment" : "Item detail: the title of the section with the times, days, and amount."
+      "comment" : "Item detail and edit screen: the title of the section with the times and the days of the plan. The detail also lists the amount."
     },
     "Plan: %@" : {
       "comment" : "Edit screen: the text “Plan: %@”."
@@ -596,31 +587,31 @@
       "comment" : "Settings: notifications are delivered quietly to Notification Center, with no sound or banner."
     },
     "Record %@" : {
-
+      "comment" : "VoiceOver label of the record circle of an open dose. Record means to write down that the dose was taken. The placeholder is the item name."
     },
     "Record All" : {
-
+      "comment" : "Today: the button in the header of a part of the day that records every open item of that part as taken."
     },
     "Record a dose of %@" : {
-
+      "comment" : "VoiceOver label of the record button of an as-needed item. The placeholder is the item name."
     },
     "Record all %lld in %@ as taken" : {
-
+      "comment" : "VoiceOver label of the Record All button. The first placeholder is a count, the second is a part of the day such as Morning."
     },
     "Records a dose now." : {
-
+      "comment" : "VoiceOver hint of the record button of an as-needed item."
     },
     "Records it as taken." : {
-
+      "comment" : "VoiceOver hint of the record circle of an open dose."
     },
     "Record…" : {
-
+      "comment" : "Reminder choice sheet: the action on a candidate of another day. It opens a sheet to enter the time when the dose was taken. The ellipsis means that a sheet follows."
     },
     "Remind Again" : {
       "comment" : "Settings: the label of the picker for the number of follow-up reminders."
     },
     "Reminder" : {
-      "comment" : "Edit screen: the text “Reminder”."
+      "comment" : "Item detail: the label of the row that states whether the reminder is on, in the section Plan."
     },
     "Reminder Not Confirmed" : {
       "comment" : "Alert title after a save or a change when the system did not confirm the reminder."
@@ -635,7 +626,7 @@
       "comment" : "Alert title after reminders off or archive when the system did not confirm the removal."
     },
     "Reminders come with no sound or banner." : {
-
+      "comment" : "Settings: the footer when notifications are allowed but quiet."
     },
     "Reminders off" : {
       "comment" : "Today and My Items: the line under an item whose reminders are off."
@@ -683,7 +674,7 @@
       "comment" : "Edit screen: the text “Save”."
     },
     "Save %@ again" : {
-
+      "comment" : "VoiceOver label of the record circle when the last record did not save. The placeholder is the item name."
     },
     "Scan Label" : {
       "comment" : "Edit screen and label scan: the shortcut above the name of a new item, and the title of the scanner."
@@ -701,10 +692,10 @@
       "comment" : "Settings: the title of the sheet and the label of the gear button."
     },
     "Show" : {
-
+      "comment" : "Reminder choice sheet: the action on a candidate of today. It shows that dose on Today. The verb, not a theater show."
     },
     "Shows ways to change it." : {
-
+      "comment" : "VoiceOver hint of the record circle of a recorded dose. It opens a menu of corrections."
     },
     "Show Names in Reminders" : {
       "comment" : "Settings: a switch that adds the item names to reminders."
@@ -716,10 +707,7 @@
       "comment" : "Today: a row action that records the dose as skipped."
     },
     "Skipped" : {
-
-    },
-    "Skipped at %@" : {
-
+      "comment" : "The state of a dose that the user chose not to take. It is a record, and it is not the same as no record."
     },
     "Softgel" : {
       "comment" : "Item form or color name: the text “Softgel”."
@@ -733,14 +721,14 @@
     "Starting Tomorrow" : {
       "comment" : "Repeat page: the first day of a plan that repeats every second day is tomorrow."
     },
-    "Suggestions come from common labels. Check your own label." : {
+    "Suggestions come from common labels, so check your own label." : {
       "comment" : "Edit screen: the footer under the candidates of the smart completion for a known supplement."
     },
     "Supplement" : {
       "comment" : "Edit screen: the text “Supplement”."
     },
     "Swipe or touch and hold to change it." : {
-
+      "comment" : "VoiceOver hint of a row of the History log. It tells how to open the corrections."
     },
     "Tablet" : {
       "comment" : "Item form or color name: the text “Tablet”."
@@ -752,19 +740,19 @@
       "comment" : "Edit screen: the button that opens the camera to take a photo for the item."
     },
     "Taken" : {
-
+      "comment" : "The state of a dose that the user took, and the action that records it as taken. Past participle of take."
     },
     "Taken at" : {
-
+      "comment" : "The title of the section in the time sheet, above the time wheel. The next words are a time, for example Taken at 8:07 AM."
     },
     "Taken at %@" : {
-
+      "comment" : "The words under an item when the dose was taken at a time. The placeholder is a time or a date and a time, for example Taken at 8:07 AM."
     },
     "Taken Earlier…" : {
       "comment" : "Today: the menu button of an open row. It opens the time sheet and records the dose as taken at the chosen time."
     },
     "Tap + to add a supplement or medication." : {
-
+      "comment" : "Today: the description of the empty page. The plus is the add button at the top right."
     },
     "Tap a word to add or remove it." : {
       "comment" : "Label scan: the helper line under the words of the tapped text."
@@ -775,14 +763,14 @@
     "Tap the name on the label" : {
       "comment" : "Label scan: the prompt on the card before the user taps a text."
     },
-    "Test not sent. Notifications are off for Maru." : {
-      "comment" : "Settings footer when the test notification is not allowed."
+    "Maru did not send the test, because notifications are off." : {
+      "comment" : "Settings: the footer when the test notification is not allowed because notifications are off for Maru."
     },
-    "Test not sent. Try again." : {
-      "comment" : "Settings footer when the system did not take the test notification."
+    "Maru did not send the test, so try again." : {
+      "comment" : "Settings: the footer when the system did not take the test notification."
     },
-    "Test not sent. Your iPhone can’t hold more reminders." : {
-
+    "Maru did not send the test, because your iPhone can’t hold more reminders." : {
+      "comment" : "Settings: the footer when the system has no room for the test notification."
     },
     "The plan has too many times for iPhone." : {
       "comment" : "Item detail: the footer of the plan when the plan has more reminder times than iPhone allows."
@@ -794,10 +782,10 @@
       "comment" : "Alert message after a save when the reminder is not set yet."
     },
     "The reminders may still be on until Maru checks again." : {
-
+      "comment" : "Item detail: the footer when the system did not confirm that the reminders of an archived or ended item are removed."
     },
     "The test comes in about 5 seconds." : {
-
+      "comment" : "Settings: the footer after the user taps the test notification button."
     },
     "This backup replaces every item and record on this iPhone. You can’t undo this." : {
       "comment" : "The message of the restore confirmation."
@@ -806,13 +794,13 @@
       "comment" : "Settings: the alert for a file that is not a backup or is damaged."
     },
     "This item changed. Check it, then try again." : {
-
+      "comment" : "Alert message when the stored record is not the one that the page showed. The word item means the dose or the record."
     },
     "This reminder came late, or your time zone changed." : {
-
+      "comment" : "Reminder choice sheet: the footer when the time of the notification is not certain."
     },
     "This reminder is for another day." : {
-
+      "comment" : "Reminder choice sheet: the footer when the notification is for a day that is not today."
     },
     "This version of Maru can’t open your data. Maru did not change or delete it." : {
       "comment" : "Storage problem: the text when the update of the data to this app version failed."
@@ -824,7 +812,7 @@
       "comment" : "Item detail: the label of the city whose time a medication keeps."
     },
     "Time changed to %@" : {
-
+      "comment" : "History: the words of a correction of the time of a taken dose. The placeholder is a time, for example Time changed to 8:00 AM."
     },
     "To scan a label, allow the camera for Maru in Settings." : {
       "comment" : "Edit screen: the text of the alert when the camera is off for Maru."
@@ -835,14 +823,14 @@
     "Today" : {
       "comment" : "The title of the first tab and of its page."
     },
-    "Today changed" : {
-
+    "Today Changed" : {
+      "comment" : "Alert title on Today when the stored record is not the one that the page showed, for example after a change on another screen."
     },
     "Tomorrow" : {
       "comment" : "Item detail: the next dose of a plan that repeats every second day is tomorrow."
     },
     "Tries to save it again." : {
-
+      "comment" : "VoiceOver hint of a record circle or a row whose last record did not save."
     },
     "Try Again" : {
       "comment" : "Storage problem: the button that reads the data again."
@@ -866,16 +854,16 @@
       "comment" : "Edit screen: the text “Type”."
     },
     "Undo" : {
-
+      "comment" : "The action that removes the latest record of a dose, so the dose is open again. It is not an undo of typing."
     },
     "Undone" : {
-
+      "comment" : "History: the words of an action that removed a record. Past participle of undo."
     },
     "Unlock to Continue" : {
-
+      "comment" : "Alert title when the user taps a reminder while the iPhone is locked and Maru cannot read the records."
     },
     "Unlock your iPhone, then try again." : {
-
+      "comment" : "Alert message and footer when the data cannot be read or saved because the iPhone is locked."
     },
     "Unlock your iPhone, then try again. Your entries are still here." : {
       "comment" : "Edit screen: the text “Unlock your iPhone, then try again. Your entries are still here.”."
@@ -883,7 +871,7 @@
     "Until Recorded" : {
       "comment" : "Settings: follow-up reminders come until the user records the dose, up to a limit that the footer states."
     },
-    "Update Maru to open your data" : {
+    "Update Maru to Open Your Data" : {
       "comment" : "Storage problem: the title when a newer version of the app saved the data."
     },
     "Use Capsule" : {
@@ -904,14 +892,14 @@
     "Use This Name" : {
       "comment" : "Label scan: the button that gives the chosen name to the edit screen."
     },
-    "We read every message. The form opens a web page." : {
-      "comment" : "Settings: the footer of the feedback button."
+    "The form opens a web page, and we read every message." : {
+      "comment" : "Settings: the footer of the feedback button. One sentence."
     },
     "What you record shows here." : {
-
+      "comment" : "History: the description of the empty page."
     },
     "Which Reminder?" : {
-
+      "comment" : "The title of the sheet that asks which reminder the user means, when a tapped notification is not certain."
     },
     "With food" : {
       "comment" : "Edit screen: the text “With food”."
@@ -920,16 +908,16 @@
       "comment" : "Item form or color name: the text “Yellow”."
     },
     "Yesterday" : {
-
+      "comment" : "The day before today, as a word in a list of days."
     },
     "You can change this plan again from %@." : {
       "comment" : "Edit screen: the preview line when the stored plan starts after today, for example after a flight west. The placeholder is a date."
     },
     "You can still record it with reminders off." : {
-
+      "comment" : "Item detail: the line under the name of an item whose reminders are off."
     },
     "You can still record without reminders." : {
-
+      "comment" : "Settings: the footer when notifications are off for Maru."
     },
     "Your Data" : {
       "comment" : "Settings: the header of the section with the record export, the backup, and the restore."
@@ -937,11 +925,11 @@
     "Your data file is damaged. Maru did not change or delete it." : {
       "comment" : "Storage problem: the text for a damaged data file."
     },
-    "Your iPhone is full" : {
+    "Your iPhone Is Full" : {
       "comment" : "Storage problem: the title when the disk is full."
     },
     "Your iPhone is full. Free some storage, then try again." : {
-
+      "comment" : "Alert message when a record did not save because the disk is full."
     },
     "Your iPhone is full. Free some storage, then try again. Your entries are still here." : {
       "comment" : "Edit screen: the text “Free some storage, then try again. Your entries are still here.”."
@@ -950,7 +938,31 @@
       "comment" : "Edit screen: the text “Your note”."
     },
     "Your plan or the clock changed after this reminder was set." : {
-
+      "comment" : "Reminder choice sheet: the footer when the plan or the device clock changed after the reminder was set."
+    },
+    "Not Saved" : {
+      "comment" : "Alert title on Today, the as-needed section, and History when a record or a correction did not save. Title Case, as the title of every alert."
+    },
+    "Can’t Show Item" : {
+      "comment" : "Item detail: the title of the page when the item did not read from the store. The description and a Try Again button are under it."
+    },
+    "Support Maru" : {
+      "comment" : "Settings: the title of the section with three optional tips. A tip unlocks nothing."
+    },
+    "Thank you for your support." : {
+      "comment" : "Settings: the footer of the tips after a successful tip."
+    },
+    "Your tip waits for approval." : {
+      "comment" : "Settings: the footer of the tips when the purchase waits for approval, for example Ask to Buy."
+    },
+    "The tip did not go through." : {
+      "comment" : "Settings: the footer of the tips after a failed purchase."
+    },
+    "Tips are not available now." : {
+      "comment" : "Settings: the footer of the tips when the store has no tip to show."
+    },
+    "A tip is optional and unlocks nothing." : {
+      "comment" : "Settings: the footer of the tips in the normal state."
     }
   },
   "version" : "1.0"

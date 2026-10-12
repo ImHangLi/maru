@@ -28,13 +28,13 @@ struct SupportSection: View {
     private var footerText: LocalizedStringKey {
         switch store.notice {
         case .thanks: "Thank you for your support."
-        case .pending: "Your tip waits for approval. Nothing else changes."
-        case .failed: "The tip did not go through. Try again later."
+        case .pending: "Your tip waits for approval."
+        case .failed: "The tip did not go through."
         case nil:
             if store.products.isEmpty, !store.isLoading {
                 "Tips are not available now."
             } else {
-                "A tip is optional. It unlocks nothing and does not touch your data."
+                "A tip is optional and unlocks nothing."
             }
         }
     }

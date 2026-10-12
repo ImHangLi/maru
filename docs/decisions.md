@@ -265,7 +265,7 @@ Owner decision, after use on the device: "The notification does not tell me what
 - Health data rule: the names stay on the device in local notifications. The text is read back from the system only in memory for the comparison, and it is never logged (spec 10).
 - The setting lives in `UserDefaults.standard` under `reminders.hideNames`. No value means names on (D014, D023).
 
-## D030 · 2026-10-11 · One motion language
+## D030 · 2026-10-11 · One motion language (the cases press and fill, and the motion of a tap and of numbers, changed by D058)
 
 Owner decision, with agent detail. The owner likes the open and fold animation and asked for the same care on every page: motion where a change needs it, none where it does not, and the same motion for the same kind of change. The earlier report, a finished part that snapped closed while a tap on its header animated, was a consistency problem.
 
@@ -980,3 +980,40 @@ Maintainer decision on 2026-10-12, after use on the device.
 - The store reads `recordedOccurrences` and `recordedAsNeededOccurrences` are gone, because only the old list used them.
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in the detail at the largest text sizes and with VoiceOver need a check on a real iPhone.
+
+## D058 · 2026-10-12 · Consistency pass across the app
+
+The maintainer asked to unify the app: the same words, colors, states, and motion for the same thing on every page. The agent made the choices below inside that request. The maintainer can overrule any of them.
+
+Words and states:
+
+- Every alert title uses Title Case: "Not Saved", "Today Changed", "History Changed", "Not Changed", "Maru Couldn’t Save". The words of a state in a row stay in sentence case, for example "Not saved".
+- Every empty or error page is a system `ContentUnavailableView` with a Title Case title, no period, an SF Symbol, and an optional one-sentence description. This includes Today, My Items, the archived list, the item detail, History and its logs, and the storage problem page.
+- One word for one action in every dialog, menu, and swipe: "Taken", "Skip", "Undo", "Change Time…". The dialog of the record circle no longer says "Mark as Taken" or "Mark as Skipped". A skipped as-needed dose says "Skipped", as a skipped row of Today does.
+- A footer is one short sentence. "Your Data" in Settings keeps two, because it must say that the files are not encrypted. The footers of "Share Usage Statistics", the test notification, "Send Feedback", and "Support Maru" are shorter. The footer of the statistics switch no longer says that turning it off clears the queue, so the sentence stays short. The switch still does it.
+- A state shows in the text color with its symbol, never in gray (design principle 6): "Archived" and the reminders-off line in the item detail, "Reminders off", "Notifications off", the taken or skipped as-needed dose, and "Not Available" in the reminder choice sheet. A date with no record to make is a plain row with no button, so the system does not dim it.
+- "Notifications off" replaces "Notifications are off". It has the pattern of "Reminders off" and the same color.
+- The mark of an unsaved change in the banner is red, as every other unsaved mark.
+- The editor section with the times and the repeat days is named "Plan", as in the item detail.
+- The day of the graph selection, the title of the log of a day, and the day sections of the log of an item use one format: "Tue, Aug 18". Today and Yesterday keep their words only in the day sections of the log of an item.
+- History rows show the item photo, with the form icon as the fallback, as every other page does.
+
+Layout and size:
+
+- The small sheets (the time wheel of a new or a changed time, the reminder choice list, and the share sheet) use the detents medium and large. The edit screen and the settings stay full sheets. One modifier, `smallSheet()`, holds the rule.
+- The dose row of an as-needed item aligns with the name by the same icon column as the item row, at every text size, with no fixed 44 points.
+- Card margin and card padding use `Tile.margin`. The second line of a list row has 2 points of spacing.
+
+Code:
+
+- The alert title and the message of a failed record are one helper, `FailureAlert`, for Today, the as-needed section, and History. `AsNeededFailure.Kind` is the same type as `TodayFailure.Kind`.
+- Dead code is gone: the record symbol state "no record", the unused `day` of the history row, and the unused time zone of the as-needed item row.
+- Every key of the String Catalog has a translator comment, and the keys that were missing (the tips section) are in it, before the translation into zh-Hans, ja, es, de, and ko.
+
+Motion (a change of D030):
+
+- Two new cases in `App/Motion.swift`: press (a scale to 0.98 and back, 0.12 seconds) and fill (a spring of 0.35 seconds with bounce 0.4, after the commit). With Reduce Motion the press shows at once and the fill is the fade of the state case.
+- The record circle and the as-needed record button scale to 0.98 while pressed. The circle springs to its size when it fills after the commit, and never at the tap (spec §7.2). A tile of My Items scales to 0.98 while pressed.
+- A number or a time that changes in place uses `contentTransition(.numericText())` with the state motion: the count of the banner, the time of a row, and the line under the week strip. With Reduce Motion the text cross-fades. This replaces the rule that text changes at once, and the rule of "no scale" for a tap.
+
+Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The press and fill motion, the dose row alignment at the largest text sizes, and the sheet heights need a check on a real iPhone.

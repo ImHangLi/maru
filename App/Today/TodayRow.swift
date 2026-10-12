@@ -28,13 +28,14 @@ struct TodayRow: View {
             }
             // The name area opens the details. It never records (spec 3 P01).
             NavigationLink(value: entry.look.itemID) {
-                VStack(alignment: .leading, spacing: 1) {
+                VStack(alignment: .leading, spacing: 2) {
                     // Names wrap and never truncate (spec 5.3).
                     Text(entry.look.name)
                         .foregroundStyle(.primary)
                     Text(verbatim: entry.detailText(in: timeZone))
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .numberMotion(value: entry.detailText(in: timeZone))
                     // The reminders are off, and the row stays so the user can still record it (T07).
                     if entry.look.remindersOff {
                         RemindersOffLabel()
@@ -100,7 +101,7 @@ struct TodayRow: View {
         }
     }
 
-    /// An open row records it as taken now. A skipped row changes to taken, as "Mark as Taken" does.
+    /// An open row records it as taken now. A skipped row changes to taken.
     private func takenButton(_ look: RecordLook) -> some View {
         Button("Taken", systemImage: "checkmark") {
             if look == .open { model.record(entry) } else { model.markTaken(entry) }
@@ -159,13 +160,13 @@ private struct RecordButton: View {
         } label: {
             RecordSymbol(state: look.symbolState)
         }
-        .buttonStyle(.borderless)
+        .buttonStyle(.pressScale)
         .confirmationDialog(dialogTitle, isPresented: $showsCorrection, titleVisibility: .visible) {
             if entry.record.status == .taken {
                 Button("Change Time…") { showsTimeEditor = true }
-                Button("Mark as Skipped") { model.markSkipped(entry) }
+                Button("Skip") { model.markSkipped(entry) }
             } else {
-                Button("Mark as Taken") { model.markTaken(entry) }
+                Button("Taken") { model.markTaken(entry) }
             }
             Button("Undo", role: .destructive) { model.undo(entry) }
         }
@@ -224,10 +225,13 @@ private extension RecordLook {
 /// Taken and skipped differ also without color (spec 5.3). Today, the as-needed section, and the
 /// history use it. The label and the value of the button say the state, so VoiceOver reads no image name.
 struct RecordSymbol: View {
-    enum State { case open, noRecord, taken, skipped, notSaved }
+    enum State { case open, taken, skipped, notSaved }
 
     let state: State
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    /// The scale of the circle while it fills (`Motion.fill`).
+    @SwiftUI.State private var fillScale: CGFloat = 1
 
     var body: some View {
         // One image for every state, so the system replace effect runs between two states (D030).
@@ -235,16 +239,22 @@ struct RecordSymbol: View {
             .symbolRenderingMode(.palette)
             .foregroundStyle(mark, fill)
             .font(.title2)
+            .scaleEffect(fillScale)
             .frame(minWidth: 44, minHeight: 44)
             .contentShape(Rectangle())
             .symbolMotion(value: state)
+            // The circle fills after the commit, so the spring starts there and never at the tap (spec 7.2).
+            .onChange(of: state) { old, new in
+                guard new == .taken, old != .taken, !reduceMotion else { return }
+                fillScale = Motion.fillStartScale
+                Task { @MainActor in withMotion(.fill) { fillScale = 1 } }
+            }
             .accessibilityHidden(true)
     }
 
     private var name: String {
         switch state {
         case .open: "circle"
-        case .noRecord: "circle.dashed"
         case .taken: "checkmark.circle.fill"
         case .skipped: "minus.circle.fill"
         case .notSaved: "exclamationmark.circle"
@@ -254,7 +264,7 @@ struct RecordSymbol: View {
     /// The first color of the symbol: the line of a ring, or the mark on a filled circle.
     private var mark: AnyShapeStyle {
         switch state {
-        case .open, .noRecord: AnyShapeStyle(Color(.tertiaryLabel))
+        case .open: AnyShapeStyle(Color(.tertiaryLabel))
         // The check mark is white or black on the tint (D025).
         case .taken: AnyShapeStyle(appColor.labelOnTint)
         case .skipped: AnyShapeStyle(Color.secondary)
@@ -267,7 +277,7 @@ struct RecordSymbol: View {
         switch state {
         case .taken: AnyShapeStyle(.tint)
         case .skipped: AnyShapeStyle(Color(.tertiarySystemFill))
-        case .open, .noRecord, .notSaved: mark
+        case .open, .notSaved: mark
         }
     }
 }
@@ -315,7 +325,7 @@ struct ChangeTimeSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .smallSheet()
     }
 }
 

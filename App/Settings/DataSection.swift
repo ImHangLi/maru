@@ -17,7 +17,7 @@ struct DataSection: View {
             Button("Export Records") { model.exportRecords() }
                 .sheet(item: $model.transfer.shared, onDismiss: { model.shareDidEnd() }) { file in
                     ShareSheet(url: file.url) { model.transfer.shared = nil }
-                        .presentationDetents([.medium, .large])
+                        .smallSheet()
                 }
             Button("Back Up") { model.backUp() }
                 .alert(failureTitle, isPresented: $showsFailure, presenting: shownFailure) { _ in

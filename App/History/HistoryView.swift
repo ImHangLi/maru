@@ -22,7 +22,7 @@ struct HistoryView: View {
                     .overlay {
                         if model.history.loadFailure != nil {
                             ContentUnavailableView {
-                                Text("Can’t Show History")
+                                Label("Can’t Show History", systemImage: "exclamationmark.triangle")
                             } description: {
                                 Text("Unlock your iPhone, then try again.")
                             } actions: {
@@ -56,7 +56,7 @@ struct HistoryCorrectionFeedback: ViewModifier {
             .sensoryFeedback(.success, trigger: model.today.commitCount) { _, _ in isActive }
             // On the page, not on the list, so a retry of the banner can show its error also on an empty page.
             .alert(
-                failureTitle,
+                model.history.failure?.kind.alertTitle(changed: "History Changed") ?? Text("Not Saved"),
                 isPresented: Binding(
                     get: { isActive && model.history.failure != nil },
                     set: { if !$0 { model.history.failure = nil } }
@@ -70,12 +70,12 @@ struct HistoryCorrectionFeedback: ViewModifier {
                     Button("OK", role: .cancel) {}
                 }
             } message: { failure in
-                failureMessage(failure.kind)
+                failure.kind.alertMessage
             }
             .background {
                 // A second alert needs its own view. An as-needed correction sends its own pair again (D014).
                 Color.clear.alert(
-                    asNeededFailureTitle,
+                    model.history.asNeededFailure?.kind.alertTitle(changed: "History Changed") ?? Text("Not Saved"),
                     isPresented: Binding(
                         get: { isActive && model.history.asNeededFailure != nil },
                         set: { if !$0 { model.history.asNeededFailure = nil } }
@@ -89,33 +89,9 @@ struct HistoryCorrectionFeedback: ViewModifier {
                         Button("OK", role: .cancel) {}
                     }
                 } message: { failure in
-                    switch failure.kind {
-                    case let .notSaved(error): failureMessage(.notSaved(error))
-                    case .changed: failureMessage(.changed)
-                    }
+                    failure.kind.alertMessage
                 }
             }
-    }
-
-    private var failureTitle: Text {
-        if case .changed = model.history.failure?.kind { Text("History changed") } else { Text("Not saved") }
-    }
-
-    private var asNeededFailureTitle: Text {
-        if case .changed = model.history.asNeededFailure?.kind { Text("History changed") } else { Text("Not saved") }
-    }
-
-    private func failureMessage(_ kind: TodayFailure.Kind) -> Text {
-        switch kind {
-        case .notSaved(.unavailable):
-            Text("Unlock your iPhone, then try again.")
-        case .notSaved(.diskFull):
-            Text("Your iPhone is full. Free some storage, then try again.")
-        case .notSaved:
-            Text("Maru couldn’t save this. Try again.")
-        case .changed:
-            Text("This item changed. Check it, then try again.")
-        }
     }
 }
 
@@ -151,7 +127,7 @@ private struct HistoryList: View {
                     if failure == .unavailable {
                         Text("Unlock your iPhone, then try again.")
                     } else {
-                        Text("Maru couldn’t read the history. Try again.")
+                        Text("Maru couldn’t read the history.")
                     }
                 }
             }
@@ -177,7 +153,7 @@ private struct HistoryList: View {
         .overlay {
             if weeks.isEmpty, model.history.graph == nil, model.history.loadFailure == nil {
                 ContentUnavailableView {
-                    Text("No History Yet")
+                    Label("No History Yet", systemImage: "calendar")
                 } description: {
                     Text("What you record shows here.")
                 }
@@ -192,6 +168,12 @@ extension LocalDate {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = .utc
         return calendar.date(from: DateComponents(year: year, month: month, day: day, hour: 12)) ?? .now
+    }
+
+    /// The one format of a day for the eye, for example "Tue, Aug 18". The selection of the graph, the title of
+    /// the log of a day, and the day sections of the log of an item use it (D058).
+    var shortLabel: String {
+        noon.formatted(Date.FormatStyle.dateTime.weekday(.abbreviated).month(.abbreviated).day().timeZone(.utc))
     }
 }
 

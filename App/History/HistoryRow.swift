@@ -13,8 +13,6 @@ struct HistoryEntryRow: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     let entry: HistoryEntry
-    /// The day of the section.
-    let day: LocalDate
     @State private var showsTimeEditor = false
 
     private enum Correction { case none, open, taken, skipped, notSaved }
@@ -83,7 +81,7 @@ struct HistoryEntryRow: View {
     private func label(_ item: TodaySnapshot.ItemLook?) -> some View {
         HStack(spacing: 12) {
             if let item {
-                FormIcon(form: item.form, color: item.color)
+                FormIcon(form: item.form, color: item.color, photo: item.imageReference)
                     .frame(minWidth: 32)
             }
             VStack(alignment: .leading, spacing: 2) {
@@ -115,6 +113,7 @@ struct HistoryEntryRow: View {
                     .font(.subheadline)
                     .monospacedDigit()
                     .foregroundStyle(.secondary)
+                    .numberMotion(value: whenText)
             }
         }
         .frame(minHeight: 44)

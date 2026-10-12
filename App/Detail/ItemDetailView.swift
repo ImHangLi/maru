@@ -21,6 +21,8 @@ struct ItemDetailView: View {
                 content(detail)
             } else if readFailed {
                 ContentUnavailableView {
+                    Label("Can’t Show Item", systemImage: "exclamationmark.triangle")
+                } description: {
                     Text("Maru couldn’t read this item.")
                 } actions: {
                     Button("Try Again") { Task { await load() } }
@@ -44,7 +46,7 @@ struct ItemDetailView: View {
         }
         // Each new read of the store, for example after a save in the edit screen, reads the detail again.
         .task(id: model.content) { await load() }
-        .alert("Not changed", isPresented: $changeFailed) {
+        .alert("Not Changed", isPresented: $changeFailed) {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Maru couldn’t save this change. Try again.")
@@ -164,14 +166,12 @@ private struct DetailHeader: View {
             }
             if item.isArchived {
                 Label("Archived", systemImage: "archivebox")
-                    .foregroundStyle(.secondary)
             } else if remindersOff {
                 Label {
                     Text("You can still record it with reminders off.")
                 } icon: {
                     Image(systemName: "bell.slash")
                 }
-                .foregroundStyle(.secondary)
             }
         }
         .padding(.vertical, 4)
@@ -301,6 +301,7 @@ private struct WeekSection: View {
                 Text(verbatim: summary)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .numberMotion(value: summary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 4)

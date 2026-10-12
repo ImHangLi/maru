@@ -36,7 +36,7 @@ struct ReminderChoiceSheet: View {
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .smallSheet()
         .sheet(item: $editing) { candidate in
             ChangeTimeSheet(
                 name: candidate.name,
@@ -49,33 +49,46 @@ struct ReminderChoiceSheet: View {
     private func row(_ candidate: ReminderChoice.Candidate) -> some View {
         let isToday = candidate.isToday
         let isPending = model.pendingEvent(of: candidate) != nil
-        return Button {
-            if isToday {
-                model.show(candidate)
-            } else if isPending {
-                model.retry(candidate)
-            } else {
-                editing = candidate
+        // A date that no generation run reached has nothing to record here. Its row is no button, and it says
+        // so with a symbol and the text color, not with gray (design principle 6).
+        let isAvailable = isToday || candidate.occurrence != nil
+        let content = HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: candidate.name)
+                    .foregroundStyle(.primary)
+                Text(detail(candidate, isPending: isPending))
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
-        } label: {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(verbatim: candidate.name)
-                        .foregroundStyle(.primary)
-                    Text(detail(candidate, isPending: isPending))
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            if isAvailable {
                 Text(action(candidate, isPending: isPending))
-                    .foregroundStyle(candidate.occurrence == nil && !isToday ? AnyShapeStyle(.secondary) : AnyShapeStyle(.tint))
+                    .foregroundStyle(.tint)
+            } else {
+                Label("Not Available", systemImage: "nosign")
+                    .foregroundStyle(.primary)
             }
-            .frame(minHeight: 44)
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        // A date that no generation run reached has nothing to record here.
-        .disabled(!isToday && candidate.occurrence == nil)
+        .frame(minHeight: 44)
+        .contentShape(Rectangle())
+        return Group {
+            if isAvailable {
+                Button {
+                    if isToday {
+                        model.show(candidate)
+                    } else if isPending {
+                        model.retry(candidate)
+                    } else {
+                        editing = candidate
+                    }
+                } label: {
+                    content
+                }
+                .buttonStyle(.plain)
+            } else {
+                content
+            }
+        }
     }
 
     /// For example "Morning, Yesterday, Taken at 8:02".
@@ -95,7 +108,6 @@ struct ReminderChoiceSheet: View {
 
     private func action(_ candidate: ReminderChoice.Candidate, isPending: Bool) -> LocalizedStringKey {
         if candidate.isToday { return "Show" }
-        if candidate.occurrence == nil { return "Not Available" }
         if isPending { return "Try Again" }
         return candidate.takenAt == nil ? "Record…" : "Change Time…"
     }

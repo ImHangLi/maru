@@ -96,7 +96,7 @@ struct SettingsView: View {
                             }
                         ))
                     } footer: {
-                        Text("Counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. Turning this off clears the data that waits to be sent.")
+                        Text("Maru shares counts of what you use, and never item names, doses, or times.")
                     }
                 }
                 DataSection()
@@ -198,9 +198,9 @@ private struct ReminderSection: View {
         switch model.settings.test {
         case .idle, .sending: nil
         case .sent: "The test comes in about 5 seconds."
-        case .notAllowed: "Test not sent. Notifications are off for Maru."
-        case .noRoom: "Test not sent. Your iPhone can’t hold more reminders."
-        case .failed: "Test not sent. Try again."
+        case .notAllowed: "Maru did not send the test, because notifications are off."
+        case .noRoom: "Maru did not send the test, because your iPhone can’t hold more reminders."
+        case .failed: "Maru did not send the test, so try again."
         }
     }
 }

@@ -77,7 +77,7 @@ enum DebugScenario: String, CaseIterable, Identifiable {
             ]
         case .failedWrite:
             [
-                "Record any item. A “Not saved” alert offers Try Again. After Cancel, the row and the banner at the top offer it too (D014, T19).",
+                "Record any item. A “Not Saved” alert offers Try Again. After Cancel, the row and the banner at the top offer it too (D014, T19).",
                 "No success haptic and no “recorded” state before the retry.",
                 "Try Again on the row or the banner succeeds. The item has one record, not two (T18).",
             ]
