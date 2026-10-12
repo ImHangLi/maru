@@ -31,6 +31,7 @@ Your data stays on your iPhone. Maru has no account, no cloud, no ads, and no tr
 - **Travel.** A medication can keep the clock of its home time zone.
 - **Your choices only.** Maru never picks a dose or a medication time for you.
 - **For everyone.** Text at every size, VoiceOver, Dark Mode, and an app color that you choose.
+- **Six languages.** English, Simplified Chinese, Japanese, Spanish, German, and Korean. Reminders also use your language.
 
 Maru is in early development and is not on the App Store yet.
 

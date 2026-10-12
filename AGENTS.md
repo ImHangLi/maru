@@ -48,7 +48,7 @@ On another Mac, use XcodeBuildMCP to run the app in a simulator, take screenshot
 
 ## Conventions
 
-- Write code, comments, commit messages, and docs in English. Product copy lives in String Catalogs. Ship `en` first. `zh-Hans` is optional and can follow (D017).
+- Write code, comments, commit messages, and docs in English. Product copy lives in String Catalogs. English (`en`) is the source language. The first release also ships zh-Hans, ja, es, de, and ko (D051, D059).
 - Use SwiftUI system controls and Swift 6 strict concurrency.
 - "Maru" is the working brand. Keep the bundle ID, display name, and marketing strings separate (spec §13.3).
 
