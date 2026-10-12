@@ -24,7 +24,7 @@ No. You can add as many items as you want. Maru has no account and no paywall on
 
 ## Where is my data?
 
-On your iPhone. Maru has no server and makes no network requests by itself. The feedback form in Settings is a web page that opens only when you tap it. Read `PRIVACY.md` for the details.
+On your iPhone. Maru has no server and no account. Optional usage statistics never include item names, doses, or times, and a switch in Settings turns them off. The feedback form in Settings is a web page that opens only when you tap it. Read `PRIVACY.md` for the details.
 
 ## Can I take my records with me?
 
