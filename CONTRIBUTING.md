@@ -35,7 +35,7 @@ xcodebuild -project Maru.xcodeproj -scheme Maru -destination 'generic/platform=i
 - Names the spec sections or acceptance IDs (`T01`–`T51`) that it covers.
 - Says what changed, why, and how you checked it. Add screenshots for a UI change.
 - Keeps tests few. Add a test only for a behavior that protects a record or an acceptance ID (D016 in [docs/decisions.md](docs/decisions.md)).
-- Uses English in code, comments, commit messages, and docs. Product text goes in `App/Localizable.xcstrings`.
+- Uses English in code, comments, commit messages, and docs. Product text goes in `App/Localizable.xcstrings`, with a translator comment and the five other languages (D059).
 
 [AGENTS.md](AGENTS.md) has the code rules. They apply to people and coding agents alike. If you use an agent, read and test its work before you send it.
 

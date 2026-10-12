@@ -8,7 +8,7 @@ Maru was developed in a private repository before it became public. Issue number
 
 - The app and the package build. CI builds and tests the package and builds the app for the iOS Simulator.
 - Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, optional follow-up reminders, and as-needed items.
-- The first release is in English (D017).
+- The app has six languages (D059): English, zh-Hans, ja, es, de, and ko. The translation is not reviewed by a native speaker yet (`docs/localization-review.md`). Nobody saw it on a display.
 - The design rules are in `docs/design.md`. Native SwiftUI components only (D026).
 - Maru does not integrate with Apple Health in V1 (D022).
 - An "every other day" schedule is in code (D036). Its reminders are dated requests for the next 7 due dates, and they need a check on a real iPhone.
@@ -31,12 +31,12 @@ Maru was developed in a private repository before it became public. Issue number
 1. Check on the maintainer's iPhone, in one session: the item photo (D056), the History graph and rows, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.
 2. Home Screen widgets are in code (D048), "Today" and "Take Now". Nobody saw them. Check on the iPhone: the signing of the App Group with the free team, the one-time move of the database, the tap on a capsule with the app closed, and the reminders after it. The database now lives in the App Group container, and the old copy stays in Application Support.
 3. Acceptance on a real iPhone: one week of daily use by the maintainer. It started on 2026-10-12.
-4. Release: follow `docs/release-plan.md` (D051). The maintainer joins the Apple Developer Program first.
+4. Release: a native speaker checks each language with `docs/localization-review.md` (D059). Follow `docs/release-plan.md` (D051). The maintainer joins the Apple Developer Program first.
 
 ## Known gaps
 
 - Dark Mode, the largest text sizes, and VoiceOver speech need a full check on a device.
-- The String Catalog keys all have comments (D058). It still needs a sync in Xcode before a second language: the planned languages are zh-Hans, ja, es, de, and ko.
+- The String Catalog keys all have comments (D058) and six languages (D059). A native speaker must check the text, and each language needs a look on a device for the longest words.
 
 ## Run the app with sample data
 

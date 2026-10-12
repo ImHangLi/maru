@@ -107,7 +107,7 @@ Owner decision. The owner said that the app has too many tests (137 after three 
 - An implementation brief and a review brief state this limit. A reviewer does not ask for more tests unless a required behavior has none.
 - A cleanup pass removes existing tests that do not meet this rule.
 
-## D017 · 2026-10-11 · English first (replaced by D051 for the first public release)
+## D017 · 2026-10-11 · English first (replaced by D051 and D059 for the first public release)
 
 Owner decision. The first release is in English. This includes the App Store screenshots and all store text. Simplified Chinese is optional and can follow later. This replaces "ship `en` and `zh-Hans` first" in `AGENTS.md`. Chat with the owner stays in Chinese.
 
@@ -1017,3 +1017,22 @@ Motion (a change of D030):
 - A number or a time that changes in place uses `contentTransition(.numericText())` with the state motion: the count of the banner, the time of a row, and the line under the week strip. With Reduce Motion the text cross-fades. This replaces the rule that text changes at once, and the rule of "no scale" for a tap.
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The press and fill motion, the dose row alignment at the largest text sizes, and the sheet heights need a check on a real iPhone.
+
+## D059 · 2026-10-12 · Six languages in the String Catalogs
+
+The maintainer asked for the six languages of D051. English stays the source. The agent made the choices below. A native speaker has not read the text yet.
+
+- Languages: `zh-Hans`, `ja`, `es`, `de`, and `ko`, for every key of `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`, and `Packages/MaruKit/Sources/MaruNotifications/Resources/Localizable.xcstrings`. Each value has the state "translated". This replaces the "English only" notes of D017, D048, and D053. Spec §13.2 lists `zh-Hant` and `fr` too. D051 chose the six languages, so the first release has neither of them.
+- Reminders: they were localizable already (`String(localized:bundle:locale:)` with the package catalog). They now have the five translations, so the notification title, body, action, and test text use the language of the user. The package has `defaultLocalization: "en"` and the resource folder, so `Package.swift` did not change.
+- Info.plist: `App/InfoPlist.xcstrings` holds the camera permission text in six languages. The display name stays "Maru" in every language.
+- Plurals: `ja`, `ko`, and `zh-Hans` have the category `other`. `de` and `es` have `one` and `other` for "changes not saved". The other counted keys read right for every number, so they have one form.
+- Register: `ja` uses です and ます in sentences and plain words in labels. `ko` uses 해요체 in sentences. `de` and `es` use "du" and "tú". `zh-Hans` uses "你".
+- Words: each language follows the words of Apple Health, Reminders, and Settings in that language. `ko` uses "미리 알림" for a reminder and "알림" for a notification. `de` uses "Erinnerung" and "Mitteilung". `es` uses "Ajustes". `zh-Hans` uses "存储" for "Save". `ko` uses "내역" for History, because "기록" is the word for a record.
+- Medical safety: the text has no advice. "Taken", "Skipped", and "No record" keep their meaning. A follow-up reminder says that the dose is still to take, and a first reminder never says that it is not taken (D047).
+- The tip is "赞赏" (zh-Hans), "チップ" (ja), "propina" (es), "Trinkgeld" (de), and "후원" (ko).
+- The new key "Data" is the name of a parameter of the widget intent. It was not in the catalogs.
+- Project: `project.yml` sets `developmentLanguage: en`. XcodeGen reads the regions from the catalogs, so the project lists `en`, `zh-Hans`, `ja`, `es`, `de`, and `ko` as known regions. No tool or dependency is new.
+- Stays English: the supplement and medicine name lists of the quick add (D038), the CSV column titles and file names of the export (a file format), the city name in a medication time zone (it comes from the zone ID), and the debug tools. App Store Connect holds the tip names, the store text, and the screenshots, so they are separate work. `PRIVACY.md` and `site/` have no translation yet.
+- Review: `docs/localization-review.md` lists the 25 riskiest strings in each language for a native speaker.
+
+Not verified: no build of the app ran on this Mac. CI builds the app. Nobody saw the text on a display. Needs a check on a real iPhone in each language: the longest German and Spanish text in buttons, rows, the widgets, and the notification, the Japanese and Korean line breaks, and the camera prompt.

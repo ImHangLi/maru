@@ -1,0 +1,47 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "NSCameraUsageDescription" : {
+      "comment" : "The text of the system camera permission prompt. The prompt shows at the first tap on Scan Label or Take Photo.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru verwendet die Kamera, um den Namen auf einem Etikett zu lesen und ein Foto eines Eintrags aufzunehmen. Ein Etikett-Scan speichert kein Foto."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru uses the camera to read the name on a label and to take a photo of an item. A label scan saves no photo."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru usa la cámara para leer el nombre de una etiqueta y para hacer una foto de un elemento. El escaneo de una etiqueta no guarda ninguna foto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruはカメラを使って、ラベルの名前を読み取ったり、項目の写真を撮ったりします。ラベルのスキャンでは写真を保存しません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru는 카메라로 라벨의 이름을 읽고 항목 사진을 찍어요. 라벨 스캔은 사진을 저장하지 않아요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 使用相机读取标签上的名称，并为项目拍照。扫描标签不会存储照片。"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
