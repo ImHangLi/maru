@@ -12,7 +12,7 @@ Maru asks iOS to encrypt the database file while your iPhone is locked. When Mar
 
 ## What Maru does not do
 
-- It makes no network requests by itself. It has no server and no account.
+- It makes no network requests by itself, except the request of the App Store for the tip prices when you open Settings. It has no server and no account.
 - It contains no analytics, advertising, or crash-reporting code.
 - It does not read your contacts, your location, or the advertising identifier.
 - It does not read from or write to Apple Health.
@@ -26,6 +26,10 @@ The name suggestions on the add screen come from a list inside the app. The name
 ## Feedback
 
 Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.
+
+## Tips
+
+Settings has a "Support Maru" section with three optional tips. A tip unlocks nothing. The purchase goes through the App Store. Apple handles your payment and your Apple Account, and Maru gets no payment data or account data. Maru does not send item names, doses, or records with a tip. Maru loads the tip prices from the App Store only when you open Settings.
 
 ## Notifications
 
