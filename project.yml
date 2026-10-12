@@ -55,8 +55,8 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: Maru
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        # The label scan of the add screen (D038). The system asks at the first tap on "Scan Label".
-        INFOPLIST_KEY_NSCameraUsageDescription: Maru uses the camera to read the name on a label. Photos are not saved.
+        # The label scan (D038) and the item photo (D056) of the edit screen. The system asks at the first tap.
+        INFOPLIST_KEY_NSCameraUsageDescription: Maru uses the camera to read the name on a label and to take a photo of an item. A label scan saves no photo.
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         # Maru uses only the encryption of iOS, so the upload needs no export compliance document.

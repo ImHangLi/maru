@@ -840,7 +840,7 @@ Agent detail:
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw a widget. CI builds the app. Needs a check on a real iPhone: the signing, the move of an existing database, the tap on a capsule with the app closed and with the app open, the reminder and the follow-up that go after the tap, a locked iPhone, a change of the tint, and dark mode.
 
-## D049 · 2026-10-12 · Simplify: remove unused code
+## D049 · 2026-10-12 · Simplify: remove unused code (`Item.imageReference` restored by D056)
 
 The maintainer asked for this on 2026-10-12. Users see no change.
 
@@ -892,3 +892,37 @@ Agent decisions for the analytics part of D051. They follow spec §10 and §11. 
 - Open items for the maintainer: turn on "Discard client IP data" in the PostHog project. Choose the host region. Check the privacy label and the Privacy Manifest of the build. Review the opt-in list and the notice text. This change did not translate the new strings.
 
 Not verified: the app build and the screens. CI builds the app. The send to a real PostHog project and a packet capture (T42) need a key and a device.
+
+## D056 · 2026-10-12 · Optional item photo
+
+The maintainer asked for this on 2026-10-12. It covers spec §5.1, §5.2, and §10, and T29 to T32. It restores `Item.imageReference`, which D049 removed.
+
+What the user sees:
+
+- The add and edit screen has a section "Photo (Optional)" after the note. It has "Choose Photo" (the system `PhotosPicker`, which needs no permission), "Take Photo" (the system camera), a switch "Remove Background", and "Remove Photo". "Take Photo" shows only on an iPhone with a camera.
+- The photo replaces the form icon on a Today row, on a My Items tile, on the item detail, and on the archived list. The form icon stays as the fallback. History rows keep the form icon.
+- An item with no photo looks and works as before (T32).
+
+How it works:
+
+- Maru reads the chosen photo, scales it to at most 512 pixels on the longest side, and applies its rotation. The scale happens while Maru reads the file, so the full image is never decoded. Then Maru crops the middle square. The crop is JPEG. It is always the first result, so Save never waits for the background removal.
+- The background removal uses `VNGenerateForegroundInstanceMaskRequest` (iOS 17, on device) and runs off the main actor at utility priority. It keeps the result only when Vision finds exactly one subject. With no subject or with many subjects it fails, and the crop stays (T29). Maru never picks one of many subjects. A cutout is PNG with alpha. The switch "Remove Background" lets the user keep the crop when the cutout looks wrong.
+- The image has no metadata. The decoded image holds only pixels, and the encoder gets no properties, so EXIF data and the location do not reach the file. Maru never keeps the original image (T31).
+- Stale results (T30): the photo state lives in the edit screen, and the background work is a SwiftUI task of that screen with the identity of the latest request. A new request, a Cancel, a Save, and a Discard cancel the task, and each step checks the cancel before it writes the state. The result never reaches a closed screen or another item. Nothing writes a file before Save.
+- Save writes the new file first, and then the transaction stores the file name in `item.imageReference`. A failed transaction removes the new file. After the commit, Maru removes the old file. "Remove Photo" and a delete of the item remove the file after the commit. A restore removes every photo file that no restored item uses.
+- A file name is a new UUID for each photo, and Maru never changes a file. So the name is the cache key, and an old image can not show for a new photo. A name with a path part is ignored.
+- Lists draw the form icon first and read the photo off the main actor, as a 192 pixel image in an in-memory cache. The photo replaces the icon when the read ends. A missing file, or a read that fails on a locked iPhone, keeps the form icon. The startup path does not read a photo (spec §9).
+
+Where it lives:
+
+- The files are in `Photos/` in the App Group container, next to `Database/`. A build with no container uses Application Support. The folder and each file have complete file protection (spec §10).
+- `Item.imageReference` is the file name. The column `imageReference` exists since the first migration, so there is no migration. An old row has NULL.
+- The widgets show no photo. The widget snapshot carries the file name only for the app code that shares the type.
+
+Backup (D040):
+
+- The in-app backup holds the column with the file name and not the files. A restore on the same iPhone shows a photo only when its file is still there. A restore on another iPhone shows the form icon. This keeps the backup file as small as the database, and the user can choose the photo again.
+- The iPhone backup, in iCloud or on a computer, includes the files as it includes the database. `PRIVACY.md` and `docs/export-format.md` say so. The record export (CSV) has no photo.
+- The draft file of the edit screen does not hold a photo. After the app stops, the user chooses the photo again.
+
+Not verified: no app build ran on the Mac of the maintainer, and nobody saw the screen. CI builds the app. The background removal, the camera, and the real size of a row need a check on a real iPhone. The Simulator may fail the background removal and then shows the crop. Check with a bottle on a table, with a bottle in a hand, and with two bottles, for T29. Check a missing file and a locked iPhone.

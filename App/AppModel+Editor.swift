@@ -73,16 +73,30 @@ extension AppModel {
     ///
     /// A failure throws and leaves the screen open with the draft, and the store unchanged. After a restore the
     /// store refuses the save, the screen closes, and the pages read again (D040).
-    func save(_ draft: ItemDraft, in session: EditorSession) async throws {
+    ///
+    /// A new photo is a new file, written before the transaction. The old file goes after the commit, and
+    /// the new file goes when the transaction fails. So a failure leaves the stored photo as it was (D056).
+    func save(_ draft: ItemDraft, in session: EditorSession, photo: PhotoState.Edit = .unchanged) async throws {
         let now = Date()
         let deviceTimeZone = NamedTimeZone(device: .current, at: now)
-        let (item, schedule) = try draft.build(
+        let built = try draft.build(
             item: session.context.item,
             schedule: session.context.schedule,
             keptZoneFrom: session.zoneSchedule,
             now: now,
             deviceTimeZone: deviceTimeZone
         )
+        var item = built.item
+        let schedule = built.schedule
+        let storedPhoto = session.context.item?.imageReference
+        var newPhoto: String?
+        switch photo {
+        case .unchanged: break
+        case .removed: item.imageReference = nil
+        case let .replaced(choice):
+            newPhoto = try await store.writePhoto(choice.chosen.data, fileExtension: choice.chosen.fileExtension)
+            item.imageReference = newPhoto
+        }
         do throws(StorageError) {
             if let replaced = session.replaced {
                 try await store.replace(replaced.item.id, with: item, schedule: schedule, generation: session.generation)
@@ -91,14 +105,17 @@ extension AppModel {
             }
         } catch .replaced {
             // A restore replaced the data that the screen read. The draft belongs to the old data.
+            await store.removePhoto(newPhoto)
             DraftFile.remove(key: session.draftKey)
             if editor?.id == session.id { editor = nil }
             return refresh()
         } catch {
+            await store.removePhoto(newPhoto)
             reportCoreError(.save, error)
             throw error
         }
 
+        if storedPhoto != item.imageReference { await store.removePhoto(storedPhoto) }
         DraftFile.remove(key: session.draftKey)
         if editor?.id == session.id { editor = nil }
         refresh()

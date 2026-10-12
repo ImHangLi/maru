@@ -137,6 +137,8 @@ actor AppStore {
         }
         engine = nil
         followUps = nil
+        // The restored items replace the old ones. The photo files of the old items have no owner now (D056).
+        await removeUnreferencedPhotos()
         return .success(result)
     }
 
@@ -195,7 +197,10 @@ actor AppStore {
             today?.asNeeded = AsNeededCard(try await store.asNeeded(on: date), items: items, on: date)
         }
         let entries = items.map {
-            ListEntry(id: $0.id, name: $0.name, form: $0.form, color: $0.color, remindersOff: remindersOff.contains($0.id))
+            ListEntry(
+                id: $0.id, name: $0.name, form: $0.form, color: $0.color,
+                imageReference: $0.imageReference, remindersOff: remindersOff.contains($0.id)
+            )
         }
         return Snapshot(
             today: today,
