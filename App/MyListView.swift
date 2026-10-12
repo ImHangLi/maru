@@ -174,12 +174,14 @@ private struct ItemTile: View {
     var body: some View {
         NavigationLink(value: entry.id) {
             VStack(alignment: .leading, spacing: 12) {
-                entry.form.image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: min(iconSize, 64), height: min(iconSize, 64))
-                    .foregroundStyle(entry.color.color)
-                    .accessibilityHidden(true)
+                ItemPhotoView(reference: entry.imageReference, side: min(iconSize, 64)) {
+                    entry.form.image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: min(iconSize, 64), height: min(iconSize, 64))
+                        .foregroundStyle(entry.color.color)
+                }
+                .accessibilityHidden(true)
                 // With two columns the tile has room for two lines, so most rows have one height.
                 // A longer name wraps and makes the tile taller (spec 5.3).
                 ZStack(alignment: .topLeading) {

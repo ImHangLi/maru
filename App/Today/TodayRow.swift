@@ -23,7 +23,7 @@ struct TodayRow: View {
         HStack(spacing: 12) {
             // At the three largest text sizes the icon gives its width to the name (D013).
             if typeSize < .accessibility3 {
-                FormIcon(form: entry.look.form, color: entry.look.color)
+                FormIcon(form: entry.look.form, color: entry.look.color, photo: entry.look.imageReference)
                     .frame(minWidth: 32, minHeight: 44)
             }
             // The name area opens the details. It never records (spec 3 P01).

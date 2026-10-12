@@ -109,10 +109,15 @@ extension AppStore {
 
     /// Deletes the item with its schedules and its records, in one transaction (D033). It returns the IDs of
     /// the deleted schedules and of their versions, or `nil` when the store has no such item.
+    /// After the commit, the photo file of the item goes too (D056).
     func deleteItem(
         _ itemID: ItemID,
         generation: Int
     ) async throws(StorageError) -> (schedules: [ScheduleID], versions: [ScheduleVersionID])? {
-        try await open().deleteItem(itemID, generation: generation)
+        let store = try open()
+        let photo = try await store.item(id: itemID)?.imageReference
+        let deleted = try await store.deleteItem(itemID, generation: generation)
+        if deleted != nil { ItemPhotos.remove(photo) }
+        return deleted
     }
 }

@@ -67,18 +67,22 @@ extension ItemForm {
 struct FormIcon: View {
     let form: ItemForm
     let color: ItemColor
+    /// The photo file of the item. The photo replaces the icon when it loads, and the icon stays when there is none (D056).
+    var photo: String?
     /// The icon has a size limit, and it hides at the three largest text sizes (docs/design.md).
     @ScaledMetric(relativeTo: .body) private var size = 28
     @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         if typeSize < .accessibility3 {
-            form.image
-                .resizable()
-                .scaledToFit()
-                .frame(width: min(size, 44), height: min(size, 44))
-                .foregroundStyle(color.color)
-                .accessibilityHidden(true)
+            ItemPhotoView(reference: photo, side: min(size * 1.4, 44)) {
+                form.image
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: min(size, 44), height: min(size, 44))
+                    .foregroundStyle(color.color)
+            }
+            .accessibilityHidden(true)
         }
     }
 }

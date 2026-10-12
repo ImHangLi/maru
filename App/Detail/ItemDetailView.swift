@@ -155,7 +155,7 @@ private struct DetailHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 12) {
-                FormIcon(form: item.form, color: item.color)
+                FormIcon(form: item.form, color: item.color, photo: item.imageReference)
                 // Names wrap and never truncate (spec 5.3).
                 Text(verbatim: item.name)
                     .font(.title2.bold())

@@ -57,6 +57,8 @@ The settings:
 
 A backup does not hold the notification permission, the pending reminders, or an unsaved draft. They belong to one iPhone.
 
+A backup does not hold the item photos (D056). The `item` table has the column `imageReference` with the name of the photo file, and the files are not in the backup. A restore keeps the names. An item shows its photo only when the file is still on the iPhone, and else it shows the form icon. After a restore, Maru removes the photo files that no restored item uses. The record export has no photo.
+
 ### What a restore accepts
 
 - The format version is 1 or lower, and the application ID is the one of Maru.

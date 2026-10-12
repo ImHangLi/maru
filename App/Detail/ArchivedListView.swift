@@ -46,7 +46,7 @@ struct ArchivedListView: View {
 
     private func row(_ entry: ListEntry) -> some View {
         HStack(spacing: 12) {
-            FormIcon(form: entry.form, color: entry.color)
+            FormIcon(form: entry.form, color: entry.color, photo: entry.imageReference)
             Text(verbatim: entry.name)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)

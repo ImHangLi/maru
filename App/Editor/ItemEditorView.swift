@@ -40,6 +40,8 @@ struct ItemEditorView: View {
     /// The user chose a form on this screen, so the app changes it no more. A stored item, a replacement,
     /// and a kept draft start with a chosen form.
     @State private var formIsChosen: Bool
+    /// The photo that the user picked or removed on this screen (D056). It is not part of the draft file.
+    @State private var photo = PhotoState()
 
     init(session: EditorSession) {
         self.session = session
@@ -48,7 +50,7 @@ struct ItemEditorView: View {
         _formIsChosen = State(initialValue: !session.isNew || session.replaced != nil || session.isRestored)
     }
 
-    private var hasChanges: Bool { draft != session.original }
+    private var hasChanges: Bool { draft != session.original || photo.isChanged }
     private var problem: DraftProblem? {
         draft.problem(
             item: session.context.item,
@@ -81,8 +83,11 @@ struct ItemEditorView: View {
                 amountSection
                 timesSection
                 noteSection
+                PhotoSection(state: $photo, storedReference: session.context.item?.imageReference)
             }
             .scrollDismissesKeyboard(.interactively)
+            // The photo work belongs to this screen. When it closes, a late result writes nothing (T30).
+            .photoWork($photo)
             // A row or a footer that comes or goes moves the form (D030).
             .motion(.layout, value: layout)
             #if DEBUG
@@ -151,6 +156,9 @@ struct ItemEditorView: View {
             candidates?.amounts.count ?? 0,
             candidates?.times.count ?? 0,
             candidates?.notes.count ?? 0,
+            photo.isChanged,
+            photo.step,
+            photo.hasCutout,
         ]
     }
 
@@ -483,7 +491,7 @@ struct ItemEditorView: View {
         Task {
             defer { isSaving = false }
             do {
-                try await model.save(draft, in: session)
+                try await model.save(draft, in: session, photo: photo.edit)
             } catch {
                 saveError = SaveErrorText(error)
             }
