@@ -51,14 +51,11 @@ struct TodayState {
     /// The finished parts of the day that show one line. Set when the page shows after a launch or a return,
     /// by a tap on a title, and a short time after the record that finishes a part (D012, D028).
     var foldedParts: Set<DayPart> = []
-    /// The title of the current part of the day has the tint for a few seconds after a launch or a return (D020).
-    var highlightsCurrentPart = false
     /// Counts the commits, for the success haptic. It changes only after a commit (spec 7.2).
     var commitCount = 0
     var failure: TodayFailure?
     /// The next content that shows comes from a launch or a return to the app.
     var isReturning = true
-    var highlightRun = 0
     /// Refreshes Today when the day changes while the app stays in front.
     var dayChange: Task<Void, Never>?
     /// The rows of a tapped reminder. Today scrolls to their card and keeps it open until the app leaves the front,
@@ -399,7 +396,6 @@ extension AppModel {
             today.isReturning = false
             let folded = Set(day.groups.filter(isFinished).map(\.part)).subtracting(focusedParts(of: day))
             withMotion(replacesToday ? .layout : nil) { today.foldedParts = folded }
-            highlightCurrentPart()
         }
         // The page stays in front over midnight: read again at the next midnight of a zone of the content.
         today.dayChange?.cancel()
@@ -408,17 +404,6 @@ extension AppModel {
             try? await Task.sleep(for: .seconds(max(interval, 1)))
             guard !Task.isCancelled else { return }
             self?.refresh()
-        }
-    }
-
-    private func highlightCurrentPart() {
-        today.highlightRun += 1
-        let run = today.highlightRun
-        today.highlightsCurrentPart = true
-        Task { [weak self] in
-            try? await Task.sleep(for: .seconds(6))
-            guard let self, today.highlightRun == run else { return }
-            today.highlightsCurrentPart = false
         }
     }
 }

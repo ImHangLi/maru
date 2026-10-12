@@ -134,7 +134,7 @@ Agent decisions from issue #3 (PR #16), after two review rounds by a different m
 - The store has no schema change. The resolved instant is computed, not stored.
 - Open point for the history screen (#10): rows that are no longer planned and have no record stay in the database, so history must read by records.
 
-## D020 · 2026-10-11 · Ring, opening highlight, My List, palette, and settings entry (ring and icon-only tab setting removed by D026, palette replaced by D021, My List form replaced by D032)
+## D020 · 2026-10-11 · Ring, opening highlight, My List, palette, and settings entry (ring and icon-only tab setting removed by D026, palette replaced by D021, My List form replaced by D032, opening highlight removed by D050)
 
 Owner decisions, with two agent recommendations that the owner asked for.
 
@@ -293,7 +293,7 @@ Owner decision. Maru becomes a public repository under the MIT license. This rep
 - The repository holds no personal health data, no local paths, and no credentials. Records refer to private work only as history, without links to private branches or local files.
 - `docs/process.md` applies to every contributor. The rules for agents that work for the maintainer are in `AGENTS.md`.
 
-## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044)
+## D032 · 2026-10-11 · Owner feedback: plain folded header, timeline history, grid for My List, add-item defaults ("Remind Again" row replaced by D039, row time added by D044, chevron removed by D050)
 
 Owner decisions after use on the device. The owner wants a simple, native app with no repeated information.
 
@@ -850,3 +850,10 @@ The maintainer asked for this on 2026-10-12. Users see no change.
 - `AppStore`: one helper opens the store for both record transactions. The `history` and `historyCounts` forwarders are gone.
 - Tests and helpers: `noTypeCarriesInventoryFields`, `DoseTests`, `writerSetting`, and `WidgetDay.hasOpenDose`.
 - `LocalStore+Move.swift` is now `LocalStore+Adopt.swift`.
+
+## D050 · 2026-10-12 · Plain slot header: no chevron, no opening highlight
+
+Maintainer decision after use on the device.
+
+- The header of a finished part of the day has no chevron. A tap on the header still folds and opens the section. This replaces the chevron of D032.
+- The title of the current part of the day stays in the text color when the app opens or returns. This removes the opening highlight of D020 and the attention motion of D030.
