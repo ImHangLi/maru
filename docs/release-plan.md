@@ -164,13 +164,13 @@ The notes are in App Store Connect. They state: what Maru does, no account, the 
 
 ### TestFlight
 
-- Build 3 of version 1.0.0 is the submission build. It was uploaded on 2026-10-13 from `main`, it has the app and the widgets and no Watch app, and its state is "Valid". It is on version 1.0.0 and in internal testing.
-- Builds 1 and 2 came before it, on the same day. Build 2 has two shorter German titles and the hidden tip section. Build 3 has the text color in rows, no "Send a Test Notification" row, and a progress bar in the medium Today widget.
+- Build 4 of version 1.0.0 is the submission build. It was uploaded on 2026-10-14 from `main` (`54f71cf`), it has the app and the widgets and no Watch app, and its state is "Valid". It has the analytics events of D077 and D078 and opens the feedback form in Safari.
+- Builds 1 and 2 came before it, on the same day. Build 2 has two shorter German titles and the hidden tip section. Build 3 has the text color in rows, no "Send a Test Notification" row, and a progress bar in the medium Today widget. Build 3 went to review on 2026-10-13, and the maintainer withdrew it on 2026-10-14 for build 4.
 - Each archive used the Release configuration, automatic signing, the analytics key from the Keychain on the command line, and the build number as `CURRENT_PROJECT_VERSION` on the command line. `project.yml` keeps build number 1. The distribution profiles have the App Group, and the app profile has the time-sensitive entitlement. The upload validation rejected nothing.
-- The Release build has no test control. The strings "Test Notification" and "Test Scenarios" are not in the app binary, the widget binary, or the compiled string tables of build 3.
+- The Release build has no test control. The strings "Test Notification" and "Test Scenarios" are not in the app binary, the widget binary, or the compiled string tables of build 3. Build 4 has the same analytics key as build 3, and the same entitlements.
 - The group "Internal" is an internal group with access to all builds. The maintainer is its tester.
 - The feedback email and the beta review contact email are `hello@maru.day`. Each build has its "What to Test" text.
-- A later build replaces build 3 on the version with `asc versions attach-build`.
+- A later build replaces build 4 on the version with `asc versions attach-build`.
 - Not done on purpose: no Beta App Review and no public link. No external TestFlight step is planned.
 
 ### What is open before the submission
@@ -179,4 +179,4 @@ The notes are in App Store Connect. They state: what Maru does, no account, the 
 
 - The screenshots are uploaded for the eight store languages: six for the 6.9-inch iPhone and six for the 13-inch iPad in each.
 - The Paid Apps agreement has the state "Pending User Info": a tax form is missing. The Free Apps agreement is active. The app ships without the tips.
-- The submission itself. The maintainer starts it: "Add for Review" on the version page, or `asc review submit` with the ID of build 3.
+- Done: the maintainer submitted version 1.0.0 with build 4 on 2026-10-14. Its state is "Waiting for Review", and the release is manual.
