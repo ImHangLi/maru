@@ -55,13 +55,13 @@
 <p>Maru keeps your health data on your iPhone. This page describes the app in this repository as it is today.</p>
 <h2 lang="ko">Maru가 저장하는 것</h2>
 <ul>
-<li>Your items, schedules, notes, and records, in a local SQLite database.
+<li>Your items, schedules, notes, and records.
 </li>
-<li>Your settings, in the app's local preferences.
+<li>Your settings.
 </li>
-<li>An unsaved draft of the add or edit screen, in a local file. Maru deletes it when you save or cancel.
+<li>A draft of an item that you add or edit. Maru deletes the draft when you save or cancel.
 </li>
-<li>The photo of an item, if you add one, in a local file. See "Item photos".
+<li>The photo of an item, if you add one. See "Item photos".
 </li></ul>
 <p>Maru asks iOS to encrypt the database file while your iPhone is locked. When Maru cannot open your records because the iPhone is locked, it records nothing and asks you to unlock.</p>
 <h2 lang="ko">Maru가 하지 않는 것</h2>
@@ -75,7 +75,7 @@
 <li>It does not read from or write to Apple Health.
 </li></ul>
 <h2 lang="ko">사용 통계</h2>
-<p>A build of Maru that has an analytics project key can send simple usage statistics to PostHog. A build with no key has no switch and sends nothing. This section applies to a build with a key.</p>
+<p>Some versions of Maru can send usage statistics to PostHog. A version that cannot has no switch and sends nothing. This section applies to a version that can.</p>
 <ul>
 <li>Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".
 </li>
@@ -107,7 +107,7 @@
 <li>Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
 </li></ul>
 <h2 lang="ko">카메라</h2>
-<p>Maru uses the camera only while you scan a label on the add screen. Your iPhone reads the text, and Maru keeps only the name that you tap. A label scan saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".</p>
+<p>Maru uses the camera only when you scan a label or take a photo of an item. Your iPhone reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".</p>
 <h2 lang="ko">항목 사진</h2>
 <p>An item can have a photo that you take or choose on the add or edit screen. It is optional.</p>
 <ul>
