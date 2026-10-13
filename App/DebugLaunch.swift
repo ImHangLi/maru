@@ -10,8 +10,8 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruSampleData")
     }
 
-    /// `-MaruSampleRecords YES`: with the sample items, record morning as taken, one noon item as taken,
-    /// and one evening item as skipped, through the record transaction. For screenshots of recorded rows.
+    /// `-MaruSampleRecords YES`: with the sample items, record the morning of today as taken and a history of
+    /// 80 days, through the record transaction. For screenshots of recorded rows and of the history.
     static var wantsSampleRecords: Bool {
         UserDefaults.standard.bool(forKey: "MaruSampleRecords")
     }
@@ -59,25 +59,32 @@ extension AppStore {
         )
     }
 
-    /// Made-up supplements with no dose. They are not the data of a person.
-    /// An item with no time has no schedule, so it shows only in My Items (T02).
-    private static let samples: [(name: String, form: ItemForm, amount: String?, times: [(hour: Int, minute: Int)])] = [
-        ("Vitamin D", .drop, nil, [(8, 0)]),
-        ("Omega-3", .softgel, "2 softgels", [(8, 0), (20, 0)]),
-        ("Zinc", .tablet, nil, [(12, 30)]),
-        ("Creatine", .powder, "1 scoop", [(13, 0)]),
-        ("Magnesium glycinate", .capsule, "2 capsules", [(21, 30)]),
-        ("Probiotic", .unknown, nil, []),
+    /// The supplements and medications that many people take, with generic names. They are not the data of a person.
+    /// An item with no time has no schedule, so it is as needed (D021).
+    private static let samples: [(
+        name: String, category: ItemCategory, form: ItemForm, amount: String?, times: [(hour: Int, minute: Int)]
+    )] = [
+        ("Vitamin D", .supplement, .softgel, "1 softgel", [(8, 0)]),
+        ("Levothyroxine", .medication, .tablet, "1 tablet", [(7, 0)]),
+        ("Omega-3", .supplement, .softgel, "2 softgels", [(12, 30)]),
+        ("Magnesium", .supplement, .capsule, "2 capsules", [(21, 0)]),
+        ("Atorvastatin", .medication, .tablet, "1 tablet", [(21, 0)]),
+        ("Ibuprofen", .medication, .tablet, nil, []),
     ]
+
+    /// The sample records start this many days before today, so the graph of the history has 13 weeks or fewer.
+    private static let sampleHistoryDays = 80
 
     func loadSampleData(at now: Date, deviceTimeZone: NamedTimeZone) async throws {
         let store = try open()
         guard try await store.items().isEmpty else { return }
+        let today = LocalDate(now, in: deviceTimeZone)
         var items: [Item] = []
+        var schedules: [Schedule] = []
         for sample in Self.samples {
             // Each sample gets the color that the edit screen gives a new item, so the colors differ (D021).
             let item = try Item(
-                category: .supplement,
+                category: sample.category,
                 name: sample.name,
                 form: sample.form,
                 color: .forNewItem(among: items)
@@ -92,7 +99,7 @@ extension AppStore {
             try schedule.appendVersion(
                 ScheduleVersion(
                     scheduleID: schedule.id,
-                    effectiveFrom: LocalDate(now, in: deviceTimeZone),
+                    effectiveFrom: DebugLaunch.wantsSampleRecords ? today.adding(days: -Self.sampleHistoryDays) : today,
                     weeklyRule: .everyDay,
                     slotTimes: slotTimes,
                     dose: sample.amount.flatMap(Dose.init),
@@ -100,26 +107,51 @@ extension AppStore {
                 )
             )
             try await store.save(schedule)
+            schedules.append(schedule)
         }
-        if DebugLaunch.wantsSampleRecords { try await recordSamples(at: now, deviceTimeZone: deviceTimeZone) }
+        if DebugLaunch.wantsSampleRecords {
+            try await recordSamples(schedules, at: now, deviceTimeZone: deviceTimeZone)
+        }
     }
 
-    /// Morning taken, the first noon item taken, and the first evening item skipped.
-    private func recordSamples(at now: Date, deviceTimeZone: NamedTimeZone) async throws {
+    /// The morning of today taken, and a history that looks like real use: most doses taken, some skipped or
+    /// with no record, and some days with no record. The pattern is fixed, so each load gives the same graph.
+    private func recordSamples(_ schedules: [Schedule], at now: Date, deviceTimeZone: NamedTimeZone) async throws {
         let store = try open()
+        let today = LocalDate(now, in: deviceTimeZone)
+        var events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)] = []
+        func event(_ occurrence: Occurrence, _ action: IntakeAction) -> (event: IntakeEvent, scheduleVersionID: ScheduleVersionID) {
+            // A few minutes after the planned time, and never after now.
+            let planned = occurrence.timeZone.resolve(occurrence.plannedTime, on: occurrence.plannedDate).earliestInstant
+            let time = min(planned.addingTimeInterval(4 * 60), now)
+            return (
+                IntakeEvent(occurrenceID: occurrence.id, action: action, occurredAt: time, recordedAt: time, source: .app),
+                occurrence.scheduleVersionID
+            )
+        }
+        for day in 1...Self.sampleHistoryDays where day % 23 != 9 {
+            let date = today.adding(days: -day)
+            let planned = schedules.flatMap { $0.plannedOccurrences(on: date, deviceTimeZone: deviceTimeZone) }
+            for (index, plan) in planned.enumerated() where (day * 3 + index * 5) % 19 != 0 {
+                // No generation run stores a day this old, so the sample stores the occurrence itself.
+                let occurrence = Occurrence(
+                    slotID: plan.slotID,
+                    plannedDate: plan.plannedDate,
+                    plannedTime: plan.plannedTime,
+                    timeZone: plan.timeZone,
+                    scheduleVersionID: plan.scheduleVersionID
+                )
+                try await store.save(occurrence)
+                events.append(event(occurrence, (day + index) % 31 == 0 ? .skipped : .taken))
+            }
+        }
         let occurrences = TodaySnapshot.today(
             try await store.generateOccurrences(at: now, deviceTimeZone: deviceTimeZone), at: now
         )
-        let morning = occurrences.filter { DayPart($0.plannedTime) == .morning }
-        let noon = occurrences.filter { DayPart($0.plannedTime) == .noon }.prefix(1)
-        let evening = occurrences.filter { DayPart($0.plannedTime) == .evening }.prefix(1)
-        let events = (morning + noon).map { ($0, IntakeAction.taken) } + evening.map { ($0, IntakeAction.skipped) }
-        try await store.record(events.map { occurrence, action in
-            (
-                IntakeEvent(occurrenceID: occurrence.id, action: action, occurredAt: now, recordedAt: now, source: .app),
-                occurrence.scheduleVersionID
-            )
-        })
+        for occurrence in occurrences where DayPart(occurrence.plannedTime) == .morning {
+            events.append(event(occurrence, .taken))
+        }
+        try await store.record(events)
     }
 }
 #endif
