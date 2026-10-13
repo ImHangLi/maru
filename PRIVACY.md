@@ -30,9 +30,9 @@ A build of Maru that has an analytics project key can send simple usage statisti
   - `daily_usage_summary`: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
   - `core_error`: whether a save or a read failed, with one of five fixed codes.
   - `feedback_entry`: that you tapped "Send Feedback".
-  - `purchase_result`: a fixed product and result. Maru has no purchase yet, so it sends none.
+  - `purchase_result`: a fixed product and result. Maru does not send this event yet.
 - What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
-- Each request also has the app version, the major version of iOS, and a random install ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location.
+- Each request also has the app version, the major version of iOS, and a random install ID. Apple's privacy label lists it as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 - No session recording, no screen capture, and no automatic capture of taps or screens.
 - If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage flags. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
 - Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
