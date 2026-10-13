@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The readable column of a wide display, such as an iPad (D070). A page keeps its content in a column in the
+/// The readable column of a wide display, such as an iPad (D072). A page keeps its content in a column in the
 /// middle. The margins are safe area, so the scroll view keeps the full width, and a scroll starts in a margin too.
 /// A display that is not wider than the column, such as an iPhone or Slide Over, gets no margin.
 private struct ReadableColumn: ViewModifier {

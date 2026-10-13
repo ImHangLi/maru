@@ -10,7 +10,7 @@ struct TodayView: View {
     var body: some View {
         Group {
             if sizeClass == .regular {
-                // At a regular width, History stays beside Today (D070). It is open as long as it shows, also
+                // At a regular width, History stays beside Today (D072). It is open as long as it shows, also
                 // after a new session or a widget link closes it.
                 WideColumns {
                     page(showsHistory: false)

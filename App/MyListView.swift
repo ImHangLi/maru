@@ -11,7 +11,7 @@ struct MyListView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.horizontalSizeClass) private var sizeClass
-    /// The page of the second column at a regular width (D070). A tap on a tile or on "Archived" sets it.
+    /// The page of the second column at a regular width (D072). A tap on a tile or on "Archived" sets it.
     @State private var chosen: Shown?
 
     /// What the second column shows.
@@ -21,7 +21,7 @@ struct MyListView: View {
     }
 
     var body: some View {
-        // At a regular width, the grid is the first column, and the detail of one item stays beside it (D070).
+        // At a regular width, the grid is the first column, and the detail of one item stays beside it (D072).
         // An empty page has nothing to show beside it, so it keeps the full width.
         if sizeClass == .regular, let shown {
             WideColumns {
@@ -199,7 +199,7 @@ private struct PlainRow: ViewModifier {
 private struct ItemGrid: View {
     let entries: [ListEntry]
     let columns: Int
-    /// At a regular width: whether the second column shows the item, and the tap that shows it (D070).
+    /// At a regular width: whether the second column shows the item, and the tap that shows it (D072).
     /// `nil` when a tap opens the detail as a push.
     let selection: ((ItemID) -> (isSelected: Bool, select: () -> Void))?
 

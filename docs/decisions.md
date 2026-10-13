@@ -1181,7 +1181,7 @@ Maintainer decision on 2026-10-13, after two model reviews.
 - Every data type that the usage statistics send is "Linked to the user: Yes" in `App/PrivacyInfo.xcprivacy` and on the App Store privacy label. Each event carries the same random install ID, and Apple counts data that a persistent device-level ID ties together as linked. "Used for tracking" stays "No". This replaces the "not linked" part of D063 and of the region entry.
 - The app does not change. The install ID stays random, Maru has no account, and the ID is deleted when the user turns the switch off.
 
-## D070 · 2026-10-13 · The app also runs on iPad
+## D072 · 2026-10-13 · The app also runs on iPad
 
 Maintainer decision, with agent detail. The maintainer asked for iPad support before the first release, if it is ready. It must not delay the release.
 

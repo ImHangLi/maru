@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, and D070 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, and D072 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -120,7 +120,7 @@ The log of an item and the log of a day use the timeline rows below. The log of 
 
 A grid of tiles, so the user sees at once which items they have (spec §3 P02, D032). It replaces the list of D020.
 
-- Two columns. One column at the accessibility text sizes. On an iPad at a regular width, the grid is the first of two columns (D070).
+- Two columns. One column at the accessibility text sizes. On an iPad at a regular width, the grid is the first of two columns (D072).
 - A tile shows two things: the form icon, large, in the item color, and the name in the headline weight under it. No plan line, no amount, and no other text. The plan is in the item detail.
 - The name wraps and never truncates. A tile has room for two lines, and a longer name makes its row taller. The tiles of one row have the same height.
 - Order: the first time of day of the plan, then the name. As-needed items come last. No section titles.
@@ -174,7 +174,7 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 
 ## iPad
 
-At a regular width, such as a full-screen iPad, each tab shows two pages side by side (D070). A compact width, such as Slide Over or a narrow Split View, shows the pages of the iPhone.
+At a regular width, such as a full-screen iPad, each tab shows two pages side by side (D072). A compact width, such as Slide Over or a narrow Split View, shows the pages of the iPhone.
 
 - Two columns: each page has its own navigation stack. The first column has the width of an iPhone page: 38 % of the window, at least 320 and at most 420 points. The second column gets the other space. A system divider separates them. `App/WideColumns.swift` holds the rule.
 - Today: Today is the first column, and History is the second column. History is open as long as it shows, so the bar of Today has no History button. A row of Today opens the item detail in the first column. A row of History opens its log in the second column.
@@ -254,4 +254,4 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - Follow the system text size at every size, with no maximum (D013). Names wrap and never truncate.
 - The icon has a size limit. The record circle follows the text size. Hide the icon at the three largest accessibility sizes.
 - Support VoiceOver, dark mode, Increase Contrast, and Reduce Motion (spec §5.3).
-- The tab bar always shows icons with names (D026). On an iPad the system shows it at the top, in its own form (D070).
+- The tab bar always shows icons with names (D026). On an iPad the system shows it at the top, in its own form (D072).
