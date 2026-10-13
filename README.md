@@ -1,51 +1,51 @@
 <p align="center">
-  <img src="App/Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="Maru app icon" width="128" height="128">
+  <a href="https://maru.day"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png">
+    <img src="docs/images/hero.png" alt="Maru. Did I take it? One look. The Today screen of Maru with the items to take now." width="100%">
+  </picture></a>
 </p>
-
-<h1 align="center">Maru</h1>
-
-<p align="center">Remember what you take. Nothing more.</p>
 
 <p align="center">
-  <a href="https://github.com/ImHangLi/maru/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/ImHangLi/maru/actions/workflows/ci.yml/badge.svg"></a>
-  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-lightgrey"></a>
+  Maru reminds you to take your vitamins, supplements, and medicine.<br>
+  One tap records what you took.
 </p>
-
-Maru is a small iPhone and iPad app for daily supplements and simple medication schedules. It reminds you on time, shows what to take now, and keeps a record you can trust.
-
-Your data stays on your device. Maru has no account, no cloud, no ads, and no tracking. A missed dose is only a missed dose. There are no streaks, no scores, and no guilt. The app uses native iOS components only, so it feels like part of the system.
 
 <p align="center">
-  <img src="docs/images/today.png" alt="Today" width="24%">
-  <img src="docs/images/my-items.png" alt="My Items" width="24%">
-  <img src="docs/images/history.png" alt="History" width="24%">
-  <img src="docs/images/settings.png" alt="Settings" width="24%">
+  <a href="https://maru.day">Website</a>&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://maru.day/faq/">FAQ</a>&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://maru.day/privacy/">Privacy</a>&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://maru.day/support/">Support</a>
 </p>
 
-## Features
+<p align="center">
+  Coming soon to the App Store, for iPhone and iPad.
+</p>
 
-- **Today.** One section for each part of the day. Tap the circle to record a dose. Record a whole section with one tap.
-- **Reminders on time.** Local notifications at the times you choose. An optional second reminder, off by default.
-- **History.** See what you took and when. Undo or correct a record.
-- **As needed.** Record an item with no schedule at the current time.
-- **Travel.** A medication can keep the clock of its home time zone.
-- **Your choices only.** Maru never picks a dose or a medication time for you.
-- **For everyone.** Text at every size, VoiceOver, Dark Mode, and an app color that you choose.
-- **Six languages.** English, Simplified Chinese, Japanese, Spanish, German, and Korean. Reminders also use your language.
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/reminders-dark.png">
+    <img src="docs/images/reminders.png" alt="The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening. Under it, a Maru reminder to take Vitamin D3." width="49%">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/history-dark.png">
+    <img src="docs/images/history.png" alt="The History screen of Maru with a graph of past days and the last 7 days of each item." width="49%">
+  </picture>
+</p>
 
-Maru is in early development and is not on the App Store yet.
+<p align="center">
+  <b>Reminders.</b> Maru reminds you at your times.<br>
+  <b>History.</b> You see each day that you recorded.
+</p>
 
-## Questions
-
-Why not Apple Health or an alarm? What if I forget to record? Read [the short answers](docs/faq.md).
-
-## Privacy
-
-Maru stores everything on your device, and it has no sync between two devices. Your items and records are in a local database, protected by iOS file encryption. It has no account. A build with an analytics key can send simple usage statistics that never include item names, doses, or intake times. They are on by default outside the EU, the EEA, the UK, and Switzerland, and a switch in Settings turns them off. The only web page is the feedback form, which opens when you tap it. Reminders are local notifications. Read [PRIVACY.md](PRIVACY.md) for the details.
+- Free and open source. No subscription and no ads.
+- No account.
+- Your records stay on your device. Usage statistics are optional: see [PRIVACY.md](PRIVACY.md).
+- Six languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
+- Maru gives no medical advice.
 
 ## Build
 
-You need a Mac with Xcode 27 or later and [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+Use a Mac with Xcode 27 or later.
 
 ```sh
 brew install xcodegen
@@ -55,57 +55,15 @@ xcodegen generate
 open Maru.xcodeproj
 ```
 
-Select the Maru scheme and an iPhone or iPad simulator, then press Cmd-R.
-
-To run Maru on your own iPhone, a free Apple ID is enough:
-
-1. In Xcode, open Settings > Accounts and add your Apple ID.
-2. In the Maru target, open Signing & Capabilities and select your personal team.
-3. Change the bundle identifier to one that you own, for example `com.yourname.maru`.
-
-A build signed with a free Apple ID stops after seven days. Run it again from Xcode to renew it.
-
-The core logic builds and tests on a Mac without a simulator:
+Run the tests of the core logic:
 
 ```sh
 swift test --package-path Packages/MaruKit
 ```
 
-## Project layout
+## Contribute
 
-```text
-App/                    SwiftUI app: views and app wiring
-Packages/MaruKit/
-  MaruCore              Items, schedules, and record rules. No UI, no third-party code
-  MaruDatabase          The local SQLite store (GRDB)
-  MaruNotifications     Local reminders
-docs/                   Spec, design rules, decisions, and research
-project.yml             XcodeGen project definition
-```
-
-```mermaid
-flowchart LR
-  app["App<br/>SwiftUI"] --> core["MaruCore<br/>rules"]
-  app --> db["MaruDatabase"]
-  app --> notif["MaruNotifications"]
-  db --> core
-  notif --> core
-  db --> sqlite[("SQLite<br/>on the device")]
-  notif --> center["iOS local<br/>notifications"]
-```
-
-The views call domain operations. They never write to the database directly.
-
-## Docs
-
-- [Spec](docs/spec.md): scope, data model, and acceptance checks (in Simplified Chinese).
-- [Design](docs/design.md): the visual rules.
-- [Decisions](docs/decisions.md): numbered decisions and their reasons.
-- [How we work](docs/process.md): records and the flow for one change.
-
-## Contributing
-
-Bug reports and ideas are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before you send code. Report a security problem privately, as [SECURITY.md](SECURITY.md) describes.
+Read [CONTRIBUTING.md](CONTRIBUTING.md) before you send code. Report a security problem as [SECURITY.md](SECURITY.md) describes.
 
 ## License
 

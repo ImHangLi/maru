@@ -1,0 +1,19 @@
+/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/shots/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/badges/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/icon.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/style.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/site.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400

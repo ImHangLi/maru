@@ -333,6 +333,31 @@ def phrases(text, load=True):
                    for i, part in enumerate(parts))
 
 
+# Response headers for Cloudflare. Pictures change rarely, so a browser keeps them for a day and checks again
+# after that. The style sheet and the script keep their names between releases, so they stay fresh for one hour.
+# The pages keep the default: a browser asks each time. HSTS tells a browser to use HTTPS for this site.
+HEADERS = """/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/shots/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/badges/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/icon.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/style.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/site.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+"""
+
+
 def layout(code, page, title, desc, main, head=""):
     s = STRINGS[code]
     f = s["footer"]
@@ -340,8 +365,14 @@ def layout(code, page, title, desc, main, head=""):
     alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
     banner = (f'<meta name="apple-itunes-app" content="app-id={re.search(r"id(\d+)", STORE_URL).group(1)}">\n'
               if RELEASED else "")
+    # Google Search Console reads this tag on the home page to confirm the owner of the site. Keep it.
+    if page == "index.html" and code == LANGS[0][0]:
+        banner += '<meta name="google-site-verification" content="RS5MimbYtPjYD6RQrpYsM9gtvHPVW_mOC43pGs5eqRc">\n'
     cta = f'<a class="bar-cta" href="{e(STORE_URL)}">{e(s["store"]["download"])}</a>\n' if RELEASED else ""
     locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c, _ in LANGS if c != code)
+    # The social preview card of the language (social.py), and its words for a screen reader.
+    card = f'{ORIGIN}/og{"-" + FOLDER[code] if FOLDER[code] else ""}.png'
+    card_alt = e(f'Maru. {" ".join(part.strip() for part in s["home"]["h1"].split("|"))} {s["shots"]["today"]["alt"]}')
     current = ' aria-current="page"'
     menu = "".join(
         f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
@@ -370,12 +401,15 @@ def layout(code, page, title, desc, main, head=""):
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:url" content="{here}">
-<meta property="og:image" content="{ORIGIN}/icon.png">
-<meta property="og:image:width" content="1024">
-<meta property="og:image:height" content="1024">
-<meta property="og:image:alt" content="Maru">
+<meta property="og:image" content="{card}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{card_alt}">
 <meta property="og:locale" content="{OG_LOCALE[code]}">
-{locales}<meta name="twitter:card" content="summary">
+{locales}<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{card}">
+<meta name="twitter:image:alt" content="{card_alt}">
 {head}<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -608,6 +642,7 @@ def main():
     (SITE / "404.html").write_text(not_found(), "utf-8")
     (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
     (SITE / "_redirects").write_text(redirects(), "utf-8")
+    (SITE / "_headers").write_text(HEADERS, "utf-8")
     (SITE / "llms.txt").write_text(llms(), "utf-8")
     print(f"built {len(LANGS) * len(PAGES)} pages")
 

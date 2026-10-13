@@ -19,6 +19,7 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 | `src/mock/<lang>.json` | The app text of the widget and the reminder in one language |
 | `../PRIVACY.md` | The full privacy policy. It stays English on every language page |
 | `style.css`, `site.js` | The style, the scroll entrances, the hero phone, and the language hint |
+| `social.py` | The social preview cards: `og.png` and one card for each other language. Also the pictures of the repository README |
 
 Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
 
@@ -133,6 +134,21 @@ The labels are new, and their numbers and barcodes are fake. Apple's Vision fram
 - The components follow `Widget/` and `docs/design.md`: the system font, the sizes in points, and the default pink. The reminder is a Lock Screen banner of iOS 26, measured from a capture at 3x. It shows the title and the body of a due reminder from `MaruNotifications`, and the time, with no action. It has the width of the widget.
 - A component scales with its block. `--base` is the width that it fills, in points, and `--pt-max` stops it at a little more than its real size. The colors are tokens that start with `--app-`, with a dark set.
 - Each component is one picture for assistive technology: it has `role="img"` and the alt text of `shots` in `src/strings/<lang>.json`.
+
+## Social preview cards
+
+```sh
+python3 site/social.py
+```
+
+The command needs Google Chrome on macOS. It draws each card as an HTML page with the system fonts, and Chrome takes the picture. Run it when the headline, the icon, or the Today screenshots change, and commit the pictures.
+
+- `og.png` and `og-cn.png`, `og-jp.png`, `og-es.png`, `og-de.png`, `og-kr.png`: 1200 x 630 px, for Open Graph and X. Every page of a language names the card of that language in `og:image` and `twitter:image`, with `twitter:card` set to `summary_large_image`.
+- `og-github.png`: 1280 x 640 px, the same design in English, for the social preview of the GitHub repository. Upload it by hand in the settings of the repository. The site does not serve it.
+- The files are PNG, because X, Facebook, LinkedIn, Slack, and iMessage all read PNG, and each file is under 300 KB.
+- A card has the icon, the name, the headline of the home page, and the top of the Today screen. It has no App Store badge and no "Download", so it stays true before and after the release.
+- The command also writes the pictures of the repository README to `docs/images/`: `hero.png`, `reminders.png`, and `history.png`, and a `-dark` file of each for the dark theme of GitHub. The feature pictures are the blocks of the home page on a card. The dark hero shows `shots/today-dark-en.webp`, and the dark History card shows `shots/history-dark-en.webp`. They are captures of the app in dark mode at 780 px width, made from a 1206 x 2622 capture with `sips --resampleWidth 780` and `cwebp -q 90 -sharp_yuv`. The site does not serve the dark captures.
+- Platforms keep a card for days. After a change, ask for a new read in the X Card Validator, the Facebook Sharing Debugger, and the LinkedIn Post Inspector.
 
 ## Deploy
 

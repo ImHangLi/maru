@@ -23,17 +23,20 @@
 <meta property="og:title" content="Maru：プライバシー">
 <meta property="og:description" content="Maruがデバイスに保存するもの、送信するもの、決してしないこと。">
 <meta property="og:url" content="https://maru.day/jp/privacy/">
-<meta property="og:image" content="https://maru.day/icon.png">
-<meta property="og:image:width" content="1024">
-<meta property="og:image:height" content="1024">
-<meta property="og:image:alt" content="Maru">
+<meta property="og:image" content="https://maru.day/og-jp.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Maru. 飲んだっけ？ もう迷わない。 Maruの「今日」画面。いま飲む項目が並んでいます。">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 <meta property="og:locale:alternate" content="zh_CN">
 <meta property="og:locale:alternate" content="es_ES">
 <meta property="og:locale:alternate" content="de_DE">
 <meta property="og:locale:alternate" content="ko_KR">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://maru.day/og-jp.png">
+<meta name="twitter:image:alt" content="Maru. 飲んだっけ？ もう迷わない。 Maruの「今日」画面。いま飲む項目が並んでいます。">
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -52,7 +55,7 @@
 <section class="card summary" aria-labelledby="summary-title"><h2 id="summary-title">かんたんに言うと</h2><ul><li>項目と記録はお使いのiPhoneやiPadの中に残り、データはデバイスごとに別々です。Maruにはアカウントも、それらを預かるサーバーもありません。</li><li>かんたんな利用状況の統計に、飲んでいるものは決して含まれません。「設定」のスイッチひとつでオフにできます。</li><li>Maruに広告はなく、連絡先や位置情報も読み取りません。</li></ul></section>
 <p class="note">以下のポリシー全文は英語です。英語の文面が正式なものです。</p>
 <div class="policy" lang="en">
-<p>Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. If you install the Maru app on your Apple Watch, your iPhone sends the list of today's doses to your own Watch: the names, the amounts, the times, and whether each dose is recorded. It goes directly between the two devices and through no server of Maru. This page describes the app in this repository as it is today.</p>
+<p>Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. This page describes the app in this repository as it is today.</p>
 <h2 lang="ja">Maruが保存するもの</h2>
 <ul>
 <li>Your items, schedules, notes, and records.
@@ -63,7 +66,7 @@
 </li>
 <li>The photo of an item, if you add one. See "Item photos".
 </li></ul>
-<p>Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so a record from your Apple Watch works with the iPhone in your pocket. When Maru cannot open your records, it records nothing and asks you to unlock.</p>
+<p>Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so the "Taken" action of a reminder works while the device is locked. When Maru cannot open your records, it records nothing and asks you to unlock.</p>
 <h2 lang="ja">Maruがしないこと</h2>
 <ul>
 <li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the request of the App Store for the tip prices when you open Settings.

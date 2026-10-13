@@ -10,13 +10,13 @@
       "internalID" : "6A1B9D01",
       "localizations" : [
         {
-          "description" : "A small tip to support Maru.",
-          "displayName" : "Small Tip",
+          "description" : "A small optional tip. It unlocks nothing.",
+          "displayName" : "A Small Thanks",
           "locale" : "en_US"
         }
       ],
       "productID" : "com.imhangli.maru.tip.small",
-      "referenceName" : "Small Tip",
+      "referenceName" : "Tip Small",
       "type" : "Consumable"
     },
     {
@@ -25,28 +25,28 @@
       "internalID" : "6A1B9D02",
       "localizations" : [
         {
-          "description" : "A medium tip to support Maru.",
-          "displayName" : "Medium Tip",
+          "description" : "A medium optional tip. It unlocks nothing.",
+          "displayName" : "A Warm Thanks",
           "locale" : "en_US"
         }
       ],
       "productID" : "com.imhangli.maru.tip.medium",
-      "referenceName" : "Medium Tip",
+      "referenceName" : "Tip Medium",
       "type" : "Consumable"
     },
     {
-      "displayPrice" : "4.99",
+      "displayPrice" : "9.99",
       "familyShareable" : false,
       "internalID" : "6A1B9D03",
       "localizations" : [
         {
-          "description" : "A large tip to support Maru.",
-          "displayName" : "Large Tip",
+          "description" : "A large optional tip. It unlocks nothing.",
+          "displayName" : "A Big Hug",
           "locale" : "en_US"
         }
       ],
       "productID" : "com.imhangli.maru.tip.large",
-      "referenceName" : "Large Tip",
+      "referenceName" : "Tip Large",
       "type" : "Consumable"
     }
   ],
