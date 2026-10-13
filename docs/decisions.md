@@ -1348,18 +1348,22 @@ Maintainer decisions after the test of the TestFlight build, for the build that 
 
 Maintainer request on 2026-10-14, with agent detail. Build 3 sends four events, and the maintainer cannot judge the product from them. This change adds events and fields that answer the questions of spec §11.1. Every value is a fixed word, a flag, or a coarse range. The rules of spec §10 and §11 stay.
 
-- `setup_step`: the steps `editor_opened`, `item_saved`, `editor_closed`, `scan_opened`, `scan_used`, and `scan_blocked`, with `mode` (`new`, `edit`, `replace`). A save adds the kind of plan, a range of the count of reminder times (`0`, `1`, `2`, `3_plus`), three flags for an amount, a note, and a photo, the source of the name (`typed`, `suggestion`, `scan`), a flag for a tapped smart-completion candidate, a flag for the first item, and a range of the time on the screen. A close with no save adds `had_changes` and the time range. The event is not called "abandoned", because the user can come back (spec §11.1).
+- `setup_step`: the steps `editor_opened`, `item_saved`, `editor_closed`, `scan_opened`, `scan_used`, and `scan_blocked`, with `mode` (`new`, `edit`, `replace`). A save adds a flag for a reminder time, three flags for an amount, a note, and a photo, the source of the name (`typed`, `suggestion`, `scan`), a flag for a tapped smart-completion candidate, a flag for the first item, and a range of the time on the screen. A close with no save adds `had_changes` and the time range. The event is not called "abandoned", because the user can come back (spec §11.1).
 - `daily_usage_summary`: eight more flags (reminder action, skip, undo, correction, as-needed, My Items, item detail, Settings), a range of the count of opens of the day, a range of the count of active items, and a flag for a widget on the Home Screen. A day with an open or a flag has a summary. A record from a reminder action with no open gives `app_opens` = `0`.
 - `core_error`: the operations `schedule` and `scan`, and three codes of the reminder state of a save: `too_many`, `not_set`, `not_confirmed`.
 - New events: `notification_permission` (sent only when the state that the app reads differs from the state that it sent last), `setting_changed` ("Remind Again", "Show Names in Reminders", the app color), and `data_action` (export, backup, restore, with a result).
 - Each request also has `app_language` (one of the six app languages, else `other`) and `device` (`iphone`, `ipad`, `other`), next to the app version.
 - No event goes out at the moment of a record. A skip, an undo, a correction, and a reminder action are only flags of the daily summary, so no event time tells an intake time.
+- The summary of a day goes out only at an open of the app. A day that ends while the app works in the background, for example after the "Taken" action of a reminder, waits on the device as one summary with no time. Before, the first background record of a new day sent the summary of the day before, so the event time could tell the time of that record. At most one summary waits, and a newer day replaces it.
+- "On" in Settings or in the opt-in question counts one open, because the user is in the app.
 - Not sent, and why:
   - The type of an item (supplement or medication). It tells that the user takes a medication, which is health data. The privacy label would then need "Health".
+  - The kind of plan (daily, weekdays, every other day, and so on) and the count of reminder times. A first draft sent both. The model review found that they describe the regimen of the user and can give the planned doses of a day, so the label would need "Health". The save sends only `has_reminder`.
   - A count of doses, a time, a weekday, and an item ID (spec §11.5).
   - The analytics switch. After "off" nothing goes out, and an "on" event alone gives no rate.
 - Privacy label: no new data type. The new events are "Product Interaction". The codes of `core_error` and `device` are "Other Diagnostic Data". `app_language` is "Other Data Types", with the region. `App/PrivacyInfo.xcprivacy` already declares these types. App Store Connect needs no change of the types, and the purpose stays "Analytics".
 - Tests: the schema test sends each new factory result through the checked init (D016). No other new test.
+- `PRIVACY.md` names each key that the sender adds, and the event time to the millisecond.
 
 Not verified: the app build on this Mac and the screens. CI builds the app. Nobody sent an event to the PostHog project. The packet check (T42) waits for a build with the key.
 
@@ -1374,5 +1378,7 @@ Maintainer decision on 2026-10-14. It replaces the notice part of D051 and D052.
 - `PRIVACY.md` and the site privacy page say that Maru shows no notice outside the opt-in regions. The App Store review notes need a new sentence, which the maintainer changes in App Store Connect.
 - The limit: the region setting is not the place of the user (D052).
 
-Not verified: the app build on this Mac. CI builds the app. Whether another storefront needs a notice or an opt-in for this data is a legal question. The model review of this change gave an opinion, and it is not legal advice.
+Not verified: the app build on this Mac. CI builds the app.
+
+Open legal risk, for the maintainer: the model review (GPT-6.1-Sol, 2026-10-14) gave an opinion that is not legal advice. It does not treat "on with no notice" as safe in every storefront, because a random install ID is not anonymity in law, and the data comes from a health app. It named the highest risk in Washington and Nevada (consumer health data laws with prior consent), then South Korea (PIPA), Brazil (LGPD), and Canada, mainly Quebec, if the data counts as health data. California, Japan, and Australia expect at least a notice at collection. No region was added to the opt-in list. The maintainer decides, with legal advice if needed.
 

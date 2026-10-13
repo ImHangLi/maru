@@ -135,8 +135,7 @@ extension AppModel {
         refresh()
         analytics.capture(.itemSaved(AnalyticsEvent.ItemSetup(
             mode: session.mode,
-            schedule: draft.scheduleKind,
-            reminderTimes: draft.times.count,
+            hasReminder: schedule != nil,
             hasAmount: schedule?.versions.last?.dose != nil,
             hasNote: item.intakeNote != nil,
             hasPhoto: item.imageReference != nil,
@@ -184,18 +183,5 @@ extension AppModel {
     /// The scanner could not run, after the camera permission.
     func scanDidFail() {
         analytics.capture(.coreError(.scan, .failed))
-    }
-}
-
-extension ItemDraft {
-    /// The kind of plan for the usage statistics. It names no time and no day (D077).
-    var scheduleKind: AnalyticsEvent.ScheduleKind {
-        guard !times.isEmpty else { return .asNeeded }
-        switch cycle?.kind {
-        case .everyOtherDay: return .everyOtherDay
-        case .interval: return .everyFewDays
-        case .pause: return .daysOnOff
-        case nil: return weekdays.count == Weekday.allCases.count ? .daily : .weekdays
-        }
     }
 }

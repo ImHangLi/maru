@@ -20,7 +20,7 @@ struct AnalyticsTests {
         let built: [AnalyticsEvent] = [
             .setupStep(.editorOpened, mode: .new),
             .itemSaved(AnalyticsEvent.ItemSetup(
-                mode: .replace, schedule: .daysOnOff, reminderTimes: 4, hasAmount: true, hasNote: false,
+                mode: .replace, hasReminder: true, hasAmount: true, hasNote: false,
                 hasPhoto: true, nameSource: .scan, usedCompletion: true, isFirstItem: false, duration: 95
             )),
             .editorClosed(mode: .edit, hadChanges: true, duration: 400),

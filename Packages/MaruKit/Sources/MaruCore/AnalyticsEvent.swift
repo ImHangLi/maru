@@ -38,8 +38,7 @@ public struct AnalyticsEvent: Sendable, Equatable {
         "setup_step": [
             "step": .choice(SetupStep.allCases.map(\.rawValue)),
             "mode": .choice(EditorMode.allCases.map(\.rawValue)),
-            "schedule": .choice(ScheduleKind.allCases.map(\.rawValue)),
-            "reminder_times": .choice(["0", "1", "2", "3_plus"]),
+            "has_reminder": .flag,
             "has_amount": .flag,
             "has_note": .flag,
             "has_photo": .flag,
@@ -167,26 +166,17 @@ public extension AnalyticsEvent {
         case new, edit, replace
     }
 
-    /// The kind of plan, never its times or its days.
-    enum ScheduleKind: String, CaseIterable, Sendable {
-        case asNeeded = "as_needed"
-        case daily
-        case weekdays
-        case everyOtherDay = "every_other_day"
-        case everyFewDays = "every_few_days"
-        case daysOnOff = "days_on_off"
-    }
-
     /// How the name of a new item got into the field the last time. A key press after it keeps the source.
     enum NameSource: String, CaseIterable, Sendable {
         case typed, suggestion, scan
     }
 
-    /// One save on the edit screen. It holds kinds and flags of the plan, never a name, an amount, or a time.
+    /// One save on the edit screen. It holds flags, never a name, an amount, a time, or the kind or count of doses
+    /// of the plan, because those describe the regimen of the user (D077).
     struct ItemSetup: Sendable {
         public var mode: EditorMode
-        public var schedule: ScheduleKind
-        public var reminderTimes: Int
+        /// The plan has at least one reminder time.
+        public var hasReminder: Bool
         public var hasAmount: Bool
         public var hasNote: Bool
         public var hasPhoto: Bool
@@ -197,12 +187,11 @@ public extension AnalyticsEvent {
         public var duration: TimeInterval
 
         public init(
-            mode: EditorMode, schedule: ScheduleKind, reminderTimes: Int, hasAmount: Bool, hasNote: Bool,
+            mode: EditorMode, hasReminder: Bool, hasAmount: Bool, hasNote: Bool,
             hasPhoto: Bool, nameSource: NameSource?, usedCompletion: Bool, isFirstItem: Bool, duration: TimeInterval
         ) {
             self.mode = mode
-            self.schedule = schedule
-            self.reminderTimes = reminderTimes
+            self.hasReminder = hasReminder
             self.hasAmount = hasAmount
             self.hasNote = hasNote
             self.hasPhoto = hasPhoto
@@ -264,8 +253,7 @@ public extension AnalyticsEvent {
         var properties: [String: Value] = [
             "step": .text(SetupStep.itemSaved.rawValue),
             "mode": .text(setup.mode.rawValue),
-            "schedule": .text(setup.schedule.rawValue),
-            "reminder_times": .text(setup.reminderTimes >= 3 ? "3_plus" : String(max(setup.reminderTimes, 0))),
+            "has_reminder": .flag(setup.hasReminder),
             "has_amount": .flag(setup.hasAmount),
             "has_note": .flag(setup.hasNote),
             "has_photo": .flag(setup.hasPhoto),
