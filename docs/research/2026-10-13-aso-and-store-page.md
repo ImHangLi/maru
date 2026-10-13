@@ -180,8 +180,8 @@ App Store Connect accepted the English name. The names of the other languages ar
 | zh-Hans | Maru：吃药提醒与保健品打卡 (15) | 维生素、用药记录，吃了没一眼知道 (16) |
 | ja | Maru：お薬とサプリの服薬リマインダー (20) | 飲んだかどうか、ひと目でわかる記録 (17) |
 | en-GB | Maru: Pill & Vitamin Reminder (29) | Tablet & Supplement Tracker (27) |
-| es-ES | Maru: Recordatorio pastillas (28) | Vitaminas y suplementos al día (30) |
-| es-MX | Maru: Recordatorio pastillas (28) | Medicinas y vitaminas al día (28) |
+| es-ES | Maru Recordatorio de pastillas (30) | Vitaminas y suplementos al día (30) |
+| es-MX | Maru Recordatorio de pastillas (30) | Medicinas y vitaminas al día (28) |
 | de-DE | Maru: Tabletten-Erinnerung (26) | Medikamente, Vitamine im Blick (30) |
 | ko | Maru: 약 알림과 영양제 복약 기록 (21) | 먹었는지 한눈에, 탭 한 번이면 끝 (19) |
 
@@ -189,10 +189,10 @@ Keyword lines:
 
 | Locale | Keywords |
 |---|---|
-| en-US | `medication,medicine,meds,med,dose,tablet,capsule,daily,schedule,history,log,alarm,widget,did,take` |
+| en-US | `medication,medicine,meds,dose,tablet,capsule,daily,schedule,history,log,alarm,widget,did,take,drug` |
 | zh-Hans | `服药,药物,药品,闹钟,补充剂,补剂,营养品,每日,习惯,日历,小组件,鱼油,钙片,益生菌,定时,药盒,喝药,管家,助手,吃药时间,按时,慢病,胶囊,药片,叶酸,褪黑素,忘记,每天,追踪,健康管理` |
 | ja | `飲み忘れ,防止,管理,アラーム,通知,ピル,ビタミン,くすり,カレンダー,ウィジェット,習慣,チェック,時間,漢方,目薬,サプリメント,服用,錠剤,毎日,のんだ,健康管理,トラッカー` |
-| en-GB | `medication,medicine,meds,med,dose,capsule,daily,schedule,history,log,alarm,widget,did,take,one,tap` |
+| en-GB | `medication,medicine,meds,dose,capsule,daily,schedule,history,log,alarm,widget,did,take,one,tap,drug` |
 | es-ES | `medicamentos,medicación,medicinas,píldora,alarma,pastillero,toma,dosis,control,calendario,registro` |
 | es-MX | `medicamentos,suplementos,alarma,píldoras,pastillero,control,horario,tomar,dosis,calendario,registro` |
 | de-DE | `supplements,pillen,medikamentenplan,einnahme,wecker,alarm,tracker,nahrungsergänzung,kapseln,dosis` |
@@ -216,6 +216,10 @@ Notes on the text:
 - The description says "widget", "every other day", and "Export Records". `evidence.md` allows these only when they are in the released build. They are in the code on main. Check them against the build that ships.
 - "Tap Taken on the reminder" has its condition in the text: a reminder for one item.
 - "Remind Again" has its number in the text: up to 12.
+- "Tap the circle beside an item": a tap on the name opens the detail, so the description names the circle.
+- The schedule line names only what main supports: daily and every-other-day reminders, and as-needed items with no reminder. If [PR #37](https://github.com/ImHangLi/maru/pull/37) ("every few days" and "days on, days off") merges before the submission, update this line in every language.
+- The promotional text promises that the records stay on the iPhone, not all data. The optional usage statistics can leave the iPhone.
+- en-US and en-GB: "med" was removed, because "meds" covers it. "drug" uses the free characters. It is not in the name or the subtitle.
 - The last paragraph says that Maru gives no medical advice, that it is not an alarm, and that the user should ask a doctor or pharmacist (guideline 1.4.1).
 - "Free" is in the description only. Guideline 2.3.7 keeps prices out of names, subtitles, and screenshots.
 - The German name uses a hyphen, as correct German asks. Suggestions such as "doser: tabletten-erinnerung" show the form in the store. That search splits the word at the hyphen is not verified.
@@ -244,7 +248,7 @@ A second reading of each line, back into English, to find a meaning that moved.
 | ja | Name | Maru：お薬とサプリの服薬リマインダー | Maru: a reminder to take medicine and supplements |
 | ja | Subtitle | 飲んだかどうか、ひと目でわかる記録 | A record that shows at a glance if you took it |
 | ja | First line | 飲んだっけ？ Maruを開けば、ひと目でわかります。 | Did I take it? Open Maru, and you see it at a glance. |
-| es | Name | Maru: Recordatorio pastillas | Maru: Pill reminder |
+| es | Name | Maru Recordatorio de pastillas | Maru Pill reminder |
 | es-ES | Subtitle | Vitaminas y suplementos al día | Vitamins and supplements, up to date |
 | es-MX | Subtitle | Medicinas y vitaminas al día | Medicines and vitamins, up to date |
 | es | First line | ¿Ya me lo tomé? Abre Maru y sal de dudas. | Did I take it already? Open Maru and end the doubt. |
@@ -405,6 +409,10 @@ Not collected, and so not selected:
 | Identifiers › User ID | No account |
 | Sensitive Info, Financial Info, Browsing History, Search History | None |
 
+**Open question for the maintainer (not decided):** two reviews say that the random install ID makes the analytics data "Linked to the user: Yes" under Apple's definition, because the ID stays the same over time. The answers above stay as they are until the maintainer decides.
+
+**Before the submission:** the privacy policy URL and the support URL must be live in every language. Both return 404 today.
+
 One judgment: the feedback form opens in the system browser. Apple's label covers data that the app collects. If the form moves into the app, add "Other User Content" and "Email Address".
 
 ## 10. Decisions and reasons
@@ -425,7 +433,7 @@ Choices of the second round, each with its reason:
 | Every name says the category in the words of the top search suggestion of that market | A reader gives a search result about one second. The category word answers "what is it" in that second, and the name is the field with the most search weight |
 | Every subtitle gives the reason to tap, and adds search words that the name does not have | Apple reads both fields, so a repeated word is a lost word. "One look", "one tap", "im Blick", and "al día" promise less work, not more duty |
 | No "never miss", no "don't forget", no streak word | A promise of delivery is not allowed (section 6). A guilt word pushes away the people who already feel bad about a missed dose |
-| es names changed to "Maru: Recordatorio pastillas" | "recordatorio" is in 10 of 10 top names in Spain and 9 of 10 in Mexico, and "recordatorio pastillas" is a suggestion of Apple in both. The first draft had the word only in the subtitle. The form with no "de" is the form of the suggestion, and the form with "de" has 31 characters |
+| es names changed to "Maru Recordatorio de pastillas" (review round) | "recordatorio" is in 10 of 10 top names in Spain and 9 of 10 in Mexico, and "recordatorio pastillas" is a suggestion of Apple in both. The form with "de" is correct Spanish. With no colon, it has 30 characters. No brand rule asks for the colon |
 | es-ES subtitle "Vitaminas y suplementos al día", es-MX "Medicinas y vitaminas al día" | The supplement words have the least competition. "Medicinas" is the common word in Mexico. "medicamentos" is in both keyword fields |
 | de subtitle "Medikamente, Vitamine im Blick" | "Medikamente" is in 5 of 9 top results, and "im Blick" is the reason to tap. The form with "&" has 31 characters |
 | ko name "Maru: 약 알림과 영양제 복약 기록" | The same four search words with no separator |
