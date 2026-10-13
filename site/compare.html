@@ -8,6 +8,9 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<!-- Smart App Banner: when the app is live, remove this comment and put the numeric App Store ID in app-id.
+<meta name="apple-itunes-app" content="app-id=0000000000">
+-->
 <link rel="canonical" href="https://maru.day/compare.html">
 <link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/icon.png">
@@ -26,7 +29,7 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header"><div class="nav-inner"><a class="brand" href="/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a><nav class="nav-links" aria-label="Main"><a href="/faq.html">FAQ</a><a href="/compare.html" aria-current="page">Compare</a><a href="/privacy.html">Privacy</a><a href="/support.html">Support</a></nav></div></header>
+<header class="site-header"><div class="nav-inner"><a class="brand" href="/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a><nav class="nav-links" aria-label="Main"><a href="/faq.html">FAQ</a><a href="/compare.html" class="opt" aria-current="page">Compare</a><a href="/privacy.html">Privacy</a><a href="/support.html" class="opt">Support</a><a class="nav-cta" data-store-nav href="mailto:hello@maru.day?subject=Notify%20me">Notify me</a></nav></div></header>
 <main id="main" class="prose wide">
 <h1>Maru vs Apple Health Medications vs Medisafe</h1>
 <p class="lede">An honest table. Maru aims to do the same job in fewer steps. Where we did not verify a fact, the table says "Unknown".</p>
@@ -56,7 +59,7 @@
 <div><h2>Open source</h2><a href="https://github.com/ImHangLi/maru">Source on GitHub</a></div>
 </div>
 </div>
-<div class="legal"><p>Maru is in early development and is not on the App Store yet. Open source under the MIT license.</p></div>
+<div class="legal"><p>Maru is open source under the MIT license. It is in early development and is not on the App Store yet.</p></div>
 </footer>
 <script src="/site.js" defer></script>
 </body>
