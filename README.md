@@ -1,5 +1,8 @@
 <p align="center">
-  <a href="https://maru.day"><img src="docs/images/hero.png" alt="Maru. Did I take it? One look. The Today screen of Maru with the items to take now." width="100%"></a>
+  <a href="https://maru.day"><picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/hero-dark.png">
+    <img src="docs/images/hero.png" alt="Maru. Did I take it? One look. The Today screen of Maru with the items to take now." width="100%">
+  </picture></a>
 </p>
 
 <p align="center">
@@ -18,18 +21,21 @@
   Coming soon to the App Store, for iPhone and iPad.
 </p>
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/images/reminders.png" alt="The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening. Under it, a Maru reminder to take Vitamin D3." width="100%">
-      <p><b>Reminders.</b> Maru reminds you at your times.</p>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/images/history.png" alt="The History screen of Maru with a graph of past days and the last 7 days of each item." width="100%">
-      <p><b>History.</b> You see each day that you recorded.</p>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/reminders-dark.png">
+    <img src="docs/images/reminders.png" alt="The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening. Under it, a Maru reminder to take Vitamin D3." width="49%">
+  </picture>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/history-dark.png">
+    <img src="docs/images/history.png" alt="The History screen of Maru with a graph of past days and the last 7 days of each item." width="49%">
+  </picture>
+</p>
+
+<p align="center">
+  <b>Reminders.</b> Maru reminds you at your times.<br>
+  <b>History.</b> You see each day that you recorded.
+</p>
 
 - Free and open source. No subscription and no ads.
 - No account.
