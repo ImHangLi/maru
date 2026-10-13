@@ -33,6 +33,8 @@ Maru was developed in a private repository before it became public. Issue number
 
 - A first Apple Watch app is in code (D071): one screen with the doses of today by part of the day, a tap for "Taken", and a swipe for "Skip" and "Undo". The Watch has no database. It asks the iPhone for each record and shows "recorded" only after the iPhone confirms the commit. Nobody built it on a Mac or ran it on a Watch. CI builds it with the app. The database is now readable on a locked iPhone after the first unlock (D066), so a record from the Watch, and the "Taken" action of a reminder on the Watch, can work with the iPhone locked. Nobody saw this on a device. Version 1.0 ships without it (D074): the app does not embed the Watch app, and `PRIVACY.md` does not describe it. It waits for 1.1 and a test on a real Watch.
 
+- Build 1 of version 1.0.0 is on TestFlight for the internal group, without the Watch app (D074, D075). Nobody installed it yet. `docs/release-plan.md`, section 7, lists what is open before the submission.
+
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the item photo (D056), the History graph and rows, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.

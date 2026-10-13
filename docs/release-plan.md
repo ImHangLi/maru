@@ -7,7 +7,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 | Step | State |
 |---|---|
 | Join the Apple Developer Program as an individual | Done on 2026-10-13 |
-| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open. The maintainer does not register for GST for now, so the tips may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
+| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open: the agreement has the state "Pending User Info" on 2026-10-13, and a tax form is missing. The maintainer does not register for GST for now, so the tips may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
 | Give the agent the Team ID, and set the paid team in Xcode for each target, also the Watch app (D071) | Team ID `JBG4XL9NQK`. Xcode needs the Apple ID again |
 | Create an App Store Connect API key (App Manager). Enter it in a private prompt, never in chat | Done. The `asc` CLI uses it from the keychain |
 | Buy the landing page domain | Done: `maru.day` |
@@ -160,27 +160,21 @@ Three consumable in-app purchases, in `metadata/in-app-purchases/tips.json`.
 
 The notes are in App Store Connect. They state: what Maru does, no account, the steps to see a reminder in two minutes, no medical advice and no dose calculation, where the tips are and that they unlock nothing, where the data stays, the usage statistics, the label scan, and the widgets.
 
+### TestFlight
+
+- Build 1 of version 1.0.0, uploaded on 2026-10-13 from `main` after D074. It has the app and the widgets, and no Watch app. Its state is "Valid", and it is in internal testing.
+- The archive used the Release configuration, automatic signing, and the analytics key from the Keychain on the command line. The distribution profiles have the App Group, and the app profile has the time-sensitive entitlement. The upload validation rejected nothing.
+- The group "Internal" is an internal group with access to all builds. The maintainer is its tester.
+- The feedback email and the beta review contact email are `hello@maru.day`. Build 1 has its "What to Test" text.
+- Build 1 is on version 1.0.0. A later build replaces it with `asc versions attach-build`.
+- Not done on purpose: no Beta App Review and no public link. No external TestFlight step is planned.
+
 ### What is open before the submission
 
+`asc validate --strict` on version 1.0.0 reports only the first two items.
+
 - The screenshots for the iPhone and the 13-inch iPad.
-- The review screenshot of the tips.
-- The Paid Apps agreement, for the tips.
-- A build on the version.
-
-
-## 7. After the release: the weekly search routine
-
-The maintainer approved this routine on 2026-10-13. It starts in the week after the app is in the App Store. A scheduled task in the maintainer's T3 Code thread runs it each Monday. Before the release, the task only reports "not released yet".
-
-Each week:
-
-1. Read Google Search Console for `https://maru.day/` (the property is verified, and the sitemap is submitted): the queries, the pages, the clicks, and the impressions of the last 28 days against the 28 days before. Read the App Store Connect numbers for the same period. Use real numbers only. Do not estimate a search volume.
-2. Choose at most one new page for the site. Use this order of page types:
-   - "Alternative to X" and "X compared with Maru", for the apps that people leave. State honestly where the other app is the better choice.
-   - Pages for one condition that Maru meets: no subscription, no account, open source, data on the device.
-   - Pages for one job, for example an every-other-day schedule or days on and days off.
-3. A new page needs one thing that the other results do not have: the phone preview with real screens, a real comparison table, or real numbers. Without it, do not write the page.
-4. Write the page in English first, then in the five other languages, with links from at least three related pages in the body text. Rebuild the sitemap. Open a pull request. The maintainer approves each new public page before a deploy.
-5. Do not change a page that changed in the last 60 days. Do not delete a page without the maintainer.
-
-Limits: at most one new page each week. No paid links, no mass email, no posts in the maintainer's name. A paid tool needs a maintainer decision.
+- The review screenshot of the tips. The three products stay in "Missing Metadata" until each has one. Take one capture of Settings, "Support Maru", with the names and the prices, then run `asc iap review-screenshots create` for each product.
+- The Paid Apps agreement has the state "Pending User Info": a tax form is missing. The Free Apps agreement is active. The app can ship without it, and the tips cannot be sold until it is active.
+- A first in-app purchase goes to review with an app version. Add the three tips to the submission of 1.0.0.
+- The submission itself. The maintainer starts it.
