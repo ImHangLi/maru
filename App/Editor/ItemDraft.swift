@@ -289,14 +289,8 @@ extension ItemDraft {
             return try DayCycle(start: start, daysOn: counts.daysOn, daysOff: counts.daysOff)
         }
         // A choice that gives the due dates of the stored plan from today on is no change of the plan.
-        // A later start date in the same rhythm is a change when the stored plan has a dose before it:
-        // the user moved the first day, so the days from today to that date have no dose. One full cycle
-        // always has a dose, so the check reads at most that many days.
-        if let new = dayCycle, let stored = latest?.dayCycle,
-           (new.daysOn, new.daysOff) == (stored.daysOn, stored.daysOff), new.start >= stored.start,
-           new.start.days(since: stored.start).isMultiple(of: new.daysOn + new.daysOff),
-           (0..<min(max(0, new.start.days(since: today)), new.daysOn + new.daysOff))
-               .allSatisfy({ !stored.isDue(on: today.adding(days: $0)) }) {
+        // A moved first day with another due date from today on is a change (spec 2).
+        if let new = dayCycle, let stored = latest?.dayCycle, new.hasSameDueDates(as: stored, from: today) {
             dayCycle = stored
         }
         let dose = Dose(amount)

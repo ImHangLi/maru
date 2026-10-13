@@ -36,6 +36,20 @@ public struct DayCycle: Hashable, Sendable {
     public func isDue(on date: LocalDate) -> Bool {
         date >= start && date.days(since: start) % (daysOn + daysOff) < daysOn
     }
+
+    /// The two cycles give the same due dates from `date` on. A cycle has no dose before its start date,
+    /// so two cycles in the same rhythm differ only on the due dates of the earlier one before the later start.
+    /// One full cycle from the earlier start always has a dose, so the check reads at most that many days.
+    public func hasSameDueDates(as other: DayCycle, from date: LocalDate) -> Bool {
+        let length = daysOn + daysOff
+        guard (daysOn, daysOff) == (other.daysOn, other.daysOff), start.days(since: other.start).isMultiple(of: length) else {
+            return false
+        }
+        let (earlier, later) = start < other.start ? (self, other) : (other, self)
+        let first = max(date, earlier.start)
+        return (0..<min(max(0, later.start.days(since: first)), length))
+            .allSatisfy { !earlier.isDue(on: first.adding(days: $0)) }
+    }
 }
 
 /// A stable identity for one daily dose point, such as "the morning one".
