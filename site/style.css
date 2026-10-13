@@ -18,26 +18,24 @@
   --tip-bg: #1D1D1F;
   --tip-text: #FFFFFF;
 
+  /* The iPhone frame around a screenshot */
+  --device-bezel: #1D1D1F;
+  --device-screen: #E5E5EA;
+  --island: #000000;
+
   /* App components: the system colors of iOS in light mode, and the default pink of Maru (docs/design.md) */
   --app-tint: #FF2D55;
-  --app-on-tint: #FFFFFF;
-  --app-touch: rgba(255, 45, 85, 0.14);
-  --app-bg: #F2F2F7;
-  --app-card: #FFFFFF;
   --app-label: #000000;
   --app-label-2: #8A8A8E;
-  --app-separator: #E8E8E8;
-  --app-ring: #C5C5C7;
-  --app-chevron: #C4C4C7;
-  --app-fill-3: rgba(118, 118, 128, 0.12);
-  --app-strip-none: #D9D9DB;
   --app-widget: #FFFFFF;
   --app-cap-off: #E5E5EA;
   --app-cap-line: #C7C7CC;
   --app-cap-shine: rgba(255, 255, 255, 0.32);
-  --app-banner: rgba(255, 255, 255, 0.94);
-  --app-banner-2: #7C7C80;
-  --app-glass: rgba(255, 255, 255, 0.6);
+  /* The glass of a Lock Screen reminder: a light fill over a blur of the wallpaper, and a bright rim. */
+  --app-banner: rgba(255, 255, 255, 0.7);
+  --app-banner-rim: inset 0 0 0 0.5px rgba(255, 255, 255, 0.85);
+  --app-banner-text: #000000;
+  --app-banner-2: rgba(0, 0, 0, 0.55);
   --app-icon-bg: #FFFFFF;
   --app-icon-ring: #E4E4E6;
   --app-icon-mark: linear-gradient(#FF5C7C, #FF2D55);
@@ -71,11 +69,6 @@
   --dur-bar: 480ms;
   --dur-hero: 520ms;
   --stagger: 60ms;
-  /* The tap on the Today row in the hero: it starts after the hero entrance, and the circle fills a moment after the touch. */
-  --dur-tap: 500ms;
-  --dur-fill: 350ms;
-  --delay-tap: 1100ms;
-  --delay-fill: 160ms;
   /* The page entrance starts this long after the top bar starts. The content of the bar fades in at the end of its fall. */
   --delay-page: 80ms;
   --delay-bar-content: 320ms;
@@ -92,19 +85,21 @@
   --shift-enter: 14px;
   --shift-hero: 24px;
   --scale-hero: 0.97;
-  /* The hero component is the largest picture of the page. It is in the first paint, dim, and does not start from nothing. */
+  /* The hero phone is the largest picture of the page. It is in the first paint, dim, and does not start from nothing. */
   --fade-hero: 0.3;
   --shift-lift: 4px;
   --blur-enter: 4px;
   --blur-lift: 2px;
   --press: 0.98;
-  --scale-fill: 0.85;
   --blur-glass: 20px;
+  --saturate-glass: 1.6;
   --scale-menu: 0.96;
   --dim-hover: 0.82;
   --dim-press: 0.68;
 
   /* Shadows: layers of light with a hairline ring. No single blur. */
+  /* The shadow of a cut-out picture follows its shape, so it is a filter. */
+  --shadow-jar: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0 14px 18px rgba(0, 0, 0, 0.14));
   --hairline: 0 0 0 0.5px var(--ring-color);
   --edge-below: 0 0.5px 0 var(--ring-color);
   --edge-above: 0 -0.5px 0 var(--ring-color);
@@ -161,7 +156,8 @@
   --max-lede: 34rem;
   --max-copy: 26rem;
   --max-stage: 25rem;
-  /* On a wide screen the hero component takes this share of the screen, so the longest headline keeps its line. */
+  --device-w: 14.5rem;
+  /* On a wide screen the hero phone takes this share of the screen, so the longest headline keeps its line. */
   --hero-stage-share: 36vw;
   --menu-width: 11rem;
   --nav-h: 56px;
@@ -187,21 +183,17 @@
     --bar-ring: var(--hairline);
     --tip-bg: #F5F5F7;
     --tip-text: #1D1D1F;
-    --app-bg: #000000;
-    --app-card: #1C1C1E;
+    --device-bezel: #3A3A3C;
+    --device-screen: #1C1C1E;
     --app-label: #FFFFFF;
     --app-label-2: #8D8D93;
-    --app-separator: #38383A;
-    --app-ring: #5B5B60;
-    --app-chevron: #5B5B60;
-    --app-fill-3: rgba(118, 118, 128, 0.24);
-    --app-strip-none: #3A3A3C;
     --app-widget: #1C1C1E;
     --app-cap-off: #2C2C2E;
     --app-cap-line: #48484A;
-    --app-banner: rgba(37, 37, 39, 0.9);
-    --app-banner-2: #98989F;
-    --app-glass: rgba(60, 60, 64, 0.6);
+    --app-banner: rgba(255, 255, 255, 0.14);
+    --app-banner-rim: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    --app-banner-text: rgba(255, 255, 255, 0.93);
+    --app-banner-2: rgba(255, 255, 255, 0.85);
     --app-icon-ring: rgba(0, 0, 0, 0.2);
     --wallpaper: radial-gradient(120% 80% at 0% 0%, #4A1424, transparent 60%), radial-gradient(90% 70% at 100% 100%, #7A1B35, transparent 70%), linear-gradient(160deg, #1A080E, #33101C);
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), var(--hairline);
@@ -426,99 +418,44 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .hero h1 { font-size: var(--fs-hero); margin-bottom: var(--space-4); }
 .hero .lede { margin-bottom: var(--space-5); }
 
-/* App components: the Today list, the History graph, the item page, the widget, and the reminder, drawn in HTML.
+/* Device frame: iPhone 17 Pro proportions around a real screenshot of 1206 x 2622. */
+.device {
+  width: var(--device-w); flex: none; position: relative;
+  padding: calc(var(--device-w) * 0.0125);
+  border-radius: calc(var(--device-w) * 0.15);
+  background: var(--device-bezel);
+  box-shadow: var(--shadow-float);
+}
+.device-screen {
+  position: relative; overflow: hidden; aspect-ratio: 1206 / 2622;
+  border-radius: calc(var(--device-w) * 0.1375);
+  background: var(--device-screen);
+}
+.device-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* The hero phone. The full Today list scrolls inside the screen, and the bars stay in place over it, as in the app.
+   The scroll passes to the page at each end. A mouse can drag the list (site.js). */
+.device-scroll {
+  position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  border-radius: inherit; cursor: grab; outline: none; user-select: none; -webkit-user-select: none;
+}
+.device-scroll::-webkit-scrollbar { display: none; }
+.device-scroll.is-dragging { cursor: grabbing; }
+.device-scroll img { position: static; display: block; height: auto; }
+.device-scroll + img { pointer-events: none; }
+.device:has(.device-scroll:focus-visible) { outline: var(--ring-width) solid var(--focus); outline-offset: var(--ring-offset); }
+.island {
+  position: absolute; left: 50%; top: calc(var(--device-w) * 0.04);
+  width: calc(var(--device-w) * 0.31); height: calc(var(--device-w) * 0.092); transform: translateX(-50%);
+  background: var(--island); border-radius: var(--radius-full);
+}
+
+/* App components: the widget and the reminder, drawn in HTML.
    Every size is the size in the app in points, times --pt. A component fills the width of its container: --base is
    that width in points. --pt-max stops it at a little more than its real size. The colors are the system colors of iOS. */
-.mock { --base: 402; --pt: min(var(--pt-max), 100cqw / var(--base)); flex: none; color: var(--app-label); text-align: left; letter-spacing: calc(0.47 * var(--pt)); }
+.mock { --base: 370; --pt: min(var(--pt-max), 100cqw / var(--base)); flex: none; color: var(--app-label); text-align: left; letter-spacing: calc(0.47 * var(--pt)); }
 /* The captures show about 0.47 pt more tracking than the same font in a browser, at every text size up to 17 pt. */
-.m-app { width: calc(var(--base) * var(--pt)); font-size: calc(17 * var(--pt)); line-height: calc(22 * var(--pt)); }
-.m-head { margin: 0 0 calc(9.67 * var(--pt)); padding-left: calc(32 * var(--pt)); font-size: calc(20 * var(--pt)); line-height: calc(25 * var(--pt)); font-weight: var(--fw-bold); letter-spacing: 0; }
-.m-head.m-gray { color: var(--app-label-2); font-size: calc(17.67 * var(--pt)); line-height: calc(22 * var(--pt)); font-weight: var(--fw-semibold); margin-bottom: calc(8 * var(--pt)); }
-.m-card { margin: 0 calc(16 * var(--pt)); background: var(--app-card); border-radius: calc(26 * var(--pt)); box-shadow: var(--shadow-card); }
-.m-card + .m-head { margin-top: calc(28 * var(--pt)); }
-/* The History and the item page show the cards with no screen margin, so the cards are as large as the block allows. */
-.mock-history, .mock-detail, .mock-widget, .mock-notification { --base: 370; }
-.mock-history .m-card, .mock-detail .m-card { margin: 0; }
-.mock-history .m-head, .mock-detail .m-head { padding-left: calc(16 * var(--pt)); }
-.m-graph + .m-head { margin-top: calc(18.67 * var(--pt)); }
-.m-row { position: relative; min-height: calc(73.67 * var(--pt)); display: flex; align-items: center; padding: 0 calc(16 * var(--pt)); }
-.m-row + .m-row::before { content: ""; position: absolute; left: calc(60.33 * var(--pt)); right: calc(16 * var(--pt)); top: 0; height: calc(0.67 * var(--pt)); background: var(--app-separator); }
-.m-ico { flex: none; width: calc(28 * var(--pt)); height: calc(28 * var(--pt)); margin: 0 calc(14.33 * var(--pt)) 0 calc(2 * var(--pt)); }
-.m-txt { flex: 1; min-width: 0; display: grid; padding: calc(10.67 * var(--pt)) 0 calc(9.33 * var(--pt)); }
-.m-txt b { font-weight: normal; }
-.m-sub { font-size: calc(15 * var(--pt)); line-height: calc(20 * var(--pt)); color: var(--app-label-2); }
-/* The record circle: "circle" and "checkmark.circle.fill" in a 44 pt target. */
-.m-rec { flex: none; position: relative; width: calc(44 * var(--pt)); height: calc(44 * var(--pt)); display: grid; place-items: center; }
-.m-rec > * { grid-area: 1 / 1; }
-.m-rec svg { width: calc(22 * var(--pt)); height: calc(22 * var(--pt)); overflow: visible; }
-.m-ring circle { fill: none; stroke: var(--app-ring); stroke-width: 1.73; }
-.m-check circle { fill: var(--app-tint); }
-.m-check path { fill: none; stroke: var(--app-on-tint); stroke-width: 1.87; stroke-linecap: round; stroke-linejoin: round; }
-.m-touch { position: absolute; left: 50%; top: 50%; width: calc(63 * var(--pt)); height: calc(63 * var(--pt)); margin: calc(-31.5 * var(--pt)) 0 0 calc(-31.5 * var(--pt)); border-radius: var(--radius-full); background: var(--app-touch); opacity: 0; }
-/* The strip of the last 7 days (WeekStrip): filled, filled at 40%, outline, or a faint gray capsule. */
-.m-strip { flex: none; display: flex; gap: calc(3.2 * var(--pt)); }
-.m-strip i { width: calc(6.4 * var(--pt)); height: calc(16 * var(--pt)); border-radius: var(--radius-full); }
-.m-strip .w-a { background: var(--c); }
-.m-strip .w-s { background: color-mix(in srgb, var(--c) 40%, transparent); }
-.m-strip .w-m { box-shadow: inset 0 0 0 calc(1.5 * var(--pt)) var(--c); }
-.m-strip .w-n { background: var(--app-strip-none); }
-.m-chev { flex: none; width: calc(6.67 * var(--pt)); height: calc(11.33 * var(--pt)); margin: 0 calc(2.33 * var(--pt)) 0 calc(12.67 * var(--pt)); }
-.m-chev path { fill: none; stroke: var(--app-chevron); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
 
-/* The Today list in the hero: a cut of the screen on the app background. */
-.m-today { padding: calc(22 * var(--pt)) 0 calc(16 * var(--pt)); background: var(--app-bg); border-radius: calc(36 * var(--pt)); box-shadow: var(--shadow-float); }
-.m-today .m-card { box-shadow: none; }
-.m-swap { display: grid; }
-.m-swap > * { grid-area: 1 / 1; }
-.m-before { opacity: 0; }
-/* One tap records the noon row when the hero enters: a touch, then the circle fills with a spring, as in the app (Motion.fill).
-   Without the class "motion" the row shows the recorded state at once. */
-@keyframes tap-touch {
-  from { opacity: 0; transform: scale(var(--scale-fill)); }
-  30% { opacity: 1; transform: none; }
-  to { opacity: 0; }
-}
-@keyframes tap-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-@keyframes tap-in {
-  from { opacity: 0; transform: scale(var(--scale-fill)); }
-}
-.motion .m-tap .m-touch { animation: tap-touch var(--dur-tap) var(--ease-out) var(--delay-tap) both; }
-.motion .m-tap .m-ring, .motion .m-today .m-before { animation: tap-out var(--dur-fade) var(--ease-in) calc(var(--delay-tap) + var(--delay-fill)) both; }
-.motion .m-tap .m-check { animation: tap-in var(--dur-fill) var(--ease-spring) calc(var(--delay-tap) + var(--delay-fill)) both; }
-.motion .m-today .m-after { animation: fade var(--dur-base) var(--ease-out) calc(var(--delay-tap) + var(--delay-fill)) both; }
-.m-tap .m-ring { opacity: 0; }
-
-/* The History graph (HistoryGraphView): 13 week columns of 21 pt squares, the months above, and three weekday letters. */
-.m-graph {
-  display: grid; gap: calc(4.25 * var(--pt));
-  grid-template-columns: calc(9.75 * var(--pt)) repeat(13, calc(21 * var(--pt)));
-  grid-template-rows: calc(12.42 * var(--pt)) repeat(7, calc(21 * var(--pt)));
-  padding: calc(16 * var(--pt)) calc(16 * var(--pt)) calc(15.83 * var(--pt));
-}
-.m-graph i { border-radius: calc(4.62 * var(--pt)); }
-.m-graph .g-A { background: var(--app-tint); }
-.m-graph .g-M { background: color-mix(in srgb, var(--app-tint) 60%, transparent); }
-.m-graph .g-S { background: color-mix(in srgb, var(--app-tint) 30%, transparent); }
-.m-graph .g-N { background: var(--app-fill-3); }
-.m-graph .g-F { box-shadow: inset 0 0 0 calc(1 * var(--pt)) var(--app-fill-3); }
-.m-graph u { text-decoration: none; white-space: nowrap; font-size: calc(11 * var(--pt)); line-height: calc(13.33 * var(--pt)); color: var(--app-label-2); letter-spacing: 0; align-self: end; }
-.m-graph .g-wk { align-self: center; }
-
-/* The item page: the plan, and the strip of the last 7 days with the counts under it. */
-.m-pair { min-height: calc(51.67 * var(--pt)); justify-content: space-between; gap: calc(16 * var(--pt)); }
-.m-pair + .m-pair::before { left: calc(16 * var(--pt)); }
-.m-value { color: var(--app-label-2); text-align: right; }
-.m-week { padding: calc(15.67 * var(--pt)) calc(16 * var(--pt)); }
-.m-week-top { display: flex; align-items: center; }
-.m-week .m-ico { margin: 0 calc(14 * var(--pt)) 0 calc(2 * var(--pt)); }
-/* The counts stand side by side, or one under the other in a language where they do not fit in one line. */
-.m-counts { margin: calc(10.67 * var(--pt)) 0 0; display: flex; flex-wrap: wrap; gap: calc(2 * var(--pt)) calc(16 * var(--pt)); font-size: calc(15 * var(--pt)); line-height: calc(20 * var(--pt)); color: var(--app-label-2); }
-.m-counts.m-stack { flex-direction: column; }
-
-/* The reminder block: the widget and the opened reminder on a wallpaper, as on an iPhone. */
+/* The reminder block: the widget and the reminder on a wallpaper, as on an iPhone. */
 .wallpaper {
   width: 100%; max-width: var(--max-stage); container-type: inline-size;
   display: grid; gap: var(--space-6); justify-items: center;
@@ -542,27 +479,28 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   border-radius: var(--radius-full); transform: rotate(-45deg); background: var(--app-cap-off); box-shadow: inset 0 0 0 calc(1.08 * var(--pt)) var(--app-cap-line);
 }
 .m-caps i.on::before { background: linear-gradient(var(--app-cap-shine), transparent), var(--app-tint); box-shadow: none; }
-/* The opened reminder and its action. The banner is a system view, measured from a capture. */
+/* The reminder on the Lock Screen, measured from a capture of iOS 26 at 3x: a glass banner with the icon, the title and
+   the time in one row, and the body under them. It has the width of the widget, so the two have the same edges. */
 .m-notif {
-  position: relative; width: calc(370 * var(--pt)); height: calc(75 * var(--pt)); border-radius: calc(32 * var(--pt));
-  background: var(--app-banner); box-shadow: var(--shadow-elevated);
-  -webkit-backdrop-filter: blur(var(--blur-glass)); backdrop-filter: blur(var(--blur-glass));
+  position: relative; width: calc(349.33 * var(--pt));
+  padding: calc(12.1 * var(--pt)) calc(17.67 * var(--pt)) calc(13.2 * var(--pt)) calc(64.67 * var(--pt));
+  border-radius: calc(23.33 * var(--pt)); background: var(--app-banner); box-shadow: var(--app-banner-rim);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(var(--saturate-glass)); backdrop-filter: blur(var(--blur-glass)) saturate(var(--saturate-glass));
 }
-.m-notif > * { position: absolute; left: calc(64 * var(--pt)); white-space: nowrap; }
-.m-app-icon { left: calc(14.33 * var(--pt)); top: calc(18.67 * var(--pt)); width: calc(37 * var(--pt)); height: calc(37 * var(--pt)); border-radius: calc(9 * var(--pt)); background: var(--app-icon-bg); box-shadow: inset 0 0 0 calc(0.5 * var(--pt)) var(--app-icon-ring); }
-.m-app-icon::before { content: ""; position: absolute; left: calc(7 * var(--pt)); top: calc(13 * var(--pt)); width: calc(23 * var(--pt)); height: calc(11 * var(--pt)); border-radius: var(--radius-full); transform: rotate(-45deg); background: var(--app-icon-mark); }
-.m-ts, .m-now { top: calc(10 * var(--pt)); font-size: calc(13 * var(--pt)); line-height: calc(16 * var(--pt)); color: var(--app-banner-2); }
-.m-ts { font-weight: var(--fw-semibold); }
-.m-now { left: auto; right: calc(17.67 * var(--pt)); top: calc(11.67 * var(--pt)); }
-.m-notif b, .m-body { font-size: calc(15 * var(--pt)); line-height: calc(18.67 * var(--pt)); color: var(--app-label); }
-.m-notif b { top: calc(25.33 * var(--pt)); font-weight: var(--fw-semibold); }
-.m-body { top: calc(43.33 * var(--pt)); }
-.m-action {
-  width: calc(248 * var(--pt)); height: calc(59.33 * var(--pt)); margin: calc(16.67 * var(--pt)) auto 0; padding-left: calc(28.67 * var(--pt));
-  display: flex; align-items: center; border-radius: var(--radius-full); font-size: calc(17 * var(--pt));
-  background: var(--app-glass); box-shadow: var(--shadow-card);
-  -webkit-backdrop-filter: blur(var(--blur-glass)); backdrop-filter: blur(var(--blur-glass));
-}
+/* The text sets the height of the banner, and the icon is in the middle of it. */
+.m-app-icon { position: absolute; left: calc(14 * var(--pt)); top: 50%; translate: 0 -50%; width: calc(37.67 * var(--pt)); height: calc(37.67 * var(--pt)); border-radius: calc(8.5 * var(--pt)); background: var(--app-icon-bg); box-shadow: inset 0 0 0 calc(0.5 * var(--pt)) var(--app-icon-ring); }
+.m-app-icon::before { content: ""; position: absolute; left: calc(7.33 * var(--pt)); top: calc(13.33 * var(--pt)); width: calc(23 * var(--pt)); height: calc(11 * var(--pt)); border-radius: var(--radius-full); transform: rotate(-45deg); background: var(--app-icon-mark); }
+/* The system text of the banner has the tracking of iOS, not the extra tracking of the app captures. */
+.m-notif-text { display: grid; font-size: calc(15 * var(--pt)); line-height: calc(18 * var(--pt)); letter-spacing: calc(-0.15 * var(--pt)); color: var(--app-banner-text); }
+/* The time sits on the baseline of the title: 1.07 pt lower in the same 18 pt line. */
+.m-notif-top { display: flex; gap: calc(8 * var(--pt)); }
+.m-notif b, .m-body { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-notif b { flex: 1; font-weight: var(--fw-semibold); }
+.m-now { flex: none; position: relative; top: calc(1.07 * var(--pt)); font-size: calc(12 * var(--pt)); letter-spacing: 0; color: var(--app-banner-2); }
+
+/* The photo block: three jars cut out as the app cuts out the photo of an item, on the panel with a soft shadow. */
+.jars { width: 100%; max-width: var(--max-stage); display: flex; align-items: flex-end; justify-content: center; gap: var(--space-3); padding: var(--space-5) 0; }
+.jars img { flex: 1 1 0; min-width: 0; height: auto; filter: var(--shadow-jar); }
 
 /* Feature panels */
 .feature {
@@ -627,7 +565,7 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
 .summary { margin-bottom: var(--space-5); }
 
 @media (min-width: 720px) {
-  :root { --gutter: 32px; }
+  :root { --gutter: 32px; --device-w: 17.5rem; }
   .feature { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; padding: var(--space-8) var(--space-7); }
   .feature.flip .feature-copy { order: 2; }
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }

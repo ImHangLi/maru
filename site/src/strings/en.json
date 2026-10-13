@@ -27,10 +27,13 @@
       "alt": "The page of one item in Maru with its times, its amount, and its last 7 days."
     },
     "notification": {
-      "alt": "A Maru reminder to take Vitamin D."
+      "alt": "A Maru reminder to take Vitamin D3."
     },
     "widget": {
       "alt": "The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening."
+    },
+    "photos": {
+      "alt": "Three supplement jars with made-up labels, cut out as item icons in Maru."
     }
   },
   "blocks": [
@@ -48,13 +51,18 @@
       "shot": "detail",
       "title": "Check times and amounts",
       "text": "See its times, its amount, and its last seven days."
+    },
+    {
+      "shot": "photos",
+      "title": "Your bottle, your icon",
+      "text": "Take or choose a photo of your own bottle, and it becomes the item icon. Maru can remove the background on your iPhone or iPad, and the photo stays on your device."
     }
   ],
   "trust_title": "Good to know",
   "trust": [
     "Free and open source",
     "No account",
-    "Your records stay on your iPhone"
+    "Your records stay on your devices"
   ],
   "footer": {
     "faq": "FAQ",
@@ -79,7 +87,7 @@
       ],
       [
         "Where is my data?",
-        "Your items and records stay on your iPhone. The <a href=\"{privacy}\">privacy page</a> has the details."
+        "Your items and records stay on your iPhone or iPad. Each device keeps its own data, and Maru does not sync between devices. The <a href=\"{privacy}\">privacy page</a> has the details."
       ],
       [
         "Why not an alarm or Apple Health?",
@@ -110,6 +118,10 @@
         "No. Maru reminds and records, and nothing more."
       ],
       [
+        "Can I use a photo of my bottle?",
+        "Yes. On the add or edit screen, take or choose a photo, and it becomes the item icon. Maru keeps a small copy on your device and can remove the background there. Maru never sends the photo."
+      ],
+      [
         "How do I move to a new iPhone or iPad?",
         "In Maru's Settings on the old device, tap Back Up and save the file. On the new device, tap Restore from Backup and choose that file. This replaces the items and records already in Maru on that device. The file is not encrypted, so keep it private."
       ],
@@ -119,7 +131,7 @@
       ],
       [
         "Is there an Apple Watch app?",
-        "No. Maru is an app for iPhone and iPad, and it does not sync between devices."
+        "Not yet. Version 1.0 is for iPhone and iPad. An Apple Watch app comes later."
       ],
       [
         "Which languages does Maru speak?",
@@ -144,11 +156,11 @@
   },
   "privacy": {
     "title": "Maru: Privacy",
-    "desc": "What Maru stores on your iPhone, what it sends, and what it never does.",
+    "desc": "What Maru stores on your device, what it sends, and what it never does.",
     "h1": "Privacy",
     "summary_title": "In short",
     "summary": [
-      "Your items and records stay on your iPhone. Maru has no account and no server for them.",
+      "Your items and records stay on your iPhone or iPad, and each device keeps its own data. Maru has no account and no server for them.",
       "Simple usage statistics never include what you take, and one switch in Settings turns them off.",
       "Maru has no ads, and it does not read your contacts or your location."
     ],

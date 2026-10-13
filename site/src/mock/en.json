@@ -7,55 +7,9 @@
     "Noon",
     "Evening"
   ],
-  "taken_at": "Taken at {t}",
-  "sep": ", ",
   "today": "Today",
   "of": "{a} of {b}",
-  "last7": "Last 7 Days",
-  "months": [
-    "Aug",
-    "Sep",
-    "Oct"
-  ],
-  "weekdays": [
-    "M",
-    "W",
-    "F"
-  ],
-  "monday_first": false,
-  "time_sensitive": "TIME SENSITIVE",
   "reminder_title": "Time to take",
-  "now": "now",
-  "taken": "Taken",
-  "plan": "Plan",
-  "days": "Days",
-  "every_day": "Every day",
-  "amount": "Amount",
-  "counts": [
-    "Taken: {n}",
-    "Skipped: {n}",
-    "No record: {n}"
-  ],
-  "items": [
-    [
-      "Levothyroxine",
-      "1 tablet"
-    ],
-    [
-      "Vitamin D",
-      "1 softgel"
-    ],
-    [
-      "Omega-3",
-      "2 softgels"
-    ],
-    [
-      "Magnesium",
-      "2 capsules"
-    ],
-    [
-      "Atorvastatin",
-      "1 tablet"
-    ]
-  ]
+  "reminder_item": "Vitamin D3",
+  "now": "now"
 }

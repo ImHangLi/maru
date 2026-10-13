@@ -5,55 +5,9 @@
     "Mediodía",
     "Noche"
   ],
-  "taken_at": "Tomado: {t}",
-  "sep": ", ",
   "today": "Hoy",
   "of": "{a} de {b}",
-  "last7": "Últimos 7 días",
-  "months": [
-    "ago",
-    "sept",
-    "oct"
-  ],
-  "weekdays": [
-    "L",
-    "X",
-    "V"
-  ],
-  "monday_first": true,
-  "time_sensitive": "URGENTE",
   "reminder_title": "Hora de tomar",
-  "now": "ahora",
-  "taken": "Tomado",
-  "plan": "Plan",
-  "days": "Días",
-  "every_day": "Todos los días",
-  "amount": "Cantidad",
-  "counts": [
-    "Tomadas: {n}",
-    "Omitidas: {n}",
-    "Sin registro: {n}"
-  ],
-  "items": [
-    [
-      "Levotiroxina",
-      "1 comprimido"
-    ],
-    [
-      "Vitamina D",
-      "1 cápsula"
-    ],
-    [
-      "Omega-3",
-      "2 cápsulas"
-    ],
-    [
-      "Magnesio",
-      "2 cápsulas"
-    ],
-    [
-      "Atorvastatina",
-      "1 comprimido"
-    ]
-  ]
+  "reminder_item": "Vitamina D3",
+  "now": "ahora"
 }

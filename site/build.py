@@ -2,11 +2,16 @@
 """Build the Maru site: python3 site/build.py
 
 Reads src/strings/<lang>.json, src/mock/<lang>.json, and PRIVACY.md, and writes the pages of every language into site/.
+With --shots DIR it first converts the screenshots in DIR to 780 px wide WebP files in shots/.
 """
 
 import html
 import json
 import re
+import struct
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 import mock
@@ -30,11 +35,23 @@ PAGES = ["index.html", "faq/index.html", "privacy/index.html", "support/index.ht
 # The addresses of the pages before the folders. _redirects sends them to the new addresses.
 OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html", "support.html": "support/index.html"}
 OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
+SHOTS = ["today", "history", "detail"]
+SHOT_WIDTH = 780
+# A capture of an iPhone 17 Pro simulator, and the rows of Today in it. The layout is the same in every language.
+CAPTURE_W, CAPTURE_H = 1206, 2622
+APP_BG = bytes.fromhex("F2F2F7")
+# The status bar starts at TODAY_STATUS, the toolbar buttons at TODAY_TOOLBAR, and the title at TODAY_TITLE.
+# TODAY_SEAM is an empty row between the date and the first group. The tab bar starts at TODAY_TAB_BAR.
+TODAY_STATUS, TODAY_TOOLBAR, TODAY_TITLE, TODAY_SEAM, TODAY_TAB_BAR = 60, 150, 370, 570, 2371
+# How far the shadow of a glass shape reaches: to each side, and below.
+GLASS_SHADOW = (7, 30)
+# The jars of the photo block, from left to right. README.md names the source of each photo.
+JARS = ["omega3", "vitd3", "magnesium"]
 # Apple asks for a badge height of 40 px or more on a screen.
 PAGE_BADGE = 56
 # The devices that the line under the badge names. It must match the devices of the released app before a deploy.
 # Possible values: "iphone", "ipad", "watch".
-DEVICES = ["iphone"]
+DEVICES = ["iphone", "ipad"]
 # The icon and the product name of each device. Apple does not translate these names.
 DEVICE_NAMES = {"iphone": ("phone", "iPhone"), "ipad": ("tablet", "iPad"), "watch": ("watch", "Apple Watch")}
 # Every icon comes from Hugeicons (free stroke set, version 4.3.5, MIT license). The stroke width is in style.css.
@@ -59,6 +76,104 @@ def url(code, page):
     return f"{prefix}/{page.removesuffix('index.html')}"
 
 
+def webp_size(path):
+    data = path.read_bytes()[:30]
+    kind = data[12:16]
+    if kind == b"VP8 ":
+        width, height = struct.unpack("<HH", data[26:30])
+        return width & 0x3FFF, height & 0x3FFF
+    if kind == b"VP8L":
+        bits = struct.unpack("<I", data[21:25])[0]
+        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+    if kind == b"VP8X":
+        return int.from_bytes(data[24:27], "little") + 1, int.from_bytes(data[27:30], "little") + 1
+    raise ValueError(f"{path} is not a WebP file")
+
+
+def pixels(png):
+    """The pixels of a capture as RGB bytes. Needs ffmpeg."""
+    return subprocess.run(["ffmpeg", "-v", "error", "-i", str(png), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                          check=True, capture_output=True).stdout
+
+
+def write_webp(data, mode, height, name):
+    """Write raw pixels of the capture width as a WebP file of SHOT_WIDTH. Needs ffmpeg and cwebp."""
+    with tempfile.TemporaryDirectory() as tmp:
+        png = Path(tmp) / "full.png"
+        subprocess.run(["ffmpeg", "-v", "error", "-f", "rawvideo", "-pix_fmt", mode, "-s", f"{CAPTURE_W}x{height}",
+                        "-i", "-", str(png)], input=bytes(data), check=True)
+        subprocess.run(["cwebp", "-quiet", "-q", "90", "-sharp_yuv", "-resize", str(SHOT_WIDTH), "0", str(png), "-o",
+                        str(SITE / "shots" / name)], check=True)
+
+
+def import_today(source, code):
+    """Make the two pictures of the hero phone from two captures of Today: the list at its top (today-<lang>.png) and
+    the list at its end (today-end-<lang>.png). today-<lang>.webp is the full list with no bars, and
+    today-bars-<lang>.webp is the status bar, the toolbar buttons, and the tab bar on a clear background."""
+    top, end = pixels(Path(source) / f"today-{code}.png"), pixels(Path(source) / f"today-end-{code}.png")
+    line = CAPTURE_W * 3
+    blank = APP_BG * CAPTURE_W
+
+    def row(buf, y):
+        return buf[y * line:(y + 1) * line]
+
+    # How far the list moved between the two captures.
+    shift = next(d for d in range(1, TODAY_TITLE) if all(row(top, y) == row(end, y - d) for y in range(700, 2100, 100)))
+    if row(top, TODAY_SEAM) != blank or row(end, TODAY_SEAM - shift) != blank or row(end, TODAY_TAB_BAR - 1) != blank:
+        raise ValueError(f"today-{code}: a cut is not on the background")
+    # The list: the title from the first capture, the rows from the second, and the space that lets the last row
+    # scroll above the tab bar, as in the app.
+    full = blank * TODAY_TITLE + top[TODAY_TITLE * line:TODAY_SEAM * line] \
+        + end[(TODAY_SEAM - shift) * line:TODAY_TAB_BAR * line]
+    full += blank * (CAPTURE_H + shift - len(full) // line)
+    write_webp(full, "rgb24", CAPTURE_H + shift, f"today-{code}.webp")
+
+    # The bars. A glass shape is opaque. Around it, a pixel that is a darker background is a shadow or the edge of a
+    # black glyph, so it becomes black with the same strength. That keeps the look over the rows that scroll under it.
+    bars = bytearray(CAPTURE_W * CAPTURE_H * 4)
+    areas = [(top, TODAY_STATUS, TODAY_TOOLBAR, 0, CAPTURE_W), (top, TODAY_TOOLBAR, TODAY_TITLE, 0, CAPTURE_W // 2),
+             (top, TODAY_TOOLBAR, TODAY_TITLE, CAPTURE_W // 2, CAPTURE_W), (end, TODAY_TAB_BAR, CAPTURE_H, 0, CAPTURE_W)]
+    for index, (buf, y0, y1, x0, x1) in enumerate(areas):
+        marks = [(x, y) for y in range(y0, y1) for x in range(x0, x1)
+                 if buf[y * line + x * 3:y * line + x * 3 + 3] != APP_BG]
+        xs, ys = [x for x, _ in marks], [y for _, y in marks]
+        # The glass is a capsule. Its shadow reaches GLASS_SHADOW pixels to each side and below. The status bar has none.
+        side, below = (0, 0) if index == 0 else GLASS_SHADOW
+        left, right, up, radius = min(xs) + side, max(xs) - side, min(ys), (max(ys) - below - min(ys)) / 2
+        for x, y in marks:
+            r, g, b = buf[y * line + x * 3:y * line + x * 3 + 3]
+            nearest = min(max(x, left + radius), right - radius)
+            glass = index > 0 and (x - nearest) ** 2 + (y - up - radius) ** 2 <= radius ** 2
+            shade = r / APP_BG[0]
+            if not glass and r == g and shade < 1 and abs(b - APP_BG[2] * shade) < 4:
+                r, g, b, alpha = 0, 0, 0, round(255 * (1 - shade))
+            else:
+                alpha = 255
+            bars[(y * CAPTURE_W + x) * 4:(y * CAPTURE_W + x) * 4 + 4] = bytes((r, g, b, alpha))
+    write_webp(bars, "rgba", CAPTURE_H, f"today-bars-{code}.webp")
+
+
+def import_shots(source):
+    """Convert the captures to WebP. Needs sips (macOS), cwebp, and ffmpeg."""
+    (SITE / "shots").mkdir(exist_ok=True)
+    for code, _ in LANGS:
+        if (Path(source) / f"today-end-{code}.png").exists():
+            import_today(source, code)
+            print(f"shot today-{code}")
+    for shot in SHOTS[1:]:
+        for code, _ in LANGS:
+            png = Path(source) / f"{shot}-{code}.png"
+            if not png.exists():
+                continue
+            with tempfile.TemporaryDirectory() as tmp:
+                small = Path(tmp) / "small.png"
+                subprocess.run(["sips", "--resampleWidth", str(SHOT_WIDTH), str(png), "--out", str(small)],
+                               check=True, capture_output=True)
+                subprocess.run(["cwebp", "-quiet", "-q", "90", "-sharp_yuv", str(small), "-o",
+                                str(SITE / "shots" / f"{shot}-{code}.webp")], check=True)
+            print(f"shot {shot}-{code}")
+
+
 def icon(name):
     return (f'<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" '
             f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>')
@@ -70,13 +185,47 @@ def picture(code, shot, body, extra=""):
     return f'<div class="mock mock-{shot}{extra}" role="img" aria-label="{e(alt)}">{body}</div>'
 
 
+def device(code, shot):
+    """An iPhone frame around a real screenshot of the app in the language of the page."""
+    file = SITE / "shots" / f"{shot}-{code}.webp"
+    width, height = webp_size(file)
+    return (f'<div class="device"><div class="device-screen"><img src="/shots/{file.name}" width="{width}" '
+            f'height="{height}" loading="lazy" decoding="async" alt="{e(STRINGS[code]["shots"][shot]["alt"])}"></div>'
+            f'<span class="island" aria-hidden="true"></span></div>')
+
+
+def live_device(code):
+    """The hero phone. The full Today list scrolls inside the screen, under the bars, as in the app."""
+    imgs = ""
+    for name in ("today", "today-bars"):
+        file = SITE / "shots" / f"{name}-{code}.webp"
+        width, height = webp_size(file)
+        imgs += (f'<img src="/shots/{file.name}" width="{width}" height="{height}" fetchpriority="high" '
+                 f'draggable="false" alt="">')
+        if name == "today":
+            imgs = (f'<div class="device-scroll" tabindex="0" role="img" '
+                    f'aria-label="{e(STRINGS[code]["shots"]["today"]["alt"])}">{imgs}</div>')
+    return (f'<div class="device"><div class="device-screen">{imgs}</div>'
+            f'<span class="island" aria-hidden="true"></span></div>')
+
+
+def jars(code):
+    """Three supplement jars with made-up brand labels, cut out as the app cuts out a photo of an item."""
+    imgs = "".join(
+        f'<img src="/shots/jar-{name}.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="">'
+        for name, w, h in [(n, *webp_size(SITE / "shots" / f"jar-{n}.webp")) for n in JARS])
+    return f'<div class="jars" role="img" aria-label="{e(STRINGS[code]["shots"]["photos"]["alt"])}">{imgs}</div>'
+
+
 def stage(code, shot):
-    """The component of a block. The reminder block shows the widget and the reminder on a wallpaper."""
-    t = mock.load(code)
+    """The picture of a block. The reminder block shows the widget and the reminder on a wallpaper."""
     if shot == "duo":
+        t = mock.load(code)
         return (f'<div class="wallpaper">{picture(code, "widget", mock.widget(t), " enter d2")}'
                 f'{picture(code, "notification", mock.reminder(t), " enter d3")}</div>')
-    return picture(code, shot, {"history": mock.history, "detail": mock.detail}[shot](t))
+    if shot == "photos":
+        return jars(code)
+    return device(code, shot)
 
 
 def badge(code, height):
@@ -196,7 +345,7 @@ def home(code):
 <p class="lede load d2">{e(h["lede"])}</p>
 {download(code)}
 </div>
-<div class="hero-stage load-hero">{picture(code, "today", mock.today(mock.load(code)))}</div>
+<div class="hero-stage load-hero">{live_device(code)}</div>
 </div>
 </section>
 <div class="wrap features">
@@ -353,9 +502,11 @@ Facts:
 - Schedules: every day, every other day, every few days (every 3 to 30 days), or days on and days off (for example 21 on and 7 off). As-needed items have no reminders.
 - History with undo and correction. Record export, backup, and restore.
 - Home Screen widgets.
+- Item photos: take or choose a photo of a bottle as the item icon. Maru can remove the background on the device, and it never sends the photo.
 - Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
 - Maru does not track stock, give medical advice, or pick a dose or a time for you.
-- Maru has no Apple Watch app and no sync between devices.
+- Each iPhone or iPad keeps its own data. Maru has no sync between devices.
+- Version 1.0 is for iPhone and iPad. It has no Apple Watch app yet.
 
 Pages:
 - [FAQ]({ORIGIN}/faq/): short answers.
@@ -369,6 +520,8 @@ Languages:
 
 
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] == "--shots":
+        import_shots(sys.argv[2])
     render = {"index.html": home, "faq/index.html": faq, "privacy/index.html": privacy, "support/index.html": support}
     for code, folder in LANGS:
         for page in PAGES:

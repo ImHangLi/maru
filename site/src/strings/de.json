@@ -27,10 +27,13 @@
       "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."
     },
     "notification": {
-      "alt": "Eine Erinnerung von Maru an Vitamin D."
+      "alt": "Eine Erinnerung von Maru an Vitamin D3."
     },
     "widget": {
       "alt": "Das Maru-Widget „Heute“: 2 von 5 eingenommen, mit Morgens, Mittags und Abends."
+    },
+    "photos": {
+      "alt": "Drei Nahrungsergänzungsdosen mit erfundenen Etiketten, freigestellt als Symbole von Einträgen in Maru."
     }
   },
   "blocks": [
@@ -48,13 +51,18 @@
       "shot": "detail",
       "title": "Zeiten und Mengen im Blick",
       "text": "Dort stehen die Zeiten, die Menge und die letzten sieben Tage."
+    },
+    {
+      "shot": "photos",
+      "title": "Deine Dose |als Symbol",
+      "text": "Mach oder wähle ein Foto deiner eigenen Dose, und es wird zum Symbol des Eintrags. Maru kann den Hintergrund auf deinem iPhone oder iPad entfernen, und das Foto bleibt auf deinem Gerät."
     }
   ],
   "trust_title": "Gut zu wissen",
   "trust": [
     "Kostenlos und Open Source",
     "Ohne Konto",
-    "Deine Aufzeichnungen bleiben auf deinem iPhone"
+    "Deine Aufzeichnungen bleiben auf deinen Geräten"
   ],
   "footer": {
     "faq": "Fragen",
@@ -79,7 +87,7 @@
       ],
       [
         "Wo sind meine Daten?",
-        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."
+        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad. Jedes Gerät hat seine eigenen Daten, und Maru synchronisiert nicht zwischen Geräten. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."
       ],
       [
         "Warum nicht ein Wecker oder Apple Health?",
@@ -110,6 +118,10 @@
         "Nein. Maru erinnert und erfasst, mehr nicht."
       ],
       [
+        "Kann ich ein Foto meiner Dose verwenden?",
+        "Ja. Mach oder wähle auf dem Bildschirm zum Hinzufügen oder Bearbeiten ein Foto, und es wird zum Symbol des Eintrags. Maru speichert eine kleine Kopie auf deinem Gerät und kann dort den Hintergrund entfernen. Maru sendet das Foto nie."
+      ],
+      [
         "Wie ziehe ich auf ein neues iPhone oder iPad um?",
         "Öffne auf dem alten Gerät die Einstellungen in Maru, tippe auf „Backup erstellen“ und sichere die Datei. Tippe auf dem neuen Gerät auf „Aus Backup wiederherstellen“ und wähle diese Datei. Das ersetzt die Einträge und Aufzeichnungen, die dort schon in Maru sind. Die Datei ist nicht verschlüsselt, also bewahre sie sicher auf."
       ],
@@ -119,7 +131,7 @@
       ],
       [
         "Gibt es eine App für die Apple Watch?",
-        "Nein. Maru ist eine App für iPhone und iPad und synchronisiert nicht zwischen Geräten."
+        "Noch nicht. Version 1.0 ist für iPhone und iPad. Eine App für die Apple Watch kommt später."
       ],
       [
         "Welche Sprachen spricht Maru?",
@@ -144,11 +156,11 @@
   },
   "privacy": {
     "title": "Maru: Datenschutz",
-    "desc": "Was Maru auf deinem iPhone speichert, was es sendet und was es nie tut.",
+    "desc": "Was Maru auf deinem Gerät speichert, was es sendet und was es nie tut.",
     "h1": "Datenschutz",
     "summary_title": "Kurz gesagt",
     "summary": [
-      "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Maru hat kein Konto und keinen Server dafür.",
+      "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad, und jedes Gerät hat seine eigenen Daten. Maru hat kein Konto und keinen Server dafür.",
       "Die einfache Nutzungsstatistik enthält nie, was du nimmst, und ein Schalter in den Einstellungen stellt sie ab.",
       "Maru hat keine Werbung und liest weder deine Kontakte noch deinen Standort."
     ],
