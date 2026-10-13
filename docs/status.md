@@ -35,7 +35,7 @@ Maru was developed in a private repository before it became public. Issue number
 
 - The app tint is not on row text any more, Settings has no test notification, and the medium "Today" widget has a progress bar in place of the count (D076). A simulator capture confirmed Settings, the add and edit screen, and the widget layout in light and dark. Nobody saw the widget on a Home Screen, in the tinted or clear look, or the "Item Options…" row of the item detail.
 
-- Build 3 of version 1.0.0 is the submission build. It is on TestFlight for the internal group and on the App Store version, without the Watch app (D074, D075). The screenshots are uploaded for the eight store languages. The tips are ready, but they are not in the submission of 1.0.0: the first tip goes to review with a later version, after the Paid Apps agreement is active. The app is not submitted for review, and the maintainer starts the submission. `docs/release-plan.md`, section 7, has the details.
+- Build 4 of version 1.0.0 is the submission build. It is on the App Store version, without the Watch app (D074, D075). The screenshots are uploaded for the eight store languages. The tips are ready, but they are not in the submission of 1.0.0: the first tip goes to review with a later version, after the Paid Apps agreement is active. The maintainer submitted version 1.0.0 with build 4 on 2026-10-14, and it waits for review. The release is manual. `docs/release-plan.md`, section 7, has the details.
 
 ## Next
 
