@@ -1,6 +1,6 @@
 # Privacy
 
-Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. If you install the Maru app on your Apple Watch, your iPhone sends the list of today's doses to your own Watch: the names, the amounts, the times, and whether each dose is recorded. It goes directly between the two devices and through no server of Maru. This file describes the app in this repository as it is today.
+Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. This file describes the app in this repository as it is today.
 
 ## What Maru stores
 
@@ -9,7 +9,7 @@ Maru keeps your health data on your iPhone or iPad. Each device has its own data
 - A draft of an item that you add or edit. Maru deletes the draft when you save or cancel.
 - The photo of an item, if you add one. See "Item photos".
 
-Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so a record from your Apple Watch works with the iPhone in your pocket. When Maru cannot open your records, it records nothing and asks you to unlock.
+Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so the "Taken" action of a reminder works while the device is locked. When Maru cannot open your records, it records nothing and asks you to unlock.
 
 ## What Maru does not do
 
