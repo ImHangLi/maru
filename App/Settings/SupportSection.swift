@@ -17,6 +17,7 @@ struct SupportSection: View {
                             Text(product.displayPrice)
                         }
                     }
+                    .rowText()
                     .disabled(store.buyingID != nil)
                 }
             } header: {

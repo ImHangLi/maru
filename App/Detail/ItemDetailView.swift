@@ -97,13 +97,14 @@ struct ItemDetailView: View {
             Section {
                 if item.isArchived {
                     Button("Restore") { change { try await model.setArchived(false, for: item.id) } }
+                        .rowText()
                     Button("Delete Item…", role: .destructive) {
                         model.askToEnd(.delete, itemID: item.id, name: item.name)
                     }
                 } else {
                     // A plain row at the end, so the rare changes stay out of the way (spec 3 P04). It opens a
                     // system menu, not a dialog, so an archive or a delete has one confirmation (D033).
-                    Menu("Item Options…") {
+                    Menu {
                         Button("Replace with a New Product…", systemImage: "arrow.triangle.2.circlepath") {
                             model.openEditorForNewProduct(item.id)
                         }
@@ -124,6 +125,8 @@ struct ItemDetailView: View {
                         Button("Delete Item…", systemImage: "trash", role: .destructive) {
                             model.askToEnd(.delete, itemID: item.id, name: item.name)
                         }
+                    } label: {
+                        Text("Item Options…").rowText()
                     }
                 }
             }
@@ -199,6 +202,7 @@ private struct ScheduleSection: View {
                 Button("Open Settings") {
                     if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
                 }
+                .rowText()
             }
         } header: {
             Text("Plan")

@@ -135,9 +135,11 @@ struct LookSection<Choices: View>: View {
             choices
             PhotosPicker(selection: $pickerItem, matching: .images) {
                 Label("Choose Photo", systemImage: "photo")
+                    .labelStyle(RowLabelStyle())
             }
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
                 Button("Take Photo", systemImage: "camera", action: startCamera)
+                    .labelStyle(RowLabelStyle())
                     .fullScreenCover(isPresented: $takesPhoto) {
                         CameraPicker { image in
                             takesPhoto = false

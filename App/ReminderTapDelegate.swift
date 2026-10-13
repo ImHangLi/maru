@@ -67,10 +67,8 @@ final class ReminderTapDelegate: NSObject, UNUserNotificationCenterDelegate, Sen
         // A tap on the reminder opens it. "Taken" records its one dose in the background (spec 8.3, D034).
         let isTaken = response.actionIdentifier == ReminderAction.takenIdentifier
         guard isTaken || response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
-        // The test of settings and the "not recorded" notice are not reminders. A tap only opens the app.
-        guard ![TestNotification.identifier, ActionNotice.identifier].contains(response.notification.request.identifier) else {
-            return
-        }
+        // The "not recorded" notice is not a reminder. A tap only opens the app.
+        guard response.notification.request.identifier != ActionNotice.identifier else { return }
         let notification = response.notification
         #if DEBUG
         // A notification from before the latest store change belongs to the other store (spec 7.3).
