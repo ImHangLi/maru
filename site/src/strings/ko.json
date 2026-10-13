@@ -16,6 +16,17 @@
     "devices": "지원 기기",
     "soon": "App Store 출시 예정"
   },
+  "phone": {
+    "label": "Maru 앱 미리보기예요. 화면 다섯 개를 볼 수 있어요. 아무것도 기록되지 않아요.",
+    "show": "‘{}’ 화면 보기",
+    "back": "뒤로",
+    "close": "닫기",
+    "today": "오늘",
+    "items": "내 항목",
+    "history": "내역",
+    "settings": "설정",
+    "add": "항목 추가"
+  },
   "shots": {
     "today": {
       "alt": "지금 먹을 항목이 보이는 Maru의 오늘 화면."

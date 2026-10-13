@@ -16,6 +16,17 @@
     "devices": "适用设备",
     "soon": "即将上架 App Store"
   },
+  "phone": {
+    "label": "Maru App 的预览。可以查看五个界面，不会记录任何内容。",
+    "show": "显示“{}”界面",
+    "back": "返回",
+    "close": "关闭",
+    "today": "今天",
+    "items": "我的项目",
+    "history": "历史记录",
+    "settings": "设置",
+    "add": "添加项目"
+  },
   "shots": {
     "today": {
       "alt": "Maru 的“今天”界面，显示现在该吃的项目。"

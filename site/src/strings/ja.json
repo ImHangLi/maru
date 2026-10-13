@@ -16,6 +16,17 @@
     "devices": "対応デバイス",
     "soon": "まもなくApp Storeで公開"
   },
+  "phone": {
+    "label": "Maruアプリのプレビューです。5つの画面を見られます。記録はされません。",
+    "show": "「{}」画面を表示",
+    "back": "戻る",
+    "close": "閉じる",
+    "today": "今日",
+    "items": "マイ項目",
+    "history": "履歴",
+    "settings": "設定",
+    "add": "項目を追加"
+  },
   "shots": {
     "today": {
       "alt": "Maruの「今日」画面。いま飲む項目が並んでいます。"

@@ -16,6 +16,17 @@
     "devices": "Disponible para",
     "soon": "Próximamente en el App Store"
   },
+  "phone": {
+    "label": "Una vista previa de la app Maru. Puedes ver cinco pantallas. No se registra nada.",
+    "show": "Mostrar la pantalla {}",
+    "back": "Atrás",
+    "close": "Cerrar",
+    "today": "Hoy",
+    "items": "Mis elementos",
+    "history": "Historial",
+    "settings": "Ajustes",
+    "add": "Añadir elemento"
+  },
   "shots": {
     "today": {
       "alt": "La pantalla Hoy de Maru con lo que toca tomar ahora."
