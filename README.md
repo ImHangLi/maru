@@ -1,11 +1,8 @@
 <p align="center">
-  <img src="docs/images/icon.png" alt="The Maru app icon" width="96" height="96">
+  <a href="https://maru.day"><img src="docs/images/hero.png" alt="Maru. Did I take it? One look. The Today screen of Maru with the items to take now." width="100%"></a>
 </p>
 
-<h1 align="center">Maru</h1>
-
 <p align="center">
-  <b>Did I take it? One look.</b><br>
   Maru reminds you to take your vitamins, supplements, and medicine.<br>
   One tap records what you took.
 </p>
@@ -18,11 +15,7 @@
 </p>
 
 <p align="center">
-  <a href="https://maru.day"><img src="docs/images/hero.png" alt="Maru. Did I take it? One look. The Today screen of Maru with the items to take now." width="100%"></a>
-</p>
-
-<p align="center">
-  Coming soon to the App Store, for iPhone and iPad. Read more at <a href="https://maru.day">maru.day</a>.
+  Coming soon to the App Store, for iPhone and iPad.
 </p>
 
 <table>
