@@ -1120,4 +1120,6 @@ Agent decision, after a copy review of all user-facing text by a different model
 - `PRIVACY.md` and `docs/faq.md` lose the implementation words and the streak words. The camera paragraph of `PRIVACY.md` now also names the item photo. `site/` is not part of this change.
 - Every changed string in Japanese, Korean, Spanish, and German is a draft until a native speaker reads it. `docs/localization-review.md` lists them.
 
-Not verified: no build of the app on this Mac, and nobody saw the text on a display. The item detail still joins its three counts with "·" (D061). The copy review did not name it, and it stays for a later change.
+- The item detail shows its three counts (D061) as separate labelled values with space between them, and one under the other when the row is too narrow. This was the last "·" separator in the app, the widgets, the reminders, and the String Catalogs.
+
+Not verified: no build of the app on this Mac, and nobody saw the text on a display.

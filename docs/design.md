@@ -36,7 +36,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A failure uses a system alert. Every alert title uses Title Case, for example "Not Saved", "Today Changed", "History Changed", "Not Changed", and "Maru Couldn’t Save" (D058). A failed reminder after a save or a change also gets an alert. Notifications that are off show as the row "Notifications off" on Today and My Items, with no alert.
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
-- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses: "Taken: 5 · Skipped: 1 · No record: 1". An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
+- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses as three labelled values with space between them and no separator: "Taken: 5", "Skipped: 1", "No record: 1". They stand one under the other when the row is too narrow (D068). An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
 - For a plan of every other day, "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036).
 
 ## Today
