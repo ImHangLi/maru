@@ -1016,6 +1016,47 @@
         }
       }
     },
+    "%@ at %@, from %@, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every few days or has a pause. The first placeholder is the rule, for example Every 3 days, or 21 days on, 7 days off. The second is the times. The third is the first day, for example Tue, Aug 18.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ um %2$@, ab %3$@, ohne Enddatum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ at %2$@, from %3$@, with no end date"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@, desde %3$@, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@、%3$@から、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, %3$@부터, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@，从 %3$@ 开始，无结束日期"
+          }
+        }
+      }
+    },
     "%@ at %@, with no end date" : {
       "comment" : "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times.",
       "localizations" : {
@@ -1053,6 +1094,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ %2$@，无结束日期"
+          }
+        }
+      }
+    },
+    "%@, %@" : {
+      "comment" : "The days of a plan with a pause. The first placeholder is the days with a dose, the second is the days with none. Example: 21 days on, 7 days off.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@、%2$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，%2$@"
           }
         }
       }
@@ -1310,6 +1392,196 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "%lld 项更改未存储。重试"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld days off" : {
+      "comment" : "The second part of the days of a plan with a pause: the number of days with no dose. Example: 7 days off.",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Tag Pause"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Tage Pause"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld day off"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld days off"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld día de descanso"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld días de descanso"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld日休み"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld일 휴식"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "停 %lld 天"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld days on" : {
+      "comment" : "The first part of the days of a plan with a pause: the number of days with a dose. Example: 21 days on.",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Tag Einnahme"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Tage Einnahme"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld day on"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld days on"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld día de toma"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld días de toma"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld日服用"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld일 복용"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "服 %lld 天"
                 }
               }
             }
@@ -1982,6 +2254,41 @@
         }
       }
     },
+    "Another Date" : {
+      "comment" : "Repeat page: the label of the date picker for the first day of a plan that repeats every few days or has a pause, when the first day is not today or tomorrow. The date can be in the past.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anderes Datum"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Otra fecha"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "別の日付"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다른 날짜"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "其他日期"
+          }
+        }
+      }
+    },
     "App Color" : {
       "comment" : "Settings: the header of the row of colors for the whole app. The selected color name follows it.",
       "localizations" : {
@@ -2577,6 +2884,41 @@
         }
       }
     },
+    "Choose" : {
+      "comment" : "Repeat page: the empty first choice in a menu of numbers of days. Maru picks no number, so the menu shows this until the user chooses.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auswählen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "선택"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择"
+          }
+        }
+      }
+    },
     "Choose at least one day." : {
       "comment" : "Edit screen: the preview line when no weekday is on.",
       "localizations" : {
@@ -2613,7 +2955,7 @@
       }
     },
     "Choose the first day." : {
-      "comment" : "Edit screen: the preview line and the hint when a plan repeats every second day and has no first day yet.",
+      "comment" : "Edit screen and repeat page: the preview line and the hint when a plan that counts days (every other day, every few days, or days on and days off) has no first day yet.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2643,6 +2985,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请选择第一天。"
+          }
+        }
+      }
+    },
+    "Choose the number of days." : {
+      "comment" : "Edit screen and repeat page: the preview line and the hint when a plan repeats every few days, or has days on and days off, and a number of days is not chosen yet.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle die Anzahl der Tage."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elige el número de días."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日数を選択してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일수를 선택하세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请选择天数。"
           }
         }
       }
@@ -2748,6 +3125,111 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "日期"
+          }
+        }
+      }
+    },
+    "Days Off" : {
+      "comment" : "Repeat page: the label of the menu for the number of days with no dose, after the days with a dose. Example: 7.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tage Pause"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días de descanso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "休む日数"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "쉬는 일수"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停用天数"
+          }
+        }
+      }
+    },
+    "Days On" : {
+      "comment" : "Repeat page: the label of the menu for the number of days with a dose, before the days with none. Example: 21.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tage mit Einnahme"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días de toma"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用する日数"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 일수"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用天数"
+          }
+        }
+      }
+    },
+    "Days On and Off" : {
+      "comment" : "Repeat page: the choice of a plan with a number of days with a dose, then a number of days with no dose, for example 21 days on and 7 days off. The edit screen also shows it as the repeat rule until the numbers are chosen.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einnahmetage und Pause"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días de toma y de descanso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用日と休みの日"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용일과 쉬는 날"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服几天停几天"
           }
         }
       }
@@ -3452,6 +3934,41 @@
         }
       }
     },
+    "Every %lld days" : {
+      "comment" : "The days of a plan that repeats every few days, and the choices of the interval on the repeat page. The number is 3 or more.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle %lld Tage"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada %lld días"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld日ごと"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld일마다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每 %lld 天"
+          }
+        }
+      }
+    },
     "Every day" : {
       "comment" : "Edit screen: the days of a plan that reminds on all seven days.",
       "localizations" : {
@@ -3518,6 +4035,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每天"
+          }
+        }
+      }
+    },
+    "Every Few Days" : {
+      "comment" : "Repeat page: the choice of a plan that repeats every 3 to 30 days. The edit screen also shows it as the repeat rule until the interval is chosen.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle paar Tage"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cada varios días"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数日ごと"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "며칠마다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每隔几天"
           }
         }
       }
@@ -4078,6 +4630,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请在 iPhone“设置”中为时区选择一个城市。"
+          }
+        }
+      }
+    },
+    "Interval" : {
+      "comment" : "Repeat page: the label of the menu for the days from one dose to the next. The value follows, for example Every 3 days.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervall"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intervalo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "間隔"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "간격"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "间隔"
           }
         }
       }
@@ -4853,7 +5440,7 @@
       }
     },
     "Maru sets the reminders of the next 7 dose days each time you open it." : {
-      "comment" : "Item detail: the footer of a plan that repeats every second day when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open.",
+      "comment" : "Item detail: the footer of a plan that counts days (every other day, every few days, or days on and days off) when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5238,7 +5825,7 @@
       }
     },
     "Next Dose" : {
-      "comment" : "Item detail: the label of the day of the next dose of a plan that repeats every second day. The value is Today, Tomorrow, or a weekday.",
+      "comment" : "Item detail: the label of the day of the next dose of a plan that counts days (every other day, every few days, or days on and days off). The value is Today, Tomorrow, a weekday, or a date.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8108,7 +8695,7 @@
       }
     },
     "Starting Today" : {
-      "comment" : "Repeat page: the first day of a plan that repeats every second day is today.",
+      "comment" : "Repeat page: the first day of a plan that counts days (every other day, every few days, or days on and days off) is today.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8143,7 +8730,7 @@
       }
     },
     "Starting Tomorrow" : {
-      "comment" : "Repeat page: the first day of a plan that repeats every second day is tomorrow.",
+      "comment" : "Repeat page: the first day of a plan that counts days (every other day, every few days, or days on and days off) is tomorrow.",
       "localizations" : {
         "de" : {
           "stringUnit" : {

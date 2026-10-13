@@ -18,15 +18,12 @@
   },
   "shots": {
     "today": {
-      "label": "Heute",
       "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
     },
     "history": {
-      "label": "Verlauf",
       "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der vergangenen Tage und den letzten 7 Tagen jedes Eintrags."
     },
     "detail": {
-      "label": "Eintrag",
       "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."
     },
     "notification": {
@@ -95,6 +92,10 @@
       [
         "Erinnert mich Maru mehrmals?",
         "Schalte in den Einstellungen „Erneut erinnern“ ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Maru ist kein Wecker, deshalb können der Stummmodus oder ein Fokus eine Erinnerung zurückhalten."
+      ],
+      [
+        "Kann ich etwas alle paar Tage oder mit Pausen nehmen?",
+        "Ja. Wähle „Jeden Tag“, „Jeden zweiten Tag“, „Alle paar Tage“ (alle 3 bis 30 Tage) oder „Einnahmetage und Pause“, zum Beispiel 21 Tage Einnahme und 7 Tage Pause. Einträge „Bei Bedarf“ haben keine Erinnerung: Du erfasst sie, wenn du sie nimmst."
       ],
       [
         "Was, wenn ich das Erfassen vergesse?",

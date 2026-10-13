@@ -18,15 +18,12 @@
   },
   "shots": {
     "today": {
-      "label": "Today",
       "alt": "The Today screen of Maru with the items to take now."
     },
     "history": {
-      "label": "History",
       "alt": "The History screen of Maru with a graph of past days and the last 7 days of each item."
     },
     "detail": {
-      "label": "Item",
       "alt": "The page of one item in Maru with its times, its amount, and its last 7 days."
     },
     "notification": {
@@ -95,6 +92,10 @@
       [
         "Will Maru keep reminding me?",
         "Turn on Remind Again in Settings, and Maru sends up to 12 more reminders for a dose. Maru is not an alarm, so silent mode or a Focus can hold a reminder."
+      ],
+      [
+        "Can I take something every few days, or with a break?",
+        "Yes. Choose Every Day, Every Other Day, Every Few Days (every 3 to 30 days), or Days On and Off, for example 21 days on and 7 off. An As Needed item has no reminders, and you record it when you take it."
       ],
       [
         "What if I forget to record?",

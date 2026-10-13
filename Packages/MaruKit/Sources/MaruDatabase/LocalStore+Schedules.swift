@@ -62,12 +62,14 @@ extension LocalStore {
         try db.execute(
             sql: """
                 INSERT INTO scheduleVersion
-                    (id, scheduleID, position, effectiveFrom, weekdays, everyOtherDayFrom, dose, timeZonePolicy, timeZone)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    (id, scheduleID, position, effectiveFrom, weekdays, cycleStart, cycleDaysOn, cycleDaysOff,
+                     dose, timeZonePolicy, timeZone)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
             arguments: [
                 version.id.text, version.scheduleID.text, position, version.effectiveFrom.text, version.weeklyRule.text,
-                version.everyOtherDayFrom?.text, version.dose?.text, policy, timeZone,
+                version.dayCycle?.start.text, version.dayCycle?.daysOn, version.dayCycle?.daysOff,
+                version.dose?.text, policy, timeZone,
             ]
         )
         for (slotPosition, slotTime) in version.slotTimes.enumerated() {
@@ -135,13 +137,20 @@ extension LocalStore {
         case ("followsDevice", nil): .followsDevice
         default: throw StorageError.invalidData
         }
-        let everyOtherDayFrom: String? = try row.decode(forColumn: "everyOtherDayFrom")
+        let cycleStart: String? = try row.decode(forColumn: "cycleStart")
+        let cycleDaysOn: Int? = try row.decode(forColumn: "cycleDaysOn")
+        let cycleDaysOff: Int? = try row.decode(forColumn: "cycleDaysOff")
+        let dayCycle: DayCycle? = switch (cycleStart, cycleDaysOn, cycleDaysOff) {
+        case (nil, nil, nil): nil
+        case let (start?, daysOn?, daysOff?): try DayCycle(start: LocalDate(text: start), daysOn: daysOn, daysOff: daysOff)
+        default: throw StorageError.invalidData
+        }
         return try ScheduleVersion(
             id: ScheduleVersionID(text: id),
             scheduleID: scheduleID,
             effectiveFrom: LocalDate(text: row.decode(forColumn: "effectiveFrom")),
             weeklyRule: WeeklyRule(text: row.decode(forColumn: "weekdays")),
-            everyOtherDayFrom: everyOtherDayFrom.map(LocalDate.init(text:)),
+            dayCycle: dayCycle,
             slotTimes: slotTimes,
             dose: dose,
             timeZonePolicy: timeZonePolicy

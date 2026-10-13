@@ -1,6 +1,7 @@
 wrangler.toml
 .assetsignore
 build.py
-concept.py
+mock.py
+__pycache__
 README.md
 src

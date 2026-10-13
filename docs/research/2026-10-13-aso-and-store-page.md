@@ -213,11 +213,11 @@ Notes on the text:
 
 - The description has one structure in every language. The first three lines carry the message: the doubt, then what Maru does, then where the data stays.
 - The names of screens and buttons are the words of `App/Localizable.xcstrings`.
-- The description says "widget", "every other day", and "Export Records". `evidence.md` allows these only when they are in the released build. They are in the code on main. Check them against the build that ships.
+- The description says "widget", the schedule names, and "Export Records". `evidence.md` allows these only when they are in the released build. They are in the code on main. Check them against the build that ships.
 - "Tap Taken on the reminder" has its condition in the text: a reminder for one item.
 - "Remind Again" has its number in the text: up to 12.
 - "Tap the circle beside an item": a tap on the name opens the detail, so the description names the circle.
-- The schedule line names only what main supports: daily and every-other-day reminders, and as-needed items with no reminder. If [PR #37](https://github.com/ImHangLi/maru/pull/37) ("every few days" and "days on, days off") merges before the submission, update this line in every language.
+- The schedule line names the schedules of D065: every day, every other day, every few days, and days on and days off, with 21 on and 7 off as the example. As-needed items have no reminder. The names are the words of `App/Localizable.xcstrings`. If the schedules of D065 ship in 1.1 and not in 1.0, remove them from this line for 1.0.
 - The promotional text promises that the records stay on the iPhone, not all data. The optional usage statistics can leave the iPhone.
 - en-US and en-GB: "med" was removed, because "meds" covers it. "drug" uses the free characters. It is not in the name or the subtitle.
 - The last paragraph says that Maru gives no medical advice, that it is not an alarm, and that the user should ask a doctor or pharmacist (guideline 1.4.1).

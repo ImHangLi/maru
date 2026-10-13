@@ -9,7 +9,7 @@ import Foundation
 public struct ReminderContent: Hashable, Sendable {
     public enum Kind: Hashable, Sendable {
         /// The first reminder at the slot time: a repeating request, or a dated request of a plan
-        /// that repeats every second day (D036).
+        /// with a day cycle (D036, D065).
         case due
         /// The optional follow-up after the slot time (D021).
         case again
@@ -52,7 +52,7 @@ public struct ReminderTrigger: Hashable, Sendable {
     /// `nil` means the time zone of the device. The reminder then follows the device to another zone.
     public let timeZone: NamedTimeZone?
 
-    /// A dated request fires one time. The system has no repeating trigger for every second day.
+    /// A dated request fires one time. The system has no repeating trigger for a day cycle.
     public var repeats: Bool { date == nil }
 
     /// The components that a calendar trigger of the system matches.
@@ -102,7 +102,8 @@ public struct ReminderRequest: Hashable, Sendable {
 /// and the day. So the same plan always gives the same identifiers, and a request that is added again
 /// replaces the pending one. A series has no stored state.
 ///
-/// A plan that repeats every second day cannot use a repeating trigger. So it gets dated series (D036):
+/// A plan with a day cycle (every other day, every few days, or days with a pause after them) cannot use
+/// a repeating trigger. So it gets dated series (D036, D065):
 /// one series for one date, with the slots that are due at the time on that date, and one request that
 /// fires one time. A dated series has only such slots. A slot with a weekly rule at the same time stays
 /// in the repeating series, so a repeating request never names an item on a day when it is not due.
@@ -254,8 +255,8 @@ public struct ReminderPlan: Hashable, Sendable {
     /// The requests that the series can use, repeating and dated together. The follow-ups use the room
     /// that the series requests of the plan do not need, minus `FollowUpPlan.reserve` (spec 8.4, D039).
     public static let requestBudget = 48
-    /// A plan that repeats every second day gets dated requests for this many due dates at each of its times,
-    /// from the date of the run (D036). Each run sets them again. So its reminders stop after the last of
+    /// A plan with a day cycle gets dated requests for this many due dates at each of its times,
+    /// from the date of the run (D036, D065). Each run sets them again. So its reminders stop after the last of
     /// these dates when the app does not run before it. A repeating request has no such limit.
     public static let datedDueDates = 7
 
@@ -287,11 +288,12 @@ public struct ReminderPlan: Hashable, Sendable {
     ///
     /// A series that does not fit in the budget gets no request, and each of its schedules is `.blocked(.overLimit)`.
     /// The repeating series get their requests first, in the order in which the schedules first use them.
-    /// Then the dated series get theirs, in the same order. So a change of one plan to every second day
+    /// Then the dated series get theirs, in the same order. So a change of one plan to a day cycle
     /// never takes the repeating reminder of another plan.
     ///
-    /// A version that repeats every second day gets dated series: one for each of its next `datedDueDates`
-    /// due dates at each of its times, when the instant of that time is after `now`. The dated series of one
+    /// A version with a day cycle gets dated series: one for each of its next `datedDueDates`
+    /// due dates at each of its times, when the instant of that time is after `now`. A day of the pause
+    /// of a cycle is not a due date, so it gets no request. The dated series of one
     /// time and one time zone rule fit in the budget together, or none of them gets a request. So a schedule
     /// never has a reminder on some of its dates only.
     ///
@@ -370,29 +372,27 @@ public struct ReminderPlan: Hashable, Sendable {
             }
             for slotTime in version.slotTimes {
                 let timeZone = keyTimeZone(of: version, at: slotTime.time)
-                let key = Key(timeZone: timeZone, time: slotTime.time, isDated: version.everyOtherDayFrom != nil)
+                let key = Key(timeZone: timeZone, time: slotTime.time, isDated: version.dayCycle != nil)
                 if units[key] == nil {
                     keys.append(key)
                     units[key] = []
                 }
                 keysOfSchedule[schedule.id, default: []].append(key)
                 var slotUnits = [Unit(key: key)]
-                if let start = version.everyOtherDayFrom {
+                if let cycle = version.dayCycle {
                     // The next due dates, from today in the zone of the plan. Only the time of today can be over.
                     let zone = timeZone ?? deviceTimeZone
-                    let today = LocalDate(now, in: zone)
-                    var date = max(today, start)
-                    if !version.isDue(on: date) { date = date.adding(days: 1) }
+                    var date = max(LocalDate(now, in: zone), cycle.start)
                     slotUnits = []
                     while slotUnits.count < Self.datedDueDates {
                         // A local time that a clock change removes or repeats uses its first instant (T25).
                         let instant = zone.resolve(slotTime.time, on: date).earliestInstant
-                        if instant > now {
+                        if cycle.isDue(on: date), instant > now {
                             let unit = Unit(key: key, date: date)
                             fireDates[unit] = instant
                             slotUnits.append(unit)
                         }
-                        date = date.adding(days: 2)
+                        date = date.adding(days: 1)
                     }
                 }
                 for unit in slotUnits {
@@ -435,7 +435,7 @@ public struct ReminderPlan: Hashable, Sendable {
             used += count
             kept[key] = series
         }
-        /// The requests of one repeating series, with the weekdays on which a record or an every-other-day item
+        /// The requests of one repeating series, with the weekdays on which a record or an item with a day cycle
         /// changes who is named. The next two dates of such a weekday get dated requests, and the weekday leaves
         /// the repeating requests, because a repeating request cannot skip one date. Each run sets them again,
         /// so a weekday with no run for seven days reminds one more time and then stops (D047).
@@ -457,8 +457,8 @@ public struct ReminderPlan: Hashable, Sendable {
                 !closed.contains(OccurrenceKey(slotID: pair.member.slotID, plannedDate: date))
             }
             func instant(_ date: LocalDate) -> Date { zone.resolve(key.time, on: date).earliestInstant }
-            /// The first two dates of a weekday from today that have not passed, and every date of an
-            /// every-other-day request on that weekday. A dated request stays until a new one covers its members.
+            /// The first two dates of a weekday from today that have not passed, and every date of a
+            /// day-cycle request on that weekday. A dated request stays until a new one covers its members.
             func dates(of weekday: Weekday) -> [LocalDate] {
                 let first = (0..<7).map { today.adding(days: $0) }.first { $0.weekday == weekday }!
                 let own = [first, first.adding(days: 7)] + datedDates.filter { $0.weekday == weekday }
@@ -490,10 +490,10 @@ public struct ReminderPlan: Hashable, Sendable {
                     )
                 )
             }
-            // An every-other-day date on a weekday that the repeating series does not use stays as it is.
+            // A day-cycle date on a weekday that the repeating series does not use stays as it is.
             return result + dated.filter { $0.date.map { !all.contains($0.weekday) } ?? false }
         }
-        // A time with a record before it, or with a daily and an every-other-day item, gets the requests of
+        // A time with a record before it, or with a daily item and an item with a day cycle, gets the requests of
         // `rework` when they fit in the room that is left. The others keep their plain requests (D047).
         var shared: [Key: [ReminderSeries]] = [:]
         for key in keys where !key.isDated {

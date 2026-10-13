@@ -18,15 +18,12 @@
   },
   "shots": {
     "today": {
-      "label": "Hoy",
       "alt": "La pantalla Hoy de Maru con lo que toca tomar ahora."
     },
     "history": {
-      "label": "Historial",
       "alt": "La pantalla Historial de Maru con un gráfico de los días pasados y los últimos 7 días de cada elemento."
     },
     "detail": {
-      "label": "Elemento",
       "alt": "La página de un elemento en Maru con sus horas, su cantidad y sus últimos 7 días."
     },
     "notification": {
@@ -95,6 +92,10 @@
       [
         "¿Maru me sigue avisando?",
         "Activa «Recordar de nuevo» en Ajustes y Maru envía hasta 12 recordatorios más por toma. Maru no es una alarma, así que el modo Silencio o un modo de concentración pueden retener un recordatorio."
+      ],
+      [
+        "¿Puedo tomar algo cada varios días o con descansos?",
+        "Sí. Elige «Todos los días», «Un día sí y otro no», «Cada varios días» (cada 3 a 30 días) o «Días de toma y de descanso», por ejemplo 21 días de toma y 7 de descanso. Los elementos «Si es necesario» no tienen recordatorios: los registras cuando los tomas."
       ],
       [
         "¿Y si se me olvida registrar?",
