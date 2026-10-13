@@ -318,7 +318,7 @@ A search result shows the name, the subtitle, and the first three portrait frame
 | # | Caption (en) | Part of the UI | Reason for the place |
 |---|---|---|---|
 | 1 | Did I take it? One look. | The Today list, with photos and filled circles | The name beside it already says "reminder". So the first frame gives the reason to pick this one: the doubt that every person in this search knows. Four of six competitors open with "never miss", so this line is also the one that differs |
-| 2 | Reminders at your times | One reminder, as a notification card | The searcher typed "reminder". The second frame proves that the app does the job that they searched for |
+| 2 | Reminders at your times | One reminder as a notification card, and the Today widget under it | The searcher typed "reminder". The second frame proves that the app does the job that they searched for |
 | 3 | One tap. Recorded. | One row before and after the tap | Effort is the main reason that people leave a tracker (`evidence.md`, pain points). This frame ends the group that shows in search: see, get reminded, record |
 | 4 | See what you took | The History graph and the last 7 days | Proof that the record lasts. It is a benefit of week two, not of day one |
 | 5 | Know it by its photo | My Items, with three photos | A feature that the other sets do not show. It comes after the reasons, because no person searches for it |
@@ -326,7 +326,7 @@ A search result shows the name, the subtitle, and the first three portrait frame
 
 Changes from the first set:
 
-- The frame "Your day at a glance" (the Today widget) left the set. No clean capture of a Home Screen widget was possible in the simulator session, and a drawn widget is not the real UI.
+- The frame "Your day at a glance" (the Today widget) left the set. The maintainer then asked for the widget as a second card in frame 2. It is drawn, because no capture of a Home Screen widget was possible in the simulator session.
 - The frame "Know it by its photo" is new. `main` now has item photos, and the sample data has three.
 - The second line of frame 2 was "Tap Taken right on the reminder." It is now "They show what to take." The frame shows a standard reminder with no action button, so the old line named a control that the frame does not show.
 
@@ -358,8 +358,8 @@ The references are six sets from https://www.appshot.gallery/ outside the medica
 
 - Each frame has one caption of two lines, 108 to 146 pixels high on the iPhone, and at most one gray second line. The second half of captions 1 and 3 is in the app pink.
 - One background for the whole set: white that turns to a pale pink at the bottom.
-- Frames 1, 4, 5, and 6 show the whole screen of one capture in the upper part of a device shape: an iPhone with a thin dark edge and the Dynamic Island, at 72% of the frame width, or an iPad with a thin even edge, at 74%. The device has the same size and place in each frame, and the bottom edge of the frame cuts it. The maintainer asked for this on 2026-10-13.
-- Frame 2 shows one reminder as a card on the background, with no Lock Screen, no wallpaper, and no clock. The maintainer asked for this. The card is drawn in HTML with the measures of the site component (`site/mock.py`), the app icon file, the title of the app's reminder, and the word of iOS for "now" in each language, as real Lock Screen captures showed it.
+- Frames 1, 4, 5, and 6 show the whole screen of one capture in the upper part of a device shape: an iPhone with a thin dark edge and the Dynamic Island, at 72% of the frame width, or an iPad with a thin even edge, at 90%. The device has the same size and place in each frame, and the bottom edge of the frame cuts it. The maintainer asked for this on 2026-10-13.
+- Frame 2 shows one reminder as a card at 86% of the frame width, and the medium Today widget under it at the same width, with no Lock Screen, no wallpaper, and no clock. The maintainer asked for this. Both cards are drawn in HTML with the measures of the site component (`site/mock.py`), the app icon file, the title of the app's reminder, and the word of iOS for "now" in each language, as real Lock Screen captures showed it.
 - Frame 3 shows the same row from two captures: one from a launch with no records, and one with the morning recorded. A touch point marks the circle. Guideline 2.3.3 allows an overlay that shows an input.
 
 ### 7.5 How the captures were made
@@ -371,7 +371,8 @@ The references are six sets from https://www.appshot.gallery/ outside the medica
 
 ### 7.6 Differences from the real app that remain
 
-- The reminder of frame 2 is drawn. It is white on the light background. iOS draws a reminder as glass over the wallpaper.
+- The reminder and the widget of frame 2 are drawn. Nobody compared the widget with a capture in each language. The reminder is white on the light background. iOS draws a reminder as glass over the wallpaper.
+- The iPad frame 3 shows the row at 200% without its empty middle, as the row looks in a narrow window. The pieces are from the captures.
 - The dark device edge and the Dynamic Island are drawn.
 - Frame 3 pairs two captures. It does not show one tap.
 - On the iPad the content fills the window, so the text of the UI is small in a frame.
