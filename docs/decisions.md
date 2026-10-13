@@ -1153,7 +1153,7 @@ Tests (D016): four new tests. The rhythm and the pause across a clock change, th
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
-## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074)
 
 Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
 
@@ -1305,4 +1305,28 @@ Maintainer decision on the concept, with agent detail. The maintainer approved a
 - To give the same three supplements in each language, magnesium replaces the probiotic in zh-Hans, ja, and ko. The names that match the labels are "Vitamin D3" and "Magnesium Glycinate" in English, with the local names in the other languages. This differs from the probiotic choice of the store research for Korea. The site mock (`site/src/mock/`) still has the old names.
 - The PNGs are in `App/Debug/SamplePhotos/`. The Release configuration of the app target sets `EXCLUDED_SOURCE_FILE_NAMES` to `sample-photo-*.png`, so a release build does not copy them. A CI step reads the Release build settings and fails when the setting is missing.
 - Image sources: Unsplash photos by Supliful under the Unsplash License, with invented labels. The brand names had no hit in the US trademark register. A TMview check is still open before a public use of the images.
+
+## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test
+
+Maintainer decision, with agent detail. The goal is a fast first release. It replaces the "embedded in the app" part of D071 for version 1.0.
+
+- Version 1.0.0 ships for iPhone and iPad, without the Apple Watch app. Nobody ran the Watch app on a real Watch, and a build with it needs Watch screenshots.
+- `project.yml`: the `Maru` target no longer depends on the `MaruWatch` target, so an archive does not embed the Watch app. This is the only change to the build. The `Watch/` code, the `MaruWatch` target, and its scheme stay.
+- CI builds the Watch app in its own step, for the watchOS Simulator, because the app build no longer includes it.
+- The iPhone code that answers the Watch stays in the app. It does nothing when no Watch app is installed.
+- `PRIVACY.md` no longer has the sentence about the list of today on the Watch, and the privacy pages of the site are built again. Add the sentence back in the change that embeds the Watch app. The site FAQ and `site/llms.txt` already say that Maru has no Watch app. The store text does not name the Watch.
+- To embed the Watch app in 1.1: add `- target: MaruWatch` to the dependencies of `Maru`, restore the privacy sentence, and add Watch screenshots.
+
+Not verified: no build ran on the Mac of the maintainer before the merge. CI builds the app and the Watch app.
+
+## D075 · 2026-10-13 · The App Store Connect record
+
+The maintainer approved the setup of the App Store Connect record and asked for the best version of each setting. Agent decisions on the details. `docs/release-plan.md`, section 7, has each value and its reason.
+
+- Primary category Health & Fitness, secondary category Medical. Price free. All territories except mainland China. Manual release after approval.
+- Age rating answers: "Medical or Treatment Information" is "Infrequent or Mild", "Health or Wellness Topics" is "Yes", and every other answer is "None" or "No".
+- Maru is declared as not a regulated medical device.
+- The privacy label is that of D069, and it is published.
+- The tips have the names "A Small Thanks", "A Warm Thanks", and "A Big Hug", at USD 0.99, 2.99, and 9.99. D053 had no names and no prices. `Config/Maru.storekit` has the same names and prices.
+- The store URLs use the paths of the live site: `/support/` and `/privacy/`, with the language folder.
 
