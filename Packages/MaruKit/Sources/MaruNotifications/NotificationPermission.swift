@@ -71,6 +71,8 @@ public enum TestNotification {
             comment: "The text of the test notification from settings."
         )
         content.sound = .default
+        // The test shows what a reminder does, so it has the same level (D062).
+        content.interruptionLevel = .timeSensitive
         let request = UNNotificationRequest(
             identifier: identifier,
             content: content,

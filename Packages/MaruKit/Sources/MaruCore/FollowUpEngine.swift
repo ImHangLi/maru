@@ -203,12 +203,13 @@ public actor FollowUpEngine {
         )
     }
 
-    /// A pending follow-up is current when it has the `userInfo`, the text, and the action of the request (D029, D034).
+    /// A pending follow-up is current when it has the `userInfo`, the text, and the action of the request, and the
+    /// time-sensitive level (D029, D034, D062).
     /// The fire instant is in `userInfo`. The text changes with a record, a rename, the setting, or the language.
     private func isCurrent(_ held: PendingReminder?, _ request: FollowUpRequest) -> Bool {
         guard let held else { return false }
         return held.userInfo == request.userInfo && held.text == center.text(for: request.content)
-            && held.hasTakenAction == request.content.hasTakenAction
+            && held.hasTakenAction == request.content.hasTakenAction && held.isTimeSensitive
     }
 
     /// The same rule as `ReminderEngine`: each identifier has at most one open removal, and the ledger

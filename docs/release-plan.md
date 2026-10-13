@@ -6,11 +6,11 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 | Step | State |
 |---|---|
-| Join the Apple Developer Program as an individual | Open |
+| Join the Apple Developer Program as an individual | Done on 2026-10-13 |
 | Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open |
-| Give the agent the Team ID, and set the paid team in Xcode for both targets | Open |
+| Give the agent the Team ID, and set the paid team in Xcode for both targets | Team ID `JBG4XL9NQK`. Xcode needs the Apple ID again |
 | Create an App Store Connect API key (App Manager). Enter it in a private prompt, never in chat | Open |
-| Buy the landing page domain | Open |
+| Buy the landing page domain | Done: `maru.day` |
 | Create the PostHog project (EU cloud) | Open |
 | Create the X, Reddit, and Product Hunt accounts for Maru | Open |
 | Search the "Maru" trademark in the main markets | Open |
@@ -18,9 +18,9 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 ## 2. Identity
 
 - Freeze the bundle IDs `com.imhangli.maru` and `com.imhangli.maru.widgets` before the first upload (D005).
-- Register the App Group on the paid team. If the free team holds `group.com.imhangli.maru`, use a new group ID.
-- Set the version to 1.0.0.
-- Add the time-sensitive notification entitlement (D034).
+- Register the App Group on the paid team. Done: the paid team is the free team, so the group ID stays (D062).
+- Set the version to 1.0.0. Done (D062).
+- Add the time-sensitive notification entitlement (D034). Done in code (D062). The device build waits for the Apple ID in Xcode.
 
 ## 3. Features
 

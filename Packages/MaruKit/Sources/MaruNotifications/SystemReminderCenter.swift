@@ -74,6 +74,8 @@ extension UNNotificationRequest {
         content.title = text.title
         content.body = text.body
         content.sound = .default
+        // A reminder shows during a Focus, unless the user turns off Time Sensitive alerts for Maru (D062).
+        content.interruptionLevel = .timeSensitive
         content.userInfo = request.userInfo
         if request.content.hasTakenAction { content.categoryIdentifier = ReminderAction.categoryIdentifier }
         self.init(
@@ -92,7 +94,8 @@ extension PendingReminder {
             identifier: request.identifier,
             userInfo: request.content.userInfo as? [String: String] ?? [:],
             text: ReminderText(title: request.content.title, body: request.content.body),
-            hasTakenAction: request.content.categoryIdentifier == ReminderAction.categoryIdentifier
+            hasTakenAction: request.content.categoryIdentifier == ReminderAction.categoryIdentifier,
+            isTimeSensitive: request.content.interruptionLevel == .timeSensitive
         )
     }
 }

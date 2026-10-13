@@ -340,7 +340,7 @@ Agent decision under the owner's direction: match Apple Health Medications, with
 - The swipe button "Delete Item…" has no destructive role. With that role the system removes the row before the confirmation.
 - Tests (D016): one new test, for the delete transaction.
 
-## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders
+## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062)
 
 Agent decision, under the owner's direction to match Apple Health Medications (`docs/research/2026-10-11-apple-health-gap.md`, rows 22 and 23).
 
@@ -1057,3 +1057,16 @@ Maintainer request on 2026-10-13, after use on the device.
 - A day with nothing planned shows a faint gray capsule in place of an empty slot, in the detail and in History. This replaces that rule of D054. The strip shows all 7 days, so it has no gap.
 
 Not verified: no build of the app on this Mac. CI builds the app.
+
+## D062 · 2026-10-13 · Paid team: time-sensitive reminders and version 1.0.0
+
+The maintainer joined the Apple Developer Program on 2026-10-13. The Team ID is `JBG4XL9NQK`, the same team as the free provisioning. The agent made the changes that waited for the membership (D007, D034, D051).
+
+- Reminders, follow-ups, and the test notification have the interruption level `timeSensitive`. A reminder then shows during a Focus. The user can turn off Time Sensitive alerts for Maru in Settings. The "Not recorded" notice keeps the default level, because it is not a dose.
+- `Config/Maru.entitlements` has `com.apple.developer.usernotifications.time-sensitive`.
+- `PendingReminder.isTimeSensitive` tells the engines that a pending request has the level. A request from an older build has the default level, so the next refresh replaces it with an add of the same identifier, as for a text change (D029). It takes no new room.
+- The App Group stays `group.com.imhangli.maru`. The paid team is the same team, so the group needs no new ID.
+- `MARKETING_VERSION` is 1.0.0.
+- Not done: iCloud sync stays out (D040). Critical Alerts stay out (D021).
+
+Not verified: the device build needs the maintainer's Apple ID in Xcode, so that automatic signing adds the capability to the App ID. Nobody saw a reminder during a Focus yet.
