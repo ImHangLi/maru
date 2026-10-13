@@ -1,18 +1,29 @@
 # Maru
 
-> Maru is a small iPhone app for daily supplements and simple medication schedules. It reminds you on time, shows what to take now, and keeps a record you can trust. It is in early development and is not on the App Store yet.
+> Maru is a small app for daily vitamins, supplements, and simple medication schedules. It reminds you at the times you choose, shows what to take now, and keeps a record. It is not in the App Store yet.
 
 Facts:
-- Free core. No account, no ads, no tracking, no cloud. Data stays on the iPhone.
-- Today screen: record a dose with one tap, or a whole part of the day with one tap.
-- Local reminders at the times you choose, with an optional "Remind Again".
-- History with undo and correction. CSV export, backup, and restore.
+- Runs on: iPhone.
+- Free, with no subscription, no ads, no account, and no limit on items. Optional tips unlock nothing.
+- Items and records stay on the device. Optional usage statistics never include names, doses, or times.
+- Today screen: record a dose with one tap.
+- Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose.
+- History with undo and correction. Record export, backup, and restore.
+- Home Screen widgets.
+- Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
 - Maru does not track stock, give medical advice, or pick a dose or a time for you.
 - Maru has no Apple Watch app and no sync between devices.
 
 Pages:
-- [FAQ](https://maru.day/faq.html): short answers.
-- [Compare](https://maru.day/compare.html): Maru, Apple Health Medications, and Medisafe.
-- [Privacy](https://maru.day/privacy.html): what the app stores and what it does not do.
-- [Support](https://maru.day/support.html): hello@maru.day and the feedback form.
+- [FAQ](https://maru.day/faq/): short answers.
+- [Privacy](https://maru.day/privacy/): what the app stores and what it does not do.
+- [Support](https://maru.day/support/): hello@maru.day and the feedback form.
 - [Source](https://github.com/ImHangLi/maru): MIT license.
+
+Languages:
+- English: https://maru.day/
+- Simplified Chinese: https://maru.day/cn/
+- Japanese: https://maru.day/jp/
+- Spanish: https://maru.day/es/
+- German: https://maru.day/de/
+- Korean: https://maru.day/kr/

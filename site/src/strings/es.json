@@ -1,0 +1,170 @@
+{
+  "name": "Español",
+  "suggest": "Ver en español",
+  "close": "Cerrar",
+  "skip": "Ir al contenido",
+  "nav_label": "Principal",
+  "home": {
+    "title": "Maru: ten claro lo que tomaste",
+    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste. Gratis y sin cuenta.",
+    "h1": "¿Ya me lo tomé? |Sal de dudas.",
+    "lede": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste."
+  },
+  "store": {
+    "badge_alt": "Consíguelo en el App Store",
+    "download": "Descargar",
+    "devices": "Disponible para",
+    "soon": "Próximamente en el App Store"
+  },
+  "shots": {
+    "today": {
+      "label": "Hoy",
+      "alt": "La pantalla Hoy de Maru con lo que toca tomar ahora."
+    },
+    "history": {
+      "label": "Historial",
+      "alt": "La pantalla Historial de Maru con un gráfico de los días pasados y los últimos 7 días de cada elemento."
+    },
+    "detail": {
+      "label": "Elemento",
+      "alt": "La página de un elemento en Maru con sus horas, su cantidad y sus últimos 7 días."
+    },
+    "notification": {
+      "alt": "Un recordatorio de Maru para tomar la vitamina D."
+    },
+    "widget": {
+      "alt": "El widget Hoy de Maru: 2 de 5 tomados, con Mañana, Mediodía y Noche."
+    }
+  },
+  "blocks": [
+    {
+      "shot": "duo",
+      "title": "Recordatorios y tu día de un vistazo",
+      "text": "Maru te avisa a tus horas, y el widget muestra tu día."
+    },
+    {
+      "shot": "history",
+      "title": "Mira lo que tomaste",
+      "text": "Meses enteros de un vistazo, y los últimos siete días de cada elemento."
+    },
+    {
+      "shot": "detail",
+      "title": "Consulta horas y cantidades",
+      "text": "Consulta sus horas, su cantidad y sus últimos siete días."
+    }
+  ],
+  "trust_title": "Bueno saberlo",
+  "trust": [
+    "Gratis y de código abierto",
+    "Sin cuenta",
+    "Tus registros se quedan en tu iPhone"
+  ],
+  "footer": {
+    "faq": "Preguntas",
+    "support": "Soporte",
+    "privacy": "Privacidad",
+    "source": "Código fuente",
+    "language": "Idioma",
+    "advice": "Maru no da consejos médicos."
+  },
+  "faq": {
+    "title": "Maru: Preguntas y respuestas",
+    "desc": "Respuestas cortas sobre Maru: el precio, tus datos, los recordatorios y el cambio a un iPhone nuevo.",
+    "h1": "Preguntas y respuestas",
+    "items": [
+      [
+        "¿Maru es gratis?",
+        "Sí, sin suscripción, sin anuncios y sin límite de elementos. Puedes dejar una propina si quieres, pero no desbloquea nada."
+      ],
+      [
+        "¿Necesito una cuenta?",
+        "No. Abre Maru y añade lo que tomas."
+      ],
+      [
+        "¿Dónde están mis datos?",
+        "Tus elementos y registros se quedan en tu iPhone. La <a href=\"{privacy}\">página de privacidad</a> tiene los detalles."
+      ],
+      [
+        "¿Por qué no una alarma o la app Salud?",
+        "Una alarma suena, pero no sabe qué tomaste. La app Salud hace mucho más, y Maru hace una sola cosa: te muestra qué toca ahora y lo registras con un toque."
+      ],
+      [
+        "¿Puedo registrar desde el recordatorio?",
+        "Sí, cuando el recordatorio es de un solo elemento: toca «Tomado». Un recordatorio de varios elementos abre Maru."
+      ],
+      [
+        "¿Maru me sigue avisando?",
+        "Activa «Recordar de nuevo» en Ajustes y Maru envía hasta 12 recordatorios más por toma. Maru no es una alarma, así que el modo Silencio o un modo de concentración pueden retener un recordatorio."
+      ],
+      [
+        "¿Y si se me olvida registrar?",
+        "Puedes registrar más tarde o cambiar la hora registrada."
+      ],
+      [
+        "¿Maru me dice qué tomar?",
+        "No. Maru no da consejos médicos: tú escribes lo que tomas y Maru te lo recuerda."
+      ],
+      [
+        "¿Maru cuenta las pastillas que me quedan?",
+        "No. Maru recuerda y registra, nada más."
+      ],
+      [
+        "¿Cómo paso a un iPhone nuevo?",
+        "En los Ajustes de Maru del iPhone antiguo, toca «Copia de seguridad» y guarda el archivo. En el iPhone nuevo, toca «Restaurar desde copia de seguridad» y elige ese archivo. Esto reemplaza los elementos y registros que ya haya en Maru en ese iPhone. El archivo no está cifrado, así que guárdalo en un lugar privado."
+      ],
+      [
+        "¿Puedo sacar mis registros?",
+        "Sí. «Exportar registros» en Ajustes crea un archivo que Numbers y Excel pueden abrir."
+      ],
+      [
+        "¿Hay app para Apple Watch?",
+        "No. Maru es una app para iPhone y no sincroniza entre dispositivos."
+      ],
+      [
+        "¿En qué idiomas está Maru?",
+        "En inglés, chino simplificado, japonés, español, alemán y coreano."
+      ],
+      [
+        "¿Maru es de código abierto?",
+        "Sí. El código está en <a href=\"{github}\">GitHub</a> con la licencia MIT."
+      ]
+    ]
+  },
+  "support": {
+    "title": "Maru: Soporte",
+    "desc": "Haz una pregunta sobre Maru, informa de un error o comparte una idea.",
+    "h1": "Soporte",
+    "lede": "Haz una pregunta, informa de un error o comparte una idea.",
+    "email": "Correo",
+    "form": "Formulario de comentarios",
+    "form_link": "Abrir el formulario",
+    "form_note": "El formulario es una página de Tally (tally.so).",
+    "note": "No incluyas datos de salud en tu mensaje. Puede que las <a href=\"{faq}\">preguntas y respuestas</a> ya tengan lo que buscas."
+  },
+  "privacy": {
+    "title": "Maru: Privacidad",
+    "desc": "Qué guarda Maru en tu iPhone, qué envía y qué no hace nunca.",
+    "h1": "Privacidad",
+    "summary_title": "En pocas palabras",
+    "summary": [
+      "Tus elementos y registros se quedan en tu iPhone. Maru no tiene cuentas ni un servidor para ellos.",
+      "Las estadísticas de uso son sencillas, nunca incluyen lo que tomas y se desactivan con un interruptor en Ajustes.",
+      "Maru no tiene anuncios y no lee tus contactos ni tu ubicación."
+    ],
+    "binding": "La política completa está en inglés más abajo. El texto en inglés es el que vale.",
+    "headings": {
+      "What Maru stores": "Qué guarda Maru",
+      "What Maru does not do": "Qué no hace Maru",
+      "Usage statistics": "Estadísticas de uso",
+      "Camera": "Cámara",
+      "Item photos": "Fotos de los elementos",
+      "Feedback": "Comentarios",
+      "Tips": "Propinas",
+      "Notifications": "Notificaciones",
+      "Export and backup files": "Archivos de exportación y copia de seguridad",
+      "iPhone backups": "Copias de seguridad del iPhone",
+      "Changes": "Cambios"
+    }
+  },
+  "github": "Maru en GitHub"
+}
