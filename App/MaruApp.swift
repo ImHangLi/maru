@@ -32,7 +32,7 @@ struct MaruApp: App {
         UNUserNotificationCenter.current().delegate = tapDelegate
         // The "Taken" action of a reminder for one item (D034). The call does not wait for the system.
         ReminderAction.register()
-        // A tap on a gray capsule of the "Take Now" widget runs in this process (D048).
+        // A tap on a gray capsule of the "Record Dose" widget runs in this process (D048).
         TakeDoseHook.install { try await AppModel.shared.takeFromWidget($0) }
         // The widgets read the tint from the App Group.
         AppGroup.appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink

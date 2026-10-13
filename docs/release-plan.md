@@ -49,7 +49,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 - Name, subtitle, and keywords: see the research note. Six languages with fastlane `deliver`.
 - Screenshots for the 6.9-inch iPhone in each language.
 - A privacy policy page and a support page on the landing page domain.
-- Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, not linked to the user, and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
+- Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, linked to the user (D069), and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
 - Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50).
 
 ## 6. Launch
