@@ -29,11 +29,15 @@ The top bar has a language menu. It is a `details` element with plain links, so 
 
 ## App Store badge
 
-Every button is Apple's "Download on the App Store" badge in the language of the page. The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The rules are in Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
+The hero has Apple's "Download on the App Store" badge in the language of the page. The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The rules are in Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
 
-`STORE_URL` in `build.py` is the one link of every badge. It is a placeholder until Maru is on the App Store, and the build prints a warning while it is the placeholder. **Do not deploy the site with the placeholder.** Set the real link, build again, and check that the warning is gone. The real link also turns on the Smart App Banner.
+`STORE_URL` in `build.py` is the one link of the badge, of the "Download" button in the top bar, and of the text link at the end of the home page. It is a placeholder until Maru is on the App Store, and the build prints a warning while it is the placeholder. **Do not deploy the site with the placeholder.** Set the real link, build again, and check that the warning is gone. The real link also turns on the Smart App Banner.
 
-The badge is in the top bar and in the hero. The end of the home page has a text link, because Apple asks for one badge in a layout.
+The badge is in the hero only, because Apple asks for one badge in a layout. The top bar has a plain "Download" button in its own style, with no Apple logo, and the end of the home page has a text link.
+
+## Top bar
+
+The top bar is a dark island that hangs from the top edge, in the middle of the page, as wide as its content. It is solid, so it stays readable over a picture, and it does not change when the page scrolls. Below 420 px it is the full width. It holds the logo, the language button, the GitHub button, and the "Download" button. The tokens that start with `--bar-` in `style.css` set its colors.
 
 ## Icons
 
@@ -58,7 +62,7 @@ python3 site/concept.py /path/to/captures
 Both commands need `sips` (macOS) and `cwebp`.
 
 - `build.py --shots` reads `today.png`, `history.png`, and `detail.png`, and language files such as `today-ja.png`. It writes WebP files of 780 px width to `shots/`. The page shows them in an iPhone frame. A language page uses its own file, or the English file.
-- `concept.py` cuts three pictures with a transparent background, all at one scale. `shots/widget.webp` is the widget from `widget.png`. `shots/notification.webp` and `shots/taken.webp` are the notification and its "Taken" action from `reminder-expanded.png`. One block of the home page shows the three together with no phone. They are English on every page.
+- `concept.py` cuts two pictures with a transparent background, at one scale. `shots/widget.webp` is the widget from `widget.png`. `shots/notification.webp` is the notification from `reminder-expanded.png`. One block of the home page shows the two together with no phone. They are English on every page.
 
 Use only real captures of the app. Do not draw app screens.
 

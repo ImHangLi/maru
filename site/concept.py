@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Cut the two product pictures from real simulator captures: python3 site/concept.py DIR
 
-DIR holds widget.png and reminder-expanded.png (1206 x 2622). The script writes shots/widget.webp,
-shots/notification.webp, and shots/taken.webp with a transparent background, all at the same scale.
+DIR holds widget.png and reminder-expanded.png (1206 x 2622). The script writes shots/widget.webp and
+shots/notification.webp with a transparent background, at the same scale.
 Every pixel comes from the captures. Nothing is drawn.
 It needs sips (macOS) and cwebp, and no Python package.
 """
@@ -22,12 +22,8 @@ WHITE = 250
 # Crop boxes in the capture, as (left, top, width, height). Each box holds one element and a margin of wallpaper.
 WIDGET_BOX = (60, 250, 1090, 534)
 REMINDER_BOX = (28, 1212, 1150, 496)
-# The "Taken" action inside REMINDER_BOX. The notification card is above this line, and the action is below it.
-ACTION_TOP = 268
-# Both elements are in the middle of the screen of 1206 px.
-SCREEN_CENTER = 603
-# The cut of the "Taken" action is this number of pixels inside its edge.
-RIM = 3
+# The notification card is in the first rows of REMINDER_BOX. Its action is below this line, and is not used.
+CARD_ROWS = 268
 # The corners of a card are inside a square of this size. Outside the squares, the edges of a card are straight.
 CORNER = 130
 
@@ -142,43 +138,18 @@ def cut_card(rows):
     return pixels, alpha
 
 
-def cut_pill(rows, center):
-    """Cut the translucent "Taken" action. It is a capsule that is lighter than the wallpaper around it.
-    The capsule comes from its measured box, RIM pixels inside the edge, so no wallpaper stays on the rim."""
-    height, width = len(rows), len(rows[0])
-    light = [[sum(p) / 3 for p in row] for row in rows]
-    line = light[height // 2]
-    floor = (line[2] + line[center]) / 2
-    left = next(x for x in range(width) if line[x] > floor) + RIM
-    # The wallpaper is light at the right end, so the right edge comes from the left edge and the center.
-    right = 2 * center - left - 1
-    column = [light[y][center] for y in range(height)]
-    ys = [y for y in range(height) if column[y] > floor]
-    top, bottom = ys[0] + RIM, ys[-1] - RIM
-    # The Lock Screen material shows a curve of the wallpaper in the last fifth of the capsule. Replace the color there
-    # with the color of the clean material to its left. The shape and all pixels still come from the capture.
-    shift = round((right - left) * 0.2) + 10
-    seam = right - shift + 10
-    blend = 40
-    clean = []
-    for row in rows:
-        line = list(row)
-        for x in range(seam - blend, width):
-            part = min(1, (x - (seam - blend)) / blend)
-            line[x] = tuple(round(a * (1 - part) + b * part) for a, b in zip(row[x], row[x - shift]))
-        clean.append(line)
-    rows = clean
-    radius = (bottom - top + 1) / 2
-    center_y = (top + bottom + 1) / 2
-    alpha = []
-    for y in range(height):
-        line = []
-        for x in range(width):
-            nearest = min(max(x + 0.5, left + radius), right + 1 - radius)
-            distance = ((x + 0.5 - nearest) ** 2 + (y + 0.5 - center_y) ** 2) ** 0.5
-            line.append(max(0, min(255, round(255 * (radius - distance + 0.5)))))
-        alpha.append(line)
-    return rows, alpha
+def clean_bottom(pixels, alpha):
+    """The Home Screen shines through the lower edge of the widget as a gray mark in the middle.
+    Replace each darker pixel there with the pixel of the same row, one quarter of the card to its left."""
+    ys = [y for y, line in enumerate(alpha) if 255 in line]
+    xs = [x for x in range(len(alpha[0])) if alpha[ys[len(ys) // 2]][x] == 255]
+    top, bottom, left, right = ys[0], ys[-1], xs[0], xs[-1]
+    shift = (right - left) // 4
+    for y in range(bottom - (bottom - top) // 4, bottom + 1):
+        for x in range(left + shift + CORNER, right - CORNER):
+            if alpha[y][x] == 255 and min(pixels[y][x]) < min(pixels[y][x - shift]):
+                pixels[y][x] = pixels[y][x - shift]
+    return pixels, alpha
 
 
 def save(name, pixels, alpha):
@@ -198,10 +169,8 @@ def save(name, pixels, alpha):
 
 def main():
     source = Path(sys.argv[1])
-    save("widget", *cut_card(crop(source / "widget.png", WIDGET_BOX)))
-    rows = crop(source / "reminder-expanded.png", REMINDER_BOX)
-    save("notification", *cut_card(rows[:ACTION_TOP]))
-    save("taken", *cut_pill(rows[ACTION_TOP:], SCREEN_CENTER - REMINDER_BOX[0]))
+    save("widget", *clean_bottom(*cut_card(crop(source / "widget.png", WIDGET_BOX))))
+    save("notification", *cut_card(crop(source / "reminder-expanded.png", REMINDER_BOX)[:CARD_ROWS]))
 
 
 if __name__ == "__main__":

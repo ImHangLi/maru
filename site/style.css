@@ -15,17 +15,27 @@
   --fill-2: rgba(120, 120, 128, 0.12);
   --fill-3: rgba(120, 120, 128, 0.08);
   --ring-color: rgba(0, 0, 0, 0.08);
-  --nav-bg: rgba(255, 255, 255, 0.72);
   --tip-bg: #1D1D1F;
   --tip-text: #FFFFFF;
   --device-bezel: #1D1D1F;
   --device-screen: #E5E5EA;
   --island: #000000;
 
+  /* Top bar: a dark island that hangs from the top edge */
+  --bar-bg: #1D1D1F;
+  --bar-text: #FFFFFF;
+  --bar-text-2: rgba(255, 255, 255, 0.72);
+  --bar-fill: rgba(255, 255, 255, 0.14);
+  --bar-fill-press: rgba(255, 255, 255, 0.22);
+  --bar-cta-bg: #FFFFFF;
+  --bar-cta-text: #1D1D1F;
+  --bar-ring: 0 0 0 0 transparent;
+
   /* Radius */
   --radius-sm: 6px;
   --radius-md: 12px;
   --radius-lg: 24px;
+  --radius-bar: 20px;
   --radius-full: 999px;
   --radius-icon: 22%;
 
@@ -47,7 +57,6 @@
   --shift-lift: 4px;
   --blur-enter: 2px;
   --press: 0.98;
-  --pop-from: 0.94;
   --dim-hover: 0.82;
   --dim-press: 0.68;
 
@@ -111,12 +120,12 @@
   --max-copy: 26rem;
   --max-duo: 27rem;
   --menu-width: 11rem;
-  --nav-h: 60px;
-  --badge-nav: 40px;
+  --nav-h: 56px;
+  --bar-cta-h: 36px;
+  --bar-drop: 8px;
   --badge-page: 56px;
   --brand-icon: 28px;
   --device-w: 14.5rem;
-  --blur-nav: 20px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -130,7 +139,8 @@
     --focus: #FF6482;
     --tint-soft: rgba(255, 55, 95, 0.12);
     --ring-color: rgba(255, 255, 255, 0.12);
-    --nav-bg: rgba(0, 0, 0, 0.72);
+    --bar-bg: #1C1C1E;
+    --bar-ring: var(--hairline);
     --tip-bg: #F5F5F7;
     --tip-text: #1D1D1F;
     --device-bezel: #3A3A3C;
@@ -226,46 +236,58 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   from { opacity: 0; transform: translateY(var(--shift-enter)); filter: var(--drop-float) blur(var(--blur-enter)); }
   to { filter: var(--drop-float) blur(0); }
 }
-@keyframes pop {
-  from { opacity: 0; transform: scale(var(--pop-from)); filter: var(--drop-float) blur(var(--blur-enter)); }
-  to { filter: var(--drop-float) blur(0); }
+@keyframes drop {
+  from { opacity: 0; transform: translateY(calc(-1 * var(--bar-drop))); }
 }
 @keyframes lift {
   from { opacity: 0; transform: translateY(var(--shift-lift)); filter: blur(var(--blur-enter)); }
 }
 .motion .is-in .enter { animation: enter var(--dur-enter) var(--ease-smooth) both; animation-delay: calc(var(--order, 0) * var(--stagger)); }
 .motion .is-in .duo .enter { animation-name: enter-cutout; }
-.motion .is-in .duo .pop { animation: pop var(--dur-slow) var(--ease-spring) both; animation-delay: calc(var(--order, 0) * var(--stagger)); }
 .d1 { --order: 1; }
 .d2 { --order: 2; }
 .d3 { --order: 3; }
-.d5 { --order: 5; }
+.d4 { --order: 4; }
 
-/* Top bar */
-.site-header {
-  position: sticky; top: 0; z-index: 20;
-  background: var(--nav-bg);
-  -webkit-backdrop-filter: saturate(180%) blur(var(--blur-nav));
-  backdrop-filter: saturate(180%) blur(var(--blur-nav));
-  box-shadow: var(--edge-below);
-}
+/* Top bar: a dark island that hangs from the top edge of the page, in the middle. It is as wide as its content.
+   It is solid, so it stays readable over a picture and over a block. It does not change when the page scrolls. */
+.site-header { position: sticky; top: 0; z-index: 20; height: var(--nav-h); display: flex; justify-content: center; pointer-events: none; }
 .nav-inner {
-  max-width: var(--max); margin: 0 auto; height: var(--nav-h); padding: 0 var(--gutter);
-  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  position: relative; pointer-events: auto; height: var(--nav-h); padding: 0 var(--space-3) 0 var(--space-4);
+  display: flex; align-items: center; gap: var(--space-6);
+  background: var(--bar-bg); color: var(--bar-text); border-radius: 0 0 var(--radius-bar) var(--radius-bar); box-shadow: var(--bar-ring);
 }
+.motion .nav-inner { animation: drop var(--dur-enter) var(--ease-out) both; }
+/* The two corners where the island meets the top edge curve outward. */
+.nav-inner::before, .nav-inner::after {
+  content: ""; position: absolute; top: 0; width: var(--radius-bar); height: var(--radius-bar);
+  background: radial-gradient(circle at 0 100%, transparent var(--radius-bar), var(--bar-bg) calc(var(--radius-bar) + 0.5px));
+}
+.nav-inner::before { right: 100%; }
+.nav-inner::after { left: 100%; transform: scaleX(-1); }
 .brand {
-  display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text); font-weight: var(--fw-semibold); text-decoration: none;
+  display: inline-flex; align-items: center; gap: var(--space-2); color: var(--bar-text); font-weight: var(--fw-semibold); text-decoration: none;
   border-radius: var(--radius-sm); transition: transform var(--dur-fast) var(--ease-smooth), opacity var(--dur-fast) var(--ease-smooth);
 }
 .brand:active { transform: scale(var(--press)); }
-.brand img { width: var(--brand-icon); height: var(--brand-icon); border-radius: var(--radius-icon); box-shadow: var(--hairline); }
+.brand img { width: var(--brand-icon); height: var(--brand-icon); border-radius: var(--radius-icon); }
 .nav-links { display: flex; align-items: center; gap: var(--space-1); }
+.site-header .icon-btn { color: var(--bar-text-2); }
+.site-header .icon-btn:hover, .site-header .lang-menu[open] summary { color: var(--bar-text); background: var(--bar-fill); }
+.site-header .icon-btn:active { background: var(--bar-fill-press); }
+.site-header :focus-visible { outline-color: var(--bar-text); }
+.bar-cta {
+  display: inline-flex; align-items: center; height: var(--bar-cta-h); padding: 0 var(--space-4); margin-left: var(--space-2);
+  background: var(--bar-cta-bg); color: var(--bar-cta-text); border-radius: var(--radius-full);
+  font-size: var(--fs-sm); font-weight: var(--fw-semibold); text-decoration: none; white-space: nowrap;
+  transition: transform var(--dur-fast) var(--ease-smooth), opacity var(--dur-fast) var(--ease-smooth);
+}
+.bar-cta:active { transform: scale(var(--press)); }
 
 /* Language menu: a details element with plain links, so it works with no script. */
 .lang-menu { position: relative; }
 .lang-menu summary { list-style: none; -webkit-user-select: none; user-select: none; }
 .lang-menu summary::-webkit-details-marker { display: none; }
-.lang-menu[open] summary { color: var(--text); background: var(--fill-2); }
 .lang-menu ul {
   position: absolute; right: 0; top: calc(100% + var(--space-2)); z-index: 30; min-width: var(--menu-width);
   margin: 0; padding: var(--space-2); list-style: none;
@@ -289,7 +311,6 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   transition: opacity var(--dur-fast) var(--ease-smooth);
 }
 .badge img { display: block; }
-.nav-links .badge { margin: 0 0 0 calc(var(--badge-nav) * 0.25); }
 .cta { display: flex; flex-direction: column; align-items: center; }
 
 /* Layout */
@@ -335,17 +356,16 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .feature h2 { font-size: var(--fs-2xl); margin-bottom: var(--space-3); }
 .feature .lede { margin: 0 auto; max-width: var(--max-copy); }
 
-/* The reminder and the widget as one product picture: three real cuts on one grid.
-   The reminder is in front, to the right. Its action is under it. The widget is lower, to the left. */
+/* The widget and the reminder as one product picture: two real cuts with depth.
+   The widget is behind, to the left. The reminder is in front, lower and to the right, over the empty part of the widget. */
 .duo {
-  width: 100%; max-width: var(--max-duo); padding: var(--space-5) 0;
-  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); row-gap: var(--space-3);
+  width: 100%; max-width: var(--max-duo); padding: var(--space-6) 0;
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
   background: radial-gradient(closest-side, var(--tint-soft), transparent);
 }
 .duo img { width: 100%; filter: var(--drop-float); }
-.duo-notification { grid-column: 2 / 13; }
-.duo-taken { grid-column: 4 / 11; }
-.duo-widget { grid-column: 1 / 11; margin-top: var(--space-4); }
+.duo-widget { grid-column: 1 / 11; }
+.duo-notification { grid-column: 2 / 13; margin-top: -9%; position: relative; }
 
 /* Closing panel */
 .closer {
@@ -410,16 +430,23 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   .hero-grid { grid-template-columns: 1.3fr 0.7fr; align-items: center; }
   .hero-copy, .hero .cta { align-items: flex-start; }
 }
+/* A narrow screen has no room for an island. The bar is the full width, with no round corners. */
+@media (max-width: 419px) {
+  .site-header { display: block; }
+  .nav-inner { justify-content: space-between; gap: var(--space-2); border-radius: 0; }
+  .nav-inner::before, .nav-inner::after { display: none; }
+}
 @media (max-width: 359px) {
   :root { --gutter: 12px; --hit: 36px; }
-  .nav-inner { gap: var(--space-1); }
+  .nav-inner { padding: 0 var(--space-2) 0 var(--space-3); }
   .nav-links { gap: 0; }
+  .bar-cta { padding: 0 var(--space-3); margin-left: var(--space-1); }
 }
 
 /* Reduced motion: no movement, no blur, and each state shows at once. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  .icon-btn:active, .brand:active, .lang-menu li a:active, .nots a:active, .closer-links a:active, .site-footer a:active { transform: none; }
+  .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .nots a:active, .closer-links a:active, .site-footer a:active { transform: none; }
   .icon-btn[data-tip]::after { filter: none; transform: translate(-50%, 0); }
 }
 

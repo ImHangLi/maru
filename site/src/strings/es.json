@@ -11,7 +11,8 @@
     "lede": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos, y registra lo que tomaste."
   },
   "store": {
-    "badge_alt": "Consíguelo en el App Store"
+    "badge_alt": "Consíguelo en el App Store",
+    "download": "Descargar"
   },
   "shots": {
     "today": {
@@ -27,7 +28,7 @@
       "alt": "La página de un elemento en Maru con sus horas, su cantidad y sus últimos 7 días."
     },
     "notification": {
-      "alt": "Un recordatorio de Maru para tomar la vitamina D, con la acción «Tomado»."
+      "alt": "Un recordatorio de Maru para tomar la vitamina D."
     },
     "widget": {
       "alt": "El widget Hoy de Maru: 2 de 5 tomados, con Mañana, Mediodía y Noche."
@@ -36,8 +37,8 @@
   "blocks": [
     {
       "shot": "duo",
-      "title": "Recuerda, toca y listo",
-      "text": "Toca «Tomado» en el recordatorio y sigue tu día desde el widget."
+      "title": "Un recordatorio y un vistazo",
+      "text": "Maru te avisa a tus horas, y el widget muestra tu día."
     },
     {
       "shot": "history",

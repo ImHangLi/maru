@@ -11,7 +11,8 @@
     "lede": "Maru 提醒你吃维生素、保健品和药，还帮你记下吃过什么。"
   },
   "store": {
-    "badge_alt": "在 App Store 下载"
+    "badge_alt": "在 App Store 下载",
+    "download": "下载"
   },
   "shots": {
     "today": {
@@ -27,7 +28,7 @@
       "alt": "Maru 中一个项目的页面，有时间、用量和最近 7 天的记录。"
     },
     "notification": {
-      "alt": "Maru 的提醒：该吃维生素 D 了，下方有“已服用”操作。"
+      "alt": "Maru 的提醒：该吃维生素 D 了。"
     },
     "widget": {
       "alt": "Maru 的“今天”小组件：5 项里已服用 2 项，分为早上、中午和晚上。"
@@ -36,8 +37,8 @@
   "blocks": [
     {
       "shot": "duo",
-      "title": "到点提醒，点一下就好",
-      "text": "在提醒上点“已服用”，小组件上就能看到今天的情况。"
+      "title": "到点提醒，一眼看全",
+      "text": "Maru 按你定的时间提醒，小组件上能看到今天的情况。"
     },
     {
       "shot": "history",
