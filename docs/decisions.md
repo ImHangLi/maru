@@ -1249,3 +1249,29 @@ Maintainer decision on 2026-10-13, after two model reviews.
 
 - Every data type that the usage statistics send is "Linked to the user: Yes" in `App/PrivacyInfo.xcprivacy` and on the App Store privacy label. Each event carries the same random install ID, and Apple counts data that a persistent device-level ID ties together as linked. "Used for tracking" stays "No". This replaces the "not linked" part of D063 and of the region entry.
 - The app does not change. The install ID stays random, Maru has no account, and the ID is deleted when the user turns the switch off.
+
+## D070 · 2026-10-13 · Name lists in each language
+
+Maintainer request: in each language, the names of supplements and medicines are the names that people in that market use. Agent decisions on the details. Parts of D038 and D043 change.
+
+- zh-Hans, ja, ko, es, and de each get two lists in `App/Resources`: `SupplementNames-<language>.txt` and `MedicationNames-<language>.txt`. Each list has about 150 to 250 common names in the local script and spelling. They are not translations of the English lists.
+
+| Language | Supplements | Medicines | Supplements with an English twin |
+|---|---|---|---|
+| Simplified Chinese (zh-Hans) | 176 | 247 | 86 |
+| Japanese (ja) | 183 | 219 | 67 |
+| Korean (ko) | 166 | 198 | 68 |
+| Spanish (es) | 165 | 210 | 83 |
+| German (de) | 167 | 215 | 80 |
+
+- Medicines are generic names: 通用名 in Chinese, 一般名 in katakana in Japanese, 성분명 in Korean, DCI in Spanish, and Wirkstoffe in German. Everyday traditional medicines are in the medicine list by their formula names: Chinese patent medicines, Kampo formulas with their reading in hiragana, and Korean herbal formulas. No brand names.
+- The app reads the lists of its language first, then the English lists, because people type Latin names too. English has no extra list.
+- The search keeps the rules of D038 and adds three for Chinese, Japanese, and Korean. One character of these scripts is enough. Hiragana matches katakana, so a typed reading finds a katakana name or a Kampo name. In a Hangul syllable that the keyboard did not complete yet, the last consonant ends that syllable or starts the next one: "아토ㅁ" and "아톰" find 아토목세틴 and not 아토르바스타틴. The consonant narrows the result. There is no pinyin or romaji search.
+- Smart completion (D043): a field `= <English name>` in a supplement line names the entry of `SupplementCompletions.txt` that the local name uses. A local name gets the form and the candidates of its English twin, and no data of its own. The candidate amounts stay in English words, as before.
+- Two names for the same product are one entry with an alias: 对乙酰氨基酚 with 扑热息痛. A local product with no exact English equivalent has no twin: 酵素, 녹즙. A brand ingredient name is replaced by its generic description: 락티움 is 유단백가수분해물.
+- Controlled and high-risk medicines stay in the suggestions: opioids, sedatives, stimulants, insulin, anticoagulants, and methotrexate. People who take them on a prescription need reminders the most. A suggestion is a spelling aid and gives no advice, so the app shows no warning for these names.
+- An alias never leads to another name. A test reads the real lists of each language with the English lists, and checks that each name and alias belongs to one name only, and that each twin exists.
+- The debug sample data follows the app language, with six items that many people in that market take, in the same forms and at the same times as the English sample.
+- Sources: general knowledge of the generic names and label names of each market, with the public national naming systems (Chinese 通用名, Japanese 一般名, Korean 성분명, INN/DCI) as the reference for spelling. No database or list was copied, so no license applies and `docs/third-party-licenses.md` does not change.
+
+Not verified: no native pharmacist read the lists. A first review corrected some names on 2026-10-13. Every name still needs that check, and `docs/localization-review.md` lists the names to check first. No build of the app on this Mac, and nobody saw the suggestions on a display.

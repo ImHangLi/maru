@@ -1,0 +1,182 @@
+# Common supplement names in Simplified Chinese, for the name suggestions of the add screen (D038, D070).
+# The format is the format of SupplementNames.txt: one name on each line, then its aliases after "|".
+# A field that starts with "=" is not an alias. It names the entry of SupplementCompletions.txt that gives
+# this name its smart completion (D043). The order is from the most common name down.
+# The names are the generic names on labels in mainland China. No brand names.
+# Written from general knowledge. A native speaker must check it. It is a typing aid, not medical information.
+维生素 D | 维D | = Vitamin D
+维生素 C | 维C | = Vitamin C
+钙片 | = Calcium
+复合维生素 | 多种维生素 | = Multivitamin
+鱼油 | = Fish Oil
+深海鱼油 | = Fish Oil
+益生菌 | = Probiotic
+B 族维生素 | 维生素 B 族
+叶酸 | = Folic Acid
+维生素 D3 | 维D3 | = Vitamin D3
+蛋白粉 | = Protein Powder
+胶原蛋白 | = Collagen
+辅酶 Q10 | = Coenzyme Q10
+氨基葡萄糖 | 氨糖 | = Glucosamine
+氨糖软骨素 | = Glucosamine Chondroitin
+褪黑素 | = Melatonin
+叶黄素 | = Lutein
+钙 | = Calcium
+铁 | = Iron
+铁剂 | = Iron
+锌 | = Zinc
+镁 | = Magnesium
+维生素 E | 维E | = Vitamin E
+维生素 A | 维A | = Vitamin A
+维生素 B12 | 维B12 | = Vitamin B12
+维生素 B6 | 维B6 | = Vitamin B6
+维生素 B1 | 维B1 | = Vitamin B1
+维生素 B2 | 维B2
+维生素 K2 | 维K2 | = Vitamin K2
+维生素 D3 + K2 | = Vitamin D3 + K2
+钙 + 维生素 D | = Calcium + Vitamin D
+钙镁锌 | = Calcium Magnesium Zinc
+碳酸钙 | = Calcium Carbonate
+碳酸钙 D3
+柠檬酸钙 | = Calcium Citrate
+乳钙
+液体钙
+葡萄糖酸钙
+葡萄糖酸锌 | = Zinc Gluconate
+DHA
+藻油 DHA | = Algae Oil
+藻油 | = Algae Oil
+鱼肝油
+欧米伽 3 | = Omega-3
+磷虾油 | = Krill Oil
+亚麻籽油 | = Flaxseed Oil
+月见草油 | = Evening Primrose Oil
+卵磷脂
+大豆卵磷脂
+蜂胶
+蜂王浆
+螺旋藻
+灵芝孢子粉
+破壁灵芝孢子粉
+西洋参
+人参 | = Ginseng
+红参
+枸杞
+阿胶
+燕窝
+冬虫夏草
+铁皮石斛
+三七粉
+黄芪
+乳清蛋白 | = Whey Protein
+乳清蛋白粉 | = Whey Protein
+大豆蛋白
+酪蛋白
+胶原蛋白肽 | = Collagen Peptides
+胶原蛋白粉 | = Collagen
+水解胶原蛋白 | = Hydrolyzed Collagen
+奶蓟草 | 水飞蓟 | = Milk Thistle
+葡萄籽
+葡萄籽提取物
+番茄红素
+大豆异黄酮
+蔓越莓
+蓝莓叶黄素
+姜黄 | = Turmeric
+姜黄素 | = Curcumin
+纳豆激酶
+红曲
+左旋肉碱
+肌酸 | = Creatine
+一水肌酸 | = Creatine Monohydrate
+支链氨基酸 | = BCAA
+谷氨酰胺 | = Glutamine
+左旋谷氨酰胺 | = L-Glutamine
+电解质 | = Electrolytes
+膳食纤维
+益生元
+乳铁蛋白
+牛初乳
+酵素
+玛咖
+锯棕榈
+南非醉茄 | = Ashwagandha
+茶氨酸 | = Theanine
+L-茶氨酸 | = L-Theanine
+γ-氨基丁酸 | = GABA
+透明质酸 | 玻尿酸 | = Hyaluronic Acid
+烟酰胺
+烟酸 | = Niacin
+NMN
+白藜芦醇 | = Resveratrol
+槲皮素 | = Quercetin
+硒
+硒片
+富硒酵母
+铬
+钾 | = Potassium
+碘
+铜
+牛磺酸
+赖氨酸
+精氨酸
+谷胱甘肽
+硫辛酸
+虾青素
+花青素
+越橘
+银杏叶提取物
+松花粉
+大蒜素
+大蒜油
+角鲨烯
+海豹油
+共轭亚油酸
+MCT 油
+酸枣仁
+缬草 | = Valerian
+缬草根 | = Valerian Root
+圣约翰草
+紫锥菊 | = Echinacea
+接骨木莓
+生姜 | = Ginger
+绿茶提取物 | = Green Tea Extract
+茶多酚
+猴头菇 | = Lion's Mane
+红景天 | = Rhodiola
+黄精
+葛根
+消化酶 | = Digestive Enzymes
+菠萝蛋白酶
+乳酸菌
+生物素
+泛酸
+肌醇
+胆碱
+软骨素
+二甲基砜
+孕妇复合维生素
+儿童复合维生素
+男士复合维生素 | = Men's Multivitamin
+女士复合维生素 | = Women's Multivitamin
+中老年复合维生素 | = Senior Multivitamin
+增肌粉
+氮泵 | = Pre-Workout
+β-丙氨酸 | = Beta-Alanine
+洋车前子壳 | = Psyllium Husk
+奇亚籽
+青汁 | = Greens Powder
+大麦若叶
+5-羟色氨酸 | = 5-HTP
+乙酰左旋肉碱 | = Acetyl-L-Carnitine
+苏糖酸镁 | = Magnesium L-Threonate
+甘氨酸镁 | = Magnesium Glycinate
+柠檬酸镁
+氧化镁 | = Magnesium Oxide
+吡啶甲酸锌 | = Zinc Picolinate
+甲基叶酸 | = Methylfolate
+活性叶酸 | = Methylfolate
+磷脂酰丝氨酸
+PQQ
+白芸豆
+黑芝麻丸

@@ -1,0 +1,172 @@
+# Common supplement names in Korean, for the name suggestions of the add screen (D038, D070).
+# The format is the format of SupplementNames.txt: one name on each line, then its aliases after "|".
+# A field that starts with "=" is not an alias. It names the entry of SupplementCompletions.txt that gives
+# this name its smart completion (D043). The order is from the most common name down.
+# The names are the names on Korean labels (건강기능식품). No brand names.
+# Written from general knowledge. A native speaker must check it. It is a typing aid, not medical information.
+비타민 D | = Vitamin D
+종합비타민 | 멀티비타민 | = Multivitamin
+오메가3 | 오메가-3 | = Omega-3
+유산균 | 프로바이오틱스 | = Probiotic
+비타민 C | = Vitamin C
+홍삼 | 홍삼정
+루테인 | = Lutein
+밀크씨슬 | = Milk Thistle
+마그네슘 | = Magnesium
+칼슘 | = Calcium
+칼슘 마그네슘 비타민 D
+철분 | 철분제 | = Iron
+아연 | = Zinc
+엽산 | = Folic Acid
+비타민 B 컴플렉스 | 비타민 B군
+비타민 B1 | = Vitamin B1
+비타민 B6 | = Vitamin B6
+비타민 B12 | = Vitamin B12
+비타민 E | = Vitamin E
+비타민 A | = Vitamin A
+비타민 K2 | = Vitamin K2
+비타민 D3 | = Vitamin D3
+콜라겐 | = Collagen
+저분자 콜라겐 | = Hydrolyzed Collagen
+글루코사민 | = Glucosamine
+콘드로이친
+MSM | 식이유황
+보스웰리아
+초록입홍합
+쏘팔메토
+코엔자임Q10 | 코큐텐 | = Coenzyme Q10
+프로폴리스
+크릴오일 | = Krill Oil
+알티지 오메가3
+식물성 오메가3 | = Vegan Omega-3
+단백질 보충제 | 프로틴 | = Protein Powder
+유청 단백질 | 웨이 프로틴 | = Whey Protein
+식물성 단백질
+크레아틴 | = Creatine
+BCAA | = BCAA
+아르기닌
+글루타민 | = Glutamine
+타우린
+가르시니아
+녹차추출물 | = Green Tea Extract
+카테킨
+알로에
+스피루리나
+클로렐라
+인삼 | = Ginseng
+흑마늘
+녹용
+강황 | = Turmeric
+커큐민 | = Curcumin
+생강 | = Ginger
+매스틱
+브로멜라인
+소화효소 | = Digestive Enzymes
+식이섬유
+차전자피 | = Psyllium Husk
+프리바이오틱스
+신바이오틱스
+포스트바이오틱스
+락토페린
+초유
+히알루론산 | = Hyaluronic Acid
+엘라스틴
+세라마이드
+글루타치온
+비오틴
+맥주효모
+판토텐산
+나이아신 | = Niacin
+이노시톨
+레시틴
+포스파티딜세린
+은행잎 추출물
+L-테아닌 | 테아닌 | = L-Theanine
+가바 | = GABA
+유단백가수분해물
+아쉬와간다 | = Ashwagandha
+로디올라 | = Rhodiola
+마카
+셀레늄
+크롬
+요오드
+칼륨 | = Potassium
+구리
+망간
+감마리놀렌산
+달맞이꽃 종자유 | = Evening Primrose Oil
+아마씨유 | = Flaxseed Oil
+햄프씨드 오일
+MCT 오일
+스쿠알렌
+아스타잔틴
+라이코펜
+빌베리
+블루베리
+크랜베리
+엘더베리
+에키네시아 | = Echinacea
+퀘르세틴 | = Quercetin
+레스베라트롤 | = Resveratrol
+NMN
+알파리포산
+L-카르니틴 | 카르니틴
+아세틸 L-카르니틴 | = Acetyl-L-Carnitine
+시트룰린
+베타알라닌 | = Beta-Alanine
+프리워크아웃 | 운동전 부스터 | = Pre-Workout
+전해질 | = Electrolytes
+대두 이소플라본
+석류 추출물
+회화나무 열매 추출물
+프랑스해안송껍질추출물
+포도씨 추출물
+나토키나제
+홍국
+폴리코사놀
+바나바잎 추출물
+여주
+돼지감자
+베르베린 | = Berberine
+키토산
+공액리놀레산
+시서스
+미역 등 복합추출물
+상황버섯
+차가버섯
+영지버섯
+동충하초
+노루궁뎅이버섯 | = Lion's Mane
+베타글루칸
+로열젤리
+매실
+헛개나무 열매 추출물 | 헛개
+오미자
+산수유
+흑염소 진액
+양배추즙
+녹즙
+임산부 종합비타민
+어린이 종합비타민
+남성 종합비타민 | = Men's Multivitamin
+여성 종합비타민 | = Women's Multivitamin
+시니어 종합비타민 | = Senior Multivitamin
+멀티미네랄
+비타민 D 드롭 | 비타민 D 액상
+질 유산균
+구강 유산균
+모유 유산균
+L-글루타민 | = L-Glutamine
+NAC | = NAC
+5-HTP | = 5-HTP
+비타민 D3 + K2 | = Vitamin D3 + K2
+마그네슘 글리시네이트 | = Magnesium Glycinate
+산화마그네슘 | = Magnesium Oxide
+구연산칼슘 | = Calcium Citrate
+탄산칼슘 | = Calcium Carbonate
+킬레이트 철분
+메틸폴레이트 | 활성엽산 | = Methylfolate
+메틸코발라민 | = Methylcobalamin
+그린커피빈
+카페인
+곡물 효소
