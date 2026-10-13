@@ -290,57 +290,92 @@ From the [App Review Guidelines](https://developer.apple.com/app-store/review/gu
 
 ## 7. The screenshots
 
-The set is outside the repository, in the maintainer's screenshot folder `ui-shots/store/`: one HTML file, and for each of `en`, `zh-Hans`, `ja`, `es`, `de`, and `ko` six frames at 1206 × 2622 pixels and one `overview.png`. es-MX uses the `es` frames, and en-GB uses the `en` frames.
+The set is outside the repository, in the maintainer's screenshot folder `ui-shots/store-final/`: one HTML file (`index.html`), the simulator captures (`_cap/`), and for each of `en`, `zh-Hans`, `ja`, `es`, `de`, and `ko` six frames and one `overview.png` for each platform. es-MX uses the `es` frames, and en-GB uses the `en` frames. The first set, `ui-shots/store/`, drew the UI in HTML. This set replaces it.
 
-### 7.1 The order, by acquisition value
+Version 1.0 ships without the Watch app, so the set has no Watch screenshots, and no frame shows or names the Watch.
+
+### 7.1 What Apple allows
+
+Guideline 2.3.3: "Screenshots should show the app in use, and not merely the title art, login page, or splash screen. They may also include text and image overlays (e.g. to demonstrate input mechanisms, such as an animated touch point or Apple Pencil) and show extended functionality on device, such as Touch Bar." Guideline 2.3.7 forbids prices and text that is not about the app in a screenshot. Guideline 2.3.10 forbids imagery of other platforms. Source: [App Review Guidelines](https://developer.apple.com/app-store/review/guidelines/), read on 2026-10-13.
+
+So a caption, a background, and an enlarged or cropped part of the real UI are allowed, when the UI is the app as it is. The app UI in this set comes from simulator captures of `main`. The reminder of frame 2 is drawn (section 7.4).
+
+### 7.2 Sizes
+
+Source: [screenshot specifications](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications), read on 2026-10-13.
+
+| Platform | Size in pixels | Rule on the page |
+|---|---|---|
+| iPhone | 1206 × 2622, portrait | "At least one screenshot for iPhone with Dynamic Island (medium display)". The large display (1260 × 2736, 1290 × 2796, or 1320 × 2868) is optional and gets a scaled copy |
+| iPad | 2064 × 2752, portrait | The 13-inch display is "Required if app runs on iPad" |
+
+The page also says "Required for Apple Watch apps" for the Watch sizes, and "You must use the same screenshot size for Apple Watch consistently across all localizations for the app." That matters when the Watch app ships.
+
+### 7.3 The order, by acquisition value
 
 A search result shows the name, the subtitle, and the first three portrait frames before any tap. So frames 1 to 3 must win the tap, and frames 4 to 6 serve the person who already opened the page.
 
-| # | Message | Part of the UI | Reason for the place |
+| # | Caption (en) | Part of the UI | Reason for the place |
 |---|---|---|---|
-| 1 | Did I take it? One look. | The Today list | The name beside it already says "reminder". So the first frame gives the reason to pick this one: the doubt that every person in this search knows. Four of six competitors open with "never miss", so this line is also the one that differs |
-| 2 | Reminders at your times | The reminder with its "Taken" action | The searcher typed "reminder". The second frame proves that the app does the job that they searched for. It also shows the least work: a record with the app closed |
+| 1 | Did I take it? One look. | The Today list, with photos and filled circles | The name beside it already says "reminder". So the first frame gives the reason to pick this one: the doubt that every person in this search knows. Four of six competitors open with "never miss", so this line is also the one that differs |
+| 2 | Reminders at your times | One reminder as a notification card, and the Today widget under it | The searcher typed "reminder". The second frame proves that the app does the job that they searched for |
 | 3 | One tap. Recorded. | One row before and after the tap | Effort is the main reason that people leave a tracker (`evidence.md`, pain points). This frame ends the group that shows in search: see, get reminded, record |
-| 4 | See what you took | The History graph | Proof that the record lasts. It matters after the first three, because it is a benefit of week two, not of day one |
-| 5 | Your day at a glance | The Today widget | A second way to take the one look. It is a feature, so it comes after the reasons |
-| 6 | No account. No ads. | The records of the last 7 days | Trust closes the page. It removes the last doubt before the download. It does not start the page, because no person searches for it |
+| 4 | See what you took | The History graph and the last 7 days | Proof that the record lasts. It is a benefit of week two, not of day one |
+| 5 | Know it by its photo | My Items, with three photos | A feature that the other sets do not show. It comes after the reasons, because no person searches for it |
+| 6 | No account. No ads. | The detail of one item | Trust closes the page. It removes the last doubt before the download |
 
-Not in the set: "Scan Label" and My Items with photos. No capture of them exists, and a frame that is drawn with no capture to compare cannot be checked.
+Changes from the first set:
 
-### 7.2 The design
+- The frame "Your day at a glance" (the Today widget) left the set. The maintainer then asked for the widget as a second card in frame 2. It is drawn, because no capture of a Home Screen widget was possible in the simulator session.
+- The frame "Know it by its photo" is new. `main` now has item photos, and the sample data has three.
+- The second line of frame 2 was "Tap Taken right on the reminder." It is now "They show what to take." The frame shows a standard reminder with no action button, so the old line named a control that the frame does not show.
 
-- Each frame shows one part of the UI with a caption, as the maintainer asked. No frame is a full screen in a device.
-- The parts are HTML and CSS, at 3 pixels for each point. Sizes, colors, icons, and texts come from the SwiftUI views (`TodayRow`, `TodayWidget`, `CapsuleMark`, `WeekStrip`, `HistoryGraphView`), from `App/Icons.xcassets`, from the String Catalogs, and from colors sampled in the captures.
-- Each part was put beside the real capture at the same size, in English, Simplified Chinese, and German, and corrected until text widths and positions agreed within about 3 pixels of 1206.
-- Frames 1 and 6 put the part on the gray of the app (`#F2F2F7`). Frames 2 to 5 put one part on the page background with a soft shadow.
-- Frame 2 shows the banner at 145%, and it runs off the right edge, where it holds only the time. The other parts are at 100% to 110%, because a row is as wide as the screen. A larger row cuts its own text.
-- Frame 3 shows the same row before and after the tap, with a touch point on the circle. Guideline 2.3.3 allows an overlay that shows an input.
-- Captions: the system font in bold, 106 to 144 pixels. The second half of captions 1 and 3 is in the app pink.
+The captions in the six languages are in `index.html` of the set. The new lines:
 
-### 7.3 Item names
+| Locale | Frame 2, second line | Frame 5 | Frame 5, second line |
+|---|---|---|---|
+| en | They show what to take. | Know it by its photo | Add a photo of your bottle. |
+| zh-Hans | 提醒里写着该吃什么。 | 看照片，就认得 | 给每一项加一张瓶子的照片。 |
+| ja | 何を飲むかも通知に表示。 | 写真で見分ける | ボトルの写真を追加できます。 |
+| es | El aviso dice qué tomar. | Reconócelo por su foto | Añade una foto del envase. |
+| de | Die Erinnerung nennt, was dran ist. | Am Foto erkennen | Füge ein Foto der Dose hinzu. |
+| ko | 무엇을 먹을지 알림에 표시돼요. | 사진으로 바로 구분 | 약병 사진을 추가하세요. |
 
-The frames use names that people of each market know. The amounts are text that a user types.
+No native speaker read these lines. The iPad set says "iPad" where the iPhone set says "iPhone".
 
-| Locale | Items | Reason |
-|---|---|---|
-| en | Levothyroxine, Vitamin D, Omega-3, Magnesium, Atorvastatin | The sample data of the app. Both medicines are among the most prescribed in the US |
-| zh-Hans | 氨氯地平, 维生素 D, 鱼油, 益生菌, 阿托伐他汀 | A common blood pressure medicine and a common statin, with the supplements that sell most |
-| ja | アムロジピン, ビタミンD, オメガ3, 亜鉛, ロスバスタチン | The same choice, with the statin that is most common in Japan |
-| ko | 암로디핀, 비타민 D, 오메가3, 유산균, 아토르바스타틴 | Probiotics (유산균) are the leading supplement in Korea |
-| es | Levotiroxina, Vitamina D, Omega-3, Magnesio, Atorvastatina | The generic names in Spanish |
-| de | L-Thyroxin, Vitamin D, Omega-3, Magnesium, Atorvastatin | "L-Thyroxin" is the name in German use |
+### 7.4 The design
 
-These choices are from general knowledge, not from a sales source. No brand name is in a frame.
+The references are six sets from https://www.appshot.gallery/ outside the medication category: Atoms, Amie, Dime, Haptic, Superlist, and WaterDuo.
 
-### 7.4 Differences from the real app that remain
+| Set | What this set takes from it |
+|---|---|
+| Atoms | An off-white page, a short caption in very large type, and one part of the UI that leaves the device |
+| Amie | No device frame. Cropped parts of the real UI on a light page |
+| Dime | One idea for each frame, and much empty space |
+| Haptic | A real card that lifts off the screen with a soft shadow |
+| Superlist | One accent color on one phrase of the caption |
+| WaterDuo | One reminder as the proof of a reminder app |
 
-Apple can reject a screenshot that does not show the app as it is. A capture from one simulator session must replace or confirm these frames before the submission.
+- Each frame has one caption of two lines, 108 to 146 pixels high on the iPhone, and at most one gray second line. The second half of captions 1 and 3 is in the app pink.
+- One background for the whole set: white that turns to a pale pink at the bottom.
+- Frames 1, 4, 5, and 6 show the whole screen of one capture in the upper part of a device shape: an iPhone with a thin dark edge and the Dynamic Island, at 72% of the frame width, or an iPad with a thin even edge, at 90%. The device has the same size and place in each frame, and the bottom edge of the frame cuts it. The maintainer asked for this on 2026-10-13.
+- Frame 2 shows one reminder as a card at 86% of the frame width, and the medium Today widget under it at the same width, with no Lock Screen, no wallpaper, and no clock. The maintainer asked for this. Both cards are drawn in HTML with the measures of the site component (`site/mock.py`), the app icon file, the title of the app's reminder, and the word of iOS for "now" in each language, as real Lock Screen captures showed it.
+- Frame 3 shows the same row from two captures: one from a launch with no records, and one with the morning recorded. A touch point marks the circle. Guideline 2.3.3 allows an overlay that shows an input.
 
-- The reminder banner and its action are system views. The words of the system over the title ("TIME SENSITIVE") and at the right ("now") are known only in English. The other five languages use words that nobody confirmed.
-- The "Taken" action is glass in iOS, and it takes its tone from the wallpaper. The frame shows it on a light page.
-- Corners are plain round corners. iOS draws continuous corners.
-- Frame 3 shows a record time of one minute after the planned time. It is an example.
-- The widget and the graph were compared only in English and German.
+### 7.5 How the captures were made
+
+- A Debug build of `main` in simulators that the task made: iPhone 18 Pro (1206 × 2622) and iPad Pro 13-inch (M5) (2064 × 2752), iOS 27.0.
+- The system language of the simulator is the language of the set. The launch arguments are `-MaruSampleData YES -MaruSampleRecords YES`. The item names are the sample data of each language (D070).
+- The status bar override sets the clock to 9:41, full battery, and full signal.
+- `ui-shots/store-final/iap/tips-review.png` is the picture for the review of the three tips: Settings at the "Support Maru" section, in English, at 1320 × 2868 pixels, from `main` with `Config/Maru.storekit` active through a test host that was not committed.
+
+### 7.6 Differences from the real app that remain
+
+- The reminder and the widget of frame 2 are drawn. Nobody compared the widget with a capture in each language. The reminder is white on the light background. iOS draws a reminder as glass over the wallpaper.
+- The iPad frame 3 shows the row at 200% without its empty middle, as the row looks in a narrow window. The pieces are from the captures.
+- The dark device edge and the Dynamic Island are drawn.
+- Frame 3 pairs two captures. It does not show one tap.
+- On the iPad the content fills the window, so the text of the UI is small in a frame.
 
 ## 8. Category, age rating, and review notes
 
@@ -471,7 +506,7 @@ No free source gave a search volume without an account.
 - The reading of the screenshot sets is by one model from contact sheets. Type sizes are estimates, not measurements.
 - Not looked at: screenshots.pro, appscreens, theapplaunchpad, and X. Xiaohongshu: one result page only.
 - No search volume number from any source (section 10).
-- The frames are HTML copies of the UI, not captures (section 7.4).
+- The frames use simulator captures. Section 7.6 has the differences from a real iPhone that remain.
 - Round Health, Dosecast, and Pillo were not found by name.
 - Not verified: that search reads screenshot text, that search reads every supported language of a storefront, the keyword limit for Chinese, Japanese, and Korean, the two-character rule for those languages, and how search treats a hyphen.
 - The ASO sources are vendor blogs with tools to sell.

@@ -49,8 +49,8 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 ## 5. Store page
 
 - Name, subtitle, keywords, and description: the files in `metadata/`, in the layout of `asc metadata`. Six languages, es-MX, and en-GB. The reasons are in `docs/research/2026-10-13-aso-and-store-page.md`. The text is in App Store Connect (section 7).
-- Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. Section 7 of the same note has the six frames and their order. The frames are HTML copies of the UI, and captures must confirm them before the submission.
-- Screenshots for the 13-inch iPad in each language (D072). App Store Connect requires them for an app that supports the iPad. Both sets are uploaded (section 7).
+- Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. Section 7 of the same note has the six frames and their order. The frames use simulator captures of `main`, and they are in `ui-shots/store-final/iphone/`, outside the repository.
+- Screenshots for the 13-inch iPad in each language (D072), at 2064 × 2752 pixels. App Store Connect requires them for an app that supports the iPad. Both sets are uploaded (section 7).
 - A privacy policy page and a support page on the landing page domain. The pages are live.
 - Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, linked to the user (D069), and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location. Published (section 7).
 - Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50). Drafts are in section 8 of the note. The secondary category is Medical. Set (section 7).
