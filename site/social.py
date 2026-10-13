@@ -149,6 +149,7 @@ DARK_TOKENS = """
     --app-label: #FFFFFF;
     --app-label-2: #8D8D93;
     --app-widget: #1C1C1E;
+    --app-fill: rgba(120, 120, 128, 0.36);
     --app-cap-off: #2C2C2E;
     --app-cap-line: #48484A;
     --app-banner: rgba(255, 255, 255, 0.14);

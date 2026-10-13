@@ -32,6 +32,7 @@
   --app-label: #000000;
   --app-label-2: #8A8A8E;
   --app-widget: #FFFFFF;
+  --app-fill: rgba(120, 120, 128, 0.2);
   --app-cap-off: #E5E5EA;
   --app-cap-line: #C7C7CC;
   --app-cap-shine: rgba(255, 255, 255, 0.32);
@@ -469,11 +470,15 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   background: var(--wallpaper); box-shadow: var(--hairline);
 }
 /* The medium Today widget (TodayWidget, CapsuleMark). */
-.m-widget { width: calc(349.33 * var(--pt)); height: calc(164 * var(--pt)); padding: calc(17.67 * var(--pt)); background: var(--app-widget); border-radius: calc(28 * var(--pt)); box-shadow: var(--shadow-float); }
-.m-widget-top { display: flex; justify-content: space-between; gap: calc(8 * var(--pt)); font-size: calc(17 * var(--pt)); line-height: calc(22 * var(--pt)); }
+.m-widget { width: calc(349.33 * var(--pt)); height: calc(164 * var(--pt)); padding: calc(17.67 * var(--pt)); display: flex; flex-direction: column; justify-content: space-between; background: var(--app-widget); border-radius: calc(28 * var(--pt)); box-shadow: var(--shadow-float); }
+.m-widget-top { display: flex; justify-content: space-between; align-items: center; gap: calc(8 * var(--pt)); font-size: calc(17 * var(--pt)); line-height: calc(22 * var(--pt)); }
+/* The progress bar of the day: a track of 96 x 8 pt in the system fill, and the tint for the share taken. No border and no text. */
+.m-bar { flex: none; width: calc(96 * var(--pt)); height: calc(8 * var(--pt)); border-radius: var(--radius-full); background: var(--app-fill); overflow: hidden; }
+.m-bar i { display: block; height: 100%; min-width: calc(8 * var(--pt)); border-radius: var(--radius-full); background: var(--app-tint); }
 .m-widget-top b, .m-col b { font-weight: var(--fw-semibold); }
-.m-widget-top b + b, .m-time { color: var(--app-label-2); }
-.m-cols { display: flex; gap: calc(8 * var(--pt)); margin-top: calc(7.33 * var(--pt)); }
+.m-time { color: var(--app-label-2); }
+/* The columns end at the bottom edge, so the space under the capsules equals the space over the title. */
+.m-cols { display: flex; gap: calc(8 * var(--pt)); }
 .m-col { flex: 1; min-width: 0; display: grid; align-content: start; }
 .m-col b { font-size: calc(15 * var(--pt)); line-height: calc(20 * var(--pt)); white-space: nowrap; }
 .m-col b.now { color: var(--app-tint); }
