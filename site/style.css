@@ -43,8 +43,14 @@
   --dur-fast: 150ms;
   --dur-base: 200ms;
   --dur-slow: 280ms;
-  --dur-enter: 300ms;
-  --stagger: 70ms;
+  --dur-fade: 150ms;
+  --dur-enter: 420ms;
+  --dur-bar: 480ms;
+  --dur-phone: 520ms;
+  --stagger: 60ms;
+  /* The page entrance starts this long after the top bar starts. The content of the bar fades in at the end of its fall. */
+  --delay-page: 80ms;
+  --delay-bar-content: 320ms;
 
   /* Easing. No rule uses "ease" or "ease-in-out". */
   --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
@@ -53,9 +59,14 @@
   --ease-in-out: cubic-bezier(0.66, 0, 0.34, 1);
 
   /* Motion distances */
-  --shift-enter: 6px;
+  --shift-enter: 14px;
+  --shift-phone: 24px;
+  --scale-phone: 0.97;
+  /* The phone is the largest picture of the page. It is in the first paint, dim, and does not start from nothing. */
+  --fade-phone: 0.3;
   --shift-lift: 4px;
-  --blur-enter: 2px;
+  --blur-enter: 4px;
+  --blur-lift: 2px;
   --press: 0.98;
   --dim-hover: 0.82;
   --dim-press: 0.68;
@@ -122,7 +133,6 @@
   --menu-width: 11rem;
   --nav-h: 56px;
   --bar-cta-h: 36px;
-  --bar-drop: 8px;
   --badge-page: 56px;
   --brand-icon: 28px;
   --device-w: 14.5rem;
@@ -217,7 +227,7 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   content: attr(data-tip); position: absolute; top: calc(100% + var(--space-1)); left: 50%; z-index: 30;
   padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm);
   background: var(--tip-bg); color: var(--tip-text); font-size: var(--fs-xs); font-weight: var(--fw-medium); line-height: var(--lh-tight); white-space: nowrap;
-  opacity: 0; pointer-events: none; filter: blur(var(--blur-enter));
+  opacity: 0; pointer-events: none; filter: blur(var(--blur-lift));
   transform: translate(-50%, var(--shift-lift));
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out);
 }
@@ -227,20 +237,33 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .icon-btn[data-tip]:focus-visible::after { opacity: 1; filter: blur(0); transform: translate(-50%, 0); }
 .lang-menu[open] .icon-btn[data-tip]::after { opacity: 0; }
 
-/* Entrance. Content is visible with no script. A group with .is-in plays the entrance of its .enter parts one time.
+/* Entrance on scroll. Content is visible with no script. A group with .is-in plays the entrance of its .enter parts one time.
    The class "motion" on <html> says that motion is on. */
+/* The blur clears at 60% of the time, before the movement ends, so the text is sharp when it comes to rest. */
 @keyframes enter {
   from { opacity: 0; transform: translateY(var(--shift-enter)); filter: blur(var(--blur-enter)); }
+  60% { filter: none; }
 }
 @keyframes enter-cutout {
   from { opacity: 0; transform: translateY(var(--shift-enter)); filter: var(--drop-float) blur(var(--blur-enter)); }
-  to { filter: var(--drop-float) blur(0); }
+  60%, to { filter: var(--drop-float) blur(0); }
 }
-@keyframes drop {
-  from { opacity: 0; transform: translateY(calc(-1 * var(--bar-drop))); }
+/* The page entrance: one short moment when the page loads. The bar falls in from above the top edge, and its content
+   fades in at the end. The hero parts rise in order, and the phone rises and grows to its size and settles last. */
+@keyframes bar-in {
+  from { transform: translateY(-100%); }
 }
+@keyframes fade {
+  from { opacity: 0; }
+}
+@keyframes phone-in {
+  from { opacity: var(--fade-phone); transform: translateY(var(--shift-phone)) scale(var(--scale-phone)); filter: blur(var(--blur-enter)); }
+  60% { filter: none; }
+}
+.motion .load { animation: enter var(--dur-enter) var(--ease-smooth) both; animation-delay: calc(var(--delay-page) + var(--order, 0) * var(--stagger)); }
+.motion .load-phone { animation: phone-in var(--dur-phone) var(--ease-out) both; animation-delay: calc(var(--delay-page) + var(--stagger)); }
 @keyframes lift {
-  from { opacity: 0; transform: translateY(var(--shift-lift)); filter: blur(var(--blur-enter)); }
+  from { opacity: 0; transform: translateY(var(--shift-lift)); filter: blur(var(--blur-lift)); }
 }
 .motion .is-in .enter { animation: enter var(--dur-enter) var(--ease-smooth) both; animation-delay: calc(var(--order, 0) * var(--stagger)); }
 .motion .is-in .duo .enter { animation-name: enter-cutout; }
@@ -257,7 +280,8 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   display: flex; align-items: center; gap: var(--space-6);
   background: var(--bar-bg); color: var(--bar-text); border-radius: 0 0 var(--radius-bar) var(--radius-bar); box-shadow: var(--bar-ring);
 }
-.motion .nav-inner { animation: drop var(--dur-enter) var(--ease-out) both; }
+.motion .nav-inner { animation: bar-in var(--dur-bar) var(--ease-out) both; }
+.motion .nav-inner > * { animation: fade var(--dur-fade) var(--ease-smooth) var(--delay-bar-content) both; }
 /* The two corners where the island meets the top edge curve outward. */
 .nav-inner::before, .nav-inner::after {
   content: ""; position: absolute; top: 0; width: var(--radius-bar); height: var(--radius-bar);

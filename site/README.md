@@ -48,8 +48,10 @@ Every icon is from [Hugeicons](https://hugeicons.com), the free stroke set, pack
 `style.css` starts with one block of tokens: color, radius, duration, easing, shadow, icon, type, and space. A rule below that block uses a token and no raw value.
 
 - A transition or an animation uses one of the four easing tokens. Do not use `ease` or `ease-in-out`.
-- An entrance moves 6 px, clears a blur of 2 px, and fades in, in 300 ms. A part of a block starts 70 ms after the part before it.
-- Content is visible with no script. `site.js` adds the class `is-in` to a block when it enters the view, and the entrance plays one time. `<html>` gets the class `motion` only when the visitor did not ask for reduced motion.
+- The page has one entrance when it loads, about 660 ms long. The top bar falls in from above the top edge (480 ms), and its content fades in at the end. The hero parts rise 14 px in order, 60 ms apart (420 ms each), and the phone rises 24 px and grows from 97% (520 ms). A text page has the same bar and a shorter entrance of its title and its body.
+- The phone is in the first paint at 30% opacity, so the largest picture of the page does not wait for the entrance.
+- A block enters one time when it scrolls into view, with the same rise, blur, and duration as the hero parts. The blur clears at 60% of the time, so text is sharp when it comes to rest.
+- Content is visible with no script. `<html>` gets the class `motion` only when the visitor did not ask for reduced motion. `site.js` adds the class `is-in` to a block when it enters the view. A page from the back and forward cache shows at rest.
 - A press scales a control to 0.98. The link of the App Store badge changes only its opacity, because the badge must not move.
 
 ## Pictures

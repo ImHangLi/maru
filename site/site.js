@@ -12,6 +12,11 @@
     document.querySelectorAll("[data-reveal]").forEach(function (el) { io.observe(el); });
   }
 
+  // A page from the back and forward cache shows at rest, with no entrance.
+  window.addEventListener("pageshow", function (event) {
+    if (event.persisted) document.documentElement.classList.remove("motion");
+  });
+
   // Language. The page never redirects. A first visit can show one quiet hint for the language of the browser.
   // A click on a language, or on the close button, is the choice of the visitor. After that, no hint shows.
   var KEY = "maru-lang";

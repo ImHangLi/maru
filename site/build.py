@@ -124,9 +124,11 @@ def badge(code, height):
 
 
 def phrases(text):
-    """A "|" in a headline marks a place where the line can break. Each part stays in one piece."""
+    """A "|" in a headline marks a place where the line can break. Each part stays in one piece,
+    and enters as one unit when the page loads."""
     parts = text.split("|")
-    return "".join(f'<span class="nb">{e(part.strip())}</span>{" " if part.endswith(" ") else ""}' for part in parts)
+    return "".join(f'<span class="nb load d{i + 1}">{e(part.strip())}</span>{" " if part.endswith(" ") else ""}'
+                   for i, part in enumerate(parts))
 
 
 def layout(code, page, title, desc, main, head=""):
@@ -207,14 +209,14 @@ def home(code):
     trust = f'<li><a href="{GITHUB}">{icon("github")}{e(first)}</a></li>' + "".join(f"<li>{e(t)}</li>" for t in rest)
     main = f"""<main id="main">
 <section class="hero">
-<div class="wrap hero-grid is-in">
+<div class="wrap hero-grid">
 <div class="hero-copy">
-<img class="hero-icon enter" src="/icon.png" alt="" width="72" height="72">
-<h1 class="enter d1">{phrases(h["h1"])}</h1>
-<p class="lede enter d2">{e(h["lede"])}</p>
-<div class="cta enter d3">{badge(code, PAGE_BADGE)}</div>
+<img class="hero-icon load" src="/icon.png" alt="" width="72" height="72">
+<h1>{phrases(h["h1"])}</h1>
+<p class="lede load d3">{e(h["lede"])}</p>
+<div class="cta load d4">{badge(code, PAGE_BADGE)}</div>
 </div>
-<div class="hero-stage enter d2">{device(code, "today", eager=True)}</div>
+<div class="hero-stage load-phone">{device(code, "today", eager=True)}</div>
 </div>
 </section>
 <div class="wrap features">
@@ -242,20 +244,22 @@ def faq(code):
         {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub(r"<[^>]+>", "", a)}}
         for q, a in items]}
     head = f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>\n'
-    main = f'<main id="main" class="prose">\n<h1>{e(s["h1"])}</h1>\n{body}</main>'
+    main = f'<main id="main" class="prose">\n<h1 class="load">{e(s["h1"])}</h1>\n<div class="load d1">\n{body}</div>\n</main>'
     return layout(code, "faq.html", s["title"], s["desc"], main, head)
 
 
 def support(code):
     s = STRINGS[code]["support"]
     main = f"""<main id="main" class="prose">
-<h1>{e(s["h1"])}</h1>
+<h1 class="load">{e(s["h1"])}</h1>
+<div class="load d1">
 <p class="lede">{e(s["lede"])}</p>
 <div class="cards">
 <article class="card"><h2>{e(s["email"])}</h2><p><a href="mailto:{EMAIL}">{EMAIL}</a></p></article>
 <article class="card"><h2>{e(s["form"])}</h2><p><a href="{FEEDBACK_FORM}">{e(s["form_link"])}</a></p><p class="note">{e(s["form_note"])}</p></article>
 </div>
 <p>{s["note"].format(**links(code))}</p>
+</div>
 </main>"""
     return layout(code, "support.html", s["title"], s["desc"], main)
 
@@ -304,10 +308,12 @@ def privacy(code):
     summary = "".join(f"<li>{e(line)}</li>" for line in s["summary"])
     binding = f'<p class="note">{e(s["binding"])}</p>\n' if s["binding"] else ""
     main = f"""<main id="main" class="prose">
-<h1>{e(s["h1"])}</h1>
+<h1 class="load">{e(s["h1"])}</h1>
+<div class="load d1">
 <section class="card summary" aria-labelledby="summary-title"><h2 id="summary-title">{e(s["summary_title"])}</h2><ul>{summary}</ul></section>
 {binding}<div class="policy" lang="en">
 {policy(code)}
+</div>
 </div>
 </main>"""
     return layout(code, "privacy.html", s["title"], s["desc"], main)
