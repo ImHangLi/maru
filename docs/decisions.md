@@ -145,7 +145,7 @@ Owner decisions, with two agent recommendations that the owner asked for.
 - Settings entry (agent recommendation, the owner asked): a gear button at the top left of both tabs that opens a sheet. Not a third tab. Reasons: settings are rare, a tab is for a place the user goes every day, Apple's own apps (Health, Fitness, App Store) put the same kind of entry in a top corner, and two tabs keep the bar calm. A reminder problem such as notifications turned off shows on Today itself (spec §2.2), so the user does not need to find settings to learn about it. The add button sits at the top right of both tabs. This keeps the two tabs of spec §1.
 - New optional setting: the tab bar shows icons with no words. Off by default. The names stay for VoiceOver.
 
-## D021 · 2026-10-11 · Direction after Apple Health Medications, no app accent, item colors, header wash (wash removed by D024, no accent setting replaced by D025, one follow-up replaced by D039)
+## D021 · 2026-10-11 · Direction after Apple Health Medications, no app accent, item colors, header wash (wash removed by D024, no accent setting replaced by D025, one follow-up replaced by D039, "Record All" removed by D060)
 
 Owner decision, after the hands-on test in `docs/research/2026-10-11-apple-health-medications.md`. The owner accepted the recommendation: continue milestone A with a narrower positioning. The owner set three requirements for every flow: not tedious, intuitive, and simple. The owner asked for the Apple Health features that Maru should have, each in a simpler flow. The owner left the wash color and the details to the agent and went offline, so the agent made the choices below.
 
@@ -967,7 +967,7 @@ Agent detail:
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in dark mode and at the largest text sizes, the push from the graph, the alerts from a log, and VoiceOver need a check on a real iPhone.
 
-## D057 · 2026-10-12 · Today never folds, and the item detail shows the week strip
+## D057 · 2026-10-12 · Today never folds, and the item detail shows the week strip ("Record All" removed by D060)
 
 Maintainer decision on 2026-10-12, after use on the device.
 
@@ -1036,3 +1036,13 @@ The maintainer asked for the six languages of D051. English stays the source. Th
 - Review: `docs/localization-review.md` lists the 25 riskiest strings in each language for a native speaker.
 
 Not verified: no build of the app ran on this Mac. CI builds the app. Nobody saw the text on a display. Needs a check on a real iPhone in each language: the longest German and Spanish text in buttons, rows, the widgets, and the notification, the Japanese and Korean line breaks, and the camera prompt.
+
+## D060 · 2026-10-13 · No "Record All" on Today
+
+Maintainer decision on 2026-10-13, after use on the device.
+
+- A part of the day on Today has no "Record All" button. The user records each row on its own. This replaces the "Record All" rule of D021 and D057.
+- The model operation, the header button, its VoiceOver label, and the two catalog keys are gone. `TodaySnapshot.Group.openEntries` is gone, because only the button used it.
+- A record is still one event per row, so the store and the record rules do not change.
+
+Not verified: no build of the app on this Mac. CI builds the app.

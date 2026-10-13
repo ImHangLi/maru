@@ -6462,41 +6462,6 @@
         }
       }
     },
-    "Record All" : {
-      "comment" : "Today: the button in the header of a part of the day that records every open item of that part as taken.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle erfassen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Registrar todo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "すべて記録"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모두 기록"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "全部标为已服"
-          }
-        }
-      }
-    },
     "Record a dose of %@" : {
       "comment" : "VoiceOver label of the record button of an as-needed item. The placeholder is the item name.",
       "localizations" : {
@@ -6528,41 +6493,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "记录一次 %@"
-          }
-        }
-      }
-    },
-    "Record all %lld in %@ as taken" : {
-      "comment" : "VoiceOver label of the Record All button. The first placeholder is a count, the second is a part of the day such as Morning.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle %1$lld in %2$@ als eingenommen erfassen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Registrar como tomados los %1$lld de %2$@"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%2$@の%1$lld件をすべて服用として記録"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%2$@의 %1$lld개를 모두 복용함으로 기록"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "将%2$@的全部 %1$lld 项记录为已服用"
           }
         }
       }

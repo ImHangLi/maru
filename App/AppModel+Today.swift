@@ -75,13 +75,6 @@ extension AppModel {
         commit([event(for: entry, .taken)])
     }
 
-    /// "Record All" of a part of the day: every open row of the part as taken, in one transaction (D021).
-    func recordAll(_ group: TodaySnapshot.Group) {
-        let open = group.openEntries.filter { today.pending[$0.id] == nil }
-        guard !open.isEmpty else { return }
-        commit(open.map { event(for: $0, .taken) })
-    }
-
     func undo(_ entry: TodaySnapshot.Entry) {
         commit([event(for: entry, .undo)])
     }
