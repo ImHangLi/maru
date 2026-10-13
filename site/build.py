@@ -147,11 +147,13 @@ def download(code):
             f'<ul class="get-devices" aria-label="{e(s["devices"])}">{devices}</ul></div>')
 
 
-def phrases(text):
-    """A "|" in a headline marks a place where the line can break. Each part stays in one piece,
-    and enters as one unit when the page loads."""
+def phrases(text, load=True):
+    """A "|" in a headline marks a place where the line can break. Each part stays in one piece.
+    In the hero headline, each part also enters as one unit when the page loads."""
     parts = text.split("|")
-    return "".join(f'<span class="nb load d{i}">{e(part.strip())}</span>{" " if part.endswith(" ") else ""}'
+    if len(parts) == 1 and not load:
+        return e(text)
+    return "".join(f'<span class="nb{f" load d{i}" if load else ""}">{e(part.strip())}</span>{" " if part.endswith(" ") else ""}'
                    for i, part in enumerate(parts))
 
 
@@ -230,7 +232,7 @@ def home(code):
     h = s["home"]
     blocks = "".join(
         f'<article class="feature{" flip" if i % 2 else ""}" data-reveal><div class="feature-copy">'
-        f'<h2 class="enter">{e(b["title"])}</h2><p class="lede enter d1">{e(b["text"])}</p></div>'
+        f'<h2 class="enter">{phrases(b["title"], load=False)}</h2><p class="lede enter d1">{e(b["text"])}</p></div>'
         f'<div class="feature-stage{"" if b["shot"] == "duo" else " enter d2"}">{device(code, b["shot"])}</div></article>\n'
         for i, b in enumerate(s["blocks"]))
     store_link = f'<a href="{e(STORE_URL)}">{e(s["store"]["badge_alt"])}</a>' if RELEASED else ""
