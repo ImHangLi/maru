@@ -22,16 +22,27 @@ Maru asks iOS to encrypt the database file. After a restart of your device, noth
 
 Some versions of Maru can send usage statistics to PostHog. A version that cannot has no switch and sends nothing. This section applies to a version that can.
 
-- Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".
-- Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on in the notice or in Settings.
+- Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows no notice and no question about them. The switch "Share Usage Statistics" in Settings turns them off.
+- Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on. Maru asks once, after you save an item, and Settings has the same switch.
 - How Maru picks the rule: it uses the region setting of your device, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or a device with another region setting, gets the rule of that setting.
-- What Maru sends: only these events and fields.
-  - `setup_step`: that an item was saved.
-  - `daily_usage_summary`: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
-  - `core_error`: whether a save or a read failed, with one of five fixed codes.
+- What Maru sends: only these events and fields. Each value is a fixed word, a yes-or-no flag, or a range such as "2_3". None is a name, an amount, or a time of day.
+  - `setup_step`: a step on the add or edit screen. `step` is one of `editor_opened`, `item_saved`, `editor_closed` (closed with no save), `scan_opened`, `scan_used`, or `scan_blocked` (the camera is off for Maru). `mode` is `new`, `edit`, or `replace`. A save also has:
+    - `schedule`: the kind of plan, one of `as_needed`, `daily`, `weekdays`, `every_other_day`, `every_few_days`, or `days_on_off`. Not the days or the times.
+    - `reminder_times`: how many reminder times the plan has, as `0`, `1`, `2`, or `3_plus`. Not the times.
+    - `has_amount`, `has_note`, `has_photo`: yes or no. Not the amount, the note, or the photo.
+    - `name_source`, for a new item: `typed`, `suggestion`, or `scan`. Not the name.
+    - `used_completion`: yes if you tapped a suggested amount, time, or note.
+    - `first_item`: yes if it is the first item on the device.
+    - `duration`: the time on the screen, as `under_30s`, `30s_to_2m`, `2m_to_5m`, or `over_5m`.
+    - A close with no save has `had_changes` (yes or no) and `duration`.
+  - `daily_usage_summary`: one summary for each day that you used the app, sent on a later day. It has the day number since the statistics started, and yes-or-no flags for that day: `used_record` (recorded a dose), `used_history` (opened History), `used_notification` (opened the app from a reminder or used a reminder action), `used_widget` (used a widget), `used_reminder_action` (recorded from the "Taken" action of a reminder), `used_skip`, `used_undo`, `used_correction` (changed an earlier record), `used_as_needed` (recorded an as-needed dose), `used_my_items`, `used_item_detail`, and `used_settings`. It also has `app_opens`, how often the app came to the front that day, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, `active_items`, the number of your active items, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, and `has_widget`, yes if a Maru widget is on your Home Screen. It has no time and no count of doses.
+  - `core_error`: an operation that failed, `save`, `read`, `schedule` (setting a reminder), or `scan` (the label scanner), with one of eight fixed codes: `locked`, `corrupt`, `newer_schema`, `migration_failed`, `failed`, `too_many`, `not_set`, or `not_confirmed`.
+  - `notification_permission`: the notification permission, `not_asked`, `allowed`, `denied`, or `quiet`, and the permission before it, or `unknown`. Maru sends it only when the permission changes.
+  - `setting_changed`: a new value of one setting: `remind_again` (`off`, `1`, `2`, `3`, `5`, or `until_recorded`) with `remind_again_minutes` (`5`, `10`, `15`, `30`, or `60`), `show_names` (yes or no), or `app_color` (one of the eight color names).
+  - `data_action`: `export`, `backup`, or `restore`, with the result `done`, `failed`, `cancelled`, `invalid_file`, `newer_file`, or `not_confirmed`. Not the file or its content.
   - `feedback_entry`: that you tapped "Send Feedback".
-- What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
-- Each request also has the app version, the major version of iOS, a random install ID, and the region setting of your device as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
+- What Maru never sends: item names, doses, amounts, intake times, reminder times, item IDs, notes, photos, or the text of a message. It sends no event at the moment of a record, no time of a single dose, and no count of doses.
+- Each request also has the app version, the major version of iOS, a random install ID, the language of the app (`en`, `zh-Hans`, `ja`, `ko`, `es`, `de`, or `other`), the device type (`iphone`, `ipad`, or `other`), and the region setting of your device as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 - No session recording, no screen capture, and no automatic capture of taps or screens.
 - If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage flags. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
 - Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.

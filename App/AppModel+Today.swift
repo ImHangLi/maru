@@ -260,7 +260,7 @@ extension AppModel {
     }
 
     private func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
-        analytics.markUsed(.record)
+        noteRecords(records)
         for record in records {
             today.pending[record.occurrenceID] = nil
         }

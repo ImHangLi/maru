@@ -31,7 +31,7 @@ struct DataTransferState {
 extension AppModel {
     /// "Export Records": makes the CSV file, then the share sheet shows it. Maru sends nothing by itself.
     func exportRecords() {
-        share { store, now in
+        share(.export) { store, now in
             guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw StorageError.invalidData }
             return try await store.exportRecords(at: now, deviceTimeZone: deviceTimeZone)
         }
@@ -40,19 +40,21 @@ extension AppModel {
     /// "Back Up": makes the backup file with the database and the settings, then the share sheet shows it.
     func backUp() {
         let settings = BackupSettings.current()
-        share { store, now in
+        share(.backup) { store, now in
             try await store.backUp(at: now, settings: settings)
         }
     }
 
-    private func share(_ make: @escaping @Sendable (AppStore, Date) async throws -> URL) {
+    private func share(_ action: AnalyticsEvent.DataAction, _ make: @escaping @Sendable (AppStore, Date) async throws -> URL) {
         guard !transfer.isWorking else { return }
         transfer.isWorking = true
         Task { [store] in
             do {
                 transfer.shared = DataTransferState.SharedFile(url: try await make(store, Date()))
+                analytics.capture(.dataAction(action, .done))
             } catch {
                 transfer.failure = .fileNotMade
+                analytics.capture(.dataAction(action, .failed))
             }
             transfer.isWorking = false
         }
@@ -80,6 +82,7 @@ extension AppModel {
                 transfer.staged = try await store.stage(backup: file)
             } catch {
                 transfer.failure = Self.restoreFailure(error)
+                noteRestore(Self.restoreFailure(error))
             }
             transfer.isWorking = false
         }
@@ -88,6 +91,7 @@ extension AppModel {
     func cancelRestore() {
         guard let staged = transfer.staged else { return }
         transfer.staged = nil
+        analytics.capture(.dataAction(.restore, .cancelled))
         Task { [store] in
             await store.discard(staged)
         }
@@ -116,12 +120,14 @@ extension AppModel {
             } catch {
                 transfer.isRestoring = false
                 transfer.failure = Self.restoreFailure(error)
+                noteRestore(Self.restoreFailure(error))
                 refresh()
                 return
             }
             forgetReplacedData(generation: result.generation)
             transfer.isRestoring = false
             BackupSettings.apply(staged.settings)
+            analytics.capture(.dataAction(.restore, result.isFlushed ? .done : .notConfirmed))
             if result.isFlushed {
                 // Today shows the restored data. No message says so (D028).
                 settings.isPresented = false
@@ -161,6 +167,17 @@ extension AppModel {
         reminderStatus = [:]
         reminderAlerts = []
         DraftFile.removeAll()
+    }
+
+    /// A failed check or restore as one result of the `data_action` event (D077).
+    private func noteRestore(_ failure: DataTransferState.Failure) {
+        let result: AnalyticsEvent.DataResult = switch failure {
+        case .notABackup: .invalidFile
+        case .newerBackup: .newerFile
+        case .restoredNotConfirmed: .notConfirmed
+        case .fileNotMade, .notRestored: .failed
+        }
+        analytics.capture(.dataAction(.restore, result))
     }
 
     private static func restoreFailure(_ error: StorageError) -> DataTransferState.Failure {

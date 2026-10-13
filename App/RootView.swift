@@ -11,7 +11,7 @@ struct RootView: View {
     /// The archive or delete confirmation on the display. It is a copy, so the alert keeps its text while it closes.
     @State private var shownEnd: ItemEndRequest?
     @State private var showsEnd = false
-    /// The one-time notice about usage statistics (spec 11.3, D051).
+    /// The one-time opt-in question about usage statistics in an opt-in region (spec 11.3, D051, D078).
     @State private var showsStatisticsNotice = false
 
     var body: some View {
@@ -92,26 +92,17 @@ struct RootView: View {
         } message: {
             Text("Maru couldn’t save this change. Try again.")
         }
-        // The notice waits for the edit screen and for the alerts before it.
+        // The opt-in question waits for the edit screen and for the alerts before it.
         .onChange(of: noticeIsDue, initial: true) { _, isDue in
             guard isDue else { return }
             showsStatisticsNotice = true
             model.analyticsNoticeDidShow()
         }
         .alert("Help Improve Maru?", isPresented: $showsStatisticsNotice) {
-            if model.analytics.requiresOptIn {
-                Button("Share Statistics") { model.setSharesUsageStatistics(true) }
-                Button("Not Now", role: .cancel) {}
-            } else {
-                Button("OK", role: .cancel) {}
-                Button("Turn Off") { model.setSharesUsageStatistics(false) }
-            }
+            Button("Share Statistics") { model.setSharesUsageStatistics(true) }
+            Button("Not Now", role: .cancel) {}
         } message: {
-            if model.analytics.requiresOptIn {
-                Text("Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings.")
-            } else {
-                Text("Maru shares how you use the app, such as whether you recorded a dose today. It never shares item names, doses, or times. You can turn this off in Settings.")
-            }
+            Text("Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings.")
         }
         .onChange(of: nextAlert) { _, alert in
             guard let alert else { return }

@@ -74,6 +74,7 @@ struct MyListView: View {
             .modifier(DebugDataBanner())
             #endif
             .navigationTitle("My Items")
+            .onAppear { model.noteUse(.myItems) }
             .toolbar {
                 SettingsButton()
                 AddItemButton()

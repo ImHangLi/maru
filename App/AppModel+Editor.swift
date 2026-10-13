@@ -15,8 +15,14 @@ struct EditorSession: Identifiable {
     let generation: Int
     /// The item that a save replaces, with its schedule (T06). The draft is then a new item.
     var replaced: (item: Item, schedule: Schedule?)?
+    /// For the duration bucket of the usage statistics (D077). It is not stored, and no clock time leaves the device.
+    let openedAt = Date()
 
     var isNew: Bool { context.item == nil }
+
+    var mode: AnalyticsEvent.EditorMode {
+        replaced != nil ? .replace : isNew ? .new : .edit
+    }
 
     /// The plan whose zone a medication keeps (spec 8.5): the stored plan, or the plan of the replaced item.
     var zoneSchedule: Schedule? { context.schedule ?? replaced?.schedule }
@@ -54,6 +60,7 @@ extension AppModel {
                     )
                 }
                 editor = session
+                analytics.capture(.setupStep(.editorOpened, mode: session.mode))
             } catch {
                 // The list or Today shows the state of the store. The edit screen does not open on stale data.
                 refresh()
@@ -76,7 +83,13 @@ extension AppModel {
     ///
     /// A new photo is a new file, written before the transaction. The old file goes after the commit, and
     /// the new file goes when the transaction fails. So a failure leaves the stored photo as it was (D056).
-    func save(_ draft: ItemDraft, in session: EditorSession, photo: PhotoState.Edit = .unchanged) async throws {
+    func save(
+        _ draft: ItemDraft,
+        in session: EditorSession,
+        photo: PhotoState.Edit = .unchanged,
+        nameSource: AnalyticsEvent.NameSource = .typed,
+        usedCompletion: Bool = false
+    ) async throws {
         let now = Date()
         let deviceTimeZone = NamedTimeZone(device: .current, at: now)
         let built = try draft.build(
@@ -117,9 +130,21 @@ extension AppModel {
 
         if storedPhoto != item.imageReference { await store.removePhoto(storedPhoto) }
         DraftFile.remove(key: session.draftKey)
+        savedEditor = session.id
         if editor?.id == session.id { editor = nil }
         refresh()
-        analytics.capture(.itemSaved)
+        analytics.capture(.itemSaved(AnalyticsEvent.ItemSetup(
+            mode: session.mode,
+            schedule: draft.scheduleKind,
+            reminderTimes: draft.times.count,
+            hasAmount: schedule?.versions.last?.dose != nil,
+            hasNote: item.intakeNote != nil,
+            hasPhoto: item.imageReference != nil,
+            nameSource: session.isNew ? nameSource : nil,
+            usedCompletion: usedCompletion,
+            isFirstItem: session.isNew && session.replaced == nil && session.context.itemNames.isEmpty,
+            duration: Date().timeIntervalSince(session.openedAt)
+        )))
         offerAnalyticsNotice()
 
         // A replacement with no time still runs the queue: the archived old item can hold a series and
@@ -138,5 +163,39 @@ extension AppModel {
             status = ReminderStatus(state)
         }
         report(status, of: reported.id, removes: removed != nil)
+    }
+
+    /// The edit screen closed. A close after a save sends nothing more, because the save sent `item_saved`.
+    func editorDidClose(_ session: EditorSession, hadChanges: Bool) {
+        if savedEditor == session.id {
+            savedEditor = nil
+            return
+        }
+        analytics.capture(.editorClosed(
+            mode: session.mode, hadChanges: hadChanges, duration: Date().timeIntervalSince(session.openedAt)
+        ))
+    }
+
+    /// A step of the label scan on the edit screen (D077).
+    func editorStep(_ step: AnalyticsEvent.SetupStep, in session: EditorSession) {
+        analytics.capture(.setupStep(step, mode: session.mode))
+    }
+
+    /// The scanner could not run, after the camera permission.
+    func scanDidFail() {
+        analytics.capture(.coreError(.scan, .failed))
+    }
+}
+
+extension ItemDraft {
+    /// The kind of plan for the usage statistics. It names no time and no day (D077).
+    var scheduleKind: AnalyticsEvent.ScheduleKind {
+        guard !times.isEmpty else { return .asNeeded }
+        switch cycle?.kind {
+        case .everyOtherDay: return .everyOtherDay
+        case .interval: return .everyFewDays
+        case .pause: return .daysOnOff
+        case nil: return weekdays.count == Weekday.allCases.count ? .daily : .weekdays
+        }
     }
 }

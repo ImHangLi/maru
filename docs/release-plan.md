@@ -133,9 +133,9 @@ The question is: "Is your app a regulated medical device in any country or regio
 | Data type | Purpose | Linked to the user | Tracking | What it is in the code |
 |---|---|---|---|---|
 | Identifiers: Device ID | Analytics | Yes | No | `distinct_id`, the random install ID |
-| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, and `feedback_entry` |
-| Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, and `ios_major` |
-| Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) |
+| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077) |
+| Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, `ios_major`, and `device` |
+| Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) and `app_language` (D077) |
 
 The label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`. Add "Purchase History" in the release that first sends `purchase_result`.
 

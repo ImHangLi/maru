@@ -1,3 +1,6 @@
+import Foundation
+
+
 /// One product analytics event (spec 11.5). The schema below is the only list of what can leave the device.
 ///
 /// The init rejects an unknown event, an unknown field, and a value outside the allowed values. It never drops a field
@@ -32,17 +35,55 @@ public struct AnalyticsEvent: Sendable, Equatable {
     }
 
     private static let schema: [String: [String: Field]] = [
-        "setup_step": ["step": .choice(["item_saved"])],
+        "setup_step": [
+            "step": .choice(SetupStep.allCases.map(\.rawValue)),
+            "mode": .choice(EditorMode.allCases.map(\.rawValue)),
+            "schedule": .choice(ScheduleKind.allCases.map(\.rawValue)),
+            "reminder_times": .choice(["0", "1", "2", "3_plus"]),
+            "has_amount": .flag,
+            "has_note": .flag,
+            "has_photo": .flag,
+            "name_source": .choice(NameSource.allCases.map(\.rawValue)),
+            "used_completion": .flag,
+            "first_item": .flag,
+            "had_changes": .flag,
+            "duration": .choice(["under_30s", "30s_to_2m", "2m_to_5m", "over_5m"]),
+        ],
         "daily_usage_summary": [
             "day_index": .count(0...3650),
             "used_record": .flag,
             "used_history": .flag,
             "used_notification": .flag,
             "used_widget": .flag,
+            "used_reminder_action": .flag,
+            "used_skip": .flag,
+            "used_undo": .flag,
+            "used_correction": .flag,
+            "used_as_needed": .flag,
+            "used_my_items": .flag,
+            "used_item_detail": .flag,
+            "used_settings": .flag,
+            "app_opens": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
+            "active_items": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
+            "has_widget": .flag,
         ],
         "core_error": [
-            "operation": .choice(["save", "read"]),
-            "code": .choice(["locked", "corrupt", "newer_schema", "migration_failed", "failed"]),
+            "operation": .choice(Operation.allCases.map(\.rawValue)),
+            "code": .choice(ErrorCode.allCases.map(\.rawValue)),
+        ],
+        "notification_permission": [
+            "state": .choice(Permission.allCases.map(\.rawValue)),
+            "previous": .choice(["unknown"] + Permission.allCases.map(\.rawValue)),
+        ],
+        "setting_changed": [
+            "remind_again": .choice(["off", "1", "2", "3", "5", "until_recorded"]),
+            "remind_again_minutes": .choice(["5", "10", "15", "30", "60"]),
+            "show_names": .flag,
+            "app_color": .choice(ItemColor.allCases.map(\.rawValue)),
+        ],
+        "data_action": [
+            "action": .choice(DataAction.allCases.map(\.rawValue)),
+            "result": .choice(DataResult.allCases.map(\.rawValue)),
         ],
         "feedback_entry": ["entry": .choice(["settings"])],
         "purchase_result": [
@@ -73,33 +114,193 @@ public struct AnalyticsEvent: Sendable, Equatable {
 
 /// The app builds its events with these factories.
 public extension AnalyticsEvent {
-    /// A part of the app that the user used on one day (spec 11.5).
+    /// A part of the app that the user used on one day (spec 11.5). Each flag is one bit for the day. It has no time
+    /// and no count.
     enum UsageFlag: String, CaseIterable, Sendable {
         case record = "used_record"
         case history = "used_history"
+        /// The app opened from a tap on a reminder, or the "Taken" action of a reminder ran.
         case notification = "used_notification"
         case widget = "used_widget"
+        /// The "Taken" action of a reminder recorded a dose, with no open of the app.
+        case reminderAction = "used_reminder_action"
+        case skip = "used_skip"
+        case undo = "used_undo"
+        /// A record replaced an earlier record of the same dose, for example "Change Time…".
+        case correction = "used_correction"
+        case asNeeded = "used_as_needed"
+        case myItems = "used_my_items"
+        case itemDetail = "used_item_detail"
+        case settings = "used_settings"
     }
 
-    enum Operation: String, Sendable {
+    /// The local tallies of one day, sent as coarse buckets in the summary of that day.
+    struct UsageDay: Sendable, Equatable {
+        public var used: Set<UsageFlag>
+        /// The number of times that the app came to the front on the day.
+        public var opens: Int
+        /// The number of active items at the last read of the day. `nil` when the app did not read them.
+        public var activeItems: Int?
+        /// Whether a widget of Maru was on the Home Screen at the last check of the day. `nil` when not checked.
+        public var hasWidget: Bool?
+
+        public init(used: Set<UsageFlag> = [], opens: Int = 0, activeItems: Int? = nil, hasWidget: Bool? = nil) {
+            self.used = used
+            self.opens = opens
+            self.activeItems = activeItems
+            self.hasWidget = hasWidget
+        }
+    }
+
+    enum SetupStep: String, CaseIterable, Sendable {
+        case editorOpened = "editor_opened"
+        case itemSaved = "item_saved"
+        /// The edit screen closed with no save. It is not called "abandoned": the user can come back (spec 11.1).
+        case editorClosed = "editor_closed"
+        case scanOpened = "scan_opened"
+        case scanUsed = "scan_used"
+        /// The camera is off for Maru, or the user refused it.
+        case scanBlocked = "scan_blocked"
+    }
+
+    enum EditorMode: String, CaseIterable, Sendable {
+        case new, edit, replace
+    }
+
+    /// The kind of plan, never its times or its days.
+    enum ScheduleKind: String, CaseIterable, Sendable {
+        case asNeeded = "as_needed"
+        case daily
+        case weekdays
+        case everyOtherDay = "every_other_day"
+        case everyFewDays = "every_few_days"
+        case daysOnOff = "days_on_off"
+    }
+
+    /// How the name of a new item got into the field the last time. A key press after it keeps the source.
+    enum NameSource: String, CaseIterable, Sendable {
+        case typed, suggestion, scan
+    }
+
+    /// One save on the edit screen. It holds kinds and flags of the plan, never a name, an amount, or a time.
+    struct ItemSetup: Sendable {
+        public var mode: EditorMode
+        public var schedule: ScheduleKind
+        public var reminderTimes: Int
+        public var hasAmount: Bool
+        public var hasNote: Bool
+        public var hasPhoto: Bool
+        /// Only for a new item or a replacement.
+        public var nameSource: NameSource?
+        public var usedCompletion: Bool
+        public var isFirstItem: Bool
+        public var duration: TimeInterval
+
+        public init(
+            mode: EditorMode, schedule: ScheduleKind, reminderTimes: Int, hasAmount: Bool, hasNote: Bool,
+            hasPhoto: Bool, nameSource: NameSource?, usedCompletion: Bool, isFirstItem: Bool, duration: TimeInterval
+        ) {
+            self.mode = mode
+            self.schedule = schedule
+            self.reminderTimes = reminderTimes
+            self.hasAmount = hasAmount
+            self.hasNote = hasNote
+            self.hasPhoto = hasPhoto
+            self.nameSource = nameSource
+            self.usedCompletion = usedCompletion
+            self.isFirstItem = isFirstItem
+            self.duration = duration
+        }
+    }
+
+    enum Operation: String, CaseIterable, Sendable {
         case save, read
+        /// A run of the reminder engine.
+        case schedule
+        /// The label scanner.
+        case scan
     }
 
-    enum ErrorCode: String, Sendable {
+    enum ErrorCode: String, CaseIterable, Sendable {
         case locked, corrupt, newerSchema = "newer_schema", migrationFailed = "migration_failed", failed
+        /// The system holds no room for the reminder of a plan.
+        case tooMany = "too_many"
+        /// The plan is saved, and the system does not hold its reminder.
+        case notSet = "not_set"
+        /// The system did not confirm a removal.
+        case notConfirmed = "not_confirmed"
+    }
+
+    enum Permission: String, CaseIterable, Sendable {
+        case notAsked = "not_asked"
+        case allowed, denied
+        /// Delivered quietly, with no banner and no sound.
+        case quiet
+    }
+
+    enum DataAction: String, CaseIterable, Sendable {
+        case export, backup, restore
+    }
+
+    enum DataResult: String, CaseIterable, Sendable {
+        /// The file was made, or the restore committed.
+        case done
+        case failed
+        case cancelled
+        /// The picked file is not a Maru backup.
+        case invalidFile = "invalid_file"
+        /// The backup comes from a newer version of Maru.
+        case newerFile = "newer_file"
+        /// The restore committed, and the storage medium did not confirm it.
+        case notConfirmed = "not_confirmed"
+    }
+
+    static func setupStep(_ step: SetupStep, mode: EditorMode) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setup_step", ["step": .text(step.rawValue), "mode": .text(mode.rawValue)])
     }
 
     /// An item was saved. It does not say which item.
-    static var itemSaved: AnalyticsEvent {
-        AnalyticsEvent(unchecked: "setup_step", ["step": .text("item_saved")])
+    static func itemSaved(_ setup: ItemSetup) -> AnalyticsEvent {
+        var properties: [String: Value] = [
+            "step": .text(SetupStep.itemSaved.rawValue),
+            "mode": .text(setup.mode.rawValue),
+            "schedule": .text(setup.schedule.rawValue),
+            "reminder_times": .text(setup.reminderTimes >= 3 ? "3_plus" : String(max(setup.reminderTimes, 0))),
+            "has_amount": .flag(setup.hasAmount),
+            "has_note": .flag(setup.hasNote),
+            "has_photo": .flag(setup.hasPhoto),
+            "used_completion": .flag(setup.usedCompletion),
+            "first_item": .flag(setup.isFirstItem),
+            "duration": .text(durationBucket(setup.duration)),
+        ]
+        if let source = setup.nameSource { properties["name_source"] = .text(source.rawValue) }
+        return AnalyticsEvent(unchecked: "setup_step", properties)
+    }
+
+    /// The edit screen closed with no save.
+    static func editorClosed(mode: EditorMode, hadChanges: Bool, duration: TimeInterval) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setup_step", [
+            "step": .text(SetupStep.editorClosed.rawValue),
+            "mode": .text(mode.rawValue),
+            "had_changes": .flag(hadChanges),
+            "duration": .text(durationBucket(duration)),
+        ])
     }
 
     /// `dayIndex` counts the days from the first day of use after analytics became active. It is not the install day.
-    static func dailyUsage(dayIndex: Int, used: Set<UsageFlag>) -> AnalyticsEvent {
-        var properties: [String: Value] = ["day_index": .count(min(max(dayIndex, 0), 3650))]
+    static func dailyUsage(dayIndex: Int, _ day: UsageDay) -> AnalyticsEvent {
+        var properties: [String: Value] = [
+            "day_index": .count(min(max(dayIndex, 0), 3650)),
+            // "0": only a background action ran, for example the "Taken" action of a reminder.
+            "app_opens": .text(bucket(day.opens, ["0": 0...0, "1": 1...1, "2_3": 2...3, "4_6": 4...6], over: "7_plus")),
+        ]
         for flag in UsageFlag.allCases {
-            properties[flag.rawValue] = .flag(used.contains(flag))
+            properties[flag.rawValue] = .flag(day.used.contains(flag))
         }
+        if let items = day.activeItems {
+            properties["active_items"] = .text(bucket(items, ["0": 0...0, "1": 1...1, "2_3": 2...3, "4_6": 4...6], over: "7_plus"))
+        }
+        if let hasWidget = day.hasWidget { properties["has_widget"] = .flag(hasWidget) }
         return AnalyticsEvent(unchecked: "daily_usage_summary", properties)
     }
 
@@ -107,7 +308,50 @@ public extension AnalyticsEvent {
         AnalyticsEvent(unchecked: "core_error", ["operation": .text(operation.rawValue), "code": .text(code.rawValue)])
     }
 
+    /// The permission that the app read differs from the one that it sent last. `previous` is `nil` for the first read.
+    static func notificationPermission(_ state: Permission, previous: Permission?) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "notification_permission", [
+            "state": .text(state.rawValue),
+            "previous": .text(previous?.rawValue ?? "unknown"),
+        ])
+    }
+
+    /// "Remind Again" changed. `nil` is off.
+    static func remindAgainChanged(_ setting: FollowUpSetting?) -> AnalyticsEvent {
+        guard let setting else { return AnalyticsEvent(unchecked: "setting_changed", ["remind_again": .text("off")]) }
+        let count = setting.count == .untilRecorded ? "until_recorded" : String(setting.count.rawValue)
+        return AnalyticsEvent(unchecked: "setting_changed", [
+            "remind_again": .text(count),
+            "remind_again_minutes": .text(String(setting.interval.rawValue)),
+        ])
+    }
+
+    static func showNamesChanged(_ showsNames: Bool) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setting_changed", ["show_names": .flag(showsNames)])
+    }
+
+    static func appColorChanged(_ color: ItemColor) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setting_changed", ["app_color": .text(color.rawValue)])
+    }
+
+    static func dataAction(_ action: DataAction, _ result: DataResult) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "data_action", ["action": .text(action.rawValue), "result": .text(result.rawValue)])
+    }
+
     static var feedbackOpened: AnalyticsEvent {
         AnalyticsEvent(unchecked: "feedback_entry", ["entry": .text("settings")])
+    }
+
+    private static func durationBucket(_ seconds: TimeInterval) -> String {
+        switch seconds {
+        case ..<30: "under_30s"
+        case ..<120: "30s_to_2m"
+        case ..<300: "2m_to_5m"
+        default: "over_5m"
+        }
+    }
+
+    private static func bucket(_ value: Int, _ buckets: KeyValuePairs<String, ClosedRange<Int>>, over: String) -> String {
+        buckets.first { $0.value.contains(value) }?.key ?? over
     }
 }

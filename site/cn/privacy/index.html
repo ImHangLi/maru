@@ -79,26 +79,49 @@
 <h2 lang="zh-Hans">使用统计</h2>
 <p>Some versions of Maru can send usage statistics to PostHog. A version that cannot has no switch and sends nothing. This section applies to a version that can.</p>
 <ul>
-<li>Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".
+<li>Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows no notice and no question about them. The switch "Share Usage Statistics" in Settings turns them off.
 </li>
-<li>Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on in the notice or in Settings.
+<li>Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on. Maru asks once, after you save an item, and Settings has the same switch.
 </li>
 <li>How Maru picks the rule: it uses the region setting of your device, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or a device with another region setting, gets the rule of that setting.
 </li>
-<li>What Maru sends: only these events and fields.
+<li>What Maru sends: only these events and fields. Each value is a fixed word, a yes-or-no flag, or a range such as "2_3". None is a name, an amount, or a time of day.
 <ul>
-<li><code>setup_step</code>: that an item was saved.
+<li><code>setup_step</code>: a step on the add or edit screen. <code>step</code> is one of <code>editor_opened</code>, <code>item_saved</code>, <code>editor_closed</code> (closed with no save), <code>scan_opened</code>, <code>scan_used</code>, or <code>scan_blocked</code> (the camera is off for Maru). <code>mode</code> is <code>new</code>, <code>edit</code>, or <code>replace</code>. A save also has:
+<ul>
+<li><code>schedule</code>: the kind of plan, one of <code>as_needed</code>, <code>daily</code>, <code>weekdays</code>, <code>every_other_day</code>, <code>every_few_days</code>, or <code>days_on_off</code>. Not the days or the times.
 </li>
-<li><code>daily_usage_summary</code>: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
+<li><code>reminder_times</code>: how many reminder times the plan has, as <code>0</code>, <code>1</code>, <code>2</code>, or <code>3_plus</code>. Not the times.
 </li>
-<li><code>core_error</code>: whether a save or a read failed, with one of five fixed codes.
+<li><code>has_amount</code>, <code>has_note</code>, <code>has_photo</code>: yes or no. Not the amount, the note, or the photo.
+</li>
+<li><code>name_source</code>, for a new item: <code>typed</code>, <code>suggestion</code>, or <code>scan</code>. Not the name.
+</li>
+<li><code>used_completion</code>: yes if you tapped a suggested amount, time, or note.
+</li>
+<li><code>first_item</code>: yes if it is the first item on the device.
+</li>
+<li><code>duration</code>: the time on the screen, as <code>under_30s</code>, <code>30s_to_2m</code>, <code>2m_to_5m</code>, or <code>over_5m</code>.
+</li>
+<li>A close with no save has <code>had_changes</code> (yes or no) and <code>duration</code>.
+</li></ul>
+</li>
+<li><code>daily_usage_summary</code>: one summary for each day that you used the app, sent on a later day. It has the day number since the statistics started, and yes-or-no flags for that day: <code>used_record</code> (recorded a dose), <code>used_history</code> (opened History), <code>used_notification</code> (opened the app from a reminder or used a reminder action), <code>used_widget</code> (used a widget), <code>used_reminder_action</code> (recorded from the "Taken" action of a reminder), <code>used_skip</code>, <code>used_undo</code>, <code>used_correction</code> (changed an earlier record), <code>used_as_needed</code> (recorded an as-needed dose), <code>used_my_items</code>, <code>used_item_detail</code>, and <code>used_settings</code>. It also has <code>app_opens</code>, how often the app came to the front that day, as <code>0</code>, <code>1</code>, <code>2_3</code>, <code>4_6</code>, or <code>7_plus</code>, <code>active_items</code>, the number of your active items, as <code>0</code>, <code>1</code>, <code>2_3</code>, <code>4_6</code>, or <code>7_plus</code>, and <code>has_widget</code>, yes if a Maru widget is on your Home Screen. It has no time and no count of doses.
+</li>
+<li><code>core_error</code>: an operation that failed, <code>save</code>, <code>read</code>, <code>schedule</code> (setting a reminder), or <code>scan</code> (the label scanner), with one of eight fixed codes: <code>locked</code>, <code>corrupt</code>, <code>newer_schema</code>, <code>migration_failed</code>, <code>failed</code>, <code>too_many</code>, <code>not_set</code>, or <code>not_confirmed</code>.
+</li>
+<li><code>notification_permission</code>: the notification permission, <code>not_asked</code>, <code>allowed</code>, <code>denied</code>, or <code>quiet</code>, and the permission before it, or <code>unknown</code>. Maru sends it only when the permission changes.
+</li>
+<li><code>setting_changed</code>: a new value of one setting: <code>remind_again</code> (<code>off</code>, <code>1</code>, <code>2</code>, <code>3</code>, <code>5</code>, or <code>until_recorded</code>) with <code>remind_again_minutes</code> (<code>5</code>, <code>10</code>, <code>15</code>, <code>30</code>, or <code>60</code>), <code>show_names</code> (yes or no), or <code>app_color</code> (one of the eight color names).
+</li>
+<li><code>data_action</code>: <code>export</code>, <code>backup</code>, or <code>restore</code>, with the result <code>done</code>, <code>failed</code>, <code>cancelled</code>, <code>invalid_file</code>, <code>newer_file</code>, or <code>not_confirmed</code>. Not the file or its content.
 </li>
 <li><code>feedback_entry</code>: that you tapped "Send Feedback".
 </li></ul>
 </li>
-<li>What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
+<li>What Maru never sends: item names, doses, amounts, intake times, reminder times, item IDs, notes, photos, or the text of a message. It sends no event at the moment of a record, no time of a single dose, and no count of doses.
 </li>
-<li>Each request also has the app version, the major version of iOS, a random install ID, and the region setting of your device as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
+<li>Each request also has the app version, the major version of iOS, a random install ID, the language of the app (<code>en</code>, <code>zh-Hans</code>, <code>ja</code>, <code>ko</code>, <code>es</code>, <code>de</code>, or <code>other</code>), the device type (<code>iphone</code>, <code>ipad</code>, or <code>other</code>), and the region setting of your device as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 </li>
 <li>No session recording, no screen capture, and no automatic capture of taps or screens.
 </li>

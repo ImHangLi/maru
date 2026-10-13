@@ -37,7 +37,7 @@ struct AnalyticsServiceTests {
         }
 
         // No consent: no client exists, and no event or usage flag is kept (T41).
-        service.capture(.itemSaved)
+        service.capture(.feedbackOpened)
         service.markUsed(.record)
         #expect(madeClients == 0 && client.events.isEmpty)
         #expect(defaults.object(forKey: "analytics.usage.day") == nil)
@@ -58,7 +58,7 @@ struct AnalyticsServiceTests {
         service.setOn(false)
         #expect(client.resets == 1)
         #expect(defaults.object(forKey: "analytics.usage.flags") == nil)
-        service.capture(.itemSaved)
+        service.capture(.feedbackOpened)
         #expect(client.events.count == 1)
     }
 
@@ -75,7 +75,7 @@ struct AnalyticsServiceTests {
             throw URLError(.notConnectedToInternet)
         }
         for _ in 0..<250 {
-            client.capture(.itemSaved)
+            client.capture(.feedbackOpened)
         }
         #expect(client.queuedCount == PostHogClient.maxQueued)
         try await Task.sleep(for: .milliseconds(200))
@@ -104,7 +104,7 @@ struct AnalyticsServiceTests {
                 bodies.append(request.httpBody ?? Data())
                 return 200
             }
-            client.capture(.itemSaved)
+            client.capture(.feedbackOpened)
             await client.flush()
         }
         let regions = try bodies.value.map { body in
