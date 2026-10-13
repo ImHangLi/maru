@@ -14,10 +14,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-# The App Store link of Maru. This one constant sets the link of every badge.
-# It is a placeholder until Maru is on the App Store. Do not deploy the site with the placeholder.
-PLACEHOLDER_STORE_URL = "https://apps.apple.com/app/id0000000000"
-STORE_URL = PLACEHOLDER_STORE_URL
+# The App Store link of Maru. This one constant sets the link of the badge, of the "Download" button in the top bar,
+# and of the text link at the end of the home page. It also sets the Smart App Banner.
+STORE_URL = "https://apps.apple.com/app/id6822159516"
 
 ORIGIN = "https://maru.day"
 GITHUB = "https://github.com/ImHangLi/maru"
@@ -146,9 +145,7 @@ def layout(code, page, title, desc, main, head=""):
     f = s["footer"]
     here = ORIGIN + url(code, page)
     alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
-    banner = re.search(r"id(\d+)", STORE_URL)
-    banner = (f'<meta name="apple-itunes-app" content="app-id={banner.group(1)}">\n'
-              if banner and STORE_URL != PLACEHOLDER_STORE_URL else "")
+    banner = f'<meta name="apple-itunes-app" content="app-id={re.search(r"id(\d+)", STORE_URL).group(1)}">\n'
     current = ' aria-current="page"'
     menu = "".join(
         f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
@@ -349,8 +346,6 @@ def main():
             (SITE / folder / page).write_text(render[page](code), "utf-8")
     (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
     print(f"built {len(LANGS) * len(PAGES)} pages")
-    if STORE_URL == PLACEHOLDER_STORE_URL:
-        print("WARNING: STORE_URL is the placeholder. Every App Store badge has a link that does not work. Do not deploy.")
 
 if __name__ == "__main__":
     main()

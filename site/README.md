@@ -31,7 +31,7 @@ The top bar has a language menu. It is a `details` element with plain links, so 
 
 The hero has Apple's "Download on the App Store" badge in the language of the page. The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The rules are in Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
 
-`STORE_URL` in `build.py` is the one link of the badge, of the "Download" button in the top bar, and of the text link at the end of the home page. It is a placeholder until Maru is on the App Store, and the build prints a warning while it is the placeholder. **Do not deploy the site with the placeholder.** Set the real link, build again, and check that the warning is gone. The real link also turns on the Smart App Banner.
+`STORE_URL` in `build.py` is the one link of the badge, of the "Download" button in the top bar, and of the text link at the end of the home page. It also sets the Smart App Banner. The link opens a store page only when the app is on sale. Do not deploy the site before that.
 
 The badge is in the hero only, because Apple asks for one badge in a layout. It is a part of the download unit: the app icon and the name, the badge, and one line that says where the app runs (iPhone, iOS 17 or later, from `project.yml`). Name no other device there. The top bar has a plain "Download" button in its own style, with no Apple logo, and the end of the home page has a text link.
 
