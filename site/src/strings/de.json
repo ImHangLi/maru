@@ -18,15 +18,12 @@
   },
   "shots": {
     "today": {
-      "label": "Heute",
       "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
     },
     "history": {
-      "label": "Verlauf",
       "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der vergangenen Tage und den letzten 7 Tagen jedes Eintrags."
     },
     "detail": {
-      "label": "Eintrag",
       "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."
     },
     "notification": {

@@ -18,15 +18,12 @@
   },
   "shots": {
     "today": {
-      "label": "Hoy",
       "alt": "La pantalla Hoy de Maru con lo que toca tomar ahora."
     },
     "history": {
-      "label": "Historial",
       "alt": "La pantalla Historial de Maru con un gráfico de los días pasados y los últimos 7 días de cada elemento."
     },
     "detail": {
-      "label": "Elemento",
       "alt": "La página de un elemento en Maru con sus horas, su cantidad y sus últimos 7 días."
     },
     "notification": {
