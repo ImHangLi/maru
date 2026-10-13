@@ -213,7 +213,6 @@ extension AppModel {
 
     private func didCommitAsNeeded(_ record: OccurrenceRecord, _ pending: AsNeededEvent) {
         noteRecords([record])
-        analytics.markUsed(.asNeeded)
         forget(pending)
         historyDidCommitAsNeeded(record, of: pending.occurrence)
         // A retry can succeed after midnight, when the content shows another day. Only a dose of the shown

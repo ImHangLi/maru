@@ -58,7 +58,6 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "used_skip": .flag,
             "used_undo": .flag,
             "used_correction": .flag,
-            "used_as_needed": .flag,
             "used_my_items": .flag,
             "used_item_detail": .flag,
             "used_settings": .flag,
@@ -127,7 +126,6 @@ public extension AnalyticsEvent {
         case undo = "used_undo"
         /// A record replaced an earlier record of the same dose, for example "Change Time…".
         case correction = "used_correction"
-        case asNeeded = "used_as_needed"
         case myItems = "used_my_items"
         case itemDetail = "used_item_detail"
         case settings = "used_settings"
