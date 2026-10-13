@@ -1,7 +1,8 @@
 /* Maru site. Tokens first. Every rule below the token block uses a token. */
 
 :root {
-  color-scheme: light dark;
+  /* Light only: the app pictures are light captures, so a dark page would not match them. */
+  color-scheme: light;
 
   /* Color */
   --bg: #FFFFFF;
@@ -171,39 +172,6 @@
   --pt-max: 1.1px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --bg-alt: #121214;
-    --surface: #1C1C1E;
-    --text: #F5F5F7;
-    --text-2: #A1A1A6;
-    --link: #FF6482;
-    --focus: #FF6482;
-    --tint-soft: rgba(255, 55, 95, 0.12);
-    --ring-color: rgba(255, 255, 255, 0.12);
-    --bar-bg: #1C1C1E;
-    --bar-ring: var(--hairline);
-    --tip-bg: #F5F5F7;
-    --tip-text: #1D1D1F;
-    --device-bezel: #3A3A3C;
-    --device-screen: #1C1C1E;
-    --app-label: #FFFFFF;
-    --app-label-2: #8D8D93;
-    --app-widget: #1C1C1E;
-    --app-cap-off: #2C2C2E;
-    --app-cap-line: #48484A;
-    --app-banner: rgba(255, 255, 255, 0.14);
-    --app-banner-rim: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.24);
-    --app-banner-text: rgba(255, 255, 255, 0.93);
-    --app-banner-2: rgba(255, 255, 255, 0.85);
-    --app-icon-ring: rgba(0, 0, 0, 0.2);
-    --wallpaper: radial-gradient(120% 80% at 0% 0%, #4A1424, transparent 60%), radial-gradient(90% 70% at 100% 100%, #7A1B35, transparent 70%), linear-gradient(160deg, #1A080E, #33101C);
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), var(--hairline);
-    --shadow-elevated: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3), var(--hairline);
-    --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 24px rgba(0, 0, 0, 0.4), 0 40px 80px rgba(0, 0, 0, 0.5), var(--hairline);
-  }
-}
 
 /* Languages. Chinese, Japanese, and Korean use their system fonts, no negative tracking, and more line height. */
 :lang(zh-Hans) { font-family: var(--font-zh); line-break: strict; }
