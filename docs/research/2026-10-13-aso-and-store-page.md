@@ -2,14 +2,14 @@
 
 Date: 2026-10-13. A desk study for the App Store release (D051), and the reasons for the files in `metadata/`. It follows `2026-10-12-store-name-and-languages.md` and `2026-10-13-name-and-trademark.md`.
 
-Nothing in this note is live. No app record exists, and this study changed nothing in App Store Connect. The maintainer decides the name and the store text (`docs/process.md`, decision 3).
+Nothing in this note is live. The app record exists with the name "Maru: Pill & Vitamin Reminder", and this study changed nothing in App Store Connect. The maintainer decides the store text (`docs/process.md`, decision 3). Section 10 has the decisions of 2026-10-13 and the reason for each choice of the second round.
 
 ## 1. Summary
 
 - Five patterns repeat in the best screenshot sets (section 2.2). The plan in section 7 copies them.
 - A new app cannot win "pill reminder". Ten of the ten top US results have both words in the name, and the leaders have 8,000 to 100,000 ratings. "Supplement tracker" and "vitamin tracker" are open: apps with 0 to 125 ratings are in the top ten.
-- The name is the strongest search field. The listing puts search words in the name and keeps the hook for the screenshots. This differs from the site title "Maru: Know What You Took". The maintainer must choose (section 10).
-- Add es-MX. Mexico uses it, and Apple shows it in the US storefront.
+- The name is the strongest search field. The listing puts search words in the name and keeps the hook for the screenshots.
+- es-MX and en-GB are in the listing. es-MX is the default of Mexico and of most of Latin America. en-GB is the default of the UK, Ireland, India, Singapore, and Malaysia, and an extra language in most other storefronts.
 - Apple's own page does not say that screenshot text is a search field. Vendor blogs say it is since June 2025. Treat it as not proven, and write captions for people.
 - The required iPhone screenshot size is now the medium Dynamic Island display: 1206 × 2622 or 1179 × 2556 pixels. The captures that exist are already 1206 × 2622.
 
@@ -118,7 +118,8 @@ Decision for the listing:
 
 - **Add es-MX.** It is the language of the Mexico storefront, and the US storefront shows it to Spanish speakers. Its text is Mexican Spanish. It is not a second English keyword field.
 - zh-Hans and ko are already in the set, and the US storefront supports both. Their users in the US see their own language.
-- An English (UK) page can add 100 keyword characters in five of the seven storefronts. Do this after the release, with data. It is a second English page to maintain.
+- **Add en-GB** (second round). The same table lists English (UK) as the default of the United Kingdom, Ireland, India, Singapore, and Malaysia, and as an extra language of Australia, New Zealand, Germany, Austria, Switzerland, Spain, Mexico, Korea, Hong Kong, Taiwan, France, Brazil, and the Spanish-speaking storefronts of Latin America. The UK is the second market for Health & Fitness spend (the earlier note). The en-GB page says "Tablet" in the subtitle, the UK word, so the two English pages cover more words together.
+- **Not added:** Arabic, Chinese (Traditional), French, Portuguese (Brazil), Russian, and Vietnamese pages that hold only English keywords. A US user with one of these languages would get a page in that language for an app that does not speak it. That is a wrong promise, and guideline 2.3.7 forbids metadata that exists "just to game the system".
 
 ## 4. Keywords
 
@@ -171,17 +172,18 @@ Left out on purpose: "お薬手帳" (a pharmacy record book in Japan, which Maru
 
 The files are in `metadata/`, in the layout of `asc metadata` (`app-info/<locale>.json` and `version/1.0.0/<locale>.json`). `asc metadata validate --dir ./metadata` reports no issue. `asc metadata push` with `--dry-run` shows the plan before a change. The files replace the fastlane `deliver` idea in the release plan.
 
-**Every name is provisional.** Only the creation of the app record proves that a name is free.
+App Store Connect accepted the English name. The names of the other languages are not entered yet.
 
 | Locale | Name | Subtitle |
 |---|---|---|
 | en-US | Maru: Pill & Vitamin Reminder (29) | One-Tap Supplement Tracker (26) |
 | zh-Hans | Maru：吃药提醒与保健品打卡 (15) | 维生素、用药记录，吃了没一眼知道 (16) |
 | ja | Maru：お薬とサプリの服薬リマインダー (20) | 飲んだかどうか、ひと目でわかる記録 (17) |
-| es-ES | Maru: Pastillas y vitaminas (27) | Recordatorio de medicamentos (28) |
-| es-MX | Maru: Pastillas y vitaminas (27) | Recordatorio de medicamentos (28) |
-| de-DE | Maru: Tabletten-Erinnerung (26) | Supplements & Medikamente (25) |
-| ko | Maru: 약 알림·영양제 복약 기록 (20) | 먹었는지 한눈에, 탭 한 번이면 끝 (19) |
+| en-GB | Maru: Pill & Vitamin Reminder (29) | Tablet & Supplement Tracker (27) |
+| es-ES | Maru: Recordatorio pastillas (28) | Vitaminas y suplementos al día (30) |
+| es-MX | Maru: Recordatorio pastillas (28) | Medicinas y vitaminas al día (28) |
+| de-DE | Maru: Tabletten-Erinnerung (26) | Medikamente, Vitamine im Blick (30) |
+| ko | Maru: 약 알림과 영양제 복약 기록 (21) | 먹었는지 한눈에, 탭 한 번이면 끝 (19) |
 
 Keyword lines:
 
@@ -190,9 +192,10 @@ Keyword lines:
 | en-US | `medication,medicine,meds,med,dose,tablet,capsule,daily,schedule,history,log,alarm,widget,did,take` |
 | zh-Hans | `服药,药物,药品,闹钟,补充剂,补剂,营养品,每日,习惯,日历,小组件,鱼油,钙片,益生菌,定时,药盒,喝药,管家,助手,吃药时间,按时,慢病,胶囊,药片,叶酸,褪黑素,忘记,每天,追踪,健康管理` |
 | ja | `飲み忘れ,防止,管理,アラーム,通知,ピル,ビタミン,くすり,カレンダー,ウィジェット,習慣,チェック,時間,漢方,目薬,サプリメント,服用,錠剤,毎日,のんだ,健康管理,トラッカー` |
-| es-ES | `suplementos,medicación,medicinas,píldora,alarma,pastillero,toma,dosis,control,calendario,registro` |
-| es-MX | `medicinas,suplementos,alarma,píldoras,pastillero,control,horario,tomar,dosis,calendario,registro` |
-| de-DE | `vitamine,pillen,medikamentenplan,einnahme,wecker,alarm,tracker,nahrungsergänzung,kapseln,dosis` |
+| en-GB | `medication,medicine,meds,med,dose,capsule,daily,schedule,history,log,alarm,widget,did,take,one,tap` |
+| es-ES | `medicamentos,medicación,medicinas,píldora,alarma,pastillero,toma,dosis,control,calendario,registro` |
+| es-MX | `medicamentos,suplementos,alarma,píldoras,pastillero,control,horario,tomar,dosis,calendario,registro` |
+| de-DE | `supplements,pillen,medikamentenplan,einnahme,wecker,alarm,tracker,nahrungsergänzung,kapseln,dosis` |
 | ko | `복용,알람,비타민,약먹는시간,체크,관리,리마인더,루틴,위젯,알약,캘린더,시간,챙겨먹기,일정,습관,건강기능식품,유산균,오메가3,투약,매일,깜빡,먹었나,섭취,트래커,건강관리` |
 
 Alternatives for the name:
@@ -202,7 +205,7 @@ Alternatives for the name:
 | en-US | Maru: Know What You Took, with the subtitle "Supplement & Pill Reminder" | Maru: Daily Pill Check |
 | zh-Hans | Maru：吃了没，看一眼就知道 | Maru：吃药提醒 |
 | ja | Maru：飲んだかどうか、すぐわかる | Maru：お薬・サプリの記録 |
-| es-ES, es-MX | Maru: ten claro lo que tomaste | Maru: Recordatorio pastillas |
+| es-ES, es-MX | Maru: ten claro lo que tomaste | Maru: Pastillas y vitaminas |
 | de-DE | Maru: Wissen, was du nimmst | Maru: Tabletten & Vitamine |
 | ko | Maru: 먹었는지 바로 확인 | Maru: 약 알림 |
 
@@ -241,13 +244,14 @@ A second reading of each line, back into English, to find a meaning that moved.
 | ja | Name | Maru：お薬とサプリの服薬リマインダー | Maru: a reminder to take medicine and supplements |
 | ja | Subtitle | 飲んだかどうか、ひと目でわかる記録 | A record that shows at a glance if you took it |
 | ja | First line | 飲んだっけ？ Maruを開けば、ひと目でわかります。 | Did I take it? Open Maru, and you see it at a glance. |
-| es | Name | Maru: Pastillas y vitaminas | Maru: Pills and vitamins |
-| es | Subtitle | Recordatorio de medicamentos | Medication reminder |
+| es | Name | Maru: Recordatorio pastillas | Maru: Pill reminder |
+| es-ES | Subtitle | Vitaminas y suplementos al día | Vitamins and supplements, up to date |
+| es-MX | Subtitle | Medicinas y vitaminas al día | Medicines and vitamins, up to date |
 | es | First line | ¿Ya me lo tomé? Abre Maru y sal de dudas. | Did I take it already? Open Maru and end the doubt. |
 | de-DE | Name | Maru: Tabletten-Erinnerung | Maru: tablet reminder |
-| de-DE | Subtitle | Supplements & Medikamente | Supplements and medications |
+| de-DE | Subtitle | Medikamente, Vitamine im Blick | Medications and vitamins in view |
 | de-DE | First line | Schon genommen? Öffne Maru, und du weißt es. | Taken already? Open Maru, and you know. |
-| ko | Name | Maru: 약 알림·영양제 복약 기록 | Maru: medicine reminders, and a record of supplements and doses |
+| ko | Name | Maru: 약 알림과 영양제 복약 기록 | Maru: medicine reminders, and a record of supplements and doses |
 | ko | Subtitle | 먹었는지 한눈에, 탭 한 번이면 끝 | See at a glance if you took it. One tap, and done |
 | ko | First line | 먹었나? Maru를 열면 바로 알 수 있어요. | Did I take it? Open Maru, and you know at once. |
 
@@ -280,76 +284,66 @@ From the [App Review Guidelines](https://developer.apple.com/app-store/review/gu
 
 `evidence.md` section 5 stays the list of claims. This study adds one fact to it: Apple's keyword page names "competing app names" as a reason for rejection.
 
-## 7. The screenshot plan
+## 7. The screenshots
 
-A design, not final images. The mock and its exports are outside the repository, in the maintainer's screenshot folder: `ui-shots/store/index.html` and `ui-shots/store/png/` (English and Simplified Chinese, 14 frames at 1206 × 2622).
+The set is outside the repository, in the maintainer's screenshot folder `ui-shots/store/`: one HTML file, and for each of `en`, `zh-Hans`, `ja`, `es`, `de`, and `ko` six frames at 1206 × 2622 pixels and one `overview.png`. es-MX uses the `es` frames, and en-GB uses the `en` frames.
 
-### 7.1 Layout
+### 7.1 The order, by acquisition value
 
-- Seven portrait frames at 1206 × 2622 pixels, the required size. One upload serves every iPhone size.
-- Background: white at the top that turns to a very light pink at the bottom (`#FFF3F5`). One background for all seven frames.
-- Caption: on top, centered, the system font in bold, 128 pixels (108 for a long line), in `#1D1D1F`. The second half of the first two captions is in the app pink `#FF2D55`. An optional second line at 56 pixels in `#6E6E73`.
-- The pink capsule of the icon sits over the first caption only. It is the one brand mark of the set.
-- Device: a plain dark bezel with round corners, 968 pixels wide, that runs off the bottom edge. No hand, no tilt, no shine.
-- Frame 2 has no device. It is the Today list as a cropped card at 108%, so the check marks are large. It breaks the row of phones once.
-- No panorama, no badges, no ratings, and no price word.
+A search result shows the name, the subtitle, and the first three portrait frames before any tap. So frames 1 to 3 must win the tap, and frames 4 to 6 serve the person who already opened the page.
 
-### 7.2 The frames
+| # | Message | Part of the UI | Reason for the place |
+|---|---|---|---|
+| 1 | Did I take it? One look. | The Today list | The name beside it already says "reminder". So the first frame gives the reason to pick this one: the doubt that every person in this search knows. Four of six competitors open with "never miss", so this line is also the one that differs |
+| 2 | Reminders at your times | The reminder with its "Taken" action | The searcher typed "reminder". The second frame proves that the app does the job that they searched for. It also shows the least work: a record with the app closed |
+| 3 | One tap. Recorded. | One row before and after the tap | Effort is the main reason that people leave a tracker (`evidence.md`, pain points). This frame ends the group that shows in search: see, get reminded, record |
+| 4 | See what you took | The History graph | Proof that the record lasts. It matters after the first three, because it is a benefit of week two, not of day one |
+| 5 | Your day at a glance | The Today widget | A second way to take the one look. It is a feature, so it comes after the reasons |
+| 6 | No account. No ads. | The records of the last 7 days | Trust closes the page. It removes the last doubt before the download. It does not start the page, because no person searches for it |
 
-| # | Screen and state | Why here |
+Not in the set: "Scan Label" and My Items with photos. No capture of them exists, and a frame that is drawn with no capture to compare cannot be checked.
+
+### 7.2 The design
+
+- Each frame shows one part of the UI with a caption, as the maintainer asked. No frame is a full screen in a device.
+- The parts are HTML and CSS, at 3 pixels for each point. Sizes, colors, icons, and texts come from the SwiftUI views (`TodayRow`, `TodayWidget`, `CapsuleMark`, `WeekStrip`, `HistoryGraphView`), from `App/Icons.xcassets`, from the String Catalogs, and from colors sampled in the captures.
+- Each part was put beside the real capture at the same size, in English, Simplified Chinese, and German, and corrected until text widths and positions agreed within about 3 pixels of 1206.
+- Frames 1 and 6 put the part on the gray of the app (`#F2F2F7`). Frames 2 to 5 put one part on the page background with a soft shadow.
+- Frame 2 shows the banner at 145%, and it runs off the right edge, where it holds only the time. The other parts are at 100% to 110%, because a row is as wide as the screen. A larger row cuts its own text.
+- Frame 3 shows the same row before and after the tap, with a touch point on the circle. Guideline 2.3.3 allows an overlay that shows an input.
+- Captions: the system font in bold, 106 to 144 pixels. The second half of captions 1 and 3 is in the app pink.
+
+### 7.3 Item names
+
+The frames use names that people of each market know. The amounts are text that a user types.
+
+| Locale | Items | Reason |
 |---|---|---|
-| 1 | Today, with two items taken and three open | The promise. It answers "what is this" with the user's own question, and it shows the answer in the UI |
-| 2 | Today as a cropped list, with the filled check marks | The second half of the promise: how little work it is |
-| 3 | A Lock Screen reminder for one item, with the "Taken" action | The core loop is complete in three frames: see, record, get reminded |
-| 4 | History, with the graph and "Last 7 Days" | The record is the proof that Maru remembers |
-| 5 | The Home Screen with the "Today" widget | A second way to take the one look |
-| 6 | The add screen with "Scan Label" | It removes the fear of setup |
-| 7 | My Items, with photos | Trust at the end, for the reader who scrolls that far |
+| en | Levothyroxine, Vitamin D, Omega-3, Magnesium, Atorvastatin | The sample data of the app. Both medicines are among the most prescribed in the US |
+| zh-Hans | 氨氯地平, 维生素 D, 鱼油, 益生菌, 阿托伐他汀 | A common blood pressure medicine and a common statin, with the supplements that sell most |
+| ja | アムロジピン, ビタミンD, オメガ3, 亜鉛, ロスバスタチン | The same choice, with the statin that is most common in Japan |
+| ko | 암로디핀, 비타민 D, 오메가3, 유산균, 아토르바스타틴 | Probiotics (유산균) are the leading supplement in Korea |
+| es | Levotiroxina, Vitamina D, Omega-3, Magnesio, Atorvastatina | The generic names in Spanish |
+| de | L-Thyroxin, Vitamin D, Omega-3, Magnesium, Atorvastatin | "L-Thyroxin" is the name in German use |
 
-Captions. The first line is the headline. The second line is optional.
+These choices are from general knowledge, not from a sales source. No brand name is in a frame.
 
-| # | en | zh-Hans | ja |
-|---|---|---|---|
-| 1 | Did I take it? / One look. | 吃了没？ / 看一眼就知道。 | 飲んだっけ？ / ひと目でわかる。 |
-| 2 | One tap. / Recorded. | 点一下， / 就记好。 | ワンタップで / 記録完了。 |
-| 3 | Reminders at your times. Second line: Tap Taken right on the reminder. | 按你的时间提醒。Second line: 在提醒上直接点“已服用”。 | 決めた時間にお知らせ。Second line: 通知から「服用済み」をタップ。 |
-| 4 | See what you took. Second line: Months at a glance. | 吃过什么，一目了然。Second line: 几个月的记录一眼看完。 | 飲んだ記録がひと目で。Second line: 数か月分をまとめて。 |
-| 5 | Your day at a glance. Second line: A widget on your Home Screen. | 今天，一眼看全。Second line: 主屏幕小组件。 | 今日の様子をひと目で。Second line: ホーム画面のウィジェット。 |
-| 6 | Scan the label to add. Second line: Your iPhone reads the name. | 扫一下标签就能添加。Second line: 由 iPhone 读出名称。 | ラベルをスキャンして追加。Second line: 名前はiPhoneが読み取ります。 |
-| 7 | No account. No ads. Second line: Your records stay on your iPhone. | 无需注册，没有广告。Second line: 记录只留在你的 iPhone 上。 | アカウント不要、広告なし。Second line: 記録はiPhoneの中だけに。 |
+### 7.4 Differences from the real app that remain
 
-| # | es | de | ko |
-|---|---|---|---|
-| 1 | ¿Ya me lo tomé? / Sal de dudas. | Schon genommen? / Ein Blick genügt. | 먹었나? / 한눈에 확인. |
-| 2 | Un toque. / Registrado. | Ein Tippen. / Erfasst. | 한 번 탭하면 / 기록 끝. |
-| 3 | Te avisa a tus horas. Second line: Toca «Tomado» en el recordatorio. | Erinnert zu deinen Zeiten. Second line: Tippe in der Erinnerung auf „Eingenommen“. | 정한 시간에 알림. Second line: 알림에서 바로 ‘복용함’. |
-| 4 | Mira lo que tomaste. Second line: Meses enteros de un vistazo. | Sieh, was du genommen hast. Second line: Ganze Monate auf einen Blick. | 먹은 기록을 한눈에. Second line: 몇 달 치도 한 화면에. |
-| 5 | Tu día de un vistazo. Second line: Un widget en la pantalla de inicio. | Dein Tag auf einen Blick. Second line: Ein Widget auf dem Home-Bildschirm. | 오늘 하루를 한눈에. Second line: 홈 화면 위젯. |
-| 6 | Escanea la etiqueta. Second line: Tu iPhone lee el nombre. | Etikett scannen, fertig. Second line: Dein iPhone liest den Namen. | 라벨을 스캔해 추가. Second line: iPhone이 이름을 읽어요. |
-| 7 | Sin cuenta. Sin anuncios. Second line: Tus registros se quedan en tu iPhone. | Ohne Konto. Ohne Werbung. Second line: Deine Aufzeichnungen bleiben auf deinem iPhone. | 계정도 광고도 없어요. Second line: 기록은 내 iPhone에만 남아요. |
+Apple can reject a screenshot that does not show the app as it is. A capture from one simulator session must replace or confirm these frames before the submission.
 
-The caption of frame 3 is true only for a reminder with one item. The frame shows one item.
-
-### 7.3 Captures that are still needed
-
-The mock uses the captures that exist: Today, History, and the item detail in six languages, and the reminder and the widget in English. One simulator session, with the sample data and one build, must take these, each in six languages at 1206 × 2622:
-
-1. The reminder on the Lock Screen with the "Taken" action, with no keyboard in the picture. The English capture shows a keyboard.
-2. The Home Screen with the "Today" widget, with the widget text in each language.
-3. The add screen with the "Scan Label" row and a name in the field. A second choice is the scan card over a real bottle.
-4. My Items with a photo on three or more items.
-5. Today in the state of frame 1, with the status bar at 9:41. The six captures that exist are good.
-6. Settings with "Remind Again" open, as a reserve frame for the follow-ups.
-7. Today in Dark Mode, as a reserve frame.
-
-The sample items have English names in every language. A set for Japan, Korea, or China reads better with local names, such as "维生素 D" and "鱼油". That needs a small change to the sample data, or a hand-made set of items for each language.
+- The reminder banner and its action are system views. The words of the system over the title ("TIME SENSITIVE") and at the right ("now") are known only in English. The other five languages use words that nobody confirmed.
+- The "Taken" action is glass in iOS, and it takes its tone from the wallpaper. The frame shows it on a light page.
+- Corners are plain round corners. iOS draws continuous corners.
+- Frame 3 shows a record time of one minute after the planned time. It is an example.
+- The widget and the graph were compared only in English and German.
 
 ## 8. Category, age rating, and review notes
 
 ### Category
 
 - Primary: Health & Fitness (the release plan).
-- Secondary: **Medical**, as a recommendation. In the US, 8 of the 10 top results for "pill reminder" have Medical as the primary category, and Apple's search reads both categories. Guideline 1.4.1 applies to what the app does, not to its category.
+- Secondary: **Medical**. The maintainer decided it. In the US, 8 of the 10 top results for "pill reminder" have Medical as the primary category, and Apple's search reads both categories. Guideline 1.4.1 applies to what the app does, not to its category.
 - The other choice is Lifestyle. It fits the calm tone and adds no medical frame, but it adds no search fit. Productivity fits least.
 
 ### Age rating answers (draft)
@@ -413,14 +407,54 @@ Not collected, and so not selected:
 
 One judgment: the feedback form opens in the system browser. Apple's label covers data that the app collects. If the form moves into the app, add "Other User Content" and "Email Address".
 
-## 10. Decisions for the maintainer
+## 10. Decisions and reasons
 
-1. **The name.** Search words in the name ("Maru: Pill & Vitamin Reminder", in the files) or the phrase of the site ("Maru: Know What You Took", alternative 1). The first is better for search and plainer. The second is the brand line, and the site and the first screenshot already carry it. If the maintainer picks the second, the subtitle becomes "Supplement & Pill Reminder".
-2. **The secondary category.** Medical (recommended) or Lifestyle.
-3. **es-MX.** Add it (recommended) or keep six languages.
-4. **The alarm words** in the keyword fields. Keep them (recommended) or remove them, because Maru says that it is not an alarm.
-5. **Local item names** in the screenshots of zh-Hans, ja, and ko.
-6. **The China mainland storefront**, as in the earlier note. The zh-Hans text is ready in both cases.
+Decisions of the maintainer on 2026-10-13:
+
+- The app record exists (Apple ID 6822159516) with the name "Maru: Pill & Vitamin Reminder". The English subtitle is "One-Tap Supplement Tracker".
+- The secondary category is Medical.
+- es-MX is in the listing.
+- The alarm keywords stay.
+- The separator "·" is not used anywhere. The Korean name and the list marks of the Chinese and Japanese descriptions changed.
+- Mainland China is not in the first release. zh-Hans stays for the other storefronts.
+
+Choices of the second round, each with its reason:
+
+| Choice | Reason |
+|---|---|
+| Every name says the category in the words of the top search suggestion of that market | A reader gives a search result about one second. The category word answers "what is it" in that second, and the name is the field with the most search weight |
+| Every subtitle gives the reason to tap, and adds search words that the name does not have | Apple reads both fields, so a repeated word is a lost word. "One look", "one tap", "im Blick", and "al día" promise less work, not more duty |
+| No "never miss", no "don't forget", no streak word | A promise of delivery is not allowed (section 6). A guilt word pushes away the people who already feel bad about a missed dose |
+| es names changed to "Maru: Recordatorio pastillas" | "recordatorio" is in 10 of 10 top names in Spain and 9 of 10 in Mexico, and "recordatorio pastillas" is a suggestion of Apple in both. The first draft had the word only in the subtitle. The form with no "de" is the form of the suggestion, and the form with "de" has 31 characters |
+| es-ES subtitle "Vitaminas y suplementos al día", es-MX "Medicinas y vitaminas al día" | The supplement words have the least competition. "Medicinas" is the common word in Mexico. "medicamentos" is in both keyword fields |
+| de subtitle "Medikamente, Vitamine im Blick" | "Medikamente" is in 5 of 9 top results, and "im Blick" is the reason to tap. The form with "&" has 31 characters |
+| ko name "Maru: 약 알림과 영양제 복약 기록" | The same four search words with no separator |
+| en-GB added, with "Tablet" in the subtitle | Section 3. It is the only English page that the UK storefront reads |
+| No keyword-only pages in other languages | Section 3 |
+
+The search terms that each page aims at:
+
+| Locale | Terms, first to last | Why |
+|---|---|---|
+| en-US, en-GB | "supplement tracker", "vitamin tracker", "vitamin reminder", "pill reminder", "medication reminder", "did i take it" | The first three are open: apps with 0 to 125 ratings are in the top ten. The next two have the demand, and Maru needs the words to show at all |
+| zh-Hans | 吃药提醒, 吃药打卡, 用药记录, 保健品, 维生素 | 吃药提醒 is the first suggestion for 吃药. The top reminder apps have 3 to 1,605 ratings |
+| ja | 服薬 リマインダー, お薬 記録, サプリ 管理, 飲み忘れ, 服薬管理 | "サプリ 管理" is open: six of the top ten have 1 to 14 ratings. 飲み忘れ is in the keyword field, because "防止" in a name reads as a promise |
+| es-ES | recordatorio pastillas, recordatorio medicamentos, vitaminas, suplementos | The first suggestions for "pastillas" and "recordatorio" |
+| es-MX | recordatorio pastillas, recordatorio de medicamentos, medicinas, vitaminas | "recordatorio de medicamentos" is the first suggestion for "recordatorio" in Mexico |
+| de-DE | tabletten erinnerung, medikamente erinnerung, vitamine, supplements, medikamentenplan | "tabletten erinnerung" is the first suggestion for "tabletten" |
+| ko | 약 알림, 영양제 알림, 복약 알림, 복약 기록 | 약 알림 is the second suggestion for 약, and the top apps have 0 to 4,022 ratings |
+
+### Search volume
+
+No free source gave a search volume without an account.
+
+| Source | Result |
+|---|---|
+| App Store search suggestions, per storefront | Real, but an order and not a number. Section 4.2 |
+| `asc apps public search` and `asc apps public rank` | Work with no account. They return result lists and one rank. They have no popularity value |
+| Rating counts of the top results (iTunes Search API) | Real numbers. They show the strength of the competition, not the demand. Section 4.3 |
+| Apple Ads search term popularity | The `asc` command `asc ads insights search-term-popularity find` reads it. It needs an Apple Ads account with an API key, and this Mac has none. No source says if an account with no campaign is enough. One vendor reports that the value is 5 for most terms since a change by Apple ([ASO.dev](https://static.aso.dev/blog/apple-ads-popularity-massive-drop/)) |
+| Astro, AppFollow, AppTweak, Appfigures, AppKittie, ASO.dev | All need an account. ASO.dev has a trial of 3 days and no free plan. A vendor post gives 5 keywords a day for AppTweak and 10 for AppFollow on a free account, which was not checked |
 
 ## 11. Limits
 
@@ -428,6 +462,8 @@ One judgment: the feedback form opens in the system browser. Apple's label cover
 - The top-ten lists are from the iTunes Search API. Its order can differ from the order in the App Store app.
 - The reading of the screenshot sets is by one model from contact sheets. Type sizes are estimates, not measurements.
 - Not looked at: screenshots.pro, appscreens, theapplaunchpad, and X. Xiaohongshu: one result page only.
+- No search volume number from any source (section 10).
+- The frames are HTML copies of the UI, not captures (section 7.4).
 - Round Health, Dosecast, and Pillo were not found by name.
 - Not verified: that search reads screenshot text, that search reads every supported language of a storefront, the keyword limit for Chinese, Japanese, and Korean, the two-character rule for those languages, and how search treats a hyphen.
 - The ASO sources are vendor blogs with tools to sell.
