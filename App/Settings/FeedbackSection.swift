@@ -14,12 +14,8 @@ struct FeedbackSection: View {
             Button("Send Feedback") {
                 guard let url = Self.formURL else { return }
                 model.analytics.capture(.feedbackOpened)
-                // The system shows the page in a browser sheet over Maru where it can. On an older system, Safari opens.
-                if #available(iOS 26.0, *) {
-                    openURL(url, prefersInApp: true)
-                } else {
-                    openURL(url)
-                }
+                // Safari opens the form, as for the links in About. An in-app browser over the settings sheet did not open.
+                openURL(url)
             }
             .rowText()
         } footer: {

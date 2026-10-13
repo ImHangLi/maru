@@ -445,7 +445,7 @@ Owner decision. Settings has a "Send Feedback" button at the end. It opens the o
 - No server of Maru, no email address of the owner in the app, and no data of the app in the request. The page loads only after a tap.
 - The form asks for a message, and for an email address only if the user wants a reply. It asks the user to leave out health details.
 - `PRIVACY.md` names Tally. "No network requests" is now "no network requests by itself".
-- The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
+- The button uses the system `openURL` action, and Safari opens the form. No custom browser view. (Changed on 2026-10-14: the in-app browser sheet did not open over the settings sheet on the maintainer's iPhone.)
 
 
 ## D038 · 2026-10-11 · Quick add: scan a label and name suggestions (form proposal changed by D043) (scan card partly replaced by D042)
