@@ -90,10 +90,11 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     /// The region setting of the device as two letters `A` to `Z`, in upper case (D064). `nil` for a missing value and
     /// for any other form, such as the UN M.49 code `419`. The event then has no region field.
     static func regionField(_ regionCode: String?) -> String? {
-        guard let code = regionCode?.uppercased(), code.unicodeScalars.count == 2,
-              code.unicodeScalars.allSatisfy({ ("A"..."Z").contains($0) })
+        // Check the letters before the change of case: an upper-case form can turn one other letter into two ASCII letters.
+        guard let code = regionCode, code.unicodeScalars.count == 2,
+              code.unicodeScalars.allSatisfy({ ("A"..."Z").contains($0) || ("a"..."z").contains($0) })
         else { return nil }
-        return code
+        return code.uppercased()
     }
 
     /// The pseudonymous install ID. It is made at the first event after consent, and `reset` removes it (spec 11.3).
