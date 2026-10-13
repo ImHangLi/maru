@@ -1138,6 +1138,8 @@ The screens:
 - The item detail shows the rule under "Days", and "Next Dose" for each plan with a day cycle. "Next Dose" shows a date when the dose is 7 or more days away, because a weekday alone does not tell the week after a pause.
 - A stored cycle of 1 day on and 2 to 29 days off opens as "Every Few Days". The two forms give the same dates.
 - A draft file from before this change keeps its rule: the file names the cycle with the old key, and a cycle with no kind is every other day.
+- A save keeps the stored cycle only when the choice gives the same due dates from today on. A first day that the user moves to a later date is a new version from today, also when the date is in the rhythm of the stored cycle: the days before it then have no dose. This is from the review, which found that such a save kept the old first day.
+- The numbers of a cycle are 1 to 99, in the domain (`DayCycle.dayCounts`), in the checks of `v5`, and in the menus. Stored data or a backup with another number does not load, so a restore refuses the file before it replaces the data. This is from the review: a backup with a very large number passed, and the next due calculation overflowed.
 
 Rejected:
 
@@ -1147,6 +1149,6 @@ Rejected:
 - "Every Few Days" from 2 days. It would give two choices for the same plan.
 - A change of `site/compare.html`, which says that Maru has no cycles. The site is published text, and it must follow the build that the store has.
 
-Tests (D016): three new tests. The rhythm and the pause across a clock change, the dated requests around a pause, and the migration with a restore of an older backup.
+Tests (D016): four new tests. The rhythm and the pause across a clock change, the dated requests around a pause, the migration with a restore of an older backup, and the refusal of a backup with a number outside the limits.
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.

@@ -71,12 +71,9 @@ struct ItemDraft: Codable, Equatable {
 
         /// The days from one dose to the next that "Every Few Days" offers. Two days is "Every Other Day".
         static let intervals = 3...30
-        /// The numbers that "Days On" and "Days Off" offer.
-        static let dayCounts = 1...99
-
         /// The days with a dose and the days with none, when the user chose them and the page offers them.
         var counts: (daysOn: Int, daysOff: Int)? {
-            guard let daysOn, let daysOff, Self.dayCounts.contains(daysOn), Self.dayCounts.contains(daysOff) else { return nil }
+            guard let daysOn, let daysOff, DayCycle.dayCounts.contains(daysOn), DayCycle.dayCounts.contains(daysOff) else { return nil }
             return (daysOn, daysOff)
         }
     }
@@ -291,10 +288,15 @@ extension ItemDraft {
             guard let start = cycle.start?.date else { throw DraftBuildError.noFirstDay }
             return try DayCycle(start: start, daysOn: counts.daysOn, daysOff: counts.daysOff)
         }
-        // A choice that gives the due dates of the stored plan is no change of the plan.
+        // A choice that gives the due dates of the stored plan from today on is no change of the plan.
+        // A later start date in the same rhythm is a change when the stored plan has a dose before it:
+        // the user moved the first day, so the days from today to that date have no dose. One full cycle
+        // always has a dose, so the check reads at most that many days.
         if let new = dayCycle, let stored = latest?.dayCycle,
            (new.daysOn, new.daysOff) == (stored.daysOn, stored.daysOff), new.start >= stored.start,
-           new.start.days(since: stored.start).isMultiple(of: new.daysOn + new.daysOff) {
+           new.start.days(since: stored.start).isMultiple(of: new.daysOn + new.daysOff),
+           (0..<min(max(0, new.start.days(since: today)), new.daysOn + new.daysOff))
+               .allSatisfy({ !stored.isDue(on: today.adding(days: $0)) }) {
             dayCycle = stored
         }
         let dose = Dose(amount)

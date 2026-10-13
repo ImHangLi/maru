@@ -693,11 +693,11 @@ private struct RepeatList: View {
                         } else {
                             DayCountPicker(
                                 title: "Days On", selection: Binding(get: { cycle?.daysOn }, set: { cycle?.daysOn = $0 }),
-                                values: ItemDraft.Cycle.dayCounts
+                                values: DayCycle.dayCounts
                             ) { Text(verbatim: "\($0)") }
                             DayCountPicker(
                                 title: "Days Off", selection: Binding(get: { cycle?.daysOff }, set: { cycle?.daysOff = $0 }),
-                                values: ItemDraft.Cycle.dayCounts
+                                values: DayCycle.dayCounts
                             ) { Text(verbatim: "\($0)") }
                         }
                     } footer: {

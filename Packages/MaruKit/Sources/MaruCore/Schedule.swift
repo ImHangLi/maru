@@ -8,7 +8,7 @@ public enum ScheduleError: Error, Equatable, Sendable {
     case noVersion
     /// A version with a day cycle has no weekday rule other than every day.
     case weekdaysWithDayCycle
-    /// A day cycle has at least one day with a dose and one day with none.
+    /// A number of days of a day cycle is outside `DayCycle.dayCounts`.
     case invalidDayCycle
 }
 
@@ -20,8 +20,13 @@ public struct DayCycle: Hashable, Sendable {
     public let daysOn: Int
     public let daysOff: Int
 
+    /// The numbers of days that a cycle can have, and that the repeat page offers. Stored data with another
+    /// number does not load, so a sum of the two numbers never overflows, and a search for the next due date
+    /// is short.
+    public static let dayCounts = 1...99
+
     public init(start: LocalDate, daysOn: Int, daysOff: Int) throws {
-        guard daysOn >= 1, daysOff >= 1 else { throw ScheduleError.invalidDayCycle }
+        guard Self.dayCounts.contains(daysOn), Self.dayCounts.contains(daysOff) else { throw ScheduleError.invalidDayCycle }
         self.start = start
         self.daysOn = daysOn
         self.daysOff = daysOff

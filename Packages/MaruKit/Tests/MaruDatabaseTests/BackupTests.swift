@@ -124,6 +124,29 @@ struct BackupTests {
         #expect(try await store.schedule(id: seed.schedule.id) == seed.schedule)
     }
 
+    /// A backup with a number of days that a cycle cannot have is refused before the restore, so no due date
+    /// calculation meets a number that overflows (D065). The file has no check of its own: a file from
+    /// another source can have any value.
+    @Test func aBackupWithACycleOutsideTheLimitsIsRefusedAndTheDataStays() async throws {
+        #expect(throws: ScheduleError.invalidDayCycle) {
+            try DayCycle(start: Fixtures.date(2026, 3, 1), daysOn: .max, daysOff: 1)
+        }
+        let (store, seed) = try await storeWithABackup()
+        let file = try DatabaseQueue(path: backupFile.path)
+        try await file.writeWithoutTransaction { db in
+            try db.execute(
+                sql: """
+                    PRAGMA ignore_check_constraints = ON;
+                    UPDATE scheduleVersion SET cycleStart = '2026-03-01', cycleDaysOn = 9223372036854775807, cycleDaysOff = 1
+                    """
+            )
+        }
+        try file.close()
+        #expect(throws: StorageError.self) { try store.stage(backup: backupFile) }
+        #expect(try temporaryFiles(in: directory).isEmpty)
+        #expect(try await store.schedule(id: seed.schedule.id) == seed.schedule)
+    }
+
     /// A staged file that is gone must not restore as an empty database. The data stays, and the epoch of the
     /// widgets does not stay open (D048).
     @Test func aRestoreWithAMissingStagedFileChangesNothing() async throws {

@@ -180,10 +180,11 @@ enum Schema {
     /// the pause. The start date is the column of `v4` with a new name, and its check stays. A version that
     /// repeats every second day gets 1 and 1, so it keeps its rhythm. A version with no start date keeps
     /// `NULL` in the three columns and loads unchanged. `ScheduleVersion` loads all three or none.
+    /// The checks have the limits of `DayCycle.dayCounts`.
     static let v5 = """
         ALTER TABLE scheduleVersion RENAME COLUMN everyOtherDayFrom TO cycleStart;
-        ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOn INTEGER CHECK (cycleDaysOn >= 1);
-        ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOff INTEGER CHECK (cycleDaysOff >= 1);
+        ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOn INTEGER CHECK (cycleDaysOn BETWEEN 1 AND 99);
+        ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOff INTEGER CHECK (cycleDaysOff BETWEEN 1 AND 99);
         UPDATE scheduleVersion SET cycleDaysOn = 1, cycleDaysOff = 1 WHERE cycleStart IS NOT NULL;
         """
 }
