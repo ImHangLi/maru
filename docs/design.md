@@ -172,6 +172,17 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
 - The words "Today", "Morning", "Noon", and "Evening" match the app. The "·" in the header of the small "Today" widget is the owner design. It is the one use of the separator of principle 5.
 
+## Watch
+
+One screen, "Today", with system list rows on the black background of watchOS (D065).
+
+- One section per part of the day, with the slot word as its header, as on the iPhone.
+- Row: the capsule of the widgets, the name, and a second line in small gray text with the amount and the time. A taken dose shows its intake time, and a skipped dose shows "Skipped". The capsule is gray for a dose that is open or skipped, as in the widgets.
+- A tap on an open row records "Taken". A swipe left gives "Skip" on an open row and "Undo" on a recorded row, with the words of the iPhone.
+- A row is half transparent while its request runs. The capsule fills and the success haptic plays only after the iPhone confirms the commit (spec §7.2).
+- A failure is a first row with a warning symbol and one plain sentence, and the error haptic. It stays until the next request.
+- The last line is "Updated 8:07 AM", the time of the list. With no list of today: "Open Maru on your iPhone to update."
+
 ## Motion
 
 One motion language for the whole app (D030, D058). The same kind of change uses the same motion on every page. `App/Motion.swift` has the cases. A view or the model names a case and never a curve or a duration.

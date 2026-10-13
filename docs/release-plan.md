@@ -8,7 +8,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 |---|---|
 | Join the Apple Developer Program as an individual | Done on 2026-10-13 |
 | Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open. The maintainer does not register for GST for now, so the tips may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
-| Give the agent the Team ID, and set the paid team in Xcode for both targets | Team ID `JBG4XL9NQK`. Xcode needs the Apple ID again |
+| Give the agent the Team ID, and set the paid team in Xcode for each target, also the Watch app (D065) | Team ID `JBG4XL9NQK`. Xcode needs the Apple ID again |
 | Create an App Store Connect API key (App Manager). Enter it in a private prompt, never in chat | Open |
 | Buy the landing page domain | Done: `maru.day` |
 | Create the PostHog project | Done. "Discard client IP data" is on. The cloud region must match `MARU_ANALYTICS_HOST` and the sentence in `PRIVACY.md` (D063) |
@@ -18,6 +18,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 ## 2. Identity
 
 - Freeze the bundle IDs `com.imhangli.maru` and `com.imhangli.maru.widgets` before the first upload (D005).
+- The Watch app has the bundle ID `com.imhangli.maru.watchkitapp` (D065). The app embeds it, so an archive includes it. To ship 1.0 without the Watch app, archive 1.0 before that change merges, or remove the `MaruWatch` dependency for the archive. A build with the Watch app needs Watch screenshots and a sentence in the privacy policy.
 - Register the App Group on the paid team. Done: the paid team is the free team, so the group ID stays (D062).
 - Set the version to 1.0.0. Done (D062).
 - Add the time-sensitive notification entitlement (D034). Done in code (D062). The device build waits for the Apple ID in Xcode.

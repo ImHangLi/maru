@@ -56,7 +56,7 @@ extension AppModel {
                    generation == dataGeneration,
                    await store.restoreEpoch() == intent.epoch,
                    (try? await store.widgetTarget(of: occurrenceID, scheduleVersionID: versionID, at: Date())) == .alreadyTaken {
-                    await finishWidgetRecord(deviceTimeZone: deviceTimeZone)
+                    await waitForReminders(deviceTimeZone: deviceTimeZone)
                     return
                 }
             case let .open(occurrence, record):
@@ -75,7 +75,7 @@ extension AppModel {
                 event.requiresCurrentPlan = true
                 event.restoreEpoch = intent.epoch
                 if await commitAndWait([event], generation: generation) {
-                    await finishWidgetRecord(deviceTimeZone: deviceTimeZone)
+                    await waitForReminders(deviceTimeZone: deviceTimeZone)
                     return
                 }
             case .none:
@@ -88,8 +88,8 @@ extension AppModel {
         )
     }
 
-    /// The system can suspend the process after the intent returns, so the intent waits for the reminders.
-    private func finishWidgetRecord(deviceTimeZone: NamedTimeZone) async {
+    /// The system can suspend the process after a background record returns, so the caller waits for the reminders.
+    func waitForReminders(deviceTimeZone: NamedTimeZone) async {
         _ = try? await store.reconcileReminders(at: Date(), deviceTimeZone: deviceTimeZone)
     }
 }

@@ -4,7 +4,7 @@ This file lists the 25 riskiest strings of each language, for a native speaker t
 
 A reviewer checks three things in each row. The meaning of dose, time, skip, and taken stays the same. The text gives no medical advice. The text is short and natural, in the words of Apple's own apps in that language.
 
-The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`, `App/InfoPlist.xcstrings`, and `Packages/MaruKit/Sources/MaruNotifications/Resources/Localizable.xcstrings`. To change a string, edit the catalog and keep the format specifiers (`%@`, `%lld`, `%1$@`). The reviewer's name and the date go in the table below after a check.
+The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`, `Watch/Localizable.xcstrings`, `App/InfoPlist.xcstrings`, and `Packages/MaruKit/Sources/MaruNotifications/Resources/Localizable.xcstrings`. To change a string, edit the catalog and keep the format specifiers (`%@`, `%lld`, `%1$@`). The reviewer's name and the date go in the table below after a check.
 
 | Language | Reviewer | Date | Result |
 |---|---|---|---|

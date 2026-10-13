@@ -168,7 +168,9 @@ final class AppModel {
             todayDidShow()
             if case .loaded = content {
                 // The widgets show what is stored, so they read again after each read of the app (D048).
+                // The Watch app gets the list (D065).
                 WidgetCenter.shared.reloadAllTimelines()
+                sendWatchDay()
                 showPendingWidgetSlot()
             }
             // After the content shows, so Today never waits for the reminders (spec 8.1, 9).

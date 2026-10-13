@@ -113,7 +113,7 @@ extension AppModel {
     // MARK: Record transaction
 
     /// A new event revises the last event of the row, also after an undo.
-    private func event(for entry: Entry, _ action: IntakeAction, at time: Date? = nil) -> PendingEvent {
+    func event(for entry: TodaySnapshot.Entry, _ action: IntakeAction, at time: Date? = nil) -> PendingEvent {
         let now = Date()
         return PendingEvent(
             event: IntakeEvent(
@@ -266,6 +266,7 @@ extension AppModel {
             content = .loaded(snapshot)
         }
         today.choice?.apply(records)
+        sendWatchDay()
         historyDidCommit(records)
         today.commitCount += 1
         if backfilled.isEmpty {

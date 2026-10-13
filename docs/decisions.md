@@ -1102,3 +1102,47 @@ Maintainer decision, with agent detail. It adds one field to the events of D052.
 - The maintainer does not register for GST for now, so supporter tips may not be for sale in the Australian storefront. Check the state of the Paid Apps Agreement before the first release.
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody sent an event to the PostHog project, and nobody checked the packets (T42). The "Discard client IP data" setting is the report of the maintainer.
+
+## D065 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone
+
+Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
+
+Scope:
+
+- One screen, "Today": the doses of today by part of the day, with the capsule of the widgets (D048). A tap on an open dose records "Taken". A swipe gives "Skip" on an open dose and "Undo" on a recorded dose, with the words of the iPhone (D058).
+- Not in this change: complications, a Watch-only mode, iCloud, as-needed items, a change of the intake time, and adding or editing items on the Watch.
+
+Where the data lives:
+
+- The iPhone database stays the only store. The Watch app has no database and does not link `MaruDatabase` or GRDB. It links only `MaruCore`, so `Package.swift` now also names watchOS 10.
+- The iPhone sends the list of today as the WatchConnectivity application context after each read of the app, after each commit, and after a change of the tint. The system keeps the last context on the Watch, so the Watch app opens with the last list and shows its time ("Updated 8:07 AM"). A list of an earlier day does not show as today.
+- When the Watch app comes to the front, it also asks the iPhone for the list of now. The system starts Maru on the iPhone in the background for the request.
+- This changes one stated rule of spec 10: the names, the amounts, the times, and the states of the doses of today now leave the iPhone, to the user's own paired Watch. WatchConnectivity sends them between the two devices, and Maru has no server in between. Nothing goes to the Watch until the Watch app is installed. Analytics get no new event and no new field, and the Watch app sends no analytics and writes no log.
+
+Where the record runs:
+
+- The Watch sends a request with the occurrence ID, the schedule version ID, and the action. It carries no name. `AppModel.answerWatch` reads today again from the store, finds the dose, and records with `commitAndWait`, the transaction of the record circle, with the generation check of D040. The source of the event is `app`, as for the widget. A new source would change the schema and the export format.
+- The reply says "recorded" only after the commit, and it has the list after the request. The Watch never changes the state of a dose by itself: the capsule fills and the success haptic plays only for a reply that says "recorded" (spec 7.2).
+- A dose that has the asked state already is a success with no new event, after a flush, as for the widget. So a second tap after a lost reply writes nothing (T18).
+- After a commit the iPhone waits for the reminder run (D047) before it replies, as for the widget.
+- Nothing is recorded, and the Watch says so in plain words, when: the iPhone is not reachable, no reply comes, the iPhone is locked, the dose is not in the list of today any more, the plan changed, the dose has an event that the store did not confirm (D014), or the commit fails. A failed commit shows on the iPhone as on Today.
+- The message format is in `MaruCore/WatchMessage.swift`. A message that does not decode records nothing, so a Watch app and an iPhone app of different versions fail safe.
+
+Limits that the maintainer must know:
+
+- The database has complete file protection (spec 10). A locked iPhone cannot read or write it. So the Watch app records only while the iPhone is unlocked, and with the iPhone locked in a pocket it shows the last list and "Not recorded. Unlock your iPhone and try again." A change of the protection level is a spec change and a maintainer decision.
+- The app embeds the Watch app. An archive of the iPhone app from this state includes it, and App Store Connect then asks for Watch screenshots and reviews the Watch app. To ship 1.0 without it, archive 1.0 before this change merges, or remove the `MaruWatch` dependency of the `Maru` target for that archive.
+- `PRIVACY.md` and the privacy page say that the health data stays on the iPhone. They need one sentence about the Watch before a build with the Watch app goes to users. The text is a maintainer decision.
+
+Notifications: nothing new. The iPhone reminders mirror to the Watch with the "Taken" action of D034. The category has one background action, registered on the iPhone at each launch. For a notification that the iPhone forwards, watchOS gives a background action to the iPhone app, so the response goes to `ReminderTapDelegate`, and `takeReminder` records with the same transaction. This is a reading of the code and of the watchOS rule, and a device must confirm it. The Watch app has no notification code, so a tap on the reminder itself opens the Watch app at its list.
+
+Project: the target `MaruWatch`, bundle ID `com.imhangli.maru.watchkitapp`, watchOS 10, automatic signing with the team of the app. It compiles four shared files: the slot words, the tint, the time format, and the capsule. Its String Catalog has six languages (D059). The app icon set has one more entry for watchOS with the same image. CI: the `app` job builds the Watch app with the app, because the app embeds it.
+
+Not verified: no build on this Mac. Nobody ran the Watch app on a Watch or in a simulator. A real iPhone and Watch must confirm:
+
+- The install of the Watch app with the iPhone app, and the signing of the new App ID.
+- The list after a launch, after a record on the iPhone, and on the next day.
+- A tap, a skip, and an undo with the iPhone unlocked: the record on the iPhone, the haptic, and no follow-up after it.
+- The same with the iPhone locked, and with the iPhone off or out of range: no record, and the text.
+- A reminder on the Watch with the iPhone locked: the "Taken" action is there, and what it does. The expected result with a locked iPhone is the "Not recorded" notice of D034, because the database is locked.
+- The icon in the round mask, the rows at the largest text size, VoiceOver, and each language.
