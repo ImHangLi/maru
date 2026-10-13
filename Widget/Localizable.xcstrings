@@ -71,8 +71,43 @@
         }
       }
     },
+    "%lld of %lld taken" : {
+      "comment" : "Today widget: VoiceOver label of the count of doses taken of the doses planned. Example: 4 of 7 taken.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld von %2$lld eingenommen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld de %2$lld tomadas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%2$lld回中%1$lld回服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%2$lld회 중 %1$lld회 복용함"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已服用 %1$lld/%2$lld"
+          }
+        }
+      }
+    },
     "+%lld" : {
-      "comment" : "Take Now widget: the number of doses of the slot that do not fit. Example: +2.",
+      "comment" : "Record Dose widget: the number of doses of the slot that do not fit. Example: +2.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -351,72 +386,72 @@
         }
       }
     },
-    "Not taken" : {
-      "comment" : "Widget: VoiceOver label of a gray capsule.",
+    "Not recorded" : {
+      "comment" : "Widget: VoiceOver label of the gray capsule of a dose with no record yet.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nicht eingenommen"
+            "value" : "Nicht erfasst"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No tomado"
+            "value" : "Sin registrar"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未服用"
+            "value" : "未記録"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "복용하지 않음"
+            "value" : "기록되지 않음"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未服用"
+            "value" : "未记录"
           }
         }
       }
     },
-    "Nothing to Take Today" : {
-      "comment" : "Widget: shown when no dose is due today.",
+    "Nothing Planned Today" : {
+      "comment" : "Widget: shown when no dose is planned today.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heute nichts einzunehmen"
+            "value" : "Heute nichts geplant"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nada que tomar hoy"
+            "value" : "Nada planificado para hoy"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今日の服用はありません"
+            "value" : "今日の服用予定はありません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오늘 복용할 항목 없음"
+            "value" : "오늘 예정된 복용 없음"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今天无需服用"
+            "value" : "今天没有服用计划"
           }
         }
       }
@@ -596,37 +631,72 @@
         }
       }
     },
-    "Take Now" : {
-      "comment" : "Widget: the name of the widget that records a dose with a tap.",
+    "Skipped" : {
+      "comment" : "Widget: VoiceOver label of the gray capsule of a skipped dose.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jetzt einnehmen"
+            "value" : "Übersprungen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomar ahora"
+            "value" : "Omitido"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今すぐ服用"
+            "value" : "スキップ済み"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "지금 복용"
+            "value" : "건너뜀"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "立即服用"
+            "value" : "已跳过"
+          }
+        }
+      }
+    },
+    "Record Dose" : {
+      "comment" : "Widget: the name of the widget that records a dose with a tap.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis erfassen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用を記録"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 기록"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录服用"
           }
         }
       }
@@ -667,7 +737,7 @@
       }
     },
     "Tap a capsule to record a dose of the current slot." : {
-      "comment" : "Widget gallery: description of the Take Now widget.",
+      "comment" : "Widget gallery: description of the Record Dose widget.",
       "localizations" : {
         "de" : {
           "stringUnit" : {

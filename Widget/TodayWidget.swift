@@ -26,7 +26,7 @@ private struct TodayWidgetView: View {
         case .unavailable:
             UnavailableView()
         case let .day(day) where day.doses.isEmpty:
-            Text("Nothing to Take Today")
+            Text("Nothing Planned Today")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .widgetURL(AppGroup.todayURL(nil))
@@ -55,6 +55,7 @@ private struct SmallToday: View {
                     Text("\(slot.openCount) left")
                 } else {
                     Text("\(day.takenCount) of \(day.doses.count)")
+                        .accessibilityLabel(Text("\(day.takenCount) of \(day.doses.count) taken"))
                 }
             }
             .font(.largeTitle.bold())
@@ -64,7 +65,7 @@ private struct SmallToday: View {
             HStack {
                 Spacer(minLength: 0)
                 CapsuleRows(
-                    taken: Array((slot?.doses ?? day.doses).prefix(8)).map(\.isTaken),
+                    statuses: Array((slot?.doses ?? day.doses).prefix(8)).map(\.status),
                     tint: tint, size: 28, perRow: 4, alignment: .trailing
                 )
             }
@@ -76,15 +77,13 @@ private struct SmallToday: View {
 
     @ViewBuilder
     private func header(_ slot: WidgetDay.Slot?) -> some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 6) {
             if let slot {
                 Text(slot.part.title).foregroundStyle(tint)
-                Text(verbatim: "·").foregroundStyle(.secondary)
                 Text(slot.time.formatted(.rowTime(in: day.timeZone))).foregroundStyle(.secondary)
             } else {
                 Text("All done").foregroundStyle(tint)
                 if let next = day.nextTime {
-                    Text(verbatim: "·").foregroundStyle(.secondary)
                     Text("Next \(next.formatted(.rowTime(in: day.timeZone)))").foregroundStyle(.secondary)
                 }
             }
@@ -107,6 +106,7 @@ private struct MediumToday: View {
                 Text("Today").font(.headline)
                 Spacer()
                 Text("\(day.takenCount) of \(day.doses.count)").font(.headline).foregroundStyle(.secondary)
+                    .accessibilityLabel(Text("\(day.takenCount) of \(day.doses.count) taken"))
             }
             HStack(alignment: .top, spacing: 8) {
                 ForEach(day.slots) { slot in
@@ -119,7 +119,7 @@ private struct MediumToday: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             CapsuleRows(
-                                taken: slot.doses.prefix(6).map(\.isTaken),
+                                statuses: slot.doses.prefix(6).map(\.status),
                                 tint: tint, size: 26, perRow: 3, alignment: .leading
                             )
                             .padding(.top, 4)

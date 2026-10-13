@@ -49,7 +49,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 - Name, subtitle, keywords, and description: the files in `metadata/`, in the layout of `asc metadata`. Six languages, es-MX, and en-GB. The reasons are in `docs/research/2026-10-13-aso-and-store-page.md`. The app record has the name "Maru: Pill & Vitamin Reminder".
 - Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. Section 7 of the same note has the six frames and their order. The frames are HTML copies of the UI, and captures must confirm them before the submission.
 - A privacy policy page and a support page on the landing page domain. The URLs in `metadata/` return 404 until the new site is live.
-- Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, not linked to the user, and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
+- Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, linked to the user (D069), and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
 - Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50). Drafts are in section 8 of the note. The secondary category is Medical.
 
 ## 6. Launch

@@ -22,7 +22,7 @@ extension AppModel {
         focus(Set(group.entries.map(\.occurrence.key)))
     }
 
-    /// The tap on a gray capsule of the "Take Now" widget (D048). The system runs it in this process.
+    /// The tap on a gray capsule of the "Record Dose" widget (D048). The system runs it in this process.
     ///
     /// It records one dose with the transaction of the record circle and the generation check of D040, and then it
     /// runs the reminders as after a record on Today (D047). Three checks come first:
@@ -95,7 +95,7 @@ extension AppModel {
 }
 
 extension AppStore {
-    /// What a tap on the "Take Now" widget can record. See `LocalStore.widgetTarget`.
+    /// What a tap on the "Record Dose" widget can record. See `LocalStore.widgetTarget`.
     func widgetTarget(
         of occurrenceID: OccurrenceID, scheduleVersionID: ScheduleVersionID, at now: Date
     ) async throws(StorageError) -> ReminderActionTarget {

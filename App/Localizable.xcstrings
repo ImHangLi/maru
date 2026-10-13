@@ -421,37 +421,37 @@
         }
       }
     },
-    "Maru shares counts of what you use, and never item names, doses, or times." : {
+    "Maru shares how you use the app, and never item names, doses, or times." : {
       "comment" : "Settings: the footer of the usage statistics switch. One sentence.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru teilt nur Zählwerte zur Nutzung, nie Namen, Dosen oder Zeiten."
+            "value" : "Maru teilt, wie du die App nutzt, aber nie Namen, Dosen oder Zeiten."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru comparte recuentos de uso, nunca nombres de elementos, dosis ni horas."
+            "value" : "Maru comparte cómo usas la app, nunca nombres de elementos, dosis ni horas."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maruが共有するのは利用した回数だけです。項目名、用量、時刻は共有しません。"
+            "value" : "Maruが共有するのは機能の利用状況だけです。項目名、用量、時刻は共有しません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru는 사용 횟수만 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요."
+            "value" : "Maru는 앱 사용 정보만 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru 只共享使用次数，绝不包含项目名称、剂量或时间。"
+            "value" : "Maru 只共享功能使用情况，绝不包含项目名称、剂量或时间。"
           }
         }
       }
@@ -596,72 +596,72 @@
         }
       }
     },
-    "Share counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can change this in Settings." : {
+    "Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings." : {
       "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the message. The statistics are off until the user agrees.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Teile Zählwerte zur Nutzung, zum Beispiel ob du eine Dosis erfasst hast. Nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ändern."
+            "value" : "Teile, wie du die App nutzt, zum Beispiel ob du heute eine Dosis erfasst hast. Maru teilt nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ändern."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Comparte recuentos de lo que usas, como si has registrado una dosis. Nunca nombres de elementos, dosis ni horas. Puedes cambiarlo en Ajustes."
+            "value" : "Comparte cómo usas la app, por ejemplo si has registrado una dosis hoy. Maru nunca comparte nombres de elementos, dosis ni horas. Puedes cambiarlo en Ajustes."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服用を記録したかどうかなど、機能を使った回数を共有します。項目名、用量、時刻は共有しません。この設定は「設定」でいつでも変更できます。"
+            "value" : "今日服用を記録したかどうかなど、機能の利用状況を共有します。項目名、用量、時刻は共有しません。「設定」でいつでも変更できます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "복용을 기록했는지 같은 사용 횟수를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 바꿀 수 있어요."
+            "value" : "오늘 복용을 기록했는지 같은 앱 사용 정보를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 바꿀 수 있어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "共享你使用功能的次数，例如是否记录了一次服用。绝不包含项目名称、剂量或时间。你可以随时在“设置”中更改。"
+            "value" : "共享功能使用情况，例如今天是否记录了服用。Maru 绝不共享项目名称、剂量或时间。你可以随时在“设置”中更改。"
           }
         }
       }
     },
-    "Maru shares counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can turn this off in Settings." : {
+    "Maru shares how you use the app, such as whether you recorded a dose today. It never shares item names, doses, or times. You can turn this off in Settings." : {
       "comment" : "Usage statistics notice: the message. The statistics are on by default outside the EU, the UK, and Switzerland.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru teilt Zählwerte zur Nutzung, zum Beispiel ob du eine Dosis erfasst hast. Nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ausschalten."
+            "value" : "Maru teilt, wie du die App nutzt, zum Beispiel ob du heute eine Dosis erfasst hast. Maru teilt nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ausschalten."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru comparte recuentos de lo que usas, como si has registrado una dosis. Nunca nombres de elementos, dosis ni horas. Puedes desactivarlo en Ajustes."
+            "value" : "Maru comparte cómo usas la app, por ejemplo si has registrado una dosis hoy. Nunca comparte nombres de elementos, dosis ni horas. Puedes desactivarlo en Ajustes."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maruは、服用を記録したかどうかなど、機能を使った回数を共有します。項目名、用量、時刻は共有しません。「設定」でいつでもオフにできます。"
+            "value" : "Maruは、今日服用を記録したかどうかなど、機能の利用状況を共有します。項目名、用量、時刻は共有しません。「設定」でいつでもオフにできます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru는 복용을 기록했는지 같은 사용 횟수를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 끌 수 있어요."
+            "value" : "Maru는 오늘 복용을 기록했는지 같은 앱 사용 정보를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 끌 수 있어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru 会共享你使用功能的次数，例如是否记录了一次服用。绝不包含项目名称、剂量或时间。你可以随时在“设置”中关闭。"
+            "value" : "Maru 会共享功能使用情况，例如今天是否记录了服用。绝不共享项目名称、剂量或时间。你可以随时在“设置”中关闭。"
           }
         }
       }
@@ -1632,37 +1632,37 @@
         }
       }
     },
-    "A backup moves everything to a new iPhone. The files have your item names and records and are not encrypted, so share them only with people you trust." : {
+    "A backup moves your items, records, and some settings to a new iPhone, but not photos. The files are not encrypted, so share them only with people you trust." : {
       "comment" : "Settings: the footer of “Your Data”.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ein Backup überträgt alles auf ein neues iPhone. Die Dateien enthalten die Namen deiner Einträge und deine Aufzeichnungen und sind nicht verschlüsselt. Teile sie nur mit Personen, denen du vertraust."
+            "value" : "Ein Backup überträgt deine Einträge, Aufzeichnungen und einige Einstellungen auf ein neues iPhone, aber keine Fotos. Die Dateien sind nicht verschlüsselt. Teile sie nur mit Personen, denen du vertraust."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una copia de seguridad lo traslada todo a un iPhone nuevo. Los archivos contienen los nombres de tus elementos y tus registros, y no están cifrados. Compártelos solo con personas de confianza."
+            "value" : "Una copia de seguridad traslada tus elementos, registros y algunos ajustes a un iPhone nuevo, pero no las fotos. Los archivos no están cifrados. Compártelos solo con personas de confianza."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "バックアップを使うと、すべてを新しいiPhoneに移せます。ファイルには項目名と記録が含まれ、暗号化されていません。信頼できる相手とだけ共有してください。"
+            "value" : "バックアップを使うと、項目、記録、一部の設定を新しいiPhoneに移せます。写真は含まれません。ファイルは暗号化されていないため、信頼できる相手とだけ共有してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "백업하면 모든 내용을 새 iPhone으로 옮길 수 있어요. 파일에는 항목 이름과 기록이 들어 있고 암호화되지 않으니, 믿을 수 있는 사람과만 공유하세요."
+            "value" : "백업하면 항목, 기록, 일부 설정을 새 iPhone으로 옮길 수 있어요. 사진은 포함되지 않아요. 파일은 암호화되지 않으니 믿을 수 있는 사람과만 공유하세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "备份可将所有内容迁移到新 iPhone。文件包含你的项目名称和记录，且未加密，请只与你信任的人共享。"
+            "value" : "备份可将项目、记录和部分设置迁移到新 iPhone，但不含照片。文件未加密，请只与你信任的人共享。"
           }
         }
       }
@@ -2507,37 +2507,37 @@
         }
       }
     },
-    "Change or End This Item…" : {
+    "Item Options…" : {
       "comment" : "Item detail: the row that opens the menu to change the product, turn off reminders, archive, or delete.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diesen Eintrag ändern oder beenden …"
+            "value" : "Eintragsoptionen …"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cambiar o finalizar este elemento…"
+            "value" : "Opciones del elemento…"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "この項目を変更または終了…"
+            "value" : "項目のオプション…"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 항목 변경 또는 종료…"
+            "value" : "항목 옵션…"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更改或结束此项目…"
+            "value" : "项目选项…"
           }
         }
       }
@@ -3295,13 +3295,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ドロップ"
+            "value" : "滴剤"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "드롭"
+            "value" : "점적제"
           }
         },
         "zh-Hans" : {
@@ -4392,42 +4392,42 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你打开 Maru 时会再次检查。"
+            "value" : "下次打开时，Maru 会再次检查。"
           }
         }
       }
     },
-    "Maru couldn’t confirm that your iPhone saved it. If your data looks wrong later, restore the backup again." : {
+    "Maru couldn’t confirm that your iPhone saved the restored data. If your data looks wrong later, restore the backup again." : {
       "comment" : "Settings: the alert for a restore that replaced the data, when the storage did not confirm the save.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru konnte nicht bestätigen, dass dein iPhone die Daten gesichert hat. Wenn deine Daten später falsch aussehen, stelle das Backup erneut wieder her."
+            "value" : "Maru konnte nicht bestätigen, dass dein iPhone die wiederhergestellten Daten gesichert hat. Wenn deine Daten später falsch aussehen, stelle das Backup erneut wieder her."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru no ha podido confirmar que el iPhone lo guardara. Si más adelante tus datos parecen incorrectos, restaura la copia de seguridad otra vez."
+            "value" : "Maru no ha podido confirmar que el iPhone guardara los datos restaurados. Si más adelante tus datos parecen incorrectos, restaura la copia de seguridad otra vez."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhoneが保存したことをMaruが確認できませんでした。あとでデータがおかしい場合は、バックアップをもう一度復元してください。"
+            "value" : "復元したデータがiPhoneに保存されたか確認できませんでした。あとでデータがおかしい場合は、バックアップをもう一度復元してください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhone이 저장했는지 Maru가 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원하세요."
+            "value" : "복원한 데이터가 iPhone에 저장되었는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원하세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru 无法确认 iPhone 是否已存储。如果之后发现数据有误，请再次恢复备份。"
+            "value" : "Maru 无法确认 iPhone 是否已存储恢复的数据。如果之后发现数据有误，请再次恢复备份。"
           }
         }
       }
@@ -4876,7 +4876,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru를 열 때마다 앞으로 7일간 복용일의 미리 알림을 설정해요."
+            "value" : "Maru를 열 때마다 다음 7번의 복용일에 맞춰 미리 알림을 설정해요."
           }
         },
         "zh-Hans" : {
@@ -4952,7 +4952,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你打开 Maru 时会再次尝试。"
+            "value" : "下次打开时，Maru 会再次尝试。"
           }
         }
       }
@@ -5937,37 +5937,37 @@
         }
       }
     },
-    "Nothing to Take Today" : {
-      "comment" : "Today: the title of the empty page when the user has items but none is due today.",
+    "Nothing Planned Today" : {
+      "comment" : "Today: the title of the empty page when the user has items but none has a planned dose today.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Heute nichts einzunehmen"
+            "value" : "Heute nichts geplant"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nada que tomar hoy"
+            "value" : "Nada planificado para hoy"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今日の服用はありません"
+            "value" : "今日の服用予定はありません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "오늘 복용할 항목 없음"
+            "value" : "오늘 예정된 복용 없음"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今天无需服用"
+            "value" : "今天没有服用计划"
           }
         }
       }
@@ -6217,37 +6217,37 @@
         }
       }
     },
-    "Only for items that you did not record." : {
+    "Only for doses with no record." : {
       "comment" : "Settings: the footer under Remind Again. A follow-up reminder comes only for a dose that has no record.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nur für Einträge, die du nicht erfasst hast."
+            "value" : "Nur für Dosen ohne Aufzeichnung."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solo para los elementos que no has registrado."
+            "value" : "Solo para las dosis sin registro."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記録していない項目にのみ通知します。"
+            "value" : "まだ記録していない服用にだけ通知します。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록하지 않은 항목에만 와요."
+            "value" : "아직 기록하지 않은 복용에만 와요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仅针对你尚未记录的项目。"
+            "value" : "仅提醒尚未记录的服用。"
           }
         }
       }
@@ -7372,37 +7372,37 @@
         }
       }
     },
-    "Replace All Data?" : {
+    "Replace Maru Data?" : {
       "comment" : "The title of the restore confirmation.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alle Daten ersetzen?"
+            "value" : "Maru-Daten ersetzen?"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "¿Reemplazar todos los datos?"
+            "value" : "¿Reemplazar los datos de Maru?"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "すべてのデータを置き換えますか？"
+            "value" : "Maruのデータを置き換えますか？"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "모든 데이터를 교체할까요?"
+            "value" : "Maru 데이터를 교체할까요?"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "要替换所有数据吗？"
+            "value" : "要替换 Maru 数据吗？"
           }
         }
       }
@@ -7547,37 +7547,37 @@
         }
       }
     },
-    "Restored" : {
+    "Restore Not Confirmed" : {
       "comment" : "Settings: the title of the alert for a restore that replaced the data, when the storage did not confirm the save.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wiederhergestellt"
+            "value" : "Wiederherstellung nicht bestätigt"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Restaurado"
+            "value" : "Restauración sin confirmar"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "復元しました"
+            "value" : "復元を確認できません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "복원됨"
+            "value" : "복원이 확인되지 않음"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已恢复"
+            "value" : "恢复未确认"
           }
         }
       }
@@ -8317,37 +8317,37 @@
         }
       }
     },
-    "Take Now" : {
+    "Record Dose" : {
       "comment" : "Today: a row action of an as-needed item. Records one dose now.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Jetzt einnehmen"
+            "value" : "Dosis erfassen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomar ahora"
+            "value" : "Registrar dosis"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今すぐ服用"
+            "value" : "服用を記録"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "지금 복용"
+            "value" : "복용 기록"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "立即服用"
+            "value" : "记录服用"
           }
         }
       }
@@ -8487,7 +8487,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服用于 %@"
+            "value" : "%@ 服用"
           }
         }
       }
@@ -8510,7 +8510,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "以前の服用…"
+            "value" : "服用時刻を指定…"
           }
         },
         "ko" : {
@@ -8872,7 +8872,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "计划已存储。你打开 Maru 时会再次尝试。"
+            "value" : "计划已存储。下次打开时，Maru 会再次尝试。"
           }
         }
       }
@@ -8947,37 +8947,37 @@
         }
       }
     },
-    "This backup replaces every item and record on this iPhone. You can’t undo this." : {
+    "This backup replaces all items and records in Maru. You can’t undo this." : {
       "comment" : "The message of the restore confirmation.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dieses Backup ersetzt alle Einträge und Aufzeichnungen auf diesem iPhone. Das kannst du nicht rückgängig machen."
+            "value" : "Dieses Backup ersetzt alle Einträge und Aufzeichnungen in Maru. Das kannst du nicht rückgängig machen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esta copia de seguridad reemplaza todos los elementos y registros de este iPhone. No se puede deshacer."
+            "value" : "Esta copia de seguridad reemplaza todos los elementos y registros de Maru. No se puede deshacer."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このバックアップは、このiPhoneのすべての項目と記録を置き換えます。この操作は取り消せません。"
+            "value" : "このバックアップは、Maruのすべての項目と記録を置き換えます。この操作は取り消せません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 백업은 이 iPhone의 모든 항목과 기록을 교체해요. 이 동작은 되돌릴 수 없어요."
+            "value" : "이 백업은 Maru의 모든 항목과 기록을 교체해요. 이 동작은 되돌릴 수 없어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此备份会替换这台 iPhone 上的所有项目和记录。此操作无法撤销。"
+            "value" : "此备份会替换 Maru 中的所有项目和记录。此操作无法撤销。"
           }
         }
       }
@@ -9251,7 +9251,7 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시간이 %@(으)로 변경됨"
+            "value" : "변경된 시간: %@"
           }
         },
         "zh-Hans" : {
@@ -10015,13 +10015,13 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ドロップにする"
+            "value" : "滴剤にする"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "드롭 사용"
+            "value" : "점적제 사용"
           }
         },
         "zh-Hans" : {

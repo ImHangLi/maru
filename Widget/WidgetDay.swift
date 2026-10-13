@@ -47,7 +47,7 @@ struct WidgetDay: Sendable {
     }
 
     /// The slot of the clock now, or the next slot that has doses. After the last slot it is the last slot.
-    /// "Take Now" shows it, also when every dose of it is taken, so a record fills the capsule in place.
+    /// "Record Dose" shows it, also when every dose of it is taken, so a record fills the capsule in place.
     func slotAtClock(at date: Date) -> Slot? {
         let order = DayPart.allCases
         let now = order.firstIndex(of: clockPart(at: date))!
