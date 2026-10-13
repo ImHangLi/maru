@@ -134,7 +134,8 @@ def cta(code):
 
 def phrases(text):
     """A "|" in a headline marks a place where the line can break. Each part stays in one piece."""
-    return "".join(f'<span class="nb">{e(part)}</span>' for part in text.split("|"))
+    parts = text.split("|")
+    return "".join(f'<span class="nb">{e(part.strip())}</span>{" " if part.endswith(" ") else ""}' for part in parts)
 
 
 def layout(code, page, title, desc, main, head=""):
@@ -152,7 +153,7 @@ def layout(code, page, title, desc, main, head=""):
         f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
         f'data-close="{e(STRINGS[c]["close"])}"{current if c == code else ""}>{e(STRINGS[c]["name"])}</a></li>'
         for c, _ in LANGS)
-    return f"""<!doctype html>
+    return f"""<!DOCTYPE html>
 <html lang="{code}">
 <head>
 <meta charset="utf-8">
@@ -223,8 +224,8 @@ def home(code):
 <div class="hero-stage">{device(code, "today", eager=True)}</div>
 </div>
 </section>
-<section class="wrap features">
-{blocks}</section>
+<div class="wrap features">
+{blocks}</div>
 <section class="wrap" aria-labelledby="trust-title">
 <div class="closer" data-reveal="large">
 <h2 id="trust-title" class="sr">{e(s["trust_title"])}</h2>

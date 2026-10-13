@@ -270,10 +270,11 @@ code { font: 0.875em var(--font-mono); background: var(--fill-3); padding: 0.1em
 
 /* Feature panels */
 .feature {
-  display: grid; gap: var(--space-6); justify-items: center; text-align: center;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); justify-items: center; text-align: center;
   background: var(--bg-alt); border-radius: var(--radius-lg); padding: var(--space-7) var(--space-5);
   margin-bottom: var(--space-5); box-shadow: 0 0 0 0.5px var(--ring-color);
 }
+.feature-stage { width: 100%; display: grid; justify-items: center; }
 .feature h2 { font-size: var(--fs-2xl); margin-bottom: var(--space-3); }
 .feature .lede { margin: 0 auto; max-width: 26rem; }
 
@@ -300,8 +301,8 @@ code { font: 0.875em var(--font-mono); background: var(--fill-3); padding: 0.1em
 
 /* A quiet hint that the page exists in the language of the browser. site.js adds it once. */
 .lang-hint {
-  position: fixed; left: 50%; bottom: var(--space-4); transform: translateX(-50%); z-index: 25;
-  display: flex; align-items: center; gap: var(--space-1); max-width: calc(100% - 2 * var(--space-4));
+  position: fixed; left: 0; right: 0; bottom: var(--space-4); z-index: 25; margin: 0 auto;
+  display: flex; align-items: center; gap: var(--space-1); width: max-content; max-width: calc(100% - 2 * var(--space-4));
   background: var(--surface); border-radius: var(--radius-full); box-shadow: var(--shadow-elevated);
   padding: var(--space-1) var(--space-1) var(--space-1) var(--space-4); font-size: var(--fs-sm);
 }
