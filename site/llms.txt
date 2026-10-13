@@ -1,10 +1,11 @@
 # Maru
 
-> Maru is a small iPhone app for daily vitamins, supplements, and simple medication schedules. It reminds you at the times you choose, shows what to take now, and keeps a record. It is not on the App Store yet.
+> Maru is a small app for daily vitamins, supplements, and simple medication schedules. It reminds you at the times you choose, shows what to take now, and keeps a record. It is not in the App Store yet.
 
 Facts:
+- Runs on: iPhone.
 - Free, with no subscription, no ads, no account, and no limit on items. Optional tips unlock nothing.
-- Items and records stay on the iPhone. Optional usage statistics never include names, doses, or times.
+- Items and records stay on the device. Optional usage statistics never include names, doses, or times.
 - Today screen: record a dose with one tap.
 - Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose.
 - History with undo and correction. Record export, backup, and restore.
@@ -14,9 +15,9 @@ Facts:
 - Maru has no Apple Watch app and no sync between devices.
 
 Pages:
-- [FAQ](https://maru.day/faq.html): short answers.
-- [Privacy](https://maru.day/privacy.html): what the app stores and what it does not do.
-- [Support](https://maru.day/support.html): hello@maru.day and the feedback form.
+- [FAQ](https://maru.day/faq/): short answers.
+- [Privacy](https://maru.day/privacy/): what the app stores and what it does not do.
+- [Support](https://maru.day/support/): hello@maru.day and the feedback form.
 - [Source](https://github.com/ImHangLi/maru): MIT license.
 
 Languages:

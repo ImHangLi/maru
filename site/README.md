@@ -17,7 +17,7 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 | `../PRIVACY.md` | The full privacy policy. It stays English on every language page |
 | `style.css`, `site.js` | The style, the scroll entrances, and the language hint |
 
-Do not edit `index.html`, `faq.html`, `privacy.html`, `support.html`, or a language folder by hand.
+Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
 
 ## Languages
 
@@ -27,15 +27,17 @@ A `|` in a headline marks a place where the line can break.
 
 The top bar has a language menu. It is a `details` element with plain links, so it works with no script. A link goes to the same page in the other language.
 
-## App Store badge
+## Before and after the release
 
-The hero has Apple's "Download on the App Store" badge in the language of the page. The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The rules are in Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
+`RELEASED` in `build.py` says if Maru is in the App Store.
 
-`STORE_URL` in `build.py` is the one link of the badge, of the "Download" button in the top bar, and of the text link at the end of the home page. It also sets the Smart App Banner. The link opens a store page only when the app is on sale. Do not deploy the site before that.
+- While it is `False`, the hero has one plain line, "Coming soon to the App Store", in the language of the page. The page has no Apple badge, no "Download" button, no link to the App Store, and no Smart App Banner. Apple's badge is a call to get an app that is in the store, and the pre-order badge is only for an app on pre-order. See Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
+- When it is `True`, the hero has Apple's "Download on the App Store" badge in the language of the page, the top bar has a "Download" button, the end of the home page has a text link, and the Smart App Banner is on. `STORE_URL` is the link of all of them.
+- The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The badge is in the hero only, because Apple asks for one badge in a layout.
 
-The badge is in the hero only, because Apple asks for one badge in a layout. It is the download unit together with the row of devices under it.
+On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and deploy.
 
-`DEVICES` in `build.py` is the list of devices that the row names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **Before a deploy, the list must match the devices that the released app supports.** It is all three now, for the preview, and the app on `main` runs on iPhone only (`project.yml`, device family 1). The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list too. The top bar has a plain "Download" button in its own style, with no Apple logo, and the end of the home page has a text link.
+`DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone"]` now. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
 
 ## Top bar
 
@@ -74,6 +76,26 @@ Both commands need `sips` (macOS) and `cwebp`.
 - `concept.py` cuts two pictures with a transparent background, at one scale. `shots/widget.webp` is the widget from `widget.png`. `shots/notification.webp` is the notification from `reminder-expanded.png`. One block of the home page shows the two together with no phone. They are English on every page.
 
 Use only real captures of the app. Do not draw app screens.
+
+## Deploy
+
+The site is a Cloudflare Worker with static assets. `wrangler.toml` is in `site/`, and `.assetsignore` keeps the sources out of the upload.
+
+```sh
+python3 site/build.py
+cd site && npx wrangler deploy
+```
+
+After a deploy, check these addresses. Each must answer 200, or the redirect that the list names.
+
+```sh
+for p in / /faq/ /privacy/ /support/ /cn/ /jp/ /kr/ /es/ /de/ /sitemap.xml /robots.txt /llms.txt; do curl -s -o /dev/null -w "%{http_code} $p\n" https://maru.day$p; done
+curl -sI https://maru.day/privacy.html | head -3      # 301 to /privacy/
+curl -sI https://maru.day/zh-hans/ | head -3          # 301 to /cn/
+curl -s -o /dev/null -w "%{http_code}\n" https://maru.day/no-such-page   # 404
+```
+
+The App Store record needs two addresses: the privacy policy `https://maru.day/privacy/` and the support page `https://maru.day/support/`. The app opens `https://maru.day/privacy.html` and `https://maru.day/support.html`, and `_redirects` sends them on.
 
 ## Preview
 

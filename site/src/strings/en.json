@@ -7,13 +7,14 @@
   "home": {
     "title": "Maru: Know What You Took",
     "desc": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took. Free, with no account.",
-    "h1": "Never wonder |if you took it.",
+    "h1": "Did I take it? |One look.",
     "lede": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took."
   },
   "store": {
     "badge_alt": "Download on the App Store",
     "download": "Download",
-    "devices": "Available for"
+    "devices": "Available for",
+    "soon": "Coming soon to the App Store"
   },
   "shots": {
     "today": {

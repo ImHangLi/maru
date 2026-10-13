@@ -13,7 +13,8 @@
   "store": {
     "badge_alt": "App Store에서 다운로드하기",
     "download": "다운로드",
-    "devices": "지원 기기"
+    "devices": "지원 기기",
+    "soon": "App Store 출시 예정"
   },
   "shots": {
     "today": {

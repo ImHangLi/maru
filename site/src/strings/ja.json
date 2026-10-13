@@ -13,7 +13,8 @@
   "store": {
     "badge_alt": "App Storeからダウンロード",
     "download": "ダウンロード",
-    "devices": "対応デバイス"
+    "devices": "対応デバイス",
+    "soon": "まもなくApp Storeで公開"
   },
   "shots": {
     "today": {

@@ -360,6 +360,8 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
    The gap is larger than the clear space of the badge. */
 .get { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
 .get .badge { margin: 0; }
+/* Before the release: one plain line in place of the badge. It is not a button and has no Apple artwork. */
+.soon { margin: 0; padding: var(--space-3) var(--space-5); border-radius: var(--radius-full); background: var(--fill-2); font-weight: var(--fw-semibold); }
 .get-devices { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-5); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); color: var(--text-2); }
 .get-devices li { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
 
@@ -485,6 +487,9 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   .site-header { display: block; }
   .nav-inner { justify-content: space-between; gap: var(--space-2); border-radius: 0; }
   .nav-inner::before, .nav-inner::after { display: none; }
+  /* The last button is at the edge of the screen. Its tooltip stays inside the screen. */
+  .nav-links > .icon-btn:last-child[data-tip]::after { left: auto; right: 0; transform: translate(0, var(--shift-lift)); }
+  .nav-links > .icon-btn:last-child[data-tip]:hover::after, .nav-links > .icon-btn:last-child[data-tip]:focus-visible::after { transform: none; }
 }
 @media (max-width: 359px) {
   :root { --gutter: 12px; --hit: 36px; }

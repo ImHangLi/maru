@@ -13,7 +13,8 @@
   "store": {
     "badge_alt": "Laden im App Store",
     "download": "Laden",
-    "devices": "Verfügbar für"
+    "devices": "Verfügbar für",
+    "soon": "Bald im App Store"
   },
   "shots": {
     "today": {
