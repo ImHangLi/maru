@@ -36,7 +36,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 - One week of daily use on the maintainer's iPhone, from 2026-10-12 to 2026-10-19.
 - The open device checks in `docs/status.md`.
-- The check on a real iPad (D065). If it fails, set `TARGETED_DEVICE_FAMILY` to `"1"` in both targets before the first upload. An update cannot remove the iPad later.
+- The check on a real iPad (D070). If it fails, set `TARGETED_DEVICE_FAMILY` to `"1"` in both targets before the first upload. An update cannot remove the iPad later.
 - Dark Mode, the largest text sizes, VoiceOver, and Reduce Motion (T33).
 - Launch and record timing on a release build (T36).
 - Analytics, with a release build that has the key:
@@ -47,12 +47,12 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 ## 5. Store page
 
-- Name, subtitle, and keywords: see the research note. Six languages with fastlane `deliver`.
-- Screenshots for the 6.9-inch iPhone in each language.
-- Screenshots for the 13-inch iPad in each language (D065). App Store Connect requires them for an app that supports the iPad.
-- A privacy policy page and a support page on the landing page domain.
-- Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, not linked to the user, and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
-- Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50).
+- Name, subtitle, keywords, and description: the files in `metadata/`, in the layout of `asc metadata`. Six languages, es-MX, and en-GB. The reasons are in `docs/research/2026-10-13-aso-and-store-page.md`. The app record has the name "Maru: Pill & Vitamin Reminder".
+- Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. Section 7 of the same note has the six frames and their order. The frames are HTML copies of the UI, and captures must confirm them before the submission.
+- Screenshots for the 13-inch iPad in each language (D070). App Store Connect requires them for an app that supports the iPad.
+- A privacy policy page and a support page on the landing page domain. The URLs in `metadata/` return 404 until the new site is live.
+- Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, linked to the user (D069), and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
+- Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50). Drafts are in section 8 of the note. The secondary category is Medical.
 
 ## 6. Launch
 

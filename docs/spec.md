@@ -2,7 +2,7 @@
 
 日期：2026-10-10  
 状态：供开发、真机验收及首发准备使用的设计规格；不是已实现或通过测试的 App。性能数值均为拟定预算，不是测量结果。  
-平台：iPhone 与 iPad 原生（iPad 见 `docs/decisions.md` D065，各设备数据独立、不同步），建议兼容 iOS 17 起；正式提交采用 Apple 当时要求的 SDK，依赖按可用稳定版本锁定。  
+平台：iPhone 与 iPad 原生（iPad 见 `docs/decisions.md` D070，各设备数据独立、不同步），建议兼容 iOS 17 起；正式提交采用 Apple 当时要求的 SDK，依赖按可用稳定版本锁定。  
 优先级：本文件取代旧版 `supplement_app_v1_spec.md` 与 `supplement_app_v1_retention_addendum.md` 中相冲突的范围、默认值、库存/换瓶流程、指标和技术选择。旧文件保留为历史资料，不再直接作为开发指令。
 
 > Amendments (2026-10-11, see `docs/decisions.md` D032): a new item starts as a supplement with the capsule form, and the user can change both. No default amount and no default reminder time (§2.1) stay. The example time of a supplement is the start value of the time picker, not a time in the draft. The plan preview uses no "·" separator. The English name of "我的清单" is "My Items", and it is a grid. These amendments override conflicting text below.
@@ -47,14 +47,14 @@
 
 AI 聊天、库存/购买推荐、药品外观自动鉴定、个性化剂量与补服建议、健康评分、streak 惩罚、排行榜、动态药柜小游戏、社区、家庭远程监督、血检分析、健康数据云同步、注册账户、完整相互作用检查、以广告 SDK 变现。
 
-V1 不自动处理每 X 小时、递减剂量、复杂循环、按指标改变剂量及儿童用量。不要把不支持的用法悄悄变成“每天一次”。
+V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M 天”这一种固定周期除外，D065）、按指标改变剂量及儿童用量。不要把不支持的用法悄悄变成“每天一次”。
 
 ## 2. 默认值、权限与设置
 
 ### 2.1 低摩擦不等于悄悄做决定
 
 - 初始提醒频率可以在草稿中显示“每天”，但保存前必须可见、可改、由用户确认。
-- 重复规则可选：每天、按星期几、隔天一次（D036）。选隔天一次时，第一天由用户在“今天开始”和“明天开始”之间选定，App 不预选；未选定不能保存。预览用自然语言写出，例如“隔天一次，08:00，明天开始”。周期（如服 21 天停 7 天）、变化的用量和按小时的间隔仍不支持（§1）。
+- 重复规则可选：每天、按星期几、隔天一次（D036）、每隔几天（每 3 到 30 天一次）、服几天停几天的周期（如服 21 天停 7 天）（D065）。后三种按日历日计数。选隔天一次时，第一天由用户在“今天开始”和“明天开始”之间选定。选每隔几天或周期时，天数由用户选定，第一天由用户选“今天开始”“明天开始”或另一个日期，日期可以早于今天（周期已经开始时）。天数和第一天 App 都不预选；未选定不能保存。预览用自然语言写出，例如“隔天一次，08:00，明天开始”或“服 21 天，停 7 天，08:00，自 10 月 13 日起”。变化的用量和按小时的间隔仍不支持（§1）。
 - 补剂可沿用用户之前确认过的生活时段。首次没有现有时段时，提供一个清楚标为“提醒时间”的示例预选值，而不是“最佳服用时间”。该值不因药名自动获得医学依据。
 - 药品的提醒钟点由用户确认；不能仅根据药名默认早晚两次或固定 09:00。识别到的标签用法也需用户核对。
 - 保存按钮上方展示完整预览：例如“每天 08:00、20:00 · 不设结束日期”。示例时间不是实际用户用药建议。
@@ -292,6 +292,8 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 隔天一次（D036）：系统的可重复日历触发无法表达“每隔一天”。这类安排改用带日期的一次性请求：每个钟点预排接下来 7 个应服日，一个应服日一条，与每天/每周的 series 一起计入 48 条请求预算，预算先分给每天/每周的重复请求，再分给带日期的请求；同一钟点的 7 条要么全部排入，要么都不排并显示“未设置”，不只排前几天。引擎每次运行（保存后、启动、回到前台）补齐到 7 个应服日，做法与后续提示相同。局限必须明说：用户一直不打开 App，这类提醒在最后一个已排应服日（上次运行时排定的第 7 个应服日）之后停止；每天/每周的重复提醒不受影响。项目详情在提醒状态下写明这一点，不显示无条件的“已开启”。同一钟点既有每天的项目又有隔天的项目时，应服日发两条通知：重复请求只含每天的项目，带日期的请求只含当天应服的隔天项目；任何通知都不在非应服日写出某个项目的名称。
 
+> Amendment (2026-10-13, D065): A plan of every few days and a plan with days on and days off use the dated requests of D036, with no other mechanism. A day of the pause is not a due day: it gets no request, and no notification names the item. The 7 due days of a plan with a pause can be 7 days in a row, so its reminders can stop after one week with no open of Maru. The item detail states the limit with the same text.
+
 > Amendment (2026-10-12, D047): One fire time gives one notification that names the open items. A dose that is recorded (taken or skipped) before its time does not remind: the repeating request of that weekday is replaced by weekly requests for the other weekdays, and by dated requests for the next two dates of that weekday. A daily or weekly item and an every-other-day item at one time share one dated request on a due day. Each run (launch, return to the front, save, record, undo) compiles again, and after the time passes the plan has the repeating request again. Without room in the budget of 48, the plain requests stay. The limits are in `docs/decisions.md` D047.
 
 没有常驻 timer、假后台音频、依赖每晚后台刷新、APNs 续命或逐日服务端推送。计划本身可以持续存在，实际通知显示仍受系统权限、专注模式、摘要、关机等影响；不宣传必达、永不漏服或自动绕过静音。
@@ -306,7 +308,7 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 用户可能提前完成记录，但相应的未来重复提示仍出现。不能把此提示写成“你还没有吃”。清除已经交付的提示是可做的；取消一个重复 request 会影响整个 series，不等于只取消今天。不要在记录后删掉 series，再假设明天后台会重建。[S05]
 
-初版宁可使用明确的固定查看提示，也不采用“短滚动队列 + 未来某次后台续排”的隐性失效方案。隔天一次是唯一例外（§8.1，D036）：它的队列长度和停止条件在项目详情中明示，补排只发生在 App 运行时，不依赖后台。若要宣称“提前记录后保证不再提醒本次，同时无限期不停后续提醒”，必须先提供独立真机原型和证据；未验证时不作此承诺。
+初版宁可使用明确的固定查看提示，也不采用“短滚动队列 + 未来某次后台续排”的隐性失效方案。按日历日计数的安排（隔天一次、每隔几天、周期）是唯一例外（§8.1，D036，D065）：它的队列长度和停止条件在项目详情中明示，补排只发生在 App 运行时，不依赖后台。若要宣称“提前记录后保证不再提醒本次，同时无限期不停后续提醒”，必须先提供独立真机原型和证据；未验证时不作此承诺。
 
 前台收到提示时可根据当前数据库抑制重复展示；后台不拥有同样的任意执行保证。记录后删掉当前已交付通知，不能假装同时完成了对未来重复内容的动态修改。
 
@@ -314,7 +316,7 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 一次性通知可携带 occurrenceID。重复通知的 userInfo 是 seriesID + scheduleRevision，不能预写一个固定“今天的 occurrenceID”永远复用。
 
-隔天一次的带日期请求（D036）在 userInfo 中另带计划日期。点击时直接用这个日期，不从交付时间推断；其余规则不变：不是今天、延迟交付、时区不确定、旧版本或夏令时歧义时进入确认。只对应一个项目的带日期请求同样提供“已服”动作，用 scheduleRevision 校验身份。
+隔天一次、每隔几天和周期的带日期请求（D036，D065）在 userInfo 中另带计划日期。点击时直接用这个日期，不从交付时间推断；其余规则不变：不是今天、延迟交付、时区不确定、旧版本或夏令时歧义时进入确认。只对应一个项目的带日期请求同样提供“已服”动作，用 scheduleRevision 校验身份。
 
 点击时综合 `UNNotification.date`、触发规则、时区与历史版本解析候选事项；不能用用户点击时的 `Date()` 直接记为今天。[S12] 系统交付元数据不必然等于原定时间；跨日延迟、时区、旧版本或无法唯一解析时必须进入日期/事项确认，而不是猜。
 
@@ -340,6 +342,7 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 - 每日固定钟点与每隔 X 小时不同，后者不属于 V1 自动调度。
 - 隔天一次（D036）：安排保存一个起始日期。起始日当天，以及其后与起始日相隔偶数个日历日的日期，是应服日。日期按该安排的日历和时区计算，只数日历日，不数小时；夏令时切换和时区变化不改变节奏，漏服或跳过也不改变节奏。修改钟点或用量产生新版本并保留起始日期；修改节奏或起始日产生的新版本自今天起生效，过去的记录不变。非应服日不生成事项，今天不显示该项目，历史也不显示“没有记录”。
+- 每隔几天与周期（D065）：与隔天一次是同一条规则。安排保存起始日期、服用天数和停用天数：自起始日起连续“服用天数”天是应服日，随后“停用天数”天不是，如此循环。隔天一次是 1 和 1，每 N 天一次是 1 和 N−1，服 21 天停 7 天是 21 和 7。起始日可以早于今天。其余与隔天一次相同：只数日历日；夏令时切换、时区变化、漏服或跳过都不改变节奏；修改钟点或用量保留起始日期和天数；修改天数或起始日产生的新版本自今天起生效，过去的记录不变；停用日不生成事项，今天和历史都不显示该项目。
 - 补剂可选择跟随当地生活时间；药品默认保留用户确认的原时区日历语义，切时区显示对应当地时间，不静默决定新的服法。
 - 时区策略以命名时区保存，不只保存 UTC offset；夏令时测试不存在/重复时刻；有歧义就明确显示待核对，不编造剂量。
 - 暂停/关闭提醒取消相应 requests，但不等同建议停药；归档同时移出活动安排。
@@ -544,7 +547,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T19 | 保存失败 | 无成功文字/触感，状态可重试 |
 | T20 | 撤销与更正 | DB、今天及历史一致，不只改 UI |
 | T21 | 提前记录 | 不假称重复通知一定消失，通知不宣称未服 |
-| T22 | 多日不启动/强制退出/离线 | 重复提醒不依赖后续后台续排；实际结果有测试记录。隔天一次的提醒在已排的 7 个应服日之后停止，界面已说明（§8.1，T51） |
+| T22 | 多日不启动/强制退出/离线 | 重复提醒不依赖后续后台续排；实际结果有测试记录。隔天一次、每隔几天和周期的提醒在已排的 7 个应服日之后停止，界面已说明（§8.1，T51，T52） |
 | T23 | App 前台接收提醒 | 正确读取当前状态，避免误导重复展示 |
 | T24 | 专注模式/摘要/延迟 | 不误报必达，不据延迟点击猜实际服用 |
 | T25 | 时区与夏令时 | 明确策略，无重复或不明疗程转换 |
@@ -574,6 +577,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T49 | 语言/日期/数字 | 实际支持范围准确，通知和错误同样本地化 |
 | T50 | 宣传与实际构建 | 不声称库存、无限可靠、临床效果或没有实际实现的能力 |
 | T51 | 隔天一次 | 起始日及其后每隔一个日历日应服；夏令时、时区变化、漏服或跳过不改变节奏；非应服日今天和历史都不出现该项目；通知不在非应服日写出该项目；详情写明提醒只排到接下来 7 个应服日 |
+| T52 | 每隔几天与周期 | 天数和起始日由用户选定，App 不预选，未选定不能保存；自起始日起服 N 天、停 M 天循环（每 N 天一次是服 1 天、停 N−1 天）；夏令时、时区变化、漏服或跳过不改变节奏；停用日今天和历史都不出现该项目，通知不写出该项目；详情写明提醒只排到接下来 7 个应服日；数据库迁移后隔天一次的安排保持原节奏，旧备份可以恢复 |
 
 ## 16. 交付与验收证据
 

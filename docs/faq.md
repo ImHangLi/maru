@@ -8,7 +8,7 @@ Maru is one small place for one job. You open it, and the first screen shows wha
 
 ## What if I forget to record?
 
-Nothing happens. Maru has no streaks and no penalties. A record is there to help you, not to judge you. You can also record later, or change the time of a record.
+You can record later, or change the time of a record.
 
 ## Did I take it or not?
 
@@ -20,7 +20,7 @@ Yes. In Settings, "Remind Again" sends more reminders for a dose that you did no
 
 ## Is there a limit on the number of items?
 
-No. You can add as many items as you want. Maru has no account and no paywall on the core.
+No. You can add as many items as you want. Maru is free and needs no account.
 
 ## Where is my data?
 

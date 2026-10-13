@@ -124,7 +124,7 @@ public struct ReminderTapResolver: Sendable {
         let today = LocalDate(now, in: zone)
 
         // A dated request carries its plan date, so the resolver does not read the date from the delivery (D036).
-        // Its members are the slots that repeat every second day and are due on that date.
+        // Its members are the slots with a day cycle that are due on that date.
         if let dueDate = reminder.userInfo[ReminderRequest.dueDateKey] {
             guard let date = LocalDate(dayText: dueDate) else { return .notSeries }
             let planned = zone.resolve(series.time, on: date)
@@ -138,16 +138,16 @@ public struct ReminderTapResolver: Sendable {
                 doubts.insert(.delayed)
             }
             let reminding = schedules.filter { $0.isEnabled && $0.endDate == nil }
-            // The dated request of an every-other-day item stands for those items. A dated request that
+            // The dated request of an item with a day cycle stands for those items. A dated request that
             // replaces a repeating request, or that joins both kinds, stands for every item due on its date (D047).
-            let matched = [SeriesKey.Rule.everyOtherDay, .dated].first {
+            let matched = [SeriesKey.Rule.dayCycle, .dated].first {
                 revision != nil && revision == series.revision(on: date, schedules: reminding, rule: $0)
             }
             let isCurrent = matched != nil
             if !isCurrent { doubts.insert(.olderPlan) }
             var candidates = series.candidates(
                 on: date, schedules: isCurrent ? reminding : schedules, zone: zone, current: isCurrent,
-                rule: matched ?? .everyOtherDay
+                rule: matched ?? .dayCycle
             )
             // A record before the time closed some members. The request names and stands for the open ones only.
             if isCurrent, let open = reminder.userInfo[ReminderRequest.openSlotsKey] {
@@ -290,7 +290,7 @@ private struct SeriesKey {
     /// at the same time have different members (D036).
     enum Rule {
         case weekly
-        case everyOtherDay
+        case dayCycle
         /// Every version that is due on the date, with any repeat rule (D047).
         case dated
     }
@@ -303,8 +303,8 @@ private struct SeriesKey {
         }
         return switch rule {
         case nil, .dated: inZone
-        case .weekly: inZone && version.everyOtherDayFrom == nil
-        case .everyOtherDay: inZone && version.everyOtherDayFrom != nil
+        case .weekly: inZone && version.dayCycle == nil
+        case .dayCycle: inZone && version.dayCycle != nil
         }
     }
 

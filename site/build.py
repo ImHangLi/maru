@@ -1,0 +1,385 @@
+#!/usr/bin/env python3
+"""Build the Maru site: python3 site/build.py
+
+Reads src/strings/<lang>.json, src/mock/<lang>.json, and PRIVACY.md, and writes the pages of every language into site/.
+"""
+
+import html
+import json
+import re
+from pathlib import Path
+
+import mock
+
+# Is Maru in the App Store? While this is False, the site says "coming soon", shows no Apple badge,
+# has no link to the App Store, and has no Smart App Banner. Set it to True on the day of the release, and build again.
+RELEASED = False
+# The App Store link of Maru. When RELEASED is True, this one constant sets the link of the badge, of the "Download"
+# button in the top bar, and of the text link at the end of the home page. It also sets the Smart App Banner.
+STORE_URL = "https://apps.apple.com/app/id6822159516"
+
+ORIGIN = "https://maru.day"
+GITHUB = "https://github.com/ImHangLi/maru"
+EMAIL = "hello@maru.day"
+FEEDBACK_FORM = "https://tally.so/r/jadWkR"
+# The language code (also the hreflang value) and the folder of each language. English is the default.
+# A folder is a two-letter name, because ads and links carry it. The language code stays a correct language tag.
+LANGS = [("en", ""), ("zh-Hans", "cn"), ("ja", "jp"), ("es", "es"), ("de", "de"), ("ko", "kr")]
+# Each page is the index file of its own folder, so its address ends with a slash and needs no redirect.
+PAGES = ["index.html", "faq/index.html", "privacy/index.html", "support/index.html"]
+# The addresses of the pages before the folders. _redirects sends them to the new addresses.
+OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html", "support.html": "support/index.html"}
+OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
+# Apple asks for a badge height of 40 px or more on a screen.
+PAGE_BADGE = 56
+# The devices that the line under the badge names. It must match the devices of the released app before a deploy.
+# Possible values: "iphone", "ipad", "watch".
+DEVICES = ["iphone"]
+# The icon and the product name of each device. Apple does not translate these names.
+DEVICE_NAMES = {"iphone": ("phone", "iPhone"), "ipad": ("tablet", "iPad"), "watch": ("watch", "Apple Watch")}
+# Every icon comes from Hugeicons (free stroke set, version 4.3.5, MIT license). The stroke width is in style.css.
+ICONS = {
+    "github": "<path d=\"M10 20.5675C6.57143 21.7248 3.71429 20.5675 2 17\"/><path d=\"M10 22V18.7579C10 18.1596 10.1839 17.6396 10.4804 17.1699C10.6838 16.8476 10.5445 16.3904 10.1771 16.2894C7.13394 15.4528 5 14.1077 5 9.64606C5 8.48611 5.38005 7.39556 6.04811 6.4464C6.21437 6.21018 6.29749 6.09208 6.31748 5.9851C6.33746 5.87813 6.30272 5.73852 6.23322 5.45932C5.95038 4.32292 5.96871 3.11619 6.39322 2.02823C6.39322 2.02823 7.27042 1.74242 9.26698 2.98969C9.72282 3.27447 9.95075 3.41686 10.1515 3.44871C10.3522 3.48056 10.6206 3.41384 11.1573 3.28041C11.8913 3.09795 12.6476 3 13.5 3C14.3524 3 15.1087 3.09795 15.8427 3.28041C16.3794 3.41384 16.6478 3.48056 16.8485 3.44871C17.0493 3.41686 17.2772 3.27447 17.733 2.98969C19.7296 1.74242 20.6068 2.02823 20.6068 2.02823C21.0313 3.11619 21.0496 4.32292 20.7668 5.45932C20.6973 5.73852 20.6625 5.87813 20.6825 5.9851C20.7025 6.09207 20.7856 6.21019 20.9519 6.4464C21.6199 7.39556 22 8.48611 22 9.64606C22 14.1077 19.8661 15.4528 16.8229 16.2894C16.4555 16.3904 16.3162 16.8476 16.5196 17.1699C16.8161 17.6396 17 18.1596 17 18.7579V22\"/>",
+    "globe": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2C12 2 8 6 8 12Z\"/><path d=\"M21 15H3\"/><path d=\"M21 9H3\"/>",
+    "check": "<path d=\"M5 14L8.5 17.5L19 6.5\"/>",
+    "close": "<path d=\"M18 6L6.00081 17.9992M17.9992 18L6 6.00085\"/>",
+    "phone": "<path d=\"M13.5 2H10.5C8.14298 2 6.96447 2 6.23223 2.73223C5.5 3.46447 5.5 4.64298 5.5 7V17C5.5 19.357 5.5 20.5355 6.23223 21.2678C6.96447 22 8.14298 22 10.5 22H13.5C15.857 22 17.0355 22 17.7678 21.2678C18.5 20.5355 18.5 19.357 18.5 17V7C18.5 4.64298 18.5 3.46447 17.7678 2.73223C17.0355 2 15.857 2 13.5 2Z\"/><path d=\"M12.125 19H12M12.25 19C12.25 19.1381 12.1381 19.25 12 19.25C11.8619 19.25 11.75 19.1381 11.75 19C11.75 18.8619 11.8619 18.75 12 18.75C12.1381 18.75 12.25 18.8619 12.25 19Z\"/>",
+    "tablet": "<path d=\"M14.5 2H9.5C6.67157 2 5.25736 2 4.37868 2.87868C3.5 3.75736 3.5 5.17157 3.5 8V16C3.5 18.8284 3.5 20.2426 4.37868 21.1213C5.25736 22 6.67157 22 9.5 22H14.5C17.3284 22 18.7426 22 19.6213 21.1213C20.5 20.2426 20.5 18.8284 20.5 16V8C20.5 5.17157 20.5 3.75736 19.6213 2.87868C18.7426 2 17.3284 2 14.5 2Z\"/><path d=\"M12.125 19H12M12.25 19C12.25 19.1381 12.1381 19.25 12 19.25C11.8619 19.25 11.75 19.1381 11.75 19C11.75 18.8619 11.8619 18.75 12 18.75C12.1381 18.75 12.25 18.8619 12.25 19Z\"/>",
+    "watch": "<path d=\"M7 11C7 9.11438 7 8.17157 7.58579 7.58579C8.17157 7 9.11438 7 11 7H13C14.8856 7 15.8284 7 16.4142 7.58579C17 8.17157 17 9.11438 17 11V13C17 14.8856 17 15.8284 16.4142 16.4142C15.8284 17 14.8856 17 13 17H11C9.11438 17 8.17157 17 7.58579 16.4142C7 15.8284 7 14.8856 7 13V11Z\"/><path d=\"M8.5 7C8.5 7 9.18904 5.66076 9.34422 4.00093C9.42833 3.10125 9.47038 2.6514 9.72393 2.39673C9.97748 2.14207 10.283 2.11215 10.8942 2.05231C11.217 2.0207 11.5863 2 12 2C12.4137 2 12.783 2.0207 13.1058 2.05231C13.717 2.11215 14.0225 2.14207 14.2761 2.39673C14.5296 2.6514 14.5717 3.10125 14.6558 4.00093C14.811 5.66076 15.5 7 15.5 7\"/><path d=\"M15.5 17C15.5 17 14.811 18.3392 14.6558 19.9991C14.5717 20.8988 14.5296 21.3486 14.2761 21.6033C14.0225 21.8579 13.717 21.8879 13.1058 21.9477C12.783 21.9793 12.4137 22 12 22C11.5863 22 11.217 21.9793 10.8942 21.9477C10.283 21.8879 9.97748 21.8579 9.72393 21.6033C9.47038 21.3486 9.42833 20.8988 9.34422 19.9991C9.18904 18.3392 8.5 17 8.5 17\"/>"
+}
+
+SITE = Path(__file__).resolve().parent
+STRINGS = {code: json.loads((SITE / "src/strings" / f"{code}.json").read_text("utf-8")) for code, _ in LANGS}
+FOLDER = dict(LANGS)
+e = html.escape
+
+
+def url(code, page):
+    prefix = f"/{FOLDER[code]}" if FOLDER[code] else ""
+    return f"{prefix}/{page.removesuffix('index.html')}"
+
+
+def icon(name):
+    return (f'<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" '
+            f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>')
+
+
+def picture(code, shot, body, extra=""):
+    """A code-drawn app component, read as one picture. Its text is in src/mock/<lang>.json."""
+    alt = STRINGS[code]["shots"][shot]["alt"]
+    return f'<div class="mock mock-{shot}{extra}" role="img" aria-label="{e(alt)}">{body}</div>'
+
+
+def stage(code, shot):
+    """The component of a block. The reminder block shows the widget and the reminder on a wallpaper."""
+    t = mock.load(code)
+    if shot == "duo":
+        return (f'<div class="wallpaper">{picture(code, "widget", mock.widget(t), " enter d2")}'
+                f'{picture(code, "notification", mock.reminder(t), " enter d3")}</div>')
+    return picture(code, shot, {"history": mock.history, "detail": mock.detail}[shot](t))
+
+
+def badge(code, height):
+    """Apple's "Download on the App Store" badge in the language of the page. The artwork is not changed."""
+    svg = (SITE / "badges" / f"{code}.svg").read_text("utf-8")
+    width, natural = (float(v) for v in re.search(r'width="([\d.]+)" height="([\d.]+)"', svg).groups())
+    return (f'<a class="badge" href="{e(STORE_URL)}"><img src="/badges/{code}.svg" '
+            f'width="{round(width * height / natural)}" height="{height}" alt="{e(STRINGS[code]["store"]["badge_alt"])}"></a>')
+
+
+def download(code):
+    """The download unit of the hero. After the release: Apple's badge, and under it the devices that the app runs on.
+    Before the release: one plain line with no Apple artwork, because Apple's badge is a call to get an app that is in the store."""
+    s = STRINGS[code]["store"]
+    devices = "".join(f'<li>{icon(DEVICE_NAMES[d][0])}{DEVICE_NAMES[d][1]}</li>' for d in DEVICES)
+    first = badge(code, PAGE_BADGE) if RELEASED else f'<p class="soon">{e(s["soon"])}</p>'
+    return (f'<div class="get load d3">{first}'
+            f'<ul class="get-devices" aria-label="{e(s["devices"])}">{devices}</ul></div>')
+
+
+def phrases(text, load=True):
+    """A "|" in a headline marks a place where the line can break. Each part stays in one piece.
+    In the hero headline, each part also enters as one unit when the page loads."""
+    parts = text.split("|")
+    if len(parts) == 1 and not load:
+        return e(text)
+    return "".join(f'<span class="nb{f" load d{i}" if load else ""}">{e(part.strip())}</span>{" " if part.endswith(" ") else ""}'
+                   for i, part in enumerate(parts))
+
+
+def layout(code, page, title, desc, main, head=""):
+    s = STRINGS[code]
+    f = s["footer"]
+    here = ORIGIN + url(code, page)
+    alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
+    banner = (f'<meta name="apple-itunes-app" content="app-id={re.search(r"id(\d+)", STORE_URL).group(1)}">\n'
+              if RELEASED else "")
+    cta = f'<a class="bar-cta" href="{e(STORE_URL)}">{e(s["store"]["download"])}</a>\n' if RELEASED else ""
+    locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c, _ in LANGS if c != code)
+    current = ' aria-current="page"'
+    menu = "".join(
+        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
+        f'{icon("check") if c == code else ""}</a></li>'
+        for c, _ in LANGS)
+    languages = "".join(
+        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
+        f'data-close="{e(STRINGS[c]["close"])}"{current if c == code else ""}>{e(STRINGS[c]["name"])}</a></li>'
+        for c, _ in LANGS)
+    return f"""<!DOCTYPE html>
+<html lang="{code}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{e(title)}</title>
+<meta name="description" content="{e(desc)}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+{banner}<link rel="canonical" href="{here}">
+{alternates}<link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Maru">
+<meta property="og:title" content="{e(title)}">
+<meta property="og:description" content="{e(desc)}">
+<meta property="og:url" content="{here}">
+<meta property="og:image" content="{ORIGIN}/icon.png">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
+<meta property="og:image:alt" content="Maru">
+<meta property="og:locale" content="{OG_LOCALE[code]}">
+{locales}<meta name="twitter:card" content="summary">
+{head}<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<a class="skip" href="#main">{e(s["skip"])}</a>
+<header class="site-header"><div class="nav-inner">
+<a class="brand" href="{url(code, "index.html")}"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
+<nav class="nav-links" aria-label="{e(s["nav_label"])}">
+<details class="lang-menu"><summary class="icon-btn" aria-label="{e(f["language"])}: {e(s["name"])}" data-tip="{e(f["language"])}">{icon("globe")}</summary><ul>{menu}</ul></details>
+<a class="icon-btn" href="{GITHUB}" aria-label="{e(s["github"])}" data-tip="GitHub">{icon("github")}</a>
+{cta}</nav>
+</div></header>
+{main}
+<footer class="site-footer">
+<div class="footer-inner">
+<ul class="footer-links"><li><a href="{url(code, "faq/index.html")}">{e(f["faq"])}</a></li><li><a href="{url(code, "support/index.html")}">{e(f["support"])}</a></li><li><a href="{url(code, "privacy/index.html")}">{e(f["privacy"])}</a></li><li><a href="{GITHUB}">{e(f["source"])}</a></li></ul>
+<nav class="langs" aria-label="{e(f["language"])}"><ul>{languages}</ul></nav>
+<p>{e(f["advice"])}</p>
+</div>
+</footer>
+<template id="lang-hint"><aside class="lang-hint"><a href="{url(code, page)}">{e(s["suggest"])}</a><button type="button" class="icon-btn" aria-label="{e(s["close"])}">{icon("close")}</button></aside></template>
+<script src="/site.js" defer></script>
+</body>
+</html>
+"""
+
+
+def home(code):
+    s = STRINGS[code]
+    h = s["home"]
+    blocks = "".join(
+        f'<article class="feature{" flip" if i % 2 else ""}" data-reveal><div class="feature-copy">'
+        f'<h2 class="enter">{phrases(b["title"], load=False)}</h2><p class="lede enter d1">{e(b["text"])}</p></div>'
+        f'<div class="feature-stage{"" if b["shot"] == "duo" else " enter d2"}">{stage(code, b["shot"])}</div></article>\n'
+        for i, b in enumerate(s["blocks"]))
+    store_link = f'<a href="{e(STORE_URL)}">{e(s["store"]["badge_alt"])}</a>' if RELEASED else ""
+    first, *rest = s["trust"]
+    trust = f'<li><a href="{GITHUB}">{icon("github")}{e(first)}</a></li>' + "".join(f"<li>{e(t)}</li>" for t in rest)
+    main = f"""<main id="main">
+<section class="hero">
+<div class="wrap hero-grid">
+<div class="hero-copy">
+<h1>{phrases(h["h1"])}</h1>
+<p class="lede load d2">{e(h["lede"])}</p>
+{download(code)}
+</div>
+<div class="hero-stage load-hero">{picture(code, "today", mock.today(mock.load(code)))}</div>
+</div>
+</section>
+<div class="wrap features">
+{blocks}</div>
+<section class="wrap" aria-labelledby="trust-title">
+<div class="closer" data-reveal>
+<h2 id="trust-title" class="sr">{e(s["trust_title"])}</h2>
+<ul class="nots enter">{trust}</ul>
+<p class="closer-links enter d1">{store_link}<a href="{url(code, "faq/index.html")}">{e(s["faq"]["h1"])}</a></p>
+</div>
+</section>
+</main>"""
+    return layout(code, "index.html", h["title"], h["desc"], main)
+
+
+def links(code):
+    return {"privacy": url(code, "privacy/index.html"), "faq": url(code, "faq/index.html"), "github": GITHUB}
+
+
+def faq(code):
+    s = STRINGS[code]["faq"]
+    items = [(q, a.format(**links(code))) for q, a in s["items"]]
+    body = "".join(f'<div class="qa"><h2>{e(q)}</h2><p>{a}</p></div>\n' for q, a in items)
+    schema = {"@context": "https://schema.org", "@type": "FAQPage", "inLanguage": code, "mainEntity": [
+        {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": re.sub(r"<[^>]+>", "", a)}}
+        for q, a in items]}
+    head = f'<script type="application/ld+json">{json.dumps(schema, ensure_ascii=False)}</script>\n'
+    main = f'<main id="main" class="prose">\n<h1 class="load">{e(s["h1"])}</h1>\n<div class="load d1">\n{body}</div>\n</main>'
+    return layout(code, "faq/index.html", s["title"], s["desc"], main, head)
+
+
+def support(code):
+    s = STRINGS[code]["support"]
+    main = f"""<main id="main" class="prose">
+<h1 class="load">{e(s["h1"])}</h1>
+<div class="load d1">
+<p class="lede">{e(s["lede"])}</p>
+<div class="cards">
+<article class="card"><h2>{e(s["email"])}</h2><p><a href="mailto:{EMAIL}">{EMAIL}</a></p></article>
+<article class="card"><h2>{e(s["form"])}</h2><p><a href="{FEEDBACK_FORM}">{e(s["form_link"])}</a></p><p class="note">{e(s["form_note"])}</p></article>
+</div>
+<p>{s["note"].format(**links(code))}</p>
+</div>
+</main>"""
+    return layout(code, "support/index.html", s["title"], s["desc"], main)
+
+
+def inline(text):
+    return re.sub(r"`([^`]+)`", r"<code>\1</code>", e(text, quote=False))
+
+
+def policy(code):
+    """PRIVACY.md as HTML. The text stays English. A language page gets its own headings."""
+    headings = STRINGS[code]["privacy"]["headings"]
+    out, depth = [], 0
+
+    def close(to):
+        nonlocal depth
+        while depth > to:
+            out.append("</li></ul>")
+            depth -= 1
+
+    text = (SITE.parent / "PRIVACY.md").read_text("utf-8").replace("This file", "This page")
+    for line in text.splitlines():
+        item = re.match(r"( *)- (.*)", line)
+        if item:
+            level = len(item.group(1)) // 2 + 1
+            if level > depth:
+                out.append("<ul>")
+                depth += 1
+            else:
+                close(level)
+                out.append("</li>")
+            out.append(f"<li>{inline(item.group(2))}")
+            continue
+        close(0)
+        if line.startswith("## "):
+            title = line[3:]
+            lang = "" if code == "en" else f' lang="{code}"'
+            out.append(f"<h2{lang}>{e(title if code == 'en' else headings[title])}</h2>")
+        elif line and not line.startswith("# "):
+            out.append(f"<p>{inline(line)}</p>")
+    close(0)
+    return "\n".join(out)
+
+
+def privacy(code):
+    s = STRINGS[code]["privacy"]
+    summary = "".join(f"<li>{e(line)}</li>" for line in s["summary"])
+    binding = f'<p class="note">{e(s["binding"])}</p>\n' if s["binding"] else ""
+    main = f"""<main id="main" class="prose">
+<h1 class="load">{e(s["h1"])}</h1>
+<div class="load d1">
+<section class="card summary" aria-labelledby="summary-title"><h2 id="summary-title">{e(s["summary_title"])}</h2><ul>{summary}</ul></section>
+{binding}<div class="policy" lang="en">
+{policy(code)}
+</div>
+</div>
+</main>"""
+    return layout(code, "privacy/index.html", s["title"], s["desc"], main)
+
+
+def sitemap():
+    rows = []
+    for page in PAGES:
+        alternates = "".join(
+            f'<xhtml:link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}"/>' for c, _ in LANGS)
+        alternates += f'<xhtml:link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}"/>'
+        rows += [f"  <url><loc>{ORIGIN}{url(code, page)}</loc>{alternates}</url>" for code, _ in LANGS]
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
+            'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + "\n".join(rows) + "\n</urlset>\n")
+
+
+def not_found():
+    """The page for an address that does not exist. It is English, and it links to every language."""
+    homes = "".join(f'<li><a href="{url(c, "index.html")}" lang="{c}" hreflang="{c}">{e(STRINGS[c]["name"])}</a></li>' for c, _ in LANGS)
+    main = f"""<main id="main" class="prose">
+<h1 class="load">Page not found</h1>
+<div class="load d1">
+<p class="lede">This address has no page. Go to the home page of Maru.</p>
+<ul>{homes}</ul>
+</div>
+</main>"""
+    page = layout("en", "index.html", "Maru: Page not found", "This address has no page.", main,
+                  '<meta name="robots" content="noindex">\n')
+    return re.sub(r'<link rel="(canonical|alternate)"[^>]*>\n', "", page)
+
+
+def redirects():
+    rows = ["/compare.html /faq/ 301", "/us / 301", "/us/* /:splat 301"]
+    for code, folder in LANGS:
+        prefix = f"/{folder}" if folder else ""
+        rows += [f"{prefix}/{old} {url(code, new)} 301" for old, new in OLD_PAGES.items()]
+    for old, new in [("zh-hans", "cn"), ("ja", "jp"), ("ko", "kr")]:
+        rows += [f"/{old} /{new}/ 301", f"/{old}/* /{new}/:splat 301"]
+    return "\n".join(rows) + "\n"
+
+
+def llms():
+    state = "It is in the App Store." if RELEASED else "It is not in the App Store yet."
+    devices = ", ".join(DEVICE_NAMES[d][1] for d in DEVICES)
+    languages = "\n".join(f"- {name}: {ORIGIN}{url(code, 'index.html')}" for code, name in [
+        ("en", "English"), ("zh-Hans", "Simplified Chinese"), ("ja", "Japanese"), ("es", "Spanish"), ("de", "German"), ("ko", "Korean")])
+    return f"""# Maru
+
+> Maru is a small app for daily vitamins, supplements, and simple medication schedules. It reminds you at the times you choose, shows what to take now, and keeps a record. {state}
+
+Facts:
+- Runs on: {devices}.
+- Free, with no subscription, no ads, no account, and no limit on items. Optional tips unlock nothing.
+- Items and records stay on the device. Optional usage statistics never include names, doses, or times.
+- Today screen: record a dose with one tap.
+- Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose.
+- History with undo and correction. Record export, backup, and restore.
+- Home Screen widgets.
+- Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
+- Maru does not track stock, give medical advice, or pick a dose or a time for you.
+- Maru has no Apple Watch app and no sync between devices.
+
+Pages:
+- [FAQ]({ORIGIN}/faq/): short answers.
+- [Privacy]({ORIGIN}/privacy/): what the app stores and what it does not do.
+- [Support]({ORIGIN}/support/): hello@maru.day and the feedback form.
+- [Source]({GITHUB}): MIT license.
+
+Languages:
+{languages}
+"""
+
+
+def main():
+    render = {"index.html": home, "faq/index.html": faq, "privacy/index.html": privacy, "support/index.html": support}
+    for code, folder in LANGS:
+        for page in PAGES:
+            file = SITE / folder / page
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_text(render[page](code), "utf-8")
+    (SITE / "404.html").write_text(not_found(), "utf-8")
+    (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
+    (SITE / "_redirects").write_text(redirects(), "utf-8")
+    (SITE / "llms.txt").write_text(llms(), "utf-8")
+    print(f"built {len(LANGS) * len(PAGES)} pages")
+
+
+if __name__ == "__main__":
+    main()

@@ -91,7 +91,7 @@ struct HistoryTests {
                 scheduleID: schedule.id,
                 effectiveFrom: Fixtures.date(2026, 3, 1),
                 weeklyRule: .everyDay,
-                everyOtherDayFrom: Fixtures.date(2026, 3, 1),
+                dayCycle: DayCycle(start: Fixtures.date(2026, 3, 1), daysOn: 1, daysOff: 1),
                 slotTimes: [SlotTime(slotID: slot, time: Fixtures.time(9))],
                 timeZonePolicy: .fixed(Fixtures.shanghai)
             )

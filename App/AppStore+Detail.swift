@@ -4,7 +4,7 @@ import MaruDatabase
 
 /// What the detail page of one item shows (spec 3 P04).
 struct ItemDetail: Equatable, Sendable {
-    /// The day of the next dose of a plan that repeats every second day (D036).
+    /// The day of the next dose of a plan that counts days (D036, D065).
     struct NextDose: Equatable, Sendable {
         let date: LocalDate
         /// 0 for today and 1 for tomorrow.
@@ -14,7 +14,7 @@ struct ItemDetail: Equatable, Sendable {
     let item: Item
     /// `nil` for an item with no time (T02).
     let schedule: Schedule?
-    /// `nil` for a plan that does not repeat every second day.
+    /// `nil` for a plan that does not count days.
     let nextDose: NextDose?
     /// The strip of the last 7 days (D054). `nil` when the item had no planned dose and no taken as-needed dose.
     let week: HistoryItemWeek?
@@ -37,14 +37,16 @@ extension AppStore {
         return ItemDetail(item: item, schedule: schedule, nextDose: nextDose, week: week)
     }
 
-    /// The first date from today on which a plan of every second day has a time that is still to come.
+    /// The first date from today on which a plan that counts days has a time that is still to come.
     /// It reads the plan and not the records: a dose of today that the user recorded early still counts
-    /// until its time. So today after the last time gives the day after tomorrow.
+    /// until its time. So today after the last time of a plan of every second day gives the day after tomorrow.
+    /// The search covers one full cycle from today, or from a start date that is still to come.
     private static func nextDose(of schedule: Schedule, at now: Date, deviceTimeZone: NamedTimeZone) -> ItemDetail.NextDose? {
-        guard let version = schedule.versions.last, version.everyOtherDayFrom != nil else { return nil }
+        guard let version = schedule.versions.last, let cycle = version.dayCycle else { return nil }
         let zone = if case let .fixed(zone) = version.timeZonePolicy { zone } else { deviceTimeZone }
         let today = LocalDate(now, in: zone)
-        for days in 0...6 {
+        let first = max(0, cycle.start.days(since: today))
+        for days in first...first + cycle.daysOn + cycle.daysOff {
             let date = today.adding(days: days)
             let isToCome = schedule.plannedOccurrences(on: date, deviceTimeZone: deviceTimeZone).contains {
                 $0.timeZone.resolve($0.plannedTime, on: date).earliestInstant > now

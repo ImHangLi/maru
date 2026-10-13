@@ -385,7 +385,7 @@ Owner decisions after the study in `docs/research/2026-10-11-user-feedback-cn.md
 - The first release answers the common questions directly, as a FAQ: `docs/faq.md`. The owner's words for the product: one single, separate, easy place for this job. A record is simple. A missed record is fine. The app exists to lower the mental load.
 - Do not build the app on the maintainer's Mac. CI is the build check. One local device build is acceptable for an install on the maintainer's iPhone.
 
-## D036 · 2026-10-11 · Every other day: rule and reminders (two notifications at one time replaced by D047)
+## D036 · 2026-10-11 · Every other day: rule and reminders (two notifications at one time replaced by D047, "no cycles" and "no date picker" replaced by D065)
 
 Agent decision, under the owner decision D035. It changes spec 2.1, 8.1, 8.2, 8.3, 8.5, and 15 (new acceptance ID T51, and a note on T22).
 
@@ -788,7 +788,7 @@ Agent detail:
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw a notification. It needs a check on a real iPhone.
 
-## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now
+## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now (widget name, header separator, and VoiceOver labels replaced by D068)
 
 Owner decision on the design (D046), with agent detail. It adds two widgets, small and medium each. It follows spec 6 (Widgets), 7.2, 9, and 10. Spec 10 says a widget shows only non-sensitive content by default.
 
@@ -1071,7 +1071,7 @@ The maintainer joined the Apple Developer Program on 2026-10-13. The Team ID is 
 
 Not verified: the device build needs the maintainer's Apple ID in Xcode, so that automatic signing adds the capability to the App ID. Nobody saw a reminder during a Focus yet.
 
-## D063 · 2026-10-13 · Store needs: an About section and the collected data in the privacy manifest
+## D063 · 2026-10-13 · Store needs: an About section and the collected data in the privacy manifest ("not linked" replaced by D069)
 
 Agent decision, after a release audit.
 
@@ -1082,7 +1082,7 @@ Agent decision, after a release audit.
 
 Not verified: no build of the app on this Mac. CI builds the app. The pages on maru.day are not live yet, so the two links show the placeholder until the site deploys.
 
-## D064 · 2026-10-13 · Analytics requests carry the region setting
+## D064 · 2026-10-13 · Analytics requests carry the region setting ("not linked" replaced by D069)
 
 Maintainer decision, with agent detail. It adds one field to the events of D052.
 
@@ -1103,7 +1103,85 @@ Maintainer decision, with agent detail. It adds one field to the events of D052.
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody sent an event to the PostHog project, and nobody checked the packets (T42). The "Discard client IP data" setting is the report of the maintainer.
 
-## D065 · 2026-10-13 · The app also runs on iPad
+## D065 · 2026-10-13 · Every few days, and days on and off
+
+Maintainer decision on the direction, with agent detail. The maintainer approved more schedule types on 2026-10-13: a cycle with a pause, and "every N days" only if it costs little. The feature must not delay the first release. If it is not ready, it ships in 1.1. It changes spec 1, 2.1, 8.1, 8.2, 8.3, 8.5, and 15 (new acceptance ID T52, and a note on T22). It replaces two lines of D036: "Only this rule. No cycles", and "no date picker".
+
+The rule:
+
+- One rule serves the three schedules. A schedule version can have a day cycle: a start date, a number of days with a dose (`daysOn`), and a number of days with none (`daysOff`). A date is due when it is on or after the start date and its count of calendar days from the start date, modulo `daysOn + daysOff`, is less than `daysOn`.
+- Every other day is 1 and 1. Every N days is 1 and N - 1. 21 days on and 7 days off is 21 and 7. The every-other-day rule of D036 is this rule with 1 and 1, so its dates did not change.
+- The other rules of D036 stay. The rule counts calendar dates in the calendar and the time zone of the plan, so a clock change, a time zone change, a missed dose, and a skip do not move the rhythm. An edit of a time or of the amount keeps the cycle. A change of a number or of the first day makes a new version from today. A day of the pause has no occurrence, so the item is not on Today, History has no "No record" row for it, and the widgets do not show it.
+- The start date can be before today, for a cycle that the user already started.
+- Hourly intervals and changing amounts stay out of scope (spec 1).
+
+The database:
+
+- Migration `v5` gives the column `scheduleVersion.everyOtherDayFrom` the name `cycleStart`, and adds `cycleDaysOn` and `cycleDaysOff`. A version with a start date gets 1 and 1. A version with no start date keeps `NULL` in the three columns. The store loads all three values or none, and any other row is invalid data.
+- The migration only renames, adds, and fills the new columns. It rebuilds no table and deletes no row (spec 7.3).
+- A backup from before `v5` restores: the restore applies `v5` to its copy of the backup, as it does for each later migration (D040). The backup format version stays 1.
+- The record export did not change. It has one line for each dose, and a day of the pause has no dose.
+
+The reminders:
+
+- No second mechanism. A plan with a day cycle gets the dated requests of D036: one request for each of its next 7 due dates at each of its times, set again at each run. The budget of 48, the order of the budget, the "all 7 or none" rule, the shared request of D047, and the tap resolver did not change. The plan now steps one day at a time and keeps the due dates, in place of a step of two days.
+- A day of the pause is not a due date. It gets no request, so no notification names the item on that day.
+- The limit is the same text as D036: "Maru sets the reminders of the next 7 dose days each time you open it." For every other day the 7 due dates cover 13 days. For a plan with a pause they can be 7 days in a row. So its reminders can stop after one week with no open of Maru.
+
+The screens:
+
+- The repeat page has four choices in the first section: "Every Day", "Every Other Day", "Every Few Days", and "Days On and Off".
+- "Every Few Days" has a menu "Interval" with 3 to 30 days. Two days is "Every Other Day", so the menu does not have it. "Days On and Off" has two menus, "Days On" and "Days Off", with 1 to 99. Each menu starts on "Choose". The app picks no number (spec 2.1). Save stays off, and the plan line says "Choose the number of days.", until the user chooses.
+- The first day of the two new choices: "Starting Today", "Starting Tomorrow", or a system date picker "Another Date". The app picks no first day. Until the user chooses, the date picker shows today, the draft has no date, the footer says "Choose the first day.", and Save stays off. A change of the choice in the first section clears the numbers and the first day.
+- Every other day keeps its two first-day choices and no date picker (D036), because it has only two possible rhythms.
+- The plan line names the first day as a date, also a past one, because the first day decides which days have a dose: "21 days on, 7 days off at 8:00 AM, from Tue, Oct 13, with no end date".
+- The item detail shows the rule under "Days", and "Next Dose" for each plan with a day cycle. "Next Dose" shows a date when the dose is 7 or more days away, because a weekday alone does not tell the week after a pause.
+- A stored cycle of 1 day on and 2 to 29 days off opens as "Every Few Days". The two forms give the same dates.
+- A draft file from before this change keeps its rule: the file names the cycle with the old key, and a cycle with no kind is every other day.
+- A save keeps the stored cycle only when the choice gives the same due dates from today on. A first day that the user moves to a later date is a new version from today, also when the date is in the rhythm of the stored cycle: the days before it then have no dose. This is from the review, which found that such a save kept the old first day.
+- The numbers of a cycle are 1 to 99, in the domain (`DayCycle.dayCounts`), in the checks of `v5`, and in the menus. Stored data or a backup with another number does not load, so a restore refuses the file before it replaces the data. This is from the review: a backup with a very large number passed, and the next due calculation overflowed.
+
+Rejected:
+
+- A second column set or a second rule type for cycles. One rule with two numbers gives all three schedules, and one migration.
+- More than 7 due dates for a plan with a pause. Each time of such a plan would use more of the 48 requests (D036).
+- A stepper or a number field for the days. A stepper needs a start value, which is a default. A number field with the number pad has no Return key, and nobody can check its commit behavior without a display.
+- "Every Few Days" from 2 days. It would give two choices for the same plan.
+- A change of `site/compare.html`, which says that Maru has no cycles. The site is published text, and it must follow the build that the store has.
+
+Tests (D016): four new tests. The rhythm and the pause across a clock change, the dated requests around a pause, the migration with a restore of an older backup, and the refusal of a backup with a number outside the limits.
+
+Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
+
+## D068 · 2026-10-13 · Copy review: text states the record, not the intake
+
+Agent decision, after a copy review of all user-facing text by a different model. It changes text in the six languages, and it replaces parts of D048. The number leaves D065 to D067 for the branches that are open at the same time.
+
+- Maru knows a record, not an intake. A dose with no record is "Not recorded" or "No record", never "Not taken". The follow-up reminder has the title "No record yet" in place of "Still to take".
+- The action that records an as-needed dose is "Record Dose" in place of "Take Now". The widget that records with a tap has the same name. Its type name and its kind string do not change, so an installed widget stays.
+- The capsule of a widget gets the record state. VoiceOver says "Taken", "Not recorded", or "Skipped". The count of the "Today" widget stays "4 of 7" on the display, because a longer text does not fit the small widget, and VoiceOver reads "4 of 7 taken".
+- The header of the small "Today" widget has no "·". The tint and the gray color separate the slot from the time. A second line does not fit above two rows of capsules.
+- A day with no planned dose says "Nothing Planned Today", with the word "planned" of History. It does not say that there is nothing to take.
+- The restore alerts name Maru: "Replace Maru Data?" and "This backup replaces all items and records in Maru." A restore that the storage did not confirm has the title "Restore Not Confirmed".
+- The footer of "Your Data" says what a backup holds: items, records, and some settings, and no photos (`docs/export-format.md`).
+- The statistics text says "how you use the app" in place of "counts of what you use", because the daily summary has yes-or-no flags and no count.
+- The menu of the item detail is "Item Options…". "End This Item" can read as advice to stop an intake.
+- Japanese and Korean "Drops" use the pharmacy words for the dosage form, 滴剤 and 점적제, in place of the loanwords. Apple's word in Health was not found. A native speaker must confirm both.
+- `PRIVACY.md` and `docs/faq.md` lose the implementation words and the streak words. The camera paragraph of `PRIVACY.md` now also names the item photo. `site/` is not part of this change.
+- Every changed string in Japanese, Korean, Spanish, and German is a draft until a native speaker reads it. `docs/localization-review.md` lists them.
+
+- The item detail shows its three counts (D061) as separate labelled values with space between them, and one under the other when the row is too narrow. This was the last "·" separator in the app, the widgets, the reminders, and the String Catalogs.
+
+Not verified: no build of the app on this Mac, and nobody saw the text on a display.
+
+## D069 · 2026-10-13 · Usage statistics are "linked to the user" on the privacy label
+
+Maintainer decision on 2026-10-13, after two model reviews.
+
+- Every data type that the usage statistics send is "Linked to the user: Yes" in `App/PrivacyInfo.xcprivacy` and on the App Store privacy label. Each event carries the same random install ID, and Apple counts data that a persistent device-level ID ties together as linked. "Used for tracking" stays "No". This replaces the "not linked" part of D063 and of the region entry.
+- The app does not change. The install ID stays random, Maru has no account, and the ID is deleted when the user turns the switch off.
+
+## D070 · 2026-10-13 · The app also runs on iPad
 
 Maintainer decision, with agent detail. The maintainer asked for iPad support before the first release, if it is ready. It must not delay the release.
 
@@ -1114,11 +1192,11 @@ Maintainer decision, with agent detail. The maintainer asked for iPad support be
 - History beside Today reads its days again when the content of the app changes, because it does not open again for each look as on an iPhone.
 - Settings, the add and edit screen, the scanner, and the time sheets stay system sheets. The system gives a sheet a fixed width on an iPad. The system shows the tab bar at the top on iPadOS 18 and later, with names and no icons. This is the system form of the rule of D026.
 - No presentation needs a new anchor. Each `confirmationDialog` is on its button: the record circle, the as-needed dose, and "Cancel" of the edit screen. SwiftUI shows it as a popover from that button on an iPad. The share sheet is a `UIActivityViewController` inside a SwiftUI sheet, so UIKit does not present it and it needs no source view. The file picker, the photo picker, and the camera are system presentations.
-- Text: 14 strings name the iPhone. Each has a device variation for the iPad in the String Catalog, in the six languages. The iPad text is the iPhone text with the other device name, and Korean has the particle for the new word. A native speaker did not check them.
+- Text: 13 strings name the iPhone. Each has a device variation for the iPad in the String Catalog, in the six languages. The iPad text is the iPhone text with the other device name, and Korean has the particle for the new word. A native speaker did not check them.
 - Widgets: the small and the medium family exist on the iPad, and the layouts do not change. The large and the extra large family need a new design, so Maru does not offer them.
 - Each iPad has its own local database. Maru has no sync (D040). The backup file moves the data between an iPhone and an iPad, without the photos (D056).
 - Not done: no sidebar, no keyboard shortcuts, no pointer effects of its own, and no iPad family of the widgets.
-- `PRIVACY.md`, `docs/faq.md`, and the site say "iPhone or iPad" or "device" where the text is true for both. They say that each device has its own data.
+- `PRIVACY.md` and `docs/faq.md` say "iPhone or iPad" or "device" where the text is true for both, and say that each device has its own data. The site builds its privacy page from `PRIVACY.md`. Its FAQ answer about the Apple Watch now says that Maru is an app for iPhone and iPad, in the six languages.
 - The stop rule: if the check on a real iPad fails before the first upload, set `TARGETED_DEVICE_FAMILY` to `"1"` in both targets. The other parts of this change do nothing on an iPhone. After a version with iPad support is on the App Store, Apple does not let an update remove the iPad.
 - The store page then needs iPad screenshots (`docs/release-plan.md`).
 

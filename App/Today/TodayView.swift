@@ -10,7 +10,7 @@ struct TodayView: View {
     var body: some View {
         Group {
             if sizeClass == .regular {
-                // At a regular width, History stays beside Today (D065). It is open as long as it shows, also
+                // At a regular width, History stays beside Today (D070). It is open as long as it shows, also
                 // after a new session or a widget link closes it.
                 WideColumns {
                     page(showsHistory: false)
@@ -114,7 +114,7 @@ private struct TodayContent: View {
             .overlay {
                 if today.groups.isEmpty && asNeededRows.isEmpty {
                     if hasItems {
-                        ContentUnavailableView("Nothing to Take Today", systemImage: "checkmark.circle")
+                        ContentUnavailableView("Nothing Planned Today", systemImage: "checkmark.circle")
                     } else {
                         ContentUnavailableView {
                             Label("No Items Yet", systemImage: "pills")

@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, and D065 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, and D070 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -36,8 +36,8 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A failure uses a system alert. Every alert title uses Title Case, for example "Not Saved", "Today Changed", "History Changed", "Not Changed", and "Maru Couldn’t Save" (D058). A failed reminder after a save or a change also gets an alert. Notifications that are off show as the row "Notifications off" on Today and My Items, with no alert.
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
-- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses: "Taken: 5 · Skipped: 1 · No record: 1". An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
-- For a plan of every other day, "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036).
+- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses as three labelled values with space between them and no separator: "Taken: 5", "Skipped: 1", "No record: 1". They stand one under the other when the row is too narrow (D068). An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
+- For a plan that counts days (every other day, every few days, or days on and off), "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036, D065).
 
 ## Today
 
@@ -50,10 +50,10 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A recorded row and an open row differ only by the circle and the time. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032, D044).
 - A slot always shows its rows, also when every row is done. Nothing folds or opens. The header is the plain title (D057, D060).
 - The same words name an action in the dialog of the circle, in the menu, and in the swipe: "Taken", "Skip", "Undo", and "Change Time…" (D058). Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
-- A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Take Now". Every action uses the same record transaction as the circle (D028).
+- A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Record Dose" (D068). Every action uses the same record transaction as the circle (D028).
 - The menu of a recorded row has "Change Time…". The menu of an open row has "Taken Earlier…". Each opens the time sheet directly. The sheet shows the time wheel at once, and "Save" records the dose as taken at that time. The wheel does not go past the current time. So a change of a record time needs three taps (D033).
 - An "As Needed" section at the end lists items with no schedule. Each row has a record button that records a dose at the current time (D021). A dose of today shows under its item as "Taken at 8:07 AM" or "Skipped" in the text color. It lines up with the name, past the icon column, at every text size (D058).
-- With no item, the empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing to Take Today" (D026, D058).
+- With no item, the empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing Planned Today" (D026, D058, D068).
 - Success text and the success haptic come only after the local transaction commits (spec §7.2).
 
 ## History
@@ -120,7 +120,7 @@ The log of an item and the log of a day use the timeline rows below. The log of 
 
 A grid of tiles, so the user sees at once which items they have (spec §3 P02, D032). It replaces the list of D020.
 
-- Two columns. One column at the accessibility text sizes. On an iPad at a regular width, the grid is the first of two columns (D065).
+- Two columns. One column at the accessibility text sizes. On an iPad at a regular width, the grid is the first of two columns (D070).
 - A tile shows two things: the form icon, large, in the item color, and the name in the headline weight under it. No plan line, no amount, and no other text. The plan is in the item detail.
 - The name wraps and never truncates. A tile has room for two lines, and a longer name makes its row taller. The tiles of one row have the same height.
 - Order: the first time of day of the plan, then the name. As-needed items come last. No section titles.
@@ -137,7 +137,7 @@ One confirmation for each, and no second dialog before it (D033).
 
 - "Archive…" is in the context menu of a Today row and of a My Items tile, and in the menu of the item detail. Long press, "Archive…", "Archive": three taps.
 - The archive alert names the item. It says that the reminders stop, that the item leaves Today and My Items, that the records stay, and that this is not advice to stop.
-- The item detail ends with the row "Change or End This Item…". It opens a system menu, not a dialog: "Replace with a New Product…", the reminder switch, "Archive…", and "Delete Item…".
+- The item detail ends with the row "Item Options…" (D068). It opens a system menu, not a dialog: "Replace with a New Product…", the reminder switch, "Archive…", and "Delete Item…".
 - "Delete Item…" is in that menu, on the detail of an archived item, and in the archived list. The delete alert names the item. It says that the item, its plan, and all its records are deleted, and that the user cannot undo this.
 - After the commit, the item leaves every page with the layout motion. A reminder that the system did not confirm as removed gets the alert "Reminders May Still Be On", for an archive and for a delete.
 
@@ -158,23 +158,23 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 - The strikethrough setting is gone (D032).
 - "Your Data" is the section before "Send Feedback" (D040). It has three rows: "Export Records", "Back Up", and "Restore from Backup…". A tap on one of the first two opens the system share sheet with the file. The third opens the system file picker.
 - The footer of "Your Data" has two sentences, because it must say that the files are not encrypted (D058).
-- A restore has one alert, "Replace All Data?", with a destructive button "Replace". After a restore, the sheet closes and Today shows the restored data. No message says so (D028). A failure is a system alert that says that the data did not change.
+- A restore has one alert, "Replace Maru Data?", with a destructive button "Replace". After a restore, the sheet closes and Today shows the restored data. No message says so (D028). A failure is a system alert that says that the data did not change.
 - The share sheet is the one of UIKit, `UIActivityViewController`, in a system sheet. `ShareLink` needs the file before the tap and does not say when the sheet closes, and Maru must remove the file then (D026, D040).
 
 ## Widgets
 
 Two Home Screen widgets, small and medium each (D048). They use the capsule of the app icon, tilted by 45 degrees, and no list rows.
 
-- One capsule is one dose. Taken: filled with the app tint (D025) as a gradient. Not taken and skipped: light gray (`systemGray5`) with a thin edge (`systemGray3`). VoiceOver says "Taken" or "Not taken", so the color is never the only signal.
+- One capsule is one dose. Taken: filled with the app tint (D025) as a gradient. Open and skipped: light gray (`systemGray5`) with a thin edge (`systemGray3`). VoiceOver says "Taken", "Not recorded", or "Skipped" (D068), so the color is never the only signal.
 - The background is the system background: white in light mode, black in dark mode. Text uses the system font and the system colors.
-- "Today" has no names and no buttons. Small: the slot word in the tint, a "·", the time. Under it a large "2 left", and the capsules of the slot at the bottom right. When every dose is done: "All done · Next 8:00", "7 of 7", filled capsules. Medium: "Today" and "4 of 7", then a column for each slot with its title, its time, and its capsules. The slot of the clock has the title in the tint. A tap opens Today at the slot.
-- "Take Now" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
+- "Today" has no names and no buttons. Small: the slot word in the tint, then the time in gray. Under it a large "2 left", and the capsules of the slot at the bottom right. When every dose is done: "All done" in the tint and "Next 8:00" in gray, "7 of 7", filled capsules. Medium: "Today" and "4 of 7", then a column for each slot with its title, its time, and its capsules. VoiceOver reads the count as "4 of 7 taken". The slot of the clock has the title in the tint. A tap opens Today at the slot.
+- "Record Dose" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
-- The words "Today", "Morning", "Noon", and "Evening" match the app. The "·" in the header of the small "Today" widget is the owner design. It is the one use of the separator of principle 5.
+- The words "Today", "Morning", "Noon", and "Evening" match the app. The header of the small "Today" widget has no "·": the color separates the two parts (D068).
 
 ## iPad
 
-At a regular width, such as a full-screen iPad, each tab shows two pages side by side (D065). A compact width, such as Slide Over or a narrow Split View, shows the pages of the iPhone.
+At a regular width, such as a full-screen iPad, each tab shows two pages side by side (D070). A compact width, such as Slide Over or a narrow Split View, shows the pages of the iPhone.
 
 - Two columns: each page has its own navigation stack. The first column has the width of an iPhone page: 38 % of the window, at least 320 and at most 420 points. The second column gets the other space. A system divider separates them. `App/WideColumns.swift` holds the rule.
 - Today: Today is the first column, and History is the second column. History is open as long as it shows, so the bar of Today has no History button. A row of Today opens the item detail in the first column. A row of History opens its log in the second column.
@@ -243,14 +243,15 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - Smart completion (D043): when the name of a supplement is a name of the built-in list, in full, the form changes to the form of the scanned label, else to the usual form. This happens only while the user did not choose a form on the screen. After that, a different form shows as a row under the form menu, for example "Use Softgel". A medication gets only the scanned form, as that row.
 - Under the amount field, the "Add a Time" button, and the note menu, a known supplement shows candidates as small bordered system buttons in one row: for example "1 softgel" and "2 softgels", "Evening", and "With food". A row that does not fit becomes a column. A tap fills the field or adds the time. Nothing fills before a tap. The footer under the note says "Suggestions come from common labels. Check your own label." The candidates come and go with the layout motion. A change of the type to "Medication" removes them at once.
 - "Add a Time" opens a sheet with a time wheel. The time counts only after "Add" (spec §2.1). For the first time of a supplement the wheel starts at a time that the user already confirmed for a supplement, else at 8:00.
-- "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day" and "Every Other Day". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and it has no date picker (D036).
-- The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date".
+- "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day", "Every Other Day", "Every Few Days", and "Days On and Off". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and every other day has no date picker (D036).
+- "Every Few Days" has a menu "Interval" from "Every 3 days" to "Every 30 days". "Days On and Off" has two menus, "Days On" and "Days Off", from 1 to 99. Each menu starts on "Choose", and Maru picks no number. Under the menus are "Starting Today", "Starting Tomorrow", and a system date picker "Another Date" for any other first day, also a day in the past. The footers say "Choose the number of days." and "Choose the first day." until the user chooses (D065).
+- The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date". The plan line of the other two names the first day as a date: "21 days on, 7 days off at 8:00 AM, from Tue, Oct 13, with no end date".
 - The last section is "Photo (Optional)" (D056). The rows are "Choose Photo", "Take Photo", and "Remove Photo", with a preview of 56 points above them when the item has a photo. After a pick, a row with a progress view says "Removing the background…". When Maru finds one subject, the switch "Remove Background" shows, and it starts on. With no clear subject, the footer says that the photo stays as it is. Save is never off because of the photo.
-- The item detail shows "Every other day" under "Days", and a row "Next Dose" with "Today", "Tomorrow", or a weekday (D036).
+- The item detail shows "Every other day", "Every 3 days", or "21 days on, 7 days off" under "Days", and a row "Next Dose" with "Today", "Tomorrow", a weekday, or a date when the dose is 7 or more days away (D036, D065).
 
 ## Text and accessibility
 
 - Follow the system text size at every size, with no maximum (D013). Names wrap and never truncate.
 - The icon has a size limit. The record circle follows the text size. Hide the icon at the three largest accessibility sizes.
 - Support VoiceOver, dark mode, Increase Contrast, and Reduce Motion (spec §5.3).
-- The tab bar always shows icons with names (D026). On an iPad the system shows it at the top, in its own form (D065).
+- The tab bar always shows icons with names (D026). On an iPad the system shows it at the top, in its own form (D070).
