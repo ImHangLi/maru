@@ -3,7 +3,7 @@ import MaruCore
 import SwiftUI
 import WidgetKit
 
-/// "Take Now": the doses of the current slot. A tap on a gray capsule records the dose (D048).
+/// "Record Dose": the doses of the current slot. A tap on a gray capsule records the dose (D048).
 /// The capsule fills only after the app commits the record and the system loads the timeline again (spec 7.2).
 struct TakeNowWidget: Widget {
     static let kind = "com.imhangli.maru.takeNow"
@@ -13,7 +13,7 @@ struct TakeNowWidget: Widget {
             TakeNowWidgetView(entry: entry)
                 .containerBackground(for: .widget) { Color(.systemBackground) }
         }
-        .configurationDisplayName("Take Now")
+        .configurationDisplayName("Record Dose")
         .description("Tap a capsule to record a dose of the current slot.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
@@ -52,7 +52,7 @@ private struct TakeNowWidgetView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .widgetURL(AppGroup.todayURL(slot.part))
             } else {
-                Text("Nothing to Take Today")
+                Text("Nothing Planned Today")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .widgetURL(AppGroup.todayURL(nil))
@@ -103,7 +103,7 @@ private struct TakeNowWidgetView: View {
     /// An open dose is a button. A taken or skipped dose is only a picture, and the widget has no undo.
     @ViewBuilder
     private func control(_ dose: WidgetDay.Dose, size: CGFloat, epoch: Int) -> some View {
-        let mark = CapsuleMark(isTaken: dose.isTaken, tint: entry.tint.tint, size: size)
+        let mark = CapsuleMark(status: dose.status, tint: entry.tint.tint, size: size)
         if dose.isOpen {
             Button(intent: TakeDoseIntent(occurrenceID: dose.id, scheduleVersionID: dose.scheduleVersionID, epoch: epoch)) {
                 mark.frame(minWidth: 40, minHeight: 40)

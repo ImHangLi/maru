@@ -113,7 +113,7 @@ extension ReminderContent {
         case .due:
             String(localized: "Time to take", bundle: .module, locale: locale, comment: "The title of a reminder.")
         case .again:
-            String(localized: "Still to take", bundle: .module, locale: locale, comment: "The title of a follow-up reminder.")
+            String(localized: "No record yet", bundle: .module, locale: locale, comment: "The title of a follow-up reminder.")
         }
         guard var names, !names.isEmpty else {
             let body = String(

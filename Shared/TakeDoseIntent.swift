@@ -2,7 +2,7 @@ import AppIntents
 import Foundation
 import os
 
-/// The tap on a gray capsule of the "Take Now" widget (D048).
+/// The tap on a gray capsule of the "Record Dose" widget (D048).
 ///
 /// The widget and the app both compile this type. The app adds the conformance to `ForegroundContinuableIntent`
 /// in `App/TakeDoseIntent+App.swift`, so the system runs `perform()` in the app process. There the one model

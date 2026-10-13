@@ -38,7 +38,7 @@ struct SystemRequestTests {
         #expect(neutral == ReminderText(title: "Time to take", body: "Open Maru to see your plan."))
         // A long list names two items and the count of the others.
         let long = ReminderContent(kind: .again, names: ["A", "B", "C", "D"]).text(locale: locale)
-        #expect(long == ReminderText(title: "Still to take", body: "A, B, and 2 more"))
+        #expect(long == ReminderText(title: "No record yet", body: "A, B, and 2 more"))
         // The system fires it at 08:00 in New York on each Monday. The calendar counts from Sunday = 1.
         let trigger = try #require(system.trigger as? UNCalendarNotificationTrigger)
         #expect(trigger.repeats)
