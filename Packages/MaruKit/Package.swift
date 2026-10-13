@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "MaruKit",
     defaultLocalization: "en",
-    // The Watch app links only `MaruCore` (D065).
+    // The Watch app links only `MaruCore` (D071).
     platforms: [.iOS(.v17), .macOS(.v14), .watchOS(.v10)],
     products: [
         .library(name: "MaruCore", targets: ["MaruCore"]),

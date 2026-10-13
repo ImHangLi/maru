@@ -168,7 +168,7 @@ final class AppModel {
             todayDidShow()
             if case .loaded = content {
                 // The widgets show what is stored, so they read again after each read of the app (D048).
-                // The Watch app gets the list (D065).
+                // The Watch app gets the list (D071).
                 WidgetCenter.shared.reloadAllTimelines()
                 sendWatchDay()
                 showPendingWidgetSlot()

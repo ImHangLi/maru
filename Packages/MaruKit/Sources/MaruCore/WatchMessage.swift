@@ -1,6 +1,6 @@
 import Foundation
 
-/// A message between the iPhone app and the Watch app (D065).
+/// A message between the iPhone app and the Watch app (D071).
 ///
 /// The iPhone database is the only store. The Watch shows a list that the iPhone sent, and it asks the iPhone
 /// for each record. A message that does not decode gives `nil`, so a Watch app and an iPhone app of different

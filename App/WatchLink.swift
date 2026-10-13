@@ -2,7 +2,7 @@ import Foundation
 import MaruCore
 import WatchConnectivity
 
-/// The link to the Watch app (D065). It sends the list of today, and it gives each request of the Watch
+/// The link to the Watch app (D071). It sends the list of today, and it gives each request of the Watch
 /// to the model. It holds no data. An iPhone with no paired Watch, or with no Watch app, sends nothing.
 final class WatchLink: NSObject, WCSessionDelegate, Sendable {
     static let shared = WatchLink()

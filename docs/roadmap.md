@@ -36,7 +36,7 @@ Additions from research (D006):
 
 | Candidate | Trigger |
 |---|---|
-| Lock-screen quick logging. A first Apple Watch app is in work (D065) | Users ask for faster logging |
+| Lock-screen quick logging. A first Apple Watch app is in work (D071) | Users ask for faster logging |
 | Cycles such as 21 days on and 7 days off | Repeated requests in feedback |
 | Read-only import of medication names from Apple Health (D022) | Users ask to bring their list from Health |
 | Optional end-to-end encrypted sync | Users with several devices ask for it |

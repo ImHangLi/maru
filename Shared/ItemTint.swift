@@ -4,7 +4,7 @@ import SwiftUI
 import UIKit
 #endif
 
-/// The colors of an item and the app tint. The app, the widgets (D048), and the Watch app (D065) share them.
+/// The colors of an item and the app tint. The app, the widgets (D048), and the Watch app (D071) share them.
 extension ItemColor {
     /// The system color with the same name. Each one has a light and a dark value (docs/design.md, Color).
     var color: Color {

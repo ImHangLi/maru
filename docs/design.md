@@ -174,7 +174,7 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 
 ## Watch
 
-One screen, "Today", with system list rows on the black background of watchOS (D065).
+One screen, "Today", with system list rows on the black background of watchOS (D071).
 
 - One section per part of the day, with the slot word as its header, as on the iPhone.
 - Row: the capsule of the widgets, the name, and a second line in small gray text with the amount and the time. A taken dose shows its intake time, and a skipped dose shows "Skipped". The capsule is gray for a dose that is open or skipped, as in the widgets.

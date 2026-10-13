@@ -2,7 +2,7 @@ import Foundation
 import MaruCore
 import WatchConnectivity
 
-/// The link to the iPhone app (D065). It gives each list that the iPhone sends, and it sends the requests.
+/// The link to the iPhone app (D071). It gives each list that the iPhone sends, and it sends the requests.
 final class PhoneLink: NSObject, WCSessionDelegate, Sendable {
     enum Answer: Sendable {
         case reply(WatchReply)

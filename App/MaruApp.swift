@@ -34,7 +34,7 @@ struct MaruApp: App {
         ReminderAction.register()
         // A tap on a gray capsule of the "Record Dose" widget runs in this process (D048).
         TakeDoseHook.install { try await AppModel.shared.takeFromWidget($0) }
-        // The Watch app sends its requests to this process, also in the background (D065).
+        // The Watch app sends its requests to this process, also in the background (D071).
         WatchLink.shared.start()
         // The widgets read the tint from the App Group.
         AppGroup.appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink

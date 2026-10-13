@@ -3,7 +3,7 @@ import Testing
 @testable import MaruCore
 
 struct WatchMessageTests {
-    /// D065: a request and a reply come back from their message data as they went in, and data that is
+    /// D071: a request and a reply come back from their message data as they went in, and data that is
     /// no message gives no request and no reply, so it can never show as a record.
     @Test func aMessageKeepsItsContent() throws {
         let dose = WatchDay.Dose(
@@ -28,7 +28,7 @@ struct WatchMessageTests {
         #expect(WatchRequest(message: Data()) == nil)
     }
 
-    /// D065, T18: the Watch writes only on the record that its row showed, and one intent applies one time.
+    /// D071, T18: the Watch writes only on the record that its row showed, and one intent applies one time.
     /// A row from before a change on the iPhone, and an intent with a later choice after it, write nothing.
     @Test func anIntentAppliesOneTimeToTheRecordThatTheWatchShowed() throws {
         let now = Date()

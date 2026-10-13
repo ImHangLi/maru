@@ -1,7 +1,7 @@
 import MaruCore
 import SwiftUI
 
-/// The one screen of the Watch app: the doses of today by part of the day, like Today on the iPhone (D065).
+/// The one screen of the Watch app: the doses of today by part of the day, like Today on the iPhone (D071).
 struct TodayView: View {
     @Environment(WatchModel.self) private var model
     @Environment(\.scenePhase) private var scenePhase

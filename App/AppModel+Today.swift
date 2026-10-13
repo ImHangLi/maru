@@ -11,7 +11,7 @@ struct PendingEvent: Equatable, Sendable {
     /// run stored. A retry sends this same occurrence (D014).
     var backfill: Occurrence?
     /// The record must still be in the plan of now: an active item, a slot of the plan, the planned schedule
-    /// version, and a dose of today. The widget and the Watch set it, because their rows can be old (D048, D065).
+    /// version, and a dose of today. The widget and the Watch set it, because their rows can be old (D048, D071).
     var requiresCurrentPlan = false
     /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
     var restoreEpoch: Int?

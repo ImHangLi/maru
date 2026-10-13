@@ -1103,7 +1103,7 @@ Maintainer decision, with agent detail. It adds one field to the events of D052.
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody sent an event to the PostHog project, and nobody checked the packets (T42). The "Discard client IP data" setting is the report of the maintainer.
 
-## D065 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone
 
 Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
 
@@ -1154,7 +1154,7 @@ Not verified: no build on this Mac. Nobody ran the Watch app on a Watch or in a 
 
 Maintainer decision on 2026-10-13, with agent detail. It replaces the file protection level of D014 and D048, and the unlock rule of D034 for an action on the Watch. It changes spec 10.
 
-- Reason: the user wears the Watch while the iPhone is locked in a pocket. With complete protection, a record from the Watch app (D065) and the "Taken" action of a reminder on the Watch could not write then.
+- Reason: the user wears the Watch while the iPhone is locked in a pocket. With complete protection, a record from the Watch app (D071) and the "Taken" action of a reminder on the Watch could not write then.
 - Change: the database directory has the level "complete until first user authentication": the database, the WAL file, the SHM file, the rollback journal, the restore epoch file, and a staged backup. iOS still encrypts the files. After a restart, nothing reads them until the first unlock.
 - What keeps complete protection: the item photos, the export files, an exported backup, and the draft file of the edit screen. A record does not need them.
 - Existing installs: each open sets the level on the directory and on the files that exist, as it did before for a weaker file. It changes one attribute. It copies and rebuilds nothing (spec 7.3). The first launch of the new build must run on an unlocked iPhone to change the files. Until then the old level stays, and a locked iPhone records nothing, as before.

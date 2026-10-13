@@ -99,7 +99,7 @@ extension LocalStore {
                 try Self.insert(occurrence, db)
             }
             // The plan of now reads the clock and the device time zone here, after the writer is free, so a
-            // request that waited for the writer past midnight records nothing (D065).
+            // request that waited for the writer past midnight records nothing (D071).
             let plan = try currentPlan.map { currentPlan in
                 guard let plan = currentPlan() else { throw RecordFailure.storage(.unavailable) }
                 return plan
@@ -118,7 +118,7 @@ extension LocalStore {
     /// The widget records only a dose that the plan of now still has: its item is active, its slot is in the
     /// plan, and its schedule version is the planned one. The occurrence row of an archived item or of a removed
     /// slot stays, and a stale widget button must not record it (D048). The dose must also be of today in its own
-    /// time zone at the time of the plan, so a request from before midnight records nothing after it (D065).
+    /// time zone at the time of the plan, so a request from before midnight records nothing after it (D071).
     /// The check and the clock of the plan run in the record transaction.
     static func requireCurrentPlan(_ occurrence: Occurrence, _ plan: OccurrenceGeneration, _ db: Database) throws {
         let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)

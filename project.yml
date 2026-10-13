@@ -3,7 +3,7 @@ options:
   bundleIdPrefix: com.imhangli
   deploymentTarget:
     iOS: "17.0"
-    # The Watch app (D065). watchOS 10 is the version that pairs with iOS 17.
+    # The Watch app (D071). watchOS 10 is the version that pairs with iOS 17.
     watchOS: "10.0"
   createIntermediateGroups: true
   # English is the source language. The six languages of the first release are in the String Catalogs (D051, D059).
@@ -37,7 +37,7 @@ schemes:
       config: Debug
     archive:
       config: Release
-  # Runs the Watch app alone. The Maru scheme also builds it, because the app embeds it (D065).
+  # Runs the Watch app alone. The Maru scheme also builds it, because the app embeds it (D071).
   MaruWatch:
     build:
       targets:
@@ -60,7 +60,7 @@ targets:
         product: MaruAnalytics
       # The Home Screen widgets (D048). XcodeGen embeds the extension in the app.
       - target: MaruWidgets
-      # The Watch app (D065). XcodeGen embeds it in the app.
+      # The Watch app (D071). XcodeGen embeds it in the app.
       - target: MaruWatch
     settings:
       base:
@@ -105,7 +105,7 @@ targets:
         CODE_SIGN_STYLE: Automatic
         CODE_SIGN_ENTITLEMENTS: Config/MaruWidgets.entitlements
         SKIP_INSTALL: YES
-  # The Watch app (D065). It has no database: it links only MaruCore, and the iPhone app makes each record.
+  # The Watch app (D071). It has no database: it links only MaruCore, and the iPhone app makes each record.
   MaruWatch:
     type: application
     platform: watchOS

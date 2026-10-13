@@ -53,7 +53,7 @@ jobs:
 
   app:
     # Build the app for the iOS Simulator. The app embeds the Watch app, so the same step builds it for the
-    # watchOS Simulator (D065). macOS runners are free for public repositories.
+    # watchOS Simulator (D071). macOS runners are free for public repositories.
     # The app needs Xcode 27. The macos-26 image has only Xcode 26, so use the Xcode 27 image (public preview).
     needs: changes
     if: needs.changes.outputs.app == 'true'

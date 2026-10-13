@@ -2,7 +2,7 @@ import Foundation
 import MaruCore
 import Observation
 
-/// The state of the Watch app (D065). The view reads it and calls its operations (spec 6).
+/// The state of the Watch app (D071). The view reads it and calls its operations (spec 6).
 ///
 /// The Watch has no database. It never changes the state of a dose by itself: the list changes only when
 /// the iPhone sends a new one, so a dose shows as recorded only after the iPhone committed it (spec 7.2).

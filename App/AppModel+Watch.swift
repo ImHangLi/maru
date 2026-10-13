@@ -2,7 +2,7 @@ import Foundation
 import MaruCore
 
 extension AppModel {
-    /// Sends the list of today to the Watch app, after each read and each commit (D065).
+    /// Sends the list of today to the Watch app, after each read and each commit (D071).
     ///
     /// The list goes only to a paired Watch that has the Watch app. WatchConnectivity sends it between the two
     /// devices with the encryption of the system, and through no server of Maru.
@@ -14,7 +14,7 @@ extension AppModel {
         WatchLink.shared.send(WatchDay(day, unsaved: Set(today.pending.keys), at: now))
     }
 
-    /// Answers a request of the Watch app (D065). The system can start Maru in the background for it.
+    /// Answers a request of the Watch app (D071). The system can start Maru in the background for it.
     ///
     /// The reply says "recorded" only after the record transaction committed (spec 7.2). It says "changed" when
     /// the dose is not the one that the Watch showed. In every other case it says "not recorded": an iPhone that was not unlocked after a restart,

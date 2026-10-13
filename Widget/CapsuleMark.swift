@@ -6,7 +6,7 @@ import SwiftUI
 /// Taken: filled with the app tint as a gradient. Open or skipped: light gray with a thin gray edge.
 /// On the Watch, a skipped capsule also has a minus along its axis, as the row on the iPhone has.
 /// The state is never only a color: the widgets also give a VoiceOver label.
-/// The Watch app draws the same mark (D065). watchOS has no `systemGray5` and `systemGray3`, so it uses grays
+/// The Watch app draws the same mark (D071). watchOS has no `systemGray5` and `systemGray3`, so it uses grays
 /// of the same strength on its black background.
 struct CapsuleMark: View {
     let status: OccurrenceStatus

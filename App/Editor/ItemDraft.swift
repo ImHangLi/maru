@@ -261,7 +261,7 @@ enum DraftBuildError: Error {
 }
 
 // The draft file keeps the raw values. The conformances live in the app, so `MaruCore` does not change.
-// `ItemColor` has its conformance in `MaruCore`, for the messages of the Watch app (D065).
+// `ItemColor` has its conformance in `MaruCore`, for the messages of the Watch app (D071).
 extension ItemCategory: @retroactive Codable {}
 extension ItemForm: @retroactive Codable {}
 extension Weekday: @retroactive Codable {}

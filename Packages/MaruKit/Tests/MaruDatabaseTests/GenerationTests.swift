@@ -162,7 +162,7 @@ struct GenerationTests {
     }
 
     /// A record of the widget or the Watch reads the clock in its transaction. A request from before midnight
-    /// that gets the writer after it records nothing for yesterday (D065).
+    /// that gets the writer after it records nothing for yesterday (D071).
     @Test func recordInTheCurrentPlanReadsTheClockInTheTransaction() async throws {
         let (store, _, _, _, evening) = try await prepare()
         let dose = try #require(try await generate(store, at: late).first { $0.slotID == evening && $0.plannedDate == today })
