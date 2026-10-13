@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, and D065 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, and D072 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -120,7 +120,7 @@ The log of an item and the log of a day use the timeline rows below. The log of 
 
 A grid of tiles, so the user sees at once which items they have (spec §3 P02, D032). It replaces the list of D020.
 
-- Two columns. One column at the accessibility text sizes.
+- Two columns. One column at the accessibility text sizes. The iPad has the same grid (D072).
 - A tile shows two things: the form icon, large, in the item color, and the name in the headline weight under it. No plan line, no amount, and no other text. The plan is in the item detail.
 - The name wraps and never truncates. A tile has room for two lines, and a longer name makes its row taller. The tiles of one row have the same height.
 - Order: the first time of day of the plan, then the name. As-needed items come last. No section titles.
@@ -171,6 +171,15 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 - "Record Dose" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
 - The words "Today", "Morning", "Noon", and "Evening" match the app. The header of the small "Today" widget has no "·": the color separates the two parts (D068).
+
+## iPad
+
+The iPad uses the layout of the iPhone at a larger width (D072). It has the same tab bar, the same pages, and the same navigation: Today opens History and the item detail as a push, and My Items pushes the detail on top of the grid.
+
+- The content fills the width of the window. There is no readable column in the middle and no second pane.
+- My Items keeps two columns of tiles, and one at the accessibility text sizes. The History graph fills the width.
+- Settings, the add and edit screen, the scanner, and the time sheets are system sheets. A dialog of choices shows as a popover from its button.
+- The iPad has the four orientations. The iPhone is portrait only. Split View and Slide Over show the same pages at their width.
 
 ## Watch
 
@@ -251,4 +260,4 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - Follow the system text size at every size, with no maximum (D013). Names wrap and never truncate.
 - The icon has a size limit. The record circle follows the text size. Hide the icon at the three largest accessibility sizes.
 - Support VoiceOver, dark mode, Increase Contrast, and Reduce Motion (spec §5.3).
-- The tab bar always shows icons with names (D026).
+- The tab bar always shows icons with names (D026). On an iPad the system shows it at the top, in its own form (D072).

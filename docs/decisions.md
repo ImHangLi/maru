@@ -1275,3 +1275,22 @@ Maintainer request: in each language, the names of supplements and medicines are
 - Sources: general knowledge of the generic names and label names of each market, with the public national naming systems (Chinese 通用名, Japanese 一般名, Korean 성분명, INN/DCI) as the reference for spelling. No database or list was copied, so no license applies and `docs/third-party-licenses.md` does not change.
 
 Not verified: no native pharmacist read the lists. A first review corrected some names on 2026-10-13. Every name still needs that check, and `docs/localization-review.md` lists the names to check first. No build of the app on this Mac, and nobody saw the suggestions on a display.
+
+## D072 · 2026-10-13 · The app also runs on iPad
+
+Maintainer decision, with agent detail. The maintainer asked for iPad support before the first release, if it is ready. It must not delay the release.
+
+- Both targets have the device families iPhone and iPad. The iPhone stays portrait only. The iPad has the four orientations, in `Config/Maru-Info.plist`, and the generated launch screen. The app does not require the full screen, so Split View, Slide Over, and windows work.
+- Layout (`docs/design.md`, "iPad"): the iPad uses the layout of the iPhone at a larger width. It has the same tab bar, the same pages, and one navigation stack in each tab. Today opens History and the item detail as a push, as on the iPhone. My Items keeps the grid of two columns. The content fills the width of the window.
+- The maintainer first asked for a list and its detail side by side. A first version had two pages side by side at a regular width and a readable column of 672 points. Before the merge, the maintainer chose one layout for both devices: the iPad must look and work like the iPhone, only wider. The code of the two columns was removed.
+- Settings, the add and edit screen, the scanner, and the time sheets stay system sheets. The system gives a sheet a fixed width on an iPad. The system shows the tab bar at the top on iPadOS 18 and later, with names and no icons. This is the system form of the rule of D026.
+- No presentation needs a new anchor. Each `confirmationDialog` is on its button: the record circle, the as-needed dose, and "Cancel" of the edit screen. SwiftUI shows it as a popover from that button on an iPad. The share sheet is a `UIActivityViewController` inside a SwiftUI sheet, so UIKit does not present it and it needs no source view. The file picker, the photo picker, and the camera are system presentations.
+- Text: 13 strings name the iPhone. Each has a device variation for the iPad in the String Catalog, in the six languages. The iPad text is the iPhone text with the other device name, and Korean has the particle for the new word. A native speaker did not check them.
+- Widgets: the small and the medium family exist on the iPad, and the layouts do not change. The large and the extra large family need a new design, so Maru does not offer them.
+- Each iPad has its own local database. Maru has no sync (D040). The backup file moves the data between an iPhone and an iPad, without the photos (D056).
+- Not done: no sidebar, no keyboard shortcuts, no pointer effects of its own, and no iPad family of the widgets.
+- `PRIVACY.md` and `docs/faq.md` say "iPhone or iPad" or "device" where the text is true for both, and say that each device has its own data. The site builds its privacy page from `PRIVACY.md`. Its FAQ answer about the Apple Watch now says that Maru is an app for iPhone and iPad, in the six languages.
+- The stop rule: if the check on a real iPad fails before the first upload, set `TARGETED_DEVICE_FAMILY` to `"1"` in both targets. The other parts of this change do nothing on an iPhone. After a version with iPad support is on the App Store, Apple does not let an update remove the iPad.
+- The store page then needs iPad screenshots (`docs/release-plan.md`).
+
+The two-column version was seen in the simulators iPad Pro 13-inch and iPad mini, in portrait and landscape, light and dark, and at the largest text size: Today with History, the day log and the item log, the item detail, My Items, add and edit, the photo picker, Settings, and the share sheet of the export. Not seen: Split View and Slide Over, the scanner and the camera (the simulator has no camera), restore, the tip section with products, and a real iPad. The camera may not be available in Split View or Slide Over. Nobody saw the layout of the iPhone on an iPad display. CI builds it.

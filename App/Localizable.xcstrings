@@ -1908,33 +1908,111 @@
       "comment" : "Settings: the footer of “Your Data”.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein Backup überträgt deine Einträge, Aufzeichnungen und einige Einstellungen auf ein neues iPhone, aber keine Fotos. Die Dateien sind nicht verschlüsselt. Teile sie nur mit Personen, denen du vertraust."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Ein Backup überträgt deine Einträge, Aufzeichnungen und einige Einstellungen auf ein neues iPad, aber keine Fotos. Die Dateien sind nicht verschlüsselt. Teile sie nur mit Personen, denen du vertraust."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Ein Backup überträgt deine Einträge, Aufzeichnungen und einige Einstellungen auf ein neues iPhone, aber keine Fotos. Die Dateien sind nicht verschlüsselt. Teile sie nur mit Personen, denen du vertraust."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "A backup moves your items, records, and some settings to a new iPad, but not photos. The files are not encrypted, so share them only with people you trust."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "A backup moves your items, records, and some settings to a new iPhone, but not photos. The files are not encrypted, so share them only with people you trust."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una copia de seguridad traslada tus elementos, registros y algunos ajustes a un iPhone nuevo, pero no las fotos. Los archivos no están cifrados. Compártelos solo con personas de confianza."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Una copia de seguridad traslada tus elementos, registros y algunos ajustes a un iPad nuevo, pero no las fotos. Los archivos no están cifrados. Compártelos solo con personas de confianza."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Una copia de seguridad traslada tus elementos, registros y algunos ajustes a un iPhone nuevo, pero no las fotos. Los archivos no están cifrados. Compártelos solo con personas de confianza."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップを使うと、項目、記録、一部の設定を新しいiPhoneに移せます。写真は含まれません。ファイルは暗号化されていないため、信頼できる相手とだけ共有してください。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "バックアップを使うと、項目、記録、一部の設定を新しいiPadに移せます。写真は含まれません。ファイルは暗号化されていないため、信頼できる相手とだけ共有してください。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "バックアップを使うと、項目、記録、一部の設定を新しいiPhoneに移せます。写真は含まれません。ファイルは暗号化されていないため、信頼できる相手とだけ共有してください。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "백업하면 항목, 기록, 일부 설정을 새 iPhone으로 옮길 수 있어요. 사진은 포함되지 않아요. 파일은 암호화되지 않으니 믿을 수 있는 사람과만 공유하세요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "백업하면 항목, 기록, 일부 설정을 새 iPad로 옮길 수 있어요. 사진은 포함되지 않아요. 파일은 암호화되지 않으니 믿을 수 있는 사람과만 공유하세요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "백업하면 항목, 기록, 일부 설정을 새 iPhone으로 옮길 수 있어요. 사진은 포함되지 않아요. 파일은 암호화되지 않으니 믿을 수 있는 사람과만 공유하세요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "备份可将项目、记录和部分设置迁移到新 iPhone，但不含照片。文件未加密，请只与你信任的人共享。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "备份可将项目、记录和部分设置迁移到新 iPad，但不含照片。文件未加密，请只与你信任的人共享。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "备份可将项目、记录和部分设置迁移到新 iPhone，但不含照片。文件未加密，请只与你信任的人共享。"
+                }
+              }
+            }
           }
         }
       }
@@ -4568,33 +4646,111 @@
       "comment" : "Storage problem: the text when the data cannot be read now.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wenn dein iPhone gesperrt ist, entsperre es und versuche es erneut. Maru hat deine Daten nicht geändert oder gelöscht."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Wenn dein iPad gesperrt ist, entsperre es und versuche es erneut. Maru hat deine Daten nicht geändert oder gelöscht."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Wenn dein iPhone gesperrt ist, entsperre es und versuche es erneut. Maru hat deine Daten nicht geändert oder gelöscht."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "If your iPad is locked, unlock it and try again. Maru did not change or delete your data."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "If your iPhone is locked, unlock it and try again. Maru did not change or delete your data."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Si el iPhone está bloqueado, desbloquéalo y vuelve a intentarlo. Maru no ha cambiado ni eliminado tus datos."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Si el iPad está bloqueado, desbloquéalo y vuelve a intentarlo. Maru no ha cambiado ni eliminado tus datos."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Si el iPhone está bloqueado, desbloquéalo y vuelve a intentarlo. Maru no ha cambiado ni eliminado tus datos."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneがロックされている場合は、ロックを解除してもう一度お試しください。Maruはデータを変更も削除もしていません。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadがロックされている場合は、ロックを解除してもう一度お試しください。Maruはデータを変更も削除もしていません。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneがロックされている場合は、ロックを解除してもう一度お試しください。Maruはデータを変更も削除もしていません。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone이 잠겨 있으면 잠금을 해제하고 다시 시도하세요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad가 잠겨 있으면 잠금을 해제하고 다시 시도하세요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone이 잠겨 있으면 잠금을 해제하고 다시 시도하세요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "如果 iPhone 已锁定，请解锁后重试。Maru 没有更改或删除你的数据。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "如果 iPad 已锁定，请解锁后重试。Maru 没有更改或删除你的数据。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "如果 iPhone 已锁定，请解锁后重试。Maru 没有更改或删除你的数据。"
+                }
+              }
+            }
           }
         }
       }
@@ -4603,33 +4759,111 @@
       "comment" : "Today: the text below the time zone title.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wähle in den iPhone-Einstellungen eine Stadt für deine Zeitzone."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Wähle in den iPad-Einstellungen eine Stadt für deine Zeitzone."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Wähle in den iPhone-Einstellungen eine Stadt für deine Zeitzone."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "In iPad Settings, choose a city for your time zone."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "In iPhone Settings, choose a city for your time zone."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En Ajustes del iPhone, elige una ciudad para tu zona horaria."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "En Ajustes del iPad, elige una ciudad para tu zona horaria."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "En Ajustes del iPhone, elige una ciudad para tu zona horaria."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneの「設定」で、タイムゾーンの都市を選択してください。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadの「設定」で、タイムゾーンの都市を選択してください。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneの「設定」で、タイムゾーンの都市を選択してください。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 설정에서 시간대에 사용할 도시를 선택하세요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 설정에서 시간대에 사용할 도시를 선택하세요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 설정에서 시간대에 사용할 도시를 선택하세요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请在 iPhone“设置”中为时区选择一个城市。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "请在 iPad“设置”中为时区选择一个城市。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "请在 iPhone“设置”中为时区选择一个城市。"
+                }
+              }
+            }
           }
         }
       }
@@ -4778,33 +5012,111 @@
       "comment" : "Alert message when the user taps a reminder while the iPhone is locked and Maru cannot read the records.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru kann deine Aufzeichnungen nicht öffnen, solange dein iPhone gesperrt ist. Entsperre es und versuche es erneut."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru kann deine Aufzeichnungen nicht öffnen, solange dein iPad gesperrt ist. Entsperre es und versuche es erneut."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru kann deine Aufzeichnungen nicht öffnen, solange dein iPhone gesperrt ist. Entsperre es und versuche es erneut."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru can’t open your records while your iPad is locked. Unlock it, then try again."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru can’t open your records while your iPhone is locked. Unlock it, then try again."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no puede abrir tus registros mientras el iPhone está bloqueado. Desbloquéalo y vuelve a intentarlo."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru no puede abrir tus registros mientras el iPad está bloqueado. Desbloquéalo y vuelve a intentarlo."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru no puede abrir tus registros mientras el iPhone está bloqueado. Desbloquéalo y vuelve a intentarlo."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneがロックされている間は、Maruが記録を開けません。ロックを解除してから、もう一度お試しください。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadがロックされている間は、Maruが記録を開けません。ロックを解除してから、もう一度お試しください。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneがロックされている間は、Maruが記録を開けません。ロックを解除してから、もう一度お試しください。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone이 잠겨 있는 동안에는 Maru가 기록을 열 수 없어요. 잠금을 해제한 다음 다시 시도하세요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad가 잠겨 있는 동안에는 Maru가 기록을 열 수 없어요. 잠금을 해제한 다음 다시 시도하세요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone이 잠겨 있는 동안에는 Maru가 기록을 열 수 없어요. 잠금을 해제한 다음 다시 시도하세요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 锁定时，Maru 无法打开你的记录。请解锁后重试。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 锁定时，Maru 无法打开你的记录。请解锁后重试。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 锁定时，Maru 无法打开你的记录。请解锁后重试。"
+                }
+              }
+            }
           }
         }
       }
@@ -4988,33 +5300,111 @@
       "comment" : "Settings: the alert for a restore that replaced the data, when the storage did not confirm the save.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru konnte nicht bestätigen, dass dein iPhone die wiederhergestellten Daten gesichert hat. Wenn deine Daten später falsch aussehen, stelle das Backup erneut wieder her."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru konnte nicht bestätigen, dass dein iPad die wiederhergestellten Daten gesichert hat. Wenn deine Daten später falsch aussehen, stelle das Backup erneut wieder her."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru konnte nicht bestätigen, dass dein iPhone die wiederhergestellten Daten gesichert hat. Wenn deine Daten später falsch aussehen, stelle das Backup erneut wieder her."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru couldn’t confirm that your iPad saved the restored data. If your data looks wrong later, restore the backup again."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru couldn’t confirm that your iPhone saved the restored data. If your data looks wrong later, restore the backup again."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no ha podido confirmar que el iPhone guardara los datos restaurados. Si más adelante tus datos parecen incorrectos, restaura la copia de seguridad otra vez."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru no ha podido confirmar que el iPad guardara los datos restaurados. Si más adelante tus datos parecen incorrectos, restaura la copia de seguridad otra vez."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru no ha podido confirmar que el iPhone guardara los datos restaurados. Si más adelante tus datos parecen incorrectos, restaura la copia de seguridad otra vez."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "復元したデータがiPhoneに保存されたか確認できませんでした。あとでデータがおかしい場合は、バックアップをもう一度復元してください。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "復元したデータがiPadに保存されたか確認できませんでした。あとでデータがおかしい場合は、バックアップをもう一度復元してください。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "復元したデータがiPhoneに保存されたか確認できませんでした。あとでデータがおかしい場合は、バックアップをもう一度復元してください。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복원한 데이터가 iPhone에 저장되었는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원하세요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "복원한 데이터가 iPad에 저장되었는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원하세요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "복원한 데이터가 iPhone에 저장되었는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원하세요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 无法确认 iPhone 是否已存储恢复的数据。如果之后发现数据有误，请再次恢复备份。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru 无法确认 iPad 是否已存储恢复的数据。如果之后发现数据有误，请再次恢复备份。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru 无法确认 iPhone 是否已存储恢复的数据。如果之后发现数据有误，请再次恢复备份。"
+                }
+              }
+            }
           }
         }
       }
@@ -9328,33 +9718,111 @@
       "comment" : "Settings: the footer when the system has no room for the test notification.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru hat den Test nicht gesendet, weil dein iPhone keine weiteren Erinnerungen aufnehmen kann."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru hat den Test nicht gesendet, weil dein iPad keine weiteren Erinnerungen aufnehmen kann."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru hat den Test nicht gesendet, weil dein iPhone keine weiteren Erinnerungen aufnehmen kann."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru did not send the test, because your iPad can’t hold more reminders."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru did not send the test, because your iPhone can’t hold more reminders."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no ha enviado la prueba porque el iPhone no admite más recordatorios."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru no ha enviado la prueba porque el iPad no admite más recordatorios."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru no ha enviado la prueba porque el iPhone no admite más recordatorios."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneにこれ以上リマインダーを登録できないため、Maruはテストを送信しませんでした。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadにこれ以上リマインダーを登録できないため、Maruはテストを送信しませんでした。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneにこれ以上リマインダーを登録できないため、Maruはテストを送信しませんでした。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone이 미리 알림을 더 담을 수 없어서 Maru가 테스트를 보내지 않았어요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad가 미리 알림을 더 담을 수 없어서 Maru가 테스트를 보내지 않았어요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone이 미리 알림을 더 담을 수 없어서 Maru가 테스트를 보내지 않았어요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 没有发送测试，因为 iPhone 无法容纳更多提醒。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru 没有发送测试，因为 iPad 无法容纳更多提醒。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Maru 没有发送测试，因为 iPhone 无法容纳更多提醒。"
+                }
+              }
+            }
           }
         }
       }
@@ -9363,33 +9831,111 @@
       "comment" : "Item detail: the footer of the plan when the plan has more reminder times than iPhone allows.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Plan hat zu viele Zeiten für das iPhone."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Der Plan hat zu viele Zeiten für das iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Der Plan hat zu viele Zeiten für das iPhone."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The plan has too many times for iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The plan has too many times for iPhone."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El plan tiene demasiadas horas para el iPhone."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El plan tiene demasiadas horas para el iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El plan tiene demasiadas horas para el iPhone."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プランの時刻が多すぎて、iPhoneに登録できません。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "プランの時刻が多すぎて、iPadに登録できません。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "プランの時刻が多すぎて、iPhoneに登録できません。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "계획의 시간이 너무 많아서 iPhone에 담을 수 없어요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "계획의 시간이 너무 많아서 iPad에 담을 수 없어요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "계획의 시간이 너무 많아서 iPhone에 담을 수 없어요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此计划的时间过多，iPhone 无法容纳。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "此计划的时间过多，iPad 无法容纳。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "此计划的时间过多，iPhone 无法容纳。"
+                }
+              }
+            }
           }
         }
       }
@@ -9398,33 +9944,111 @@
       "comment" : "Alert message after a save when the plan has more reminder times than iPhone allows.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Plan ist gespeichert. Er hat zu viele Zeiten für das iPhone."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Der Plan ist gespeichert. Er hat zu viele Zeiten für das iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Der Plan ist gespeichert. Er hat zu viele Zeiten für das iPhone."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The plan is saved. It has too many times for iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "The plan is saved. It has too many times for iPhone."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El plan se ha guardado. Tiene demasiadas horas para el iPhone."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El plan se ha guardado. Tiene demasiadas horas para el iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El plan se ha guardado. Tiene demasiadas horas para el iPhone."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プランは保存されました。時刻が多すぎて、iPhoneに登録できません。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "プランは保存されました。時刻が多すぎて、iPadに登録できません。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "プランは保存されました。時刻が多すぎて、iPhoneに登録できません。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "계획을 저장했어요. 시간이 너무 많아서 iPhone에 담을 수 없어요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "계획을 저장했어요. 시간이 너무 많아서 iPad에 담을 수 없어요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "계획을 저장했어요. 시간이 너무 많아서 iPhone에 담을 수 없어요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "计划已存储，但时间过多，iPhone 无法容纳。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "计划已存储，但时间过多，iPad 无法容纳。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "计划已存储，但时间过多，iPhone 无法容纳。"
+                }
+              }
+            }
           }
         }
       }
@@ -10413,33 +11037,111 @@
       "comment" : "Alert message and footer when the data cannot be read or saved because the iPhone is locked.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entsperre dein iPhone und versuche es erneut."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Entsperre dein iPad und versuche es erneut."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Entsperre dein iPhone und versuche es erneut."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Unlock your iPad, then try again."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Unlock your iPhone, then try again."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desbloquea el iPhone y vuelve a intentarlo."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Desbloquea el iPad y vuelve a intentarlo."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Desbloquea el iPhone y vuelve a intentarlo."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneのロックを解除してから、もう一度お試しください。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadのロックを解除してから、もう一度お試しください。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneのロックを解除してから、もう一度お試しください。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 잠금을 해제한 다음 다시 시도하세요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 잠금을 해제한 다음 다시 시도하세요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 잠금을 해제한 다음 다시 시도하세요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请解锁 iPhone 后重试。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "请解锁 iPad 后重试。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "请解锁 iPhone 后重试。"
+                }
+              }
+            }
           }
         }
       }
@@ -10448,33 +11150,111 @@
       "comment" : "Edit screen: the text “Unlock your iPhone, then try again. Your entries are still here.”.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Entsperre dein iPhone und versuche es erneut. Deine Eingaben sind noch da."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Entsperre dein iPad und versuche es erneut. Deine Eingaben sind noch da."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Entsperre dein iPhone und versuche es erneut. Deine Eingaben sind noch da."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Unlock your iPad, then try again. Your entries are still here."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Unlock your iPhone, then try again. Your entries are still here."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desbloquea el iPhone y vuelve a intentarlo. Lo que escribiste sigue aquí."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Desbloquea el iPad y vuelve a intentarlo. Lo que escribiste sigue aquí."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Desbloquea el iPhone y vuelve a intentarlo. Lo que escribiste sigue aquí."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneのロックを解除してから、もう一度お試しください。入力内容はそのまま残っています。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadのロックを解除してから、もう一度お試しください。入力内容はそのまま残っています。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneのロックを解除してから、もう一度お試しください。入力内容はそのまま残っています。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 잠금을 해제한 다음 다시 시도하세요. 입력한 내용은 그대로 있어요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 잠금을 해제한 다음 다시 시도하세요. 입력한 내용은 그대로 있어요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 잠금을 해제한 다음 다시 시도하세요. 입력한 내용은 그대로 있어요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请解锁 iPhone 后重试。你输入的内容仍在这里。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "请解锁 iPad 后重试。你输入的内容仍在这里。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "请解锁 iPhone 后重试。你输入的内容仍在这里。"
+                }
+              }
+            }
           }
         }
       }
@@ -11148,33 +11928,111 @@
       "comment" : "Storage problem: the title when the disk is full.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein iPhone ist voll"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dein iPad ist voll"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dein iPhone ist voll"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your iPad Is Full"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your iPhone Is Full"
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El iPhone está lleno"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El iPad está lleno"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El iPhone está lleno"
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneの空き容量がありません"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadの空き容量がありません"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneの空き容量がありません"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 저장 공간이 가득 참"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 저장 공간이 가득 참"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 저장 공간이 가득 참"
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 储存空间已满"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 储存空间已满"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 储存空间已满"
+                }
+              }
+            }
           }
         }
       }
@@ -11183,33 +12041,111 @@
       "comment" : "Alert message when a record did not save because the disk is full.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein iPhone ist voll. Gib etwas Speicherplatz frei und versuche es erneut."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dein iPad ist voll. Gib etwas Speicherplatz frei und versuche es erneut."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dein iPhone ist voll. Gib etwas Speicherplatz frei und versuche es erneut."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your iPad is full. Free some storage, then try again."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your iPhone is full. Free some storage, then try again."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El iPhone está lleno. Libera espacio y vuelve a intentarlo."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El iPad está lleno. Libera espacio y vuelve a intentarlo."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El iPhone está lleno. Libera espacio y vuelve a intentarlo."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneの空き容量がありません。空き容量を確保してから、もう一度お試しください。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadの空き容量がありません。空き容量を確保してから、もう一度お試しください。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneの空き容量がありません。空き容量を確保してから、もう一度お試しください。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 저장 공간이 가득 찼어요. 저장 공간을 확보한 다음 다시 시도하세요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 저장 공간이 가득 찼어요. 저장 공간을 확보한 다음 다시 시도하세요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 저장 공간이 가득 찼어요. 저장 공간을 확보한 다음 다시 시도하세요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 储存空间已满。请释放一些空间后重试。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 储存空间已满。请释放一些空间后重试。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 储存空间已满。请释放一些空间后重试。"
+                }
+              }
+            }
           }
         }
       }
@@ -11218,33 +12154,111 @@
       "comment" : "Edit screen: the text “Free some storage, then try again. Your entries are still here.”.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein iPhone ist voll. Gib etwas Speicherplatz frei und versuche es erneut. Deine Eingaben sind noch da."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dein iPad ist voll. Gib etwas Speicherplatz frei und versuche es erneut. Deine Eingaben sind noch da."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Dein iPhone ist voll. Gib etwas Speicherplatz frei und versuche es erneut. Deine Eingaben sind noch da."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your iPad is full. Free some storage, then try again. Your entries are still here."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Your iPhone is full. Free some storage, then try again. Your entries are still here."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El iPhone está lleno. Libera espacio y vuelve a intentarlo. Lo que escribiste sigue aquí."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El iPad está lleno. Libera espacio y vuelve a intentarlo. Lo que escribiste sigue aquí."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "El iPhone está lleno. Libera espacio y vuelve a intentarlo. Lo que escribiste sigue aquí."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhoneの空き容量がありません。空き容量を確保してから、もう一度お試しください。入力内容はそのまま残っています。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadの空き容量がありません。空き容量を確保してから、もう一度お試しください。入力内容はそのまま残っています。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneの空き容量がありません。空き容量を確保してから、もう一度お試しください。入力内容はそのまま残っています。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 저장 공간이 가득 찼어요. 저장 공간을 확보한 다음 다시 시도하세요. 입력한 내용은 그대로 있어요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 저장 공간이 가득 찼어요. 저장 공간을 확보한 다음 다시 시도하세요. 입력한 내용은 그대로 있어요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 저장 공간이 가득 찼어요. 저장 공간을 확보한 다음 다시 시도하세요. 입력한 내용은 그대로 있어요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "iPhone 储存空间已满。请释放一些空间后重试。你输入的内容仍在这里。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad 储存空间已满。请释放一些空间后重试。你输入的内容仍在这里。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone 储存空间已满。请释放一些空间后重试。你输入的内容仍在这里。"
+                }
+              }
+            }
           }
         }
       }

@@ -66,7 +66,7 @@
   },
   "faq": {
     "title": "Maru: Questions and answers",
-    "desc": "Short answers about Maru: the price, your data, reminders, and moving to a new iPhone.",
+    "desc": "Short answers about Maru: the price, your data, reminders, and moving to a new iPhone or iPad.",
     "h1": "Questions and answers",
     "items": [
       [
@@ -110,8 +110,8 @@
         "No. Maru reminds and records, and nothing more."
       ],
       [
-        "How do I move to a new iPhone?",
-        "In Maru's Settings on the old iPhone, tap Back Up and save the file. On the new iPhone, tap Restore from Backup and choose that file. This replaces the items and records already in Maru on that iPhone. The file is not encrypted, so keep it private."
+        "How do I move to a new iPhone or iPad?",
+        "In Maru's Settings on the old device, tap Back Up and save the file. On the new device, tap Restore from Backup and choose that file. This replaces the items and records already in Maru on that device. The file is not encrypted, so keep it private."
       ],
       [
         "Can I get my records out?",
@@ -119,7 +119,7 @@
       ],
       [
         "Is there an Apple Watch app?",
-        "No. Maru is an iPhone app, and it does not sync between devices."
+        "No. Maru is an app for iPhone and iPad, and it does not sync between devices."
       ],
       [
         "Which languages does Maru speak?",

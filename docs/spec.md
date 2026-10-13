@@ -2,7 +2,7 @@
 
 日期：2026-10-10  
 状态：供开发、真机验收及首发准备使用的设计规格；不是已实现或通过测试的 App。性能数值均为拟定预算，不是测量结果。  
-平台：iPhone 原生，建议兼容 iOS 17 起；正式提交采用 Apple 当时要求的 SDK，依赖按可用稳定版本锁定。  
+平台：iPhone 与 iPad 原生（iPad 见 `docs/decisions.md` D072，各设备数据独立、不同步），建议兼容 iOS 17 起；正式提交采用 Apple 当时要求的 SDK，依赖按可用稳定版本锁定。  
 优先级：本文件取代旧版 `supplement_app_v1_spec.md` 与 `supplement_app_v1_retention_addendum.md` 中相冲突的范围、默认值、库存/换瓶流程、指标和技术选择。旧文件保留为历史资料，不再直接作为开发指令。
 
 > Amendments (2026-10-11, see `docs/decisions.md` D032): a new item starts as a supplement with the capsule form, and the user can change both. No default amount and no default reminder time (§2.1) stay. The example time of a supplement is the start value of the time picker, not a time in the draft. The plan preview uses no "·" separator. The English name of "我的清单" is "My Items", and it is a grid. These amendments override conflicting text below.
