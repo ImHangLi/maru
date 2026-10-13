@@ -46,12 +46,17 @@ enum Fixtures {
         return (schedule, morning, evening)
     }
 
+    /// A day cycle from a date. With no counts, it is every other day.
+    static func cycle(from start: LocalDate, on daysOn: Int = 1, off daysOff: Int = 1) -> DayCycle {
+        try! DayCycle(start: start, daysOn: daysOn, daysOff: daysOff)
+    }
+
     /// An enabled schedule with one slot for each time and a first version, effective on 2026-01-01.
     static func schedule(
         itemID: ItemID,
         times: [WallClockTime],
         weeklyRule: WeeklyRule = .everyDay,
-        everyOtherDayFrom: LocalDate? = nil,
+        dayCycle: DayCycle? = nil,
         timeZonePolicy: TimeZonePolicy = .fixed(shanghai)
     ) -> Schedule {
         var schedule = Schedule(itemID: itemID, isEnabled: true)
@@ -60,7 +65,7 @@ enum Fixtures {
             scheduleID: schedule.id,
             effectiveFrom: date(2026, 1, 1),
             weeklyRule: weeklyRule,
-            everyOtherDayFrom: everyOtherDayFrom,
+            dayCycle: dayCycle,
             slotTimes: slotTimes,
             timeZonePolicy: timeZonePolicy
         )

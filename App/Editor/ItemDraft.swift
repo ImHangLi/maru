@@ -17,12 +17,68 @@ struct ItemDraft: Codable, Equatable {
         case none, withFood, emptyStomach, custom
     }
 
-    /// A plan that repeats every second day (D036).
-    struct EveryOtherDay: Codable, Equatable {
+    /// A plan that counts days from a start date: every other day (D036), every few days, or days with a dose
+    /// and a pause after them (D065).
+    struct Cycle: Codable, Equatable {
+        enum Kind: String, Codable {
+            case everyOtherDay, interval, pause
+        }
+
+        /// The choice on the repeat page. It decides which rows the page shows.
+        var kind: Kind
         /// The start date: the stored one of the plan, or the calendar date that a first-day choice had at the
         /// moment of the tap. It is a date and not "today" or "tomorrow", so a save on a later day, or a draft
         /// that comes back on a later day, keeps the rhythm. `nil` until the user chooses: the app picks no day.
         var start: Day?
+        /// The days with a dose, then the days with none. `nil` until the user chooses: the app picks no number.
+        /// Every other day is 1 and 1. An interval of N days is 1 and N - 1.
+        var daysOn: Int?
+        var daysOff: Int?
+
+        /// A new choice on the repeat page, with no first day. Only every other day has its numbers.
+        init(kind: Kind) {
+            self.kind = kind
+            daysOn = kind == .pause ? nil : 1
+            daysOff = kind == .everyOtherDay ? 1 : nil
+        }
+
+        /// The rule of a stored plan.
+        init(_ cycle: DayCycle) {
+            kind = switch (cycle.daysOn, cycle.daysOff) {
+            case (1, 1): .everyOtherDay
+            case (1, Self.intervals.lowerBound - 1...Self.intervals.upperBound - 1): .interval
+            default: .pause
+            }
+            start = Day(cycle.start)
+            daysOn = cycle.daysOn
+            daysOff = cycle.daysOff
+        }
+
+        /// A draft file from before D065 has only the start date of a plan that repeats every second day.
+        init(from decoder: any Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            start = try container.decodeIfPresent(Day.self, forKey: .start)
+            if let kind = try container.decodeIfPresent(Kind.self, forKey: .kind) {
+                self.kind = kind
+                daysOn = try container.decodeIfPresent(Int.self, forKey: .daysOn)
+                daysOff = try container.decodeIfPresent(Int.self, forKey: .daysOff)
+            } else {
+                kind = .everyOtherDay
+                daysOn = 1
+                daysOff = 1
+            }
+        }
+
+        /// The days from one dose to the next that "Every Few Days" offers. Two days is "Every Other Day".
+        static let intervals = 3...30
+        /// The numbers that "Days On" and "Days Off" offer.
+        static let dayCounts = 1...99
+
+        /// The days with a dose and the days with none, when the user chose them and the page offers them.
+        var counts: (daysOn: Int, daysOff: Int)? {
+            guard let daysOn, let daysOff, Self.dayCounts.contains(daysOn), Self.dayCounts.contains(daysOff) else { return nil }
+            return (daysOn, daysOff)
+        }
     }
 
     /// A calendar date in a form that the draft file keeps.
@@ -53,11 +109,18 @@ struct ItemDraft: Codable, Equatable {
     var amount = ""
     var times: [Time] = []
     var weekdays = Set(Weekday.allCases)
-    /// `nil` means that the plan repeats on `weekdays`. Else it repeats every second day, and the weekdays do not count.
+    /// `nil` means that the plan repeats on `weekdays`. Else it counts days, and the weekdays do not count.
     /// It is optional, so a draft file from before D036 still loads.
-    var everyOtherDay: EveryOtherDay?
+    var cycle: Cycle?
     var note = Note.none
     var noteText = ""
+
+    /// The draft file names `cycle` with its key from before D065, so an older file keeps its rule.
+    /// A new property of the draft needs a case here, or the file does not keep it.
+    private enum CodingKeys: String, CodingKey {
+        case itemID, scheduleID, name, category, form, color, amount, times, weekdays, note, noteText
+        case cycle = "everyOtherDay"
+    }
 
     /// A new item with no amount and no time (spec 2.1). The type, the form, and the color have a start value (D021, D032).
     init(color: ItemColor) {
@@ -66,7 +129,7 @@ struct ItemDraft: Codable, Equatable {
         self.color = color
     }
 
-    /// The stored item and the version of its schedule that applies now. A plan of every second day keeps
+    /// The stored item and the version of its schedule that applies now. A plan that counts days keeps
     /// its stored start date.
     init(item: Item, schedule: Schedule?) {
         itemID = item.id.rawValue
@@ -87,7 +150,7 @@ struct ItemDraft: Codable, Equatable {
             amount = version.dose?.text ?? ""
             times = version.slotTimes.map { Time(id: $0.slotID.rawValue, hour: $0.time.hour, minute: $0.time.minute) }
             weekdays = version.weeklyRule.weekdays
-            everyOtherDay = version.everyOtherDayFrom.map { EveryOtherDay(start: Day($0)) }
+            cycle = version.dayCycle.map(Cycle.init)
         }
     }
 
@@ -138,7 +201,9 @@ struct ItemDraft: Codable, Equatable {
 enum DraftProblem: Equatable {
     case noName
     case noWeekday
-    /// The plan repeats every second day, and the user did not choose its first day yet.
+    /// The plan counts days, and the user did not choose the number of days yet.
+    case noDayCount
+    /// The plan counts days, and the user did not choose its first day yet.
     case noFirstDay
     case duplicateTime
     /// The device time zone has no region name, so a medication time has no zone to keep (spec 8.5).
@@ -158,8 +223,9 @@ extension ItemDraft {
     ) -> DraftProblem? {
         if trimmedName.isEmpty { return .noName }
         guard !times.isEmpty else { return nil }
-        if everyOtherDay == nil, weekdays.isEmpty { return .noWeekday }
-        if let everyOtherDay, everyOtherDay.start?.date == nil { return .noFirstDay }
+        if cycle == nil, weekdays.isEmpty { return .noWeekday }
+        if let cycle, cycle.counts == nil { return .noDayCount }
+        if let cycle, cycle.start?.date == nil { return .noFirstDay }
         if hasDuplicateTimes { return .duplicateTime }
         if deviceTimeZone == nil { return .noTimeZone }
         do {
@@ -176,9 +242,9 @@ extension ItemDraft {
     ///
     /// With no time, a new item has no schedule: it is a list-only item with no reminder (T02).
     /// A change of the times, the days, or the amount appends a schedule version that applies from today.
-    /// A plan of every second day starts on the date in the draft: the stored start date, or the date of a
+    /// A plan that counts days starts on the date in the draft: the stored start date, or the date of a
     /// first-day choice. The date of the save does not change it, so an edit of a time or of the amount does
-    /// not move the rhythm, also when the save comes on a later day (D036).
+    /// not move the rhythm, also when the save comes on a later day (D036, D065).
     /// Milestone A offers no later start date and no end date (T10). An old version never changes (spec 7.1).
     /// `zoneSchedule` is the plan of a replaced item: a medication that replaces it keeps that zone (spec 8.5).
     func build(
@@ -219,18 +285,22 @@ extension ItemDraft {
         }
         let zone = if case let .fixed(zone) = timeZonePolicy { zone } else { deviceTimeZone }
         let today = LocalDate(now, in: zone)
-        let weeklyRule = try everyOtherDay == nil ? WeeklyRule(weekdays: weekdays) : .everyDay
-        var everyOtherDayFrom = everyOtherDay?.start?.date
-        guard everyOtherDay == nil || everyOtherDayFrom != nil else { throw DraftBuildError.noFirstDay }
+        let weeklyRule = try cycle == nil ? WeeklyRule(weekdays: weekdays) : .everyDay
+        var dayCycle = try cycle.map { cycle -> DayCycle in
+            guard let counts = cycle.counts else { throw DraftBuildError.noDayCount }
+            guard let start = cycle.start?.date else { throw DraftBuildError.noFirstDay }
+            return try DayCycle(start: start, daysOn: counts.daysOn, daysOff: counts.daysOff)
+        }
         // A choice that gives the due dates of the stored plan is no change of the plan.
-        if let first = everyOtherDayFrom, let stored = latest?.everyOtherDayFrom,
-           first >= stored, first.days(since: stored).isMultiple(of: 2) {
-            everyOtherDayFrom = stored
+        if let new = dayCycle, let stored = latest?.dayCycle,
+           (new.daysOn, new.daysOff) == (stored.daysOn, stored.daysOff), new.start >= stored.start,
+           new.start.days(since: stored.start).isMultiple(of: new.daysOn + new.daysOff) {
+            dayCycle = stored
         }
         let dose = Dose(amount)
         if let latest,
            latest.weeklyRule == weeklyRule,
-           latest.everyOtherDayFrom == everyOtherDayFrom,
+           latest.dayCycle == dayCycle,
            latest.slotTimes == slotTimes,
            latest.dose == dose,
            latest.timeZonePolicy == timeZonePolicy {
@@ -244,7 +314,7 @@ extension ItemDraft {
                 scheduleID: schedule.id,
                 effectiveFrom: today,
                 weeklyRule: weeklyRule,
-                everyOtherDayFrom: everyOtherDayFrom,
+                dayCycle: dayCycle,
                 slotTimes: slotTimes,
                 dose: dose,
                 timeZonePolicy: timeZonePolicy
@@ -256,6 +326,7 @@ extension ItemDraft {
 
 enum DraftBuildError: Error {
     case noTimeZone
+    case noDayCount
     case noFirstDay
     case laterVersion(LocalDate)
 }

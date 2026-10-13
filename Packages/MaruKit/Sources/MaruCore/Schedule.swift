@@ -6,8 +6,31 @@ public enum ScheduleError: Error, Equatable, Sendable {
     case versionBeforeLatest
     case conflictingVersion(ScheduleVersionID)
     case noVersion
-    /// A version that repeats every second day has no weekday rule other than every day.
-    case weekdaysWithEveryOtherDay
+    /// A version with a day cycle has no weekday rule other than every day.
+    case weekdaysWithDayCycle
+    /// A day cycle has at least one day with a dose and one day with none.
+    case invalidDayCycle
+}
+
+/// A repeat rule that counts calendar days from a start date (D036, D065): `daysOn` days with a dose,
+/// then `daysOff` days with none, and again. 1 and 1 give every other day. 1 and 2 give every third day.
+/// 21 and 7 give three weeks with a dose and one week of pause.
+public struct DayCycle: Hashable, Sendable {
+    public let start: LocalDate
+    public let daysOn: Int
+    public let daysOff: Int
+
+    public init(start: LocalDate, daysOn: Int, daysOff: Int) throws {
+        guard daysOn >= 1, daysOff >= 1 else { throw ScheduleError.invalidDayCycle }
+        self.start = start
+        self.daysOn = daysOn
+        self.daysOff = daysOff
+    }
+
+    /// The start date is due. The rule counts calendar dates and not hours, and it reads no record.
+    public func isDue(on date: LocalDate) -> Bool {
+        date >= start && date.days(since: start) % (daysOn + daysOff) < daysOn
+    }
 }
 
 /// A stable identity for one daily dose point, such as "the morning one".
@@ -37,9 +60,9 @@ public struct ScheduleVersion: Hashable, Sendable {
     /// The version applies from this date until the next version takes over.
     public let effectiveFrom: LocalDate
     public let weeklyRule: WeeklyRule
-    /// The start date of a version that repeats every second day (D036). `nil` means that `weeklyRule` decides.
-    /// The date can be before or after `effectiveFrom`: an edit of the time keeps it, so the rhythm stays.
-    public let everyOtherDayFrom: LocalDate?
+    /// The day cycle of a version that repeats by a count of days (D036, D065). `nil` means that `weeklyRule` decides.
+    /// Its start date can be before or after `effectiveFrom`: an edit of the time keeps it, so the rhythm stays.
+    public let dayCycle: DayCycle?
     public let slotTimes: [SlotTime]
     /// The dose per intake as the user typed it. `nil` means no dose. There is no default dose.
     public let dose: Dose?
@@ -50,13 +73,13 @@ public struct ScheduleVersion: Hashable, Sendable {
         scheduleID: ScheduleID,
         effectiveFrom: LocalDate,
         weeklyRule: WeeklyRule,
-        everyOtherDayFrom: LocalDate? = nil,
+        dayCycle: DayCycle? = nil,
         slotTimes: [SlotTime],
         dose: Dose? = nil,
         timeZonePolicy: TimeZonePolicy
     ) throws {
         guard !slotTimes.isEmpty else { throw ScheduleError.noSlotTimes }
-        guard everyOtherDayFrom == nil || weeklyRule == .everyDay else { throw ScheduleError.weekdaysWithEveryOtherDay }
+        guard dayCycle == nil || weeklyRule == .everyDay else { throw ScheduleError.weekdaysWithDayCycle }
         var seen = Set<ScheduleSlotID>()
         for slotTime in slotTimes where !seen.insert(slotTime.slotID).inserted {
             throw ScheduleError.duplicateSlot(slotTime.slotID)
@@ -65,7 +88,7 @@ public struct ScheduleVersion: Hashable, Sendable {
         self.scheduleID = scheduleID
         self.effectiveFrom = effectiveFrom
         self.weeklyRule = weeklyRule
-        self.everyOtherDayFrom = everyOtherDayFrom
+        self.dayCycle = dayCycle
         self.slotTimes = slotTimes
         self.dose = dose
         self.timeZonePolicy = timeZonePolicy
@@ -75,14 +98,13 @@ public struct ScheduleVersion: Hashable, Sendable {
         slotTimes.first { $0.slotID == slotID }?.time
     }
 
-    /// Whether the repeat rule has a dose on a date (spec 8.5, D036).
+    /// Whether the repeat rule has a dose on a date (spec 8.5, D036, D065).
     ///
-    /// A version that repeats every second day is due on its start date and on each date an even number of
-    /// calendar days after it. The rule counts calendar dates of the plan, and not hours. So a clock change
-    /// or another time zone does not move the rhythm, and a missed or skipped dose does not move it.
+    /// A version with a day cycle is due on the days of the cycle that have a dose, from its start date.
+    /// The rule counts calendar dates of the plan, and not hours. So a clock change or another time zone
+    /// does not move the rhythm, and a missed or skipped dose does not move it.
     public func isDue(on date: LocalDate) -> Bool {
-        guard let start = everyOtherDayFrom else { return weeklyRule.weekdays.contains(date.weekday) }
-        return date >= start && date.days(since: start).isMultiple(of: 2)
+        dayCycle?.isDue(on: date) ?? weeklyRule.weekdays.contains(date.weekday)
     }
 }
 
@@ -152,7 +174,7 @@ public struct Schedule: Hashable, Sendable {
             scheduleID: id,
             effectiveFrom: effectiveFrom,
             weeklyRule: latest.weeklyRule,
-            everyOtherDayFrom: latest.everyOtherDayFrom,
+            dayCycle: latest.dayCycle,
             slotTimes: slotTimes,
             dose: latest.dose,
             timeZonePolicy: latest.timeZonePolicy

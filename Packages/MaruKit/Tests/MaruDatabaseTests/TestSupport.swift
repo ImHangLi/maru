@@ -108,8 +108,8 @@ extension LocalStore {
         return Seed(item: item, schedule: schedule, morning: morning, evening: evening, occurrence: occurrence)
     }
 
-    /// Stores a schedule in a database from before `v4`, which has no start date of every second day.
-    /// `save` names that column, so a migration test writes the rows of the older schema with this.
+    /// Stores a schedule with no day cycle in a database from before `v5`. `save` names the columns of `v5`,
+    /// so a migration test writes the rows of an older schema with this.
     func saveBeforeVersion4(_ schedule: Schedule) async throws {
         try await execute(
             "INSERT INTO schedule (id, itemID, isEnabled, endDate) VALUES (?, ?, ?, NULL)",

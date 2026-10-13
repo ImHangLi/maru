@@ -328,12 +328,12 @@ struct ItemEditorView: View {
                 NavigationLink {
                     RepeatList(
                         weekdays: $draft.weekdays,
-                        everyOtherDay: $draft.everyOtherDay,
+                        cycle: $draft.cycle,
                         today: { draft.today(keptZoneFrom: session.zoneSchedule) }
                     )
                 } label: {
                     LabeledContent {
-                        Text(SchedulePreview.days(draft.weekdays, everyOtherDay: draft.everyOtherDay != nil))
+                        Text(SchedulePreview.days(of: draft))
                     } label: {
                         if let city = otherZone.map(SchedulePreview.city) {
                             Text("Repeat (\(city) Time)")
@@ -603,32 +603,64 @@ private struct TimeRow: View {
 
 /// The repeat rule as a system list with check marks, like the repeat days of an alarm in Clock.
 ///
-/// The first section has "Every Day" and "Every Other Day". Under it are the seven days, or the first day
-/// of a plan that repeats every second day (D036). All seven days on means every day (spec 2.1: visible
-/// and the user can change it). The app picks no first day: the user chooses today or tomorrow.
+/// The first section has "Every Day" and the three rules that count days: "Every Other Day" (D036),
+/// "Every Few Days", and "Days On and Off" (D065). Under it are the seven days, or the numbers and the first day
+/// of a rule that counts days. All seven days on means every day (spec 2.1: visible and the user can change it).
+/// The app picks no number and no first day: each starts empty, and Save stays off until the user chooses.
 ///
-/// A choice stores the calendar date that it has at the tap. The check mark is on the day that has a dose
-/// by the start date of the draft, so a stored plan shows its rhythm, and no tap is needed to keep it.
+/// A first-day choice stores the calendar date that it has at the tap. For every other day, the check mark is
+/// on the day that has a dose by the start date of the draft, so a stored plan shows its rhythm, and no tap is
+/// needed to keep it. The other two rules can start on any date, so their check mark is on only when the
+/// start date is that day, and the date row shows the start date.
 ///
 /// The page can stay open across midnight. So a tap reads the date again, and the page reads it again
 /// each minute for the check marks.
 private struct RepeatList: View {
     @Binding var weekdays: Set<Weekday>
-    @Binding var everyOtherDay: ItemDraft.EveryOtherDay?
+    @Binding var cycle: ItemDraft.Cycle?
     /// Today in the zone of the plan, at the time of the call. `nil` when the device zone has no region name.
     let today: () -> LocalDate?
 
-    /// The plan of the draft has a dose on the date.
-    private func isDue(_ date: LocalDate?) -> Bool {
-        guard let date, let start = everyOtherDay?.start?.date else { return false }
+    /// The row of a first day has the check mark: the plan of the draft has a dose on the date (every other day),
+    /// or it starts on the date (the other rules).
+    private func isOn(_ date: LocalDate?) -> Bool {
+        guard let date, let start = cycle?.start?.date else { return false }
+        guard cycle?.kind == .everyOtherDay else { return date == start }
         return date >= start && date.days(since: start).isMultiple(of: 2)
     }
 
-    /// Starts the plan today or tomorrow, by the date at the time of the tap, when that date has no dose yet.
+    /// Starts the plan today or tomorrow, by the date at the time of the tap, when the row has no check mark yet.
     /// A tap on the row with the check mark changes nothing.
     private func start(daysFromToday days: Int) {
-        guard let date = today()?.adding(days: days), !isDue(date) else { return }
-        everyOtherDay = ItemDraft.EveryOtherDay(start: ItemDraft.Day(date))
+        guard let date = today()?.adding(days: days), !isOn(date) else { return }
+        cycle?.start = ItemDraft.Day(date)
+    }
+
+    /// Changes the rule. The numbers and the first day start empty again. A tap on the rule that is on changes nothing.
+    private func choose(_ kind: ItemDraft.Cycle.Kind) {
+        if cycle?.kind != kind { cycle = ItemDraft.Cycle(kind: kind) }
+    }
+
+    /// The days from one dose to the next of "Every Few Days". The draft keeps them as 1 day on and the other days off.
+    private var interval: Binding<Int?> {
+        Binding {
+            cycle?.daysOff.map { $0 + 1 }
+        } set: { days in
+            cycle?.daysOff = days.map { $0 - 1 }
+        }
+    }
+
+    /// The start date for the date row, as noon in UTC. With no start date the row shows today, and the draft
+    /// gets a date only when the user picks one.
+    private var startDate: Binding<Date> {
+        Binding {
+            (cycle?.start?.date ?? today())?.noon ?? .now
+        } set: { date in
+            let parts = SchedulePreview.utcCalendar.dateComponents([.year, .month, .day], from: date)
+            guard let year = parts.year, let month = parts.month, let day = parts.day,
+                  let picked = try? LocalDate(year: year, month: month, day: day) else { return }
+            cycle?.start = ItemDraft.Day(picked)
+        }
     }
 
     var body: some View {
@@ -643,20 +675,48 @@ private struct RepeatList: View {
     private var list: some View {
         List {
             Section {
-                CheckRow(title: Text("Every Day"), isOn: everyOtherDay == nil && weekdays.count == Weekday.allCases.count) {
-                    everyOtherDay = nil
+                CheckRow(title: Text("Every Day"), isOn: cycle == nil && weekdays.count == Weekday.allCases.count) {
+                    cycle = nil
                     weekdays = Set(Weekday.allCases)
                 }
-                CheckRow(title: Text("Every Other Day"), isOn: everyOtherDay != nil) {
-                    if everyOtherDay == nil { everyOtherDay = ItemDraft.EveryOtherDay(start: nil) }
-                }
+                CheckRow(title: Text("Every Other Day"), isOn: cycle?.kind == .everyOtherDay) { choose(.everyOtherDay) }
+                CheckRow(title: Text("Every Few Days"), isOn: cycle?.kind == .interval) { choose(.interval) }
+                CheckRow(title: Text("Days On and Off"), isOn: cycle?.kind == .pause) { choose(.pause) }
             }
-            if let rule = everyOtherDay {
+            if let rule = cycle {
+                if rule.kind != .everyOtherDay {
+                    Section {
+                        if rule.kind == .interval {
+                            DayCountPicker(title: "Interval", selection: interval, values: ItemDraft.Cycle.intervals) {
+                                Text("Every \($0) days")
+                            }
+                        } else {
+                            DayCountPicker(
+                                title: "Days On", selection: Binding(get: { cycle?.daysOn }, set: { cycle?.daysOn = $0 }),
+                                values: ItemDraft.Cycle.dayCounts
+                            ) { Text(verbatim: "\($0)") }
+                            DayCountPicker(
+                                title: "Days Off", selection: Binding(get: { cycle?.daysOff }, set: { cycle?.daysOff = $0 }),
+                                values: ItemDraft.Cycle.dayCounts
+                            ) { Text(verbatim: "\($0)") }
+                        }
+                    } footer: {
+                        if rule.counts == nil {
+                            Text("Choose the number of days.")
+                        }
+                    }
+                }
                 let date = today()
                 Section {
-                    CheckRow(title: Text("Starting Today"), isOn: isDue(date)) { start(daysFromToday: 0) }
-                    CheckRow(title: Text("Starting Tomorrow"), isOn: isDue(date?.adding(days: 1))) {
+                    CheckRow(title: Text("Starting Today"), isOn: isOn(date)) { start(daysFromToday: 0) }
+                    CheckRow(title: Text("Starting Tomorrow"), isOn: isOn(date?.adding(days: 1))) {
                         start(daysFromToday: 1)
+                    }
+                    // Every other day has two possible rhythms, so it needs no date (D036).
+                    if rule.kind != .everyOtherDay {
+                        DatePicker("Another Date", selection: startDate, displayedComponents: .date)
+                            // A plan date has no zone. The row shows it as a date in UTC.
+                            .environment(\.timeZone, .gmt)
                     }
                 } footer: {
                     if rule.start?.date == nil {
@@ -675,9 +735,26 @@ private struct RepeatList: View {
             }
         }
         .listStyle(.insetGrouped)
-        // The section under the rule and its footer come and go with the layout motion (D030).
+        // The sections under the rule and their footers come and go with the layout motion (D030).
         // A check mark changes with no motion, as in Clock.
-        .motion(.layout, value: [everyOtherDay != nil, everyOtherDay?.start != nil])
+        .motion(.layout, value: [cycle?.kind.rawValue ?? "", "\(cycle?.counts != nil)", "\(cycle?.start != nil)"])
+    }
+}
+
+/// A menu of numbers of days with an empty first choice, so the app picks no number (spec 2.1).
+private struct DayCountPicker<Label: View>: View {
+    let title: LocalizedStringKey
+    @Binding var selection: Int?
+    let values: ClosedRange<Int>
+    @ViewBuilder let label: (Int) -> Label
+
+    var body: some View {
+        Picker(title, selection: $selection) {
+            Text("Choose").tag(Int?.none)
+            ForEach(Array(values), id: \.self) { value in
+                label(value).tag(Int?.some(value))
+            }
+        }
     }
 }
 
