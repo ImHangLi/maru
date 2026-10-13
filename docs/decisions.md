@@ -1071,7 +1071,7 @@ The maintainer joined the Apple Developer Program on 2026-10-13. The Team ID is 
 
 Not verified: the device build needs the maintainer's Apple ID in Xcode, so that automatic signing adds the capability to the App ID. Nobody saw a reminder during a Focus yet.
 
-## D063 · 2026-10-13 · Store needs: an About section and the collected data in the privacy manifest
+## D063 · 2026-10-13 · Store needs: an About section and the collected data in the privacy manifest ("not linked" replaced by D069)
 
 Agent decision, after a release audit.
 
@@ -1082,7 +1082,7 @@ Agent decision, after a release audit.
 
 Not verified: no build of the app on this Mac. CI builds the app. The pages on maru.day are not live yet, so the two links show the placeholder until the site deploys.
 
-## D064 · 2026-10-13 · Analytics requests carry the region setting
+## D064 · 2026-10-13 · Analytics requests carry the region setting ("not linked" replaced by D069)
 
 Maintainer decision, with agent detail. It adds one field to the events of D052.
 
@@ -1193,3 +1193,10 @@ Agent decision, after a copy review of all user-facing text by a different model
 - The item detail shows its three counts (D061) as separate labelled values with space between them, and one under the other when the row is too narrow. This was the last "·" separator in the app, the widgets, the reminders, and the String Catalogs.
 
 Not verified: no build of the app on this Mac, and nobody saw the text on a display.
+
+## D069 · 2026-10-13 · Usage statistics are "linked to the user" on the privacy label
+
+Maintainer decision on 2026-10-13, after two model reviews.
+
+- Every data type that the usage statistics send is "Linked to the user: Yes" in `App/PrivacyInfo.xcprivacy` and on the App Store privacy label. Each event carries the same random install ID, and Apple counts data that a persistent device-level ID ties together as linked. "Used for tracking" stays "No". This replaces the "not linked" part of D063 and of the region entry.
+- The app does not change. The install ID stays random, Maru has no account, and the ID is deleted when the user turns the switch off.
