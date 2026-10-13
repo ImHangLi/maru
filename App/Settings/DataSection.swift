@@ -28,7 +28,7 @@ struct DataSection: View {
                     case .notABackup: Text("This file is not a Maru backup, or it is damaged. Your data did not change.")
                     case .newerBackup: Text("A newer version of Maru made this backup. Update Maru, then try again. Your data did not change.")
                     case .notRestored: Text("Maru couldn’t restore this backup. Your data did not change.")
-                    case .restoredNotConfirmed: Text("Maru couldn’t confirm that your iPhone saved it. If your data looks wrong later, restore the backup again.")
+                    case .restoredNotConfirmed: Text("Maru couldn’t confirm that your iPhone saved the restored data. If your data looks wrong later, restore the backup again.")
                     }
                 }
                 .onChange(of: model.transfer.failure) { _, failure in
@@ -44,18 +44,18 @@ struct DataSection: View {
                 }
                 // The one confirmation of a restore. Each button ends the wait of the checked backup.
                 .alert(
-                    "Replace All Data?",
+                    "Replace Maru Data?",
                     isPresented: Binding(get: { model.transfer.staged != nil }, set: { _ in })
                 ) {
                     Button("Replace", role: .destructive) { model.restore() }
                     Button("Cancel", role: .cancel) { model.cancelRestore() }
                 } message: {
-                    Text("This backup replaces every item and record on this iPhone. You can’t undo this.")
+                    Text("This backup replaces all items and records in Maru. You can’t undo this.")
                 }
         } header: {
             Text("Your Data")
         } footer: {
-            Text("A backup moves everything to a new iPhone. The files have your item names and records and are not encrypted, so share them only with people you trust.")
+            Text("A backup moves your items, records, and some settings to a new iPhone, but not photos. The files are not encrypted, so share them only with people you trust.")
         }
         .disabled(model.transfer.isWorking)
     }
@@ -63,7 +63,7 @@ struct DataSection: View {
     private var failureTitle: Text {
         switch shownFailure {
         case .fileNotMade: Text("File Not Made")
-        case .restoredNotConfirmed: Text("Restored")
+        case .restoredNotConfirmed: Text("Restore Not Confirmed")
         default: Text("Not Restored")
         }
     }

@@ -73,7 +73,7 @@ struct SettingsView: View {
                         let time = SchedulePreview.format(hour: latest.hour, minute: latest.minute)
                         Text("Maru reminds you up to \(FollowUpCount.untilRecordedLimit) times for each dose, until \(time) at the latest.")
                     } else {
-                        Text("Only for items that you did not record.")
+                        Text("Only for doses with no record.")
                     }
                 }
                 Section("Display") {
@@ -96,7 +96,7 @@ struct SettingsView: View {
                             }
                         ))
                     } footer: {
-                        Text("Maru shares counts of what you use, and never item names, doses, or times.")
+                        Text("Maru shares how you use the app, and never item names, doses, or times.")
                     }
                 }
                 DataSection()

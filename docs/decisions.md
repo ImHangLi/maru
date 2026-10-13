@@ -788,7 +788,7 @@ Agent detail:
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw a notification. It needs a check on a real iPhone.
 
-## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now (file protection level replaced by D066)
+## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now (file protection level replaced by D066, widget name, header separator, and VoiceOver labels replaced by D068)
 
 Owner decision on the design (D046), with agent detail. It adds two widgets, small and medium each. It follows spec 6 (Widgets), 7.2, 9, and 10. Spec 10 says a widget shows only non-sensitive content by default.
 
@@ -1172,3 +1172,24 @@ The Watch keeps one plain sentence for the case that remains: "Not recorded. Unl
 `PRIVACY.md` states the new level, and it has one sentence that the list of today goes to the user's own Apple Watch. The maintainer approved both texts. `site/privacy.html` has the same text. The site publishes it when this change merges.
 
 Not verified: no device ran this. A real iPhone must confirm that the level of the existing files changes at the first launch, that a record from the Watch works with the iPhone locked, that it fails with the plain sentence after a restart, and what the widgets show on a locked display.
+
+## D068 · 2026-10-13 · Copy review: text states the record, not the intake
+
+Agent decision, after a copy review of all user-facing text by a different model. It changes text in the six languages, and it replaces parts of D048. The number leaves D065 to D067 for the branches that are open at the same time.
+
+- Maru knows a record, not an intake. A dose with no record is "Not recorded" or "No record", never "Not taken". The follow-up reminder has the title "No record yet" in place of "Still to take".
+- The action that records an as-needed dose is "Record Dose" in place of "Take Now". The widget that records with a tap has the same name. Its type name and its kind string do not change, so an installed widget stays.
+- The capsule of a widget gets the record state. VoiceOver says "Taken", "Not recorded", or "Skipped". The count of the "Today" widget stays "4 of 7" on the display, because a longer text does not fit the small widget, and VoiceOver reads "4 of 7 taken".
+- The header of the small "Today" widget has no "·". The tint and the gray color separate the slot from the time. A second line does not fit above two rows of capsules.
+- A day with no planned dose says "Nothing Planned Today", with the word "planned" of History. It does not say that there is nothing to take.
+- The restore alerts name Maru: "Replace Maru Data?" and "This backup replaces all items and records in Maru." A restore that the storage did not confirm has the title "Restore Not Confirmed".
+- The footer of "Your Data" says what a backup holds: items, records, and some settings, and no photos (`docs/export-format.md`).
+- The statistics text says "how you use the app" in place of "counts of what you use", because the daily summary has yes-or-no flags and no count.
+- The menu of the item detail is "Item Options…". "End This Item" can read as advice to stop an intake.
+- Japanese and Korean "Drops" use the pharmacy words for the dosage form, 滴剤 and 점적제, in place of the loanwords. Apple's word in Health was not found. A native speaker must confirm both.
+- `PRIVACY.md` and `docs/faq.md` lose the implementation words and the streak words. The camera paragraph of `PRIVACY.md` now also names the item photo. `site/` is not part of this change.
+- Every changed string in Japanese, Korean, Spanish, and German is a draft until a native speaker reads it. `docs/localization-review.md` lists them.
+
+- The item detail shows its three counts (D061) as separate labelled values with space between them, and one under the other when the row is too narrow. This was the last "·" separator in the app, the widgets, the reminders, and the String Catalogs.
+
+Not verified: no build of the app on this Mac, and nobody saw the text on a display.

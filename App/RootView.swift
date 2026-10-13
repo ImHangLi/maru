@@ -108,9 +108,9 @@ struct RootView: View {
             }
         } message: {
             if model.analytics.requiresOptIn {
-                Text("Share counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can change this in Settings.")
+                Text("Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings.")
             } else {
-                Text("Maru shares counts of what you use, such as whether you recorded a dose. Never item names, doses, or times. You can turn this off in Settings.")
+                Text("Maru shares how you use the app, such as whether you recorded a dose today. It never shares item names, doses, or times. You can turn this off in Settings.")
             }
         }
         .onChange(of: nextAlert) { _, alert in

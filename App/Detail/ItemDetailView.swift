@@ -2,7 +2,7 @@ import MaruCore
 import SwiftUI
 
 /// The detail of one item (spec 3 P04): the name, the form icon, the plan, the note, and the 7-day strip of
-/// the records (D057). Edit opens the edit screen. The menu "Change or End This Item…" holds the rarer changes.
+/// the records (D057). Edit opens the edit screen. The menu "Item Options…" holds the rarer changes.
 ///
 /// It never says that the user finished a product, and it has no refill action (T04, T09).
 struct ItemDetailView: View {
@@ -103,7 +103,7 @@ struct ItemDetailView: View {
                 } else {
                     // A plain row at the end, so the rare changes stay out of the way (spec 3 P04). It opens a
                     // system menu, not a dialog, so an archive or a delete has one confirmation (D033).
-                    Menu("Change or End This Item…") {
+                    Menu("Item Options…") {
                         Button("Replace with a New Product…", systemImage: "arrow.triangle.2.circlepath") {
                             model.openEditorForNewProduct(item.id)
                         }
@@ -303,10 +303,14 @@ private struct WeekSection: View {
                         .accessibilityHidden(true)
                     WeekStrip(marks: week?.marks ?? Array(repeating: HistoryDayMark.none, count: 7), color: item.color.color)
                 }
-                Text(verbatim: counts)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .numberMotion(value: counts)
+                // The counts stand side by side, or one under the other when the row is too narrow.
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 16) { countTexts }
+                    VStack(alignment: .leading, spacing: 2) { countTexts }
+                }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .numberMotion(value: counts)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 4)
@@ -315,15 +319,19 @@ private struct WeekSection: View {
         }
     }
 
-    /// For example "Taken: 1 · Skipped: 0 · No record: 1". An as-needed item has only the taken doses.
-    private var counts: String {
-        guard let week else { return String(localized: "No records in the last 7 days.") }
+    private var countTexts: some View {
+        ForEach(counts, id: \.self) { Text(verbatim: $0) }
+    }
+
+    /// For example "Taken: 1", "Skipped: 0", and "No record: 1". An as-needed item has only the taken doses.
+    private var counts: [String] {
+        guard let week else { return [String(localized: "No records in the last 7 days.")] }
         let taken = String(localized: "Taken: \(week.takenDoses)", comment: "Item detail: the doses taken in the last 7 days. Example: Taken: 5.")
-        if week.isAsNeeded { return taken }
+        if week.isAsNeeded { return [taken] }
         return [
             taken,
             String(localized: "Skipped: \(week.skippedDoses)", comment: "Item detail: the planned doses skipped in the last 7 days. Example: Skipped: 1."),
             String(localized: "No record: \(week.unrecordedDoses)", comment: "Item detail: the planned doses with no record in the last 7 days. Example: No record: 1."),
-        ].joined(separator: " · ")
+        ]
     }
 }

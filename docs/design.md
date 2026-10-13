@@ -36,7 +36,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A failure uses a system alert. Every alert title uses Title Case, for example "Not Saved", "Today Changed", "History Changed", "Not Changed", and "Maru Couldn’t Save" (D058). A failed reminder after a save or a change also gets an alert. Notifications that are off show as the row "Notifications off" on Today and My Items, with no alert.
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
-- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses: "Taken: 5 · Skipped: 1 · No record: 1". An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
+- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses as three labelled values with space between them and no separator: "Taken: 5", "Skipped: 1", "No record: 1". They stand one under the other when the row is too narrow (D068). An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
 - For a plan of every other day, "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036).
 
 ## Today
@@ -50,10 +50,10 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A recorded row and an open row differ only by the circle and the time. The name, the icon, and the amount keep the normal look. No dim and no strikethrough (D032, D044).
 - A slot always shows its rows, also when every row is done. Nothing folds or opens. The header is the plain title (D057, D060).
 - The same words name an action in the dialog of the circle, in the menu, and in the swipe: "Taken", "Skip", "Undo", and "Change Time…" (D058). Swipe right on a row: "Taken". Swipe left: "Skip" on an open row, "Undo" on a recorded row. Only the first action of the right swipe runs with a full swipe (D028).
-- A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Take Now". Every action uses the same record transaction as the circle (D028).
+- A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Record Dose" (D068). Every action uses the same record transaction as the circle (D028).
 - The menu of a recorded row has "Change Time…". The menu of an open row has "Taken Earlier…". Each opens the time sheet directly. The sheet shows the time wheel at once, and "Save" records the dose as taken at that time. The wheel does not go past the current time. So a change of a record time needs three taps (D033).
 - An "As Needed" section at the end lists items with no schedule. Each row has a record button that records a dose at the current time (D021). A dose of today shows under its item as "Taken at 8:07 AM" or "Skipped" in the text color. It lines up with the name, past the icon column, at every text size (D058).
-- With no item, the empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing to Take Today" (D026, D058).
+- With no item, the empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing Planned Today" (D026, D058, D068).
 - Success text and the success haptic come only after the local transaction commits (spec §7.2).
 
 ## History
@@ -137,7 +137,7 @@ One confirmation for each, and no second dialog before it (D033).
 
 - "Archive…" is in the context menu of a Today row and of a My Items tile, and in the menu of the item detail. Long press, "Archive…", "Archive": three taps.
 - The archive alert names the item. It says that the reminders stop, that the item leaves Today and My Items, that the records stay, and that this is not advice to stop.
-- The item detail ends with the row "Change or End This Item…". It opens a system menu, not a dialog: "Replace with a New Product…", the reminder switch, "Archive…", and "Delete Item…".
+- The item detail ends with the row "Item Options…" (D068). It opens a system menu, not a dialog: "Replace with a New Product…", the reminder switch, "Archive…", and "Delete Item…".
 - "Delete Item…" is in that menu, on the detail of an archived item, and in the archived list. The delete alert names the item. It says that the item, its plan, and all its records are deleted, and that the user cannot undo this.
 - After the commit, the item leaves every page with the layout motion. A reminder that the system did not confirm as removed gets the alert "Reminders May Still Be On", for an archive and for a delete.
 
@@ -158,19 +158,19 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 - The strikethrough setting is gone (D032).
 - "Your Data" is the section before "Send Feedback" (D040). It has three rows: "Export Records", "Back Up", and "Restore from Backup…". A tap on one of the first two opens the system share sheet with the file. The third opens the system file picker.
 - The footer of "Your Data" has two sentences, because it must say that the files are not encrypted (D058).
-- A restore has one alert, "Replace All Data?", with a destructive button "Replace". After a restore, the sheet closes and Today shows the restored data. No message says so (D028). A failure is a system alert that says that the data did not change.
+- A restore has one alert, "Replace Maru Data?", with a destructive button "Replace". After a restore, the sheet closes and Today shows the restored data. No message says so (D028). A failure is a system alert that says that the data did not change.
 - The share sheet is the one of UIKit, `UIActivityViewController`, in a system sheet. `ShareLink` needs the file before the tap and does not say when the sheet closes, and Maru must remove the file then (D026, D040).
 
 ## Widgets
 
 Two Home Screen widgets, small and medium each (D048). They use the capsule of the app icon, tilted by 45 degrees, and no list rows.
 
-- One capsule is one dose. Taken: filled with the app tint (D025) as a gradient. Not taken and skipped: light gray (`systemGray5`) with a thin edge (`systemGray3`). VoiceOver says "Taken" or "Not taken", so the color is never the only signal.
+- One capsule is one dose. Taken: filled with the app tint (D025) as a gradient. Open and skipped: light gray (`systemGray5`) with a thin edge (`systemGray3`). VoiceOver says "Taken", "Not recorded", or "Skipped" (D068), so the color is never the only signal.
 - The background is the system background: white in light mode, black in dark mode. Text uses the system font and the system colors.
-- "Today" has no names and no buttons. Small: the slot word in the tint, a "·", the time. Under it a large "2 left", and the capsules of the slot at the bottom right. When every dose is done: "All done · Next 8:00", "7 of 7", filled capsules. Medium: "Today" and "4 of 7", then a column for each slot with its title, its time, and its capsules. The slot of the clock has the title in the tint. A tap opens Today at the slot.
-- "Take Now" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
+- "Today" has no names and no buttons. Small: the slot word in the tint, then the time in gray. Under it a large "2 left", and the capsules of the slot at the bottom right. When every dose is done: "All done" in the tint and "Next 8:00" in gray, "7 of 7", filled capsules. Medium: "Today" and "4 of 7", then a column for each slot with its title, its time, and its capsules. VoiceOver reads the count as "4 of 7 taken". The slot of the clock has the title in the tint. A tap opens Today at the slot.
+- "Record Dose" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
-- The words "Today", "Morning", "Noon", and "Evening" match the app. The "·" in the header of the small "Today" widget is the owner design. It is the one use of the separator of principle 5.
+- The words "Today", "Morning", "Noon", and "Evening" match the app. The header of the small "Today" widget has no "·": the color separates the two parts (D068).
 
 ## Watch
 

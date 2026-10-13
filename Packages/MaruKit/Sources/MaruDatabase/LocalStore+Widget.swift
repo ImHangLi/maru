@@ -3,7 +3,7 @@ import GRDB
 import MaruCore
 
 extension LocalStore {
-    /// What a tap on a gray capsule of the "Take Now" widget can record (D048).
+    /// What a tap on a gray capsule of the "Record Dose" widget can record (D048).
     ///
     /// The widget shows an occurrence and the schedule version that it had when the timeline was made.
     /// The target is open only when the stored occurrence is still that one, its date is today in its own
