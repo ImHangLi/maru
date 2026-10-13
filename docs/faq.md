@@ -16,7 +16,7 @@ Today keeps each recorded item in view with its mark. History shows every day, w
 
 ## Can Maru keep reminding me?
 
-Yes. In Settings, "Remind Again" sends more reminders for a dose that you did not record. You choose how many, and how long between them, from 5 minutes to 1 hour. "Until Recorded" reminds you up to 12 times for each dose, until 1:00 AM at the latest, and stops when you record. A change of the setting does not add more than 12 for a dose. iPhone does not let an app remind with no end, so Maru states the number. Maru is not an alarm: a Focus or silent mode can hold a reminder.
+Yes. In Settings, "Remind Again" sends more reminders for a dose that you did not record. You choose how many, and how long between them, from 5 minutes to 1 hour. "Until Recorded" reminds you up to 12 times for each dose, until 1:00 AM at the latest, and stops when you record. A change of the setting does not add more than 12 for a dose. iOS does not let an app remind with no end, so Maru states the number. Maru is not an alarm: a Focus or silent mode can hold a reminder.
 
 ## Is there a limit on the number of items?
 
@@ -24,15 +24,15 @@ No. You can add as many items as you want. Maru is free and needs no account.
 
 ## Where is my data?
 
-On your iPhone. Maru has no server and no account. Optional usage statistics never include item names, doses, or times, and a switch in Settings turns them off. The feedback form in Settings is a web page that opens only when you tap it. Read `PRIVACY.md` for the details.
+On your iPhone or iPad. Each device has its own data. Maru has no server and no account. Optional usage statistics never include item names, doses, or times, and a switch in Settings turns them off. The feedback form in Settings is a web page that opens only when you tap it. Read `PRIVACY.md` for the details.
 
 ## Can I take my records with me?
 
 Yes. "Export Records" in Settings makes a CSV file with every record. Numbers and Excel open it. You choose where the file goes. Maru sends nothing by itself.
 
-## How do I move to a new iPhone?
+## How do I move to a new iPhone or iPad?
 
-On the old iPhone, tap "Back Up" in Settings and save the file, for example to iCloud Drive. On the new iPhone, tap "Restore from Backup…" and pick the file. The restore replaces the data of Maru on the new iPhone. The file is not encrypted, so keep it private. A transfer or a backup of the whole iPhone by iOS can also bring the data of Maru. Maru has no sync between two devices.
+On the old device, tap "Back Up" in Settings and save the file, for example to iCloud Drive. On the new device, tap "Restore from Backup…" and pick the file. The restore replaces the data of Maru on the new device. The file is not encrypted, so keep it private. A transfer or a backup of the whole device by iOS can also bring the data of Maru. Maru has no sync between two devices.
 
 ## Does Maru count my stock or tell me to buy more?
 
@@ -44,4 +44,4 @@ No. Maru does not give medical advice. You enter what you take, and Maru reminds
 
 ## Does the label scan send a photo anywhere?
 
-No. Your iPhone reads the text on the label. Maru keeps only the name that you tap, and it saves no photo.
+No. Your device reads the text on the label. Maru keeps only the name that you tap, and it saves no photo.

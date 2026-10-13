@@ -10,8 +10,8 @@ struct PendingEvent: Equatable, Sendable {
     /// The occurrence that a backfill of the history stores with the event, for a past dose that no generation
     /// run stored. A retry sends this same occurrence (D014).
     var backfill: Occurrence?
-    /// The record must still be in the plan of now: an active item, a slot of the plan, and the planned schedule
-    /// version. The widget sets it, because its button can be old (D048).
+    /// The record must still be in the plan of now: an active item, a slot of the plan, the planned schedule
+    /// version, and a dose of today. The widget and the Watch set it, because their rows can be old (D048, D071).
     var requiresCurrentPlan = false
     /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
     var restoreEpoch: Int?
@@ -137,8 +137,12 @@ extension AppModel {
 
     /// The same transaction for a caller that waits for its end, for example the "Taken" action of a reminder (D034).
     /// `generation` is the generation of the data that the caller read the events from. `true` only after the commit.
-    func commitAndWait(_ events: [PendingEvent], generation: Int) async -> Bool {
-        guard generation == dataGeneration, begin(events) else { return false }
+    /// `confirmed` is the record that the caller read for an occurrence that no page shows, for example on a
+    /// background launch. A read during the transaction shows it in place of a commit that is not flushed.
+    func commitAndWait(
+        _ events: [PendingEvent], generation: Int, confirmed: [OccurrenceID: OccurrenceRecord] = [:]
+    ) async -> Bool {
+        guard generation == dataGeneration, begin(events, confirmed: confirmed) else { return false }
         return await run(events, generation: generation)
     }
 
@@ -178,7 +182,7 @@ extension AppModel {
 
     /// Marks the events as running. False when one of them runs already, or is not the same event as the
     /// unconfirmed one of its occurrence.
-    private func begin(_ events: [PendingEvent]) -> Bool {
+    private func begin(_ events: [PendingEvent], confirmed: [OccurrenceID: OccurrenceRecord] = [:]) -> Bool {
         let ids = Set(events.map(\.event.occurrenceID))
         // A restore replaces the data while it runs (D040).
         guard !transfer.isRestoring, !events.isEmpty, today.inFlight.isDisjoint(with: ids) else { return false }
@@ -188,7 +192,7 @@ extension AppModel {
         }
         today.inFlight.formUnion(ids)
         for id in ids {
-            today.confirmed[id] = shownRecord(of: id)
+            today.confirmed[id] = confirmed[id] ?? shownRecord(of: id)
         }
         for occurrence in events.compactMap(\.backfill) {
             today.backfills[occurrence.key] = occurrence
@@ -227,13 +231,15 @@ extension AppModel {
     }
 
     /// The record of the widget: the store also checks the plan of now in the transaction (D048).
+    /// The store reads the clock and the device time zone in the transaction, not before the wait for the writer.
     private func recordInCurrentPlan(_ events: [PendingEvent], generation: Int) async throws(RecordFailure) -> [OccurrenceRecord] {
-        let now = Date()
-        guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw .storage(.unavailable) }
-        return try await store.record(
+        try await store.record(
             events.map { ($0.event, $0.scheduleVersionID) },
             generation: generation,
-            currentPlan: OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone),
+            currentPlan: {
+                let now = Date()
+                return NamedTimeZone(device: .current, at: now).map { OccurrenceGeneration(now: now, deviceTimeZone: $0) }
+            },
             restoreEpoch: events.first?.restoreEpoch
         )
     }
@@ -266,6 +272,7 @@ extension AppModel {
             content = .loaded(snapshot)
         }
         today.choice?.apply(records)
+        sendWatchDay()
         historyDidCommit(records)
         today.commitCount += 1
         if backfilled.isEmpty {

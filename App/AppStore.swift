@@ -223,7 +223,7 @@ actor AppStore {
     func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         generation: Int,
-        currentPlan: OccurrenceGeneration? = nil,
+        currentPlan: (@Sendable () -> OccurrenceGeneration?)? = nil,
         restoreEpoch: Int? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         let store = try openForRecord()

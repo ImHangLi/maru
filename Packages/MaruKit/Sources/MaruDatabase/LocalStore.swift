@@ -146,8 +146,14 @@ public struct LocalStore: Sendable {
             // A pool opens the database in WAL mode.
             pool = try DatabasePool(path: file.path, configuration: configuration)
             // A new file gets the level of the directory on a device. Set the level on each file too,
-            // before the migrations write to it. A file from an earlier build can have a weaker level.
-            try FileProtection.protect(files: files(of: file))
+            // before the migrations write to it. A file from an earlier build can have another level (D066),
+            // also the rollback journal of a migration and the epoch file, which a record of the widget reads.
+            try FileProtection.protect(
+                files: files(of: file) + [
+                    URL(fileURLWithPath: file.path + "-journal"),
+                    file.deletingLastPathComponent().appendingPathComponent(epochFileName),
+                ]
+            )
             try makeDurable(pool)
             guard try !pool.read(migrator.hasBeenSuperseded) else { throw StorageError.newerSchema }
         } catch {
@@ -232,9 +238,12 @@ public struct LocalStore: Sendable {
     }
 }
 
-/// Strict file protection: the files are readable only while the device is unlocked (spec 10).
+/// The file protection of the database directory (spec 10, D066): iOS encrypts the files, and they are not
+/// readable after a restart until the first unlock. After that unlock they stay readable while the iPhone is
+/// locked, so a record from the Watch, or from the "Taken" action of a reminder on the Watch, works with the
+/// iPhone in a pocket.
 enum FileProtection {
-    static let level = FileProtectionType.complete
+    static let level = FileProtectionType.completeUntilFirstUserAuthentication
 
     /// Only an iOS build that is not a simulator sets the class, and a failure to set it there fails the open. On a Mac and in a
     /// simulator the class makes SQLite fail while the Mac screen is locked, and some volumes reject it.
@@ -250,10 +259,12 @@ enum FileProtection {
         try protect(directory)
     }
 
-    /// Sets the protection of files that exist. A file from an earlier build can have a weaker level.
-    static func protect(files: [URL]) throws {
+    /// Sets the protection of files that exist. A file from an earlier build can have another level.
+    /// The call changes only the attribute of the file. It copies and rebuilds nothing (spec 7.3).
+    /// A file that leaves the database directory, such as an exported backup, keeps `.complete` (D066).
+    static func protect(files: [URL], level: FileProtectionType = FileProtection.level) throws {
         for file in files where FileManager.default.fileExists(atPath: file.path) {
-            try protect(file)
+            try protect(file, level: level)
         }
     }
 
@@ -261,7 +272,7 @@ enum FileProtection {
         try FileManager.default.attributesOfItem(atPath: file.path)[.protectionKey] as? FileProtectionType
     }
 
-    private static func protect(_ url: URL) throws {
+    private static func protect(_ url: URL, level: FileProtectionType = FileProtection.level) throws {
         guard isRequired else { return }
         try FileManager.default.setAttributes([.protectionKey: level], ofItemAtPath: url.path)
     }

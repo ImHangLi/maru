@@ -66,7 +66,7 @@
   },
   "faq": {
     "title": "Maru: Questions and answers",
-    "desc": "Short answers about Maru: the price, your data, reminders, and moving to a new iPhone.",
+    "desc": "Short answers about Maru: the price, your data, reminders, and moving to a new iPhone or iPad.",
     "h1": "Questions and answers",
     "items": [
       [
@@ -94,6 +94,10 @@
         "Turn on Remind Again in Settings, and Maru sends up to 12 more reminders for a dose. Maru is not an alarm, so silent mode or a Focus can hold a reminder."
       ],
       [
+        "Can I take something every few days, or with a break?",
+        "Yes. Choose Every Day, Every Other Day, Every Few Days (every 3 to 30 days), or Days On and Off, for example 21 days on and 7 off. An As Needed item has no reminders, and you record it when you take it."
+      ],
+      [
         "What if I forget to record?",
         "You can record later or change the recorded time."
       ],
@@ -106,8 +110,8 @@
         "No. Maru reminds and records, and nothing more."
       ],
       [
-        "How do I move to a new iPhone?",
-        "In Maru's Settings on the old iPhone, tap Back Up and save the file. On the new iPhone, tap Restore from Backup and choose that file. This replaces the items and records already in Maru on that iPhone. The file is not encrypted, so keep it private."
+        "How do I move to a new iPhone or iPad?",
+        "In Maru's Settings on the old device, tap Back Up and save the file. On the new device, tap Restore from Backup and choose that file. This replaces the items and records already in Maru on that device. The file is not encrypted, so keep it private."
       ],
       [
         "Can I get my records out?",
@@ -115,7 +119,7 @@
       ],
       [
         "Is there an Apple Watch app?",
-        "No. Maru is an iPhone app, and it does not sync between devices."
+        "No. Maru is an app for iPhone and iPad, and it does not sync between devices."
       ],
       [
         "Which languages does Maru speak?",

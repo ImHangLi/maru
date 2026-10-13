@@ -66,7 +66,7 @@
   },
   "faq": {
     "title": "Maru: Fragen und Antworten",
-    "desc": "Kurze Antworten zu Maru: Preis, deine Daten, Erinnerungen und der Umzug auf ein neues iPhone.",
+    "desc": "Kurze Antworten zu Maru: Preis, deine Daten, Erinnerungen und der Umzug auf ein neues iPhone oder iPad.",
     "h1": "Fragen und Antworten",
     "items": [
       [
@@ -94,6 +94,10 @@
         "Schalte in den Einstellungen „Erneut erinnern“ ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Maru ist kein Wecker, deshalb können der Stummmodus oder ein Fokus eine Erinnerung zurückhalten."
       ],
       [
+        "Kann ich etwas alle paar Tage oder mit Pausen nehmen?",
+        "Ja. Wähle „Jeden Tag“, „Jeden zweiten Tag“, „Alle paar Tage“ (alle 3 bis 30 Tage) oder „Einnahmetage und Pause“, zum Beispiel 21 Tage Einnahme und 7 Tage Pause. Einträge „Bei Bedarf“ haben keine Erinnerung: Du erfasst sie, wenn du sie nimmst."
+      ],
+      [
         "Was, wenn ich das Erfassen vergesse?",
         "Du kannst später erfassen oder die erfasste Uhrzeit ändern."
       ],
@@ -106,8 +110,8 @@
         "Nein. Maru erinnert und erfasst, mehr nicht."
       ],
       [
-        "Wie ziehe ich auf ein neues iPhone um?",
-        "Öffne auf dem alten iPhone die Einstellungen in Maru, tippe auf „Backup erstellen“ und sichere die Datei. Tippe auf dem neuen iPhone auf „Aus Backup wiederherstellen“ und wähle diese Datei. Das ersetzt die Einträge und Aufzeichnungen, die dort schon in Maru sind. Die Datei ist nicht verschlüsselt, also bewahre sie sicher auf."
+        "Wie ziehe ich auf ein neues iPhone oder iPad um?",
+        "Öffne auf dem alten Gerät die Einstellungen in Maru, tippe auf „Backup erstellen“ und sichere die Datei. Tippe auf dem neuen Gerät auf „Aus Backup wiederherstellen“ und wähle diese Datei. Das ersetzt die Einträge und Aufzeichnungen, die dort schon in Maru sind. Die Datei ist nicht verschlüsselt, also bewahre sie sicher auf."
       ],
       [
         "Kann ich meine Aufzeichnungen mitnehmen?",
@@ -115,7 +119,7 @@
       ],
       [
         "Gibt es eine App für die Apple Watch?",
-        "Nein. Maru ist eine iPhone-App und synchronisiert nicht zwischen Geräten."
+        "Nein. Maru ist eine App für iPhone und iPad und synchronisiert nicht zwischen Geräten."
       ],
       [
         "Welche Sprachen spricht Maru?",
@@ -159,7 +163,7 @@
       "Tips": "Trinkgeld",
       "Notifications": "Mitteilungen",
       "Export and backup files": "Export- und Backup-Dateien",
-      "iPhone backups": "iPhone-Backups",
+      "iPhone and iPad backups": "iPhone- und iPad-Backups",
       "Changes": "Änderungen"
     }
   },

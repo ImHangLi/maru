@@ -1,6 +1,6 @@
 # Maru
 
-Maru is a local-first iPhone app for daily supplements and simple medication schedules that the user confirms. It reminds on time, shows what to take now, and keeps a trustworthy record.
+Maru is a local-first iPhone and iPad app for daily supplements and simple medication schedules that the user confirms. It reminds on time, shows what to take now, and keeps a trustworthy record.
 
 `docs/spec.md` is the source of truth for scope, data model, and acceptance. Read only the sections that your task needs. Section numbers and acceptance IDs (`T01`–`T52`) are stable references.
 
@@ -21,6 +21,7 @@ When you work for another contributor, follow `CONTRIBUTING.md`, and do not make
 
 - `project.yml`: the XcodeGen definition of the app. `Maru.xcodeproj` is generated and ignored by Git. Change `project.yml`, then run `xcodegen generate`. Do not edit the `.xcodeproj` by hand.
 - `App/`: the SwiftUI app target. Keep views and app wiring here.
+- `Watch/`: the watchOS app target (D071). It links only `MaruCore`. It has no database, and the iPhone app makes each record.
 - `Packages/MaruKit/`: platform-neutral logic. `MaruCore` holds domain, scheduling, and record rules. It must not import SwiftUI, UIKit, StoreKit, or analytics SDKs, so `swift build` and `swift test` run on the Mac without a simulator. `MaruDatabase` holds the SQLite store and is the only target that imports GRDB. Record every third-party dependency in `docs/third-party-licenses.md`.
 - `docs/`: the spec and research notes.
 

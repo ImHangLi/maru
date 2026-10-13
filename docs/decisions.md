@@ -78,7 +78,7 @@ Owner decision, after three rounds of surface options (see `docs/research/2026-1
 - Amount: optional, entered by the user, shown on a second line under the name. The product strength is not on the Today screen.
 - Text size: follow the system setting at every size, including the accessibility sizes. No maximum and no in-app text size control. Recommendation by the agent, pending the owner's objection. Reasons: the people who choose the largest sizes need them most, iOS already has a per-app text size setting, and spec §5.3 forbids smaller text for the sake of layout. The layout adapts: names wrap and never truncate, the icon and the circle have a size limit, and the icon is hidden at the three largest sizes.
 
-## D014 · 2026-10-11 · Database layer
+## D014 · 2026-10-11 · Database layer (file protection level replaced by D066)
 
 Agent decisions from issue #2 (PR #15), after four review rounds by a different model.
 
@@ -340,7 +340,7 @@ Agent decision under the owner's direction: match Apple Health Medications, with
 - The swipe button "Delete Item…" has no destructive role. With that role the system removes the row before the confirmation.
 - Tests (D016): one new test, for the delete transaction.
 
-## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062)
+## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062, unlock rule changed by D066)
 
 Agent decision, under the owner's direction to match Apple Health Medications (`docs/research/2026-10-11-apple-health-gap.md`, rows 22 and 23).
 
@@ -788,7 +788,7 @@ Agent detail:
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw a notification. It needs a check on a real iPhone.
 
-## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now (widget name, header separator, and VoiceOver labels replaced by D068)
+## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now (file protection level replaced by D066, widget name, header separator, and VoiceOver labels replaced by D068)
 
 Owner decision on the design (D046), with agent detail. It adds two widgets, small and medium each. It follows spec 6 (Widgets), 7.2, 9, and 10. Spec 10 says a widget shows only non-sensitive content by default.
 
@@ -1153,6 +1153,75 @@ Tests (D016): four new tests. The rhythm and the pause across a clock change, th
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone
+
+Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
+
+Scope:
+
+- One screen, "Today": the doses of today by part of the day, with the capsule of the widgets (D048). A tap on an open dose records "Taken". A swipe gives "Skip" on an open dose and "Undo" on a recorded dose, with the words of the iPhone (D058).
+- Not in this change: complications, a Watch-only mode, iCloud, as-needed items, a change of the intake time, and adding or editing items on the Watch.
+
+Where the data lives:
+
+- The iPhone database stays the only store. The Watch app has no database and does not link `MaruDatabase` or GRDB. It links only `MaruCore`, so `Package.swift` now also names watchOS 10.
+- The iPhone sends the list of today as the WatchConnectivity application context after each read of the app, after each commit, and after a change of the tint. The system keeps the last context on the Watch, so the Watch app opens with the last list and shows its time ("Updated 8:07 AM"). A list of an earlier day does not show as today.
+- When the Watch app comes to the front, it also asks the iPhone for the list of now. The system starts Maru on the iPhone in the background for the request.
+- This changes one stated rule of spec 10: the names, the amounts, the times, and the states of the doses of today now leave the iPhone, to the user's own paired Watch. WatchConnectivity sends them between the two devices, and Maru has no server in between. Nothing goes to the Watch until the Watch app is installed. Analytics get no new event and no new field, and the Watch app sends no analytics and writes no log.
+
+Where the record runs:
+
+- The Watch sends a request with the occurrence ID, the schedule version ID, the action, the revision of the row (the last event of the record that the row shows), and an intent ID. It carries no name. `AppModel.answerWatch` reads today again from the store, finds the dose, and records with `commitAndWait`, the record transaction, with the generation check of D040. The source of the event is `app`, as for the widget. A new source would change the schema and the export format.
+- The reply says "recorded" only after the commit, and it has the list after the request. The Watch never changes the state of a dose by itself: the capsule fills and the success haptic plays only for a reply that says "recorded" (spec 7.2).
+- A stale row records nothing (review finding). The record must end with the revision that the Watch sent. A change on the iPhone in between, for example a new intake time, gives the reply "changed" and a new list. The event also revises that revision, so the store rejects it in the transaction on another state.
+- One intent applies one time (review finding, T18). The intent ID is the ID of the event. The Watch keeps it for the same choice on the same row after a request with no reply. When that event is the end of the record already, the reply is "recorded" with no new event, after a flush, as for the widget. When a later choice came after it, the reply is "changed", and the later choice stays. `OccurrenceRecord.watchStep` has the rule.
+- The day is checked two times (review finding). The read must still be of today when it ends, and the transaction checks that the dose is of today in its own time zone and in the plan of now (`requiresCurrentPlan`, as for the widget). So a tap before midnight records nothing after it. The cost: a dose whose plan changed after its record cannot be undone from the Watch.
+- A list ends at its `expiresAt` also while the screen stays in front, with no iPhone in reach (review finding).
+- After a commit the iPhone waits for the reminder run (D047) before it replies, as for the widget.
+- Nothing is recorded, and the Watch says so in plain words, when: the iPhone is not reachable, no reply comes, the iPhone is locked, the dose is not in the list of today any more, the plan or the record changed, the dose has an event that the store did not confirm (D014), or the commit fails. A failed commit shows on the iPhone as on Today.
+- The message format is in `MaruCore/WatchMessage.swift`. A message that does not decode records nothing, so a Watch app and an iPhone app of different versions fail safe.
+
+Limits that the maintainer must know:
+
+- The database had complete file protection (spec 10), so the Watch app recorded only while the iPhone was unlocked. D066 changes the level. The case that remains: an iPhone that restarted and was not unlocked yet. The Watch then shows the last list and "Not recorded. Unlock your iPhone and try again."
+- The app embeds the Watch app. An archive of the iPhone app from this state includes it, and App Store Connect then asks for Watch screenshots and reviews the Watch app. To ship 1.0 without it, archive 1.0 before this change merges, or remove the `MaruWatch` dependency of the `Maru` target for that archive.
+- `PRIVACY.md` and the privacy pages of the site have the sentence about the Watch (D066).
+
+Notifications: nothing new. The iPhone reminders mirror to the Watch with the "Taken" action of D034. The category has one background action, registered on the iPhone at each launch. For a notification that the iPhone forwards, watchOS gives a background action to the iPhone app, so the response goes to `ReminderTapDelegate`, and `takeReminder` records with the same transaction. This is a reading of the code and of the watchOS rule, and a device must confirm it. The Watch app has no notification code, so a tap on the reminder itself opens the Watch app at its list.
+
+Project: the target `MaruWatch`, bundle ID `com.imhangli.maru.watchkitapp`, watchOS 10, automatic signing with the team of the app. It compiles four shared files: the slot words, the tint, the time format, and the capsule. Its String Catalog has six languages (D059). The app icon set has one more entry for watchOS with the same image. CI: the `app` job builds the Watch app with the app, because the app embeds it.
+
+Not verified: no build on this Mac. Nobody ran the Watch app on a Watch or in a simulator. A real iPhone and Watch must confirm:
+
+- The install of the Watch app with the iPhone app, and the signing of the new App ID.
+- The list after a launch, after a record on the iPhone, and on the next day.
+- A tap, a skip, and an undo with the iPhone unlocked: the record on the iPhone, the haptic, and no follow-up after it.
+- The same with the iPhone locked: a record (D066). With the iPhone restarted and not unlocked, off, or out of range: no record, and the text.
+- A reminder on the Watch with the iPhone locked: the "Taken" action is there, and what it does. With D066 the expected result is a record.
+- The icon in the round mask, the rows at the largest text size, VoiceOver, and each language.
+
+## D066 · 2026-10-13 · The database is readable on a locked iPhone after the first unlock
+
+Maintainer decision on 2026-10-13, with agent detail. It replaces the file protection level of D014 and D048, and the unlock rule of D034 for an action on the Watch. It changes spec 10.
+
+- Reason: the user wears the Watch while the iPhone is locked in a pocket. With complete protection, a record from the Watch app (D071) and the "Taken" action of a reminder on the Watch could not write then.
+- Change: the database directory has the level "complete until first user authentication": the database, the WAL file, the SHM file, the rollback journal, the restore epoch file, and a staged backup. iOS still encrypts the files. After a restart, nothing reads them until the first unlock.
+- What keeps complete protection: the item photos, the export files, an exported backup, and the draft file of the edit screen. A record does not need them.
+- Existing installs: each open sets the level on the directory and on the files that exist, as it did before for a weaker file. It changes one attribute. It copies and rebuilds nothing (spec 7.3). The first launch of the new build must run on an unlocked iPhone to change the files. Until then the old level stays, and a locked iPhone records nothing, as before.
+- The earlier copy of the database in Application Support (D048) keeps complete protection. The app does not read it when the container has a database.
+
+What else reads the same files on a locked iPhone now:
+
+- The widgets. A timeline reload on a locked iPhone now reads the data. Before, it gave "Open Maru to update." A timeline that the system made before the lock already stayed on the display, so "Take Now" could show names on a locked display before this change too, for example in StandBy. The widgets have no change. If the names must hide on a locked display, mark them as privacy sensitive in a later change.
+- The "Taken" action of a reminder (D034). It keeps the option `authenticationRequired`, so on the iPhone it still needs an unlock, and a person who holds a locked iPhone cannot write a record. On the Watch that the user wears, the action can now record with the iPhone locked. This is the wanted result. The rules of the action do not change: it records only when the reminder gives exactly one open dose of today, and never for another day, a late delivery, an older plan, two or more items, or a skipped dose (T15, T24). In those cases the "Not recorded" notice still comes.
+- The reminder engine can run on a locked iPhone after a background record. It sets the same requests as on an unlocked iPhone, and the reminder text still follows the privacy setting of D029. The text of a notification was never protected by the database level.
+- The tap on a reminder itself still opens Maru after an unlock. The "can't open your records while your iPhone is locked" alert now shows only after a restart with no unlock.
+
+The Watch keeps one plain sentence for the case that remains: "Not recorded. Unlock your iPhone and try again."
+
+`PRIVACY.md` states the new level, and it has one sentence that the list of today goes to the user's own Apple Watch. The maintainer approved both texts. `site/build.py` builds the privacy page of each language from `PRIVACY.md`, so the pages have the same text. The site publishes it when this change merges.
+
+Not verified: no device ran this. A real iPhone must confirm that the level of the existing files changes at the first launch, that a record from the Watch works with the iPhone locked, that it fails with the plain sentence after a restart, and what the widgets show on a locked display.
 ## D068 · 2026-10-13 · Copy review: text states the record, not the intake
 
 Agent decision, after a copy review of all user-facing text by a different model. It changes text in the six languages, and it replaces parts of D048. The number leaves D065 to D067 for the branches that are open at the same time.
@@ -1180,3 +1249,48 @@ Maintainer decision on 2026-10-13, after two model reviews.
 
 - Every data type that the usage statistics send is "Linked to the user: Yes" in `App/PrivacyInfo.xcprivacy` and on the App Store privacy label. Each event carries the same random install ID, and Apple counts data that a persistent device-level ID ties together as linked. "Used for tracking" stays "No". This replaces the "not linked" part of D063 and of the region entry.
 - The app does not change. The install ID stays random, Maru has no account, and the ID is deleted when the user turns the switch off.
+
+## D070 · 2026-10-13 · Name lists in each language
+
+Maintainer request: in each language, the names of supplements and medicines are the names that people in that market use. Agent decisions on the details. Parts of D038 and D043 change.
+
+- zh-Hans, ja, ko, es, and de each get two lists in `App/Resources`: `SupplementNames-<language>.txt` and `MedicationNames-<language>.txt`. Each list has about 150 to 250 common names in the local script and spelling. They are not translations of the English lists.
+
+| Language | Supplements | Medicines | Supplements with an English twin |
+|---|---|---|---|
+| Simplified Chinese (zh-Hans) | 176 | 247 | 86 |
+| Japanese (ja) | 183 | 219 | 67 |
+| Korean (ko) | 166 | 198 | 68 |
+| Spanish (es) | 165 | 210 | 83 |
+| German (de) | 167 | 215 | 80 |
+
+- Medicines are generic names: 通用名 in Chinese, 一般名 in katakana in Japanese, 성분명 in Korean, DCI in Spanish, and Wirkstoffe in German. Everyday traditional medicines are in the medicine list by their formula names: Chinese patent medicines, Kampo formulas with their reading in hiragana, and Korean herbal formulas. No brand names.
+- The app reads the lists of its language first, then the English lists, because people type Latin names too. English has no extra list.
+- The search keeps the rules of D038 and adds three for Chinese, Japanese, and Korean. One character of these scripts is enough. Hiragana matches katakana, so a typed reading finds a katakana name or a Kampo name. In a Hangul syllable that the keyboard did not complete yet, the last consonant ends that syllable or starts the next one: "아토ㅁ" and "아톰" find 아토목세틴 and not 아토르바스타틴. The consonant narrows the result. There is no pinyin or romaji search.
+- Smart completion (D043): a field `= <English name>` in a supplement line names the entry of `SupplementCompletions.txt` that the local name uses. A local name gets the form and the candidates of its English twin, and no data of its own. The candidate amounts stay in English words, as before.
+- Two names for the same product are one entry with an alias: 对乙酰氨基酚 with 扑热息痛. A local product with no exact English equivalent has no twin: 酵素, 녹즙. A brand ingredient name is replaced by its generic description: 락티움 is 유단백가수분해물.
+- Controlled and high-risk medicines stay in the suggestions: opioids, sedatives, stimulants, insulin, anticoagulants, and methotrexate. People who take them on a prescription need reminders the most. A suggestion is a spelling aid and gives no advice, so the app shows no warning for these names.
+- An alias never leads to another name. A test reads the real lists of each language with the English lists, and checks that each name and alias belongs to one name only, and that each twin exists.
+- The debug sample data follows the app language, with six items that many people in that market take, in the same forms and at the same times as the English sample.
+- Sources: general knowledge of the generic names and label names of each market, with the public national naming systems (Chinese 通用名, Japanese 一般名, Korean 성분명, INN/DCI) as the reference for spelling. No database or list was copied, so no license applies and `docs/third-party-licenses.md` does not change.
+
+Not verified: no native pharmacist read the lists. A first review corrected some names on 2026-10-13. Every name still needs that check, and `docs/localization-review.md` lists the names to check first. No build of the app on this Mac, and nobody saw the suggestions on a display.
+
+## D072 · 2026-10-13 · The app also runs on iPad
+
+Maintainer decision, with agent detail. The maintainer asked for iPad support before the first release, if it is ready. It must not delay the release.
+
+- Both targets have the device families iPhone and iPad. The iPhone stays portrait only. The iPad has the four orientations, in `Config/Maru-Info.plist`, and the generated launch screen. The app does not require the full screen, so Split View, Slide Over, and windows work.
+- Layout (`docs/design.md`, "iPad"): the iPad uses the layout of the iPhone at a larger width. It has the same tab bar, the same pages, and one navigation stack in each tab. Today opens History and the item detail as a push, as on the iPhone. My Items keeps the grid of two columns. The content fills the width of the window.
+- The maintainer first asked for a list and its detail side by side. A first version had two pages side by side at a regular width and a readable column of 672 points. Before the merge, the maintainer chose one layout for both devices: the iPad must look and work like the iPhone, only wider. The code of the two columns was removed.
+- Settings, the add and edit screen, the scanner, and the time sheets stay system sheets. The system gives a sheet a fixed width on an iPad. The system shows the tab bar at the top on iPadOS 18 and later, with names and no icons. This is the system form of the rule of D026.
+- No presentation needs a new anchor. Each `confirmationDialog` is on its button: the record circle, the as-needed dose, and "Cancel" of the edit screen. SwiftUI shows it as a popover from that button on an iPad. The share sheet is a `UIActivityViewController` inside a SwiftUI sheet, so UIKit does not present it and it needs no source view. The file picker, the photo picker, and the camera are system presentations.
+- Text: 13 strings name the iPhone. Each has a device variation for the iPad in the String Catalog, in the six languages. The iPad text is the iPhone text with the other device name, and Korean has the particle for the new word. A native speaker did not check them.
+- Widgets: the small and the medium family exist on the iPad, and the layouts do not change. The large and the extra large family need a new design, so Maru does not offer them.
+- Each iPad has its own local database. Maru has no sync (D040). The backup file moves the data between an iPhone and an iPad, without the photos (D056).
+- Not done: no sidebar, no keyboard shortcuts, no pointer effects of its own, and no iPad family of the widgets.
+- `PRIVACY.md` and `docs/faq.md` say "iPhone or iPad" or "device" where the text is true for both, and say that each device has its own data. The site builds its privacy page from `PRIVACY.md`. Its FAQ answer about the Apple Watch now says that Maru is an app for iPhone and iPad, in the six languages.
+- The stop rule: if the check on a real iPad fails before the first upload, set `TARGETED_DEVICE_FAMILY` to `"1"` in both targets. The other parts of this change do nothing on an iPhone. After a version with iPad support is on the App Store, Apple does not let an update remove the iPad.
+- The store page then needs iPad screenshots (`docs/release-plan.md`).
+
+The two-column version was seen in the simulators iPad Pro 13-inch and iPad mini, in portrait and landscape, light and dark, and at the largest text size: Today with History, the day log and the item log, the item detail, My Items, add and edit, the photo picker, Settings, and the share sheet of the export. Not seen: Split View and Slide Over, the scanner and the camera (the simulator has no camera), restore, the tip section with products, and a real iPad. The camera may not be available in Split View or Slide Over. Nobody saw the layout of the iPhone on an iPad display. CI builds it.

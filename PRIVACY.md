@@ -1,6 +1,6 @@
 # Privacy
 
-Maru keeps your health data on your iPhone. This file describes the app in this repository as it is today.
+Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. If you install the Maru app on your Apple Watch, your iPhone sends the list of today's doses to your own Watch: the names, the amounts, the times, and whether each dose is recorded. It goes directly between the two devices and through no server of Maru. This file describes the app in this repository as it is today.
 
 ## What Maru stores
 
@@ -9,7 +9,7 @@ Maru keeps your health data on your iPhone. This file describes the app in this 
 - A draft of an item that you add or edit. Maru deletes the draft when you save or cancel.
 - The photo of an item, if you add one. See "Item photos".
 
-Maru asks iOS to encrypt the database file while your iPhone is locked. When Maru cannot open your records because the iPhone is locked, it records nothing and asks you to unlock.
+Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so a record from your Apple Watch works with the iPhone in your pocket. When Maru cannot open your records, it records nothing and asks you to unlock.
 
 ## What Maru does not do
 
@@ -24,7 +24,7 @@ Some versions of Maru can send usage statistics to PostHog. A version that canno
 
 - Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".
 - Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on in the notice or in Settings.
-- How Maru picks the rule: it uses the region setting of your iPhone, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or an iPhone with another region setting, gets the rule of that setting.
+- How Maru picks the rule: it uses the region setting of your device, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or a device with another region setting, gets the rule of that setting.
 - What Maru sends: only these events and fields.
   - `setup_step`: that an item was saved.
   - `daily_usage_summary`: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
@@ -32,24 +32,24 @@ Some versions of Maru can send usage statistics to PostHog. A version that canno
   - `feedback_entry`: that you tapped "Send Feedback".
   - `purchase_result`: a fixed product and result. Maru does not send this event yet.
 - What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
-- Each request also has the app version, the major version of iOS, a random install ID, and the region setting of your iPhone as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
+- Each request also has the app version, the major version of iOS, a random install ID, and the region setting of your device as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 - No session recording, no screen capture, and no automatic capture of taps or screens.
 - If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage flags. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
 - Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
 
 ## Camera
 
-Maru uses the camera only when you scan a label or take a photo of an item. Your iPhone reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".
+Maru uses the camera only when you scan a label or take a photo of an item. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".
 
 ## Item photos
 
 An item can have a photo that you take or choose on the add or edit screen. It is optional.
 
 - Maru makes a small copy of the photo, at most 512 pixels on the longest side, and keeps only that copy. It does not keep the original photo. The copy has no location and no camera data (EXIF).
-- Maru can remove the background of the photo on your iPhone. It uses Apple's Vision framework, and nothing leaves the iPhone.
-- The photo files are in the Maru data folder of your iPhone, next to the database, with the same file protection. Maru deletes a photo file when you remove the photo or delete the item.
+- Maru can remove the background of the photo on your device. It uses Apple's Vision framework, and nothing leaves the device.
+- The photo files are in the Maru data folder of your device, next to the database. iOS encrypts them while your device is locked. Maru deletes a photo file when you remove the photo or delete the item.
 - "Take Photo" does not save to your photo library. "Choose Photo" uses the system photo picker, so Maru sees only the photo that you pick.
-- The Maru backup file (see below) does not contain the photos. After a restore on another iPhone, items show the form icon, and you can add the photos again.
+- The Maru backup file (see below) does not contain the photos. After a restore on another device, items show the form icon, and you can add the photos again.
 - The record export has no photos.
 
 The name suggestions on the add screen come from a list inside the app. The name suggestions are a typing aid. They are not medical advice.
@@ -64,7 +64,7 @@ Settings has a "Support Maru" section with three optional tips. A tip unlocks no
 
 ## Notifications
 
-Reminders are local notifications. iOS schedules and shows them on your iPhone, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.
+Reminders are local notifications. iOS schedules and shows them on your device, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.
 
 ## Export and backup files
 
@@ -75,13 +75,13 @@ Settings has "Export Records", "Back Up", and "Restore from Backup…". Maru mak
 - The files are not encrypted. Anyone with a file can read it.
 - Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.
 - Maru keeps the file in a protected temporary folder and removes it when the share sheet closes.
-- A restore reads the backup file that you pick. It replaces the data of Maru on the iPhone, after you confirm. The backup file stays where you keep it.
+- A restore reads the backup file that you pick. It replaces the data of Maru on the device, after you confirm. The backup file stays where you keep it.
 
 `docs/export-format.md` describes both files.
 
-## iPhone backups
+## iPhone and iPad backups
 
-Your iPhone backup, in iCloud or on a computer, can include Maru's data and the item photos, the same as other app data. Apple's backup settings control this.
+Your iPhone or iPad backup, in iCloud or on a computer, can include Maru's data and the item photos, the same as other app data. Apple's backup settings control this.
 
 ## Changes
 

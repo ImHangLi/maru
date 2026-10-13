@@ -25,7 +25,7 @@ public enum ItemForm: String, CaseIterable, Hashable, Sendable {
 
 /// The color of an item. It appears only on the form icon (D021).
 /// The case order is the order of the color row on the edit screen.
-public enum ItemColor: String, CaseIterable, Hashable, Sendable {
+public enum ItemColor: String, CaseIterable, Hashable, Sendable, Codable {
     case pink
     case orange
     case yellow
