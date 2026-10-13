@@ -77,6 +77,7 @@ private struct TodayContent: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .largeTitleCover()
             .headerProminence(.increased)
             // The empty text is in the middle of the page (D026).
             .overlay {

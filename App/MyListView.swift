@@ -53,6 +53,7 @@ struct MyListView: View {
                         // A tile or a row that comes or goes moves the page (D030). The first tiles show with no entrance.
                         .motion(.layout, value: layout(snapshot))
                     }
+                    .largeTitleCover()
                     .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
                     .overlay {
                         if snapshot.list.isEmpty && snapshot.archived.isEmpty {
