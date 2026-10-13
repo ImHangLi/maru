@@ -114,6 +114,8 @@ struct SettingsView: View {
             .modifier(DebugDataBanner())
             #endif
             .navigationTitle("Settings")
+            // The tip section shows only after its products load, so the load starts here.
+            .task { await SupportStore.shared.loadProducts() }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 // A restore replaces the data while it runs. The sheet stays until it ends (D040).
