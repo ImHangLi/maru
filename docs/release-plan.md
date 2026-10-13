@@ -167,3 +167,20 @@ The notes are in App Store Connect. They state: what Maru does, no account, the 
 - The Paid Apps agreement, for the tips.
 - A build on the version.
 
+
+## 7. After the release: the weekly search routine
+
+The maintainer approved this routine on 2026-10-13. It starts in the week after the app is in the App Store. A scheduled task in the maintainer's T3 Code thread runs it each Monday. Before the release, the task only reports "not released yet".
+
+Each week:
+
+1. Read Google Search Console for `https://maru.day/` (the property is verified, and the sitemap is submitted): the queries, the pages, the clicks, and the impressions of the last 28 days against the 28 days before. Read the App Store Connect numbers for the same period. Use real numbers only. Do not estimate a search volume.
+2. Choose at most one new page for the site. Use this order of page types:
+   - "Alternative to X" and "X compared with Maru", for the apps that people leave. State honestly where the other app is the better choice.
+   - Pages for one condition that Maru meets: no subscription, no account, open source, data on the device.
+   - Pages for one job, for example an every-other-day schedule or days on and days off.
+3. A new page needs one thing that the other results do not have: the phone preview with real screens, a real comparison table, or real numbers. Without it, do not write the page.
+4. Write the page in English first, then in the five other languages, with links from at least three related pages in the body text. Rebuild the sitemap. Open a pull request. The maintainer approves each new public page before a deploy.
+5. Do not change a page that changed in the last 60 days. Do not delete a page without the maintainer.
+
+Limits: at most one new page each week. No paid links, no mass email, no posts in the maintainer's name. A paid tool needs a maintainer decision.
