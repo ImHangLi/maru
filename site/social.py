@@ -141,15 +141,17 @@ def card(code, size, extra="", dark=False):
 
 def feature(shot, dark):
     """A block of the home page on a card. The dark tokens are the dark block of style.css.
-    History has no capture in dark mode, so the dark card shows the light phone."""
+    The dark History card shows the capture of History in dark mode."""
     tokens = ""
+    block = build.stage("en", shot).replace('src="/', 'src="')
     if dark:
+        block = block.replace("shots/history-en.webp", "shots/history-dark-en.webp")
         css = (SITE / "style.css").read_text("utf-8")
         tokens = ":root {" + re.search(r"prefers-color-scheme: dark\) \{\s*:root \{(.*?)\}", css, re.S).group(1) + "}"
     return FEATURE.format(tokens=tokens, width=FEATURE_SIZE[0], height=FEATURE_SIZE[1],
                           background="#161618" if dark else "#F5F5F7",
                           ring="rgba(255, 255, 255, 0.08)" if dark else "transparent",
-                          block=build.stage("en", shot).replace('src="/', 'src="'))
+                          block=block)
 
 
 def main():
