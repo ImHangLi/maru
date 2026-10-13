@@ -350,6 +350,7 @@ Facts:
 - Items and records stay on the device. Optional usage statistics never include names, doses, or times.
 - Today screen: record a dose with one tap.
 - Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose.
+- Schedules: every day, every other day, every few days (every 3 to 30 days), or days on and days off (for example 21 on and 7 off). As-needed items have no reminders.
 - History with undo and correction. Record export, backup, and restore.
 - Home Screen widgets.
 - Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.

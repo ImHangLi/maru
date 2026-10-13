@@ -1,0 +1,171 @@
+# Common supplement names in Spanish, for the name suggestions of the add screen (D038, D070).
+# The format is the format of SupplementNames.txt: one name on each line, then its aliases after "|".
+# A field that starts with "=" is not an alias. It names the entry of SupplementCompletions.txt that gives
+# this name its smart completion (D043). The order is from the most common name down.
+# The names are the names on labels in Spain and Latin America. No brand names.
+# Written from general knowledge. A native speaker must check it. It is a typing aid, not medical information.
+Vitamina D | = Vitamin D
+Vitamina D3 | = Vitamin D3
+Vitamina C | = Vitamin C
+Multivitamínico | Multivitaminas | = Multivitamin
+Magnesio | = Magnesium
+Citrato de magnesio
+Bisglicinato de magnesio | = Magnesium Bisglycinate
+Glicinato de magnesio | = Magnesium Glycinate
+Cloruro de magnesio
+Carbonato de magnesio
+Óxido de magnesio | = Magnesium Oxide
+Treonato de magnesio | = Magnesium L-Threonate
+Colágeno | = Collagen
+Colágeno hidrolizado | = Hydrolyzed Collagen
+Péptidos de colágeno | = Collagen Peptides
+Colágeno con magnesio
+Omega 3 | Omega-3 | = Omega-3
+Aceite de pescado | = Fish Oil
+Aceite de krill | = Krill Oil
+Aceite de salmón | = Salmon Oil
+Aceite de algas | = Algae Oil
+Hierro | = Iron
+Bisglicinato de hierro | = Iron Bisglycinate
+Calcio | = Calcium
+Calcio con vitamina D | Calcio + vitamina D | = Calcium + Vitamin D
+Carbonato de calcio | = Calcium Carbonate
+Citrato de calcio | = Calcium Citrate
+Calcio, magnesio y zinc | = Calcium Magnesium Zinc
+Zinc | = Zinc
+Gluconato de zinc | = Zinc Gluconate
+Picolinato de zinc | = Zinc Picolinate
+Ácido fólico | = Folic Acid
+Metilfolato | = Methylfolate
+Probióticos | Probiótico | = Probiotic
+Prebióticos
+Melatonina | = Melatonin
+Proteína en polvo | = Protein Powder
+Proteína de suero | Proteína whey | = Whey Protein
+Proteína vegetal
+Caseína
+Creatina | = Creatine
+Creatina monohidrato | = Creatine Monohydrate
+Vitamina E | = Vitamin E
+Vitamina A | = Vitamin A
+Vitamina B12 | = Vitamin B12
+Metilcobalamina | = Methylcobalamin
+Cianocobalamina | = Cyanocobalamin
+Vitamina B6 | = Vitamin B6
+Vitamina B1 | Tiamina | = Vitamin B1
+Complejo B | Vitamina B complejo
+Vitamina K2 | = Vitamin K2
+Vitamina D3 + K2 | Vitamina D3 y K2 | = Vitamin D3 + K2
+Biotina
+Niacina | = Niacin
+Potasio | = Potassium
+Citrato de potasio
+Selenio
+Yodo
+Cromo
+Cobre
+Coenzima Q10 | = Coenzyme Q10
+Luteína | = Lutein
+Cúrcuma | = Turmeric
+Curcumina | = Curcumin
+Jengibre | = Ginger
+Ginseng | = Ginseng
+Ashwagandha | = Ashwagandha
+Valeriana | = Valerian
+Pasiflora
+Tila
+Manzanilla
+Melisa
+Hipérico | Hierba de San Juan
+Equinácea | = Echinacea
+Própolis
+Jalea real
+Levadura de cerveza
+Espirulina
+Chlorella | Clorela
+Moringa
+Maca
+Cardo mariano | = Milk Thistle
+Alcachofa
+Diente de león
+Cola de caballo
+Extracto de té verde | = Green Tea Extract
+Ajo
+Ajo negro
+Aceite de onagra | = Evening Primrose Oil
+Aceite de linaza | = Flaxseed Oil
+Lecitina de soja
+Isoflavonas de soja
+Glucosamina | = Glucosamine
+Condroitina
+Glucosamina y condroitina | = Glucosamine Chondroitin
+MSM
+Ácido hialurónico | = Hyaluronic Acid
+Triptófano
+L-teanina | Teanina | = L-Theanine
+L-carnitina | Carnitina
+Acetil-L-carnitina | = Acetyl-L-Carnitine
+L-glutamina | Glutamina | = L-Glutamine
+L-arginina | Arginina
+Citrulina
+Taurina
+Aminoácidos esenciales
+BCAA | Aminoácidos ramificados | = BCAA
+Beta-alanina | = Beta-Alanine
+Pre-entreno | Preentreno | = Pre-Workout
+Electrolitos | = Electrolytes
+Fibra
+Psyllium | Psilio | = Psyllium
+Enzimas digestivas | = Digestive Enzymes
+Bromelina
+Carbón activado
+Vinagre de manzana
+Arándano rojo
+Saw palmetto | Palmito salvaje
+Ginkgo biloba
+Resveratrol | = Resveratrol
+Quercetina | = Quercetin
+NAC | N-acetilcisteína | = NAC
+Berberina | = Berberine
+Melena de león | = Lion's Mane
+Reishi
+Cordyceps
+Inositol
+Colina
+Ácido alfa lipoico
+Astaxantina
+Licopeno
+Betacaroteno
+Vitaminas prenatales
+Multivitamínico para mujer | = Women's Multivitamin
+Multivitamínico para hombre | = Men's Multivitamin
+Multivitamínico 50+ | = 50+ Multivitamin
+Multivitamínico infantil
+Fosfatidilserina
+Garcinia cambogia
+Glucomanano
+Quitosano
+CLA
+Café verde
+Guaraná
+Cafeína
+Uña de gato
+Boldo
+Aloe vera | Sábila
+Noni
+Semillas de chía
+Linaza
+Harpagofito
+Boswellia
+Proteína de guisante
+MCT
+Omega 3-6-9
+Rhodiola | = Rhodiola
+5-HTP | = 5-HTP
+GABA | = GABA
+Vitamina C con zinc
+Hierro con vitamina C
+Polen de abeja
+Colágeno marino
+Vitamina D en gotas
+Sulfato ferroso | = Ferrous Sulfate

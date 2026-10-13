@@ -66,7 +66,7 @@
   },
   "faq": {
     "title": "Maru: Preguntas y respuestas",
-    "desc": "Respuestas cortas sobre Maru: el precio, tus datos, los recordatorios y el cambio a un iPhone nuevo.",
+    "desc": "Respuestas cortas sobre Maru: el precio, tus datos, los recordatorios y el cambio a un iPhone o iPad nuevo.",
     "h1": "Preguntas y respuestas",
     "items": [
       [
@@ -94,6 +94,10 @@
         "Activa «Recordar de nuevo» en Ajustes y Maru envía hasta 12 recordatorios más por toma. Maru no es una alarma, así que el modo Silencio o un modo de concentración pueden retener un recordatorio."
       ],
       [
+        "¿Puedo tomar algo cada varios días o con descansos?",
+        "Sí. Elige «Todos los días», «Un día sí y otro no», «Cada varios días» (cada 3 a 30 días) o «Días de toma y de descanso», por ejemplo 21 días de toma y 7 de descanso. Los elementos «Si es necesario» no tienen recordatorios: los registras cuando los tomas."
+      ],
+      [
         "¿Y si se me olvida registrar?",
         "Puedes registrar más tarde o cambiar la hora registrada."
       ],
@@ -106,8 +110,8 @@
         "No. Maru recuerda y registra, nada más."
       ],
       [
-        "¿Cómo paso a un iPhone nuevo?",
-        "En los Ajustes de Maru del iPhone antiguo, toca «Copia de seguridad» y guarda el archivo. En el iPhone nuevo, toca «Restaurar desde copia de seguridad» y elige ese archivo. Esto reemplaza los elementos y registros que ya haya en Maru en ese iPhone. El archivo no está cifrado, así que guárdalo en un lugar privado."
+        "¿Cómo paso a un iPhone o iPad nuevo?",
+        "En los Ajustes de Maru del dispositivo antiguo, toca «Copia de seguridad» y guarda el archivo. En el dispositivo nuevo, toca «Restaurar desde copia de seguridad» y elige ese archivo. Esto reemplaza los elementos y registros que ya haya en Maru en ese dispositivo. El archivo no está cifrado, así que guárdalo en un lugar privado."
       ],
       [
         "¿Puedo sacar mis registros?",

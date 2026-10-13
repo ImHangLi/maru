@@ -4,7 +4,7 @@ import MaruNotifications
 
 /// The keys of the display settings in `UserDefaults.standard`. The views read them with `@AppStorage`.
 ///
-/// Preferences are not in the health database, because that file cannot be read while the iPhone is locked
+/// Preferences are not in the health database, because that file cannot be read after a restart and before the first unlock
 /// (D014). No app color means pink.
 enum DisplaySetting {
     /// The app tint, as the raw value of an `ItemColor` (D025).

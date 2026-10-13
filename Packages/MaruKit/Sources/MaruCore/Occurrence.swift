@@ -58,7 +58,7 @@ public struct Occurrence: Hashable, Sendable {
 }
 
 /// What the user chose. "Snooze" is not an intake action (spec 7.2).
-public enum IntakeAction: String, Hashable, Sendable {
+public enum IntakeAction: String, Hashable, Sendable, Codable {
     case taken
     case skipped
     /// Takes back the current event. The occurrence is unrecorded again, and the history stays (T20).
@@ -102,7 +102,7 @@ public struct IntakeEvent: Hashable, Sendable {
     }
 }
 
-public enum OccurrenceStatus: Hashable, Sendable {
+public enum OccurrenceStatus: String, Hashable, Sendable, Codable {
     case unrecorded
     case taken
     case skipped

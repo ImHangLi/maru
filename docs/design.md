@@ -186,6 +186,17 @@ At a regular width, such as a full-screen iPad, each tab shows two pages side by
 - The iPad has the four orientations. The iPhone is portrait only.
 - No `NavigationSplitView` sidebar. The app has two tabs, and the system sidebar makes Today look secondary. Two navigation stacks keep the large title and the cards of Today.
 
+## Watch
+
+One screen, "Today", with system list rows on the black background of watchOS (D071).
+
+- One section per part of the day, with the slot word as its header, as on the iPhone.
+- Row: the capsule of the widgets, the name, and a second line in small gray text with the amount and the time. A taken dose shows its intake time, and a skipped dose shows "Skipped". The capsule is gray for a dose that is open or skipped, as in the widgets.
+- A tap on an open row records "Taken". A swipe left gives "Skip" on an open row and "Undo" on a recorded row, with the words of the iPhone.
+- A row is half transparent while its request runs. The capsule fills and the success haptic plays only after the iPhone confirms the commit (spec §7.2).
+- A failure is a first row with a warning symbol and one plain sentence, and the error haptic. It stays until the next request.
+- The last line is "Updated 8:07 AM", the time of the list. With no list of today: "Open Maru on your iPhone to update."
+
 ## Motion
 
 One motion language for the whole app (D030, D058). The same kind of change uses the same motion on every page. `App/Motion.swift` has the cases. A view or the model names a case and never a curve or a duration.
