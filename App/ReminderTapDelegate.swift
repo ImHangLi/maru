@@ -40,12 +40,30 @@ final class ReminderTapDelegate: NSObject, UNUserNotificationCenterDelegate, Sen
     /// Every notification of Maru also shows while Maru is in front. With no options, the system drops it
     /// with no banner, no sound, and no entry in Notification Center, so a reminder at its time would be lost.
     func userNotificationCenter(
-        _ center: UNUserNotificationCenter, willPresent notification: UNNotification
-    ) async -> UNNotificationPresentationOptions {
-        [.banner, .list, .sound]
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .list, .sound])
     }
 
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+    /// The completion handler must run on the main thread. UIKit asserts this and stops the app. The async form
+    /// of this method calls it from a background thread, so a tap on a reminder closed Maru.
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        // The system objects are not Sendable. The response does not change, and the handler runs one time.
+        nonisolated(unsafe) let response = response
+        nonisolated(unsafe) let completionHandler = completionHandler
+        Task { @MainActor in
+            await handle(response)
+            completionHandler()
+        }
+    }
+
+    private func handle(_ response: UNNotificationResponse) async {
         // A tap on the reminder opens it. "Taken" records its one dose in the background (spec 8.3, D034).
         let isTaken = response.actionIdentifier == ReminderAction.takenIdentifier
         guard isTaken || response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
