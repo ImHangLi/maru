@@ -6,9 +6,9 @@
   "nav_label": "Hauptmenü",
   "home": {
     "title": "Maru: Wissen, was du genommen hast",
-    "desc": "Maru erinnert dich an Vitamine, Supplements und Medikamente und merkt sich, was du genommen hast. Kostenlos und ohne Konto.",
+    "desc": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Ein Tippen erfasst, was du genommen hast. Kostenlos und ohne Konto.",
     "h1": "Schon genommen? |Maru weiß es.",
-    "lede": "Maru erinnert dich an Vitamine, Supplements und Medikamente und merkt sich, was du genommen hast."
+    "lede": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Ein Tippen erfasst, was du genommen hast."
   },
   "store": {
     "badge_alt": "Laden im App Store",
@@ -48,7 +48,7 @@
     },
     {
       "shot": "detail",
-      "title": "Eine Seite pro Eintrag",
+      "title": "Zeiten und Mengen im Blick",
       "text": "Dort stehen die Zeiten, die Menge und die letzten sieben Tage."
     }
   ],
@@ -67,7 +67,7 @@
     "advice": "Maru gibt keinen medizinischen Rat."
   },
   "faq": {
-    "title": "Fragen und Antworten · Maru",
+    "title": "Maru: Fragen und Antworten",
     "desc": "Kurze Antworten zu Maru: Preis, deine Daten, Erinnerungen und der Umzug auf ein neues iPhone.",
     "h1": "Fragen und Antworten",
     "items": [
@@ -97,7 +97,7 @@
       ],
       [
         "Was, wenn ich das Erfassen vergesse?",
-        "Nichts passiert, und Maru kennt keine Serien. Du kannst später erfassen oder die Uhrzeit ändern."
+        "Du kannst später erfassen oder die erfasste Uhrzeit ändern."
       ],
       [
         "Sagt mir Maru, was ich nehmen soll?",
@@ -109,7 +109,7 @@
       ],
       [
         "Wie ziehe ich auf ein neues iPhone um?",
-        "Tippe in den Einstellungen auf dem alten iPhone auf „Backup erstellen“ und auf dem neuen auf „Aus Backup wiederherstellen“. Die Backup-Datei ist nicht verschlüsselt, also bewahre sie sicher auf."
+        "Öffne auf dem alten iPhone die Einstellungen in Maru, tippe auf „Backup erstellen“ und sichere die Datei. Tippe auf dem neuen iPhone auf „Aus Backup wiederherstellen“ und wähle diese Datei. Das ersetzt die Einträge und Aufzeichnungen, die dort schon in Maru sind. Die Datei ist nicht verschlüsselt, also bewahre sie sicher auf."
       ],
       [
         "Kann ich meine Aufzeichnungen mitnehmen?",
@@ -130,7 +130,7 @@
     ]
   },
   "support": {
-    "title": "Support · Maru",
+    "title": "Maru: Support",
     "desc": "Stell eine Frage zu Maru, melde einen Fehler oder teile eine Idee.",
     "h1": "Support",
     "lede": "Stell eine Frage, melde einen Fehler oder teile eine Idee.",
@@ -141,7 +141,7 @@
     "note": "Bitte schreib keine Gesundheitsdetails in deine Nachricht. Vielleicht steht die Antwort schon bei den <a href=\"{faq}\">Fragen und Antworten</a>."
   },
   "privacy": {
-    "title": "Datenschutz · Maru",
+    "title": "Maru: Datenschutz",
     "desc": "Was Maru auf deinem iPhone speichert, was es sendet und was es nie tut.",
     "h1": "Datenschutz",
     "summary_title": "Kurz gesagt",

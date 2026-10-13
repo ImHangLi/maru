@@ -6,9 +6,9 @@
   "nav_label": "Principal",
   "home": {
     "title": "Maru: ten claro lo que tomaste",
-    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos, y registra lo que tomaste. Gratis y sin cuenta.",
+    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste. Gratis y sin cuenta.",
     "h1": "¿Ya me lo tomé? |Sal de dudas.",
-    "lede": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos, y registra lo que tomaste."
+    "lede": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste."
   },
   "store": {
     "badge_alt": "Consíguelo en el App Store",
@@ -38,7 +38,7 @@
   "blocks": [
     {
       "shot": "duo",
-      "title": "Un recordatorio y un vistazo",
+      "title": "Recordatorios y tu día de un vistazo",
       "text": "Maru te avisa a tus horas, y el widget muestra tu día."
     },
     {
@@ -48,7 +48,7 @@
     },
     {
       "shot": "detail",
-      "title": "Una página por elemento",
+      "title": "Consulta horas y cantidades",
       "text": "Consulta sus horas, su cantidad y sus últimos siete días."
     }
   ],
@@ -67,7 +67,7 @@
     "advice": "Maru no da consejos médicos."
   },
   "faq": {
-    "title": "Preguntas y respuestas · Maru",
+    "title": "Maru: Preguntas y respuestas",
     "desc": "Respuestas cortas sobre Maru: el precio, tus datos, los recordatorios y el cambio a un iPhone nuevo.",
     "h1": "Preguntas y respuestas",
     "items": [
@@ -97,7 +97,7 @@
       ],
       [
         "¿Y si se me olvida registrar?",
-        "No pasa nada, y Maru no tiene rachas. Puedes registrar más tarde o cambiar la hora."
+        "Puedes registrar más tarde o cambiar la hora registrada."
       ],
       [
         "¿Maru me dice qué tomar?",
@@ -109,7 +109,7 @@
       ],
       [
         "¿Cómo paso a un iPhone nuevo?",
-        "En Ajustes, toca «Copia de seguridad» en el iPhone antiguo y «Restaurar desde copia de seguridad» en el nuevo. El archivo no está cifrado, así que guárdalo en un lugar privado."
+        "En los Ajustes de Maru del iPhone antiguo, toca «Copia de seguridad» y guarda el archivo. En el iPhone nuevo, toca «Restaurar desde copia de seguridad» y elige ese archivo. Esto reemplaza los elementos y registros que ya haya en Maru en ese iPhone. El archivo no está cifrado, así que guárdalo en un lugar privado."
       ],
       [
         "¿Puedo sacar mis registros?",
@@ -130,7 +130,7 @@
     ]
   },
   "support": {
-    "title": "Soporte · Maru",
+    "title": "Maru: Soporte",
     "desc": "Haz una pregunta sobre Maru, informa de un error o comparte una idea.",
     "h1": "Soporte",
     "lede": "Haz una pregunta, informa de un error o comparte una idea.",
@@ -141,7 +141,7 @@
     "note": "No incluyas datos de salud en tu mensaje. Puede que las <a href=\"{faq}\">preguntas y respuestas</a> ya tengan lo que buscas."
   },
   "privacy": {
-    "title": "Privacidad · Maru",
+    "title": "Maru: Privacidad",
     "desc": "Qué guarda Maru en tu iPhone, qué envía y qué no hace nunca.",
     "h1": "Privacidad",
     "summary_title": "En pocas palabras",

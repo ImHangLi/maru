@@ -6,9 +6,9 @@
   "nav_label": "Main",
   "home": {
     "title": "Maru: Know What You Took",
-    "desc": "Maru reminds you to take your vitamins, supplements, and medicine, and remembers what you took. Free, with no account.",
+    "desc": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took. Free, with no account.",
     "h1": "Never wonder |if you took it.",
-    "lede": "Maru reminds you to take your vitamins, supplements, and medicine, and remembers what you took."
+    "lede": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took."
   },
   "store": {
     "badge_alt": "Download on the App Store",
@@ -38,7 +38,7 @@
   "blocks": [
     {
       "shot": "duo",
-      "title": "A reminder, then a glance",
+      "title": "Reminders and today at a glance",
       "text": "Maru reminds you at your times, and the widget shows your day."
     },
     {
@@ -48,7 +48,7 @@
     },
     {
       "shot": "detail",
-      "title": "One page per item",
+      "title": "Check times and amounts",
       "text": "See its times, its amount, and its last seven days."
     }
   ],
@@ -67,7 +67,7 @@
     "advice": "Maru gives no medical advice."
   },
   "faq": {
-    "title": "Questions and answers · Maru",
+    "title": "Maru: Questions and answers",
     "desc": "Short answers about Maru: the price, your data, reminders, and moving to a new iPhone.",
     "h1": "Questions and answers",
     "items": [
@@ -97,7 +97,7 @@
       ],
       [
         "What if I forget to record?",
-        "Nothing happens, and Maru has no streaks. You can record later or change the time."
+        "You can record later or change the recorded time."
       ],
       [
         "Does Maru tell me what to take?",
@@ -109,7 +109,7 @@
       ],
       [
         "How do I move to a new iPhone?",
-        "In Settings, tap Back Up on the old iPhone and Restore from Backup on the new one. The backup file is not encrypted, so keep it private."
+        "In Maru's Settings on the old iPhone, tap Back Up and save the file. On the new iPhone, tap Restore from Backup and choose that file. This replaces the items and records already in Maru on that iPhone. The file is not encrypted, so keep it private."
       ],
       [
         "Can I get my records out?",
@@ -130,7 +130,7 @@
     ]
   },
   "support": {
-    "title": "Support · Maru",
+    "title": "Maru: Support",
     "desc": "Ask a question about Maru, report a bug, or share an idea.",
     "h1": "Support",
     "lede": "Ask a question, report a bug, or share an idea.",
@@ -141,7 +141,7 @@
     "note": "Please leave health details out of your message. The <a href=\"{faq}\">FAQ</a> may already have your answer."
   },
   "privacy": {
-    "title": "Privacy · Maru",
+    "title": "Maru: Privacy",
     "desc": "What Maru stores on your iPhone, what it sends, and what it never does.",
     "h1": "Privacy",
     "summary_title": "In short",
