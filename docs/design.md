@@ -151,6 +151,7 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 - "Display": "App Color".
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
 - "Your Data", then "Send Feedback" (D037), then "Support Maru": three optional tips of a consumable purchase. A tip unlocks nothing (D053).
+- "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift.
 - "Remind Again" is two menu rows in one section (D039). The first row is the number of follow-ups: "Off", "1 Time", "2 Times", "3 Times", "5 Times", or "Until Recorded". The second row, "Every", is the time between them: "5 min", "10 min", "15 min", "30 min", or "1 hr". It comes and goes with the layout motion, and it shows only when the number is not "Off".
 - "Until Recorded" has a limit, and the footer states the number and the last time: "Maru reminds you up to 12 times for each dose, until 1:00 AM at the latest." The time uses the time format of the device.
 - A footer or a helper text is one short sentence (D032, D058). "Your Data" is the one section that may have two.

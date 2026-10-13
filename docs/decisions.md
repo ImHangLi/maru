@@ -1070,3 +1070,13 @@ The maintainer joined the Apple Developer Program on 2026-10-13. The Team ID is 
 - Not done: iCloud sync stays out (D040). Critical Alerts stay out (D021).
 
 Not verified: the device build needs the maintainer's Apple ID in Xcode, so that automatic signing adds the capability to the App ID. Nobody saw a reminder during a Focus yet.
+
+## D063 · 2026-10-13 · Store needs: an About section and the collected data in the privacy manifest
+
+Agent decision, after a release audit.
+
+- Settings has a last section "About". "Privacy Policy" and "Support" open `https://maru.day/privacy.html` and `https://maru.day/support.html` after a tap. "Licenses" shows the MIT license of GRDB.swift, as `docs/third-party-licenses.md` requires before a public release. The license text stays in English.
+- `App/PrivacyInfo.xcprivacy` declares the data that the usage statistics send (D052): product interaction and other diagnostic data, not linked to the user, no tracking, for analytics. A build with no analytics key sends nothing, and the declaration then states more than the build does, which Apple permits.
+- `PRIVACY.md` and `site/privacy.html` said "Maru has no purchase yet". Tips exist (D053), so the text now says that Maru does not send the `purchase_result` event yet.
+
+Not verified: no build of the app on this Mac. CI builds the app. The pages on maru.day are not live yet, so the two links show the placeholder until the site deploys.

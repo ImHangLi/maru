@@ -30,7 +30,7 @@ A build of Maru that has an analytics project key can send simple usage statisti
   - `daily_usage_summary`: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
   - `core_error`: whether a save or a read failed, with one of five fixed codes.
   - `feedback_entry`: that you tapped "Send Feedback".
-  - `purchase_result`: a fixed product and result. Maru has no purchase yet, so it sends none.
+  - `purchase_result`: a fixed product and result. Maru does not send this event yet.
 - What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
 - Each request also has the app version, the major version of iOS, and a random install ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location.
 - No session recording, no screen capture, and no automatic capture of taps or screens.
