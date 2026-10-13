@@ -14,8 +14,9 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 |---|---|
 | `build.py` | The layout of every page, and the `STORE_URL` constant |
 | `src/strings/<lang>.json` | The text of one language |
-| `mock.py` | The app components of the home page, drawn in HTML and SVG |
-| `src/mock/<lang>.json` | The app text and the item names of the components in one language |
+| `shots/` | The screenshots of the app in each language |
+| `mock.py` | The widget and the reminder of the home page, drawn in HTML |
+| `src/mock/<lang>.json` | The app text of the widget and the reminder in one language |
 | `../PRIVACY.md` | The full privacy policy. It stays English on every language page |
 | `style.css`, `site.js` | The style, the scroll entrances, and the language hint |
 
@@ -58,9 +59,8 @@ The site uses the system fonts of each language and loads no font file: San Fran
 `style.css` starts with one block of tokens: color, radius, duration, easing, shadow, icon, type, and space. A rule below that block uses a token and no raw value.
 
 - A transition or an animation uses one of the four easing tokens. Do not use `ease` or `ease-in-out`.
-- The page has one entrance when it loads, about 660 ms long. The top bar falls in from above the top edge (480 ms), and its content fades in at the end. The headline lines, the sentence, and the download unit rise 14 px in order, 60 ms apart (420 ms each), and the hero component rises 24 px and grows from 97% (520 ms). A text page has the same bar and a shorter entrance of its title and its body.
-- The hero component is in the first paint at 30% opacity, so the largest picture of the page does not wait for the entrance.
-- After the entrance, one tap records the noon row of the hero: a touch, then the circle fills with a spring, as in the app. Without motion the row shows the recorded state at once.
+- The page has one entrance when it loads, about 660 ms long. The top bar falls in from above the top edge (480 ms), and its content fades in at the end. The headline lines, the sentence, and the download unit rise 14 px in order, 60 ms apart (420 ms each), and the hero phone rises 24 px and grows from 97% (520 ms). A text page has the same bar and a shorter entrance of its title and its body.
+- The hero phone is in the first paint at 30% opacity, so the largest picture of the page does not wait for the entrance.
 - A block enters one time when it scrolls into view, with the same rise, blur, and duration as the hero parts. The blur clears at 60% of the time, so text is sharp when it comes to rest.
 - Content is visible with no script. `<html>` gets the class `motion` only when the visitor did not ask for reduced motion. `site.js` adds the class `is-in` to a block when it enters the view. A page from the back and forward cache shows at rest.
 - The language menu opens in 200 ms from its button (fade, scale from 96%, a few pixels of movement) and closes faster, in 130 ms (fade and scale). `site.js` keeps the menu in the layout until the close animation ends. With reduced motion it only fades.
@@ -68,20 +68,34 @@ The site uses the system fonts of each language and loads no font file: San Fran
 
 ## Pictures
 
-The site has no screenshots. Each block shows one app component, drawn in HTML, CSS, and inline SVG by `mock.py`:
-
-| Block | Component |
+| Block | Picture |
 |---|---|
-| Hero | The Today list: Morning with two recorded rows, and Noon with the row that one tap records |
-| Reminders | The medium Today widget, and the Lock Screen reminder with its "Taken" action, on a wallpaper |
-| History | The History graph, and the last 7 days of three items |
-| Item | The plan of one item, and its strip of the last 7 days with the counts |
+| Hero | A screenshot of Today: Morning recorded, Noon and Evening open |
+| Reminders | The medium Today widget and a Lock Screen reminder on a wallpaper, drawn in HTML |
+| History | A screenshot of History: the graph and the last 7 days of each item |
+| Item | A screenshot of one item: its plan and its last 7 days with the counts |
 
-- The components follow the SwiftUI code in `App/` and `Widget/` and `docs/design.md`: the system font, the sizes in points, the default pink, the item colors, and the form icons of `App/Icons.xcassets`. The App Store screenshots use the same components and the same sample items.
-- `src/mock/<lang>.json` holds the words of the app in one language (from the String Catalogs), the time format, and local names for the sample items. Change one file, build, and every block of that language follows. The facts that every language shares (forms, colors, times, and records) are at the top of `mock.py`.
+### Screenshots
+
+```sh
+python3 site/build.py --shots /path/to/captures
+```
+
+The command needs `sips` (macOS) and `cwebp`. It reads `today-<lang>.png`, `history-<lang>.png`, and `detail-<lang>.png`, for example `today-zh-Hans.png`. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
+
+- Capture an iPhone 17 Pro simulator (1206 x 2622) in light mode, with a debug build of the app.
+- Launch with `-MaruSampleData YES -MaruSampleRecords YES`, and with `-AppleLanguages` and `-AppleLocale` of the language. The sample items follow the app language.
+- Remove the app before each language, because the sample items load only into an empty store.
+- Set the status bar: `xcrun simctl status_bar <device> override --time 9:41 --batteryLevel 100`.
+- Use only real captures of the app.
+
+### Widget and reminder
+
+`mock.py` draws the widget and the reminder in HTML and CSS. `src/mock/<lang>.json` holds their words in one language (from the String Catalogs) and the time format.
+
+- The components follow `Widget/` and `docs/design.md`: the system font, the sizes in points, and the default pink. The reminder shows the title, the item, and the time, with no action.
 - A component scales with its block. `--base` is the width that it fills, in points, and `--pt-max` stops it at a little more than its real size. The colors are tokens that start with `--app-`, with a dark set.
 - Each component is one picture for assistive technology: it has `role="img"` and the alt text of `shots` in `src/strings/<lang>.json`.
-- When the app changes, change the component in the same way, and compare it with a capture of the app at 3x (1 pt is 3 px). The site does not keep the captures.
 
 ## Deploy
 

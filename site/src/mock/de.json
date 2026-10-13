@@ -5,56 +5,9 @@
     "Mittags",
     "Abends"
   ],
-  "taken_at": "Eingenommen: {t}",
-  "sep": ", ",
   "today": "Heute",
   "of": "{a} von {b}",
-  "last7": "Letzte 7 Tage",
-  "months": [
-    "Aug",
-    "Sep",
-    "Okt"
-  ],
-  "weekdays": [
-    "M",
-    "M",
-    "F"
-  ],
-  "monday_first": true,
-  "time_sensitive": "ZEITKRITISCH",
   "reminder_title": "Zeit zur Einnahme",
-  "now": "Jetzt",
-  "taken": "Eingenommen",
-  "plan": "Plan",
-  "days": "Tage",
-  "every_day": "Jeden Tag",
-  "amount": "Menge",
-  "counts": [
-    "Eingenommen: {n}",
-    "Übersprungen: {n}",
-    "Ohne Eintrag: {n}"
-  ],
-  "items": [
-    [
-      "L-Thyroxin",
-      "1 Tablette"
-    ],
-    [
-      "Vitamin D",
-      "1 Kapsel"
-    ],
-    [
-      "Omega-3",
-      "2 Kapseln"
-    ],
-    [
-      "Magnesium",
-      "2 Kapseln"
-    ],
-    [
-      "Atorvastatin",
-      "1 Tablette"
-    ]
-  ],
-  "counts_stack": true
+  "reminder_item": "Vitamin D3",
+  "now": "Jetzt"
 }

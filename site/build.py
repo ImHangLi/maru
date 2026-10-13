@@ -2,11 +2,16 @@
 """Build the Maru site: python3 site/build.py
 
 Reads src/strings/<lang>.json, src/mock/<lang>.json, and PRIVACY.md, and writes the pages of every language into site/.
+With --shots DIR it first converts the screenshots in DIR to 780 px wide WebP files in shots/.
 """
 
 import html
 import json
 import re
+import struct
+import subprocess
+import sys
+import tempfile
 from pathlib import Path
 
 import mock
@@ -30,6 +35,8 @@ PAGES = ["index.html", "faq/index.html", "privacy/index.html", "support/index.ht
 # The addresses of the pages before the folders. _redirects sends them to the new addresses.
 OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html", "support.html": "support/index.html"}
 OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
+SHOTS = ["today", "history", "detail"]
+SHOT_WIDTH = 780
 # Apple asks for a badge height of 40 px or more on a screen.
 PAGE_BADGE = 56
 # The devices that the line under the badge names. It must match the devices of the released app before a deploy.
@@ -59,6 +66,37 @@ def url(code, page):
     return f"{prefix}/{page.removesuffix('index.html')}"
 
 
+def webp_size(path):
+    data = path.read_bytes()[:30]
+    kind = data[12:16]
+    if kind == b"VP8 ":
+        width, height = struct.unpack("<HH", data[26:30])
+        return width & 0x3FFF, height & 0x3FFF
+    if kind == b"VP8L":
+        bits = struct.unpack("<I", data[21:25])[0]
+        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
+    if kind == b"VP8X":
+        return int.from_bytes(data[24:27], "little") + 1, int.from_bytes(data[27:30], "little") + 1
+    raise ValueError(f"{path} is not a WebP file")
+
+
+def import_shots(source):
+    """Convert <shot>-<lang>.png to WebP. Needs sips (macOS) and cwebp."""
+    (SITE / "shots").mkdir(exist_ok=True)
+    for shot in SHOTS:
+        for code, _ in LANGS:
+            png = Path(source) / f"{shot}-{code}.png"
+            if not png.exists():
+                continue
+            with tempfile.TemporaryDirectory() as tmp:
+                small = Path(tmp) / "small.png"
+                subprocess.run(["sips", "--resampleWidth", str(SHOT_WIDTH), str(png), "--out", str(small)],
+                               check=True, capture_output=True)
+                subprocess.run(["cwebp", "-quiet", "-q", "90", "-sharp_yuv", str(small), "-o",
+                                str(SITE / "shots" / f"{shot}-{code}.webp")], check=True)
+            print(f"shot {shot}-{code}")
+
+
 def icon(name):
     return (f'<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" '
             f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>')
@@ -70,13 +108,23 @@ def picture(code, shot, body, extra=""):
     return f'<div class="mock mock-{shot}{extra}" role="img" aria-label="{e(alt)}">{body}</div>'
 
 
+def device(code, shot, eager=False):
+    """An iPhone frame around a real screenshot of the app in the language of the page."""
+    file = SITE / "shots" / f"{shot}-{code}.webp"
+    width, height = webp_size(file)
+    load = 'fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+    return (f'<div class="device"><div class="device-screen"><img src="/shots/{file.name}" width="{width}" '
+            f'height="{height}" {load} alt="{e(STRINGS[code]["shots"][shot]["alt"])}"></div>'
+            f'<span class="island" aria-hidden="true"></span></div>')
+
+
 def stage(code, shot):
-    """The component of a block. The reminder block shows the widget and the reminder on a wallpaper."""
-    t = mock.load(code)
+    """The picture of a block. The reminder block shows the widget and the reminder on a wallpaper."""
     if shot == "duo":
+        t = mock.load(code)
         return (f'<div class="wallpaper">{picture(code, "widget", mock.widget(t), " enter d2")}'
                 f'{picture(code, "notification", mock.reminder(t), " enter d3")}</div>')
-    return picture(code, shot, {"history": mock.history, "detail": mock.detail}[shot](t))
+    return device(code, shot)
 
 
 def badge(code, height):
@@ -196,7 +244,7 @@ def home(code):
 <p class="lede load d2">{e(h["lede"])}</p>
 {download(code)}
 </div>
-<div class="hero-stage load-hero">{picture(code, "today", mock.today(mock.load(code)))}</div>
+<div class="hero-stage load-hero">{device(code, "today", eager=True)}</div>
 </div>
 </section>
 <div class="wrap features">
@@ -368,6 +416,8 @@ Languages:
 
 
 def main():
+    if len(sys.argv) == 3 and sys.argv[1] == "--shots":
+        import_shots(sys.argv[2])
     render = {"index.html": home, "faq/index.html": faq, "privacy/index.html": privacy, "support/index.html": support}
     for code, folder in LANGS:
         for page in PAGES:
