@@ -7,9 +7,10 @@ struct AboutSection: View {
 
     var body: some View {
         Section("About") {
-            if let url = Self.privacyURL { Link("Privacy Policy", destination: url) }
-            if let url = Self.supportURL { Link("Support", destination: url) }
+            if let url = Self.privacyURL { Link("Privacy Policy", destination: url).rowText() }
+            if let url = Self.supportURL { Link("Support", destination: url).rowText() }
             NavigationLink("Licenses") { LicensesView() }
+                .rowText()
         }
     }
 }

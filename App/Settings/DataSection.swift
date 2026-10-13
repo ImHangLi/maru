@@ -15,11 +15,13 @@ struct DataSection: View {
         @Bindable var model = model
         Section {
             Button("Export Records") { model.exportRecords() }
+                .rowText()
                 .sheet(item: $model.transfer.shared, onDismiss: { model.shareDidEnd() }) { file in
                     ShareSheet(url: file.url) { model.transfer.shared = nil }
                         .smallSheet()
                 }
             Button("Back Up") { model.backUp() }
+                .rowText()
                 .alert(failureTitle, isPresented: $showsFailure, presenting: shownFailure) { _ in
                     Button("OK", role: .cancel) {}
                 } message: { failure in
@@ -38,6 +40,7 @@ struct DataSection: View {
                     model.transfer.failure = nil
                 }
             Button("Restore from Backup…") { picksBackup = true }
+                .rowText()
                 // Every file can be picked, so a backup with a changed name still restores. The check refuses each other file.
                 .fileImporter(isPresented: $picksBackup, allowedContentTypes: [.data]) { result in
                     if case let .success(file) = result { model.checkBackup(at: file) }

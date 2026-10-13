@@ -16,6 +16,17 @@
     "devices": "지원 기기",
     "soon": "App Store 출시 예정"
   },
+  "phone": {
+    "label": "Maru 앱 미리보기예요. 화면 다섯 개를 볼 수 있어요. 아무것도 기록되지 않아요.",
+    "show": "‘{}’ 화면 보기",
+    "back": "뒤로",
+    "close": "닫기",
+    "today": "오늘",
+    "items": "내 항목",
+    "history": "내역",
+    "settings": "설정",
+    "add": "항목 추가"
+  },
   "shots": {
     "today": {
       "alt": "지금 먹을 항목이 보이는 Maru의 오늘 화면."
@@ -79,7 +90,7 @@
     "items": [
       [
         "Maru는 무료인가요?",
-        "네. 구독도 광고도 없고, 항목 수에도 제한이 없어요. 원하면 팁으로 응원할 수 있지만, 팁으로 열리는 기능은 없어요."
+        "네. 구독도 광고도 없고, 항목 수에도 제한이 없어요."
       ],
       [
         "계정이 필요한가요?",
@@ -172,7 +183,6 @@
       "Camera": "카메라",
       "Item photos": "항목 사진",
       "Feedback": "피드백",
-      "Tips": "팁",
       "Notifications": "알림",
       "Export and backup files": "내보내기 및 백업 파일",
       "iPhone and iPad backups": "iPhone 및 iPad 백업",

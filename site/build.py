@@ -35,7 +35,7 @@ PAGES = ["index.html", "faq/index.html", "privacy/index.html", "support/index.ht
 # The addresses of the pages before the folders. _redirects sends them to the new addresses.
 OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html", "support.html": "support/index.html"}
 OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
-SHOTS = ["today", "history", "detail"]
+SHOTS = ["today", "history", "detail", "items"]
 SHOT_WIDTH = 780
 # A capture of an iPhone 17 Pro simulator, and the rows of Today in it. The layout is the same in every language.
 CAPTURE_W, CAPTURE_H = 1206, 2622
@@ -45,6 +45,20 @@ APP_BG = bytes.fromhex("F2F2F7")
 TODAY_STATUS, TODAY_TOOLBAR, TODAY_TITLE, TODAY_SEAM, TODAY_TAB_BAR = 60, 150, 370, 570, 2371
 # How far the shadow of a glass shape reaches: to each side, and below.
 GLASS_SHADOW = (7, 30)
+# The top of the screen hides the list that scrolls under it: the background is solid down to the first row, and it
+# fades out at the second row. The title is below the second row when the list is at its top.
+TODAY_EDGE = (300, 350)
+# Empty rows after the last group, so the last row comes to rest above the tab bar with a gap.
+TODAY_END_SPACE = 45
+# A sheet of the app (Settings, Add Item) in a capture. Its top edge is at SHEET_TOP. Its bar is solid down to the first
+# row of SHEET_EDGE and fades out at the second row. The first row of the form is below it when the form is at its top.
+SHEETS = ["settings", "add"]
+SHEET_TOP = 186
+SHEET_EDGE = (400, 430)
+# The form comes from the first capture down to SHEET_SEAM, and from the second capture after it. The last card of
+# the form ends above SHEET_LIMIT in the second capture. A debug build has more rows after it, and the site leaves them out.
+SHEET_SEAM, SHEET_LIMIT = 2300, 2570
+SHEET_END_SPACE = 105
 # The jars of the photo block, from left to right. README.md names the source of each photo.
 JARS = ["omega3", "vitd3", "magnesium"]
 # Apple asks for a badge height of 40 px or more on a screen.
@@ -109,7 +123,7 @@ def write_webp(data, mode, height, name):
 def import_today(source, code):
     """Make the two pictures of the hero phone from two captures of Today: the list at its top (today-<lang>.png) and
     the list at its end (today-end-<lang>.png). today-<lang>.webp is the full list with no bars, and
-    today-bars-<lang>.webp is the status bar, the toolbar buttons, and the tab bar on a clear background."""
+    today-bars-<lang>.webp is the status bar, the toolbar buttons, and the tab bar. The top of it hides the list, and the rest is clear."""
     top, end = pixels(Path(source) / f"today-{code}.png"), pixels(Path(source) / f"today-end-{code}.png")
     line = CAPTURE_W * 3
     blank = APP_BG * CAPTURE_W
@@ -125,12 +139,21 @@ def import_today(source, code):
     # scroll above the tab bar, as in the app.
     full = blank * TODAY_TITLE + top[TODAY_TITLE * line:TODAY_SEAM * line] \
         + end[(TODAY_SEAM - shift) * line:TODAY_TAB_BAR * line]
-    full += blank * (CAPTURE_H + shift - len(full) // line)
-    write_webp(full, "rgb24", CAPTURE_H + shift, f"today-{code}.webp")
+    height = CAPTURE_H + shift + TODAY_END_SPACE
+    full += blank * (height - len(full) // line)
+    write_webp(full, "rgb24", height, f"today-{code}.webp")
 
     # The bars. A glass shape is opaque. Around it, a pixel that is a darker background is a shadow or the edge of a
     # black glyph, so it becomes black with the same strength. That keeps the look over the rows that scroll under it.
     bars = bytearray(CAPTURE_W * CAPTURE_H * 4)
+
+    def edge(y):
+        """How much of the background the top of the screen has at row y: 1 is solid, and 0 is clear."""
+        t = min(1, max(0, (TODAY_EDGE[1] - y) / (TODAY_EDGE[1] - TODAY_EDGE[0])))
+        return t * t * (3 - 2 * t)
+
+    for y in range(TODAY_EDGE[1]):
+        bars[y * CAPTURE_W * 4:(y + 1) * CAPTURE_W * 4] = (APP_BG + bytes([round(255 * edge(y))])) * CAPTURE_W
     areas = [(top, TODAY_STATUS, TODAY_TOOLBAR, 0, CAPTURE_W), (top, TODAY_TOOLBAR, TODAY_TITLE, 0, CAPTURE_W // 2),
              (top, TODAY_TOOLBAR, TODAY_TITLE, CAPTURE_W // 2, CAPTURE_W), (end, TODAY_TAB_BAR, CAPTURE_H, 0, CAPTURE_W)]
     for index, (buf, y0, y1, x0, x1) in enumerate(areas):
@@ -146,11 +169,58 @@ def import_today(source, code):
             glass = index > 0 and (x - nearest) ** 2 + (y - up - radius) ** 2 <= radius ** 2
             shade = r / APP_BG[0]
             if not glass and r == g and shade < 1 and abs(b - APP_BG[2] * shade) < 4:
-                r, g, b, alpha = 0, 0, 0, round(255 * (1 - shade))
+                # The shadow lies over the background of the top of the screen, where that background is.
+                under, dark = edge(y), 1 - shade
+                cover = dark + under * shade
+                r, g, b = (round(c * under * shade / cover) for c in APP_BG)
+                alpha = round(255 * cover)
             else:
                 alpha = 255
             bars[(y * CAPTURE_W + x) * 4:(y * CAPTURE_W + x) * 4 + 4] = bytes((r, g, b, alpha))
     write_webp(bars, "rgba", CAPTURE_H, f"today-bars-{code}.webp")
+
+
+def import_sheet(source, name, code):
+    """Make the two pictures of a sheet of the hero phone from two captures: the form at its top (<name>-<lang>.png)
+    and the form scrolled down (<name>-end-<lang>.png). <name>-<lang>.webp is the full form with no bar, and
+    <name>-bar-<lang>.webp is the bar of the sheet with a soft lower edge. Both start at the top edge of the sheet."""
+    top, end = pixels(Path(source) / f"{name}-{code}.png"), pixels(Path(source) / f"{name}-end-{code}.png")
+    line = CAPTURE_W * 3
+    blank = APP_BG * CAPTURE_W
+
+    def row(buf, y):
+        return buf[y * line:(y + 1) * line]
+
+    # How far the form moved between the two captures: some rows above the seam are the same in both.
+    marks = range(SHEET_SEAM - 200, SHEET_SEAM + 1, 25)
+    if all(row(top, y) == blank or row(top, y) == b"\xff\xff\xff" * CAPTURE_W for y in marks):
+        raise ValueError(f"{name}-{code}: the rows above the seam are empty")
+    shift = next(d for d in range(1, SHEET_SEAM - 200 - SHEET_EDGE[1]) if all(row(top, y) == row(end, y - d) for y in marks))
+    if any(row(top, y) != blank for y in range(*SHEET_EDGE)):
+        raise ValueError(f"{name}-{code}: the form starts under the bar")
+    # The last card is white, and the background follows it. The column in the middle has no text.
+    middle = CAPTURE_W // 2 * 3
+    last = next(y for y in range(SHEET_LIMIT, SHEET_SEAM - shift, -1)
+                if row(end, y)[middle:middle + 3] == b"\xff\xff\xff" and row(end, y + 1)[middle:middle + 3] == APP_BG)
+    full = blank * (SHEET_EDGE[0] - SHEET_TOP) + top[SHEET_EDGE[0] * line:SHEET_SEAM * line] \
+        + end[(SHEET_SEAM - shift) * line:(last + 2) * line] + blank * SHEET_END_SPACE
+    write_webp(full, "rgb24", len(full) // line, f"{name}-{code}.webp")
+
+    # The bar. The page rounds the top corners of the sheet, so the dark corners of the capture become background.
+    bar = bytearray()
+    for y in range(SHEET_TOP, SHEET_EDGE[1]):
+        if y >= SHEET_EDGE[0]:
+            t = (SHEET_EDGE[1] - y) / (SHEET_EDGE[1] - SHEET_EDGE[0])
+            bar += (APP_BG + bytes([round(255 * t * t * (3 - 2 * t))])) * CAPTURE_W
+            continue
+        cells = [row(top, y)[x * 3:x * 3 + 3] for x in range(CAPTURE_W)]
+        for side in (range(CAPTURE_W // 2), range(CAPTURE_W - 1, CAPTURE_W // 2, -1)):
+            for x in side:
+                if cells[x] == APP_BG:
+                    break
+                cells[x] = APP_BG
+        bar += b"".join(cell + b"\xff" for cell in cells)
+    write_webp(bar, "rgba", SHEET_EDGE[1] - SHEET_TOP, f"{name}-bar-{code}.webp")
 
 
 def import_shots(source):
@@ -160,6 +230,10 @@ def import_shots(source):
         if (Path(source) / f"today-end-{code}.png").exists():
             import_today(source, code)
             print(f"shot today-{code}")
+        for name in SHEETS:
+            if (Path(source) / f"{name}-end-{code}.png").exists():
+                import_sheet(source, name, code)
+                print(f"shot {name}-{code}")
     for shot in SHOTS[1:]:
         for code, _ in LANGS:
             png = Path(source) / f"{shot}-{code}.png"
@@ -195,7 +269,8 @@ def device(code, shot):
 
 
 def live_device(code):
-    """The hero phone. The full Today list scrolls inside the screen, under the bars, as in the app."""
+    """The hero phone. The full Today list scrolls inside the screen, under the bars, as in the app.
+    With no script it is this one picture."""
     imgs = ""
     for name in ("today", "today-bars"):
         file = SITE / "shots" / f"{name}-{code}.webp"
@@ -205,7 +280,12 @@ def live_device(code):
         if name == "today":
             imgs = (f'<div class="device-scroll" tabindex="0" role="img" '
                     f'aria-label="{e(STRINGS[code]["shots"]["today"]["alt"])}">{imgs}</div>')
-    return (f'<div class="device"><div class="device-screen">{imgs}</div>'
+    # site.js adds the other screens and the buttons over the controls of the captures. It loads their pictures late.
+    words = STRINGS[code]["phone"]
+    labels = {name: words["show"].format(words[name]) for name in ("today", "items", "history", "settings", "add")}
+    labels |= {"back": words["back"], "close": words["close"], "settingsName": words["settings"], "addName": words["add"]}
+    return (f'<div class="device" role="group" aria-label="{e(words["label"])}" data-shots="{code}" '
+            f'data-labels="{e(json.dumps(labels, ensure_ascii=False))}"><div class="device-screen">{imgs}</div>'
             f'<span class="island" aria-hidden="true"></span></div>')
 
 
@@ -256,6 +336,31 @@ def phrases(text, load=True):
                    for i, part in enumerate(parts))
 
 
+# Response headers for Cloudflare. Pictures change rarely, so a browser keeps them for a day and checks again
+# after that. The style sheet and the script keep their names between releases, so they stay fresh for one hour.
+# The pages keep the default: a browser asks each time. HSTS tells a browser to use HTTPS for this site.
+HEADERS = """/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/shots/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/badges/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/icon.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/style.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/site.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+"""
+
+
 def layout(code, page, title, desc, main, head=""):
     s = STRINGS[code]
     f = s["footer"]
@@ -263,8 +368,14 @@ def layout(code, page, title, desc, main, head=""):
     alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
     banner = (f'<meta name="apple-itunes-app" content="app-id={re.search(r"id(\d+)", STORE_URL).group(1)}">\n'
               if RELEASED else "")
+    # Google Search Console reads this tag on the home page to confirm the owner of the site. Keep it.
+    if page == "index.html" and code == LANGS[0][0]:
+        banner += '<meta name="google-site-verification" content="RS5MimbYtPjYD6RQrpYsM9gtvHPVW_mOC43pGs5eqRc">\n'
     cta = f'<a class="bar-cta" href="{e(STORE_URL)}">{e(s["store"]["download"])}</a>\n' if RELEASED else ""
     locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c, _ in LANGS if c != code)
+    # The social preview card of the language (social.py), and its words for a screen reader.
+    card = f'{ORIGIN}/og{"-" + FOLDER[code] if FOLDER[code] else ""}.png'
+    card_alt = e(f'Maru. {" ".join(part.strip() for part in s["home"]["h1"].split("|"))} {s["shots"]["today"]["alt"]}')
     current = ' aria-current="page"'
     menu = "".join(
         f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
@@ -281,9 +392,8 @@ def layout(code, page, title, desc, main, head=""):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFFFF">
 {banner}<link rel="canonical" href="{here}">
 {alternates}<link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}">
 <link rel="icon" href="/icon.png" type="image/png">
@@ -293,12 +403,15 @@ def layout(code, page, title, desc, main, head=""):
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
 <meta property="og:url" content="{here}">
-<meta property="og:image" content="{ORIGIN}/icon.png">
-<meta property="og:image:width" content="1024">
-<meta property="og:image:height" content="1024">
-<meta property="og:image:alt" content="Maru">
+<meta property="og:image" content="{card}">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{card_alt}">
 <meta property="og:locale" content="{OG_LOCALE[code]}">
-{locales}<meta name="twitter:card" content="summary">
+{locales}<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{card}">
+<meta name="twitter:image:alt" content="{card_alt}">
 {head}<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -495,7 +608,7 @@ def llms():
 
 Facts:
 - Runs on: {devices}.
-- Free, with no subscription, no ads, no account, and no limit on items. Optional tips unlock nothing.
+- Free, with no subscription, no ads, no account, and no limit on items.
 - Items and records stay on the device. Optional usage statistics never include names, doses, or times.
 - Today screen: record a dose with one tap.
 - Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose.
@@ -531,6 +644,7 @@ def main():
     (SITE / "404.html").write_text(not_found(), "utf-8")
     (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
     (SITE / "_redirects").write_text(redirects(), "utf-8")
+    (SITE / "_headers").write_text(HEADERS, "utf-8")
     (SITE / "llms.txt").write_text(llms(), "utf-8")
     print(f"built {len(LANGS) * len(PAGES)} pages")
 

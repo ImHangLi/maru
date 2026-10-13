@@ -19,6 +19,7 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 | `src/mock/<lang>.json` | The app text of the widget and the reminder in one language |
 | `../PRIVACY.md` | The full privacy policy. It stays English on every language page |
 | `style.css`, `site.js` | The style, the scroll entrances, the hero phone, and the language hint |
+| `social.py` | The social preview cards: `og.png` and one card for each other language. Also the pictures of the repository README |
 
 Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
 
@@ -70,7 +71,7 @@ The site uses the system fonts of each language and loads no font file: San Fran
 
 | Block | Picture |
 |---|---|
-| Hero | The full Today list in a phone that scrolls: Morning recorded, Noon and Evening open, and As Needed at the end |
+| Hero | A phone with five real screens: Today, My Items, History, Settings, and Add Item. Each one scrolls, and nothing in it works |
 | Reminders | The medium Today widget and a Lock Screen reminder on a wallpaper, drawn in HTML |
 | History | A screenshot of History: the graph and the last 7 days of each item |
 | Item | A screenshot of one item: its plan and its last 7 days with the counts |
@@ -82,14 +83,34 @@ The site uses the system fonts of each language and loads no font file: San Fran
 python3 site/build.py --shots /path/to/captures
 ```
 
-The command needs `sips` (macOS), `cwebp`, and `ffmpeg`. It reads `today-<lang>.png`, `today-end-<lang>.png`, `history-<lang>.png`, and `detail-<lang>.png`, for example `today-zh-Hans.png`. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
+The command needs `sips` (macOS), `cwebp`, and `ffmpeg`. It reads `today-<lang>.png`, `today-end-<lang>.png`, `history-<lang>.png`, `detail-<lang>.png`, `items-<lang>.png`, and the two captures of each sheet (`settings-<lang>.png`, `settings-end-<lang>.png`, `add-<lang>.png`, `add-end-<lang>.png`), for example `today-zh-Hans.png`. A capture that is not there keeps its file. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
 
 The hero phone is live. `today-<lang>.png` is Today at the top of the list, and `today-end-<lang>.png` is the same screen with the list scrolled to its end. The command joins them into two files:
 
 - `today-<lang>.webp`: the full list with no bars. It scrolls inside the screen.
-- `today-bars-<lang>.webp`: the status bar, the toolbar buttons, and the tab bar on a clear background. It stays in place over the list.
+- `today-bars-<lang>.webp`: the status bar, the toolbar buttons, and the tab bar. It stays in place over the list. Its top has the background of the app with a soft lower edge, so the title scrolls away under it and does not show beside the buttons. The rest is clear.
+
+The list has some empty space after its last group, so the As Needed row comes to rest above the tab bar.
 
 The list scrolls with the wheel, a touch, the keys, or a mouse drag, and the scroll passes to the page at each end. When the phone comes into view, the list moves to its end one time and comes back. This hint does not play with reduced motion.
+
+### The other screens of the hero phone
+
+`site.js` adds four screens to the hero phone. With no script, the phone is the Today picture. The pictures of the four screens load when the page is idle, or at the first use of the phone, so the first paint does not wait for them.
+
+| Screen | How it opens, as in the app | Pictures |
+|---|---|---|
+| My Items | The tab bar. No movement | `items-<lang>.webp` |
+| History | The calendar button. It slides in from the right, and the tab bar stays in place | `history-<lang>.webp`, the picture of the History block |
+| Settings | The gear button. A sheet rises over a shade | `settings-<lang>.webp`, `settings-bar-<lang>.webp` |
+| Add Item | The plus button. A sheet rises over a shade | `add-<lang>.webp`, `add-bar-<lang>.webp` |
+
+- A sheet has two captures: the form at its top, and the form scrolled down until its last card is on the screen. The command joins them. `<name>-<lang>.webp` is the full form, and `<name>-bar-<lang>.webp` is the bar of the sheet with a soft lower edge. A debug build shows a Debug section at the end of Settings, and the command leaves it out.
+- A capture of My Items or of a sheet must not show the home indicator. Capture again if it does.
+- The Settings capture must show the three tips of "Support Maru" with their names and prices. A launch with `simctl` does not load `Config/Maru.storekit`, and Settings then says that tips are not available. Run the app with the StoreKit configuration active: from Xcode, or under a test that makes an `SKTestSession` with the file. The prices are those of the file, in US dollars in every language.
+- A `button` lies over each control of a capture that moves between screens: the gear, the calendar, the plus, the two tabs, the back button, and "Done" or "Cancel". Each button has a label in the language of the page (`phone` in `src/strings/<lang>.json`), and it is 44 pt of the app or more in each direction. Escape closes a sheet or goes back. No other control of a capture does anything.
+- For assistive technology, the phone is one group with a short description, and each picture is hidden.
+- With reduced motion, a screen fades in and out and does not move.
 
 - Capture an iPhone 17 Pro simulator (1206 x 2622) in light mode, with a debug build of the app.
 - Launch with `-MaruSampleData YES -MaruSampleRecords YES`, and with `-AppleLanguages` and `-AppleLocale` of the language. The sample items follow the app language.
@@ -112,8 +133,23 @@ The labels are new, and their numbers and barcodes are fake. Apple's Vision fram
 `mock.py` draws the widget and the reminder in HTML and CSS. `src/mock/<lang>.json` holds their words in one language (from the String Catalogs) and the time format.
 
 - The components follow `Widget/` and `docs/design.md`: the system font, the sizes in points, and the default pink. The reminder is a Lock Screen banner of iOS 26, measured from a capture at 3x. It shows the title and the body of a due reminder from `MaruNotifications`, and the time, with no action. It has the width of the widget.
-- A component scales with its block. `--base` is the width that it fills, in points, and `--pt-max` stops it at a little more than its real size. The colors are tokens that start with `--app-`, with a dark set.
+- A component scales with its block. `--base` is the width that it fills, in points, and `--pt-max` stops it at a little more than its real size. The colors are tokens that start with `--app-`. The site is light only, because the app pictures are light captures. The dark colors for the README pictures are in `social.py`.
 - Each component is one picture for assistive technology: it has `role="img"` and the alt text of `shots` in `src/strings/<lang>.json`.
+
+## Social preview cards
+
+```sh
+python3 site/social.py
+```
+
+The command needs Google Chrome on macOS. It draws each card as an HTML page with the system fonts, and Chrome takes the picture. Run it when the headline, the icon, or the Today screenshots change, and commit the pictures.
+
+- `og.png` and `og-cn.png`, `og-jp.png`, `og-es.png`, `og-de.png`, `og-kr.png`: 1200 x 630 px, for Open Graph and X. Every page of a language names the card of that language in `og:image` and `twitter:image`, with `twitter:card` set to `summary_large_image`.
+- `og-github.png`: 1280 x 640 px, the same design in English, for the social preview of the GitHub repository. Upload it by hand in the settings of the repository. The site does not serve it.
+- The files are PNG, because X, Facebook, LinkedIn, Slack, and iMessage all read PNG, and each file is under 300 KB.
+- A card has the icon, the name, the headline of the home page, and the top of the Today screen. It has no App Store badge and no "Download", so it stays true before and after the release.
+- The command also writes the pictures of the repository README to `docs/images/`: `hero.png`, `reminders.png`, and `history.png`, and a `-dark` file of each for the dark theme of GitHub. The feature pictures are the blocks of the home page on a card. The dark hero shows `shots/today-dark-en.webp`, and the dark History card shows `shots/history-dark-en.webp`. They are captures of the app in dark mode at 780 px width, made from a 1206 x 2622 capture with `sips --resampleWidth 780` and `cwebp -q 90 -sharp_yuv`. The site does not serve the dark captures.
+- Platforms keep a card for days. After a change, ask for a new read in the X Card Validator, the Facebook Sharing Debugger, and the LinkedIn Post Inspector.
 
 ## Deploy
 

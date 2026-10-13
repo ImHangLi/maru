@@ -15,17 +15,18 @@ public struct NullAnalyticsClient: AnalyticsClient {
     public func reset() {}
 }
 
-/// The choice of the user about analytics, and the default of the region (D051, D052, spec 11.3).
+/// The choice of the user about analytics, and the default of the region (D051, D052, D078, spec 11.3).
 ///
-/// In the EU, the EEA, the UK, and Switzerland the user opts in first. Elsewhere analytics is on, but it starts only
-/// after the one-time notice shows. The region is the region setting of the device (`Locale.current.region`). It is
+/// In the EU, the EEA, the UK, and Switzerland the user opts in first: a one-time question asks, and the switch in
+/// settings can turn it on. Elsewhere analytics is on from the start, with no notice, and the switch can turn it off
+/// (D078). The region is the region setting of the device (`Locale.current.region`). It is
 /// not the place of the user: a traveler, or a device with another region setting, gets the rule of that setting.
 /// An unknown region gets the opt-in rule.
 public struct AnalyticsPreference {
     private static let enabledKey = "analytics.enabled"
     private static let noticeKey = "analytics.noticeShown"
 
-    /// The EU member states, the other EEA states, the UK, Switzerland, and the outermost regions of France.
+    /// The EU member states, the other EEA states, the UK, Switzerland, the outermost regions of France, and South Korea.
     static let optInRegions: Set<String> = [
         "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU",
         "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
@@ -33,6 +34,8 @@ public struct AnalyticsPreference {
         "GF", "GP", "MQ", "RE", "YT", "MF", "AX",
         // Territories with the UK GDPR or a law of the same kind.
         "GI", "JE", "GG", "IM",
+        // South Korea: PIPA asks for consent first (D078).
+        "KR",
     ]
 
     public static func requiresOptIn(regionCode: String?) -> Bool {
@@ -62,21 +65,21 @@ public struct AnalyticsPreference {
         choice ?? !requiresOptIn
     }
 
-    /// Events leave the device only when this is true. A default of "on" waits for the notice.
+    /// Events leave the device only when this is true. It is the same value as the switch (D078).
     public var isActive: Bool {
-        choice ?? (!requiresOptIn && noticeShown)
+        isOn
     }
 
-    /// The notice has not shown yet, and the user did not choose in settings.
+    /// The opt-in question has not shown yet, and the user did not choose in settings. Only an opt-in region asks.
     public var needsNotice: Bool {
-        !noticeShown && choice == nil
+        requiresOptIn && !noticeShown && choice == nil
     }
 
     public func markNoticeShown() {
         defaults.set(true, forKey: Self.noticeKey)
     }
 
-    /// An explicit choice. It also ends the need for the notice.
+    /// An explicit choice. It also ends the need for the opt-in question.
     public func set(_ isOn: Bool) {
         defaults.set(isOn, forKey: Self.enabledKey)
         markNoticeShown()

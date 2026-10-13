@@ -47,8 +47,7 @@ struct SettingsView: View {
                         Text("5 Times").tag(FollowUpCount?.some(.five))
                         Text("Until Recorded").tag(FollowUpCount?.some(.untilRecorded))
                     }
-                    // The menu button keeps the tint that it had before. A new identity redraws it in the new app color.
-                    .id(appColor)
+                    .tint(Color.primary)
                     if followUpCount != nil {
                         Picker("Every", selection: Binding(
                             get: { followUpInterval },
@@ -63,7 +62,7 @@ struct SettingsView: View {
                             Text("30 min").tag(FollowUpInterval.minutes30)
                             Text("1 hr").tag(FollowUpInterval.minutes60)
                         }
-                        .id([appColor.rawValue, "interval"])
+                        .tint(Color.primary)
                     }
                 } footer: {
                     // iPhone has no reminder that repeats until Maru stops it, so "Until Recorded" has a limit.
@@ -78,13 +77,20 @@ struct SettingsView: View {
                 }
                 Section("Display") {
                     // A system menu of the eight colors (D025, D026).
-                    Picker("App Color", selection: $appColor) {
+                    Picker("App Color", selection: Binding(
+                        get: { appColor },
+                        set: {
+                            appColor = $0
+                            model.appColorDidChange($0)
+                        }
+                    )) {
                         ForEach(ItemColor.allCases, id: \.self) { color in
                             Label { Text(color.title) } icon: { color.tint.circleImage }
                                 .tag(color)
                         }
                     }
                     .pickerStyle(.menu)
+                    .tint(Color.primary)
                 }
                 if model.analyticsIsAvailable {
                     Section {
@@ -107,13 +113,14 @@ struct SettingsView: View {
                 DebugSection()
                 #endif
             }
-            // The rows and the footer of "Reminders" come and go with the permission and the test (D030).
+            // The rows and the footer of "Reminders" come and go with the permission (D030).
             .motion(.layout, value: model.settings.permission)
-            .motion(.layout, value: model.settings.test)
             #if DEBUG
             .modifier(DebugDataBanner())
             #endif
             .navigationTitle("Settings")
+            // The tip section shows only after its products load, so the load starts here.
+            .task { await SupportStore.shared.loadProducts() }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 // A restore replaces the data while it runs. The sheet stays until it ends (D040).
@@ -141,7 +148,7 @@ struct SettingsView: View {
     }
 }
 
-/// The honest reminder state, the way to fix it, and the test (spec 2.2, T13, T14).
+/// The honest reminder state and the way to fix it (spec 2.2, T13, T14).
 private struct ReminderSection: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openURL) private var openURL
@@ -156,24 +163,13 @@ private struct ReminderSection: View {
                 Button("Open Settings") {
                     if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
                 }
-            }
-            // The test shows only when it can arrive. A disabled row would add words and no action.
-            if canTest(permission) {
-                Button("Send a Test Notification") { model.sendTestNotification() }
-                    .disabled(model.settings.test == .sending)
+                .rowText()
             }
         } header: {
             Text("Reminders")
         } footer: {
-            VStack(alignment: .leading, spacing: 6) {
-                if let text = footerText(permission) { Text(text) }
-                if let text = testText { Text(text) }
-            }
+            if let text = footerText(permission) { Text(text) }
         }
-    }
-
-    private func canTest(_ permission: NotificationPermission?) -> Bool {
-        permission == .allowed || permission == .quiet
     }
 
     private func statusText(_ permission: NotificationPermission?) -> LocalizedStringKey {
@@ -192,16 +188,6 @@ private struct ReminderSection: View {
         case .quiet: "Reminders come with no sound or banner."
         case .denied: "You can still record without reminders."
         case .notAsked: "Maru asks when you save an item with a time."
-        }
-    }
-
-    private var testText: LocalizedStringKey? {
-        switch model.settings.test {
-        case .idle, .sending: nil
-        case .sent: "The test comes in about 5 seconds."
-        case .notAllowed: "Maru did not send the test, because notifications are off."
-        case .noRoom: "Maru did not send the test, because your iPhone can’t hold more reminders."
-        case .failed: "Maru did not send the test, so try again."
         }
     }
 }

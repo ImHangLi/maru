@@ -137,7 +137,7 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 
 ### P06 设置与反馈
 
-设置：提醒状态/测试、锁屏显示、语言、显示辅助、导出/恢复、隐私/删除、帮助、反馈、支持者购买。
+设置：提醒状态、锁屏显示、语言、显示辅助、导出/恢复、隐私/删除、帮助、反馈、支持者购买。
 
 反馈入口：今天的标准“更多”菜单中有“发送反馈”；设置中也有同一入口；错误状态提供“报告问题”。不使用悬浮客服球、自动弹问卷、摇一摇专用入口或反复询问“喜欢我们吗”。
 
@@ -421,7 +421,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 
 ### 11.3 同意及生命周期
 
-> D051 changes the default: analytics is on by default outside the EU, the EEA, the UK, and Switzerland, with a one-time notice and a switch in Settings. In those regions the user opts in first. The rules below apply to the opt-in regions.
+> D051 changes the default: analytics is on by default outside the EU, the EEA, the UK, Switzerland, and South Korea, with a switch in Settings. D078 removes the one-time notice there: analytics starts with no notice and no question. In the EU, the EEA, the UK, Switzerland, and South Korea the user opts in first, with a one-time question after the first save and the same switch. The rules below apply to the opt-in regions.
 
 - 分析默认关闭。首项计划保存后可在合适位置一次性提供可忽略的“帮助改进 App”说明，设置中始终可改；不在启动前阻断使用。
 - 同意前不初始化第三方 SDK、不建立第三方识别身份、不发配置请求；也不事后补传同意前的使用历史。
@@ -445,9 +445,12 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 
 | 事件 | 允许的信息 | 禁止的信息 |
 |---|---|---|
-| setup_step | 步骤枚举、手动/扫描枚举、结果/错误枚举、耗时桶 | 搜索词、OCR 文本、药名、剂量、具体提醒钟点 |
-| daily_usage_summary | 同意后的相对日序号、是否用过记录/历史/修改/通知入口/小组件入口等布尔标志 | 每次“已服”时间序列、已服/跳过明细、一天几剂、稳定药品 ID |
+| setup_step | 步骤枚举、新建/编辑/替换枚举、是否有提醒时间、是否有用量/备注/照片、名称来源（手输/建议/扫描）、是否用过智能补全、是否首项、是否有改动、耗时桶 | 搜索词、OCR 文本、药名、剂量、计划类型、提醒时间个数、具体提醒钟点、具体星期 |
+| daily_usage_summary | 同意后的相对日序号、是否用过记录/历史/通知入口/小组件入口/提醒动作/跳过/撤销/修改记录/我的项目/项目详情/设置等布尔标志、打开次数桶、活动项目数桶、是否有小组件 | 每次“已服”时间序列、已服/跳过明细、一天几剂、稳定药品 ID |
 | core_error | 保存/读取/调度/扫描等操作枚举、预定义错误码 | 原始 exception message、SQL 内容、文件路径或 userInfo |
+| notification_permission | 新的通知权限枚举、之前的权限枚举（只在变化时发送） | 通知内容、提醒钟点 |
+| setting_changed | “再次提醒”次数与间隔枚举、是否在提醒中显示名称、App 颜色枚举 | 其他设置值；分析开关关闭后不再发送 |
+| data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
 | purchase_result | 商品枚举、结果枚举 | Apple 账号、原始交易收据、金融身份 |
 

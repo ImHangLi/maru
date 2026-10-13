@@ -24,7 +24,6 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 4 | Notification | Body with names off | Open Maru to see your plan. | 打开 Maru 查看你的计划。 |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | 未记录 |
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | 打开 Maru 以记录。 |
-| 7 | Notification | Test notification | This is a test from Maru. | 这是来自 Maru 的测试通知。 |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 记录为已服用。 |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | %@ 服用 |
 | 11 | Dose wording | State of a skipped dose | Skipped | 已跳过 |
@@ -61,7 +60,6 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Maruを開いてプランを確認してください。 |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | 記録されていません |
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Maruを開いて記録してください。 |
-| 7 | Notification | Test notification | This is a test from Maru. | Maruからのテスト通知です。 |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 服用として記録します。 |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | %@に服用 |
 | 11 | Dose wording | State of a skipped dose | Skipped | スキップ済み |
@@ -98,7 +96,6 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Abre Maru para ver tu plan. |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | No registrado |
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Abre Maru para registrarlo. |
-| 7 | Notification | Test notification | This is a test from Maru. | Esta es una prueba de Maru. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | La registra como tomada. |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | Tomado: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | Omitido |
@@ -133,7 +130,6 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Öffne Maru, um deinen Plan zu sehen. |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | Nicht erfasst |
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Öffne Maru, um es zu erfassen. |
-| 7 | Notification | Test notification | This is a test from Maru. | Das ist ein Test von Maru. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | Erfasst sie als eingenommen. |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | Eingenommen: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | Übersprungen |
@@ -168,7 +164,6 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Maru를 열어 계획을 확인하세요. |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | 기록되지 않음 |
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Maru를 열어 기록하세요. |
-| 7 | Notification | Test notification | This is a test from Maru. | Maru의 테스트 알림이에요. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 복용함으로 기록해요. |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | 복용 시간: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | 건너뜀 |

@@ -173,7 +173,7 @@ Not added: Critical Alerts (Apple grants this entitlement only on request, and s
 
 Agent decision, after the study in `docs/research/2026-10-11-healthkit-medications-api.md`. An app can only read the medications that the user allows and their dose events. It cannot write a dose, and it cannot read schedule times. So Maru cannot be a faster front end for Health. Option 2 of D021 is closed. An optional read-only name import stays a later candidate. It needs a device test of the entitlement first.
 
-## D023 · 2026-10-11 · Settings sheet and preference storage (display settings removed by D026 and D032, foreground rule replaced by D027, no-names rule replaced by D029, feedback row added by D037)
+## D023 · 2026-10-11 · Settings sheet and preference storage (display settings removed by D026 and D032, foreground rule replaced by D027, no-names rule replaced by D029, feedback row added by D037) (test notification removed by D076)
 
 Agent decisions from issue #11.
 
@@ -445,7 +445,7 @@ Owner decision. Settings has a "Send Feedback" button at the end. It opens the o
 - No server of Maru, no email address of the owner in the app, and no data of the app in the request. The page loads only after a tap.
 - The form asks for a message, and for an email address only if the user wants a reply. It asks the user to leave out health details.
 - `PRIVACY.md` names Tally. "No network requests" is now "no network requests by itself".
-- The button uses the system `openURL` action and asks for the in-app browser sheet. On a system before iOS 26, Safari opens. No custom browser view.
+- The button uses the system `openURL` action, and Safari opens the form. No custom browser view. (Changed on 2026-10-14: the in-app browser sheet did not open over the settings sheet on the maintainer's iPhone.)
 
 
 ## D038 · 2026-10-11 · Quick add: scan a label and name suggestions (form proposal changed by D043) (scan card partly replaced by D042)
@@ -853,7 +853,7 @@ The maintainer asked for this on 2026-10-12. Users see no change.
 - Tests and helpers: `noTypeCarriesInventoryFields`, `DoseTests`, `writerSetting`, and `WidgetDay.hasOpenDose`.
 - `LocalStore+Move.swift` is now `LocalStore+Adopt.swift`.
 
-## D051 · 2026-10-12 · Release plan: full V1 scope, store name, six languages, analytics on by default
+## D051 · 2026-10-12 · Release plan: full V1 scope, store name, six languages, analytics on by default (the notice outside the opt-in regions replaced by D078)
 
 Maintainer decisions for the App Store release. The plan is in `docs/release-plan.md`. The research is in `docs/research/2026-10-12-store-name-and-languages.md`.
 
@@ -878,7 +878,7 @@ The maintainer asked for an optional supporter purchase. Spec 14 C, spec 9, T35,
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody bought a tip. CI builds the app. Needs a check in a simulator or on an iPhone with the StoreKit configuration: a buy, a cancel, a pending tip, a failure, a refund from the StoreKit transaction manager, and a tip that ends after a relaunch. App Store Connect needs the three products before a TestFlight build.
 
-## D052 · 2026-10-12 · Product analytics: allowlist, region default, own sender
+## D052 · 2026-10-12 · Product analytics: allowlist, region default, own sender (event fields extended by D077, notice outside the opt-in regions replaced by D078)
 
 Agent decisions for the analytics part of D051. They follow spec §10 and §11. Spec §11.3 says "off by default". D051 replaces that with the region rule below.
 
@@ -1153,7 +1153,7 @@ Tests (D016): four new tests. The rhythm and the pause across a clock change, th
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
-## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074)
 
 Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
 
@@ -1305,4 +1305,81 @@ Maintainer decision on the concept, with agent detail. The maintainer approved a
 - To give the same three supplements in each language, magnesium replaces the probiotic in zh-Hans, ja, and ko. The names that match the labels are "Vitamin D3" and "Magnesium Glycinate" in English, with the local names in the other languages. This differs from the probiotic choice of the store research for Korea. The site mock (`site/src/mock/`) still has the old names.
 - The PNGs are in `App/Debug/SamplePhotos/`. The Release configuration of the app target sets `EXCLUDED_SOURCE_FILE_NAMES` to `sample-photo-*.png`, so a release build does not copy them. A CI step reads the Release build settings and fails when the setting is missing.
 - Image sources: Unsplash photos by Supliful under the Unsplash License, with invented labels. The brand names had no hit in the US trademark register. A TMview check is still open before a public use of the images.
+
+## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test
+
+Maintainer decision, with agent detail. The goal is a fast first release. It replaces the "embedded in the app" part of D071 for version 1.0.
+
+- Version 1.0.0 ships for iPhone and iPad, without the Apple Watch app. Nobody ran the Watch app on a real Watch, and a build with it needs Watch screenshots.
+- `project.yml`: the `Maru` target no longer depends on the `MaruWatch` target, so an archive does not embed the Watch app. This is the only change to the build. The `Watch/` code, the `MaruWatch` target, and its scheme stay.
+- CI builds the Watch app in its own step, for the watchOS Simulator, because the app build no longer includes it.
+- The iPhone code that answers the Watch stays in the app. It does nothing when no Watch app is installed.
+- `PRIVACY.md` no longer has the sentence about the list of today on the Watch, and the privacy pages of the site are built again. Add the sentence back in the change that embeds the Watch app. The site FAQ and `site/llms.txt` already say that Maru has no Watch app. The store text does not name the Watch.
+- To embed the Watch app in 1.1: add `- target: MaruWatch` to the dependencies of `Maru`, restore the privacy sentence, and add Watch screenshots.
+
+Not verified: no build ran on the Mac of the maintainer before the merge. CI builds the app and the Watch app.
+
+## D075 · 2026-10-13 · The App Store Connect record
+
+The maintainer approved the setup of the App Store Connect record and asked for the best version of each setting. Agent decisions on the details. `docs/release-plan.md`, section 7, has each value and its reason.
+
+- Primary category Health & Fitness, secondary category Medical. Price free. All territories except mainland China. Manual release after approval.
+- Age rating answers: "Medical or Treatment Information" is "Infrequent or Mild", "Health or Wellness Topics" is "Yes", and every other answer is "None" or "No".
+- Maru is declared as not a regulated medical device.
+- The privacy label is that of D069, and it is published.
+- The tips have the names "A Small Thanks", "A Warm Thanks", and "A Big Hug", at USD 0.99, 2.99, and 9.99. D053 had no names and no prices. `Config/Maru.storekit` has the same names and prices.
+- The store URLs use the paths of the live site: `/support/` and `/privacy/`, with the language folder.
+
+## D076 · 2026-10-13 · Row text in the text color, no test notification, and a progress bar in the "Today" widget
+
+Maintainer decisions after the test of the TestFlight build, for the build that goes to App Review. Agent decisions on the details.
+
+- The app tint is for icons, controls, and state, not for row text. Tinted text on a row looked like a warning. A row that is an action or a link has the text color: in Settings ("Open Settings", "Export Records", "Back Up", "Restore from Backup…", "Send Feedback", the tips, "Privacy Policy", "Support"), on the add and edit screen ("Scan Label", the name proposals, "Use Softgel", "Choose Photo", "Take Photo", "Add a Time"), and on the item detail ("Item Options…", "Restore", "Open Settings"). A row that is off is gray.
+- The value of a menu row has the text color: "Remind Again", "Every", "App Color", "Form", "Color", "Note", and the day counts of "Repeat". The form icon of the menu keeps the app tint, as an image with its own color. The smart completion candidates are gray capsules with the text color.
+- Symbols keep the tint. Toolbar buttons, switches, check marks, and the filled button of the scanner keep the tint. "Clear" on the scanner card is not a row and keeps the tint. A destructive row ("Remove Photo", "Start Over", "Delete Item…") stays red.
+- "Send a Test Notification" is removed from Settings, with its code, its footers, and its strings in the six languages. It was a user feature of D023, and the maintainer read it as test UI. This replaces that part of D023. The follow-up reserve of 2 requests (D039) stays, so the request budget does not change. One of the two is now spare.
+- Every other test tool was already in `App/Debug/` or `App/DebugLaunch.swift` inside `#if DEBUG`: the Debug section of Settings, the test scenarios, the data banner, the launch arguments, and the sample data. The sample photos are not in a Release build (D073).
+- The medium "Today" widget shows a progress bar in place of the count "4 of 7": a track in the system fill and a fill in the app tint for taken doses divided by all doses. The system fill has an alpha value, so the track stays quiet in the light, dark, tinted, and clear looks. The fill takes the accent of a tinted Home Screen. VoiceOver reads "Today, 4 of 7 taken".
+- The small "Today" widget gets no bar. Its first line holds the slot word and the time, and a bar did not fit beside them in a capture. It keeps the large "7 of 7" when every dose is done. "Record Dose" shows no count of taken doses.
+- The columns of the medium "Today" widget end at the bottom edge, so the space over the title equals the space under the capsules.
+- Checked in an iPhone 17 Pro simulator, light and dark, with a view of the widget layout inside the app. Nobody saw the widget on a Home Screen, in the tinted or clear look, or the item detail row. They need a check on a real iPhone.
+
+## D077 · 2026-10-14 · More usage statistics for product decisions
+
+Maintainer request on 2026-10-14, with agent detail. Build 3 sends four events, and the maintainer cannot judge the product from them. This change adds events and fields that answer the questions of spec §11.1. Every value is a fixed word, a flag, or a coarse range. The rules of spec §10 and §11 stay.
+
+- `setup_step`: the steps `editor_opened`, `item_saved`, `editor_closed`, `scan_opened`, `scan_used`, and `scan_blocked`, with `mode` (`new`, `edit`, `replace`). A save adds a flag for a reminder time, three flags for an amount, a note, and a photo, the source of the name (`typed`, `suggestion`, `scan`), a flag for a tapped smart-completion candidate, a flag for the first item, and a range of the time on the screen. A close with no save adds `had_changes` and the time range. The event is not called "abandoned", because the user can come back (spec §11.1).
+- `daily_usage_summary`: seven more flags (reminder action, skip, undo, correction, My Items, item detail, Settings), a range of the count of opens of the day, a range of the count of active items, and a flag for a widget on the Home Screen. A day with an open or a flag has a summary. A record from a reminder action with no open gives `app_opens` = `0`.
+- `core_error`: the operations `schedule` and `scan`, and three codes of the reminder state of a save: `too_many`, `not_set`, `not_confirmed`.
+- New events: `notification_permission` (sent only when the state that the app reads differs from the state that it sent last), `setting_changed` ("Remind Again", "Show Names in Reminders", the app color), and `data_action` (export, backup, restore, with a result).
+- Each request also has `app_language` (one of the six app languages, else `other`) and `device` (`iphone`, `ipad`, `other`), next to the app version.
+- No event goes out at the moment of a record. A skip, an undo, a correction, and a reminder action are only flags of the daily summary, so no event time tells an intake time.
+- The summary of a day goes out only at an open of the app. A day that ends while the app works in the background, for example after the "Taken" action of a reminder, waits on the device as one summary with no time. Before, the first background record of a new day sent the summary of the day before, so the event time could tell the time of that record. At most one summary waits, and a newer day replaces it.
+- "On" in Settings or in the opt-in question counts one open, because the user is in the app.
+- Not sent, and why:
+  - The type of an item (supplement or medication). It tells that the user takes a medication, which is health data. The privacy label would then need "Health".
+  - The kind of plan (daily, weekdays, every other day, and so on) and the count of reminder times. A first draft sent both. The model review found that they describe the regimen of the user and can give the planned doses of a day, so the label would need "Health". The save sends only `has_reminder`.
+  - A flag for a record of an as-needed dose. The second review round classed it as health data, because an as-needed dose tells that the user needed the item on that day.
+  - A count of doses, a time, a weekday, and an item ID (spec §11.5).
+  - The analytics switch. After "off" nothing goes out, and an "on" event alone gives no rate.
+- Privacy label: no new data type. The new events are "Product Interaction". The codes of `core_error` and `device` are "Other Diagnostic Data". `app_language` is "Other Data Types", with the region. `App/PrivacyInfo.xcprivacy` already declares these types. App Store Connect needs no change of the types, and the purpose stays "Analytics".
+- Tests: the schema test sends each new factory result through the checked init (D016). No other new test.
+- `PRIVACY.md` names each key that the sender adds, and the event time to the millisecond.
+
+Not verified: the app build on this Mac and the screens. CI builds the app. Nobody sent an event to the PostHog project. The packet check (T42) waits for a build with the key.
+
+## D078 · 2026-10-14 · No notice for usage statistics outside the opt-in regions
+
+Maintainer decision on 2026-10-14. It replaces the notice part of D051 and D052.
+
+- Outside the EU, the EEA, the UK, Switzerland, and South Korea, usage statistics are on from the first launch, with no notice and no question. Before, they started only after a one-time notice.
+- Inside those regions nothing changes: the statistics are off until the user opts in, with a one-time question after the first save, or with the switch in Settings.
+- Every region keeps the switch "Share Usage Statistics" in Settings. "Off" still stops the client, clears the queue, deletes the install ID, and clears the local usage state (T43).
+- The app no longer has the notice with "OK" and "Turn Off", and its two strings are removed. The key `analytics.noticeShown` stays, because the question of the opt-in regions uses it.
+- `PRIVACY.md` and the site privacy page say that Maru shows no notice outside the opt-in regions. The App Store review notes need a new sentence, which the maintainer changes in App Store Connect.
+- The limit: the region setting is not the place of the user (D052).
+
+Not verified: the app build on this Mac. CI builds the app.
+
+Open legal risk, for the maintainer: the model review (GPT-6.1-Sol, 2026-10-14) gave an opinion that is not legal advice. It does not treat "on with no notice" as safe in every storefront, because a random install ID is not anonymity in law, and the data comes from a health app. It named the highest risk in Washington and Nevada (consumer health data laws with prior consent), then South Korea (PIPA), Brazil (LGPD), and Canada, mainly Quebec, if the data counts as health data. California, Japan, and Australia expect at least a notice at collection. On 2026-10-14 the maintainer added South Korea to the opt-in list, because PIPA asks for consent first and Korean is a store language. The other risks stay open.
 

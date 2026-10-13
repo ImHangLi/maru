@@ -16,11 +16,6 @@ struct SettingsState {
     var isPresented = false
     /// The permission at the last read. `nil` before the first read, so no screen shows a guess.
     var permission: NotificationPermission?
-    var test = TestState.idle
-
-    enum TestState: Equatable {
-        case idle, sending, sent, notAllowed, noRoom, failed
-    }
 }
 
 extension AppModel {
@@ -30,26 +25,34 @@ extension AppModel {
     }
 
     func openSettings() {
-        settings.test = .idle
         settings.isPresented = true
+        analytics.markUsed(.settings)
         readNotificationPermission()
     }
 
     /// Reads the permission. It never asks for it again, so the system prompt does not show (spec 2.2, T13).
     func readNotificationPermission() {
         Task {
-            settings.permission = await NotificationPermission.current()
+            let permission = await NotificationPermission.current()
+            settings.permission = permission
+            notePermission(permission)
         }
     }
 
     /// Saves the setting, then sets the follow-ups again in the notification queue (spec 4, D021, D039).
     func setFollowUp(_ setting: FollowUpSetting?) {
         DefaultsFollowUpSetting().save(setting)
+        analytics.capture(.remindAgainChanged(setting))
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
         Task { [store] in
             await store.refreshFollowUps(at: now, deviceTimeZone: deviceTimeZone)
         }
+    }
+
+    /// The user chose an app color in Settings. A restore of a backup sends nothing.
+    func appColorDidChange(_ color: ItemColor) {
+        analytics.capture(.appColorChanged(color))
     }
 
     /// "Show Names in Reminders". It starts on (D029).
@@ -66,6 +69,7 @@ extension AppModel {
     /// or return runs again.
     func setShowsNamesInReminders(_ showsNames: Bool) {
         DefaultsReminderPrivacy().save(showsNames ? .showNames : .hideNames)
+        analytics.capture(.showNamesChanged(showsNames))
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
         Task {
@@ -74,28 +78,6 @@ extension AppModel {
             var told = Set<ReminderStatus>()
             for (id, status) in reminderStatus where status != before[id] && told.insert(status).inserted {
                 report(status, of: id, removes: false)
-            }
-        }
-    }
-
-    /// Sends one neutral notification in a few seconds. It changes no reminder, so no refresh follows.
-    func sendTestNotification() {
-        guard settings.test != .sending else { return }
-        settings.test = .sending
-        Task { [store] in
-            let result = await store.sendTestNotification()
-            switch result {
-            case .sent:
-                settings.test = .sent
-            case .notAllowed:
-                // Say "off" only after the permission read confirms it.
-                let permission = await NotificationPermission.current()
-                settings.permission = permission
-                settings.test = permission == .denied ? .notAllowed : .failed
-            case .noRoom:
-                settings.test = .noRoom
-            case .failed:
-                settings.test = .failed
             }
         }
     }

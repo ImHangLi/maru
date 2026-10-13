@@ -16,6 +16,17 @@
     "devices": "Verfügbar für",
     "soon": "Bald im App Store"
   },
+  "phone": {
+    "label": "Eine Vorschau der Maru-App. Du kannst fünf Bildschirme ansehen. Nichts wird erfasst.",
+    "show": "Bildschirm „{}“ anzeigen",
+    "back": "Zurück",
+    "close": "Schließen",
+    "today": "Heute",
+    "items": "Meine Einträge",
+    "history": "Verlauf",
+    "settings": "Einstellungen",
+    "add": "Eintrag hinzufügen"
+  },
   "shots": {
     "today": {
       "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
@@ -79,7 +90,7 @@
     "items": [
       [
         "Ist Maru kostenlos?",
-        "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge. Du kannst ein Trinkgeld geben, wenn du magst, aber es schaltet nichts frei."
+        "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge."
       ],
       [
         "Brauche ich ein Konto?",
@@ -172,7 +183,6 @@
       "Camera": "Kamera",
       "Item photos": "Fotos der Einträge",
       "Feedback": "Feedback",
-      "Tips": "Trinkgeld",
       "Notifications": "Mitteilungen",
       "Export and backup files": "Export- und Backup-Dateien",
       "iPhone and iPad backups": "iPhone- und iPad-Backups",

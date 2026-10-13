@@ -16,6 +16,17 @@
     "devices": "Available for",
     "soon": "Coming soon to the App Store"
   },
+  "phone": {
+    "label": "A preview of the Maru app. You can look at five screens. Nothing is recorded.",
+    "show": "Show the {} screen",
+    "back": "Back",
+    "close": "Close",
+    "today": "Today",
+    "items": "My Items",
+    "history": "History",
+    "settings": "Settings",
+    "add": "Add Item"
+  },
   "shots": {
     "today": {
       "alt": "The Today screen of Maru with the items to take now."
@@ -79,7 +90,7 @@
     "items": [
       [
         "Is Maru free?",
-        "Yes, with no subscription, no ads, and no limit on items. You can leave a tip if you like, but a tip unlocks nothing."
+        "Yes, with no subscription, no ads, and no limit on items."
       ],
       [
         "Do I need an account?",

@@ -16,6 +16,17 @@
     "devices": "Disponible para",
     "soon": "Próximamente en el App Store"
   },
+  "phone": {
+    "label": "Una vista previa de la app Maru. Puedes ver cinco pantallas. No se registra nada.",
+    "show": "Mostrar la pantalla {}",
+    "back": "Atrás",
+    "close": "Cerrar",
+    "today": "Hoy",
+    "items": "Mis elementos",
+    "history": "Historial",
+    "settings": "Ajustes",
+    "add": "Añadir elemento"
+  },
   "shots": {
     "today": {
       "alt": "La pantalla Hoy de Maru con lo que toca tomar ahora."
@@ -79,7 +90,7 @@
     "items": [
       [
         "¿Maru es gratis?",
-        "Sí, sin suscripción, sin anuncios y sin límite de elementos. Puedes dejar una propina si quieres, pero no desbloquea nada."
+        "Sí, sin suscripción, sin anuncios y sin límite de elementos."
       ],
       [
         "¿Necesito una cuenta?",
@@ -172,7 +183,6 @@
       "Camera": "Cámara",
       "Item photos": "Fotos de los elementos",
       "Feedback": "Comentarios",
-      "Tips": "Propinas",
       "Notifications": "Notificaciones",
       "Export and backup files": "Archivos de exportación y copia de seguridad",
       "iPhone and iPad backups": "Copias de seguridad del iPhone y el iPad",

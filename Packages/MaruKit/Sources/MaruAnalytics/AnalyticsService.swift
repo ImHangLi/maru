@@ -3,14 +3,31 @@ import MaruCore
 
 /// The one door of analytics for the app (spec 11.3, D051, D052).
 ///
-/// It makes no client, and it sends nothing, until analytics is active: the user opted in, or the region allows the
-/// default and the notice showed. A build with no key is not available. It has no switch, no notice, and no client.
-/// Turning analytics off stops the client, clears its queue, drops the install ID, and clears the local usage flags (T43).
+/// It makes no client, and it sends nothing, until analytics is active: the user opted in, or the region has the default
+/// "on" (D078). A build with no key is not available. It has no switch, no question, and no client.
+/// Turning analytics off stops the client, clears its queue, drops the install ID, and clears the local usage state (T43).
 @MainActor
 public final class AnalyticsService {
     private static let usageDayKey = "analytics.usage.day"
     private static let usageFlagsKey = "analytics.usage.flags"
+    private static let usageOpensKey = "analytics.usage.opens"
+    private static let usageItemsKey = "analytics.usage.items"
+    private static let usageWidgetKey = "analytics.usage.widget"
     private static let sinceKey = "analytics.since"
+    private static let usagePendingKey = "analytics.usage.pending"
+    private static let permissionKey = "analytics.permission"
+    private static let localKeys = [
+        usageDayKey, usageFlagsKey, usageOpensKey, usageItemsKey, usageWidgetKey, usagePendingKey, sinceKey, permissionKey,
+    ]
+
+    /// The summary of an ended day that waits for the next open of the app. It has no time.
+    private struct PendingDay: Codable {
+        let dayIndex: Int
+        let flags: [String]
+        let opens: Int
+        let items: Int?
+        let widget: Bool?
+    }
 
     public let isAvailable: Bool
     private let preference: AnalyticsPreference
@@ -36,10 +53,11 @@ public final class AnalyticsService {
     /// The value of the switch in settings.
     public var isOn: Bool { preference.isOn }
     public var requiresOptIn: Bool { preference.requiresOptIn }
-    /// The one-time notice has to show.
+    /// The one-time opt-in question has to show. Only an opt-in region has it (D078).
     public var needsNotice: Bool { isAvailable && preference.needsNotice }
 
-    private var isActive: Bool { isAvailable && preference.isActive }
+    /// Analytics may collect now: the build has a key, and the consent rule allows it.
+    public var isActive: Bool { isAvailable && preference.isActive }
 
     public func noticeDidShow() {
         preference.markNoticeShown()
@@ -48,11 +66,12 @@ public final class AnalyticsService {
     /// The choice of the user. Off ends everything that analytics holds on the device (T43).
     public func setOn(_ isOn: Bool) {
         preference.set(isOn)
-        guard !isOn else { return }
+        // The user is in the app now, so this day counts one open (D077).
+        guard !isOn else { return noteOpen() }
         // The client can be new in this process, and the install ID of an older run can exist. A new client forgets it.
         (client ?? makeClient()).reset()
         client = nil
-        for key in [Self.usageDayKey, Self.usageFlagsKey, Self.sinceKey] {
+        for key in Self.localKeys {
             defaults.removeObject(forKey: key)
         }
     }
@@ -66,30 +85,90 @@ public final class AnalyticsService {
     /// Notes that the user used a part of the app today. The flag is one bit for the day. It has no time and no count.
     public func markUsed(_ flag: AnalyticsEvent.UsageFlag, at now: Date = Date()) {
         guard isActive else { return }
-        let today = calendar.startOfDay(for: now)
-        sendUsage(before: today)
-        if defaults.object(forKey: Self.sinceKey) == nil { defaults.set(today, forKey: Self.sinceKey) }
-        defaults.set(today, forKey: Self.usageDayKey)
+        startDay(at: now)
         var flags = Set(defaults.stringArray(forKey: Self.usageFlagsKey) ?? [])
         flags.insert(flag.rawValue)
         defaults.set(flags.sorted(), forKey: Self.usageFlagsKey)
     }
 
-    /// Sends the summary of an earlier day, if one waits. It runs at the start and at each return. A day with no
-    /// flag has no summary, and no summary does not mean no intake (spec 11.5).
-    public func sendPendingUsage(at now: Date = Date()) {
+    /// Counts one time that the app came to the front today. The summary sends only a bucket of the count.
+    public func noteOpen(at now: Date = Date()) {
         guard isActive else { return }
-        sendUsage(before: calendar.startOfDay(for: now))
+        startDay(at: now)
+        defaults.set(defaults.integer(forKey: Self.usageOpensKey) + 1, forKey: Self.usageOpensKey)
     }
 
-    private func sendUsage(before today: Date) {
+    /// Keeps the number of active items of the last read today. The summary sends only a bucket of it.
+    public func noteActiveItems(_ count: Int, at now: Date = Date()) {
+        guard isActive, hasDay(at: now) else { return }
+        defaults.set(max(count, 0), forKey: Self.usageItemsKey)
+    }
+
+    /// Keeps whether a widget of Maru is on the Home Screen, at the last check today.
+    public func noteWidget(installed: Bool, at now: Date = Date()) {
+        guard isActive, hasDay(at: now) else { return }
+        defaults.set(installed, forKey: Self.usageWidgetKey)
+    }
+
+    /// Sends a `notification_permission` event when the permission differs from the one that was sent last.
+    /// The first read after analytics became active sends the state with `unknown` as the previous state.
+    public func notePermission(_ state: AnalyticsEvent.Permission) {
+        guard isActive else { return }
+        let previous = defaults.string(forKey: Self.permissionKey).flatMap(AnalyticsEvent.Permission.init)
+        guard previous != state else { return }
+        defaults.set(state.rawValue, forKey: Self.permissionKey)
+        capture(.notificationPermission(state, previous: previous))
+    }
+
+    /// Sends the summary of an earlier day, if one waits. Only the start and each return of the app call it, so
+    /// the time of the event is the time of an open, never the time of a background record (D077). A day with no
+    /// open and no flag has no summary, and no summary does not mean no intake (spec 11.5).
+    public func sendPendingUsage(at now: Date = Date()) {
+        guard isActive else { return }
+        endDay(before: calendar.startOfDay(for: now))
+        guard let data = defaults.data(forKey: Self.usagePendingKey) else { return }
+        defaults.removeObject(forKey: Self.usagePendingKey)
+        guard let day = try? JSONDecoder().decode(PendingDay.self, from: data) else { return }
+        capture(.dailyUsage(
+            dayIndex: day.dayIndex,
+            AnalyticsEvent.UsageDay(
+                used: Set(day.flags.compactMap(AnalyticsEvent.UsageFlag.init)),
+                opens: day.opens,
+                activeItems: day.items,
+                hasWidget: day.widget
+            )
+        ))
+    }
+
+    /// The day of the tallies is today. The tallies of an earlier day wait for the next open.
+    private func startDay(at now: Date) {
+        let today = calendar.startOfDay(for: now)
+        endDay(before: today)
+        if defaults.object(forKey: Self.sinceKey) == nil { defaults.set(today, forKey: Self.sinceKey) }
+        defaults.set(today, forKey: Self.usageDayKey)
+    }
+
+    /// A count or a check belongs to a day that has an open or a flag, so it alone makes no summary.
+    private func hasDay(at now: Date) -> Bool {
+        guard let day = defaults.object(forKey: Self.usageDayKey) as? Date else { return false }
+        return day == calendar.startOfDay(for: now)
+    }
+
+    /// Moves the tallies of an earlier day into the one waiting summary. A newer day replaces an older one that
+    /// still waits, so at most one summary stays on the device.
+    private func endDay(before today: Date) {
         guard let day = defaults.object(forKey: Self.usageDayKey) as? Date, day < today else { return }
         let flags = Set((defaults.stringArray(forKey: Self.usageFlagsKey) ?? []).compactMap(AnalyticsEvent.UsageFlag.init))
-        defaults.removeObject(forKey: Self.usageDayKey)
-        defaults.removeObject(forKey: Self.usageFlagsKey)
-        guard !flags.isEmpty else { return }
+        let opens = defaults.integer(forKey: Self.usageOpensKey)
+        let items = defaults.object(forKey: Self.usageItemsKey) as? Int
+        let widget = defaults.object(forKey: Self.usageWidgetKey) as? Bool
+        for key in [Self.usageDayKey, Self.usageFlagsKey, Self.usageOpensKey, Self.usageItemsKey, Self.usageWidgetKey] {
+            defaults.removeObject(forKey: key)
+        }
+        guard !flags.isEmpty || opens > 0 else { return }
         let since = defaults.object(forKey: Self.sinceKey) as? Date ?? day
         let index = calendar.dateComponents([.day], from: since, to: day).day ?? 0
-        capture(.dailyUsage(dayIndex: index, used: flags))
+        let pending = PendingDay(dayIndex: index, flags: flags.map(\.rawValue).sorted(), opens: opens, items: items, widget: widget)
+        if let data = try? JSONEncoder().encode(pending) { defaults.set(data, forKey: Self.usagePendingKey) }
     }
 }

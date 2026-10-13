@@ -31,7 +31,7 @@ def clock(t, hour, minute):
 
 
 def widget(t):
-    """The medium Today widget: the count, and each part of the day with its time and its capsules."""
+    """The medium Today widget: the progress bar of the day, and each part of the day with its time and its capsules."""
     taken = {0, 1}
     cols = ""
     for p in range(3):
@@ -40,9 +40,10 @@ def widget(t):
         now = ' class="now"' if p == 1 else ""
         cols += (f'<div class="m-col"><b{now}>{e(t["parts"][p])}</b>'
                  f'<span class="m-time">{e(clock(t, *ITEMS[mine[0]]["at"]))}</span><span class="m-caps">{caps}</span></div>')
-    count = t["of"].format(a=len(taken), b=len(ITEMS))
-    return (f'<div class="m-widget"><div class="m-widget-top"><b>{e(t["today"])}</b><b>{e(count)}</b></div>'
-            f'<div class="m-cols">{cols}</div></div>')
+    # The bar has no text: its fill is the share of the doses that are taken (DayProgressBar).
+    share = 100 * len(taken) / len(ITEMS)
+    return (f'<div class="m-widget"><div class="m-widget-top"><b>{e(t["today"])}</b>'
+            f'<span class="m-bar"><i style="width:{share:g}%"></i></span></div><div class="m-cols">{cols}</div></div>')
 
 
 def reminder(t):

@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Maru：プライバシー</title>
 <meta name="description" content="Maruがデバイスに保存するもの、送信するもの、決してしないこと。">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFFFF">
 <link rel="canonical" href="https://maru.day/jp/privacy/">
 <link rel="alternate" hreflang="en" href="https://maru.day/privacy/">
 <link rel="alternate" hreflang="zh-Hans" href="https://maru.day/cn/privacy/">
@@ -23,17 +22,20 @@
 <meta property="og:title" content="Maru：プライバシー">
 <meta property="og:description" content="Maruがデバイスに保存するもの、送信するもの、決してしないこと。">
 <meta property="og:url" content="https://maru.day/jp/privacy/">
-<meta property="og:image" content="https://maru.day/icon.png">
-<meta property="og:image:width" content="1024">
-<meta property="og:image:height" content="1024">
-<meta property="og:image:alt" content="Maru">
+<meta property="og:image" content="https://maru.day/og-jp.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Maru. 飲んだっけ？ もう迷わない。 Maruの「今日」画面。いま飲む項目が並んでいます。">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:locale:alternate" content="en_US">
 <meta property="og:locale:alternate" content="zh_CN">
 <meta property="og:locale:alternate" content="es_ES">
 <meta property="og:locale:alternate" content="de_DE">
 <meta property="og:locale:alternate" content="ko_KR">
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://maru.day/og-jp.png">
+<meta name="twitter:image:alt" content="Maru. 飲んだっけ？ もう迷わない。 Maruの「今日」画面。いま飲む項目が並んでいます。">
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
 <link rel="stylesheet" href="/style.css">
 </head>
@@ -52,7 +54,7 @@
 <section class="card summary" aria-labelledby="summary-title"><h2 id="summary-title">かんたんに言うと</h2><ul><li>項目と記録はお使いのiPhoneやiPadの中に残り、データはデバイスごとに別々です。Maruにはアカウントも、それらを預かるサーバーもありません。</li><li>かんたんな利用状況の統計に、飲んでいるものは決して含まれません。「設定」のスイッチひとつでオフにできます。</li><li>Maruに広告はなく、連絡先や位置情報も読み取りません。</li></ul></section>
 <p class="note">以下のポリシー全文は英語です。英語の文面が正式なものです。</p>
 <div class="policy" lang="en">
-<p>Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. If you install the Maru app on your Apple Watch, your iPhone sends the list of today's doses to your own Watch: the names, the amounts, the times, and whether each dose is recorded. It goes directly between the two devices and through no server of Maru. This page describes the app in this repository as it is today.</p>
+<p>Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. This page describes the app in this repository as it is today.</p>
 <h2 lang="ja">Maruが保存するもの</h2>
 <ul>
 <li>Your items, schedules, notes, and records.
@@ -63,10 +65,10 @@
 </li>
 <li>The photo of an item, if you add one. See "Item photos".
 </li></ul>
-<p>Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so a record from your Apple Watch works with the iPhone in your pocket. When Maru cannot open your records, it records nothing and asks you to unlock.</p>
+<p>Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so the "Taken" action of a reminder works while the device is locked. When Maru cannot open your records, it records nothing and asks you to unlock.</p>
 <h2 lang="ja">Maruがしないこと</h2>
 <ul>
-<li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the request of the App Store for the tip prices when you open Settings.
+<li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and a request to the App Store for product information when you open Settings. That request carries only product identifiers and none of your item data. Apple's App Store privacy policy applies to it.
 </li>
 <li>It contains no advertising or crash-reporting code.
 </li>
@@ -77,37 +79,56 @@
 <h2 lang="ja">利用状況の統計</h2>
 <p>Some versions of Maru can send usage statistics to PostHog. A version that cannot has no switch and sends nothing. This section applies to a version that can.</p>
 <ul>
-<li>Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".
+<li>Where it is on: outside the EU, the EEA, the UK, Switzerland, and South Korea, the statistics are on by default. Maru shows no notice and no question about them. The switch "Share Usage Statistics" in Settings turns them off.
 </li>
-<li>Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on in the notice or in Settings.
+<li>Where it is off: in the EU, the EEA, the UK, Switzerland, and South Korea, the statistics stay off until you turn them on. Maru asks once, after you save an item, and Settings has the same switch.
 </li>
 <li>How Maru picks the rule: it uses the region setting of your device, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or a device with another region setting, gets the rule of that setting.
 </li>
-<li>What Maru sends: only these events and fields.
+<li>What Maru sends: only these events and fields. Each value is a fixed word, a yes-or-no flag, or a range such as "2_3". None is a name, an amount, or a time of day.
 <ul>
-<li><code>setup_step</code>: that an item was saved.
+<li><code>setup_step</code>: a step on the add or edit screen. <code>step</code> is one of <code>editor_opened</code>, <code>item_saved</code>, <code>editor_closed</code> (closed with no save), <code>scan_opened</code>, <code>scan_used</code>, or <code>scan_blocked</code> (the camera is off for Maru). <code>mode</code> is <code>new</code>, <code>edit</code>, or <code>replace</code>. A save also has:
+<ul>
+<li><code>has_reminder</code>: yes if the plan has a reminder time. Not the kind of plan, the days, the times, or how many times.
 </li>
-<li><code>daily_usage_summary</code>: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
+<li><code>has_amount</code>, <code>has_note</code>, <code>has_photo</code>: yes or no. Not the amount, the note, or the photo.
 </li>
-<li><code>core_error</code>: whether a save or a read failed, with one of five fixed codes.
+<li><code>name_source</code>, for a new item: <code>typed</code>, <code>suggestion</code>, or <code>scan</code>. Not the name.
 </li>
-<li><code>feedback_entry</code>: that you tapped "Send Feedback".
+<li><code>used_completion</code>: yes if you tapped a suggested amount, time, or note.
 </li>
-<li><code>purchase_result</code>: a fixed product and result. Maru does not send this event yet.
+<li><code>first_item</code>: yes if it is the first item on the device.
+</li>
+<li><code>duration</code>: the time on the screen, as <code>under_30s</code>, <code>30s_to_2m</code>, <code>2m_to_5m</code>, or <code>over_5m</code>.
+</li>
+<li>A close with no save has <code>had_changes</code> (yes or no) and <code>duration</code>.
 </li></ul>
 </li>
-<li>What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
+<li><code>daily_usage_summary</code>: one summary for each day that you used the app. Maru sends it the next time that you open the app on a later day, never from the background. It has <code>day_index</code>, the day number since the statistics started, and yes-or-no flags for that day: <code>used_record</code> (recorded a dose), <code>used_history</code> (opened History), <code>used_notification</code> (opened the app from a reminder or used a reminder action), <code>used_widget</code> (used a widget), <code>used_reminder_action</code> (recorded from the "Taken" action of a reminder), <code>used_skip</code>, <code>used_undo</code>, <code>used_correction</code> (changed an earlier record), <code>used_my_items</code>, <code>used_item_detail</code>, and <code>used_settings</code>. It also has <code>app_opens</code>, how often the app came to the front that day, as <code>0</code>, <code>1</code>, <code>2_3</code>, <code>4_6</code>, or <code>7_plus</code>, <code>active_items</code>, the number of your active items, as <code>0</code>, <code>1</code>, <code>2_3</code>, <code>4_6</code>, or <code>7_plus</code>, and <code>has_widget</code>, yes if a Maru widget is on your Home Screen. It has no time and no count of doses.
 </li>
-<li>Each request also has the app version, the major version of iOS, a random install ID, and the region setting of your device as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
+<li><code>core_error</code>: <code>operation</code>, the operation that failed: <code>save</code>, <code>read</code>, <code>schedule</code> (setting a reminder), or <code>scan</code> (the label scanner). <code>code</code>, one of eight fixed codes: <code>locked</code>, <code>corrupt</code>, <code>newer_schema</code>, <code>migration_failed</code>, <code>failed</code>, <code>too_many</code>, <code>not_set</code>, or <code>not_confirmed</code>.
+</li>
+<li><code>notification_permission</code>: <code>state</code>, the notification permission: <code>not_asked</code>, <code>allowed</code>, <code>denied</code>, or <code>quiet</code>. <code>previous</code>, the permission that Maru sent before, or <code>unknown</code>. Maru sends it once when the statistics start, with <code>previous</code> = <code>unknown</code>, and after that only when the permission changes.
+</li>
+<li><code>setting_changed</code>: a new value of one setting: <code>remind_again</code> (<code>off</code>, <code>1</code>, <code>2</code>, <code>3</code>, <code>5</code>, or <code>until_recorded</code>) with <code>remind_again_minutes</code> (<code>5</code>, <code>10</code>, <code>15</code>, <code>30</code>, or <code>60</code>), <code>show_names</code> (yes or no), or <code>app_color</code> (one of the eight color names).
+</li>
+<li><code>data_action</code>: <code>action</code>, one of <code>export</code>, <code>backup</code>, or <code>restore</code>, and <code>result</code>, one of <code>done</code>, <code>failed</code>, <code>cancelled</code>, <code>invalid_file</code>, <code>newer_file</code>, or <code>not_confirmed</code>. Not the file or its content.
+</li>
+<li><code>feedback_entry</code>: <code>entry</code> = <code>settings</code>, when you tap "Send Feedback".
+</li></ul>
+</li>
+<li>What Maru never sends: item names, doses, amounts, intake times, reminder times, item IDs, notes, photos, or the text of a message. It sends no event at the moment of a record, no time of a single dose, and no count of doses.
+</li>
+<li>Each event also has these fields: <code>app_version</code>, <code>ios_major</code> (the major version of iOS), <code>distinct_id</code> (a random install ID), <code>app_language</code> (<code>en</code>, <code>zh-Hans</code>, <code>ja</code>, <code>ko</code>, <code>es</code>, <code>de</code>, or <code>other</code>), <code>device</code> (<code>iphone</code>, <code>ipad</code>, or <code>other</code>), <code>region</code> (the region setting of your device as a two-letter code such as AU, when it has one), and <code>$process_person_profile</code> and <code>$geoip_disable</code>, which ask PostHog for no profile and no location. Each event also has the time when the app made it, to the millisecond. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 </li>
 <li>No session recording, no screen capture, and no automatic capture of taps or screens.
 </li>
-<li>If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage flags. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
+<li>If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage data, also a daily summary that waits. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
 </li>
 <li>Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
 </li></ul>
 <h2 lang="ja">カメラ</h2>
-<p>Maru uses the camera only when you scan a label or take a photo of an item. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".</p>
+<p>Maru uses the camera only when you scan a label or take a photo of an item. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo, and it sends no image and no text. With usage statistics on, Maru sends only the steps of the scan (see <code>setup_step</code>). iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".</p>
 <h2 lang="ja">項目の写真</h2>
 <p>An item can have a photo that you take or choose on the add or edit screen. It is optional.</p>
 <ul>
@@ -126,8 +147,6 @@
 <p>The name suggestions on the add screen come from a list inside the app. The name suggestions are a typing aid. They are not medical advice.</p>
 <h2 lang="ja">フィードバック</h2>
 <p>Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.</p>
-<h2 lang="ja">チップ</h2>
-<p>Settings has a "Support Maru" section with three optional tips. A tip unlocks nothing. The purchase goes through the App Store. Apple handles your payment and your Apple Account, and Maru gets no payment data or account data. Maru does not send item names, doses, or records with a tip. Maru loads the tip prices from the App Store only when you open Settings.</p>
 <h2 lang="ja">通知</h2>
 <p>Reminders are local notifications. iOS schedules and shows them on your device, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.</p>
 <h2 lang="ja">書き出しとバックアップのファイル</h2>

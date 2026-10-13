@@ -1,7 +1,8 @@
 /* Maru site. Tokens first. Every rule below the token block uses a token. */
 
 :root {
-  color-scheme: light dark;
+  /* Light only: the app pictures are light captures, so a dark page would not match them. */
+  color-scheme: light;
 
   /* Color */
   --bg: #FFFFFF;
@@ -25,9 +26,13 @@
 
   /* App components: the system colors of iOS in light mode, and the default pink of Maru (docs/design.md) */
   --app-tint: #FF2D55;
+  --app-bg: #F2F2F7;
+  /* The shade over the screen behind a sheet, measured from a capture. */
+  --app-dim: rgba(0, 0, 0, 0.2);
   --app-label: #000000;
   --app-label-2: #8A8A8E;
   --app-widget: #FFFFFF;
+  --app-fill: rgba(120, 120, 128, 0.2);
   --app-cap-off: #E5E5EA;
   --app-cap-line: #C7C7CC;
   --app-cap-shine: rgba(255, 255, 255, 0.32);
@@ -168,39 +173,6 @@
   --pt-max: 1.1px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #000000;
-    --bg-alt: #121214;
-    --surface: #1C1C1E;
-    --text: #F5F5F7;
-    --text-2: #A1A1A6;
-    --link: #FF6482;
-    --focus: #FF6482;
-    --tint-soft: rgba(255, 55, 95, 0.12);
-    --ring-color: rgba(255, 255, 255, 0.12);
-    --bar-bg: #1C1C1E;
-    --bar-ring: var(--hairline);
-    --tip-bg: #F5F5F7;
-    --tip-text: #1D1D1F;
-    --device-bezel: #3A3A3C;
-    --device-screen: #1C1C1E;
-    --app-label: #FFFFFF;
-    --app-label-2: #8D8D93;
-    --app-widget: #1C1C1E;
-    --app-cap-off: #2C2C2E;
-    --app-cap-line: #48484A;
-    --app-banner: rgba(255, 255, 255, 0.14);
-    --app-banner-rim: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.24);
-    --app-banner-text: rgba(255, 255, 255, 0.93);
-    --app-banner-2: rgba(255, 255, 255, 0.85);
-    --app-icon-ring: rgba(0, 0, 0, 0.2);
-    --wallpaper: radial-gradient(120% 80% at 0% 0%, #4A1424, transparent 60%), radial-gradient(90% 70% at 100% 100%, #7A1B35, transparent 70%), linear-gradient(160deg, #1A080E, #33101C);
-    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), var(--hairline);
-    --shadow-elevated: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3), var(--hairline);
-    --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 24px rgba(0, 0, 0, 0.4), 0 40px 80px rgba(0, 0, 0, 0.5), var(--hairline);
-  }
-}
 
 /* Languages. Chinese, Japanese, and Korean use their system fonts, no negative tracking, and more line height. */
 :lang(zh-Hans) { font-family: var(--font-zh); line-break: strict; }
@@ -443,6 +415,41 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .device-scroll img { position: static; display: block; height: auto; }
 .device-scroll + img { pointer-events: none; }
 .device:has(.device-scroll:focus-visible) { outline: var(--ring-width) solid var(--focus); outline-offset: var(--ring-offset); }
+/* The other screens of the hero phone. site.js adds them. Each position is a share of the capture of 1206 x 2622.
+   My Items is a page over Today. History is a page that slides in from the right, as a push in the app, and the tab
+   bar stays in place over it. A sheet rises over a shade, as in the app, and its top edge is at 186 of 2622. */
+.device-page, .device-hits, .device-tabs, .device-dim, .device-sheet { position: absolute; inset: 0; visibility: hidden; }
+.device-hits.is-on, .device-page.is-on, .device-tabs.is-on { visibility: visible; }
+.device-push, .device-tabs { transition: transform var(--dur-enter) var(--ease-smooth), visibility 0s var(--dur-enter); }
+.device-push { transform: translateX(100%); }
+.device-push.is-on, .device-tabs.is-on { transform: none; transition-delay: 0s; }
+/* A layer that only holds buttons lets a touch reach the list under it. */
+.device-hits, .device-tabs { pointer-events: none; }
+.device-tabs img { clip-path: inset(89% 0 0 0); }
+.device-dim { background: var(--app-dim); opacity: 0; pointer-events: none; transition: opacity var(--dur-enter) var(--ease-smooth), visibility 0s var(--dur-enter); }
+.device-dim.is-on { opacity: 1; visibility: visible; transition-delay: 0s; }
+.device-sheet {
+  top: 7.094%; overflow: hidden; border-radius: 9.37% 9.37% 0 0 / 4.64% 4.64% 0 0; background: var(--app-bg);
+  transform: translateY(100%); transition: transform var(--dur-enter) var(--ease-smooth), visibility 0s var(--dur-enter);
+}
+.device-sheet.is-on { transform: none; visibility: visible; transition-delay: 0s; }
+.device-sheet .device-scroll { border-radius: 0; }
+.device-screen .device-sheet-bar { bottom: auto; height: auto; pointer-events: none; }
+/* A button over a control of a capture. It is 44 pt or more of the app in each direction. */
+.device-hit {
+  position: absolute; top: 6.1%; height: 7.25%; padding: 0; border: 0; background: none; cursor: pointer;
+  border-radius: var(--radius-full); -webkit-tap-highlight-color: transparent; pointer-events: auto;
+}
+.device-hit:focus-visible { outline-offset: calc(-1 * var(--ring-width)); border-radius: var(--radius-full); }
+.hit-lead { left: 1.6%; width: 15.8%; }
+.hit-calendar { left: 69.6%; width: 13.5%; }
+.hit-plus { left: 83.1%; width: 14.5%; }
+.hit-tab-today, .hit-tab-items { top: 90%; height: 9.2%; width: 32%; }
+.hit-tab-today { left: 18%; }
+.hit-tab-items { left: 50%; }
+.hit-cancel, .hit-done { top: 1.4%; height: 7.8%; width: 36%; }
+.hit-cancel { left: 1.6%; }
+.hit-done { right: 1.6%; }
 .island {
   position: absolute; left: 50%; top: calc(var(--device-w) * 0.04);
   width: calc(var(--device-w) * 0.31); height: calc(var(--device-w) * 0.092); transform: translateX(-50%);
@@ -463,11 +470,15 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   background: var(--wallpaper); box-shadow: var(--hairline);
 }
 /* The medium Today widget (TodayWidget, CapsuleMark). */
-.m-widget { width: calc(349.33 * var(--pt)); height: calc(164 * var(--pt)); padding: calc(17.67 * var(--pt)); background: var(--app-widget); border-radius: calc(28 * var(--pt)); box-shadow: var(--shadow-float); }
-.m-widget-top { display: flex; justify-content: space-between; gap: calc(8 * var(--pt)); font-size: calc(17 * var(--pt)); line-height: calc(22 * var(--pt)); }
+.m-widget { width: calc(349.33 * var(--pt)); height: calc(164 * var(--pt)); padding: calc(17.67 * var(--pt)); display: flex; flex-direction: column; justify-content: space-between; background: var(--app-widget); border-radius: calc(28 * var(--pt)); box-shadow: var(--shadow-float); }
+.m-widget-top { display: flex; justify-content: space-between; align-items: center; gap: calc(8 * var(--pt)); font-size: calc(17 * var(--pt)); line-height: calc(22 * var(--pt)); }
+/* The progress bar of the day: a track of 96 x 8 pt in the system fill, and the tint for the share taken. No border and no text. */
+.m-bar { flex: none; width: calc(96 * var(--pt)); height: calc(8 * var(--pt)); border-radius: var(--radius-full); background: var(--app-fill); overflow: hidden; }
+.m-bar i { display: block; height: 100%; min-width: calc(8 * var(--pt)); border-radius: var(--radius-full); background: var(--app-tint); }
 .m-widget-top b, .m-col b { font-weight: var(--fw-semibold); }
-.m-widget-top b + b, .m-time { color: var(--app-label-2); }
-.m-cols { display: flex; gap: calc(8 * var(--pt)); margin-top: calc(7.33 * var(--pt)); }
+.m-time { color: var(--app-label-2); }
+/* The columns end at the bottom edge, so the space under the capsules equals the space over the title. */
+.m-cols { display: flex; gap: calc(8 * var(--pt)); }
 .m-col { flex: 1; min-width: 0; display: grid; align-content: start; }
 .m-col b { font-size: calc(15 * var(--pt)); line-height: calc(20 * var(--pt)); white-space: nowrap; }
 .m-col b.now { color: var(--app-tint); }
@@ -600,6 +611,11 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .nots a:active, .closer-links a:active, .site-footer a:active { transform: none; }
   .icon-btn[data-tip]::after { filter: none; transform: translate(-50%, 0); }
+  /* A screen of the hero phone still fades in and out, with no movement. */
+  .device-push, .device-sheet { transform: none; opacity: 0; }
+  .device-push, .device-sheet, .device-tabs, .device-dim { transition: opacity var(--dur-fade) var(--ease-out), visibility 0s var(--dur-fade) !important; }
+  .device-push.is-on, .device-sheet.is-on { opacity: 1; }
+  .device-push.is-on, .device-sheet.is-on, .device-tabs.is-on, .device-dim.is-on { transition-delay: 0s !important; }
   /* A menu still fades in and out, with no movement. */
   .lang-menu ul { animation: fade var(--dur-base) var(--ease-out) !important; }
   .lang-menu.closing ul { animation: fade-out var(--dur-close) var(--ease-in) forwards !important; }

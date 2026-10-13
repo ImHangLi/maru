@@ -457,7 +457,7 @@
       }
     },
     "Help Improve Maru?" : {
-      "comment" : "The one-time notice about usage statistics: the title.",
+      "comment" : "The one-time question about usage statistics in the EU, the UK, and Switzerland: the title.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -561,41 +561,6 @@
         }
       }
     },
-    "Turn Off" : {
-      "comment" : "Usage statistics notice: the button that turns the statistics off.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ausschalten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "オフにする"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "끄기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭"
-          }
-        }
-      }
-    },
     "Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings." : {
       "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the message. The statistics are off until the user agrees.",
       "localizations" : {
@@ -627,41 +592,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "共享功能使用情况，例如今天是否记录了服用。Maru 绝不共享项目名称、剂量或时间。你可以随时在“设置”中更改。"
-          }
-        }
-      }
-    },
-    "Maru shares how you use the app, such as whether you recorded a dose today. It never shares item names, doses, or times. You can turn this off in Settings." : {
-      "comment" : "Usage statistics notice: the message. The statistics are on by default outside the EU, the UK, and Switzerland.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru teilt, wie du die App nutzt, zum Beispiel ob du heute eine Dosis erfasst hast. Maru teilt nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ausschalten."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru comparte cómo usas la app, por ejemplo si has registrado una dosis hoy. Nunca comparte nombres de elementos, dosis ni horas. Puedes desactivarlo en Ajustes."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruは、今日服用を記録したかどうかなど、機能の利用状況を共有します。項目名、用量、時刻は共有しません。「設定」でいつでもオフにできます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru는 오늘 복용을 기록했는지 같은 앱 사용 정보를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 끌 수 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 会共享功能使用情况，例如今天是否记录了服用。绝不共享项目名称、剂量或时间。你可以随时在“设置”中关闭。"
           }
         }
       }
@@ -2093,7 +2023,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eintrag hinzufügen"
+            "value" : "Hinzufügen"
           }
         },
         "es" : {
@@ -3878,7 +3808,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eintrag bearbeiten"
+            "value" : "Bearbeiten"
           }
         },
         "es" : {
@@ -8664,41 +8594,6 @@
         }
       }
     },
-    "Send a Test Notification" : {
-      "comment" : "Settings: a button that sends one test notification in a few seconds.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Testmitteilung senden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enviar una notificación de prueba"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "テスト通知を送信"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "테스트 알림 보내기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "发送测试通知"
-          }
-        }
-      }
-    },
     "Sets the note." : {
       "comment" : "Edit screen: the VoiceOver hint of a note candidate of the smart completion, for example With food.",
       "localizations" : {
@@ -9609,189 +9504,6 @@
         }
       }
     },
-    "Maru did not send the test, because notifications are off." : {
-      "comment" : "Settings: the footer when the test notification is not allowed because notifications are off for Maru.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru hat den Test nicht gesendet, weil Mitteilungen ausgeschaltet sind."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no ha enviado la prueba porque las notificaciones están desactivadas."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知がオフのため、Maruはテストを送信しませんでした。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림이 꺼져 있어서 Maru가 테스트를 보내지 않았어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 没有发送测试，因为通知已关闭。"
-          }
-        }
-      }
-    },
-    "Maru did not send the test, so try again." : {
-      "comment" : "Settings: the footer when the system did not take the test notification.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru hat den Test nicht gesendet. Versuche es erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no ha enviado la prueba. Inténtalo de nuevo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruはテストを送信しませんでした。もう一度お試しください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 테스트를 보내지 않았어요. 다시 시도하세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 没有发送测试，请重试。"
-          }
-        }
-      }
-    },
-    "Maru did not send the test, because your iPhone can’t hold more reminders." : {
-      "comment" : "Settings: the footer when the system has no room for the test notification.",
-      "localizations" : {
-        "de" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru hat den Test nicht gesendet, weil dein iPad keine weiteren Erinnerungen aufnehmen kann."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru hat den Test nicht gesendet, weil dein iPhone keine weiteren Erinnerungen aufnehmen kann."
-                }
-              }
-            }
-          }
-        },
-        "en" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru did not send the test, because your iPad can’t hold more reminders."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru did not send the test, because your iPhone can’t hold more reminders."
-                }
-              }
-            }
-          }
-        },
-        "es" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru no ha enviado la prueba porque el iPad no admite más recordatorios."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru no ha enviado la prueba porque el iPhone no admite más recordatorios."
-                }
-              }
-            }
-          }
-        },
-        "ja" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPadにこれ以上リマインダーを登録できないため、Maruはテストを送信しませんでした。"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPhoneにこれ以上リマインダーを登録できないため、Maruはテストを送信しませんでした。"
-                }
-              }
-            }
-          }
-        },
-        "ko" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPad가 미리 알림을 더 담을 수 없어서 Maru가 테스트를 보내지 않았어요."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPhone이 미리 알림을 더 담을 수 없어서 Maru가 테스트를 보내지 않았어요."
-                }
-              }
-            }
-          }
-        },
-        "zh-Hans" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru 没有发送测试，因为 iPad 无法容纳更多提醒。"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru 没有发送测试，因为 iPhone 无法容纳更多提醒。"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "The plan has too many times for iPhone." : {
       "comment" : "Item detail: the footer of the plan when the plan has more reminder times than iPhone allows.",
       "localizations" : {
@@ -10084,41 +9796,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 Maru 再次检查之前，提醒可能仍然开启。"
-          }
-        }
-      }
-    },
-    "The test comes in about 5 seconds." : {
-      "comment" : "Settings: the footer after the user taps the test notification button.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Test kommt in etwa 5 Sekunden."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La prueba llega en unos 5 segundos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "テストは約5秒後に届きます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "테스트 알림은 약 5초 뒤에 와요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "测试通知约 5 秒后送达。"
           }
         }
       }
@@ -12504,41 +12181,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "赞赏未成功。"
-          }
-        }
-      }
-    },
-    "Tips are not available now." : {
-      "comment" : "Settings: the footer of the tips when the store has no tip to show.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trinkgelder sind gerade nicht verfügbar."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las propinas no están disponibles ahora."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "現在、チップは利用できません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지금은 후원할 수 없어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂时无法赞赏。"
           }
         }
       }
