@@ -1,6 +1,41 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    ", " : {
+      "comment" : "The separator between the parts of a detail line. Example: 2 capsules, 8:00 AM.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", "
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", "
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "、"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ", "
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "，"
+          }
+        }
+      }
+    },
     "Choose Photo" : {
       "comment" : "Edit screen: the button that opens the photo library to pick a photo for the item.",
       "localizations" : {
@@ -6457,7 +6492,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "全部记录"
+            "value" : "全部标为已服"
           }
         }
       }

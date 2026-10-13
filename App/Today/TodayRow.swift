@@ -348,7 +348,7 @@ extension TodaySnapshot.Entry {
             ?? String(localized: "Taken")
         case .skipped: String(localized: "Skipped")
         }
-        return ([amount].compactMap(\.self) + [state]).formatted(.list(type: .and, width: .narrow))
+        return ([amount].compactMap(\.self) + [state]).detailLine
     }
 
     /// The time that the user set. A medication that keeps another time zone names the city of that zone,
@@ -360,5 +360,13 @@ extension TodaySnapshot.Entry {
             localized: "\(time) \(SchedulePreview.city(occurrence.timeZone)) time",
             comment: "Today: the reminder time of a medication that keeps another time zone. Example: 9:00 AM Shanghai time."
         )
+    }
+}
+
+extension [String] {
+    /// The parts of a detail line, such as an amount and a time. The parts are not a list of like things,
+    /// so a list format joins them with "and" ("150 mg and 8:00 AM"), which is wrong.
+    var detailLine: String {
+        joined(separator: String(localized: ", ", comment: "The separator between the parts of a detail line. Example: 2 capsules, 8:00 AM."))
     }
 }

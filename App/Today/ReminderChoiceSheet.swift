@@ -103,7 +103,7 @@ struct ReminderChoiceSheet: View {
         } else if candidate.record?.status == .skipped {
             parts.append(String(localized: "Skipped"))
         }
-        return parts.formatted(.list(type: .and, width: .narrow))
+        return parts.detailLine
     }
 
     private func action(_ candidate: ReminderChoice.Candidate, isPending: Bool) -> LocalizedStringKey {
