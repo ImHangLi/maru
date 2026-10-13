@@ -895,7 +895,7 @@ Agent decisions for the analytics part of D051. They follow spec §10 and §11. 
 
 Not verified: the app build and the screens. CI builds the app. The send to a real PostHog project and a packet capture (T42) need a key and a device.
 
-## D056 · 2026-10-12 · Optional item photo
+## D056 · 2026-10-12 · Optional item photo (place on the edit screen replaced by D073)
 
 The maintainer asked for this on 2026-10-12. It covers spec §5.1, §5.2, and §10, and T29 to T32. It restores `Item.imageReference`, which D049 removed.
 
@@ -1294,3 +1294,15 @@ Maintainer decision, with agent detail. The maintainer asked for iPad support be
 - The store page then needs iPad screenshots (`docs/release-plan.md`).
 
 The two-column version was seen in the simulators iPad Pro 13-inch and iPad mini, in portrait and landscape, light and dark, and at the largest text size: Today with History, the day log and the item log, the item detail, My Items, add and edit, the photo picker, Settings, and the share sheet of the export. Not seen: Split View and Slide Over, the scanner and the camera (the simulator has no camera), restore, the tip section with products, and a real iPad. The camera may not be available in Split View or Slide Over. Nobody saw the layout of the iPhone on an iPad display. CI builds it.
+
+## D073 · 2026-10-13 · Photo icons line up, the photo choice is beside the form, and the sample items have photos
+
+Maintainer decision on the concept, with agent detail. The maintainer approved a concept of three supplement jars with invented brand labels (Driftholm Omega-3, daywick Vitamin D3, Quietfield Magnesium Glycinate) as item photos.
+
+- Icon column: a photo was 1.4 times the icon size, and the drawn icon was 1 time. In a list with both, the names did not line up, by about 7 points at the default text size. `FormIcon` now gives both one square frame of 1.4 times the icon size, with a limit of 44 points. The drawn icon keeps its size in the middle. This covers Today, History, the item detail, and the archived list. The My Items tile already used one size for both. The widgets show no photo.
+- Edit screen: the photo was the last section, "Photo (Optional)", under the note. It moves into the section of the form and the color, because both choose the icon. The first row of the section shows the current icon or photo. "Choose Photo" and "Take Photo" follow "Form" and "Color". The camera permission, the background removal, the switch "Remove Background", and "Remove Photo" do not change. The header "Photo (Optional)" and its string are removed. The section uses only existing strings.
+- Debug sample data: vitamin D3, omega-3, and magnesium get the jar photos, in each app language. They are stored by `ItemPhotos`, as the edit screen stores a cut-out: a PNG of at most 512 pixels, made with the Vision steps of `PhotoProcessor`. Medications never get a photo. The other sample items keep drawn icons.
+- To give the same three supplements in each language, magnesium replaces the probiotic in zh-Hans, ja, and ko. The names that match the labels are "Vitamin D3" and "Magnesium Glycinate" in English, with the local names in the other languages. This differs from the probiotic choice of the store research for Korea. The site mock (`site/src/mock/`) still has the old names.
+- The PNGs are in `App/Debug/SamplePhotos/`. The Release configuration of the app target sets `EXCLUDED_SOURCE_FILE_NAMES` to `sample-photo-*.png`, so a release build does not copy them. A CI step reads the Release build settings and fails when the setting is missing.
+- Image sources: Unsplash photos by Supliful under the Unsplash License, with invented labels. The brand names had no hit in the US trademark register. A TMview check is still open before a public use of the images.
+

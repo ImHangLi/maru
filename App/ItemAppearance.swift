@@ -75,13 +75,16 @@ struct FormIcon: View {
 
     var body: some View {
         if typeSize < .accessibility3 {
-            ItemPhotoView(reference: photo, side: min(size * 1.4, 44)) {
+            // A photo and a drawn icon share one frame, so the names in a mixed list line up (D073).
+            let side = min(size * 1.4, 44)
+            ItemPhotoView(reference: photo, side: side) {
                 form.image
                     .resizable()
                     .scaledToFit()
                     .frame(width: min(size, 44), height: min(size, 44))
                     .foregroundStyle(color.color)
             }
+            .frame(width: side, height: side)
             .accessibilityHidden(true)
         }
     }

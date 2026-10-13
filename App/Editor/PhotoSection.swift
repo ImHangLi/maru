@@ -1,4 +1,5 @@
 import AVFoundation
+import MaruCore
 import PhotosUI
 import SwiftUI
 
@@ -102,12 +103,17 @@ private struct PhotoWork: ViewModifier {
     }
 }
 
-/// The optional photo of the item (spec 5.1, D056): a photo from the library or from the camera. The photo
-/// replaces the form icon where the item shows it. The form icon stays as the fallback (T32).
-struct PhotoSection: View {
+/// How the item looks: the current icon or photo, the form and color choices, and the optional photo (spec 5.1,
+/// D056, D073). The photo choice is beside the form, because both choose the icon. The photo replaces the form
+/// icon where the item shows it. The form icon stays as the fallback (T32).
+struct LookSection<Choices: View>: View {
     @Binding var state: PhotoState
     /// The photo file of the stored item, if it has one.
     let storedReference: String?
+    let form: ItemForm
+    let color: ItemColor
+    /// The form and color pickers.
+    @ViewBuilder let choices: Choices
 
     @Environment(\.openURL) private var openURL
     @ScaledMetric(relativeTo: .body) private var previewSide = 56
@@ -125,9 +131,8 @@ struct PhotoSection: View {
 
     var body: some View {
         Section {
-            if hasPhoto {
-                preview
-            }
+            preview
+            choices
             PhotosPicker(selection: $pickerItem, matching: .images) {
                 Label("Choose Photo", systemImage: "photo")
             }
@@ -164,8 +169,6 @@ struct PhotoSection: View {
             if hasPhoto {
                 Button("Remove Photo", role: .destructive, action: remove)
             }
-        } header: {
-            Text("Photo (Optional)")
         } footer: {
             switch state.step {
             case .noSubject: Text("Maru found no single subject, so the photo stays as it is.")
@@ -180,8 +183,10 @@ struct PhotoSection: View {
         }
     }
 
-    @ViewBuilder private var preview: some View {
+    /// The icon as the lists show it: the photo, else the form icon in the item color.
+    private var preview: some View {
         HStack {
+            Spacer()
             if case let .replaced(choice) = state.edit {
                 Image(uiImage: choice.chosen.preview)
                     .resizable()
@@ -189,12 +194,25 @@ struct PhotoSection: View {
                     .frame(width: previewSide, height: previewSide)
                     .clipShape(RoundedRectangle(cornerRadius: previewSide / 5, style: .continuous))
                     .accessibilityLabel(Text("Photo"))
-            } else {
-                ItemPhotoView(reference: storedReference, side: previewSide) { EmptyView() }
+            } else if hasPhoto {
+                ItemPhotoView(reference: storedReference, side: previewSide) { formIcon }
                     .accessibilityLabel(Text("Photo"))
+            } else {
+                // The form picker under it names the form, so VoiceOver reads no image name.
+                formIcon
+                    .accessibilityHidden(true)
             }
             Spacer()
         }
+    }
+
+    private var formIcon: some View {
+        form.image
+            .resizable()
+            .scaledToFit()
+            .padding(previewSide / 8)
+            .frame(width: previewSide, height: previewSide)
+            .foregroundStyle(color.color)
     }
 
     /// The system asks for the camera at the first tap. A camera that is off gets one sentence and a button
