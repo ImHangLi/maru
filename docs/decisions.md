@@ -1135,7 +1135,7 @@ Limits that the maintainer must know:
 
 - The database had complete file protection (spec 10), so the Watch app recorded only while the iPhone was unlocked. D066 changes the level. The case that remains: an iPhone that restarted and was not unlocked yet. The Watch then shows the last list and "Not recorded. Unlock your iPhone and try again."
 - The app embeds the Watch app. An archive of the iPhone app from this state includes it, and App Store Connect then asks for Watch screenshots and reviews the Watch app. To ship 1.0 without it, archive 1.0 before this change merges, or remove the `MaruWatch` dependency of the `Maru` target for that archive.
-- `PRIVACY.md` and `site/privacy.html` have the sentence about the Watch (D066).
+- `PRIVACY.md` and the privacy pages of the site have the sentence about the Watch (D066).
 
 Notifications: nothing new. The iPhone reminders mirror to the Watch with the "Taken" action of D034. The category has one background action, registered on the iPhone at each launch. For a notification that the iPhone forwards, watchOS gives a background action to the iPhone app, so the response goes to `ReminderTapDelegate`, and `takeReminder` records with the same transaction. This is a reading of the code and of the watchOS rule, and a device must confirm it. The Watch app has no notification code, so a tap on the reminder itself opens the Watch app at its list.
 
@@ -1169,7 +1169,7 @@ What else reads the same files on a locked iPhone now:
 
 The Watch keeps one plain sentence for the case that remains: "Not recorded. Unlock your iPhone and try again."
 
-`PRIVACY.md` states the new level, and it has one sentence that the list of today goes to the user's own Apple Watch. The maintainer approved both texts. `site/privacy.html` has the same text. The site publishes it when this change merges.
+`PRIVACY.md` states the new level, and it has one sentence that the list of today goes to the user's own Apple Watch. The maintainer approved both texts. `site/build.py` builds the privacy page of each language from `PRIVACY.md`, so the pages have the same text. The site publishes it when this change merges.
 
 Not verified: no device ran this. A real iPhone must confirm that the level of the existing files changes at the first launch, that a record from the Watch works with the iPhone locked, that it fails with the plain sentence after a restart, and what the widgets show on a locked display.
 

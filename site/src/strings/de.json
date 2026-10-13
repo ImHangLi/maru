@@ -1,0 +1,170 @@
+{
+  "name": "Deutsch",
+  "suggest": "Auf Deutsch lesen",
+  "close": "Schließen",
+  "skip": "Zum Inhalt springen",
+  "nav_label": "Hauptmenü",
+  "home": {
+    "title": "Maru: Wissen, was du genommen hast",
+    "desc": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Einmal tippen, und die Einnahme ist erfasst. Kostenlos und ohne Konto.",
+    "h1": "Schon genommen? |Maru weiß es.",
+    "lede": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Einmal tippen, und die Einnahme ist erfasst."
+  },
+  "store": {
+    "badge_alt": "Laden im App Store",
+    "download": "Laden",
+    "devices": "Verfügbar für",
+    "soon": "Bald im App Store"
+  },
+  "shots": {
+    "today": {
+      "label": "Heute",
+      "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
+    },
+    "history": {
+      "label": "Verlauf",
+      "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der vergangenen Tage und den letzten 7 Tagen jedes Eintrags."
+    },
+    "detail": {
+      "label": "Eintrag",
+      "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."
+    },
+    "notification": {
+      "alt": "Eine Erinnerung von Maru an Vitamin D."
+    },
+    "widget": {
+      "alt": "Das Maru-Widget „Heute“: 2 von 5 eingenommen, mit Morgens, Mittags und Abends."
+    }
+  },
+  "blocks": [
+    {
+      "shot": "duo",
+      "title": "Erinnerung und Überblick",
+      "text": "Maru erinnert dich zu deinen Zeiten, und das Widget zeigt deinen Tag."
+    },
+    {
+      "shot": "history",
+      "title": "Sieh, was du genommen hast",
+      "text": "Ganze Monate auf einen Blick, dazu die letzten sieben Tage jedes Eintrags."
+    },
+    {
+      "shot": "detail",
+      "title": "Zeiten und Mengen im Blick",
+      "text": "Dort stehen die Zeiten, die Menge und die letzten sieben Tage."
+    }
+  ],
+  "trust_title": "Gut zu wissen",
+  "trust": [
+    "Kostenlos und Open Source",
+    "Ohne Konto",
+    "Deine Aufzeichnungen bleiben auf deinem iPhone"
+  ],
+  "footer": {
+    "faq": "Fragen",
+    "support": "Support",
+    "privacy": "Datenschutz",
+    "source": "Quellcode",
+    "language": "Sprache",
+    "advice": "Maru gibt keinen medizinischen Rat."
+  },
+  "faq": {
+    "title": "Maru: Fragen und Antworten",
+    "desc": "Kurze Antworten zu Maru: Preis, deine Daten, Erinnerungen und der Umzug auf ein neues iPhone.",
+    "h1": "Fragen und Antworten",
+    "items": [
+      [
+        "Ist Maru kostenlos?",
+        "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge. Du kannst ein Trinkgeld geben, wenn du magst, aber es schaltet nichts frei."
+      ],
+      [
+        "Brauche ich ein Konto?",
+        "Nein. Öffne Maru und trag ein, was du nimmst."
+      ],
+      [
+        "Wo sind meine Daten?",
+        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."
+      ],
+      [
+        "Warum nicht ein Wecker oder Apple Health?",
+        "Ein Wecker klingelt, aber er weiß nicht, was du genommen hast. Apple Health kann viel mehr, und Maru macht nur eine kleine Sache: Es zeigt, was jetzt dran ist, und ein Tippen erfasst es."
+      ],
+      [
+        "Kann ich direkt in der Erinnerung erfassen?",
+        "Ja, wenn die Erinnerung für einen Eintrag ist: Tippe auf „Eingenommen“. Eine Erinnerung für mehrere Einträge öffnet Maru."
+      ],
+      [
+        "Erinnert mich Maru mehrmals?",
+        "Schalte in den Einstellungen „Erneut erinnern“ ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Maru ist kein Wecker, deshalb können der Stummmodus oder ein Fokus eine Erinnerung zurückhalten."
+      ],
+      [
+        "Was, wenn ich das Erfassen vergesse?",
+        "Du kannst später erfassen oder die erfasste Uhrzeit ändern."
+      ],
+      [
+        "Sagt mir Maru, was ich nehmen soll?",
+        "Nein. Maru gibt keinen medizinischen Rat: Du trägst ein, was du nimmst, und Maru erinnert dich."
+      ],
+      [
+        "Zählt Maru, wie viele Tabletten ich noch habe?",
+        "Nein. Maru erinnert und erfasst, mehr nicht."
+      ],
+      [
+        "Wie ziehe ich auf ein neues iPhone um?",
+        "Öffne auf dem alten iPhone die Einstellungen in Maru, tippe auf „Backup erstellen“ und sichere die Datei. Tippe auf dem neuen iPhone auf „Aus Backup wiederherstellen“ und wähle diese Datei. Das ersetzt die Einträge und Aufzeichnungen, die dort schon in Maru sind. Die Datei ist nicht verschlüsselt, also bewahre sie sicher auf."
+      ],
+      [
+        "Kann ich meine Aufzeichnungen mitnehmen?",
+        "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können."
+      ],
+      [
+        "Gibt es eine App für die Apple Watch?",
+        "Nein. Maru ist eine iPhone-App und synchronisiert nicht zwischen Geräten."
+      ],
+      [
+        "Welche Sprachen spricht Maru?",
+        "Englisch, vereinfachtes Chinesisch, Japanisch, Spanisch, Deutsch und Koreanisch."
+      ],
+      [
+        "Ist Maru Open Source?",
+        "Ja. Der Code steht unter der MIT-Lizenz auf <a href=\"{github}\">GitHub</a>."
+      ]
+    ]
+  },
+  "support": {
+    "title": "Maru: Support",
+    "desc": "Stell eine Frage zu Maru, melde einen Fehler oder teile eine Idee.",
+    "h1": "Support",
+    "lede": "Stell eine Frage, melde einen Fehler oder teile eine Idee.",
+    "email": "E-Mail",
+    "form": "Feedback-Formular",
+    "form_link": "Feedback-Formular öffnen",
+    "form_note": "Das Formular ist eine Seite von Tally (tally.so).",
+    "note": "Bitte schreib keine Gesundheitsdetails in deine Nachricht. Vielleicht steht die Antwort schon bei den <a href=\"{faq}\">Fragen und Antworten</a>."
+  },
+  "privacy": {
+    "title": "Maru: Datenschutz",
+    "desc": "Was Maru auf deinem iPhone speichert, was es sendet und was es nie tut.",
+    "h1": "Datenschutz",
+    "summary_title": "Kurz gesagt",
+    "summary": [
+      "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Maru hat kein Konto und keinen Server dafür.",
+      "Die einfache Nutzungsstatistik enthält nie, was du nimmst, und ein Schalter in den Einstellungen stellt sie ab.",
+      "Maru hat keine Werbung und liest weder deine Kontakte noch deinen Standort."
+    ],
+    "binding": "Die vollständige Erklärung steht unten auf Englisch. Maßgeblich ist der englische Text.",
+    "headings": {
+      "What Maru stores": "Was Maru speichert",
+      "What Maru does not do": "Was Maru nicht tut",
+      "Usage statistics": "Nutzungsstatistik",
+      "Camera": "Kamera",
+      "Item photos": "Fotos der Einträge",
+      "Feedback": "Feedback",
+      "Tips": "Trinkgeld",
+      "Notifications": "Mitteilungen",
+      "Export and backup files": "Export- und Backup-Dateien",
+      "iPhone backups": "iPhone-Backups",
+      "Changes": "Änderungen"
+    }
+  },
+  "github": "Maru auf GitHub"
+}
