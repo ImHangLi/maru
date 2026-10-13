@@ -6,6 +6,8 @@
 <title>Privacy | Maru</title>
 <meta name="description" content="Maru keeps your health data on your iPhone. No account and no ads. Optional usage statistics never include item names, doses, or times.">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://maru.day/privacy.html">
 <link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/icon.png">
@@ -19,14 +21,12 @@
 <meta name="twitter:title" content="Privacy | Maru">
 <meta name="twitter:description" content="Maru keeps your health data on your iPhone. No account and no ads. Optional usage statistics never include item names, doses, or times.">
 <meta name="twitter:image" content="https://maru.day/icon.png">
+<script>document.documentElement.classList.add('js')</script>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-<a class="brand" href="/"><img src="/icon.png" alt="" width="32" height="32"><span>Maru</span></a>
-<nav aria-label="Main"><a href="/faq.html">FAQ</a><a href="/compare.html">Compare</a><a href="/privacy.html" aria-current="page">Privacy</a><a href="/support.html">Support</a></nav>
-</header>
+<header class="site-header"><div class="nav-inner"><a class="brand" href="/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a><nav class="nav-links" aria-label="Main"><a href="/faq.html">FAQ</a><a href="/compare.html">Compare</a><a href="/privacy.html" aria-current="page">Privacy</a><a href="/support.html">Support</a></nav></div></header>
 <main id="main" class="prose">
 <h1>Privacy</h1>
 <p class="lede">Maru keeps your health data on your iPhone. This page describes the app in this repository as it is today.</p>
@@ -51,12 +51,7 @@
 <li>Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".</li>
 <li>Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on in the notice or in Settings.</li>
 <li>How Maru picks the rule: it uses the region setting of your iPhone, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or an iPhone with another region setting, gets the rule of that setting.</li>
-<li>What Maru sends: only these events and fields.</li>
-<p>  - <code>setup_step</code>: that an item was saved.</p>
-<p>  - <code>daily_usage_summary</code>: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.</p>
-<p>  - <code>core_error</code>: whether a save or a read failed, with one of five fixed codes.</p>
-<p>  - <code>feedback_entry</code>: that you tapped "Send Feedback".</p>
-<p>  - <code>purchase_result</code>: a fixed product and result. Maru does not send this event yet.</p>
+<li>What Maru sends: only these events and fields.<ul><li><code>setup_step</code>: that an item was saved.</li><li><code>daily_usage_summary</code>: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.</li><li><code>core_error</code>: whether a save or a read failed, with one of five fixed codes.</li><li><code>feedback_entry</code>: that you tapped "Send Feedback".</li><li><code>purchase_result</code>: a fixed product and result. Maru does not send this event yet.</li></ul></li>
 <li>What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.</li>
 <li>Each request also has the app version, the major version of iOS, and a random install ID. Apple's privacy label lists it as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.</li>
 <li>No session recording, no screen capture, and no automatic capture of taps or screens.</li>
@@ -99,17 +94,18 @@
 <p>This file will change before the app does.</p>
 </main>
 <footer class="site-footer">
+<div class="footer-inner">
 <div>
-<a class="brand" href="/"><img src="/icon.png" alt="" width="24" height="24"><span>Maru</span></a>
+<a class="brand" href="/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
 <p>Remember what you take. Nothing more.</p>
 </div>
-<nav aria-label="Footer">
-<a href="/faq.html">FAQ</a>
-<a href="/compare.html">Compare</a>
-<a href="/privacy.html">Privacy</a>
-<a href="/support.html">Support</a>
-<a href="https://github.com/ImHangLi/maru">Source on GitHub</a>
-</nav>
+<div class="footer-cols">
+<div><h2>Maru</h2><a href="/faq.html">FAQ</a><a href="/compare.html">Compare</a></div>
+<div><h2>Help</h2><a href="/support.html">Support</a><a href="/privacy.html">Privacy</a></div>
+<div><h2>Open source</h2><a href="https://github.com/ImHangLi/maru">Source on GitHub</a></div>
+</div>
+</div>
+<div class="legal"><p>Maru is in early development and is not on the App Store yet. Open source under the MIT license.</p></div>
 </footer>
 <script src="/site.js" defer></script>
 </body>

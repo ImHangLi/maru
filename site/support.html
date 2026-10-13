@@ -6,6 +6,8 @@
 <title>Support | Maru</title>
 <meta name="description" content="Contact the Maru maintainer by email or use the feedback form.">
 <meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="https://maru.day/support.html">
 <link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/icon.png">
@@ -19,14 +21,12 @@
 <meta name="twitter:title" content="Support | Maru">
 <meta name="twitter:description" content="Contact the Maru maintainer by email or use the feedback form.">
 <meta name="twitter:image" content="https://maru.day/icon.png">
+<script>document.documentElement.classList.add('js')</script>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-<a class="brand" href="/"><img src="/icon.png" alt="" width="32" height="32"><span>Maru</span></a>
-<nav aria-label="Main"><a href="/faq.html">FAQ</a><a href="/compare.html">Compare</a><a href="/privacy.html">Privacy</a><a href="/support.html" aria-current="page">Support</a></nav>
-</header>
+<header class="site-header"><div class="nav-inner"><a class="brand" href="/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a><nav class="nav-links" aria-label="Main"><a href="/faq.html">FAQ</a><a href="/compare.html">Compare</a><a href="/privacy.html">Privacy</a><a href="/support.html" aria-current="page">Support</a></nav></div></header>
 <main id="main" class="prose">
 <h1>Support</h1>
 <p class="lede">Ask a question, report a bug, or share an idea.</p>
@@ -37,17 +37,18 @@
 <p>Please leave health details out of your message. Read <a href="/faq.html">the FAQ</a> first. It may have your answer.</p>
 </main>
 <footer class="site-footer">
+<div class="footer-inner">
 <div>
-<a class="brand" href="/"><img src="/icon.png" alt="" width="24" height="24"><span>Maru</span></a>
+<a class="brand" href="/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
 <p>Remember what you take. Nothing more.</p>
 </div>
-<nav aria-label="Footer">
-<a href="/faq.html">FAQ</a>
-<a href="/compare.html">Compare</a>
-<a href="/privacy.html">Privacy</a>
-<a href="/support.html">Support</a>
-<a href="https://github.com/ImHangLi/maru">Source on GitHub</a>
-</nav>
+<div class="footer-cols">
+<div><h2>Maru</h2><a href="/faq.html">FAQ</a><a href="/compare.html">Compare</a></div>
+<div><h2>Help</h2><a href="/support.html">Support</a><a href="/privacy.html">Privacy</a></div>
+<div><h2>Open source</h2><a href="https://github.com/ImHangLi/maru">Source on GitHub</a></div>
+</div>
+</div>
+<div class="legal"><p>Maru is in early development and is not on the App Store yet. Open source under the MIT license.</p></div>
 </footer>
 <script src="/site.js" defer></script>
 </body>

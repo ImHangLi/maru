@@ -4,7 +4,7 @@
 
 Facts:
 - Free core. No account, no ads, no tracking, no cloud. Data stays on the iPhone.
-- Today screen: record a dose with one tap, or a whole part of the day with one tap.
+- Today screen: record a dose with one tap.
 - Local reminders at the times you choose, with an optional "Remind Again".
 - History with undo and correction. CSV export, backup, and restore.
 - Maru does not track stock, give medical advice, or pick a dose or a time for you.
