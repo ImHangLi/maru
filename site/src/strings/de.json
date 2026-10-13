@@ -90,7 +90,7 @@
     "items": [
       [
         "Ist Maru kostenlos?",
-        "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge. Du kannst ein Trinkgeld geben, wenn du magst, aber es schaltet nichts frei."
+        "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge."
       ],
       [
         "Brauche ich ein Konto?",
@@ -183,7 +183,6 @@
       "Camera": "Kamera",
       "Item photos": "Fotos der Einträge",
       "Feedback": "Feedback",
-      "Tips": "Trinkgeld",
       "Notifications": "Mitteilungen",
       "Export and backup files": "Export- und Backup-Dateien",
       "iPhone and iPad backups": "iPhone- und iPad-Backups",

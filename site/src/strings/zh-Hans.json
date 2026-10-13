@@ -90,7 +90,7 @@
     "items": [
       [
         "Maru 免费吗？",
-        "免费，没有订阅，没有广告，项目数量也不限。你可以自愿打赏，但打赏不会解锁任何功能。"
+        "免费，没有订阅，没有广告，项目数量也不限。"
       ],
       [
         "需要注册账号吗？",
@@ -183,7 +183,6 @@
       "Camera": "相机",
       "Item photos": "项目照片",
       "Feedback": "反馈",
-      "Tips": "打赏",
       "Notifications": "通知",
       "Export and backup files": "导出和备份文件",
       "iPhone and iPad backups": "iPhone 与 iPad 备份",

@@ -155,6 +155,7 @@ Three consumable in-app purchases, in `metadata/in-app-purchases/tips.json`.
 - Each product has a review note with the path Settings, "Support Maru".
 - Each product has its review screenshot, and the public API gives the state "Ready to Submit".
 - The tips are not in the submission of 1.0.0. The version page offers no "In-App Purchases and Subscriptions" section, and the website still shows the three products as drafts. The pending Paid Apps agreement is the probable cause. No message of Apple names it.
+- Before a tip goes on sale, add a Tips section back to `PRIVACY.md` and the site FAQ. The app shows the purchase buttons as soon as a product loads, with no version check. Version 1.0.0 mentions no tips anywhere.
 - The first tip goes to review with a later app version, after the Paid Apps agreement is active. Until then the app loads no tip product, and Settings hides the section "Support Maru".
 
 ### Notes for App Review

@@ -68,7 +68,7 @@
 <p>Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so the "Taken" action of a reminder works while the device is locked. When Maru cannot open your records, it records nothing and asks you to unlock.</p>
 <h2 lang="zh-Hans">Maru 不做什么</h2>
 <ul>
-<li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the request of the App Store for the tip prices when you open Settings.
+<li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and a request to the App Store for product information when you open Settings. That request carries only product identifiers and none of your item data. Apple's App Store privacy policy applies to it.
 </li>
 <li>It contains no advertising or crash-reporting code.
 </li>
@@ -94,8 +94,6 @@
 <li><code>core_error</code>: whether a save or a read failed, with one of five fixed codes.
 </li>
 <li><code>feedback_entry</code>: that you tapped "Send Feedback".
-</li>
-<li><code>purchase_result</code>: a fixed product and result. Maru does not send this event yet.
 </li></ul>
 </li>
 <li>What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
@@ -128,8 +126,6 @@
 <p>The name suggestions on the add screen come from a list inside the app. The name suggestions are a typing aid. They are not medical advice.</p>
 <h2 lang="zh-Hans">反馈</h2>
 <p>Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.</p>
-<h2 lang="zh-Hans">打赏</h2>
-<p>Settings has a "Support Maru" section with three optional tips. A tip unlocks nothing. The purchase goes through the App Store. Apple handles your payment and your Apple Account, and Maru gets no payment data or account data. Maru does not send item names, doses, or records with a tip. Maru loads the tip prices from the App Store only when you open Settings.</p>
 <h2 lang="zh-Hans">通知</h2>
 <p>Reminders are local notifications. iOS schedules and shows them on your device, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.</p>
 <h2 lang="zh-Hans">导出和备份文件</h2>
