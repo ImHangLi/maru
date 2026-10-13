@@ -226,7 +226,7 @@ Six own icons, two tones of one color, as template images: capsule, tablet, soft
 
 An item can have one photo (D056). It is optional, and the form icon stays the fallback.
 
-- The photo replaces the form icon on a Today row, on a My Items tile, on the item detail, and on the archived list. It has the size of the icon, with a limit of 44 points in a row and 64 points on a tile, and a corner radius of one fifth of its side. It has no border and no shadow. The color of the item does not tint it.
+- The photo replaces the form icon on a Today row, on a My Items tile, on the item detail, and on the archived list. In a row, the photo and the drawn icon share one square frame of 1.4 times the icon size, with a limit of 44 points, so the names in a mixed list line up (D073). The drawn icon keeps its size in the middle of the frame. On a tile, both are 44 points with a limit of 64 points. Both follow the text size. The photo has a corner radius of one fifth of its side. It has no border and no shadow. The color of the item does not tint it.
 - The row shows the form icon first. The photo replaces it with no motion when it loads. A missing file keeps the icon.
 - At the three largest text sizes the row hides the photo, as it hides the icon (D013).
 - The photo is decoration. VoiceOver reads no image name in a row.
@@ -234,7 +234,7 @@ An item can have one photo (D056). It is optional, and the form icon stays the f
 
 ## Add and edit
 
-One screen (spec §3 P03), in this order: name, type (supplement or medication, starts on "Supplement"), form menu (starts on "Capsule"), color menu, amount (optional, with units including IU), time slots, repeat days, note, photo. Apple Health needs seven screens for the same result. Maru needs one.
+One screen (spec §3 P03), in this order: name, type (supplement or medication, starts on "Supplement"), the look of the item (the icon, the form menu that starts on "Capsule", the color menu, and the photo), amount (optional, with units including IU), time slots, repeat days, note. Apple Health needs seven screens for the same result. Maru needs one.
 
 - A system sheet: "Cancel" at the top left, "Save" at the top right. Save is off until the draft is valid (D026).
 - The section with the times and the repeat rule is named "Plan", as in the item detail (D058). The plan line is its footer. It states the full schedule, for example "Every day at 8:00 AM, with no end date", or the problem that keeps Save off. An amount has its own line above it.
@@ -252,7 +252,7 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day", "Every Other Day", "Every Few Days", and "Days On and Off". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and every other day has no date picker (D036).
 - "Every Few Days" has a menu "Interval" from "Every 3 days" to "Every 30 days". "Days On and Off" has two menus, "Days On" and "Days Off", from 1 to 99. Each menu starts on "Choose", and Maru picks no number. Under the menus are "Starting Today", "Starting Tomorrow", and a system date picker "Another Date" for any other first day, also a day in the past. The footers say "Choose the number of days." and "Choose the first day." until the user chooses (D065).
 - The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date". The plan line of the other two names the first day as a date: "21 days on, 7 days off at 8:00 AM, from Tue, Oct 13, with no end date".
-- The last section is "Photo (Optional)" (D056). The rows are "Choose Photo", "Take Photo", and "Remove Photo", with a preview of 56 points above them when the item has a photo. After a pick, a row with a progress view says "Removing the background…". When Maru finds one subject, the switch "Remove Background" shows, and it starts on. With no clear subject, the footer says that the photo stays as it is. Save is never off because of the photo.
+- The photo is part of the look of the item, in the section of the form and the color (D073). The section has no header. Its first row shows the icon as the lists show it, 56 points, in the middle: the photo, else the form icon in the item color. It changes at once with the form, the color, or a new photo. Then come "Form", "Color", "Choose Photo", "Take Photo", and "Remove Photo" when the item has a photo. The camera asks for permission only at the tap on "Take Photo". After a pick, a row with a progress view says "Removing the background…". When Maru finds one subject, the switch "Remove Background" shows, and it starts on. With no clear subject, the footer says that the photo stays as it is. Save is never off because of the photo.
 - The item detail shows "Every other day", "Every 3 days", or "21 days on, 7 days off" under "Days", and a row "Next Dose" with "Today", "Tomorrow", a weekday, or a date when the dose is 7 or more days away (D036, D065).
 
 ## Text and accessibility

@@ -736,41 +736,6 @@
         }
       }
     },
-    "Photo (Optional)" : {
-      "comment" : "Edit screen: the header of the section with the photo of the item.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto (optional)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto (opcional)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "写真（任意）"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진(선택 사항)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "照片（可选）"
-          }
-        }
-      }
-    },
     "Reading the photo…" : {
       "comment" : "Edit screen: the status while Maru reads the chosen photo.",
       "localizations" : {

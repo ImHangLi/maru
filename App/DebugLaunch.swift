@@ -63,62 +63,75 @@ extension AppStore {
     /// names and the dose words of that language (D070). They are not the data of a person. Each language has the
     /// same shape: the same forms and times, so the pictures stay comparable.
     /// An item with no time has no schedule, so it is as needed (D021).
+    /// Vitamin D3, omega-3, and magnesium have a photo of a jar with an invented brand, so a screenshot shows photo
+    /// icons next to drawn icons. A medication never has one (D073).
     private typealias Sample = (
-        name: String, category: ItemCategory, form: ItemForm, amount: String?, times: [(hour: Int, minute: Int)]
+        name: String, category: ItemCategory, form: ItemForm, amount: String?, times: [(hour: Int, minute: Int)],
+        photo: String?
     )
     private static let samplesByLanguage: [String: [Sample]] = [
         "en": [
-            ("Vitamin D", .supplement, .softgel, "1 softgel", [(8, 0)]),
-            ("Levothyroxine", .medication, .tablet, "1 tablet", [(7, 0)]),
-            ("Omega-3", .supplement, .softgel, "2 softgels", [(12, 30)]),
-            ("Magnesium", .supplement, .capsule, "2 capsules", [(21, 0)]),
-            ("Atorvastatin", .medication, .tablet, "1 tablet", [(21, 0)]),
-            ("Ibuprofen", .medication, .tablet, nil, []),
+            ("Vitamin D3", .supplement, .softgel, "1 softgel", [(8, 0)], "vitd3"),
+            ("Levothyroxine", .medication, .tablet, "1 tablet", [(7, 0)], nil),
+            ("Omega-3", .supplement, .softgel, "2 softgels", [(12, 30)], "omega3"),
+            ("Magnesium Glycinate", .supplement, .capsule, "2 capsules", [(21, 0)], "magnesium"),
+            ("Atorvastatin", .medication, .tablet, "1 tablet", [(21, 0)], nil),
+            ("Ibuprofen", .medication, .tablet, nil, [], nil),
         ],
         "zh-Hans": [
-            ("维生素 D", .supplement, .softgel, "1 粒", [(8, 0)]),
-            ("氨氯地平", .medication, .tablet, "1 片", [(7, 0)]),
-            ("鱼油", .supplement, .softgel, "2 粒", [(12, 30)]),
-            ("益生菌", .supplement, .capsule, "1 粒", [(21, 0)]),
-            ("阿托伐他汀", .medication, .tablet, "1 片", [(21, 0)]),
-            ("布洛芬", .medication, .tablet, nil, []),
+            ("维生素 D3", .supplement, .softgel, "1 粒", [(8, 0)], "vitd3"),
+            ("氨氯地平", .medication, .tablet, "1 片", [(7, 0)], nil),
+            ("鱼油", .supplement, .softgel, "2 粒", [(12, 30)], "omega3"),
+            ("甘氨酸镁", .supplement, .capsule, "2 粒", [(21, 0)], "magnesium"),
+            ("阿托伐他汀", .medication, .tablet, "1 片", [(21, 0)], nil),
+            ("布洛芬", .medication, .tablet, nil, [], nil),
         ],
         "ja": [
-            ("ビタミンD", .supplement, .softgel, "1粒", [(8, 0)]),
-            ("アムロジピン", .medication, .tablet, "1錠", [(7, 0)]),
-            ("DHA・EPA", .supplement, .softgel, "2粒", [(12, 30)]),
-            ("乳酸菌", .supplement, .capsule, "2粒", [(21, 0)]),
-            ("ロスバスタチン", .medication, .tablet, "1錠", [(21, 0)]),
-            ("ロキソプロフェン", .medication, .tablet, nil, []),
+            ("ビタミンD3", .supplement, .softgel, "1粒", [(8, 0)], "vitd3"),
+            ("アムロジピン", .medication, .tablet, "1錠", [(7, 0)], nil),
+            ("DHA・EPA", .supplement, .softgel, "2粒", [(12, 30)], "omega3"),
+            ("マグネシウム", .supplement, .capsule, "2粒", [(21, 0)], "magnesium"),
+            ("ロスバスタチン", .medication, .tablet, "1錠", [(21, 0)], nil),
+            ("ロキソプロフェン", .medication, .tablet, nil, [], nil),
         ],
         "ko": [
-            ("비타민 D", .supplement, .softgel, "1캡슐", [(8, 0)]),
-            ("암로디핀", .medication, .tablet, "1정", [(7, 0)]),
-            ("오메가3", .supplement, .softgel, "2캡슐", [(12, 30)]),
-            ("유산균", .supplement, .capsule, "1캡슐", [(21, 0)]),
-            ("아토르바스타틴", .medication, .tablet, "1정", [(21, 0)]),
-            ("아세트아미노펜", .medication, .tablet, nil, []),
+            ("비타민 D3", .supplement, .softgel, "1캡슐", [(8, 0)], "vitd3"),
+            ("암로디핀", .medication, .tablet, "1정", [(7, 0)], nil),
+            ("오메가3", .supplement, .softgel, "2캡슐", [(12, 30)], "omega3"),
+            ("마그네슘", .supplement, .capsule, "2캡슐", [(21, 0)], "magnesium"),
+            ("아토르바스타틴", .medication, .tablet, "1정", [(21, 0)], nil),
+            ("아세트아미노펜", .medication, .tablet, nil, [], nil),
         ],
         "es": [
-            ("Vitamina D", .supplement, .softgel, "1 cápsula blanda", [(8, 0)]),
-            ("Levotiroxina", .medication, .tablet, "1 comprimido", [(7, 0)]),
-            ("Omega 3", .supplement, .softgel, "2 cápsulas blandas", [(12, 30)]),
-            ("Magnesio", .supplement, .capsule, "2 cápsulas", [(21, 0)]),
-            ("Atorvastatina", .medication, .tablet, "1 comprimido", [(21, 0)]),
-            ("Paracetamol", .medication, .tablet, nil, []),
+            ("Vitamina D3", .supplement, .softgel, "1 cápsula blanda", [(8, 0)], "vitd3"),
+            ("Levotiroxina", .medication, .tablet, "1 comprimido", [(7, 0)], nil),
+            ("Omega 3", .supplement, .softgel, "2 cápsulas blandas", [(12, 30)], "omega3"),
+            ("Glicinato de magnesio", .supplement, .capsule, "2 cápsulas", [(21, 0)], "magnesium"),
+            ("Atorvastatina", .medication, .tablet, "1 comprimido", [(21, 0)], nil),
+            ("Paracetamol", .medication, .tablet, nil, [], nil),
         ],
         "de": [
-            ("Vitamin D3", .supplement, .softgel, "1 Kapsel", [(8, 0)]),
-            ("Levothyroxin", .medication, .tablet, "1 Tablette", [(7, 0)]),
-            ("Omega-3", .supplement, .softgel, "2 Kapseln", [(12, 30)]),
-            ("Magnesium", .supplement, .capsule, "2 Kapseln", [(21, 0)]),
-            ("Simvastatin", .medication, .tablet, "1 Tablette", [(21, 0)]),
-            ("Ibuprofen", .medication, .tablet, nil, []),
+            ("Vitamin D3", .supplement, .softgel, "1 Kapsel", [(8, 0)], "vitd3"),
+            ("Levothyroxin", .medication, .tablet, "1 Tablette", [(7, 0)], nil),
+            ("Omega-3", .supplement, .softgel, "2 Kapseln", [(12, 30)], "omega3"),
+            ("Magnesiumglycinat", .supplement, .capsule, "2 Kapseln", [(21, 0)], "magnesium"),
+            ("Simvastatin", .medication, .tablet, "1 Tablette", [(21, 0)], nil),
+            ("Ibuprofen", .medication, .tablet, nil, [], nil),
         ],
     ]
 
     private static var samples: [Sample] {
         samplesByLanguage[Bundle.main.preferredLocalizations.first ?? "en"] ?? samplesByLanguage["en"]!
+    }
+
+    /// Stores a sample photo as the edit screen stores a cut-out: a PNG of at most `ItemPhotos.maxPixel` pixels,
+    /// written by `ItemPhotos` (D056). The files were made with the Vision steps of `PhotoProcessor`.
+    /// Only a debug build has them (project.yml).
+    private static func writeSamplePhoto(_ name: String) throws -> String {
+        guard let url = Bundle.main.url(forResource: "sample-photo-\(name)", withExtension: "png") else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        return try ItemPhotos.write(try Data(contentsOf: url), fileExtension: "png")
     }
 
     /// The sample records start this many days before today, so the graph of the history has 13 weeks or fewer.
@@ -136,7 +149,8 @@ extension AppStore {
                 category: sample.category,
                 name: sample.name,
                 form: sample.form,
-                color: .forNewItem(among: items)
+                color: .forNewItem(among: items),
+                imageReference: try sample.photo.map(Self.writeSamplePhoto)
             )
             try await store.save(item)
             items.append(item)

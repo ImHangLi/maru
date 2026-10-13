@@ -74,3 +74,7 @@ jobs:
           -clonedSourcePackagesDirPath .build/SourcePackages
           ARCHS=arm64 ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO
           CODE_SIGNING_ALLOWED=NO build
+      # The debug sample photos must stay out of a release build (D073).
+      - run: >-
+          xcodebuild -project Maru.xcodeproj -target Maru -configuration Release -showBuildSettings
+          | grep -E 'EXCLUDED_SOURCE_FILE_NAMES = sample-photo-\*\.png$'

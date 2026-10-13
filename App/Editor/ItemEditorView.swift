@@ -6,8 +6,8 @@ import VisionKit
 
 /// The one edit screen for a new or a stored item (spec 3 P03, docs/design.md "Add and edit").
 ///
-/// The order is name, type, form, color, amount, times and repeat days, note, photo. The plan line under the
-/// times states the whole plan.
+/// The order is name, type, the look of the item (icon, form, color, and photo), amount, times and repeat days,
+/// note. The plan line under the times states the whole plan.
 /// A new item has "Scan Label" above the name, and the name field proposes names from the built-in lists (D038).
 /// Both only propose: the user sees each value here before the save. A known supplement name gives candidates
 /// for the amount, the time, and the note, and it sets the usual form until the user chooses one (D043).
@@ -80,11 +80,10 @@ struct ItemEditorView: View {
                     scanSection
                 }
                 nameSection
-                formSection
+                lookSection
                 amountSection
                 timesSection
                 noteSection
-                PhotoSection(state: $photo, storedReference: session.context.item?.imageReference)
             }
             .scrollDismissesKeyboard(.interactively)
             // The photo work belongs to this screen. When it closes, a late result writes nothing (T30).
@@ -260,9 +259,15 @@ struct ItemEditorView: View {
         }
     }
 
-    /// System menus of the six forms (D013) and the eight item colors (D021). The value shows the icon or the color.
-    private var formSection: some View {
-        Section {
+    /// The icon of the item, the form, the color, and the photo, in one section (D073). System menus of the six
+    /// forms (D013) and the eight item colors (D021). The value shows the icon or the color.
+    private var lookSection: some View {
+        LookSection(
+            state: $photo,
+            storedReference: session.context.item?.imageReference,
+            form: draft.form,
+            color: draft.color
+        ) {
             Picker("Form", selection: chosenForm) {
                 ForEach(ItemForm.allCases, id: \.self) { form in
                     Label { Text(form.title) } icon: { form.image }
