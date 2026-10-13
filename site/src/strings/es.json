@@ -131,7 +131,7 @@
       ],
       [
         "¿Hay app para Apple Watch?",
-        "Sí. El Apple Watch muestra la lista de hoy de tu iPhone, y un toque registra a través de tu iPhone. Maru no sincroniza entre dispositivos."
+        "Todavía no. La versión 1.0 es para iPhone y iPad. La app para Apple Watch llegará más adelante."
       ],
       [
         "¿En qué idiomas está Maru?",
@@ -160,7 +160,7 @@
     "h1": "Privacidad",
     "summary_title": "En pocas palabras",
     "summary": [
-      "Tus elementos y registros se quedan en tu iPhone o iPad, y cada dispositivo guarda sus propios datos. Maru no tiene cuentas ni un servidor para ellos. Tu iPhone envía la lista de hoy solo a tu propio Apple Watch.",
+      "Tus elementos y registros se quedan en tu iPhone o iPad, y cada dispositivo guarda sus propios datos. Maru no tiene cuentas ni un servidor para ellos.",
       "Las estadísticas de uso son sencillas, nunca incluyen lo que tomas y se desactivan con un interruptor en Ajustes.",
       "Maru no tiene anuncios y no lee tus contactos ni tu ubicación."
     ],

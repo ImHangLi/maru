@@ -432,6 +432,17 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   background: var(--device-screen);
 }
 .device-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+/* The hero phone. The full Today list scrolls inside the screen, and the bars stay in place over it, as in the app.
+   The scroll passes to the page at each end. A mouse can drag the list (site.js). */
+.device-scroll {
+  position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  border-radius: inherit; cursor: grab; outline: none; user-select: none; -webkit-user-select: none;
+}
+.device-scroll::-webkit-scrollbar { display: none; }
+.device-scroll.is-dragging { cursor: grabbing; }
+.device-scroll img { position: static; display: block; height: auto; }
+.device-scroll + img { pointer-events: none; }
+.device:has(.device-scroll:focus-visible) { outline: var(--ring-width) solid var(--focus); outline-offset: var(--ring-offset); }
 .island {
   position: absolute; left: 50%; top: calc(var(--device-w) * 0.04);
   width: calc(var(--device-w) * 0.31); height: calc(var(--device-w) * 0.092); transform: translateX(-50%);

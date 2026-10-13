@@ -12,6 +12,56 @@
     document.querySelectorAll("[data-reveal]").forEach(function (el) { io.observe(el); });
   }
 
+  // The hero phone. Its screen scrolls like the app. Wheel, touch, and keys are native. A mouse can also drag the list.
+  var phone = document.querySelector(".device-scroll");
+  if (phone) {
+    var used = false;
+    ["wheel", "touchstart", "pointerdown", "keydown"].forEach(function (type) {
+      phone.addEventListener(type, function () { used = true; }, { passive: true });
+    });
+    phone.addEventListener("pointerdown", function (event) {
+      if (event.pointerType !== "mouse" || event.button !== 0) return;
+      var startY = event.clientY;
+      var startTop = phone.scrollTop;
+      var move = function (e) { phone.scrollTop = startTop - (e.clientY - startY); };
+      var end = function () {
+        phone.removeEventListener("pointermove", move);
+        phone.removeEventListener("pointerup", end);
+        phone.removeEventListener("pointercancel", end);
+        phone.classList.remove("is-dragging");
+      };
+      phone.setPointerCapture(event.pointerId);
+      phone.classList.add("is-dragging");
+      phone.addEventListener("pointermove", move);
+      phone.addEventListener("pointerup", end);
+      phone.addEventListener("pointercancel", end);
+    });
+
+    // One hint that the list scrolls: when the phone is in view, the list moves to its end one time and comes back.
+    // The hint stops when the visitor uses the list. It does not play with reduced motion.
+    var glide = function (to, then) {
+      var from = phone.scrollTop;
+      var start = performance.now();
+      requestAnimationFrame(function step(now) {
+        if (used) return;
+        var t = Math.min(1, (now - start) / 900);
+        phone.scrollTop = from + (to - from) * t * t * (3 - 2 * t);
+        if (t < 1) requestAnimationFrame(step);
+        else if (then) setTimeout(then, 1200);
+      });
+    };
+    if (document.documentElement.classList.contains("motion") && "IntersectionObserver" in window) {
+      var seen = new IntersectionObserver(function (entries) {
+        if (!entries[0].isIntersecting) return;
+        seen.disconnect();
+        setTimeout(function () {
+          glide(phone.scrollHeight - phone.clientHeight, function () { glide(0); });
+        }, 1400);
+      }, { threshold: 0.9 });
+      seen.observe(phone);
+    }
+  }
+
   // A page from the back and forward cache shows at rest, with no entrance.
   window.addEventListener("pageshow", function (event) {
     if (event.persisted) document.documentElement.classList.remove("motion");

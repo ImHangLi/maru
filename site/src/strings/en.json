@@ -131,7 +131,7 @@
       ],
       [
         "Is there an Apple Watch app?",
-        "Yes. The Watch shows today's list from your iPhone, and a tap records through your iPhone. Maru does not sync between devices."
+        "Not yet. Version 1.0 is for iPhone and iPad. An Apple Watch app comes later."
       ],
       [
         "Which languages does Maru speak?",
@@ -160,7 +160,7 @@
     "h1": "Privacy",
     "summary_title": "In short",
     "summary": [
-      "Your items and records stay on your iPhone or iPad, and each device keeps its own data. Maru has no account and no server for them. Your iPhone sends today's list only to your own Apple Watch.",
+      "Your items and records stay on your iPhone or iPad, and each device keeps its own data. Maru has no account and no server for them.",
       "Simple usage statistics never include what you take, and one switch in Settings turns them off.",
       "Maru has no ads, and it does not read your contacts or your location."
     ],

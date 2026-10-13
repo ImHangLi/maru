@@ -131,7 +131,7 @@
       ],
       [
         "Gibt es eine App für die Apple Watch?",
-        "Ja. Die Apple Watch zeigt die heutige Liste von deinem iPhone, und ein Tippen erfasst die Einnahme über dein iPhone. Maru synchronisiert nicht zwischen Geräten."
+        "Noch nicht. Version 1.0 ist für iPhone und iPad. Eine App für die Apple Watch kommt später."
       ],
       [
         "Welche Sprachen spricht Maru?",
@@ -160,7 +160,7 @@
     "h1": "Datenschutz",
     "summary_title": "Kurz gesagt",
     "summary": [
-      "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad, und jedes Gerät hat seine eigenen Daten. Maru hat kein Konto und keinen Server dafür. Dein iPhone sendet die heutige Liste nur an deine eigene Apple Watch.",
+      "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad, und jedes Gerät hat seine eigenen Daten. Maru hat kein Konto und keinen Server dafür.",
       "Die einfache Nutzungsstatistik enthält nie, was du nimmst, und ein Schalter in den Einstellungen stellt sie ab.",
       "Maru hat keine Werbung und liest weder deine Kontakte noch deinen Standort."
     ],

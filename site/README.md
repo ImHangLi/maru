@@ -18,7 +18,7 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 | `mock.py` | The widget and the reminder of the home page, drawn in HTML |
 | `src/mock/<lang>.json` | The app text of the widget and the reminder in one language |
 | `../PRIVACY.md` | The full privacy policy. It stays English on every language page |
-| `style.css`, `site.js` | The style, the scroll entrances, and the language hint |
+| `style.css`, `site.js` | The style, the scroll entrances, the hero phone, and the language hint |
 
 Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
 
@@ -40,7 +40,7 @@ The top bar has a language menu. It is a `details` element with plain links, so 
 
 On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and deploy.
 
-`DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone", "ipad", "watch"]` now. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
+`DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone", "ipad"]` now: version 1.0 has no Apple Watch app. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
 
 ## Top bar
 
@@ -70,7 +70,7 @@ The site uses the system fonts of each language and loads no font file: San Fran
 
 | Block | Picture |
 |---|---|
-| Hero | A screenshot of Today: Morning recorded, Noon and Evening open |
+| Hero | The full Today list in a phone that scrolls: Morning recorded, Noon and Evening open, and As Needed at the end |
 | Reminders | The medium Today widget and a Lock Screen reminder on a wallpaper, drawn in HTML |
 | History | A screenshot of History: the graph and the last 7 days of each item |
 | Item | A screenshot of one item: its plan and its last 7 days with the counts |
@@ -82,7 +82,14 @@ The site uses the system fonts of each language and loads no font file: San Fran
 python3 site/build.py --shots /path/to/captures
 ```
 
-The command needs `sips` (macOS) and `cwebp`. It reads `today-<lang>.png`, `history-<lang>.png`, and `detail-<lang>.png`, for example `today-zh-Hans.png`. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
+The command needs `sips` (macOS), `cwebp`, and `ffmpeg`. It reads `today-<lang>.png`, `today-end-<lang>.png`, `history-<lang>.png`, and `detail-<lang>.png`, for example `today-zh-Hans.png`. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
+
+The hero phone is live. `today-<lang>.png` is Today at the top of the list, and `today-end-<lang>.png` is the same screen with the list scrolled to its end. The command joins them into two files:
+
+- `today-<lang>.webp`: the full list with no bars. It scrolls inside the screen.
+- `today-bars-<lang>.webp`: the status bar, the toolbar buttons, and the tab bar on a clear background. It stays in place over the list.
+
+The list scrolls with the wheel, a touch, the keys, or a mouse drag, and the scroll passes to the page at each end. When the phone comes into view, the list moves to its end one time and comes back. This hint does not play with reduced motion.
 
 - Capture an iPhone 17 Pro simulator (1206 x 2622) in light mode, with a debug build of the app.
 - Launch with `-MaruSampleData YES -MaruSampleRecords YES`, and with `-AppleLanguages` and `-AppleLocale` of the language. The sample items follow the app language.
