@@ -71,7 +71,7 @@ The site uses the system fonts of each language and loads no font file: San Fran
 
 | Block | Picture |
 |---|---|
-| Hero | The full Today list in a phone that scrolls: Morning recorded, Noon and Evening open, and As Needed at the end |
+| Hero | A phone with five real screens: Today, My Items, History, Settings, and Add Item. Each one scrolls, and nothing in it works |
 | Reminders | The medium Today widget and a Lock Screen reminder on a wallpaper, drawn in HTML |
 | History | A screenshot of History: the graph and the last 7 days of each item |
 | Item | A screenshot of one item: its plan and its last 7 days with the counts |
@@ -83,7 +83,7 @@ The site uses the system fonts of each language and loads no font file: San Fran
 python3 site/build.py --shots /path/to/captures
 ```
 
-The command needs `sips` (macOS), `cwebp`, and `ffmpeg`. It reads `today-<lang>.png`, `today-end-<lang>.png`, `history-<lang>.png`, and `detail-<lang>.png`, for example `today-zh-Hans.png`. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
+The command needs `sips` (macOS), `cwebp`, and `ffmpeg`. It reads `today-<lang>.png`, `today-end-<lang>.png`, `history-<lang>.png`, `detail-<lang>.png`, `items-<lang>.png`, and the two captures of each sheet (`settings-<lang>.png`, `settings-end-<lang>.png`, `add-<lang>.png`, `add-end-<lang>.png`), for example `today-zh-Hans.png`. A capture that is not there keeps its file. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
 
 The hero phone is live. `today-<lang>.png` is Today at the top of the list, and `today-end-<lang>.png` is the same screen with the list scrolled to its end. The command joins them into two files:
 
@@ -93,6 +93,24 @@ The hero phone is live. `today-<lang>.png` is Today at the top of the list, and 
 The list has some empty space after its last group, so the As Needed row comes to rest above the tab bar.
 
 The list scrolls with the wheel, a touch, the keys, or a mouse drag, and the scroll passes to the page at each end. When the phone comes into view, the list moves to its end one time and comes back. This hint does not play with reduced motion.
+
+### The other screens of the hero phone
+
+`site.js` adds four screens to the hero phone. With no script, the phone is the Today picture. The pictures of the four screens load when the page is idle, or at the first use of the phone, so the first paint does not wait for them.
+
+| Screen | How it opens, as in the app | Pictures |
+|---|---|---|
+| My Items | The tab bar. No movement | `items-<lang>.webp` |
+| History | The calendar button. It slides in from the right, and the tab bar stays in place | `history-<lang>.webp`, the picture of the History block |
+| Settings | The gear button. A sheet rises over a shade | `settings-<lang>.webp`, `settings-bar-<lang>.webp` |
+| Add Item | The plus button. A sheet rises over a shade | `add-<lang>.webp`, `add-bar-<lang>.webp` |
+
+- A sheet has two captures: the form at its top, and the form scrolled down until its last card is on the screen. The command joins them. `<name>-<lang>.webp` is the full form, and `<name>-bar-<lang>.webp` is the bar of the sheet with a soft lower edge. A debug build shows a Debug section at the end of Settings, and the command leaves it out.
+- A capture of My Items or of a sheet must not show the home indicator. Capture again if it does.
+- The Settings capture must show the three tips of "Support Maru" with their names and prices. A launch with `simctl` does not load `Config/Maru.storekit`, and Settings then says that tips are not available. Run the app with the StoreKit configuration active: from Xcode, or under a test that makes an `SKTestSession` with the file. The prices are those of the file, in US dollars in every language.
+- A `button` lies over each control of a capture that moves between screens: the gear, the calendar, the plus, the two tabs, the back button, and "Done" or "Cancel". Each button has a label in the language of the page (`phone` in `src/strings/<lang>.json`), and it is 44 pt of the app or more in each direction. Escape closes a sheet or goes back. No other control of a capture does anything.
+- For assistive technology, the phone is one group with a short description, and each picture is hidden.
+- With reduced motion, a screen fades in and out and does not move.
 
 - Capture an iPhone 17 Pro simulator (1206 x 2622) in light mode, with a debug build of the app.
 - Launch with `-MaruSampleData YES -MaruSampleRecords YES`, and with `-AppleLanguages` and `-AppleLocale` of the language. The sample items follow the app language.

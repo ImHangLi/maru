@@ -35,7 +35,7 @@ PAGES = ["index.html", "faq/index.html", "privacy/index.html", "support/index.ht
 # The addresses of the pages before the folders. _redirects sends them to the new addresses.
 OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html", "support.html": "support/index.html"}
 OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
-SHOTS = ["today", "history", "detail"]
+SHOTS = ["today", "history", "detail", "items"]
 SHOT_WIDTH = 780
 # A capture of an iPhone 17 Pro simulator, and the rows of Today in it. The layout is the same in every language.
 CAPTURE_W, CAPTURE_H = 1206, 2622
@@ -50,6 +50,15 @@ GLASS_SHADOW = (7, 30)
 TODAY_EDGE = (300, 350)
 # Empty rows after the last group, so the last row comes to rest above the tab bar with a gap.
 TODAY_END_SPACE = 45
+# A sheet of the app (Settings, Add Item) in a capture. Its top edge is at SHEET_TOP. Its bar is solid down to the first
+# row of SHEET_EDGE and fades out at the second row. The first row of the form is below it when the form is at its top.
+SHEETS = ["settings", "add"]
+SHEET_TOP = 186
+SHEET_EDGE = (400, 430)
+# The form comes from the first capture down to SHEET_SEAM, and from the second capture after it. The last card of
+# the form ends above SHEET_LIMIT in the second capture. A debug build has more rows after it, and the site leaves them out.
+SHEET_SEAM, SHEET_LIMIT = 2300, 2570
+SHEET_END_SPACE = 105
 # The jars of the photo block, from left to right. README.md names the source of each photo.
 JARS = ["omega3", "vitd3", "magnesium"]
 # Apple asks for a badge height of 40 px or more on a screen.
@@ -171,6 +180,49 @@ def import_today(source, code):
     write_webp(bars, "rgba", CAPTURE_H, f"today-bars-{code}.webp")
 
 
+def import_sheet(source, name, code):
+    """Make the two pictures of a sheet of the hero phone from two captures: the form at its top (<name>-<lang>.png)
+    and the form scrolled down (<name>-end-<lang>.png). <name>-<lang>.webp is the full form with no bar, and
+    <name>-bar-<lang>.webp is the bar of the sheet with a soft lower edge. Both start at the top edge of the sheet."""
+    top, end = pixels(Path(source) / f"{name}-{code}.png"), pixels(Path(source) / f"{name}-end-{code}.png")
+    line = CAPTURE_W * 3
+    blank = APP_BG * CAPTURE_W
+
+    def row(buf, y):
+        return buf[y * line:(y + 1) * line]
+
+    # How far the form moved between the two captures: some rows above the seam are the same in both.
+    marks = range(SHEET_SEAM - 200, SHEET_SEAM + 1, 25)
+    if all(row(top, y) == blank or row(top, y) == b"\xff\xff\xff" * CAPTURE_W for y in marks):
+        raise ValueError(f"{name}-{code}: the rows above the seam are empty")
+    shift = next(d for d in range(1, SHEET_SEAM - 200 - SHEET_EDGE[1]) if all(row(top, y) == row(end, y - d) for y in marks))
+    if any(row(top, y) != blank for y in range(*SHEET_EDGE)):
+        raise ValueError(f"{name}-{code}: the form starts under the bar")
+    # The last card is white, and the background follows it. The column in the middle has no text.
+    middle = CAPTURE_W // 2 * 3
+    last = next(y for y in range(SHEET_LIMIT, SHEET_SEAM - shift, -1)
+                if row(end, y)[middle:middle + 3] == b"\xff\xff\xff" and row(end, y + 1)[middle:middle + 3] == APP_BG)
+    full = blank * (SHEET_EDGE[0] - SHEET_TOP) + top[SHEET_EDGE[0] * line:SHEET_SEAM * line] \
+        + end[(SHEET_SEAM - shift) * line:(last + 2) * line] + blank * SHEET_END_SPACE
+    write_webp(full, "rgb24", len(full) // line, f"{name}-{code}.webp")
+
+    # The bar. The page rounds the top corners of the sheet, so the dark corners of the capture become background.
+    bar = bytearray()
+    for y in range(SHEET_TOP, SHEET_EDGE[1]):
+        if y >= SHEET_EDGE[0]:
+            t = (SHEET_EDGE[1] - y) / (SHEET_EDGE[1] - SHEET_EDGE[0])
+            bar += (APP_BG + bytes([round(255 * t * t * (3 - 2 * t))])) * CAPTURE_W
+            continue
+        cells = [row(top, y)[x * 3:x * 3 + 3] for x in range(CAPTURE_W)]
+        for side in (range(CAPTURE_W // 2), range(CAPTURE_W - 1, CAPTURE_W // 2, -1)):
+            for x in side:
+                if cells[x] == APP_BG:
+                    break
+                cells[x] = APP_BG
+        bar += b"".join(cell + b"\xff" for cell in cells)
+    write_webp(bar, "rgba", SHEET_EDGE[1] - SHEET_TOP, f"{name}-bar-{code}.webp")
+
+
 def import_shots(source):
     """Convert the captures to WebP. Needs sips (macOS), cwebp, and ffmpeg."""
     (SITE / "shots").mkdir(exist_ok=True)
@@ -178,6 +230,10 @@ def import_shots(source):
         if (Path(source) / f"today-end-{code}.png").exists():
             import_today(source, code)
             print(f"shot today-{code}")
+        for name in SHEETS:
+            if (Path(source) / f"{name}-end-{code}.png").exists():
+                import_sheet(source, name, code)
+                print(f"shot {name}-{code}")
     for shot in SHOTS[1:]:
         for code, _ in LANGS:
             png = Path(source) / f"{shot}-{code}.png"
@@ -213,7 +269,8 @@ def device(code, shot):
 
 
 def live_device(code):
-    """The hero phone. The full Today list scrolls inside the screen, under the bars, as in the app."""
+    """The hero phone. The full Today list scrolls inside the screen, under the bars, as in the app.
+    With no script it is this one picture."""
     imgs = ""
     for name in ("today", "today-bars"):
         file = SITE / "shots" / f"{name}-{code}.webp"
@@ -223,7 +280,12 @@ def live_device(code):
         if name == "today":
             imgs = (f'<div class="device-scroll" tabindex="0" role="img" '
                     f'aria-label="{e(STRINGS[code]["shots"]["today"]["alt"])}">{imgs}</div>')
-    return (f'<div class="device"><div class="device-screen">{imgs}</div>'
+    # site.js adds the other screens and the buttons over the controls of the captures. It loads their pictures late.
+    words = STRINGS[code]["phone"]
+    labels = {name: words["show"].format(words[name]) for name in ("today", "items", "history", "settings", "add")}
+    labels |= {"back": words["back"], "close": words["close"], "settingsName": words["settings"], "addName": words["add"]}
+    return (f'<div class="device" role="group" aria-label="{e(words["label"])}" data-shots="{code}" '
+            f'data-labels="{e(json.dumps(labels, ensure_ascii=False))}"><div class="device-screen">{imgs}</div>'
             f'<span class="island" aria-hidden="true"></span></div>')
 
 

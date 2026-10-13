@@ -16,6 +16,17 @@
     "devices": "Verfügbar für",
     "soon": "Bald im App Store"
   },
+  "phone": {
+    "label": "Eine Vorschau der Maru-App. Du kannst fünf Bildschirme ansehen. Nichts wird erfasst.",
+    "show": "Bildschirm „{}“ anzeigen",
+    "back": "Zurück",
+    "close": "Schließen",
+    "today": "Heute",
+    "items": "Meine Einträge",
+    "history": "Verlauf",
+    "settings": "Einstellungen",
+    "add": "Eintrag hinzufügen"
+  },
   "shots": {
     "today": {
       "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
