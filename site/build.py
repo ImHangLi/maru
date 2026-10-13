@@ -57,7 +57,7 @@ SHEET_TOP = 186
 SHEET_EDGE = (400, 430)
 # The form comes from the first capture down to SHEET_SEAM, and from the second capture after it. The last card of
 # the form ends above SHEET_LIMIT in the second capture. A debug build has more rows after it, and the site leaves them out.
-SHEET_SEAM, SHEET_LIMIT = 2300, 2540
+SHEET_SEAM, SHEET_LIMIT = 2300, 2570
 SHEET_END_SPACE = 105
 # The jars of the photo block, from left to right. README.md names the source of each photo.
 JARS = ["omega3", "vitd3", "magnesium"]
@@ -191,8 +191,11 @@ def import_sheet(source, name, code):
     def row(buf, y):
         return buf[y * line:(y + 1) * line]
 
-    shift = next(d for d in range(1, SHEET_SEAM - SHEET_EDGE[1])
-                 if all(row(top, y) == row(end, y - d) for y in range(SHEET_SEAM - 400, SHEET_SEAM + 1, 50)))
+    # How far the form moved between the two captures: some rows above the seam are the same in both.
+    marks = range(SHEET_SEAM - 200, SHEET_SEAM + 1, 25)
+    if all(row(top, y) == blank or row(top, y) == b"\xff\xff\xff" * CAPTURE_W for y in marks):
+        raise ValueError(f"{name}-{code}: the rows above the seam are empty")
+    shift = next(d for d in range(1, SHEET_SEAM - 200 - SHEET_EDGE[1]) if all(row(top, y) == row(end, y - d) for y in marks))
     if any(row(top, y) != blank for y in range(*SHEET_EDGE)):
         raise ValueError(f"{name}-{code}: the form starts under the bar")
     # The last card is white, and the background follows it. The column in the middle has no text.
