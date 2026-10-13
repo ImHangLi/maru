@@ -13,7 +13,7 @@ Maru asks iOS to encrypt the database file. After a restart of your device, noth
 
 ## What Maru does not do
 
-- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and one product request to the App Store when you open Settings. That request sends nothing about you or your items.
+- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and a request to the App Store for product information when you open Settings. That request carries only product identifiers and none of your item data. Apple's App Store privacy policy applies to it.
 - It contains no advertising or crash-reporting code.
 - It does not read your contacts, your location, or the advertising identifier.
 - It does not read from or write to Apple Health.
