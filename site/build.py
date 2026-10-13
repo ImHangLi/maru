@@ -41,7 +41,7 @@ SHOT_WIDTH = 780
 PAGE_BADGE = 56
 # The devices that the line under the badge names. It must match the devices of the released app before a deploy.
 # Possible values: "iphone", "ipad", "watch".
-DEVICES = ["iphone"]
+DEVICES = ["iphone", "ipad", "watch"]
 # The icon and the product name of each device. Apple does not translate these names.
 DEVICE_NAMES = {"iphone": ("phone", "iPhone"), "ipad": ("tablet", "iPad"), "watch": ("watch", "Apple Watch")}
 # Every icon comes from Hugeicons (free stroke set, version 4.3.5, MIT license). The stroke width is in style.css.
@@ -403,7 +403,8 @@ Facts:
 - Home Screen widgets.
 - Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
 - Maru does not track stock, give medical advice, or pick a dose or a time for you.
-- Maru has no Apple Watch app and no sync between devices.
+- Each iPhone or iPad keeps its own data. Maru has no sync between devices.
+- The Apple Watch app shows the list of today from the iPhone and records through the iPhone.
 
 Pages:
 - [FAQ]({ORIGIN}/faq/): short answers.

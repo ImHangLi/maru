@@ -54,7 +54,7 @@
   "trust": [
     "Gratis y de código abierto",
     "Sin cuenta",
-    "Tus registros se quedan en tu iPhone"
+    "Tus registros se quedan en tus dispositivos"
   ],
   "footer": {
     "faq": "Preguntas",
@@ -79,7 +79,7 @@
       ],
       [
         "¿Dónde están mis datos?",
-        "Tus elementos y registros se quedan en tu iPhone. La <a href=\"{privacy}\">página de privacidad</a> tiene los detalles."
+        "Tus elementos y registros se quedan en tu iPhone o iPad. Cada dispositivo guarda sus propios datos, y Maru no sincroniza entre dispositivos. La <a href=\"{privacy}\">página de privacidad</a> tiene los detalles."
       ],
       [
         "¿Por qué no una alarma o la app Salud?",
@@ -119,7 +119,7 @@
       ],
       [
         "¿Hay app para Apple Watch?",
-        "No. Maru es una app para iPhone y iPad, y no sincroniza entre dispositivos."
+        "Sí. El Apple Watch muestra la lista de hoy de tu iPhone, y un toque registra a través de tu iPhone. Maru no sincroniza entre dispositivos."
       ],
       [
         "¿En qué idiomas está Maru?",
@@ -144,11 +144,11 @@
   },
   "privacy": {
     "title": "Maru: Privacidad",
-    "desc": "Qué guarda Maru en tu iPhone, qué envía y qué no hace nunca.",
+    "desc": "Qué guarda Maru en tu dispositivo, qué envía y qué no hace nunca.",
     "h1": "Privacidad",
     "summary_title": "En pocas palabras",
     "summary": [
-      "Tus elementos y registros se quedan en tu iPhone. Maru no tiene cuentas ni un servidor para ellos.",
+      "Tus elementos y registros se quedan en tu iPhone o iPad, y cada dispositivo guarda sus propios datos. Maru no tiene cuentas ni un servidor para ellos. Tu iPhone envía la lista de hoy solo a tu propio Apple Watch.",
       "Las estadísticas de uso son sencillas, nunca incluyen lo que tomas y se desactivan con un interruptor en Ajustes.",
       "Maru no tiene anuncios y no lee tus contactos ni tu ubicación."
     ],

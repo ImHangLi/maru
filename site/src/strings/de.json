@@ -54,7 +54,7 @@
   "trust": [
     "Kostenlos und Open Source",
     "Ohne Konto",
-    "Deine Aufzeichnungen bleiben auf deinem iPhone"
+    "Deine Aufzeichnungen bleiben auf deinen Geräten"
   ],
   "footer": {
     "faq": "Fragen",
@@ -79,7 +79,7 @@
       ],
       [
         "Wo sind meine Daten?",
-        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."
+        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad. Jedes Gerät hat seine eigenen Daten, und Maru synchronisiert nicht zwischen Geräten. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."
       ],
       [
         "Warum nicht ein Wecker oder Apple Health?",
@@ -119,7 +119,7 @@
       ],
       [
         "Gibt es eine App für die Apple Watch?",
-        "Nein. Maru ist eine App für iPhone und iPad und synchronisiert nicht zwischen Geräten."
+        "Ja. Die Apple Watch zeigt die heutige Liste von deinem iPhone, und ein Tippen erfasst die Einnahme über dein iPhone. Maru synchronisiert nicht zwischen Geräten."
       ],
       [
         "Welche Sprachen spricht Maru?",
@@ -144,11 +144,11 @@
   },
   "privacy": {
     "title": "Maru: Datenschutz",
-    "desc": "Was Maru auf deinem iPhone speichert, was es sendet und was es nie tut.",
+    "desc": "Was Maru auf deinem Gerät speichert, was es sendet und was es nie tut.",
     "h1": "Datenschutz",
     "summary_title": "Kurz gesagt",
     "summary": [
-      "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Maru hat kein Konto und keinen Server dafür.",
+      "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad, und jedes Gerät hat seine eigenen Daten. Maru hat kein Konto und keinen Server dafür. Dein iPhone sendet die heutige Liste nur an deine eigene Apple Watch.",
       "Die einfache Nutzungsstatistik enthält nie, was du nimmst, und ein Schalter in den Einstellungen stellt sie ab.",
       "Maru hat keine Werbung und liest weder deine Kontakte noch deinen Standort."
     ],

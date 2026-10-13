@@ -54,7 +54,7 @@
   "trust": [
     "Free and open source",
     "No account",
-    "Your records stay on your iPhone"
+    "Your records stay on your devices"
   ],
   "footer": {
     "faq": "FAQ",
@@ -79,7 +79,7 @@
       ],
       [
         "Where is my data?",
-        "Your items and records stay on your iPhone. The <a href=\"{privacy}\">privacy page</a> has the details."
+        "Your items and records stay on your iPhone or iPad. Each device keeps its own data, and Maru does not sync between devices. The <a href=\"{privacy}\">privacy page</a> has the details."
       ],
       [
         "Why not an alarm or Apple Health?",
@@ -119,7 +119,7 @@
       ],
       [
         "Is there an Apple Watch app?",
-        "No. Maru is an app for iPhone and iPad, and it does not sync between devices."
+        "Yes. The Watch shows today's list from your iPhone, and a tap records through your iPhone. Maru does not sync between devices."
       ],
       [
         "Which languages does Maru speak?",
@@ -144,11 +144,11 @@
   },
   "privacy": {
     "title": "Maru: Privacy",
-    "desc": "What Maru stores on your iPhone, what it sends, and what it never does.",
+    "desc": "What Maru stores on your device, what it sends, and what it never does.",
     "h1": "Privacy",
     "summary_title": "In short",
     "summary": [
-      "Your items and records stay on your iPhone. Maru has no account and no server for them.",
+      "Your items and records stay on your iPhone or iPad, and each device keeps its own data. Maru has no account and no server for them. Your iPhone sends today's list only to your own Apple Watch.",
       "Simple usage statistics never include what you take, and one switch in Settings turns them off.",
       "Maru has no ads, and it does not read your contacts or your location."
     ],
