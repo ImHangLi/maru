@@ -2093,7 +2093,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eintrag hinzufügen"
+            "value" : "Hinzufügen"
           }
         },
         "es" : {
@@ -3878,7 +3878,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eintrag bearbeiten"
+            "value" : "Bearbeiten"
           }
         },
         "es" : {
