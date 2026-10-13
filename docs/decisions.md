@@ -853,7 +853,7 @@ The maintainer asked for this on 2026-10-12. Users see no change.
 - Tests and helpers: `noTypeCarriesInventoryFields`, `DoseTests`, `writerSetting`, and `WidgetDay.hasOpenDose`.
 - `LocalStore+Move.swift` is now `LocalStore+Adopt.swift`.
 
-## D051 · 2026-10-12 · Release plan: full V1 scope, store name, six languages, analytics on by default
+## D051 · 2026-10-12 · Release plan: full V1 scope, store name, six languages, analytics on by default (the notice outside the opt-in regions replaced by D078)
 
 Maintainer decisions for the App Store release. The plan is in `docs/release-plan.md`. The research is in `docs/research/2026-10-12-store-name-and-languages.md`.
 
@@ -878,7 +878,7 @@ The maintainer asked for an optional supporter purchase. Spec 14 C, spec 9, T35,
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody bought a tip. CI builds the app. Needs a check in a simulator or on an iPhone with the StoreKit configuration: a buy, a cancel, a pending tip, a failure, a refund from the StoreKit transaction manager, and a tip that ends after a relaunch. App Store Connect needs the three products before a TestFlight build.
 
-## D052 · 2026-10-12 · Product analytics: allowlist, region default, own sender
+## D052 · 2026-10-12 · Product analytics: allowlist, region default, own sender (event fields extended by D077, notice outside the opt-in regions replaced by D078)
 
 Agent decisions for the analytics part of D051. They follow spec §10 and §11. Spec §11.3 says "off by default". D051 replaces that with the region rule below.
 
@@ -1343,3 +1343,43 @@ Maintainer decisions after the test of the TestFlight build, for the build that 
 - The small "Today" widget gets no bar. Its first line holds the slot word and the time, and a bar did not fit beside them in a capture. It keeps the large "7 of 7" when every dose is done. "Record Dose" shows no count of taken doses.
 - The columns of the medium "Today" widget end at the bottom edge, so the space over the title equals the space under the capsules.
 - Checked in an iPhone 17 Pro simulator, light and dark, with a view of the widget layout inside the app. Nobody saw the widget on a Home Screen, in the tinted or clear look, or the item detail row. They need a check on a real iPhone.
+
+## D077 · 2026-10-14 · More usage statistics for product decisions
+
+Maintainer request on 2026-10-14, with agent detail. Build 3 sends four events, and the maintainer cannot judge the product from them. This change adds events and fields that answer the questions of spec §11.1. Every value is a fixed word, a flag, or a coarse range. The rules of spec §10 and §11 stay.
+
+- `setup_step`: the steps `editor_opened`, `item_saved`, `editor_closed`, `scan_opened`, `scan_used`, and `scan_blocked`, with `mode` (`new`, `edit`, `replace`). A save adds a flag for a reminder time, three flags for an amount, a note, and a photo, the source of the name (`typed`, `suggestion`, `scan`), a flag for a tapped smart-completion candidate, a flag for the first item, and a range of the time on the screen. A close with no save adds `had_changes` and the time range. The event is not called "abandoned", because the user can come back (spec §11.1).
+- `daily_usage_summary`: seven more flags (reminder action, skip, undo, correction, My Items, item detail, Settings), a range of the count of opens of the day, a range of the count of active items, and a flag for a widget on the Home Screen. A day with an open or a flag has a summary. A record from a reminder action with no open gives `app_opens` = `0`.
+- `core_error`: the operations `schedule` and `scan`, and three codes of the reminder state of a save: `too_many`, `not_set`, `not_confirmed`.
+- New events: `notification_permission` (sent only when the state that the app reads differs from the state that it sent last), `setting_changed` ("Remind Again", "Show Names in Reminders", the app color), and `data_action` (export, backup, restore, with a result).
+- Each request also has `app_language` (one of the six app languages, else `other`) and `device` (`iphone`, `ipad`, `other`), next to the app version.
+- No event goes out at the moment of a record. A skip, an undo, a correction, and a reminder action are only flags of the daily summary, so no event time tells an intake time.
+- The summary of a day goes out only at an open of the app. A day that ends while the app works in the background, for example after the "Taken" action of a reminder, waits on the device as one summary with no time. Before, the first background record of a new day sent the summary of the day before, so the event time could tell the time of that record. At most one summary waits, and a newer day replaces it.
+- "On" in Settings or in the opt-in question counts one open, because the user is in the app.
+- Not sent, and why:
+  - The type of an item (supplement or medication). It tells that the user takes a medication, which is health data. The privacy label would then need "Health".
+  - The kind of plan (daily, weekdays, every other day, and so on) and the count of reminder times. A first draft sent both. The model review found that they describe the regimen of the user and can give the planned doses of a day, so the label would need "Health". The save sends only `has_reminder`.
+  - A flag for a record of an as-needed dose. The second review round classed it as health data, because an as-needed dose tells that the user needed the item on that day.
+  - A count of doses, a time, a weekday, and an item ID (spec §11.5).
+  - The analytics switch. After "off" nothing goes out, and an "on" event alone gives no rate.
+- Privacy label: no new data type. The new events are "Product Interaction". The codes of `core_error` and `device` are "Other Diagnostic Data". `app_language` is "Other Data Types", with the region. `App/PrivacyInfo.xcprivacy` already declares these types. App Store Connect needs no change of the types, and the purpose stays "Analytics".
+- Tests: the schema test sends each new factory result through the checked init (D016). No other new test.
+- `PRIVACY.md` names each key that the sender adds, and the event time to the millisecond.
+
+Not verified: the app build on this Mac and the screens. CI builds the app. Nobody sent an event to the PostHog project. The packet check (T42) waits for a build with the key.
+
+## D078 · 2026-10-14 · No notice for usage statistics outside the opt-in regions
+
+Maintainer decision on 2026-10-14. It replaces the notice part of D051 and D052.
+
+- Outside the EU, the EEA, the UK, Switzerland, and South Korea, usage statistics are on from the first launch, with no notice and no question. Before, they started only after a one-time notice.
+- Inside those regions nothing changes: the statistics are off until the user opts in, with a one-time question after the first save, or with the switch in Settings.
+- Every region keeps the switch "Share Usage Statistics" in Settings. "Off" still stops the client, clears the queue, deletes the install ID, and clears the local usage state (T43).
+- The app no longer has the notice with "OK" and "Turn Off", and its two strings are removed. The key `analytics.noticeShown` stays, because the question of the opt-in regions uses it.
+- `PRIVACY.md` and the site privacy page say that Maru shows no notice outside the opt-in regions. The App Store review notes need a new sentence, which the maintainer changes in App Store Connect.
+- The limit: the region setting is not the place of the user (D052).
+
+Not verified: the app build on this Mac. CI builds the app.
+
+Open legal risk, for the maintainer: the model review (GPT-6.1-Sol, 2026-10-14) gave an opinion that is not legal advice. It does not treat "on with no notice" as safe in every storefront, because a random install ID is not anonymity in law, and the data comes from a health app. It named the highest risk in Washington and Nevada (consumer health data laws with prior consent), then South Korea (PIPA), Brazil (LGPD), and Canada, mainly Quebec, if the data counts as health data. California, Japan, and Australia expect at least a notice at collection. On 2026-10-14 the maintainer added South Korea to the opt-in list, because PIPA asks for consent first and Korean is a store language. The other risks stay open.
+

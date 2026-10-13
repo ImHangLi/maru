@@ -48,8 +48,10 @@ final class AppModel {
     let store: AppStore
     /// Product analytics (spec 11). It never holds an item name, a dose, an intake time, or an ID. See `AppModel+Analytics.swift`.
     let analytics = AppModel.makeAnalytics()
-    /// The one-time notice about usage statistics waits for the display.
+    /// The one-time opt-in question about usage statistics waits for the display (D078).
     var analyticsNotice = false
+    /// The edit screen that the last save closed. Its close sends no `editor_closed` event (D077).
+    var savedEditor: UUID?
     /// The state of the Today page that is not in the store. See `AppModel+Today.swift`.
     var today = TodayState()
     /// The history page, open over Today. See `AppModel+History.swift`.
@@ -166,7 +168,8 @@ final class AppModel {
         if isCurrent {
             self.content = content
             todayDidShow()
-            if case .loaded = content {
+            if case let .loaded(snapshot) = content {
+                analytics.noteActiveItems(snapshot.list.count)
                 // The widgets show what is stored, so they read again after each read of the app (D048).
                 // The Watch app gets the list (D071).
                 WidgetCenter.shared.reloadAllTimelines()
@@ -248,6 +251,7 @@ final class AppModel {
     func didBecomeActive() {
         // The summary of an earlier day. It queues in memory, and the sender runs off the main thread.
         analytics.sendPendingUsage()
+        noteOpen()
         // The user can change the permission in the Settings app while Maru is away (T14).
         readNotificationPermission()
         // The first activation of a process has no time in the background. `refresh` already runs.

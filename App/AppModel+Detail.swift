@@ -59,6 +59,7 @@ struct ItemEndRequest: Equatable {
 extension AppModel {
     /// The detail of one item. `nil` when the store has no such item.
     func detail(of itemID: ItemID) async throws -> ItemDetail? {
+        noteUse(.itemDetail)
         let now = Date()
         return try await store.detail(of: itemID, at: now, deviceTimeZone: NamedTimeZone(device: .current, at: now))
     }
@@ -265,6 +266,12 @@ extension AppModel {
             }
         }
         if let kind { reminderAlerts.append(ReminderAlert(kind: kind)) }
+        switch status {
+        case .tooMany: analytics.capture(.coreError(.schedule, .tooMany))
+        case .notSet: analytics.capture(.coreError(.schedule, .notSet))
+        case .notConfirmed: analytics.capture(.coreError(.schedule, .notConfirmed))
+        case .set, .off, .notAsked, .notificationsOff: break
+        }
     }
 
     /// The alert of this result shows now, so it does not wait any longer.

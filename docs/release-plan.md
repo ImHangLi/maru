@@ -27,7 +27,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 | Feature | Spec | Acceptance |
 |---|---|---|
-| Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, and Switzerland. Each event has the region setting of the iPhone as a two-letter code | §11, D051, D064 | T41–T45 |
+| Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, Switzerland, and South Korea. Each event has the region setting of the iPhone as a two-letter code | §11, D051, D064 | T41–T45 |
 | Supporter tips with StoreKit 2 (D053). They may not be for sale in the Australian storefront (D064) | §14 C | T48 |
 | Optional photo with background removal | §5.2 | T30–T32 |
 | Six languages: en, zh-Hans, ja, es, de, ko | §13.2, D051 | T49 |
@@ -133,9 +133,9 @@ The question is: "Is your app a regulated medical device in any country or regio
 | Data type | Purpose | Linked to the user | Tracking | What it is in the code |
 |---|---|---|---|---|
 | Identifiers: Device ID | Analytics | Yes | No | `distinct_id`, the random install ID |
-| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, and `feedback_entry` |
-| Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, and `ios_major` |
-| Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) |
+| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077) |
+| Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, `ios_major`, and `device` |
+| Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) and `app_language` (D077) |
 
 The label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`. Add "Purchase History" in the release that first sends `purchase_result`.
 

@@ -18,9 +18,21 @@ struct AnalyticsTests {
         }
         // Each event that the app builds passes the same check.
         let built: [AnalyticsEvent] = [
-            .itemSaved,
-            .dailyUsage(dayIndex: 4, used: [.record, .widget]),
-            .coreError(.save, .newerSchema),
+            .setupStep(.editorOpened, mode: .new),
+            .itemSaved(AnalyticsEvent.ItemSetup(
+                mode: .replace, hasReminder: true, hasAmount: true, hasNote: false,
+                hasPhoto: true, nameSource: .scan, usedCompletion: true, isFirstItem: false, duration: 95
+            )),
+            .editorClosed(mode: .edit, hadChanges: true, duration: 400),
+            .dailyUsage(dayIndex: 4, AnalyticsEvent.UsageDay(used: Set(AnalyticsEvent.UsageFlag.allCases), opens: 9, activeItems: 3, hasWidget: true)),
+            .dailyUsage(dayIndex: 5, AnalyticsEvent.UsageDay(used: [.reminderAction])),
+            .coreError(.schedule, .tooMany),
+            .notificationPermission(.quiet, previous: nil),
+            .remindAgainChanged(FollowUpSetting(count: .untilRecorded, interval: .minutes60)),
+            .remindAgainChanged(nil),
+            .showNamesChanged(false),
+            .appColorChanged(.mint),
+            .dataAction(.restore, .newerFile),
             .feedbackOpened,
         ]
         for event in built {
@@ -28,7 +40,7 @@ struct AnalyticsTests {
         }
     }
 
-    @Test func consentFollowsTheRegionAndWaitsForTheNotice() throws {
+    @Test func consentFollowsTheRegion() throws {
         let suite = "analytics-consent-\(UUID().uuidString)"
         let defaults = try #require(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -42,11 +54,9 @@ struct AnalyticsTests {
         }
         defaults.removePersistentDomain(forName: suite)
 
-        // Elsewhere: on by default, but only after the notice showed.
+        // Elsewhere: on from the start, with no notice (D078).
         let preference = AnalyticsPreference(defaults: defaults, regionCode: "US")
-        #expect(preference.isOn && !preference.isActive && preference.needsNotice)
-        preference.markNoticeShown()
-        #expect(preference.isActive && !preference.needsNotice)
+        #expect(preference.isOn && preference.isActive && !preference.needsNotice)
         preference.set(false)
         #expect(!preference.isActive && !preference.isOn)
 

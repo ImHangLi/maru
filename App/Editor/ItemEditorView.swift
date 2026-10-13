@@ -44,6 +44,10 @@ struct ItemEditorView: View {
     @State private var formIsChosen: Bool
     /// The photo that the user picked or removed on this screen (D056). It is not part of the draft file.
     @State private var photo = PhotoState()
+    /// How the name got into the field, and whether a candidate of the smart completion filled a value. Only the
+    /// kind goes to the usage statistics, never the name or the value (D077).
+    @State private var nameSource = AnalyticsEvent.NameSource.typed
+    @State private var usedCompletion = false
 
     init(session: EditorSession) {
         self.session = session
@@ -116,6 +120,7 @@ struct ItemEditorView: View {
                 LabelScanView(use: use) {
                     scanFailed = true
                     scansLabel = false
+                    model.scanDidFail()
                 }
             }
             .alert(item: $saveError) { error in
@@ -132,6 +137,8 @@ struct ItemEditorView: View {
         }
         // Only unsaved changes ask before the screen closes (spec 3 P03).
         .interactiveDismissDisabled(hasChanges)
+        // Every close: Cancel, a swipe, a save, or a restore. The model ignores the close after a save.
+        .onDisappear { model.editorDidClose(session, hadChanges: hasChanges) }
         .onChange(of: scenePhase) { _, phase in
             // The app can stop in the background. The draft comes back at the next open (spec 3 P03).
             guard phase != .active else { return }
@@ -249,6 +256,7 @@ struct ItemEditorView: View {
             ForEach(suggestions, id: \.self) { name in
                 Button(name) {
                     draft.name = name
+                    nameSource = .suggestion
                     nameIsFocused = false
                 }
                 .rowText()
@@ -303,6 +311,7 @@ struct ItemEditorView: View {
             if let amounts = candidates?.amounts, !amounts.isEmpty {
                 CandidateRow(candidates: amounts, title: { Text(verbatim: $0) }, hint: { _ in Text("Fills the amount.") }) {
                     draft.amount = $0
+                    usedCompletion = true
                 }
             }
         } header: {
@@ -334,6 +343,7 @@ struct ItemEditorView: View {
                     let time = part.time(confirmed: session.context.supplementTimes)
                     draft.times.append(ItemDraft.Time(id: UUID(), hour: time.hour, minute: time.minute))
                     draft.times = draft.sortedTimes
+                    usedCompletion = true
                 }
             }
             if !draft.times.isEmpty {
@@ -407,6 +417,7 @@ struct ItemEditorView: View {
     }
 
     private func useNote(_ note: IntakeNote) {
+        usedCompletion = true
         switch note {
         case .preset(.withFood): draft.note = .withFood
         case .preset(.emptyStomach): draft.note = .emptyStomach
@@ -473,12 +484,23 @@ struct ItemEditorView: View {
         Task {
             switch AVCaptureDevice.authorizationStatus(for: .video) {
             case .authorized: break
-            case .notDetermined: guard await AVCaptureDevice.requestAccess(for: .video) else { return }
+            case .notDetermined:
+                guard await AVCaptureDevice.requestAccess(for: .video) else {
+                    model.editorStep(.scanBlocked, in: session)
+                    return
+                }
             default:
                 cameraIsOff = true
+                model.editorStep(.scanBlocked, in: session)
                 return
             }
-            if DataScannerViewController.isAvailable { scansLabel = true } else { cameraIsOff = true }
+            if DataScannerViewController.isAvailable {
+                scansLabel = true
+                model.editorStep(.scanOpened, in: session)
+            } else {
+                cameraIsOff = true
+                model.editorStep(.scanBlocked, in: session)
+            }
         }
     }
 
@@ -486,7 +508,9 @@ struct ItemEditorView: View {
     /// no time. Its form counts as described at `formStep`.
     private func use(_ scan: LabelScan) {
         draft.name = scan.name
+        nameSource = .scan
         scannedForms = scan.forms
+        model.editorStep(.scanUsed, in: session)
     }
 
     private func scanClosed() {
@@ -505,7 +529,9 @@ struct ItemEditorView: View {
         Task {
             defer { isSaving = false }
             do {
-                try await model.save(draft, in: session, photo: photo.edit)
+                try await model.save(
+                    draft, in: session, photo: photo.edit, nameSource: nameSource, usedCompletion: usedCompletion
+                )
             } catch {
                 saveError = SaveErrorText(error)
             }

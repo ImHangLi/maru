@@ -77,7 +77,13 @@ struct SettingsView: View {
                 }
                 Section("Display") {
                     // A system menu of the eight colors (D025, D026).
-                    Picker("App Color", selection: $appColor) {
+                    Picker("App Color", selection: Binding(
+                        get: { appColor },
+                        set: {
+                            appColor = $0
+                            model.appColorDidChange($0)
+                        }
+                    )) {
                         ForEach(ItemColor.allCases, id: \.self) { color in
                             Label { Text(color.title) } icon: { color.tint.circleImage }
                                 .tag(color)

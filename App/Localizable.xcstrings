@@ -457,7 +457,7 @@
       }
     },
     "Help Improve Maru?" : {
-      "comment" : "The one-time notice about usage statistics: the title.",
+      "comment" : "The one-time question about usage statistics in the EU, the UK, and Switzerland: the title.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -561,41 +561,6 @@
         }
       }
     },
-    "Turn Off" : {
-      "comment" : "Usage statistics notice: the button that turns the statistics off.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ausschalten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactivar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "オフにする"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "끄기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭"
-          }
-        }
-      }
-    },
     "Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings." : {
       "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the message. The statistics are off until the user agrees.",
       "localizations" : {
@@ -627,41 +592,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "共享功能使用情况，例如今天是否记录了服用。Maru 绝不共享项目名称、剂量或时间。你可以随时在“设置”中更改。"
-          }
-        }
-      }
-    },
-    "Maru shares how you use the app, such as whether you recorded a dose today. It never shares item names, doses, or times. You can turn this off in Settings." : {
-      "comment" : "Usage statistics notice: the message. The statistics are on by default outside the EU, the UK, and Switzerland.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru teilt, wie du die App nutzt, zum Beispiel ob du heute eine Dosis erfasst hast. Maru teilt nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ausschalten."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru comparte cómo usas la app, por ejemplo si has registrado una dosis hoy. Nunca comparte nombres de elementos, dosis ni horas. Puedes desactivarlo en Ajustes."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruは、今日服用を記録したかどうかなど、機能の利用状況を共有します。項目名、用量、時刻は共有しません。「設定」でいつでもオフにできます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru는 오늘 복용을 기록했는지 같은 앱 사용 정보를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 끌 수 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 会共享功能使用情况，例如今天是否记录了服用。绝不共享项目名称、剂量或时间。你可以随时在“设置”中关闭。"
           }
         }
       }
