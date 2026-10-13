@@ -25,7 +25,7 @@
 <meta property="og:url" content="https://maru.day/cn/">
 <meta property="og:image" content="https://maru.day/icon.png">
 <meta name="twitter:card" content="summary">
-<script>document.documentElement.classList.add('js')</script>
+<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -33,35 +33,33 @@
 <header class="site-header"><div class="nav-inner">
 <a class="brand" href="/cn/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
 <nav class="nav-links" aria-label="主导航">
-<a class="nav-text" href="/cn/faq.html">常见问题</a>
-<a class="nav-icon" href="https://github.com/ImHangLi/maru" aria-label="GitHub 上的 Maru"><svg class="icon" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg></a>
-<details class="lang-menu"><summary><svg class="icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.25"/><path d="M2.75 10h14.5M10 2.75c2.2 2.3 3.2 4.6 3.2 7.25s-1 4.95-3.2 7.25c-2.2-2.3-3.2-4.6-3.2-7.25s1-4.95 3.2-7.25Z"/></svg><span class="sr">语言: </span><span class="lang-name">简体中文</span></summary><ul><li><a href="/" lang="en" hreflang="en">English</a></li><li><a href="/cn/" lang="zh-Hans" hreflang="zh-Hans" aria-current="page">简体中文</a></li><li><a href="/jp/" lang="ja" hreflang="ja">日本語</a></li><li><a href="/es/" lang="es" hreflang="es">Español</a></li><li><a href="/de/" lang="de" hreflang="de">Deutsch</a></li><li><a href="/kr/" lang="ko" hreflang="ko">한국어</a></li></ul></details>
-<span class="store store-nav"><span class="store-name">App Store</span><span class="store-small">即将上架</span></span>
+<details class="lang-menu"><summary class="icon-btn" aria-label="语言: 简体中文" data-tip="语言"><svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2C12 2 8 6 8 12Z"/><path d="M21 15H3"/><path d="M21 9H3"/></svg></summary><ul><li><a href="/" lang="en" hreflang="en">English</a></li><li><a href="/cn/" lang="zh-Hans" hreflang="zh-Hans" aria-current="page">简体中文<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 14L8.5 17.5L19 6.5"/></svg></a></li><li><a href="/jp/" lang="ja" hreflang="ja">日本語</a></li><li><a href="/es/" lang="es" hreflang="es">Español</a></li><li><a href="/de/" lang="de" hreflang="de">Deutsch</a></li><li><a href="/kr/" lang="ko" hreflang="ko">한국어</a></li></ul></details>
+<a class="icon-btn" href="https://github.com/ImHangLi/maru" aria-label="GitHub 上的 Maru" data-tip="GitHub"><svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20.5675C6.57143 21.7248 3.71429 20.5675 2 17"/><path d="M10 22V18.7579C10 18.1596 10.1839 17.6396 10.4804 17.1699C10.6838 16.8476 10.5445 16.3904 10.1771 16.2894C7.13394 15.4528 5 14.1077 5 9.64606C5 8.48611 5.38005 7.39556 6.04811 6.4464C6.21437 6.21018 6.29749 6.09208 6.31748 5.9851C6.33746 5.87813 6.30272 5.73852 6.23322 5.45932C5.95038 4.32292 5.96871 3.11619 6.39322 2.02823C6.39322 2.02823 7.27042 1.74242 9.26698 2.98969C9.72282 3.27447 9.95075 3.41686 10.1515 3.44871C10.3522 3.48056 10.6206 3.41384 11.1573 3.28041C11.8913 3.09795 12.6476 3 13.5 3C14.3524 3 15.1087 3.09795 15.8427 3.28041C16.3794 3.41384 16.6478 3.48056 16.8485 3.44871C17.0493 3.41686 17.2772 3.27447 17.733 2.98969C19.7296 1.74242 20.6068 2.02823 20.6068 2.02823C21.0313 3.11619 21.0496 4.32292 20.7668 5.45932C20.6973 5.73852 20.6625 5.87813 20.6825 5.9851C20.7025 6.09207 20.7856 6.21019 20.9519 6.4464C21.6199 7.39556 22 8.48611 22 9.64606C22 14.1077 19.8661 15.4528 16.8229 16.2894C16.4555 16.3904 16.3162 16.8476 16.5196 17.1699C16.8161 17.6396 17 18.1596 17 18.7579V22"/></svg></a>
+<a class="badge" href="https://apps.apple.com/app/id0000000000"><img src="/badges/zh-Hans.svg" width="109" height="40" alt="在 App Store 下载"></a>
 </nav>
 </div></header>
 <main id="main">
 <section class="hero">
-<div class="wrap hero-grid">
+<div class="wrap hero-grid is-in">
 <div class="hero-copy">
-<img class="hero-icon" src="/icon.png" alt="" width="72" height="72">
-<h1><span class="nb">吃了没？</span><span class="nb">看一眼就知道。</span></h1>
-<p class="lede">Maru 提醒你吃维生素、保健品和药，还帮你记下吃过什么。</p>
-<div class="cta"><span class="store"><span class="store-name">App Store</span><span class="store-small">即将上架</span></span><a class="notify" href="mailto:hello@maru.day?subject=%E4%B8%8A%E6%9E%B6%E6%97%B6%E9%80%9A%E7%9F%A5%E6%88%91">上架后通知我</a></div>
+<img class="hero-icon enter" src="/icon.png" alt="" width="72" height="72">
+<h1 class="enter d1"><span class="nb">吃了没？</span><span class="nb">看一眼就知道。</span></h1>
+<p class="lede enter d2">Maru 提醒你吃维生素、保健品和药，还帮你记下吃过什么。</p>
+<div class="cta enter d3"><a class="badge" href="https://apps.apple.com/app/id0000000000"><img src="/badges/zh-Hans.svg" width="152" height="56" alt="在 App Store 下载"></a></div>
 </div>
-<div class="hero-stage"><div class="device"><div class="device-screen"><img src="/shots/today-zh-Hans.webp" width="780" height="1696" loading="eager" fetchpriority="high" alt="Maru 的“今天”界面，显示现在该吃的项目。"></div><span class="island" aria-hidden="true"></span></div></div>
+<div class="hero-stage enter d2"><div class="device"><div class="device-screen"><img src="/shots/today-zh-Hans.webp" width="780" height="1696" fetchpriority="high" alt="Maru 的“今天”界面，显示现在该吃的项目。"></div><span class="island" aria-hidden="true"></span></div></div>
 </div>
 </section>
 <div class="wrap features">
-<article class="feature" data-reveal="large"><div class="feature-copy"><h2>到点提醒</h2><p class="lede">时间由你定，在提醒上点“已服用”就记好了。</p></div><div class="feature-stage"><div class="stage"><img src="/shots/reminder.webp" width="880" height="380" loading="lazy" decoding="async" alt="Maru 的提醒：该吃维生素 D 了，下方有“已服用”操作。"></div></div></article>
-<article class="feature flip" data-reveal="large"><div class="feature-copy"><h2>吃过什么，一目了然</h2><p class="lede">几个月的记录一眼看完，每个项目的最近 7 天也在这里。</p></div><div class="feature-stage"><div class="device"><div class="device-screen"><img src="/shots/history-zh-Hans.webp" width="780" height="1696" loading="lazy" decoding="async" alt="Maru 的“历史记录”界面，有过去每一天的图表和每个项目最近 7 天的记录。"></div><span class="island" aria-hidden="true"></span></div></div></article>
-<article class="feature" data-reveal="large"><div class="feature-copy"><h2>放在主屏幕上</h2><p class="lede">添加 Maru 小组件，今天的情况一眼就能看到。</p></div><div class="feature-stage"><div class="stage"><img src="/shots/widget.webp" width="880" height="432" loading="lazy" decoding="async" alt="Maru 的“今天”小组件：5 项里已服用 2 项，分为早上、中午和晚上。"></div></div></article>
-<article class="feature flip" data-reveal="large"><div class="feature-copy"><h2>每个项目一页</h2><p class="lede">时间、用量和最近 7 天，都在这一页。</p></div><div class="feature-stage"><div class="device"><div class="device-screen"><img src="/shots/detail-zh-Hans.webp" width="780" height="1696" loading="lazy" decoding="async" alt="Maru 中一个项目的页面，有时间、用量和最近 7 天的记录。"></div><span class="island" aria-hidden="true"></span></div></div></article>
+<article class="feature" data-reveal><div class="feature-copy"><h2 class="enter">到点提醒，点一下就好</h2><p class="lede enter d1">在提醒上点“已服用”，小组件上就能看到今天的情况。</p></div><div class="feature-stage"><div class="duo"><img class="duo-notification enter d3" src="/shots/notification.webp" width="797" height="166" decoding="async" alt="Maru 的提醒：该吃维生素 D 了，下方有“已服用”操作。"><img class="duo-taken pop d5" src="/shots/taken.webp" width="548" height="132" decoding="async" alt=""><img class="duo-widget enter d2" src="/shots/widget.webp" width="765" height="360" decoding="async" alt="Maru 的“今天”小组件：5 项里已服用 2 项，分为早上、中午和晚上。"></div></div></article>
+<article class="feature flip" data-reveal><div class="feature-copy"><h2 class="enter">吃过什么，一目了然</h2><p class="lede enter d1">几个月的记录一眼看完，每个项目的最近 7 天也在这里。</p></div><div class="feature-stage enter d2"><div class="device"><div class="device-screen"><img src="/shots/history-zh-Hans.webp" width="780" height="1696" decoding="async" alt="Maru 的“历史记录”界面，有过去每一天的图表和每个项目最近 7 天的记录。"></div><span class="island" aria-hidden="true"></span></div></div></article>
+<article class="feature" data-reveal><div class="feature-copy"><h2 class="enter">每个项目一页</h2><p class="lede enter d1">时间、用量和最近 7 天，都在这一页。</p></div><div class="feature-stage enter d2"><div class="device"><div class="device-screen"><img src="/shots/detail-zh-Hans.webp" width="780" height="1696" decoding="async" alt="Maru 中一个项目的页面，有时间、用量和最近 7 天的记录。"></div><span class="island" aria-hidden="true"></span></div></div></article>
 </div>
 <section class="wrap" aria-labelledby="trust-title">
-<div class="closer" data-reveal="large">
+<div class="closer" data-reveal>
 <h2 id="trust-title" class="sr">你可以放心</h2>
-<ul class="nots"><li><a href="https://github.com/ImHangLi/maru"><svg class="icon" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>免费、开源</a></li><li>无需注册</li><li>记录只留在你的 iPhone 上</li></ul>
-<div class="cta"><span class="store"><span class="store-name">App Store</span><span class="store-small">即将上架</span></span><a class="notify" href="mailto:hello@maru.day?subject=%E4%B8%8A%E6%9E%B6%E6%97%B6%E9%80%9A%E7%9F%A5%E6%88%91">上架后通知我</a></div>
+<ul class="nots enter"><li><a href="https://github.com/ImHangLi/maru"><svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20.5675C6.57143 21.7248 3.71429 20.5675 2 17"/><path d="M10 22V18.7579C10 18.1596 10.1839 17.6396 10.4804 17.1699C10.6838 16.8476 10.5445 16.3904 10.1771 16.2894C7.13394 15.4528 5 14.1077 5 9.64606C5 8.48611 5.38005 7.39556 6.04811 6.4464C6.21437 6.21018 6.29749 6.09208 6.31748 5.9851C6.33746 5.87813 6.30272 5.73852 6.23322 5.45932C5.95038 4.32292 5.96871 3.11619 6.39322 2.02823C6.39322 2.02823 7.27042 1.74242 9.26698 2.98969C9.72282 3.27447 9.95075 3.41686 10.1515 3.44871C10.3522 3.48056 10.6206 3.41384 11.1573 3.28041C11.8913 3.09795 12.6476 3 13.5 3C14.3524 3 15.1087 3.09795 15.8427 3.28041C16.3794 3.41384 16.6478 3.48056 16.8485 3.44871C17.0493 3.41686 17.2772 3.27447 17.733 2.98969C19.7296 1.74242 20.6068 2.02823 20.6068 2.02823C21.0313 3.11619 21.0496 4.32292 20.7668 5.45932C20.6973 5.73852 20.6625 5.87813 20.6825 5.9851C20.7025 6.09207 20.7856 6.21019 20.9519 6.4464C21.6199 7.39556 22 8.48611 22 9.64606C22 14.1077 19.8661 15.4528 16.8229 16.2894C16.4555 16.3904 16.3162 16.8476 16.5196 17.1699C16.8161 17.6396 17 18.1596 17 18.7579V22"/></svg>免费、开源</a></li><li>无需注册</li><li>记录只留在你的 iPhone 上</li></ul>
+<p class="closer-links enter d1"><a href="https://apps.apple.com/app/id0000000000">在 App Store 下载</a><a href="/cn/faq.html">常见问题</a></p>
 </div>
 </section>
 </main>
@@ -72,6 +70,7 @@
 <p>Maru 不提供医疗建议。</p>
 </div>
 </footer>
+<template id="lang-hint"><aside class="lang-hint"><a href="/cn/">查看简体中文版</a><button type="button" class="icon-btn" aria-label="关闭"><svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6.00081 17.9992M17.9992 18L6 6.00085"/></svg></button></aside></template>
 <script src="/site.js" defer></script>
 </body>
 </html>

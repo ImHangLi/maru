@@ -11,10 +11,6 @@
     "lede": "Maru erinnert dich an Vitamine, Supplements und Medikamente und merkt sich, was du genommen hast."
   },
   "store": {
-    "soon": "Bald im",
-    "store_first": false,
-    "notify": "Sag mir Bescheid, wenn es da ist",
-    "notify_subject": "Bitte Bescheid sagen",
     "badge_alt": "Laden im App Store"
   },
   "shots": {
@@ -22,36 +18,31 @@
       "label": "Heute",
       "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
     },
-    "reminder": {
-      "alt": "Eine Erinnerung von Maru an Vitamin D mit der Aktion „Eingenommen“."
-    },
     "history": {
       "label": "Verlauf",
       "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der vergangenen Tage und den letzten 7 Tagen jedes Eintrags."
     },
-    "widget": {
-      "alt": "Das Maru-Widget „Heute“: 2 von 5 eingenommen, mit Morgens, Mittags und Abends."
-    },
     "detail": {
       "label": "Eintrag",
       "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."
+    },
+    "notification": {
+      "alt": "Eine Erinnerung von Maru an Vitamin D mit der Aktion „Eingenommen“."
+    },
+    "widget": {
+      "alt": "Das Maru-Widget „Heute“: 2 von 5 eingenommen, mit Morgens, Mittags und Abends."
     }
   },
   "blocks": [
     {
-      "shot": "reminder",
-      "title": "Erinnerungen, wann du willst",
-      "text": "Du legst die Zeiten fest und tippst direkt in der Erinnerung auf „Eingenommen“."
+      "shot": "duo",
+      "title": "Erinnern, tippen, fertig",
+      "text": "Tippe in der Erinnerung auf „Eingenommen“, und das Widget zeigt deinen Tag."
     },
     {
       "shot": "history",
       "title": "Sieh, was du genommen hast",
       "text": "Ganze Monate auf einen Blick, dazu die letzten sieben Tage jedes Eintrags."
-    },
-    {
-      "shot": "widget",
-      "title": "Auf deinem Home-Bildschirm",
-      "text": "Füge das Maru-Widget hinzu und behalte deinen Tag im Blick."
     },
     {
       "shot": "detail",

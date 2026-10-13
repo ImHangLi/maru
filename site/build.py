@@ -13,11 +13,11 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
-from urllib.parse import quote
 
-# The App Store link of Maru. Leave it empty until Maru is on the App Store, then build again.
-# Example: "https://apps.apple.com/app/id0000000000"
-STORE_URL = ""
+# The App Store link of Maru. This one constant sets the link of every badge.
+# It is a placeholder until Maru is on the App Store. Do not deploy the site with the placeholder.
+PLACEHOLDER_STORE_URL = "https://apps.apple.com/app/id0000000000"
+STORE_URL = PLACEHOLDER_STORE_URL
 
 ORIGIN = "https://maru.day"
 GITHUB = "https://github.com/ImHangLi/maru"
@@ -27,22 +27,17 @@ FEEDBACK_FORM = "https://tally.so/r/jadWkR"
 # A folder is a two-letter name, because ads and links carry it. The language code stays a correct language tag.
 LANGS = [("en", ""), ("zh-Hans", "cn"), ("ja", "jp"), ("es", "es"), ("de", "de"), ("ko", "kr")]
 PAGES = ["index.html", "faq.html", "privacy.html", "support.html"]
-# Three screenshots go in an iPhone frame. Two product pictures show one element with no frame (see concept.py).
 SHOTS = ["today", "history", "detail"]
-PICTURES = ["reminder", "widget"]
 SHOT_WIDTH = 780
 # Apple asks for a badge height of 40 px or more on a screen.
 NAV_BADGE, PAGE_BADGE = 40, 56
-# The GitHub mark (Octicons "mark-github") and a globe for the language menu.
-GITHUB_MARK = ('<svg class="icon" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 '
-               '3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 '
-               '1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27'
-               '-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 '
-               '3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 '
-               '1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
-GLOBE = ('<svg class="icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" '
-         'stroke-width="1.5"><circle cx="10" cy="10" r="7.25"/><path d="M2.75 10h14.5M10 2.75c2.2 2.3 3.2 4.6 3.2 7.25s-1 4.95-3.2 '
-         '7.25c-2.2-2.3-3.2-4.6-3.2-7.25s1-4.95 3.2-7.25Z"/></svg>')
+# Every icon comes from Hugeicons (free stroke set, version 4.3.5, MIT license). The stroke width is in style.css.
+ICONS = {
+    "github": "<path d=\"M10 20.5675C6.57143 21.7248 3.71429 20.5675 2 17\"/><path d=\"M10 22V18.7579C10 18.1596 10.1839 17.6396 10.4804 17.1699C10.6838 16.8476 10.5445 16.3904 10.1771 16.2894C7.13394 15.4528 5 14.1077 5 9.64606C5 8.48611 5.38005 7.39556 6.04811 6.4464C6.21437 6.21018 6.29749 6.09208 6.31748 5.9851C6.33746 5.87813 6.30272 5.73852 6.23322 5.45932C5.95038 4.32292 5.96871 3.11619 6.39322 2.02823C6.39322 2.02823 7.27042 1.74242 9.26698 2.98969C9.72282 3.27447 9.95075 3.41686 10.1515 3.44871C10.3522 3.48056 10.6206 3.41384 11.1573 3.28041C11.8913 3.09795 12.6476 3 13.5 3C14.3524 3 15.1087 3.09795 15.8427 3.28041C16.3794 3.41384 16.6478 3.48056 16.8485 3.44871C17.0493 3.41686 17.2772 3.27447 17.733 2.98969C19.7296 1.74242 20.6068 2.02823 20.6068 2.02823C21.0313 3.11619 21.0496 4.32292 20.7668 5.45932C20.6973 5.73852 20.6625 5.87813 20.6825 5.9851C20.7025 6.09207 20.7856 6.21019 20.9519 6.4464C21.6199 7.39556 22 8.48611 22 9.64606C22 14.1077 19.8661 15.4528 16.8229 16.2894C16.4555 16.3904 16.3162 16.8476 16.5196 17.1699C16.8161 17.6396 17 18.1596 17 18.7579V22\"/>",
+    "globe": "<circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"M8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2C12 2 8 6 8 12Z\"/><path d=\"M21 15H3\"/><path d=\"M21 9H3\"/>",
+    "check": "<path d=\"M5 14L8.5 17.5L19 6.5\"/>",
+    "close": "<path d=\"M18 6L6.00081 17.9992M17.9992 18L6 6.00085\"/>"
+}
 
 SITE = Path(__file__).resolve().parent
 STRINGS = {code: json.loads((SITE / "src/strings" / f"{code}.json").read_text("utf-8")) for code, _ in LANGS}
@@ -87,49 +82,46 @@ def import_shots(source):
         print(f"shot {stem}")
 
 
-def picture(code, name):
-    """One real element of the app on a calm stage. The picture is English on every page."""
+def icon(name):
+    return (f'<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" '
+            f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>')
+
+
+def cutout(code, name, extra=""):
     file = SITE / "shots" / f"{name}.webp"
     width, height = webp_size(file)
-    return (f'<div class="stage"><img src="/shots/{file.name}" width="{width}" height="{height}" loading="lazy" '
-            f'decoding="async" alt="{e(STRINGS[code]["shots"][name]["alt"])}"></div>')
+    alt = STRINGS[code]["shots"][name]["alt"] if name in STRINGS[code]["shots"] else ""
+    return (f'<img class="duo-{name}{extra}" src="/shots/{file.name}" width="{width}" height="{height}" decoding="async" '
+            f'alt="{e(alt)}">')
+
+
+def duo(code):
+    """The reminder and the widget as one product picture. The pictures are real cuts, and English on every page."""
+    return (f'<div class="duo">{cutout(code, "notification", " enter d3")}{cutout(code, "taken", " pop d5")}'
+            f'{cutout(code, "widget", " enter d2")}</div>')
 
 
 def device(code, shot, eager=False):
     """An iPhone frame around a real screenshot. The language file wins, then the English file."""
-    if shot in PICTURES:
-        return picture(code, shot)
+    if shot == "duo":
+        return duo(code)
     s = STRINGS[code]["shots"][shot]
     files = [SITE / "shots" / f"{shot}-{code}.webp", SITE / "shots" / f"{shot}.webp"]
     file = next((f for f in files if f.exists()), None)
     if file is None:
         return f'<div class="device"><div class="device-screen"><span>{e(s["label"])}</span></div></div>'
     width, height = webp_size(file)
-    load = 'loading="eager" fetchpriority="high"' if eager else 'loading="lazy" decoding="async"'
+    load = 'fetchpriority="high"' if eager else 'decoding="async"'
     return (f'<div class="device"><div class="device-screen"><img src="/shots/{file.name}" width="{width}" '
             f'height="{height}" {load} alt="{e(s["alt"])}"></div><span class="island" aria-hidden="true"></span></div>')
 
 
-def store(code, height):
-    """The App Store button. After the release: Apple's badge, as Apple made it. Before the release: a plain
-    black pill in the same format with no Apple logo, because Apple keeps its badge for an app that is in the store."""
-    s = STRINGS[code]["store"]
-    if STORE_URL:
-        svg = (SITE / "badges" / f"{code}.svg").read_text("utf-8")
-        width, natural = (float(v) for v in re.search(r'width="([\d.]+)" height="([\d.]+)"', svg).groups())
-        return (f'<a class="badge" href="{e(STORE_URL)}"><img src="/badges/{code}.svg" '
-                f'width="{round(width * height / natural)}" height="{height}" alt="{e(s["badge_alt"])}"></a>')
-    lines = [f'<span class="store-small">{e(s["soon"])}</span>', '<span class="store-name">App Store</span>']
-    size = "store store-nav" if height == NAV_BADGE else "store"
-    return f'<span class="{size}">{"".join(reversed(lines) if s["store_first"] else lines)}</span>'
-
-
-def cta(code):
-    s = STRINGS[code]["store"]
-    if STORE_URL:
-        return f'<div class="cta">{store(code, PAGE_BADGE)}</div>'
-    mail = f"mailto:{EMAIL}?subject={quote(s['notify_subject'])}"
-    return f'<div class="cta">{store(code, PAGE_BADGE)}<a class="notify" href="{mail}">{e(s["notify"])}</a></div>'
+def badge(code, height):
+    """Apple's "Download on the App Store" badge in the language of the page. The artwork is not changed."""
+    svg = (SITE / "badges" / f"{code}.svg").read_text("utf-8")
+    width, natural = (float(v) for v in re.search(r'width="([\d.]+)" height="([\d.]+)"', svg).groups())
+    return (f'<a class="badge" href="{e(STORE_URL)}"><img src="/badges/{code}.svg" '
+            f'width="{round(width * height / natural)}" height="{height}" alt="{e(STRINGS[code]["store"]["badge_alt"])}"></a>')
 
 
 def phrases(text):
@@ -144,10 +136,12 @@ def layout(code, page, title, desc, main, head=""):
     here = ORIGIN + url(code, page)
     alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
     banner = re.search(r"id(\d+)", STORE_URL)
-    banner = f'<meta name="apple-itunes-app" content="app-id={banner.group(1)}">\n' if banner else ""
+    banner = (f'<meta name="apple-itunes-app" content="app-id={banner.group(1)}">\n'
+              if banner and STORE_URL != PLACEHOLDER_STORE_URL else "")
     current = ' aria-current="page"'
     menu = "".join(
-        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}</a></li>'
+        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
+        f'{icon("check") if c == code else ""}</a></li>'
         for c, _ in LANGS)
     languages = "".join(
         f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
@@ -174,7 +168,7 @@ def layout(code, page, title, desc, main, head=""):
 <meta property="og:url" content="{here}">
 <meta property="og:image" content="{ORIGIN}/icon.png">
 <meta name="twitter:card" content="summary">
-{head}<script>document.documentElement.classList.add('js')</script>
+{head}<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("motion")</script>
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
@@ -182,10 +176,9 @@ def layout(code, page, title, desc, main, head=""):
 <header class="site-header"><div class="nav-inner">
 <a class="brand" href="{url(code, "index.html")}"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
 <nav class="nav-links" aria-label="{e(s["nav_label"])}">
-<a class="nav-text" href="{url(code, "faq.html")}"{current if page == "faq.html" else ""}>{e(f["faq"])}</a>
-<a class="nav-icon" href="{GITHUB}" aria-label="{e(s["github"])}">{GITHUB_MARK}</a>
-<details class="lang-menu"><summary>{GLOBE}<span class="sr">{e(f["language"])}: </span><span class="lang-name">{e(s["name"])}</span></summary><ul>{menu}</ul></details>
-{store(code, NAV_BADGE)}
+<details class="lang-menu"><summary class="icon-btn" aria-label="{e(f["language"])}: {e(s["name"])}" data-tip="{e(f["language"])}">{icon("globe")}</summary><ul>{menu}</ul></details>
+<a class="icon-btn" href="{GITHUB}" aria-label="{e(s["github"])}" data-tip="GitHub">{icon("github")}</a>
+{badge(code, NAV_BADGE)}
 </nav>
 </div></header>
 {main}
@@ -196,6 +189,7 @@ def layout(code, page, title, desc, main, head=""):
 <p>{e(f["advice"])}</p>
 </div>
 </footer>
+<template id="lang-hint"><aside class="lang-hint"><a href="{url(code, page)}">{e(s["suggest"])}</a><button type="button" class="icon-btn" aria-label="{e(s["close"])}">{icon("close")}</button></aside></template>
 <script src="/site.js" defer></script>
 </body>
 </html>
@@ -206,31 +200,31 @@ def home(code):
     s = STRINGS[code]
     h = s["home"]
     blocks = "".join(
-        f'<article class="feature{" flip" if i % 2 else ""}" data-reveal="large"><div class="feature-copy">'
-        f'<h2>{e(b["title"])}</h2><p class="lede">{e(b["text"])}</p></div>'
-        f'<div class="feature-stage">{device(code, b["shot"])}</div></article>\n'
+        f'<article class="feature{" flip" if i % 2 else ""}" data-reveal><div class="feature-copy">'
+        f'<h2 class="enter">{e(b["title"])}</h2><p class="lede enter d1">{e(b["text"])}</p></div>'
+        f'<div class="feature-stage{"" if b["shot"] == "duo" else " enter d2"}">{device(code, b["shot"])}</div></article>\n'
         for i, b in enumerate(s["blocks"]))
     first, *rest = s["trust"]
-    trust = f'<li><a href="{GITHUB}">{GITHUB_MARK}{e(first)}</a></li>' + "".join(f"<li>{e(t)}</li>" for t in rest)
+    trust = f'<li><a href="{GITHUB}">{icon("github")}{e(first)}</a></li>' + "".join(f"<li>{e(t)}</li>" for t in rest)
     main = f"""<main id="main">
 <section class="hero">
-<div class="wrap hero-grid">
+<div class="wrap hero-grid is-in">
 <div class="hero-copy">
-<img class="hero-icon" src="/icon.png" alt="" width="72" height="72">
-<h1>{phrases(h["h1"])}</h1>
-<p class="lede">{e(h["lede"])}</p>
-{cta(code)}
+<img class="hero-icon enter" src="/icon.png" alt="" width="72" height="72">
+<h1 class="enter d1">{phrases(h["h1"])}</h1>
+<p class="lede enter d2">{e(h["lede"])}</p>
+<div class="cta enter d3">{badge(code, PAGE_BADGE)}</div>
 </div>
-<div class="hero-stage">{device(code, "today", eager=True)}</div>
+<div class="hero-stage enter d2">{device(code, "today", eager=True)}</div>
 </div>
 </section>
 <div class="wrap features">
 {blocks}</div>
 <section class="wrap" aria-labelledby="trust-title">
-<div class="closer" data-reveal="large">
+<div class="closer" data-reveal>
 <h2 id="trust-title" class="sr">{e(s["trust_title"])}</h2>
-<ul class="nots">{trust}</ul>
-{cta(code)}
+<ul class="nots enter">{trust}</ul>
+<p class="closer-links enter d1"><a href="{e(STORE_URL)}">{e(s["store"]["badge_alt"])}</a><a href="{url(code, "faq.html")}">{e(s["faq"]["h1"])}</a></p>
 </div>
 </section>
 </main>"""
@@ -341,7 +335,8 @@ def main():
             (SITE / folder / page).write_text(render[page](code), "utf-8")
     (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
     print(f"built {len(LANGS) * len(PAGES)} pages")
-
+    if STORE_URL == PLACEHOLDER_STORE_URL:
+        print("WARNING: STORE_URL is the placeholder. Every App Store badge has a link that does not work. Do not deploy.")
 
 if __name__ == "__main__":
     main()

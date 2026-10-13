@@ -27,14 +27,26 @@ A `|` in a headline marks a place where the line can break.
 
 The top bar has a language menu. It is a `details` element with plain links, so it works with no script. A link goes to the same page in the other language.
 
-## App Store button
+## App Store badge
 
-Set `STORE_URL` in `build.py` and build again. This one constant changes the top bar, the hero, and the end of the home page, and it turns on the Smart App Banner.
+Every button is Apple's "Download on the App Store" badge in the language of the page. The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The rules are in Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
 
-- After the release, the button is Apple's "Download on the App Store" badge in the language of the page. The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height.
-- Before the release, the button is a plain black pill in the same format, with the line "Coming soon on the" and with no Apple logo. Apple keeps its badge and its logo for an app that is in the store. The pill is not Apple's badge.
+`STORE_URL` in `build.py` is the one link of every badge. It is a placeholder until Maru is on the App Store, and the build prints a warning while it is the placeholder. **Do not deploy the site with the placeholder.** Set the real link, build again, and check that the warning is gone. The real link also turns on the Smart App Banner.
 
-The rules are in Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
+The badge is in the top bar and in the hero. The end of the home page has a text link, because Apple asks for one badge in a layout.
+
+## Icons
+
+Every icon is from [Hugeicons](https://hugeicons.com), the free stroke set, package `@hugeicons/core-free-icons` version 4.3.5, MIT license. The paths are in `ICONS` in `build.py`, and the pages have them as inline SVG. No icon font, no CDN, and no script loads them. `--icon-size` and `--icon-stroke` in `style.css` set the size and the stroke of all icons. To add an icon, copy its paths from the same package and the same set.
+
+## Style and motion
+
+`style.css` starts with one block of tokens: color, radius, duration, easing, shadow, icon, type, and space. A rule below that block uses a token and no raw value.
+
+- A transition or an animation uses one of the four easing tokens. Do not use `ease` or `ease-in-out`.
+- An entrance moves 6 px, clears a blur of 2 px, and fades in, in 300 ms. A part of a block starts 70 ms after the part before it.
+- Content is visible with no script. `site.js` adds the class `is-in` to a block when it enters the view, and the entrance plays one time. `<html>` gets the class `motion` only when the visitor did not ask for reduced motion.
+- A press scales a control to 0.98. The link of the App Store badge changes only its opacity, because the badge must not move.
 
 ## Pictures
 
@@ -46,7 +58,7 @@ python3 site/concept.py /path/to/captures
 Both commands need `sips` (macOS) and `cwebp`.
 
 - `build.py --shots` reads `today.png`, `history.png`, and `detail.png`, and language files such as `today-ja.png`. It writes WebP files of 780 px width to `shots/`. The page shows them in an iPhone frame. A language page uses its own file, or the English file.
-- `concept.py` cuts two product pictures with a transparent background. `shots/widget.webp` is the widget from `widget.png`. `shots/reminder.webp` is the notification and its "Taken" action from `reminder-expanded.png`. The page shows them with no phone, on a stage. They are English on every page.
+- `concept.py` cuts three pictures with a transparent background, all at one scale. `shots/widget.webp` is the widget from `widget.png`. `shots/notification.webp` and `shots/taken.webp` are the notification and its "Taken" action from `reminder-expanded.png`. One block of the home page shows the three together with no phone. They are English on every page.
 
 Use only real captures of the app. Do not draw app screens.
 

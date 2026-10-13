@@ -11,10 +11,6 @@
     "lede": "Maru reminds you to take your vitamins, supplements, and medicine, and remembers what you took."
   },
   "store": {
-    "soon": "Coming soon on the",
-    "store_first": false,
-    "notify": "Tell me when it is out",
-    "notify_subject": "Notify me",
     "badge_alt": "Download on the App Store"
   },
   "shots": {
@@ -22,36 +18,31 @@
       "label": "Today",
       "alt": "The Today screen of Maru with the items to take now."
     },
-    "reminder": {
-      "alt": "A Maru reminder to take Vitamin D, with the action Taken."
-    },
     "history": {
       "label": "History",
       "alt": "The History screen of Maru with a graph of past days and the last 7 days of each item."
     },
-    "widget": {
-      "alt": "The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening."
-    },
     "detail": {
       "label": "Item",
       "alt": "The page of one item in Maru with its times, its amount, and its last 7 days."
+    },
+    "notification": {
+      "alt": "A Maru reminder to take Vitamin D, with the action Taken."
+    },
+    "widget": {
+      "alt": "The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening."
     }
   },
   "blocks": [
     {
-      "shot": "reminder",
-      "title": "Reminders when you want them",
-      "text": "Pick your times, then tap Taken right on the reminder."
+      "shot": "duo",
+      "title": "Remind, tap, done",
+      "text": "Tap Taken on the reminder, and the widget shows your day."
     },
     {
       "shot": "history",
       "title": "See what you took",
       "text": "See months at a glance, and the last seven days of every item."
-    },
-    {
-      "shot": "widget",
-      "title": "On your Home Screen",
-      "text": "Add the Maru widget and see your day at a glance."
     },
     {
       "shot": "detail",

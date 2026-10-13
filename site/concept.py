@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Cut the two product pictures from real simulator captures: python3 site/concept.py DIR
 
-DIR holds widget.png and reminder-expanded.png (1206 x 2622). The script writes shots/widget.webp and
-shots/reminder.webp with a transparent background. Every pixel comes from the captures. Nothing is drawn.
+DIR holds widget.png and reminder-expanded.png (1206 x 2622). The script writes shots/widget.webp,
+shots/notification.webp, and shots/taken.webp with a transparent background, all at the same scale.
+Every pixel comes from the captures. Nothing is drawn.
 It needs sips (macOS) and cwebp, and no Python package.
 """
 
@@ -14,7 +15,8 @@ import zlib
 from pathlib import Path
 
 SITE = Path(__file__).resolve().parent
-OUT_WIDTH = 880
+# The pictures keep 73% of the capture size. A capture has 3 pixels for each point, so this is enough for a 2x screen.
+SCALE = 0.73
 WHITE = 250
 
 # Crop boxes in the capture, as (left, top, width, height). Each box holds one element and a margin of wallpaper.
@@ -24,6 +26,8 @@ REMINDER_BOX = (28, 1212, 1150, 496)
 ACTION_TOP = 268
 # Both elements are in the middle of the screen of 1206 px.
 SCREEN_CENTER = 603
+# The cut of the "Taken" action is this number of pixels inside its edge.
+RIM = 3
 # The corners of a card are inside a square of this size. Outside the squares, the edges of a card are straight.
 CORNER = 130
 
@@ -140,17 +144,30 @@ def cut_card(rows):
 
 def cut_pill(rows, center):
     """Cut the translucent "Taken" action. It is a capsule that is lighter than the wallpaper around it.
-    The capsule comes from its measured box, one pixel inside the edge, so no wallpaper stays on the rim."""
+    The capsule comes from its measured box, RIM pixels inside the edge, so no wallpaper stays on the rim."""
     height, width = len(rows), len(rows[0])
     light = [[sum(p) / 3 for p in row] for row in rows]
     line = light[height // 2]
     floor = (line[2] + line[center]) / 2
-    left = next(x for x in range(width) if line[x] > floor) + 1
+    left = next(x for x in range(width) if line[x] > floor) + RIM
     # The wallpaper is light at the right end, so the right edge comes from the left edge and the center.
     right = 2 * center - left - 1
     column = [light[y][center] for y in range(height)]
     ys = [y for y in range(height) if column[y] > floor]
-    top, bottom = ys[0] + 1, ys[-1] - 1
+    top, bottom = ys[0] + RIM, ys[-1] - RIM
+    # The Lock Screen material shows a curve of the wallpaper in the last fifth of the capsule. Replace the color there
+    # with the color of the clean material to its left. The shape and all pixels still come from the capture.
+    shift = round((right - left) * 0.2) + 10
+    seam = right - shift + 10
+    blend = 40
+    clean = []
+    for row in rows:
+        line = list(row)
+        for x in range(seam - blend, width):
+            part = min(1, (x - (seam - blend)) / blend)
+            line[x] = tuple(round(a * (1 - part) + b * part) for a, b in zip(row[x], row[x - shift]))
+        clean.append(line)
+    rows = clean
     radius = (bottom - top + 1) / 2
     center_y = (top + bottom + 1) / 2
     alpha = []
@@ -165,11 +182,17 @@ def cut_pill(rows, center):
 
 
 def save(name, pixels, alpha):
+    """Trim the transparent margin, and write the picture at SCALE."""
+    ys = [y for y, line in enumerate(alpha) if any(line)]
+    xs = [x for x in range(len(alpha[0])) if any(line[x] for line in alpha)]
+    pixels = [line[xs[0]:xs[-1] + 1] for line in pixels[ys[0]:ys[-1] + 1]]
+    alpha = [line[xs[0]:xs[-1] + 1] for line in alpha[ys[0]:ys[-1] + 1]]
     with tempfile.TemporaryDirectory() as tmp:
         png = Path(tmp) / "cut.png"
         write_png(png, pixels, alpha)
-        subprocess.run(["cwebp", "-quiet", "-q", "92", "-alpha_q", "100", "-exact", "-resize", str(OUT_WIDTH), "0",
-                        str(png), "-o", str(SITE / "shots" / f"{name}.webp")], check=True)
+        subprocess.run(["cwebp", "-quiet", "-q", "92", "-alpha_q", "100", "-exact", "-resize",
+                        str(round(len(pixels[0]) * SCALE)), "0", str(png), "-o", str(SITE / "shots" / f"{name}.webp")],
+                       check=True)
     print(f"picture {name}")
 
 
@@ -177,9 +200,8 @@ def main():
     source = Path(sys.argv[1])
     save("widget", *cut_card(crop(source / "widget.png", WIDGET_BOX)))
     rows = crop(source / "reminder-expanded.png", REMINDER_BOX)
-    card, card_alpha = cut_card(rows[:ACTION_TOP])
-    pill, pill_alpha = cut_pill(rows[ACTION_TOP:], SCREEN_CENTER - REMINDER_BOX[0])
-    save("reminder", card + pill, card_alpha + pill_alpha)
+    save("notification", *cut_card(rows[:ACTION_TOP]))
+    save("taken", *cut_pill(rows[ACTION_TOP:], SCREEN_CENTER - REMINDER_BOX[0]))
 
 
 if __name__ == "__main__":

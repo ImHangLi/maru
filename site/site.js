@@ -1,18 +1,15 @@
 (function () {
-  // Scroll entrances.
-  var items = document.querySelectorAll("[data-reveal]");
-  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reduce || !("IntersectionObserver" in window)) {
-    items.forEach(function (el) { el.classList.add("is-in"); });
-  } else {
+  // Entrance on scroll. A block is visible with no script. When a block enters the view, the class "is-in"
+  // plays the entrance of its parts one time. If the observer does not run, nothing is hidden.
+  if ("IntersectionObserver" in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
         entry.target.classList.add("is-in");
         io.unobserve(entry.target);
       });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.08 });
-    items.forEach(function (el) { io.observe(el); });
+    });
+    document.querySelectorAll("[data-reveal]").forEach(function (el) { io.observe(el); });
   }
 
   // Language. The page never redirects. A first visit can show one quiet hint for the language of the browser.
@@ -56,22 +53,18 @@
   if (!wanted || wanted === page || chosen()) return;
 
   var target = document.querySelector('.langs a[hreflang="' + wanted + '"]');
-  var hint = document.createElement("aside");
-  hint.className = "lang-hint";
+  var hint = document.getElementById("lang-hint").content.firstElementChild.cloneNode(true);
   hint.lang = wanted;
   hint.setAttribute("aria-label", target.textContent);
-  var go = document.createElement("a");
+  var go = hint.querySelector("a");
   go.href = target.href;
   go.textContent = target.dataset.suggest;
   go.addEventListener("click", function () { remember(wanted); });
-  var close = document.createElement("button");
-  close.type = "button";
+  var close = hint.querySelector("button");
   close.setAttribute("aria-label", target.dataset.close);
-  close.textContent = "×";
   close.addEventListener("click", function () {
     remember(page);
     hint.remove();
   });
-  hint.append(go, close);
   document.body.append(hint);
 })();
