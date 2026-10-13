@@ -18,15 +18,12 @@
   },
   "shots": {
     "today": {
-      "label": "今天",
       "alt": "Maru 的“今天”界面，显示现在该吃的项目。"
     },
     "history": {
-      "label": "历史记录",
       "alt": "Maru 的“历史记录”界面，有过去每一天的图表和每个项目最⁠近 7 天的记录。"
     },
     "detail": {
-      "label": "项目",
       "alt": "Maru 中一个项目的页面，有时间、用量和最⁠近 7 天的记录。"
     },
     "notification": {

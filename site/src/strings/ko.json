@@ -18,15 +18,12 @@
   },
   "shots": {
     "today": {
-      "label": "오늘",
       "alt": "지금 먹을 항목이 보이는 Maru의 오늘 화면."
     },
     "history": {
-      "label": "내역",
       "alt": "지난 날들의 그래프와 항목별 최근 7일이 보이는 Maru의 내역 화면."
     },
     "detail": {
-      "label": "항목",
       "alt": "시간, 용량, 최근 7일이 보이는 Maru의 항목 페이지."
     },
     "notification": {

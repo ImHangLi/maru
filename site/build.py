@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 """Build the Maru site: python3 site/build.py
 
-Reads src/strings/<lang>.json and PRIVACY.md, and writes the pages of every language into site/.
-With --shots DIR it first converts the screenshots in DIR to 780 px wide WebP files in shots/.
+Reads src/strings/<lang>.json, src/mock/<lang>.json, and PRIVACY.md, and writes the pages of every language into site/.
 """
 
 import html
 import json
 import re
-import struct
-import subprocess
-import sys
-import tempfile
 from pathlib import Path
+
+import mock
 
 # Is Maru in the App Store? While this is False, the site says "coming soon", shows no Apple badge,
 # has no link to the App Store, and has no Smart App Banner. Set it to True on the day of the release, and build again.
@@ -33,8 +30,6 @@ PAGES = ["index.html", "faq/index.html", "privacy/index.html", "support/index.ht
 # The addresses of the pages before the folders. _redirects sends them to the new addresses.
 OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html", "support.html": "support/index.html"}
 OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
-SHOTS = ["today", "history", "detail"]
-SHOT_WIDTH = 780
 # Apple asks for a badge height of 40 px or more on a screen.
 PAGE_BADGE = 56
 # The devices that the line under the badge names. It must match the devices of the released app before a deploy.
@@ -64,69 +59,24 @@ def url(code, page):
     return f"{prefix}/{page.removesuffix('index.html')}"
 
 
-def webp_size(path):
-    data = path.read_bytes()[:30]
-    kind = data[12:16]
-    if kind == b"VP8 ":
-        width, height = struct.unpack("<HH", data[26:30])
-        return width & 0x3FFF, height & 0x3FFF
-    if kind == b"VP8L":
-        bits = struct.unpack("<I", data[21:25])[0]
-        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
-    if kind == b"VP8X":
-        return int.from_bytes(data[24:27], "little") + 1, int.from_bytes(data[27:30], "little") + 1
-    raise ValueError(f"{path} is not a WebP file")
-
-
-def import_shots(source):
-    """Convert <name>.png and <name>-<lang>.png to WebP. Needs sips (macOS) and cwebp."""
-    names = [(shot, code) for shot in SHOTS for code in [""] + [c for c, _ in LANGS[1:]]]
-    (SITE / "shots").mkdir(exist_ok=True)
-    for shot, code in names:
-        stem = f"{shot}-{code}" if code else shot
-        png = Path(source) / f"{stem}.png"
-        if not png.exists():
-            continue
-        with tempfile.TemporaryDirectory() as tmp:
-            small = Path(tmp) / "small.png"
-            subprocess.run(["sips", "--resampleWidth", str(SHOT_WIDTH), str(png), "--out", str(small)],
-                           check=True, capture_output=True)
-            subprocess.run(["cwebp", "-quiet", "-q", "90", "-sharp_yuv", str(small), "-o",
-                            str(SITE / "shots" / f"{stem}.webp")], check=True)
-        print(f"shot {stem}")
-
-
 def icon(name):
     return (f'<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" '
             f'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{ICONS[name]}</svg>')
 
 
-def cutout(code, name, extra=""):
-    file = SITE / "shots" / f"{name}.webp"
-    width, height = webp_size(file)
-    alt = STRINGS[code]["shots"][name]["alt"]
-    return (f'<img class="duo-{name}{extra}" src="/shots/{file.name}" width="{width}" height="{height}" decoding="async" '
-            f'alt="{e(alt)}">')
+def picture(code, shot, body, extra=""):
+    """A code-drawn app component, read as one picture. Its text is in src/mock/<lang>.json."""
+    alt = STRINGS[code]["shots"][shot]["alt"]
+    return f'<div class="mock mock-{shot}{extra}" role="img" aria-label="{e(alt)}">{body}</div>'
 
 
-def duo(code):
-    """The widget and the reminder as one product picture, in a plain stack. The pictures are real cuts, and English on every page."""
-    return f'<div class="duo">{cutout(code, "widget", " enter d2")}{cutout(code, "notification", " enter d3")}</div>'
-
-
-def device(code, shot, eager=False):
-    """An iPhone frame around a real screenshot. The language file wins, then the English file."""
+def stage(code, shot):
+    """The component of a block. The reminder block shows the widget and the reminder on a wallpaper."""
+    t = mock.load(code)
     if shot == "duo":
-        return duo(code)
-    s = STRINGS[code]["shots"][shot]
-    files = [SITE / "shots" / f"{shot}-{code}.webp", SITE / "shots" / f"{shot}.webp"]
-    file = next((f for f in files if f.exists()), None)
-    if file is None:
-        return f'<div class="device"><div class="device-screen"><span>{e(s["label"])}</span></div></div>'
-    width, height = webp_size(file)
-    load = 'fetchpriority="high"' if eager else 'decoding="async"'
-    return (f'<div class="device"><div class="device-screen"><img src="/shots/{file.name}" width="{width}" '
-            f'height="{height}" {load} alt="{e(s["alt"])}"></div><span class="island" aria-hidden="true"></span></div>')
+        return (f'<div class="wallpaper">{picture(code, "widget", mock.widget(t), " enter d2")}'
+                f'{picture(code, "notification", mock.reminder(t), " enter d3")}</div>')
+    return picture(code, shot, {"history": mock.history, "detail": mock.detail}[shot](t))
 
 
 def badge(code, height):
@@ -233,7 +183,7 @@ def home(code):
     blocks = "".join(
         f'<article class="feature{" flip" if i % 2 else ""}" data-reveal><div class="feature-copy">'
         f'<h2 class="enter">{phrases(b["title"], load=False)}</h2><p class="lede enter d1">{e(b["text"])}</p></div>'
-        f'<div class="feature-stage{"" if b["shot"] == "duo" else " enter d2"}">{device(code, b["shot"])}</div></article>\n'
+        f'<div class="feature-stage{"" if b["shot"] == "duo" else " enter d2"}">{stage(code, b["shot"])}</div></article>\n'
         for i, b in enumerate(s["blocks"]))
     store_link = f'<a href="{e(STORE_URL)}">{e(s["store"]["badge_alt"])}</a>' if RELEASED else ""
     first, *rest = s["trust"]
@@ -246,7 +196,7 @@ def home(code):
 <p class="lede load d2">{e(h["lede"])}</p>
 {download(code)}
 </div>
-<div class="hero-stage load-phone">{device(code, "today", eager=True)}</div>
+<div class="hero-stage load-hero">{picture(code, "today", mock.today(mock.load(code)))}</div>
 </div>
 </section>
 <div class="wrap features">
@@ -418,8 +368,6 @@ Languages:
 
 
 def main():
-    if len(sys.argv) == 3 and sys.argv[1] == "--shots":
-        import_shots(sys.argv[2])
     render = {"index.html": home, "faq/index.html": faq, "privacy/index.html": privacy, "support/index.html": support}
     for code, folder in LANGS:
         for page in PAGES:

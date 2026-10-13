@@ -14,6 +14,8 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 |---|---|
 | `build.py` | The layout of every page, and the `STORE_URL` constant |
 | `src/strings/<lang>.json` | The text of one language |
+| `mock.py` | The app components of the home page, drawn in HTML and SVG |
+| `src/mock/<lang>.json` | The app text and the item names of the components in one language |
 | `../PRIVACY.md` | The full privacy policy. It stays English on every language page |
 | `style.css`, `site.js` | The style, the scroll entrances, and the language hint |
 
@@ -56,8 +58,9 @@ The site uses the system fonts of each language and loads no font file: San Fran
 `style.css` starts with one block of tokens: color, radius, duration, easing, shadow, icon, type, and space. A rule below that block uses a token and no raw value.
 
 - A transition or an animation uses one of the four easing tokens. Do not use `ease` or `ease-in-out`.
-- The page has one entrance when it loads, about 660 ms long. The top bar falls in from above the top edge (480 ms), and its content fades in at the end. The headline lines, the sentence, and the download unit rise 14 px in order, 60 ms apart (420 ms each), and the phone rises 24 px and grows from 97% (520 ms). A text page has the same bar and a shorter entrance of its title and its body.
-- The phone is in the first paint at 30% opacity, so the largest picture of the page does not wait for the entrance.
+- The page has one entrance when it loads, about 660 ms long. The top bar falls in from above the top edge (480 ms), and its content fades in at the end. The headline lines, the sentence, and the download unit rise 14 px in order, 60 ms apart (420 ms each), and the hero component rises 24 px and grows from 97% (520 ms). A text page has the same bar and a shorter entrance of its title and its body.
+- The hero component is in the first paint at 30% opacity, so the largest picture of the page does not wait for the entrance.
+- After the entrance, one tap records the noon row of the hero: a touch, then the circle fills with a spring, as in the app. Without motion the row shows the recorded state at once.
 - A block enters one time when it scrolls into view, with the same rise, blur, and duration as the hero parts. The blur clears at 60% of the time, so text is sharp when it comes to rest.
 - Content is visible with no script. `<html>` gets the class `motion` only when the visitor did not ask for reduced motion. `site.js` adds the class `is-in` to a block when it enters the view. A page from the back and forward cache shows at rest.
 - The language menu opens in 200 ms from its button (fade, scale from 96%, a few pixels of movement) and closes faster, in 130 ms (fade and scale). `site.js` keeps the menu in the layout until the close animation ends. With reduced motion it only fades.
@@ -65,17 +68,20 @@ The site uses the system fonts of each language and loads no font file: San Fran
 
 ## Pictures
 
-```sh
-python3 site/build.py --shots /path/to/captures
-python3 site/concept.py /path/to/captures
-```
+The site has no screenshots. Each block shows one app component, drawn in HTML, CSS, and inline SVG by `mock.py`:
 
-Both commands need `sips` (macOS) and `cwebp`.
+| Block | Component |
+|---|---|
+| Hero | The Today list: Morning with two recorded rows, and Noon with the row that one tap records |
+| Reminders | The medium Today widget, and the Lock Screen reminder with its "Taken" action, on a wallpaper |
+| History | The History graph, and the last 7 days of three items |
+| Item | The plan of one item, and its strip of the last 7 days with the counts |
 
-- `build.py --shots` reads `today.png`, `history.png`, and `detail.png`, and language files such as `today-ja.png`. It writes WebP files of 780 px width to `shots/`. The page shows them in an iPhone frame. A language page uses its own file, or the English file.
-- `concept.py` cuts two pictures with a transparent background, at one scale. `shots/widget.webp` is the widget from `widget.png`. `shots/notification.webp` is the notification from `reminder-expanded.png`. One block of the home page shows the two together with no phone. They are English on every page.
-
-Use only real captures of the app. Do not draw app screens.
+- The components follow the SwiftUI code in `App/` and `Widget/` and `docs/design.md`: the system font, the sizes in points, the default pink, the item colors, and the form icons of `App/Icons.xcassets`. The App Store screenshots use the same components and the same sample items.
+- `src/mock/<lang>.json` holds the words of the app in one language (from the String Catalogs), the time format, and local names for the sample items. Change one file, build, and every block of that language follows. The facts that every language shares (forms, colors, times, and records) are at the top of `mock.py`.
+- A component scales with its block. `--base` is the width that it fills, in points, and `--pt-max` stops it at a little more than its real size. The colors are tokens that start with `--app-`, with a dark set.
+- Each component is one picture for assistive technology: it has `role="img"` and the alt text of `shots` in `src/strings/<lang>.json`.
+- When the app changes, change the component in the same way, and compare it with a capture of the app at 3x (1 pt is 3 px). The site does not keep the captures.
 
 ## Deploy
 
