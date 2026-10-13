@@ -36,7 +36,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A failure uses a system alert. Every alert title uses Title Case, for example "Not Saved", "Today Changed", "History Changed", "Not Changed", and "Maru Couldn’t Save" (D058). A failed reminder after a save or a change also gets an alert. Notifications that are off show as the row "Notifications off" on Today and My Items, with no alert.
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
-- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, and a line under it that counts the days. It has no list of records and no tap. The item log is in History (D057).
+- The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses: "Taken: 5 · Skipped: 1 · No record: 1". An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
 - For a plan of every other day, "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036).
 
 ## Today
@@ -93,7 +93,7 @@ A graph of squares at the top, and a section "Last 7 Days" in a system grouped l
 
 - One section with the title "Last 7 Days", under the graph. One row for each item that had a planned dose or a taken as-needed dose in the last 7 days. An archived item shows only when it had one. Order: the first planned time, then the name. As-needed items come last.
 - Row: the form icon in the item color, or the item photo (D056, D058), the name, the part of the day or "As Needed" on a second line, and at the trailing edge a strip of 7 small capsules, oldest at the left and today at the right. The system chevron shows that the row opens.
-- Capsule: 0.4 times the height of the body text wide, and 1 times high. Filled in the item color: every planned dose of the day taken, or an as-needed dose taken. The item color at 40%: some taken. A hollow outline of 1.5 points in the item color: planned and none taken. An empty slot of the same width: nothing planned. A skipped dose is not taken.
+- Capsule: 0.4 times the height of the body text wide, and 1 times high. Filled in the item color: every planned dose of the day taken, or an as-needed dose taken. The item color at 40%: some taken. A hollow outline of 1.5 points in the item color: planned and none taken. A faint gray capsule: nothing planned (D061). A skipped dose is not taken.
 - A planned dose of today that is not due yet and has no record counts as nothing planned until its time.
 - At the accessibility text sizes the strip goes under the words.
 - A capsule that changes after a record fades with the state motion.

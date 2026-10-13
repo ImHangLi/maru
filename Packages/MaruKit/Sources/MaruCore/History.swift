@@ -202,6 +202,12 @@ public struct HistoryItemWeek: Hashable, Sendable {
     public let dayParts: [DayPart]
     /// The earliest planned time of the week. It orders the list. `nil` for an as-needed item.
     public let firstTime: WallClockTime?
+    /// The doses of the week that are taken, planned or as needed.
+    public let takenDoses: Int
+    /// The planned doses of the week that are skipped.
+    public let skippedDoses: Int
+    /// The planned doses of the week that are due and have no record.
+    public let unrecordedDoses: Int
 
     /// The days with every planned dose taken, or with an as-needed dose taken.
     public var takenDays: Int { marks.filter { $0 == .all }.count }
@@ -220,6 +226,7 @@ extension History {
         let dates = (0..<7).map { today.adding(days: $0 - 6) }
         var planned: [ItemID: [LocalDate: [HistoryDose]]] = [:]
         var asNeeded: [ItemID: Set<LocalDate>] = [:]
+        var asNeededTaken: [ItemID: Int] = [:]
         for day in days where dates.contains(day.date) {
             for dose in day.doses {
                 let isDue = !dose.record.events.isEmpty || day.date != today || dose.occurrence.resolvedTime.earliestInstant <= now
@@ -227,6 +234,7 @@ extension History {
             }
             for dose in day.asNeeded where dose.record.status == .taken {
                 asNeeded[dose.occurrence.itemID, default: []].insert(day.date)
+                asNeededTaken[dose.occurrence.itemID, default: 0] += 1
             }
         }
         return Set(planned.keys).union(asNeeded.keys).map { itemID in
@@ -240,10 +248,14 @@ extension History {
             }
             let doses = byDate.values.flatMap { $0 }
             let times = doses.map(\.occurrence.plannedTime)
+            func count(_ status: OccurrenceStatus) -> Int { doses.filter { $0.record.status == status }.count }
             return HistoryItemWeek(
                 itemID: itemID, marks: marks, isAsNeeded: doses.isEmpty,
                 dayParts: DayPart.allCases.filter { part in times.contains { DayPart($0) == part } },
-                firstTime: times.min()
+                firstTime: times.min(),
+                takenDoses: count(.taken) + (asNeededTaken[itemID] ?? 0),
+                skippedDoses: count(.skipped),
+                unrecordedDoses: count(.unrecorded)
             )
         }
     }
