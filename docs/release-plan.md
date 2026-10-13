@@ -46,11 +46,11 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 ## 5. Store page
 
-- Name, subtitle, and keywords: see the research note. Six languages with fastlane `deliver`.
-- Screenshots for the 6.9-inch iPhone in each language.
-- A privacy policy page and a support page on the landing page domain.
+- Name, subtitle, keywords, and description: the files in `metadata/`, in the layout of `asc metadata`. Six languages and es-MX. The reasons are in `docs/research/2026-10-13-aso-and-store-page.md`. The name is provisional until the maintainer decides it.
+- Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. The plan of seven frames is in section 7 of the same note.
+- A privacy policy page and a support page on the landing page domain. The URLs in `metadata/` return 404 until the new site is live.
 - Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, not linked to the user, and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
-- Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50).
+- Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50). Drafts are in section 8 of the note. The secondary category is open.
 
 ## 6. Launch
 

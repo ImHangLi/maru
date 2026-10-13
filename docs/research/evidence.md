@@ -152,7 +152,7 @@ Check each claim again against the build that ships.
 | "Export your records" or "back up and restore" | In code (D040). Claim them only when they are in the released build. Do not say "encrypted backup" |
 | "Works with Apple Health" | Maru does not use HealthKit (D022) |
 | "Checks interactions" or "tells you when to take it" | Maru gives no medical advice (spec §1) |
-| A competitor's name in the store text | App Review can reject metadata that names other apps. I did not read the current guideline text |
+| A competitor's name in the store text | Guideline 2.3.7 forbids "popular app names" in metadata, and Apple's keyword page names "competing app names" as a reason for rejection (`2026-10-13-aso-and-store-page.md`) |
 
 ## 6. Index of the research notes
 
