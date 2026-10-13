@@ -1,4 +1,4 @@
-# Common medicine names in Simplified Chinese, for the name suggestions of the add screen (D038, D069).
+# Common medicine names in Simplified Chinese, for the name suggestions of the add screen (D038, D070).
 # The format is the format of MedicationNames.txt: one name on each line, then its aliases after "|".
 # An alias is only another spelling or a clear abbreviation of the same name. Each other name is its own entry.
 # The order is from the most common name down. The names are the generic names (通用名) of mainland China,

@@ -7,7 +7,7 @@ import MaruCore
 /// The first use reads the files and builds the index one time, off the main thread. The edit screen
 /// is the first use, so the startup path does not read the lists (spec 9).
 ///
-/// A language other than English has its own two lists, with the names that people in that market use (D069).
+/// A language other than English has its own two lists, with the names that people in that market use (D070).
 /// They come before the English lists, which every language keeps, because people type Latin names too.
 enum NameList {
     static let index = Task.detached(priority: .userInitiated) {

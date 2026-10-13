@@ -19,6 +19,9 @@ enum Schema {
         migrator.registerMigration("v4") { db in
             try db.execute(sql: v4)
         }
+        migrator.registerMigration("v5") { db in
+            try db.execute(sql: v5)
+        }
         return migrator
     }
 
@@ -171,5 +174,17 @@ enum Schema {
     static let v4 = """
         ALTER TABLE scheduleVersion ADD COLUMN everyOtherDayFrom TEXT
             CHECK (everyOtherDayFrom IS NULL OR weekdays = '1234567');
+        """
+
+    /// The day cycle of a schedule version (D065): the start date, the days with a dose, and the days of
+    /// the pause. The start date is the column of `v4` with a new name, and its check stays. A version that
+    /// repeats every second day gets 1 and 1, so it keeps its rhythm. A version with no start date keeps
+    /// `NULL` in the three columns and loads unchanged. `ScheduleVersion` loads all three or none.
+    /// The checks have the limits of `DayCycle.dayCounts`.
+    static let v5 = """
+        ALTER TABLE scheduleVersion RENAME COLUMN everyOtherDayFrom TO cycleStart;
+        ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOn INTEGER CHECK (cycleDaysOn BETWEEN 1 AND 99);
+        ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOff INTEGER CHECK (cycleDaysOff BETWEEN 1 AND 99);
+        UPDATE scheduleVersion SET cycleDaysOn = 1, cycleDaysOff = 1 WHERE cycleStart IS NOT NULL;
         """
 }

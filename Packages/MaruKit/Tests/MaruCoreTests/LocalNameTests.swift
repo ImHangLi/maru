@@ -2,7 +2,7 @@ import Foundation
 import Testing
 @testable import MaruCore
 
-@Suite("Name lists in other languages (D069)")
+@Suite("Name lists in other languages (D070)")
 struct LocalNameTests {
     @Test func nonLatinNamesMatchAndGetTheCompletionOfTheirTwin() {
         let index = NameIndex(supplements: """

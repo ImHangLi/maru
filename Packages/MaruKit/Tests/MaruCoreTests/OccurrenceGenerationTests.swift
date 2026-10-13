@@ -128,7 +128,7 @@ struct OccurrenceGenerationTests {
         // In New York, 8 March 2026 has 23 hours, and 1 November 2026 has 25 hours.
         for (start, days) in [(Fixtures.date(2026, 3, 5), [5, 7, 9, 11]), (Fixtures.date(2026, 10, 30), [30, 32, 34, 36])] {
             let plan = Fixtures.schedule(
-                itemID: shelf.item.id, times: [Fixtures.time(8)], everyOtherDayFrom: start, timeZonePolicy: .fixed(Fixtures.newYork)
+                itemID: shelf.item.id, times: [Fixtures.time(8)], dayCycle: Fixtures.cycle(from: start), timeZonePolicy: .fixed(Fixtures.newYork)
             )
             let first = start.adding(days: -start.day)
             let due = (start.day - 2...start.day + 7).filter {
@@ -138,12 +138,37 @@ struct OccurrenceGenerationTests {
         }
         // On a day with no dose, the window has the dose of the day before and of the day after, and none of today.
         let plan = Fixtures.schedule(
-            itemID: shelf.item.id, times: [Fixtures.time(8)], everyOtherDayFrom: Fixtures.date(2026, 3, 5),
+            itemID: shelf.item.id, times: [Fixtures.time(8)], dayCycle: Fixtures.cycle(from: Fixtures.date(2026, 3, 5)),
             timeZonePolicy: .fixed(Fixtures.newYork)
         )
         #expect(
             shelf.run(plan, at: "2026-03-08T16:00:00Z", device: Fixtures.newYork).occurrences.map(\.plannedDate)
                 == [Fixtures.date(2026, 3, 7), Fixtures.date(2026, 3, 9)]
+        )
+    }
+
+    /// A cycle has a dose on its days on and none in its pause. It counts calendar dates, so a day of
+    /// 23 hours does not move it (D065, T52).
+    @Test func cycleHasNoDoseInItsPauseAndKeepsItsRhythmAcrossAClockChange() {
+        var shelf = Shelf()
+        // 3 days on and 2 days off from 5 March in New York, where 8 March 2026 has 23 hours.
+        let plan = Fixtures.schedule(
+            itemID: shelf.item.id, times: [Fixtures.time(8)],
+            dayCycle: Fixtures.cycle(from: Fixtures.date(2026, 3, 5), on: 3, off: 2), timeZonePolicy: .fixed(Fixtures.newYork)
+        )
+        let due = (3...16).filter {
+            !plan.plannedOccurrences(on: Fixtures.date(2026, 3, $0), deviceTimeZone: Fixtures.shanghai).isEmpty
+        }
+        #expect(due == [5, 6, 7, 10, 11, 12, 15, 16])
+        // On the first day of the pause, the window has only the dose of the day before. On the last day of
+        // the pause, it has only the dose of the day after.
+        #expect(
+            shelf.run(plan, at: "2026-03-08T16:00:00Z", device: Fixtures.newYork).occurrences.map(\.plannedDate)
+                == [Fixtures.date(2026, 3, 7)]
+        )
+        #expect(
+            shelf.run(plan, at: "2026-03-09T16:00:00Z", device: Fixtures.newYork).occurrences.map(\.plannedDate)
+                == [Fixtures.date(2026, 3, 10)]
         )
     }
 

@@ -197,7 +197,7 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 | 34 | History | Correction of a time | Time changed to %@ | 변경된 시간: %@ |
 | 35 | Footer | Item detail: every-other-day plan | Maru sets the reminders of the next 7 dose days each time you open it. | Maru를 열 때마다 다음 7번의 복용일에 맞춰 미리 알림을 설정해요. |
 
-## Name lists (D069)
+## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.
 

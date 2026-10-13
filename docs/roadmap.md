@@ -37,7 +37,6 @@ Additions from research (D006):
 | Candidate | Trigger |
 |---|---|
 | Apple Watch and lock-screen quick logging | Users ask for faster logging |
-| Cycles such as 21 days on and 7 days off | Repeated requests in feedback |
 | Read-only import of medication names from Apple Health (D022) | Users ask to bring their list from Health |
 | Optional end-to-end encrypted sync | Users with several devices ask for it |
 | More languages: zh-Hant, ja, de, fr, es | Each language passes a full UI, notification, and error review |

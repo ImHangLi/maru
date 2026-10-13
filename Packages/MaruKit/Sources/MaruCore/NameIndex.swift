@@ -5,7 +5,7 @@ import Foundation
 /// A match proposes a name and nothing else: no type, no amount, and no time. The lists are a typing aid.
 /// They are not medical information. A third list gives the smart completion of common supplements (D043).
 /// The app gives the lists of its language first, then the English lists, because people type Latin names
-/// too (D069). Build the index one time, off the main thread. A search reads it and is quick enough for each
+/// too (D070). Build the index one time, off the main thread. A search reads it and is quick enough for each
 /// key press.
 public struct NameIndex: Sendable {
     /// A name or an alias in the form that the search compares.
@@ -104,7 +104,7 @@ public struct NameIndex: Sendable {
     /// Only for a supplement: the type on the screen is "Supplement", and the name is a supplement name or one
     /// of its aliases, in full. The match ignores case, accents, spaces, hyphens, and dots. A name that is also
     /// a medicine name gets none, and so does a longer name such as a brand with a supplement name in it.
-    /// A name in another language gets the completion of its English twin, and no data of its own (D069).
+    /// A name in another language gets the completion of its English twin, and no data of its own (D070).
     public func completion(for text: String, category: ItemCategory) -> SmartCompletion? {
         guard category == .supplement else { return nil }
         let query = Key(text).compact
@@ -121,7 +121,7 @@ public struct NameIndex: Sendable {
     ///
     /// The search ignores case, accents, spaces, hyphens, and dots. It needs two letters or digits, or one
     /// character of Chinese, Japanese, or Korean. Hiragana matches katakana, and a Hangul syllable that the
-    /// keyboard did not complete yet matches without its last consonant (D069).
+    /// keyboard did not complete yet matches without its last consonant (D070).
     /// A name of the user's own items comes first. Then come the matches at the start of a name, the matches
     /// at the start of a word, and the matches in a word, each in the order of the list.
     /// In one rank, the names of the type that the edit screen shows come first. The type only orders

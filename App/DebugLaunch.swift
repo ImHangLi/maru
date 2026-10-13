@@ -60,7 +60,7 @@ extension AppStore {
     }
 
     /// The supplements and medications that many people take in the market of the app language, with the generic
-    /// names and the dose words of that language (D069). They are not the data of a person. Each language has the
+    /// names and the dose words of that language (D070). They are not the data of a person. Each language has the
     /// same shape: the same forms and times, so the pictures stay comparable.
     /// An item with no time has no schedule, so it is as needed (D021).
     private typealias Sample = (
