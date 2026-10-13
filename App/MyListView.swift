@@ -10,127 +10,75 @@ import SwiftUI
 struct MyListView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dynamicTypeSize) private var typeSize
-    @Environment(\.horizontalSizeClass) private var sizeClass
-    /// The page of the second column at a regular width (D072). A tap on a tile or on "Archived" sets it.
-    @State private var chosen: Shown?
-
-    /// What the second column shows.
-    private enum Shown: Hashable {
-        case item(ItemID)
-        case archived
-    }
 
     var body: some View {
-        // At a regular width, the grid is the first column, and the detail of one item stays beside it (D072).
-        // An empty page has nothing to show beside it, so it keeps the full width.
-        if sizeClass == .regular, let shown {
-            WideColumns {
-                NavigationStack { page(shown: shown) }
-            } trailing: {
-                NavigationStack {
-                    switch shown {
-                    case let .item(id): ItemDetailView(itemID: id).id(id)
-                    case .archived: ArchivedListView()
-                    }
-                }
-            }
-        } else {
-            NavigationStack { page(shown: nil) }
-        }
-    }
-
-    /// The page of the second column: the choice of the user while it exists, else the first item.
-    private var shown: Shown? {
-        guard case let .loaded(snapshot) = model.content else { return nil }
-        switch chosen {
-        case .archived where !snapshot.archived.isEmpty: return .archived
-        case let .item(id) where snapshot.list.contains { $0.id == id }: return chosen
-        default: break
-        }
-        if let first = ordered(snapshot.list, by: model.listTimes ?? [:]).first { return .item(first.id) }
-        return snapshot.archived.isEmpty ? nil : .archived
-    }
-
-    /// The My Items page. `shown` is the page of the second column, or `nil` when a tap opens a page as a push.
-    private func page(shown: Shown?) -> some View {
-        Group {
-            if case let .loaded(snapshot) = model.content {
-                ScrollView {
-                    VStack(spacing: Tile.spacing) {
-                        // A save with notifications off shows no alert, so the page says it in place (D028).
-                        if model.settings.permission == .denied {
-                            Button { model.openSettings() } label: {
-                                NotificationsOffLabel()
-                                    .modifier(PlainRow())
-                            }
-                            .buttonStyle(.plain)
-                            .accessibilityHint(Text("Opens settings"))
-                        }
-                        // The order needs the plans. The page reads them when it shows.
-                        if let times = model.listTimes {
-                            ItemGrid(
-                                entries: ordered(snapshot.list, by: times),
-                                columns: typeSize.isAccessibilitySize ? 1 : 2,
-                                selection: shown.map { shown in
-                                    { id in (shown == .item(id), { chosen = .item(id) }) }
+        NavigationStack {
+            Group {
+                if case let .loaded(snapshot) = model.content {
+                    ScrollView {
+                        VStack(spacing: Tile.spacing) {
+                            // A save with notifications off shows no alert, so the page says it in place (D028).
+                            if model.settings.permission == .denied {
+                                Button { model.openSettings() } label: {
+                                    NotificationsOffLabel()
+                                        .modifier(PlainRow())
                                 }
-                            )
+                                .buttonStyle(.plain)
+                                .accessibilityHint(Text("Opens settings"))
+                            }
+                            // The order needs the plans. The page reads them when it shows.
+                            if let times = model.listTimes {
+                                ItemGrid(entries: ordered(snapshot.list, by: times), columns: typeSize.isAccessibilitySize ? 1 : 2)
+                            }
+                            if !snapshot.archived.isEmpty {
+                                NavigationLink {
+                                    ArchivedListView()
+                                } label: {
+                                    HStack {
+                                        Text("Archived")
+                                            .foregroundStyle(Color.primary)
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .font(.footnote.weight(.semibold))
+                                            .foregroundStyle(.tertiary)
+                                            .accessibilityHidden(true)
+                                    }
+                                    .modifier(PlainRow())
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
-                        if !snapshot.archived.isEmpty {
-                            if shown != nil {
-                                Button { chosen = .archived } label: { archivedRow }
-                                    .buttonStyle(.plain)
-                                    .accessibilityAddTraits(shown == .archived ? .isSelected : [])
-                            } else {
-                                NavigationLink { ArchivedListView() } label: { archivedRow }
-                                    .buttonStyle(.plain)
+                        .padding(.horizontal, Tile.margin)
+                        .padding(.vertical, 8)
+                        // A tile or a row that comes or goes moves the page (D030). The first tiles show with no entrance.
+                        .motion(.layout, value: layout(snapshot))
+                    }
+                    .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
+                    .overlay {
+                        if snapshot.list.isEmpty && snapshot.archived.isEmpty {
+                            ContentUnavailableView {
+                                Label("No Items Yet", systemImage: "pills")
+                            } actions: {
+                                Button("Add Item") { model.openEditor(for: nil) }
                             }
                         }
                     }
-                    .padding(.horizontal, Tile.margin)
-                    .padding(.vertical, 8)
-                    // A tile or a row that comes or goes moves the page (D030). The first tiles show with no entrance.
-                    .motion(.layout, value: layout(snapshot))
+                    // A save or a change gives a new snapshot, and the plans can differ.
+                    .task(id: snapshot) { await model.loadListTimes() }
                 }
-                .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
-                .overlay {
-                    if snapshot.list.isEmpty && snapshot.archived.isEmpty {
-                        ContentUnavailableView {
-                            Label("No Items Yet", systemImage: "pills")
-                        } actions: {
-                            Button("Add Item") { model.openEditor(for: nil) }
-                        }
-                    }
-                }
-                // A save or a change gives a new snapshot, and the plans can differ.
-                .task(id: snapshot) { await model.loadListTimes() }
+            }
+            // The gray page with white cards, also while the first read runs (D028).
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            #if DEBUG
+            .modifier(DebugDataBanner())
+            #endif
+            .navigationTitle("My Items")
+            .toolbar {
+                SettingsButton()
+                AddItemButton()
             }
         }
-        // The gray page with white cards, also while the first read runs (D028).
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .readableColumn()
-        .background(Color(.systemGroupedBackground).ignoresSafeArea())
-        #if DEBUG
-        .modifier(DebugDataBanner())
-        #endif
-        .navigationTitle("My Items")
-        .toolbar {
-            SettingsButton()
-            AddItemButton()
-        }
-    }
-
-    private var archivedRow: some View {
-        HStack {
-            Text("Archived")
-                .foregroundStyle(Color.primary)
-            Spacer()
-            Image(systemName: "chevron.right")
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.tertiary)
-                .accessibilityHidden(true)
-        }
-        .modifier(PlainRow())
     }
 
     /// What gives the page its layout: the tiles in their order, and the two rows.
@@ -199,15 +147,12 @@ private struct PlainRow: ViewModifier {
 private struct ItemGrid: View {
     let entries: [ListEntry]
     let columns: Int
-    /// At a regular width: whether the second column shows the item, and the tap that shows it (D072).
-    /// `nil` when a tap opens the detail as a push.
-    let selection: ((ItemID) -> (isSelected: Bool, select: () -> Void))?
 
     var body: some View {
         LazyVStack(spacing: Tile.spacing) {
             ForEach(Array(stride(from: 0, to: entries.count, by: columns)), id: \.self) { start in
                 HStack(alignment: .top, spacing: Tile.spacing) {
-                    ForEach(entries[start..<min(start + columns, entries.count)]) { ItemTile(entry: $0, selection: selection?($0.id)) }
+                    ForEach(entries[start..<min(start + columns, entries.count)]) { ItemTile(entry: $0) }
                     // The last row keeps the column width.
                     if start + columns > entries.count {
                         Color.clear.frame(maxWidth: .infinity, maxHeight: 0)
@@ -224,21 +169,36 @@ private struct ItemTile: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dynamicTypeSize) private var typeSize
     let entry: ListEntry
-    let selection: (isSelected: Bool, select: () -> Void)?
     @ScaledMetric(relativeTo: .headline) private var iconSize = 44
 
     var body: some View {
-        Group {
-            if let selection {
-                Button(action: selection.select) { label }
-                    // The tile of the item beside the grid has a ring in the tint.
-                    .overlay {
-                        if selection.isSelected { Tile.shape.strokeBorder(.tint, lineWidth: 2) }
+        NavigationLink(value: entry.id) {
+            VStack(alignment: .leading, spacing: 12) {
+                ItemPhotoView(reference: entry.imageReference, side: min(iconSize, 64)) {
+                    entry.form.image
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: min(iconSize, 64), height: min(iconSize, 64))
+                        .foregroundStyle(entry.color.color)
+                }
+                .accessibilityHidden(true)
+                // With two columns the tile has room for two lines, so most rows have one height.
+                // A longer name wraps and makes the tile taller (spec 5.3).
+                ZStack(alignment: .topLeading) {
+                    if !typeSize.isAccessibilitySize {
+                        Text(verbatim: " \n ").hidden().accessibilityHidden(true)
                     }
-                    .accessibilityAddTraits(selection.isSelected ? .isSelected : [])
-            } else {
-                NavigationLink(value: entry.id) { label }
+                    Text(verbatim: entry.name)
+                        .foregroundStyle(Color.primary)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .font(.headline)
             }
+            .padding(Tile.margin)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(Color(.secondarySystemGroupedBackground), in: Tile.shape)
+            .contentShape(.contextMenuPreview, Tile.shape)
         }
         .buttonStyle(.pressScale)
         .contextMenu {
@@ -249,34 +209,5 @@ private struct ItemTile: View {
         }
         .accessibilityValue(entry.remindersOff ? Text("Reminders off") : Text(verbatim: ""))
         .accessibilityHint(Text("Opens the details"))
-    }
-
-    private var label: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            ItemPhotoView(reference: entry.imageReference, side: min(iconSize, 64)) {
-                entry.form.image
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: min(iconSize, 64), height: min(iconSize, 64))
-                    .foregroundStyle(entry.color.color)
-            }
-            .accessibilityHidden(true)
-            // With two columns the tile has room for two lines, so most rows have one height.
-            // A longer name wraps and makes the tile taller (spec 5.3).
-            ZStack(alignment: .topLeading) {
-                if !typeSize.isAccessibilitySize {
-                    Text(verbatim: " \n ").hidden().accessibilityHidden(true)
-                }
-                Text(verbatim: entry.name)
-                    .foregroundStyle(Color.primary)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .font(.headline)
-        }
-        .padding(Tile.margin)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(Color(.secondarySystemGroupedBackground), in: Tile.shape)
-        .contentShape(.contextMenuPreview, Tile.shape)
     }
 }

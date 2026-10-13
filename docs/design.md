@@ -120,7 +120,7 @@ The log of an item and the log of a day use the timeline rows below. The log of 
 
 A grid of tiles, so the user sees at once which items they have (spec §3 P02, D032). It replaces the list of D020.
 
-- Two columns. One column at the accessibility text sizes. On an iPad at a regular width, the grid is the first of two columns (D072).
+- Two columns. One column at the accessibility text sizes. The iPad has the same grid (D072).
 - A tile shows two things: the form icon, large, in the item color, and the name in the headline weight under it. No plan line, no amount, and no other text. The plan is in the item detail.
 - The name wraps and never truncates. A tile has room for two lines, and a longer name makes its row taller. The tiles of one row have the same height.
 - Order: the first time of day of the plan, then the name. As-needed items come last. No section titles.
@@ -174,17 +174,12 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 
 ## iPad
 
-At a regular width, such as a full-screen iPad, each tab shows two pages side by side (D072). A compact width, such as Slide Over or a narrow Split View, shows the pages of the iPhone.
+The iPad uses the layout of the iPhone at a larger width (D072). It has the same tab bar, the same pages, and the same navigation: Today opens History and the item detail as a push, and My Items pushes the detail on top of the grid.
 
-- Two columns: each page has its own navigation stack. The first column has the width of an iPhone page: 38 % of the window, at least 320 and at most 420 points. The second column gets the other space. A system divider separates them. `App/WideColumns.swift` holds the rule.
-- Today: Today is the first column, and History is the second column. History is open as long as it shows, so the bar of Today has no History button. A row of Today opens the item detail in the first column. A row of History opens its log in the second column.
-- My Items: the grid is the first column, and the detail of one item is the second column. A tap on a tile shows its detail. The tile of that item has a ring in the tint. With no choice, the first item shows. "Archived" shows the archived list in the second column. A page with no items and no archived items keeps the full width.
-- The readable column: a page that is wider than 672 points keeps its content in a column of 672 points in the middle. This is the width of the readable content guide of UIKit at the default text size. The gray page fills the display. The margins are safe area, so a scroll starts in a margin too. The modifier `readableColumn()` holds the rule. A page that is not wider gets no margin.
-- The History graph fills its column, so on a large iPad a square is larger than on an iPhone.
-- My Items has two columns of tiles in the first column, and one at the accessibility text sizes.
+- The content fills the width of the window. There is no readable column in the middle and no second pane.
+- My Items keeps two columns of tiles, and one at the accessibility text sizes. The History graph fills the width.
 - Settings, the add and edit screen, the scanner, and the time sheets are system sheets. A dialog of choices shows as a popover from its button.
-- The iPad has the four orientations. The iPhone is portrait only.
-- No `NavigationSplitView` sidebar. The app has two tabs, and the system sidebar makes Today look secondary. Two navigation stacks keep the large title and the cards of Today.
+- The iPad has the four orientations. The iPhone is portrait only. Split View and Slide Over show the same pages at their width.
 
 ## Watch
 

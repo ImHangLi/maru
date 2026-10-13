@@ -5,43 +5,10 @@ import UIKit
 /// The Today page: one section per part of the day in a system grouped list (spec 3 P01, docs/design.md, D026).
 struct TodayView: View {
     @Environment(AppModel.self) private var model
-    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
-        Group {
-            if sizeClass == .regular {
-                // At a regular width, History stays beside Today (D072). It is open as long as it shows, also
-                // after a new session or a widget link closes it.
-                WideColumns {
-                    page(showsHistory: false)
-                } trailing: {
-                    NavigationStack { HistoryView() }
-                }
-                .onAppear { if !model.history.isOpen { model.openHistory() } }
-                .onChange(of: model.history.isOpen) { _, isOpen in
-                    if !isOpen { model.openHistory() }
-                }
-                // On iPhone, History reads its days each time it opens. Beside Today, it reads them again when the
-                // items or the records of Today change.
-                .onChange(of: model.content) {
-                    model.loadHistory()
-                    model.loadHistoryGraph()
-                }
-            } else {
-                page(showsHistory: true)
-            }
-        }
-        // A clock change, a new time zone, or a midnight in the device zone.
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
-            model.timeDidChange()
-        }
-    }
-
-    /// The Today page in its navigation stack. `showsHistory`: the bar has the History button, and the page opens
-    /// History as a push.
-    private func page(showsHistory: Bool) -> some View {
         @Bindable var model = model
-        return NavigationStack(path: $model.today.path) {
+        NavigationStack(path: $model.today.path) {
             Group {
                 // While the first read runs, the page is empty like the launch screen (spec 9).
                 if case let .loaded(snapshot) = model.content {
@@ -58,7 +25,6 @@ struct TodayView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .readableColumn()
             .background(Color(.systemGroupedBackground).ignoresSafeArea())
             #if DEBUG
             .modifier(DebugDataBanner())
@@ -68,16 +34,18 @@ struct TodayView: View {
             .toolbar {
                 SettingsButton()
                 // History has its own button in the bar (spec 3 P01, D026).
-                if showsHistory {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button("History", systemImage: "calendar") { model.openHistory() }
-                    }
+                ToolbarItem(placement: .primaryAction) {
+                    Button("History", systemImage: "calendar") { model.openHistory() }
                 }
                 AddItemButton()
             }
-            .navigationDestination(isPresented: showsHistory ? $model.history.isOpen : .constant(false)) { HistoryView() }
+            .navigationDestination(isPresented: $model.history.isOpen) { HistoryView() }
             .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
             .sheet(item: $model.today.choice) { ReminderChoiceSheet(choice: $0) }
+        }
+        // A clock change, a new time zone, or a midnight in the device zone.
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+            model.timeDidChange()
         }
     }
 }

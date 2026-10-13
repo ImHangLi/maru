@@ -31,7 +31,6 @@ struct ItemDetailView: View {
         }
         // The gray page with white cards, also while the detail loads (D028).
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .readableColumn()
         .background(Color(.systemGroupedBackground).ignoresSafeArea())
         #if DEBUG
         .modifier(DebugDataBanner())
