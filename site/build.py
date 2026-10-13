@@ -281,6 +281,9 @@ def layout(code, page, title, desc, main, head=""):
     alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
     banner = (f'<meta name="apple-itunes-app" content="app-id={re.search(r"id(\d+)", STORE_URL).group(1)}">\n'
               if RELEASED else "")
+    # Google Search Console reads this tag on the home page to confirm the owner of the site. Keep it.
+    if page == "index.html" and code == LANGS[0][0]:
+        banner += '<meta name="google-site-verification" content="RS5MimbYtPjYD6RQrpYsM9gtvHPVW_mOC43pGs5eqRc">\n'
     cta = f'<a class="bar-cta" href="{e(STORE_URL)}">{e(s["store"]["download"])}</a>\n' if RELEASED else ""
     locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c, _ in LANGS if c != code)
     current = ' aria-current="page"'
