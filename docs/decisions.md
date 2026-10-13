@@ -1081,3 +1081,24 @@ Agent decision, after a release audit.
 - `PRIVACY.md` and `site/privacy.html` said "Maru has no purchase yet". Tips exist (D053), so the text now says that Maru does not send the `purchase_result` event yet.
 
 Not verified: no build of the app on this Mac. CI builds the app. The pages on maru.day are not live yet, so the two links show the placeholder until the site deploys.
+
+## D064 · 2026-10-13 · Analytics requests carry the region setting
+
+Maintainer decision, with agent detail. It adds one field to the events of D052.
+
+- Reason: the maintainer wants to know roughly where the users are, to decide which markets and languages to work on.
+- Value: the region setting of the iPhone, `Locale.current.region?.identifier`, in the property `region` of each event. The app reads the setting one time and gives the same value to the consent rule (D051) and to the sender, so the two always agree.
+- Guard: `PostHogClient` changes the value to upper case and accepts exactly two letters `A` to `Z`. For a missing value or any other form, such as the UN M.49 code `419`, the event has no `region` field. The guard does not check that the two letters are an assigned ISO 3166 code.
+- The field is in the sender, next to the app version and the iOS version. The service makes a sender only when analytics is active, so the field cannot leave the device before the notice and the consent rule allow it. The list of fields stays closed: `AnalyticsEvent` for the event fields, and the fixed fields of the sender.
+- What Maru still does not send or use: no Location Services, no city, no language list, no time zone, no currency, and no full locale identifier. Each event keeps `$geoip_disable: true` and `$process_person_profile: false`, so PostHog makes no location from the IP address. The PostHog project exists, with "Discard client IP data" on.
+- The limit: the region setting is not the place of the user. A traveler, or an iPhone with another region setting, counts for that setting.
+- Privacy label: declare the region as "Other Data" (`NSPrivacyCollectedDataTypeOtherDataTypes`), for analytics, not linked, and with no tracking. `App/PrivacyInfo.xcprivacy` has the entry, and `docs/release-plan.md` has the label list.
+  - It is collected data. Apple defines "collect" as a transfer off the device that the developer or a partner can access for longer than the request needs.
+  - It is not "Coarse Location". Apple defines that type as "information that describes the location of a user or device with lower resolution than a latitude and longitude", "such as Approximate Location Services". A region setting is a choice of the user in Settings. It is not a measured location, and it can differ from the place of the device.
+  - Apple names no type for a region or a locale setting. "Other Data Types" is "any other data types not mentioned". The documentation leaves doubt that a declaration is necessary, so Maru declares it.
+  - A "Location" label would tell the user that Maru collects a location, which is false. Change the type to "Coarse Location" if App Review asks.
+  - Sources: [App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/) and [NSPrivacyCollectedDataType](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacycollecteddatatypes/nsprivacycollecteddatatype).
+- `PRIVACY.md` and `site/privacy.html` name the field in the sentence about the app version and the iOS version.
+- The maintainer does not register for GST for now, so supporter tips may not be for sale in the Australian storefront. Check the state of the Paid Apps Agreement before the first release.
+
+Not verified: no build of the app on this Mac. CI builds the app. Nobody sent an event to the PostHog project, and nobody checked the packets (T42). The "Discard client IP data" setting is the report of the maintainer.

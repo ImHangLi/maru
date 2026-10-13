@@ -68,7 +68,8 @@ struct AnalyticsServiceTests {
         let configuration = try #require(PostHogConfiguration(apiKey: "phc_test", host: "https://eu.i.posthog.com"))
         let attempts = Counter()
         let client = PostHogClient(
-            configuration: configuration, appVersion: "1.0", osMajor: 27, defaults: defaults, flushDelay: .zero
+            configuration: configuration, appVersion: "1.0", osMajor: 27, regionCode: "AU", defaults: defaults,
+            flushDelay: .zero
         ) { _ in
             attempts.increment()
             throw URLError(.notConnectedToInternet)
@@ -88,6 +89,40 @@ struct AnalyticsServiceTests {
         #expect(client.queuedCount == 0)
         #expect(defaults.string(forKey: PostHogClient.installIDKey) == nil)
     }
+
+    @Test func aRegionThatIsNotTwoLettersIsNotSent() async throws {
+        let (defaults, cleanUp) = try isolatedDefaults()
+        defer { cleanUp() }
+        let configuration = try #require(PostHogConfiguration(apiKey: "phc_test", host: "https://eu.i.posthog.com"))
+        let bodies = Bodies()
+        // The UN M.49 code of Latin America is a region setting of iOS. It is not a two-letter code (D064).
+        for regionCode in ["419", "au"] {
+            let client = PostHogClient(
+                configuration: configuration, appVersion: "1.0", osMajor: 27, regionCode: regionCode,
+                defaults: defaults, flushDelay: .seconds(60)
+            ) { request in
+                bodies.append(request.httpBody ?? Data())
+                return 200
+            }
+            client.capture(.itemSaved)
+            await client.flush()
+        }
+        let regions = try bodies.value.map { body in
+            let json = try #require(JSONSerialization.jsonObject(with: body) as? [String: Any])
+            let batch = try #require(json["batch"] as? [[String: Any]])
+            let properties = try #require(batch.first?["properties"] as? [String: Any])
+            #expect(properties["$geoip_disable"] as? Bool == true)
+            return properties["region"] as? String
+        }
+        #expect(regions == [nil, "AU"])
+    }
+}
+
+private final class Bodies: @unchecked Sendable {
+    private let lock = NSLock()
+    private var bodies: [Data] = []
+    var value: [Data] { lock.withLock { bodies } }
+    func append(_ body: Data) { lock.withLock { bodies.append(body) } }
 }
 
 private final class Counter: @unchecked Sendable {
