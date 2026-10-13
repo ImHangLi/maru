@@ -50,7 +50,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 - Name, subtitle, keywords, and description: the files in `metadata/`, in the layout of `asc metadata`. Six languages, es-MX, and en-GB. The reasons are in `docs/research/2026-10-13-aso-and-store-page.md`. The text is in App Store Connect (section 7).
 - Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. Section 7 of the same note has the six frames and their order. The frames are HTML copies of the UI, and captures must confirm them before the submission.
-- Screenshots for the 13-inch iPad in each language (D072). App Store Connect requires them for an app that supports the iPad.
+- Screenshots for the 13-inch iPad in each language (D072). App Store Connect requires them for an app that supports the iPad. Both sets are uploaded (section 7).
 - A privacy policy page and a support page on the landing page domain. The pages are live.
 - Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, linked to the user (D069), and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location. Published (section 7).
 - Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50). Drafts are in section 8 of the note. The secondary category is Medical. Set (section 7).
@@ -153,8 +153,9 @@ Three consumable in-app purchases, in `metadata/in-app-purchases/tips.json`.
 - Each has a name and a description in the eight store languages. The app shows the store name, so the app has no tip name of its own.
 - Wording: guideline 3.1.1 allows a tip to the developer through in-app purchase. The names thank, and no text says "donation" or "donate", because Apple keeps donations for approved nonprofits (guideline 3.2.1). Each description and the review note say that a tip unlocks nothing.
 - Each product has a review note with the path Settings, "Support Maru".
-- Open: each product has the state "Missing Metadata" until it has a review screenshot. No capture shows the tips with their names and prices. Take one from the TestFlight build, add it to each product, and submit the three products with version 1.0.0.
-- Open: a sale needs the Paid Apps agreement.
+- Each product has its review screenshot, and the public API gives the state "Ready to Submit".
+- The tips are not in the submission of 1.0.0. The version page offers no "In-App Purchases and Subscriptions" section, and the website still shows the three products as drafts. The pending Paid Apps agreement is the probable cause. No message of Apple names it.
+- The first tip goes to review with a later app version, after the Paid Apps agreement is active. Until then the app loads no tip product, and Settings hides the section "Support Maru".
 
 ### Notes for App Review
 
@@ -162,19 +163,19 @@ The notes are in App Store Connect. They state: what Maru does, no account, the 
 
 ### TestFlight
 
-- Build 1 of version 1.0.0, uploaded on 2026-10-13 from `main` after D074. It has the app and the widgets, and no Watch app. Its state is "Valid", and it is in internal testing.
-- The archive used the Release configuration, automatic signing, and the analytics key from the Keychain on the command line. The distribution profiles have the App Group, and the app profile has the time-sensitive entitlement. The upload validation rejected nothing.
+- Build 3 of version 1.0.0 is the submission build. It was uploaded on 2026-10-13 from `main`, it has the app and the widgets and no Watch app, and its state is "Valid". It is on version 1.0.0 and in internal testing.
+- Builds 1 and 2 came before it, on the same day. Build 2 has two shorter German titles and the hidden tip section. Build 3 has the text color in rows, no "Send a Test Notification" row, and a progress bar in the medium Today widget.
+- Each archive used the Release configuration, automatic signing, the analytics key from the Keychain on the command line, and the build number as `CURRENT_PROJECT_VERSION` on the command line. `project.yml` keeps build number 1. The distribution profiles have the App Group, and the app profile has the time-sensitive entitlement. The upload validation rejected nothing.
+- The Release build has no test control. The strings "Test Notification" and "Test Scenarios" are not in the app binary, the widget binary, or the compiled string tables of build 3.
 - The group "Internal" is an internal group with access to all builds. The maintainer is its tester.
-- The feedback email and the beta review contact email are `hello@maru.day`. Build 1 has its "What to Test" text.
-- Build 1 is on version 1.0.0. A later build replaces it with `asc versions attach-build`.
+- The feedback email and the beta review contact email are `hello@maru.day`. Each build has its "What to Test" text.
+- A later build replaces build 3 on the version with `asc versions attach-build`.
 - Not done on purpose: no Beta App Review and no public link. No external TestFlight step is planned.
 
 ### What is open before the submission
 
-`asc validate --strict` on version 1.0.0 reports only the first two items.
+`asc validate --strict` on version 1.0.0 reports no error. Its three warnings are the tips that are not in the submission.
 
-- The screenshots for the iPhone and the 13-inch iPad.
-- The review screenshot of the tips. The three products stay in "Missing Metadata" until each has one. Take one capture of Settings, "Support Maru", with the names and the prices, then run `asc iap review-screenshots create` for each product.
-- The Paid Apps agreement has the state "Pending User Info": a tax form is missing. The Free Apps agreement is active. The app can ship without it, and the tips cannot be sold until it is active.
-- A first in-app purchase goes to review with an app version. Add the three tips to the submission of 1.0.0.
-- The submission itself. The maintainer starts it.
+- The screenshots are uploaded for the eight store languages: six for the 6.9-inch iPhone and six for the 13-inch iPad in each.
+- The Paid Apps agreement has the state "Pending User Info": a tax form is missing. The Free Apps agreement is active. The app ships without the tips.
+- The submission itself. The maintainer starts it: "Add for Review" on the version page, or `asc review submit` with the ID of build 3.
