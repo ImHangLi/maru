@@ -131,7 +131,7 @@ public struct WatchReply: WatchMessage, Equatable {
     }
 
     public let outcome: Outcome
-    /// The list after the request, or `nil` when the iPhone cannot read it, for example while it is locked.
+    /// The list after the request, or `nil` when the iPhone cannot read it, for example after a restart and before the first unlock.
     public let day: WatchDay?
 
     public init(outcome: Outcome, day: WatchDay?) {

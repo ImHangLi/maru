@@ -78,7 +78,7 @@ Owner decision, after three rounds of surface options (see `docs/research/2026-1
 - Amount: optional, entered by the user, shown on a second line under the name. The product strength is not on the Today screen.
 - Text size: follow the system setting at every size, including the accessibility sizes. No maximum and no in-app text size control. Recommendation by the agent, pending the owner's objection. Reasons: the people who choose the largest sizes need them most, iOS already has a per-app text size setting, and spec §5.3 forbids smaller text for the sake of layout. The layout adapts: names wrap and never truncate, the icon and the circle have a size limit, and the icon is hidden at the three largest sizes.
 
-## D014 · 2026-10-11 · Database layer
+## D014 · 2026-10-11 · Database layer (file protection level replaced by D066)
 
 Agent decisions from issue #2 (PR #15), after four review rounds by a different model.
 
@@ -340,7 +340,7 @@ Agent decision under the owner's direction: match Apple Health Medications, with
 - The swipe button "Delete Item…" has no destructive role. With that role the system removes the row before the confirmation.
 - Tests (D016): one new test, for the delete transaction.
 
-## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062)
+## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062, unlock rule changed by D066)
 
 Agent decision, under the owner's direction to match Apple Health Medications (`docs/research/2026-10-11-apple-health-gap.md`, rows 22 and 23).
 
@@ -788,7 +788,7 @@ Agent detail:
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody saw a notification. It needs a check on a real iPhone.
 
-## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now
+## D048 · 2026-10-12 · Home Screen widgets: Today and Take Now (file protection level replaced by D066)
 
 Owner decision on the design (D046), with agent detail. It adds two widgets, small and medium each. It follows spec 6 (Widgets), 7.2, 9, and 10. Spec 10 says a widget shows only non-sensitive content by default.
 
@@ -1133,9 +1133,9 @@ Where the record runs:
 
 Limits that the maintainer must know:
 
-- The database has complete file protection (spec 10). A locked iPhone cannot read or write it. So the Watch app records only while the iPhone is unlocked, and with the iPhone locked in a pocket it shows the last list and "Not recorded. Unlock your iPhone and try again." A change of the protection level is a spec change and a maintainer decision.
+- The database had complete file protection (spec 10), so the Watch app recorded only while the iPhone was unlocked. D066 changes the level. The case that remains: an iPhone that restarted and was not unlocked yet. The Watch then shows the last list and "Not recorded. Unlock your iPhone and try again."
 - The app embeds the Watch app. An archive of the iPhone app from this state includes it, and App Store Connect then asks for Watch screenshots and reviews the Watch app. To ship 1.0 without it, archive 1.0 before this change merges, or remove the `MaruWatch` dependency of the `Maru` target for that archive.
-- `PRIVACY.md` and the privacy page say that the health data stays on the iPhone. They need one sentence about the Watch before a build with the Watch app goes to users. The text is a maintainer decision.
+- `PRIVACY.md` has the sentence about the Watch (D066). The privacy page `site/privacy.html` does not have it yet. It needs the same text before a build with the Watch app goes to users.
 
 Notifications: nothing new. The iPhone reminders mirror to the Watch with the "Taken" action of D034. The category has one background action, registered on the iPhone at each launch. For a notification that the iPhone forwards, watchOS gives a background action to the iPhone app, so the response goes to `ReminderTapDelegate`, and `takeReminder` records with the same transaction. This is a reading of the code and of the watchOS rule, and a device must confirm it. The Watch app has no notification code, so a tap on the reminder itself opens the Watch app at its list.
 
@@ -1146,6 +1146,29 @@ Not verified: no build on this Mac. Nobody ran the Watch app on a Watch or in a 
 - The install of the Watch app with the iPhone app, and the signing of the new App ID.
 - The list after a launch, after a record on the iPhone, and on the next day.
 - A tap, a skip, and an undo with the iPhone unlocked: the record on the iPhone, the haptic, and no follow-up after it.
-- The same with the iPhone locked, and with the iPhone off or out of range: no record, and the text.
-- A reminder on the Watch with the iPhone locked: the "Taken" action is there, and what it does. The expected result with a locked iPhone is the "Not recorded" notice of D034, because the database is locked.
+- The same with the iPhone locked: a record (D066). With the iPhone restarted and not unlocked, off, or out of range: no record, and the text.
+- A reminder on the Watch with the iPhone locked: the "Taken" action is there, and what it does. With D066 the expected result is a record.
 - The icon in the round mask, the rows at the largest text size, VoiceOver, and each language.
+
+## D066 · 2026-10-13 · The database is readable on a locked iPhone after the first unlock
+
+Maintainer decision on 2026-10-13, with agent detail. It replaces the file protection level of D014 and D048, and the unlock rule of D034 for an action on the Watch. It changes spec 10.
+
+- Reason: the user wears the Watch while the iPhone is locked in a pocket. With complete protection, a record from the Watch app (D065) and the "Taken" action of a reminder on the Watch could not write then.
+- Change: the database directory has the level "complete until first user authentication": the database, the WAL file, the SHM file, the restore epoch file, and a staged backup. iOS still encrypts the files. After a restart, nothing reads them until the first unlock.
+- What keeps complete protection: the item photos, the export files, and the draft file of the edit screen. A record does not need them.
+- Existing installs: each open sets the level on the directory and on the files that exist, as it did before for a weaker file. It changes one attribute. It copies and rebuilds nothing (spec 7.3). The first launch of the new build must run on an unlocked iPhone to change the files. Until then the old level stays, and a locked iPhone records nothing, as before.
+- The earlier copy of the database in Application Support (D048) keeps complete protection. The app does not read it when the container has a database.
+
+What else reads the same files on a locked iPhone now:
+
+- The widgets. A timeline reload on a locked iPhone now reads the data. Before, it gave "Open Maru to update." A timeline that the system made before the lock already stayed on the display, so "Take Now" could show names on a locked display before this change too, for example in StandBy. The widgets have no change. If the names must hide on a locked display, mark them as privacy sensitive in a later change.
+- The "Taken" action of a reminder (D034). It keeps the option `authenticationRequired`, so on the iPhone it still needs an unlock, and a person who holds a locked iPhone cannot write a record. On the Watch that the user wears, the action can now record with the iPhone locked. This is the wanted result. The rules of the action do not change: it records only when the reminder gives exactly one open dose of today, and never for another day, a late delivery, an older plan, two or more items, or a skipped dose (T15, T24). In those cases the "Not recorded" notice still comes.
+- The reminder engine can run on a locked iPhone after a background record. It sets the same requests as on an unlocked iPhone, and the reminder text still follows the privacy setting of D029. The text of a notification was never protected by the database level.
+- The tap on a reminder itself still opens Maru after an unlock. The "can't open your records while your iPhone is locked" alert now shows only after a restart with no unlock.
+
+The Watch keeps one plain sentence for the case that remains: "Not recorded. Unlock your iPhone and try again."
+
+`PRIVACY.md` states the new level, and it has one sentence that the list of today goes to the user's own Apple Watch. The maintainer approved both texts. `site/privacy.html` is not changed in this change.
+
+Not verified: no device ran this. A real iPhone must confirm that the level of the existing files changes at the first launch, that a record from the Watch works with the iPhone locked, that it fails with the plain sentence after a restart, and what the widgets show on a locked display.

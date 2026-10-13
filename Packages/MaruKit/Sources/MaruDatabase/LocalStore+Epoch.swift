@@ -9,7 +9,7 @@ extension LocalStore {
     /// The restore epoch of the data in `directory`: a number that a restore changes twice, at its start and at its end.
     /// A missing file is 0. An odd number means that a restore runs or stopped in the middle.
     /// It survives a relaunch, so a widget that read the data before a restore can never record after it (D040, D048).
-    /// `nil` when the file is not readable, for example while the iPhone is locked. It holds no health data.
+    /// `nil` when the file is not readable, for example after a restart of the iPhone and before the first unlock. It holds no health data.
     public static func restoreEpoch(in directory: URL) -> Int? {
         let file = directory.appendingPathComponent(epochFileName)
         guard FileManager.default.fileExists(atPath: file.path) else { return 0 }

@@ -17,7 +17,7 @@ extension AppModel {
     /// Answers a request of the Watch app (D065). The system can start Maru in the background for it.
     ///
     /// The reply says "recorded" only after the record transaction committed (spec 7.2). It says "changed" when
-    /// the dose is not the one that the Watch showed. In every other case it says "not recorded": a locked iPhone,
+    /// the dose is not the one that the Watch showed. In every other case it says "not recorded": an iPhone that was not unlocked after a restart,
     /// an event that is not confirmed, a restore, or a failed commit. The reply also has the list after the request.
     func answerWatch(_ message: Data) async -> Data {
         var outcome = WatchReply.Outcome.notRecorded
@@ -87,7 +87,7 @@ extension AppModel {
     }
 
     /// The rows of today from a new read of the store, with the confirmed record of each running transaction.
-    /// `nil` when the store gives none, for example on a locked iPhone.
+    /// `nil` when the store gives none, for example after a restart and before the first unlock.
     private func readToday(generation: Int) async -> TodaySnapshot? {
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now),

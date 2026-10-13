@@ -4,8 +4,8 @@ import MaruDatabase
 import MaruNotifications
 
 extension AppModel {
-    /// The "Taken" action of a delivered reminder (spec 8.3, D034). The system runs it in the background,
-    /// on an unlocked iPhone.
+    /// The "Taken" action of a delivered reminder (spec 8.3, D034). The system runs it in the background:
+    /// after an unlock on the iPhone, or with the iPhone locked when the user chooses it on the Watch (D066).
     ///
     /// It records only when the reminder gives exactly one open dose of today, with the transaction of the
     /// record circle. The event revises the last event that the store read, so a second action writes nothing (T18).

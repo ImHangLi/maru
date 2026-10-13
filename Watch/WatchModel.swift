@@ -19,8 +19,8 @@ final class WatchModel {
         case changed
         /// The iPhone answered that it recorded nothing, and it sent its list.
         case notRecorded
-        /// The iPhone answered that it recorded nothing, and it could not read its data. It is locked,
-        /// because the database is protected while the iPhone is locked (spec 10).
+        /// The iPhone answered that it recorded nothing, and it could not read its data. The usual cause:
+        /// the iPhone restarted, and the database is protected until the first unlock (spec 10, D066).
         case locked
     }
 

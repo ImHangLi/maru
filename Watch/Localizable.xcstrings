@@ -177,7 +177,7 @@
       }
     },
     "Not recorded. Unlock your iPhone and try again." : {
-      "comment" : "Watch: shown after a tap when the iPhone answered that it recorded nothing and could not read its data, because it is locked.",
+      "comment" : "Watch: shown after a tap when the iPhone answered that it recorded nothing and could not read its data. The usual cause: the iPhone restarted and was not unlocked yet.",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -11,7 +11,9 @@ public enum ReminderAction {
 
     /// Registers the category. Call it at each launch, before the system can deliver a response.
     ///
-    /// The action needs an unlocked iPhone, because the database is protected while the iPhone is locked (spec 10).
+    /// On the iPhone the action needs an unlock, so a person who holds a locked iPhone cannot write a record.
+    /// On a Watch that the user wears, the action runs with the iPhone locked, and the database is readable
+    /// after the first unlock (D066).
     /// It has no foreground option, so the system starts Maru in the background for the record.
     public static func register(locale: Locale = .current) {
         let taken = UNNotificationAction(
