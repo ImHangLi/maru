@@ -1,6 +1,12 @@
 name = "maru"
 compatibility_date = "2026-10-01"
 
+# The site answers on the apex domain and on www. The pages name the apex address as canonical.
+routes = [
+  { pattern = "maru.day", custom_domain = true },
+  { pattern = "www.maru.day", custom_domain = true },
+]
+
 [assets]
 directory = "."
 not_found_handling = "404-page"
