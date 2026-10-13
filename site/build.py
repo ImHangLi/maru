@@ -274,7 +274,7 @@ def phrases(text, load=True):
                    for i, part in enumerate(parts))
 
 
-# Response headers for Cloudflare. Pictures change rarely, so a browser keeps them for a week and checks again
+# Response headers for Cloudflare. Pictures change rarely, so a browser keeps them for a day and checks again
 # after that. The style sheet and the script keep their names between releases, so they stay fresh for one hour.
 # The pages keep the default: a browser asks each time. HSTS tells a browser to use HTTPS for this site.
 HEADERS = """/*
@@ -283,13 +283,13 @@ HEADERS = """/*
   Referrer-Policy: strict-origin-when-cross-origin
 
 /shots/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 /badges/*
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 /icon.png
-  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 /style.css
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
