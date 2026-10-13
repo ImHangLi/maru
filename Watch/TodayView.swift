@@ -8,39 +8,48 @@ struct TodayView: View {
     /// The time of the last activation, or of the end of the list. A list of an earlier day does not show
     /// as today (spec 9).
     @State private var now = Date()
+    private static let noticeID = "notice"
 
     var body: some View {
         NavigationStack {
-            List {
-                if let notice = model.notice {
-                    Label {
-                        Text(notice.text)
-                    } icon: {
-                        Image(systemName: "exclamationmark.triangle.fill")
+            ScrollViewReader { proxy in
+                List {
+                    if let notice = model.notice {
+                        Label {
+                            Text(notice.text)
+                        } icon: {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                        }
+                        .id(Self.noticeID)
                     }
-                }
-                if let day = model.day, day.isCurrent(at: now) {
-                    if day.slots.isEmpty {
-                        Text("Nothing to Take Today")
+                    if let day = model.day, day.isCurrent(at: now) {
+                        if day.slots.isEmpty {
+                            Text("Nothing to Take Today")
+                                .foregroundStyle(.secondary)
+                        }
+                        ForEach(day.slots) { slot in
+                            Section {
+                                ForEach(slot.doses) { dose in
+                                    DoseRow(dose: dose, tint: day.tint.tint)
+                                }
+                            } header: {
+                                Text(slot.part.title)
+                            }
+                        }
+                        // The list can be old, so it shows its time (spec 10).
+                        Text("Updated \(day.sentAt.formatted(.rowTime(in: .current)))")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                            .listRowBackground(Color.clear)
+                    } else {
+                        Text("Open Maru on your iPhone to update.")
                             .foregroundStyle(.secondary)
                     }
-                    ForEach(day.slots) { slot in
-                        Section {
-                            ForEach(slot.doses) { dose in
-                                DoseRow(dose: dose, tint: day.tint.tint)
-                            }
-                        } header: {
-                            Text(slot.part.title)
-                        }
-                    }
-                    // The list can be old, so it shows its time (spec 10).
-                    Text("Updated \(day.sentAt.formatted(.rowTime(in: .current)))")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .listRowBackground(Color.clear)
-                } else {
-                    Text("Open Maru on your iPhone to update.")
-                        .foregroundStyle(.secondary)
+                }
+                // The notice is at the top of the list. A request from a row lower down scrolls to it.
+                .onChange(of: model.notice) { _, notice in
+                    guard notice != nil else { return }
+                    withAnimation { proxy.scrollTo(Self.noticeID, anchor: .top) }
                 }
             }
             .navigationTitle("Today")
@@ -83,10 +92,13 @@ private struct DoseRow: View {
         // The request runs. The capsule fills only when the iPhone confirms.
         .opacity(model.inFlight.contains(dose.id) ? 0.5 : 1)
         .swipeActions(edge: .trailing) {
+            // watchOS draws only the symbol of a swipe action. The words are for VoiceOver. The symbols are those of the iPhone.
             if dose.status == .unrecorded {
-                Button("Skip") { model.record(dose, as: .skipped) }
+                Button("Skip", systemImage: "minus.circle") { model.record(dose, as: .skipped) }
+                    .tint(.gray)
             } else {
-                Button("Undo") { model.record(dose, as: .undo) }
+                Button("Undo", systemImage: "arrow.uturn.backward") { model.record(dose, as: .undo) }
+                    .tint(.gray)
             }
         }
     }
@@ -104,11 +116,15 @@ private struct DoseRow: View {
         .accessibilityElement(children: .combine)
     }
 
-    /// For example "2 capsules, 8:00 AM" or "2 capsules, Skipped". A taken dose shows its intake time.
+    /// The words of the row on the iPhone: "2 capsules, 8:00 AM", "2 capsules, Taken at 8:07 AM", or
+    /// "2 capsules, Skipped". `time` is the intake time of a taken dose and the planned time of an open one.
     private var detail: String {
-        let state = dose.status == .skipped
-            ? String(localized: "Skipped")
-            : dose.time.formatted(.rowTime(in: .current))
+        let time = dose.time.formatted(.rowTime(in: .current))
+        let state = switch dose.status {
+        case .unrecorded: time
+        case .taken: String(localized: "Taken at \(time)")
+        case .skipped: String(localized: "Skipped")
+        }
         return [dose.amount, state].compactMap { $0 }.joined(separator: String(localized: ", "))
     }
 }

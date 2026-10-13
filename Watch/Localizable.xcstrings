@@ -456,6 +456,41 @@
         }
       }
     },
+    "Taken at %@" : {
+      "comment" : "Watch: the second line of a taken dose. %@ is the intake time, for example 8:07 AM. The same words as the row on the iPhone.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingenommen: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomado: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@に服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 시간: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 服用"
+          }
+        }
+      }
+    },
     "This dose changed on your iPhone. Nothing was recorded." : {
       "comment" : "Watch: shown after a tap when the dose on the iPhone is not the one that the Watch showed, for example after a change of its record on the iPhone. The Watch then shows the new list.",
       "localizations" : {
