@@ -62,7 +62,6 @@ struct TodaySnapshot: Equatable, Sendable {
         var entries: [Entry]
 
         var id: DayPart { part }
-        var openEntries: [Entry] { entries.filter(\.isOpen) }
     }
 
     /// A snapshot of this age or more is not current. The time is shorter than each calendar day,

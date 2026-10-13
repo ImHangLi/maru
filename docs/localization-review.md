@@ -26,7 +26,6 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | 打开 Maru 以记录。 |
 | 7 | Notification | Test notification | This is a test from Maru. | 这是来自 Maru 的测试通知。 |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 记录为已服用。 |
-| 9 | Dose wording | VoiceOver label of Record All | Record all %lld in %@ as taken | 将%2$@的全部 %1$lld 项记录为已服用 |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | 服用于 %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | 已跳过 |
 | 12 | Dose wording | A planned dose with no record | No record | 无记录 |
@@ -56,7 +55,6 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Maruを開いて記録してください。 |
 | 7 | Notification | Test notification | This is a test from Maru. | Maruからのテスト通知です。 |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 服用として記録します。 |
-| 9 | Dose wording | VoiceOver label of Record All | Record all %lld in %@ as taken | %2$@の%1$lld件をすべて服用として記録 |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | %@に服用 |
 | 11 | Dose wording | State of a skipped dose | Skipped | スキップ済み |
 | 12 | Dose wording | A planned dose with no record | No record | 記録なし |
@@ -86,7 +84,6 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Abre Maru para registrarlo. |
 | 7 | Notification | Test notification | This is a test from Maru. | Esta es una prueba de Maru. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | La registra como tomada. |
-| 9 | Dose wording | VoiceOver label of Record All | Record all %lld in %@ as taken | Registrar como tomados los %1$lld de %2$@ |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | Tomado: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | Omitido |
 | 12 | Dose wording | A planned dose with no record | No record | Sin registro |
@@ -116,7 +113,6 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Öffne Maru, um es zu erfassen. |
 | 7 | Notification | Test notification | This is a test from Maru. | Das ist ein Test von Maru. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | Erfasst sie als eingenommen. |
-| 9 | Dose wording | VoiceOver label of Record All | Record all %lld in %@ as taken | Alle %1$lld in %2$@ als eingenommen erfassen |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | Eingenommen: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | Übersprungen |
 | 12 | Dose wording | A planned dose with no record | No record | Keine Aufzeichnung |
@@ -146,7 +142,6 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 | 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Maru를 열어 기록하세요. |
 | 7 | Notification | Test notification | This is a test from Maru. | Maru의 테스트 알림이에요. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 복용함으로 기록해요. |
-| 9 | Dose wording | VoiceOver label of Record All | Record all %lld in %@ as taken | %2$@의 %1$lld개를 모두 복용함으로 기록 |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | 복용 시간: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | 건너뜀 |
 | 12 | Dose wording | A planned dose with no record | No record | 기록 없음 |
