@@ -1076,7 +1076,8 @@ Not verified: the device build needs the maintainer's Apple ID in Xcode, so that
 Agent decision, after a release audit.
 
 - Settings has a last section "About". "Privacy Policy" and "Support" open `https://maru.day/privacy.html` and `https://maru.day/support.html` after a tap. "Licenses" shows the MIT license of GRDB.swift, as `docs/third-party-licenses.md` requires before a public release. The license text stays in English.
-- `App/PrivacyInfo.xcprivacy` declares the data that the usage statistics send (D052): product interaction and other diagnostic data, not linked to the user, no tracking, for analytics. A build with no analytics key sends nothing, and the declaration then states more than the build does, which Apple permits.
+- `App/PrivacyInfo.xcprivacy` declares the data that the usage statistics send (D052): the random install ID as a device ID, product interaction, and other diagnostic data, for analytics, with no tracking. They are "not linked": the ID is random, Maru has no account, and the ID is deleted when the user turns the switch off. A model review called "not linked" for a persistent ID a risk. Apple may count a persistent ID as linked. Change it to "linked" if App Review asks.
+- `PRIVACY.md` states that PostHog keeps the data in the United States, because `MARU_ANALYTICS_HOST` is the US host. Change the sentence if the project moves to the EU cloud. A build with no analytics key sends nothing, and the declaration then states more than the build does, which Apple permits.
 - `PRIVACY.md` and `site/privacy.html` said "Maru has no purchase yet". Tips exist (D053), so the text now says that Maru does not send the `purchase_result` event yet.
 
 Not verified: no build of the app on this Mac. CI builds the app. The pages on maru.day are not live yet, so the two links show the placeholder until the site deploys.
