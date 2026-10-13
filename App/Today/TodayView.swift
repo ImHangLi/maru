@@ -82,7 +82,7 @@ private struct TodayContent: View {
             .overlay {
                 if today.groups.isEmpty && asNeededRows.isEmpty {
                     if hasItems {
-                        ContentUnavailableView("Nothing to Take Today", systemImage: "checkmark.circle")
+                        ContentUnavailableView("Nothing Planned Today", systemImage: "checkmark.circle")
                     } else {
                         ContentUnavailableView {
                             Label("No Items Yet", systemImage: "pills")

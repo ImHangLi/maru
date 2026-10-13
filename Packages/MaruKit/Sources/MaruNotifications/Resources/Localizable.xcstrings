@@ -165,43 +165,43 @@
         }
       }
     },
-    "Still to take" : {
+    "No record yet" : {
       "comment" : "The title of a follow-up reminder.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Noch einzunehmen"
+            "value" : "Noch nicht erfasst"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Still to take"
+            "value" : "No record yet"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pendiente de tomar"
+            "value" : "Aún sin registro"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服用がまだです"
+            "value" : "まだ記録がありません"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "아직 복용 전"
+            "value" : "아직 기록이 없어요"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "仍待服用"
+            "value" : "尚未记录"
           }
         }
       }

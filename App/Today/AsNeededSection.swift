@@ -107,7 +107,7 @@ private struct AsNeededItemRow: View {
             if isNotSaved {
                 Label("Try Again", systemImage: "arrow.clockwise")
             } else {
-                Label("Take Now", systemImage: "plus.circle")
+                Label("Record Dose", systemImage: "plus.circle")
             }
         }
     }

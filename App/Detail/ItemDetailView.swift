@@ -2,7 +2,7 @@ import MaruCore
 import SwiftUI
 
 /// The detail of one item (spec 3 P04): the name, the form icon, the plan, the note, and the 7-day strip of
-/// the records (D057). Edit opens the edit screen. The menu "Change or End This Item…" holds the rarer changes.
+/// the records (D057). Edit opens the edit screen. The menu "Item Options…" holds the rarer changes.
 ///
 /// It never says that the user finished a product, and it has no refill action (T04, T09).
 struct ItemDetailView: View {
@@ -103,7 +103,7 @@ struct ItemDetailView: View {
                 } else {
                     // A plain row at the end, so the rare changes stay out of the way (spec 3 P04). It opens a
                     // system menu, not a dialog, so an archive or a delete has one confirmation (D033).
-                    Menu("Change or End This Item…") {
+                    Menu("Item Options…") {
                         Button("Replace with a New Product…", systemImage: "arrow.triangle.2.circlepath") {
                             model.openEditorForNewProduct(item.id)
                         }
