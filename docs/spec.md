@@ -421,7 +421,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 
 ### 11.3 同意及生命周期
 
-> D051 changes the default: analytics is on by default outside the EU, the EEA, the UK, and Switzerland, with a switch in Settings. D078 removes the one-time notice there: analytics starts with no notice and no question. In the EU, the EEA, the UK, and Switzerland the user opts in first, with a one-time question after the first save and the same switch. The rules below apply to the opt-in regions.
+> D051 changes the default: analytics is on by default outside the EU, the EEA, the UK, Switzerland, and South Korea, with a switch in Settings. D078 removes the one-time notice there: analytics starts with no notice and no question. In the EU, the EEA, the UK, Switzerland, and South Korea the user opts in first, with a one-time question after the first save and the same switch. The rules below apply to the opt-in regions.
 
 - 分析默认关闭。首项计划保存后可在合适位置一次性提供可忽略的“帮助改进 App”说明，设置中始终可改；不在启动前阻断使用。
 - 同意前不初始化第三方 SDK、不建立第三方识别身份、不发配置请求；也不事后补传同意前的使用历史。

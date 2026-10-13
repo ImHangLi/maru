@@ -27,7 +27,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 | Feature | Spec | Acceptance |
 |---|---|---|
-| Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, and Switzerland. Each event has the region setting of the iPhone as a two-letter code | §11, D051, D064 | T41–T45 |
+| Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, Switzerland, and South Korea. Each event has the region setting of the iPhone as a two-letter code | §11, D051, D064 | T41–T45 |
 | Supporter tips with StoreKit 2 (D053). They may not be for sale in the Australian storefront (D064) | §14 C | T48 |
 | Optional photo with background removal | §5.2 | T30–T32 |
 | Six languages: en, zh-Hans, ja, es, de, ko | §13.2, D051 | T49 |

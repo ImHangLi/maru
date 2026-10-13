@@ -1372,7 +1372,7 @@ Not verified: the app build on this Mac and the screens. CI builds the app. Nobo
 
 Maintainer decision on 2026-10-14. It replaces the notice part of D051 and D052.
 
-- Outside the EU, the EEA, the UK, and Switzerland, usage statistics are on from the first launch, with no notice and no question. Before, they started only after a one-time notice.
+- Outside the EU, the EEA, the UK, Switzerland, and South Korea, usage statistics are on from the first launch, with no notice and no question. Before, they started only after a one-time notice.
 - Inside those regions nothing changes: the statistics are off until the user opts in, with a one-time question after the first save, or with the switch in Settings.
 - Every region keeps the switch "Share Usage Statistics" in Settings. "Off" still stops the client, clears the queue, deletes the install ID, and clears the local usage state (T43).
 - The app no longer has the notice with "OK" and "Turn Off", and its two strings are removed. The key `analytics.noticeShown` stays, because the question of the opt-in regions uses it.
@@ -1381,5 +1381,5 @@ Maintainer decision on 2026-10-14. It replaces the notice part of D051 and D052.
 
 Not verified: the app build on this Mac. CI builds the app.
 
-Open legal risk, for the maintainer: the model review (GPT-6.1-Sol, 2026-10-14) gave an opinion that is not legal advice. It does not treat "on with no notice" as safe in every storefront, because a random install ID is not anonymity in law, and the data comes from a health app. It named the highest risk in Washington and Nevada (consumer health data laws with prior consent), then South Korea (PIPA), Brazil (LGPD), and Canada, mainly Quebec, if the data counts as health data. California, Japan, and Australia expect at least a notice at collection. No region was added to the opt-in list. The maintainer decides, with legal advice if needed.
+Open legal risk, for the maintainer: the model review (GPT-6.1-Sol, 2026-10-14) gave an opinion that is not legal advice. It does not treat "on with no notice" as safe in every storefront, because a random install ID is not anonymity in law, and the data comes from a health app. It named the highest risk in Washington and Nevada (consumer health data laws with prior consent), then South Korea (PIPA), Brazil (LGPD), and Canada, mainly Quebec, if the data counts as health data. California, Japan, and Australia expect at least a notice at collection. On 2026-10-14 the maintainer added South Korea to the opt-in list, because PIPA asks for consent first and Korean is a store language. The other risks stay open.
 

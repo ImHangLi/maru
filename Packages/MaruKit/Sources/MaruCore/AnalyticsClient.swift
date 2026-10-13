@@ -26,7 +26,7 @@ public struct AnalyticsPreference {
     private static let enabledKey = "analytics.enabled"
     private static let noticeKey = "analytics.noticeShown"
 
-    /// The EU member states, the other EEA states, the UK, Switzerland, and the outermost regions of France.
+    /// The EU member states, the other EEA states, the UK, Switzerland, the outermost regions of France, and South Korea.
     static let optInRegions: Set<String> = [
         "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU",
         "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
@@ -34,6 +34,8 @@ public struct AnalyticsPreference {
         "GF", "GP", "MQ", "RE", "YT", "MF", "AX",
         // Territories with the UK GDPR or a law of the same kind.
         "GI", "JE", "GG", "IM",
+        // South Korea: PIPA asks for consent first (D078).
+        "KR",
     ]
 
     public static func requiresOptIn(regionCode: String?) -> Bool {

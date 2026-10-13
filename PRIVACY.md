@@ -22,8 +22,8 @@ Maru asks iOS to encrypt the database file. After a restart of your device, noth
 
 Some versions of Maru can send usage statistics to PostHog. A version that cannot has no switch and sends nothing. This section applies to a version that can.
 
-- Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows no notice and no question about them. The switch "Share Usage Statistics" in Settings turns them off.
-- Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on. Maru asks once, after you save an item, and Settings has the same switch.
+- Where it is on: outside the EU, the EEA, the UK, Switzerland, and South Korea, the statistics are on by default. Maru shows no notice and no question about them. The switch "Share Usage Statistics" in Settings turns them off.
+- Where it is off: in the EU, the EEA, the UK, Switzerland, and South Korea, the statistics stay off until you turn them on. Maru asks once, after you save an item, and Settings has the same switch.
 - How Maru picks the rule: it uses the region setting of your device, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or a device with another region setting, gets the rule of that setting.
 - What Maru sends: only these events and fields. Each value is a fixed word, a yes-or-no flag, or a range such as "2_3". None is a name, an amount, or a time of day.
   - `setup_step`: a step on the add or edit screen. `step` is one of `editor_opened`, `item_saved`, `editor_closed` (closed with no save), `scan_opened`, `scan_used`, or `scan_blocked` (the camera is off for Maru). `mode` is `new`, `edit`, or `replace`. A save also has:
