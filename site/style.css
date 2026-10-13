@@ -171,6 +171,13 @@
 :lang(en) { font-family: var(--font); line-break: auto; word-break: normal; }
 :lang(de) { hyphens: auto; }
 :root:lang(zh-Hans), :root:lang(ja), :root:lang(ko) { --track-tight: 0; --track-body: 0; --lh-body: 1.7; --lh-head: 1.3; --lh-lede: 1.6; }
+/* Korean headlines sit better a little tighter. */
+:root:lang(ko) { --track-tight: -0.02em; }
+/* Chinese and Japanese: trim the empty half of a full-width mark at the start and the end of a line, so a centered line is centered.
+   Japanese headlines also use proportional kana and marks. */
+:lang(zh-Hans), :lang(ja) { text-spacing-trim: trim-both; }
+:lang(ja) :is(h1, h2) { font-feature-settings: "palt"; }
+:lang(en) :is(h1, h2) { font-feature-settings: normal; }
 
 /* Base */
 * { box-sizing: border-box; }
@@ -186,6 +193,9 @@ body {
   overflow-wrap: break-word;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  font-optical-sizing: auto;
+  font-variant-numeric: lining-nums;
 }
 img { max-width: 100%; height: auto; display: block; }
 a {
@@ -194,7 +204,7 @@ a {
 }
 a:hover { opacity: var(--dim-hover); }
 a:active { opacity: var(--dim-press); }
-h1, h2 { margin: 0 0 var(--space-3); line-height: var(--lh-head); letter-spacing: var(--track-tight); text-wrap: balance; font-weight: var(--fw-bold); }
+h1, h2 { margin: 0 0 var(--space-3); line-height: var(--lh-head); letter-spacing: var(--track-tight); text-wrap: balance; font-weight: var(--fw-bold); hyphens: manual; }
 h1 { font-size: var(--fs-2xl); }
 h2 { font-size: var(--fs-xl); }
 p { margin: 0 0 var(--space-4); text-wrap: pretty; }
@@ -259,7 +269,7 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   60% { filter: none; }
 }
 .motion .load { animation: enter var(--dur-enter) var(--ease-smooth) both; animation-delay: calc(var(--delay-page) + var(--order, 0) * var(--stagger)); }
-.motion .load-phone { animation: phone-in var(--dur-phone) var(--ease-out) both; animation-delay: calc(var(--delay-page) + var(--stagger)); }
+.motion .load-phone { animation: phone-in var(--dur-phone) var(--ease-out) both; animation-delay: var(--delay-page); }
 /* A menu opens from its button: it fades in, grows from 96%, and moves a few pixels. It closes with opacity and scale only. */
 @keyframes menu-in {
   from { opacity: 0; transform: translateY(calc(-1 * var(--shift-lift))) scale(var(--scale-menu)); }
@@ -277,7 +287,6 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .d1 { --order: 1; }
 .d2 { --order: 2; }
 .d3 { --order: 3; }
-.d4 { --order: 4; }
 
 /* Top bar: a dark island that hangs from the top edge of the page, in the middle. It is as wide as its content.
    It is solid, so it stays readable over a picture and over a block. It does not change when the page scrolls. */
@@ -345,7 +354,17 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   transition: opacity var(--dur-fast) var(--ease-smooth);
 }
 .badge img { display: block; }
-.cta { display: flex; flex-direction: column; align-items: center; }
+
+/* The download unit: the app icon and name, Apple's badge, and one line that says where the app runs.
+   The icon is as high as the badge. The gaps are larger than the clear space of the badge. */
+.get { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4) var(--space-5); }
+.get .badge { margin: 0; }
+.get-app { display: flex; align-items: center; gap: var(--space-3); text-align: left; }
+.get-icon { width: var(--badge-page); height: var(--badge-page); border-radius: var(--radius-icon); box-shadow: var(--shadow-card); }
+.get-name { margin: 0; display: grid; line-height: var(--lh-tight); }
+.get-name strong { font-size: var(--fs-lg); font-weight: var(--fw-semibold); letter-spacing: var(--track-tight); }
+.get-name span { font-size: var(--fs-sm); color: var(--text-2); }
+.get-runs { flex-basis: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: var(--space-2); font-size: var(--fs-sm); color: var(--text-2); }
 
 /* Layout */
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
@@ -355,8 +374,7 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .hero-grid { display: grid; gap: var(--space-6); justify-items: center; }
 .hero-copy { display: flex; flex-direction: column; align-items: center; }
 .hero h1 { font-size: var(--fs-hero); margin-bottom: var(--space-4); }
-.hero .lede { margin-bottom: var(--space-3); }
-.hero-icon { margin-bottom: var(--space-5); border-radius: var(--radius-icon); box-shadow: var(--shadow-float); }
+.hero .lede { margin-bottom: var(--space-5); }
 
 /* Device frame: iPhone 17 Pro proportions around a real screenshot of 1206 x 2622. */
 .device {
@@ -461,7 +479,8 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
 @media (min-width: 1024px) {
   .hero { text-align: left; padding-top: var(--space-8); }
   .hero-grid { grid-template-columns: 1.3fr 0.7fr; align-items: center; }
-  .hero-copy, .hero .cta { align-items: flex-start; }
+  .hero-copy { align-items: flex-start; }
+  .get, .get-runs { justify-content: flex-start; }
 }
 /* A narrow screen has no room for an island. The bar is the full width, with no round corners. */
 @media (max-width: 419px) {

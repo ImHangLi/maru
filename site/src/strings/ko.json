@@ -12,7 +12,8 @@
   },
   "store": {
     "badge_alt": "App Store에서 다운로드하기",
-    "download": "다운로드"
+    "download": "다운로드",
+    "runs": "iOS 17 이상 iPhone용"
   },
   "shots": {
     "today": {

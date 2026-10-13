@@ -12,7 +12,8 @@
   },
   "store": {
     "badge_alt": "App Storeからダウンロード",
-    "download": "ダウンロード"
+    "download": "ダウンロード",
+    "runs": "iOS 17以降のiPhoneに対応"
   },
   "shots": {
     "today": {

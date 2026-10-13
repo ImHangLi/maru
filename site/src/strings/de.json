@@ -12,7 +12,8 @@
   },
   "store": {
     "badge_alt": "Laden im App Store",
-    "download": "Laden"
+    "download": "Laden",
+    "runs": "Für iPhone mit iOS 17 oder neuer"
   },
   "shots": {
     "today": {

@@ -12,7 +12,8 @@
   },
   "store": {
     "badge_alt": "Consíguelo en el App Store",
-    "download": "Descargar"
+    "download": "Descargar",
+    "runs": "Para iPhone con iOS 17 o posterior"
   },
   "shots": {
     "today": {
