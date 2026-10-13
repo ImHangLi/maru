@@ -1,2 +1,5 @@
 wrangler.toml
 .assetsignore
+build.py
+README.md
+src

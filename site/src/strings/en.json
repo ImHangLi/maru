@@ -1,0 +1,90 @@
+{
+  "name": "English",
+  "suggest": "Read in English",
+  "close": "Close",
+  "skip": "Skip to content",
+  "nav_label": "Main",
+  "home": {
+    "title": "Maru: Know What You Took",
+    "desc": "Maru reminds you to take your vitamins, supplements, and medicine, and remembers what you took. Free, with no account.",
+    "h1": "Never wonder |if you took it.",
+    "lede": "Maru reminds you to take your vitamins, supplements, and medicine, and remembers what you took."
+  },
+  "store": {
+    "soon_small": "Coming soon to the",
+    "soon_label": "Coming soon to the App Store",
+    "notify": "Tell me when it is ready",
+    "nav_notify": "Notify me",
+    "notify_subject": "Notify me",
+    "badge_alt": "Download on the App Store",
+    "nav_download": "Download"
+  },
+  "shots": {
+    "today": {"label": "Today", "alt": "The Today screen of Maru with the items to take now."},
+    "reminder": {"label": "Reminder", "alt": "A Maru reminder on the Lock Screen with the action Taken."},
+    "history": {"label": "History", "alt": "The History screen of Maru with a graph of past days and the last 7 days of each item."},
+    "widget": {"label": "Widget", "alt": "A Maru widget on the iPhone Home Screen."},
+    "detail": {"label": "Item", "alt": "The page of one item in Maru with its times, its amount, and its last 7 days."}
+  },
+  "blocks": [
+    {"shot": "reminder", "title": "Reminders when you want them", "text": "Pick your times, then tap Taken right on the reminder."},
+    {"shot": "history", "title": "See what you took", "text": "See months at a glance, and the last seven days of every item."},
+    {"shot": "widget", "title": "On your Home Screen", "text": "Add the Maru widget and see your day at a glance."},
+    {"shot": "detail", "title": "One page per item", "text": "See its times, its amount, and its last seven days."}
+  ],
+  "trust_title": "Good to know",
+  "trust": ["Free", "No account", "Your records stay on your iPhone"],
+  "footer": {
+    "faq": "FAQ",
+    "support": "Support",
+    "privacy": "Privacy",
+    "source": "Source code",
+    "language": "Language",
+    "advice": "Maru gives no medical advice."
+  },
+  "faq": {
+    "title": "Questions and answers · Maru",
+    "desc": "Short answers about Maru: the price, your data, reminders, and moving to a new iPhone.",
+    "h1": "Questions and answers",
+    "items": [
+      ["Is Maru free?", "Yes, with no subscription, no ads, and no limit on items. You can leave a tip if you like, but a tip unlocks nothing."],
+      ["Do I need an account?", "No. Open Maru and add what you take."],
+      ["Where is my data?", "Your items and records stay on your iPhone. The <a href=\"{privacy}\">privacy page</a> has the details."],
+      ["Why not an alarm or Apple Health?", "An alarm rings, but it does not know what you took. Apple Health does much more, and Maru does one small job: it shows what to take now, and one tap records it."],
+      ["Can I record from the reminder?", "Yes, when the reminder is for one item: tap Taken. A reminder for several items opens Maru."],
+      ["Will Maru keep reminding me?", "Turn on Remind Again in Settings, and Maru sends up to 12 more reminders for a dose. Maru is not an alarm, so silent mode or a Focus can hold a reminder."],
+      ["What if I forget to record?", "Nothing happens, and Maru has no streaks. You can record later or change the time."],
+      ["Does Maru tell me what to take?", "No. Maru gives no medical advice: you enter what you take, and Maru reminds you."],
+      ["Does Maru count the pills I have left?", "No. Maru reminds and records, and nothing more."],
+      ["How do I move to a new iPhone?", "In Settings, tap Back Up on the old iPhone and Restore from Backup on the new one. The backup file is not encrypted, so keep it private."],
+      ["Can I get my records out?", "Yes. Export Records in Settings makes a file that Numbers and Excel can open."],
+      ["Is there an Apple Watch app?", "No. Maru is an iPhone app, and it does not sync between devices."],
+      ["Which languages does Maru speak?", "English, Simplified Chinese, Japanese, Spanish, German, and Korean."],
+      ["Is Maru open source?", "Yes. The code is on <a href=\"{github}\">GitHub</a> under the MIT license."]
+    ]
+  },
+  "support": {
+    "title": "Support · Maru",
+    "desc": "Ask a question about Maru, report a bug, or share an idea.",
+    "h1": "Support",
+    "lede": "Ask a question, report a bug, or share an idea.",
+    "email": "Email",
+    "form": "Feedback form",
+    "form_link": "Open the feedback form",
+    "form_note": "The form is a page of Tally (tally.so).",
+    "note": "Please leave health details out of your message. The <a href=\"{faq}\">FAQ</a> may already have your answer."
+  },
+  "privacy": {
+    "title": "Privacy · Maru",
+    "desc": "What Maru stores on your iPhone, what it sends, and what it never does.",
+    "h1": "Privacy",
+    "summary_title": "In short",
+    "summary": [
+      "Your items and records stay on your iPhone. Maru has no account and no server for them.",
+      "Simple usage statistics never include what you take, and one switch in Settings turns them off.",
+      "Maru has no ads, and it does not read your contacts or your location."
+    ],
+    "binding": "",
+    "headings": {}
+  }
+}

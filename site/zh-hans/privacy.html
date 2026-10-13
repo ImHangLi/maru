@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>隐私 · Maru</title>
+<meta name="description" content="Maru 在你的 iPhone 上存什么、发送什么，以及绝不做什么。">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://maru.day/zh-hans/privacy.html">
+<link rel="alternate" hreflang="en" href="https://maru.day/privacy.html">
+<link rel="alternate" hreflang="zh-Hans" href="https://maru.day/zh-hans/privacy.html">
+<link rel="alternate" hreflang="ja" href="https://maru.day/ja/privacy.html">
+<link rel="alternate" hreflang="es" href="https://maru.day/es/privacy.html">
+<link rel="alternate" hreflang="de" href="https://maru.day/de/privacy.html">
+<link rel="alternate" hreflang="ko" href="https://maru.day/ko/privacy.html">
+<link rel="alternate" hreflang="x-default" href="https://maru.day/privacy.html">
+<link rel="icon" href="/icon.png" type="image/png">
+<link rel="apple-touch-icon" href="/icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Maru">
+<meta property="og:title" content="隐私 · Maru">
+<meta property="og:description" content="Maru 在你的 iPhone 上存什么、发送什么，以及绝不做什么。">
+<meta property="og:url" content="https://maru.day/zh-hans/privacy.html">
+<meta property="og:image" content="https://maru.day/icon.png">
+<meta name="twitter:card" content="summary">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-header"><div class="nav-inner"><a class="brand" href="/zh-hans/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a><nav class="nav-links" aria-label="主导航"><a href="/zh-hans/faq.html">常见问题</a><a class="nav-cta" href="mailto:hello@maru.day?subject=%E4%B8%8A%E6%9E%B6%E6%97%B6%E9%80%9A%E7%9F%A5%E6%88%91">通知我</a></nav></div></header>
+<main id="main" class="prose">
+<h1>隐私</h1>
+<section class="card summary" aria-labelledby="summary-title"><h2 id="summary-title">简单来说</h2><ul><li>你的项目和记录都留在你的 iPhone 上。Maru 没有账号，也没有存放这些数据的服务器。</li><li>简单的使用统计绝不包含你吃的东西，在“设置”里一个开关就能关掉。</li><li>Maru 没有广告，也不读取你的通讯录和位置。</li></ul></section>
+<p class="note">下面的完整政策为英文，以英文文本为准。</p>
+<div class="policy" lang="en">
+<p>Maru keeps your health data on your iPhone. This page describes the app in this repository as it is today.</p>
+<h2 lang="zh-Hans">Maru 存储什么</h2>
+<ul>
+<li>Your items, schedules, notes, and records, in a local SQLite database.
+</li>
+<li>Your settings, in the app's local preferences.
+</li>
+<li>An unsaved draft of the add or edit screen, in a local file. Maru deletes it when you save or cancel.
+</li>
+<li>The photo of an item, if you add one, in a local file. See "Item photos".
+</li></ul>
+<p>Maru asks iOS to encrypt the database file while your iPhone is locked. When Maru cannot open your records because the iPhone is locked, it records nothing and asks you to unlock.</p>
+<h2 lang="zh-Hans">Maru 不做什么</h2>
+<ul>
+<li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the request of the App Store for the tip prices when you open Settings.
+</li>
+<li>It contains no advertising or crash-reporting code.
+</li>
+<li>It does not read your contacts, your location, or the advertising identifier.
+</li>
+<li>It does not read from or write to Apple Health.
+</li></ul>
+<h2 lang="zh-Hans">使用统计</h2>
+<p>A build of Maru that has an analytics project key can send simple usage statistics to PostHog. A build with no key has no switch and sends nothing. This section applies to a build with a key.</p>
+<ul>
+<li>Where it is on: outside the EU, the EEA, the UK, and Switzerland, the statistics are on by default. Maru shows a short notice once, after you save an item, and it sends nothing before the notice shows. Settings has the switch "Share Usage Statistics".
+</li>
+<li>Where it is off: in the EU, the EEA, the UK, and Switzerland, the statistics stay off until you turn them on in the notice or in Settings.
+</li>
+<li>How Maru picks the rule: it uses the region setting of your iPhone, not your place. If that setting is missing, Maru uses the opt-in rule. A traveler, or an iPhone with another region setting, gets the rule of that setting.
+</li>
+<li>What Maru sends: only these events and fields.
+<ul>
+<li><code>setup_step</code>: that an item was saved.
+</li>
+<li><code>daily_usage_summary</code>: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
+</li>
+<li><code>core_error</code>: whether a save or a read failed, with one of five fixed codes.
+</li>
+<li><code>feedback_entry</code>: that you tapped "Send Feedback".
+</li>
+<li><code>purchase_result</code>: a fixed product and result. Maru does not send this event yet.
+</li></ul>
+</li>
+<li>What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
+</li>
+<li>Each request also has the app version, the major version of iOS, and a random install ID. Apple's privacy label lists it as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
+</li>
+<li>No session recording, no screen capture, and no automatic capture of taps or screens.
+</li>
+<li>If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage flags. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
+</li>
+<li>Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
+</li></ul>
+<h2 lang="zh-Hans">相机</h2>
+<p>Maru uses the camera only while you scan a label on the add screen. Your iPhone reads the text, and Maru keeps only the name that you tap. A label scan saves no photo and sends nothing. iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".</p>
+<h2 lang="zh-Hans">项目照片</h2>
+<p>An item can have a photo that you take or choose on the add or edit screen. It is optional.</p>
+<ul>
+<li>Maru makes a small copy of the photo, at most 512 pixels on the longest side, and keeps only that copy. It does not keep the original photo. The copy has no location and no camera data (EXIF).
+</li>
+<li>Maru can remove the background of the photo on your iPhone. It uses Apple's Vision framework, and nothing leaves the iPhone.
+</li>
+<li>The photo files are in the Maru data folder of your iPhone, next to the database, with the same file protection. Maru deletes a photo file when you remove the photo or delete the item.
+</li>
+<li>"Take Photo" does not save to your photo library. "Choose Photo" uses the system photo picker, so Maru sees only the photo that you pick.
+</li>
+<li>The Maru backup file (see below) does not contain the photos. After a restore on another iPhone, items show the form icon, and you can add the photos again.
+</li>
+<li>The record export has no photos.
+</li></ul>
+<p>The name suggestions on the add screen come from a list inside the app. The name suggestions are a typing aid. They are not medical advice.</p>
+<h2 lang="zh-Hans">反馈</h2>
+<p>Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.</p>
+<h2 lang="zh-Hans">打赏</h2>
+<p>Settings has a "Support Maru" section with three optional tips. A tip unlocks nothing. The purchase goes through the App Store. Apple handles your payment and your Apple Account, and Maru gets no payment data or account data. Maru does not send item names, doses, or records with a tip. Maru loads the tip prices from the App Store only when you open Settings.</p>
+<h2 lang="zh-Hans">通知</h2>
+<p>Reminders are local notifications. iOS schedules and shows them on your iPhone, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.</p>
+<h2 lang="zh-Hans">导出和备份文件</h2>
+<p>Settings has "Export Records", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first two.</p>
+<ul>
+<li>The record export is a CSV file. It has your item names, your amounts, and your records.
+</li>
+<li>The backup is a full copy of the database and of three settings: the app color, the names in reminders, and "Remind Again". It does not include the item photos.
+</li>
+<li>The files are not encrypted. Anyone with a file can read it.
+</li>
+<li>Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.
+</li>
+<li>Maru keeps the file in a protected temporary folder and removes it when the share sheet closes.
+</li>
+<li>A restore reads the backup file that you pick. It replaces the data of Maru on the iPhone, after you confirm. The backup file stays where you keep it.
+</li></ul>
+<p><code>docs/export-format.md</code> describes both files.</p>
+<h2 lang="zh-Hans">iPhone 备份</h2>
+<p>Your iPhone backup, in iCloud or on a computer, can include Maru's data and the item photos, the same as other app data. Apple's backup settings control this.</p>
+<h2 lang="zh-Hans">变更</h2>
+<p>This page will change before the app does.</p>
+</div>
+</main>
+<footer class="site-footer">
+<div class="footer-inner">
+<nav class="footer-links" aria-label="Maru"><a href="/zh-hans/faq.html">常见问题</a><a href="/zh-hans/support.html">支持</a><a href="/zh-hans/privacy.html">隐私</a><a href="https://github.com/ImHangLi/maru">源代码</a></nav>
+<nav class="langs" aria-label="语言"><ul><li><a href="/privacy.html" lang="en" hreflang="en" data-suggest="Read in English" data-close="Close">English</a></li><li><a href="/zh-hans/privacy.html" lang="zh-Hans" hreflang="zh-Hans" data-suggest="查看简体中文版" data-close="关闭" aria-current="page">简体中文</a></li><li><a href="/ja/privacy.html" lang="ja" hreflang="ja" data-suggest="日本語で見る" data-close="閉じる">日本語</a></li><li><a href="/es/privacy.html" lang="es" hreflang="es" data-suggest="Ver en español" data-close="Cerrar">Español</a></li><li><a href="/de/privacy.html" lang="de" hreflang="de" data-suggest="Auf Deutsch lesen" data-close="Schließen">Deutsch</a></li><li><a href="/ko/privacy.html" lang="ko" hreflang="ko" data-suggest="한국어로 보기" data-close="닫기">한국어</a></li></ul></nav>
+<p>Maru 不提供医疗建议。</p>
+</div>
+</footer>
+<script src="/site.js" defer></script>
+</body>
+</html>

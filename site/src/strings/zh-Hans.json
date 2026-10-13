@@ -1,0 +1,102 @@
+{
+  "name": "简体中文",
+  "suggest": "查看简体中文版",
+  "close": "关闭",
+  "skip": "跳到正文",
+  "nav_label": "主导航",
+  "home": {
+    "title": "Maru：吃了没，看一眼就知道",
+    "desc": "Maru 按时提醒你吃维生素、保健品和药，并记下你吃过什么。免费，无需注册。",
+    "h1": "吃了没？|看一眼就知道。",
+    "lede": "Maru 按时提醒你吃维生素、保健品和药，并帮你记下每一次。"
+  },
+  "store": {
+    "soon_small": "即将上架",
+    "soon_label": "即将上架 App Store",
+    "notify": "上架时通知我",
+    "nav_notify": "通知我",
+    "notify_subject": "上架时通知我",
+    "badge_alt": "在 App Store 下载",
+    "nav_download": "下载"
+  },
+  "shots": {
+    "today": {"label": "今天", "alt": "Maru 的“今天”界面，显示现在该吃的项目。"},
+    "reminder": {"label": "提醒", "alt": "锁定屏幕上的 Maru 提醒，带有“已服用”操作。"},
+    "history": {"label": "历史记录", "alt": "Maru 的“历史记录”界面，有过去每一天的图表和每个项目最近 7 天的记录。"},
+    "widget": {"label": "小组件", "alt": "iPhone 主屏幕上的 Maru 小组件。"},
+    "detail": {"label": "项目", "alt": "Maru 中一个项目的页面，有时间、用量和最近 7 天的记录。"}
+  },
+  "blocks": [
+    {"shot": "reminder", "title": "到点提醒", "text": "时间由你定，在提醒上点“已服用”就记好了。"},
+    {"shot": "history", "title": "吃过什么，一目了然", "text": "几个月的记录一眼看完，每个项目的最近 7 天也在这里。"},
+    {"shot": "widget", "title": "放在主屏幕上", "text": "添加 Maru 小组件，抬眼就能看到今天。"},
+    {"shot": "detail", "title": "每个项目一页", "text": "时间、用量和最近 7 天，都在这一页。"}
+  ],
+  "trust_title": "你可以放心",
+  "trust": ["免费", "无需注册", "记录只留在你的 iPhone 上"],
+  "footer": {
+    "faq": "常见问题",
+    "support": "支持",
+    "privacy": "隐私",
+    "source": "源代码",
+    "language": "语言",
+    "advice": "Maru 不提供医疗建议。"
+  },
+  "faq": {
+    "title": "常见问题 · Maru",
+    "desc": "关于 Maru 的简短回答：价格、数据、提醒，以及怎样换到新 iPhone。",
+    "h1": "常见问题",
+    "items": [
+      ["Maru 免费吗？", "免费，没有订阅，没有广告，项目数量也不限。你可以自愿打赏，但打赏不会解锁任何功能。"],
+      ["需要注册账号吗？", "不需要。打开 Maru，添加你要吃的东西就行。"],
+      ["我的数据存在哪里？", "你的项目和记录都留在你的 iPhone 上。详情请看<a href=\"{privacy}\">隐私页面</a>。"],
+      ["为什么不用闹钟或 Apple 健康？", "闹钟会响，但它不知道你吃了没有。Apple 健康的功能多得多，而 Maru 只做一件小事：告诉你现在该吃什么，点一下就记好。"],
+      ["能直接在提醒上记录吗？", "能，如果提醒里只有一个项目，点“已服用”即可。包含多个项目的提醒会打开 Maru。"],
+      ["Maru 会一直提醒我吗？", "在“设置”里打开“再次提醒”，Maru 最多会为一次服用再提醒 12 次。Maru 不是闹钟，静音模式或专注模式可能会拦下提醒。"],
+      ["忘了记录怎么办？", "不会怎么样，Maru 没有连续打卡这回事。你可以之后补记，也可以修改时间。"],
+      ["Maru 会告诉我该吃什么吗？", "不会。Maru 不提供医疗建议：吃什么由你填写，Maru 只负责提醒。"],
+      ["Maru 会统计我还剩多少药吗？", "不会。Maru 只做提醒和记录。"],
+      ["换新 iPhone 时怎么迁移？", "在旧 iPhone 的“设置”里点“备份”，再在新 iPhone 上点“从备份恢复”。备份文件没有加密，请妥善保管。"],
+      ["我能把记录导出来吗？", "能。“设置”里的“导出记录”会生成一个文件，Numbers 和 Excel 都能打开。"],
+      ["有 Apple Watch 版吗？", "没有。Maru 是 iPhone App，也不会在设备之间同步。"],
+      ["Maru 支持哪些语言？", "英语、简体中文、日语、西班牙语、德语和韩语。"],
+      ["Maru 是开源的吗？", "是的。代码以 MIT 许可证公开在 <a href=\"{github}\">GitHub</a> 上。"]
+    ]
+  },
+  "support": {
+    "title": "支持 · Maru",
+    "desc": "关于 Maru 的提问、问题反馈和建议。",
+    "h1": "支持",
+    "lede": "提问、反馈问题，或者说说你的想法。",
+    "email": "电子邮件",
+    "form": "反馈表单",
+    "form_link": "打开反馈表单",
+    "form_note": "表单是 Tally (tally.so) 的页面。",
+    "note": "请不要在信息里写健康细节。<a href=\"{faq}\">常见问题</a>里也许已经有你要的答案。"
+  },
+  "privacy": {
+    "title": "隐私 · Maru",
+    "desc": "Maru 在你的 iPhone 上存什么、发送什么，以及绝不做什么。",
+    "h1": "隐私",
+    "summary_title": "简单来说",
+    "summary": [
+      "你的项目和记录都留在你的 iPhone 上。Maru 没有账号，也没有存放这些数据的服务器。",
+      "简单的使用统计绝不包含你吃的东西，在“设置”里一个开关就能关掉。",
+      "Maru 没有广告，也不读取你的通讯录和位置。"
+    ],
+    "binding": "下面的完整政策为英文，以英文文本为准。",
+    "headings": {
+      "What Maru stores": "Maru 存储什么",
+      "What Maru does not do": "Maru 不做什么",
+      "Usage statistics": "使用统计",
+      "Camera": "相机",
+      "Item photos": "项目照片",
+      "Feedback": "反馈",
+      "Tips": "打赏",
+      "Notifications": "通知",
+      "Export and backup files": "导出和备份文件",
+      "iPhone backups": "iPhone 备份",
+      "Changes": "变更"
+    }
+  }
+}
