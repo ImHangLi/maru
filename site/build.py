@@ -45,6 +45,11 @@ APP_BG = bytes.fromhex("F2F2F7")
 TODAY_STATUS, TODAY_TOOLBAR, TODAY_TITLE, TODAY_SEAM, TODAY_TAB_BAR = 60, 150, 370, 570, 2371
 # How far the shadow of a glass shape reaches: to each side, and below.
 GLASS_SHADOW = (7, 30)
+# The top of the screen hides the list that scrolls under it: the background is solid down to the first row, and it
+# fades out at the second row. The title is below the second row when the list is at its top.
+TODAY_EDGE = (300, 350)
+# Empty rows after the last group, so the last row comes to rest above the tab bar with a gap.
+TODAY_END_SPACE = 45
 # The jars of the photo block, from left to right. README.md names the source of each photo.
 JARS = ["omega3", "vitd3", "magnesium"]
 # Apple asks for a badge height of 40 px or more on a screen.
@@ -109,7 +114,7 @@ def write_webp(data, mode, height, name):
 def import_today(source, code):
     """Make the two pictures of the hero phone from two captures of Today: the list at its top (today-<lang>.png) and
     the list at its end (today-end-<lang>.png). today-<lang>.webp is the full list with no bars, and
-    today-bars-<lang>.webp is the status bar, the toolbar buttons, and the tab bar on a clear background."""
+    today-bars-<lang>.webp is the status bar, the toolbar buttons, and the tab bar. The top of it hides the list, and the rest is clear."""
     top, end = pixels(Path(source) / f"today-{code}.png"), pixels(Path(source) / f"today-end-{code}.png")
     line = CAPTURE_W * 3
     blank = APP_BG * CAPTURE_W
@@ -125,12 +130,21 @@ def import_today(source, code):
     # scroll above the tab bar, as in the app.
     full = blank * TODAY_TITLE + top[TODAY_TITLE * line:TODAY_SEAM * line] \
         + end[(TODAY_SEAM - shift) * line:TODAY_TAB_BAR * line]
-    full += blank * (CAPTURE_H + shift - len(full) // line)
-    write_webp(full, "rgb24", CAPTURE_H + shift, f"today-{code}.webp")
+    height = CAPTURE_H + shift + TODAY_END_SPACE
+    full += blank * (height - len(full) // line)
+    write_webp(full, "rgb24", height, f"today-{code}.webp")
 
     # The bars. A glass shape is opaque. Around it, a pixel that is a darker background is a shadow or the edge of a
     # black glyph, so it becomes black with the same strength. That keeps the look over the rows that scroll under it.
     bars = bytearray(CAPTURE_W * CAPTURE_H * 4)
+
+    def edge(y):
+        """How much of the background the top of the screen has at row y: 1 is solid, and 0 is clear."""
+        t = min(1, max(0, (TODAY_EDGE[1] - y) / (TODAY_EDGE[1] - TODAY_EDGE[0])))
+        return t * t * (3 - 2 * t)
+
+    for y in range(TODAY_EDGE[1]):
+        bars[y * CAPTURE_W * 4:(y + 1) * CAPTURE_W * 4] = (APP_BG + bytes([round(255 * edge(y))])) * CAPTURE_W
     areas = [(top, TODAY_STATUS, TODAY_TOOLBAR, 0, CAPTURE_W), (top, TODAY_TOOLBAR, TODAY_TITLE, 0, CAPTURE_W // 2),
              (top, TODAY_TOOLBAR, TODAY_TITLE, CAPTURE_W // 2, CAPTURE_W), (end, TODAY_TAB_BAR, CAPTURE_H, 0, CAPTURE_W)]
     for index, (buf, y0, y1, x0, x1) in enumerate(areas):
@@ -146,7 +160,11 @@ def import_today(source, code):
             glass = index > 0 and (x - nearest) ** 2 + (y - up - radius) ** 2 <= radius ** 2
             shade = r / APP_BG[0]
             if not glass and r == g and shade < 1 and abs(b - APP_BG[2] * shade) < 4:
-                r, g, b, alpha = 0, 0, 0, round(255 * (1 - shade))
+                # The shadow lies over the background of the top of the screen, where that background is.
+                under, dark = edge(y), 1 - shade
+                cover = dark + under * shade
+                r, g, b = (round(c * under * shade / cover) for c in APP_BG)
+                alpha = round(255 * cover)
             else:
                 alpha = 255
             bars[(y * CAPTURE_W + x) * 4:(y * CAPTURE_W + x) * 4 + 4] = bytes((r, g, b, alpha))

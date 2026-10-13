@@ -87,7 +87,9 @@ The command needs `sips` (macOS), `cwebp`, and `ffmpeg`. It reads `today-<lang>.
 The hero phone is live. `today-<lang>.png` is Today at the top of the list, and `today-end-<lang>.png` is the same screen with the list scrolled to its end. The command joins them into two files:
 
 - `today-<lang>.webp`: the full list with no bars. It scrolls inside the screen.
-- `today-bars-<lang>.webp`: the status bar, the toolbar buttons, and the tab bar on a clear background. It stays in place over the list.
+- `today-bars-<lang>.webp`: the status bar, the toolbar buttons, and the tab bar. It stays in place over the list. Its top has the background of the app with a soft lower edge, so the title scrolls away under it and does not show beside the buttons. The rest is clear.
+
+The list has some empty space after its last group, so the As Needed row comes to rest above the tab bar.
 
 The list scrolls with the wheel, a touch, the keys, or a mouse drag, and the scroll passes to the page at each end. When the phone comes into view, the list moves to its end one time and comes back. This hint does not play with reduced motion.
 
