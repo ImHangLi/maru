@@ -7,13 +7,11 @@
 维生素 D | 维D | = Vitamin D
 维生素 C | 维C | = Vitamin C
 钙片 | = Calcium
-复合维生素 | = Multivitamin
-多种维生素 | = Multivitamin
+复合维生素 | 多种维生素 | = Multivitamin
 鱼油 | = Fish Oil
 深海鱼油 | = Fish Oil
 益生菌 | = Probiotic
-B 族维生素
-维生素 B 族
+B 族维生素 | 维生素 B 族
 叶酸 | = Folic Acid
 维生素 D3 | 维D3 | = Vitamin D3
 蛋白粉 | = Protein Powder
@@ -30,7 +28,6 @@ B 族维生素
 镁 | = Magnesium
 维生素 E | 维E | = Vitamin E
 维生素 A | 维A | = Vitamin A
-维生素 AD
 维生素 B12 | 维B12 | = Vitamin B12
 维生素 B6 | 维B6 | = Vitamin B6
 维生素 B1 | 维B1 | = Vitamin B1
@@ -78,8 +75,7 @@ DHA
 胶原蛋白肽 | = Collagen Peptides
 胶原蛋白粉 | = Collagen
 水解胶原蛋白 | = Hydrolyzed Collagen
-奶蓟草 | = Milk Thistle
-水飞蓟 | = Milk Thistle
+奶蓟草 | 水飞蓟 | = Milk Thistle
 葡萄籽
 葡萄籽提取物
 番茄红素
@@ -108,8 +104,7 @@ DHA
 茶氨酸 | = Theanine
 L-茶氨酸 | = L-Theanine
 γ-氨基丁酸 | = GABA
-透明质酸 | = Hyaluronic Acid
-玻尿酸 | = Hyaluronic Acid
+透明质酸 | 玻尿酸 | = Hyaluronic Acid
 烟酰胺
 烟酸 | = Niacin
 NMN

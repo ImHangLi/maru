@@ -17,7 +17,6 @@ Omeprazol
 Pantoprazol
 Esomeprazol
 Lansoprazol
-Ranitidina
 Famotidina
 Almagato
 Domperidona
@@ -27,7 +26,7 @@ Loperamida
 Lactulosa
 Macrogol
 Bisacodilo
-Butilescopolamina
+Butilescopolamina | Butilbromuro de hioscina
 Simeticona
 Atorvastatina
 Rosuvastatina
@@ -167,7 +166,7 @@ Donepezilo
 Memantina
 Metilfenidato
 Atomoxetina
-Levodopa con carbidopa | Levodopa
+Levodopa con carbidopa
 Pramipexol
 Sumatriptán
 Rizatriptán
@@ -212,6 +211,5 @@ Latanoprost
 Timolol
 Lágrimas artificiales
 Suero oral | Sales de rehidratación oral
-Butilbromuro de hioscina
 Mebendazol
 Albendazol

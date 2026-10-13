@@ -14,6 +14,8 @@ struct LocalNameTests {
         """, medications: """
         布洛芬
         アムロジピン
+        아토르바스타틴
+        아토목세틴
         """, completions: """
         Vitamin D | softgel | 1 softgel | | | label
         """)
@@ -25,10 +27,14 @@ struct LocalNameTests {
         #expect(index.matches("ようさ") == ["葉酸"])
         // A voiced kana keeps its mark.
         #expect(index.matches("ひた").isEmpty)
-        // A Hangul syllable that the keyboard did not complete yet matches without its last consonant.
+        // In a Hangul syllable that the keyboard did not complete yet, the last consonant ends that syllable
+        // or starts the next one. It narrows the result.
         #expect(index.matches("비") == ["비타민 D"])
         #expect(index.matches("빝") == ["비타민 D"])
         #expect(index.matches("비ㅌ") == ["비타민 D"])
+        #expect(index.matches("아토") == ["아토르바스타틴", "아토목세틴"])
+        #expect(index.matches("아토ㅁ") == ["아토목세틴"])
+        #expect(index.matches("아톰") == ["아토목세틴"])
         // A local name and its alias get the completion of the English twin.
         let vitaminD = index.completion(for: "Vitamin D", category: .supplement)
         #expect(vitaminD != nil)

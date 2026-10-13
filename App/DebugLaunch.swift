@@ -100,9 +100,9 @@ extension AppStore {
             ("아세트아미노펜", .medication, .tablet, nil, []),
         ],
         "es": [
-            ("Vitamina D", .supplement, .softgel, "1 cápsula", [(8, 0)]),
+            ("Vitamina D", .supplement, .softgel, "1 cápsula blanda", [(8, 0)]),
             ("Levotiroxina", .medication, .tablet, "1 comprimido", [(7, 0)]),
-            ("Omega 3", .supplement, .softgel, "2 cápsulas", [(12, 30)]),
+            ("Omega 3", .supplement, .softgel, "2 cápsulas blandas", [(12, 30)]),
             ("Magnesio", .supplement, .capsule, "2 cápsulas", [(21, 0)]),
             ("Atorvastatina", .medication, .tablet, "1 comprimido", [(21, 0)]),
             ("Paracetamol", .medication, .tablet, nil, []),

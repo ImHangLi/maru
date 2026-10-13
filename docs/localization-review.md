@@ -201,11 +201,12 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.
 
+A first review on 2026-10-13 corrected the entries below. Every name, alias, and twin still needs a check by a native pharmacist, also the corrected ones.
+
 | Language | Supplements | Medicines | Check first |
 |---|---|---|---|
-| zh-Hans | 181 | 250 | 氮泵, 增肌粉, 大麦若叶, 黑芝麻丸, 维生素 AD, 坦洛新 and 坦索罗辛 as two entries |
-| ja | 182 | 218 | 正露丸 (brand or generic), 非変性II型コラーゲン, ボラージオイル, 銀翹散, the readings of the Kampo names |
-| ko | 165 | 198 | 부스터 with 프리워크아웃, 잔티젠, 락티움, 흑염소 진액, 오메가-3-산 에틸에스테르, the dose words 1캡슐 and 1정 |
-| es | 165 | 212 | Pre-entreno, Omega 3-6-9, Tila, Butilescopolamina and Butilbromuro de hioscina as two entries, the dose word "cápsula" for a softgel |
-| de | 166 | 216 | Grünes Pulver, Pre-Workout with the alias Booster, Meerwasser-Nasenspray, Schüßler-Salze, Kurkuma mit Piperin |
-
+| zh-Hans | 176 | 247 | 氮泵, 增肌粉, 大麦若叶, 黑芝麻丸, 维生素AD as a medicine, the aliases 扑热息痛, 坦洛新, 扑尔敏, 黄连素, 多种维生素, 维生素 B 族, 水飞蓟, 玻尿酸 |
+| ja | 183 | 219 | 正露丸 (brand or generic), メラトニン as a medicine, 酵素, カテキン, ビタミンD&K2 with no English twin, シリカ and こんにゃく as their own entries, 非変性II型コラーゲン, ボラージオイル, 銀翹散, the readings of the Kampo names |
+| ko | 166 | 198 | 프리워크아웃 with 운동전 부스터, 유단백가수분해물, 미역 등 복합추출물, 프랑스해안송껍질추출물, 트리메타지딘, 오메가-3-산에틸에스테르90, 감마리놀렌산 and 달맞이꽃 종자유 as two entries, 녹즙 and 킬레이트 철분 with no English twin, 흑염소 진액, the dose words 1캡슐 and 1정 |
+| es | 165 | 210 | Pre-entreno, Omega 3-6-9, Tila, Extracto de té verde, Butilbromuro de hioscina as an alias of Butilescopolamina, the dose word "cápsula blanda" for a softgel |
+| de | 167 | 215 | Greens-Pulver, Pre-Workout with the alias Pre-Workout-Booster, OPC and Traubenkernextrakt as two entries, Silizium and Kieselerde as two entries, Meerwasser-Nasenspray, Kurkuma mit Piperin |

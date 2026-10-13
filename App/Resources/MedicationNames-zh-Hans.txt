@@ -5,8 +5,7 @@
 # and everyday Chinese patent medicines by their formula names. No brand names.
 # Written from general knowledge. A native speaker must check it. It is a typing aid, not medical information.
 布洛芬
-对乙酰氨基酚
-扑热息痛
+对乙酰氨基酚 | 扑热息痛
 阿司匹林
 阿莫西林
 氨氯地平
@@ -98,8 +97,7 @@
 多潘立酮
 莫沙必利
 洛哌丁胺
-黄连素
-盐酸小檗碱
+盐酸小檗碱 | 黄连素
 乳果糖
 开塞露
 聚乙二醇
@@ -108,10 +106,10 @@
 乳酸菌素
 健胃消食片
 口服补液盐
+维生素AD
 西替利嗪
 左西替利嗪
-氯苯那敏
-扑尔敏
+氯苯那敏 | 扑尔敏
 孟鲁司特
 沙丁胺醇
 布地奈德
@@ -211,8 +209,7 @@
 氟桂利嗪
 倍他司汀
 非那雄胺
-坦索罗辛
-坦洛新
+坦索罗辛 | 坦洛新
 西地那非
 他达拉非
 米诺地尔

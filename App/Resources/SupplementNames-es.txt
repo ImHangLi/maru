@@ -89,10 +89,10 @@ Cardo mariano | = Milk Thistle
 Alcachofa
 Diente de león
 Cola de caballo
-Té verde | Extracto de té verde | = Green Tea Extract
+Extracto de té verde | = Green Tea Extract
 Ajo
 Ajo negro
-Aceite de onagra | Onagra | = Evening Primrose Oil
+Aceite de onagra | = Evening Primrose Oil
 Aceite de linaza | = Flaxseed Oil
 Lecitina de soja
 Isoflavonas de soja
@@ -113,7 +113,7 @@ Aminoácidos esenciales
 BCAA | Aminoácidos ramificados | = BCAA
 Beta-alanina | = Beta-Alanine
 Pre-entreno | Preentreno | = Pre-Workout
-Electrolitos | Sales minerales | = Electrolytes
+Electrolitos | = Electrolytes
 Fibra
 Psyllium | Psilio | = Psyllium
 Enzimas digestivas | = Digestive Enzymes

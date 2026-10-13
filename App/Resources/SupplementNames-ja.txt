@@ -54,7 +54,7 @@ DHA・EPA | = Omega-3
 クロレラ
 スピルリナ
 ユーグレナ | ミドリムシ
-酵素 | こうそ | = Digestive Enzymes
+酵素 | こうそ
 納豆キナーゼ | なっとうキナーゼ
 黒酢 | くろず
 にんにく | ニンニク
@@ -77,7 +77,6 @@ DHA・EPA | = Omega-3
 アガリクス
 フコイダン
 ヤマブシタケ | = Lion's Mane
-メラトニン | = Melatonin
 GABA | ギャバ | = GABA
 テアニン | L-テアニン | = L-Theanine
 グリシン
@@ -139,7 +138,7 @@ L-カルニチン | カルニチン
 フォルスコリ
 ブラックジンジャー
 葛の花 | くずのはな
-カテキン | 緑茶カテキン | = Green Tea Extract
+カテキン | 緑茶カテキン
 ポリフェノール
 レスベラトロール | = Resveratrol
 ケルセチン | = Quercetin
@@ -164,7 +163,7 @@ NAC | = NAC
 クエン酸
 クエン酸カルシウム | = Calcium Citrate
 炭酸カルシウム | = Calcium Carbonate
-ビタミンD&K2 | = Vitamin D3 + K2
+ビタミンD&K2
 メチルコバラミン | = Methylcobalamin
 ホスファチジルセリン
 PQQ
@@ -182,7 +181,9 @@ PQQ
 ハトムギ | はとむぎ
 アロエ
 サイリウム | = Psyllium
-ケイ素 | シリカ
+ケイ素
+シリカ
 ゴーヤ
 シナモン
-グルコマンナン | こんにゃく
+グルコマンナン
+こんにゃく

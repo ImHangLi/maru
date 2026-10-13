@@ -85,7 +85,7 @@ Taurin
 BCAA | = BCAA
 EAA | Essentielle Aminosäuren
 Beta-Alanin | = Beta-Alanine
-Pre-Workout | Booster | = Pre-Workout
+Pre-Workout | Pre-Workout-Booster | = Pre-Workout
 Elektrolyte | = Electrolytes
 Kurkuma | = Turmeric
 Curcumin | = Curcumin
@@ -119,10 +119,11 @@ Spirulina
 Chlorella
 Gerstengras
 Weizengras
-Grünes Pulver | = Greens Powder
+Greens-Pulver | = Greens Powder
 Moringa
 Grüntee-Extrakt | = Green Tea Extract
-OPC | Traubenkernextrakt
+OPC
+Traubenkernextrakt
 Resveratrol | = Resveratrol
 Quercetin | = Quercetin
 Astaxanthin
@@ -153,13 +154,13 @@ Multimineral
 Verdauungsenzyme | = Digestive Enzymes
 Bromelain
 Basenpulver
-Schüßler-Salze | Schüssler-Salze
 Acerola
 Sanddorn
 Weißdorn
 Rosskastanie
 Bockshornklee
-Silizium | Kieselerde
+Silizium
+Kieselerde
 Knoblauch
 Schwarzer Knoblauch
 Apfelessig

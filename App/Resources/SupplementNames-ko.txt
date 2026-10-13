@@ -83,7 +83,7 @@ BCAA | = BCAA
 은행잎 추출물
 L-테아닌 | 테아닌 | = L-Theanine
 가바 | = GABA
-락티움
+유단백가수분해물
 아쉬와간다 | = Ashwagandha
 로디올라 | = Rhodiola
 마카
@@ -93,7 +93,8 @@ L-테아닌 | 테아닌 | = L-Theanine
 칼륨 | = Potassium
 구리
 망간
-감마리놀렌산 | 달맞이꽃 종자유 | = Evening Primrose Oil
+감마리놀렌산
+달맞이꽃 종자유 | = Evening Primrose Oil
 아마씨유 | = Flaxseed Oil
 햄프씨드 오일
 MCT 오일
@@ -113,12 +114,12 @@ L-카르니틴 | 카르니틴
 아세틸 L-카르니틴 | = Acetyl-L-Carnitine
 시트룰린
 베타알라닌 | = Beta-Alanine
-부스터 | 프리워크아웃 | = Pre-Workout
+프리워크아웃 | 운동전 부스터 | = Pre-Workout
 전해질 | = Electrolytes
 대두 이소플라본
 석류 추출물
 회화나무 열매 추출물
-피크노제놀
+프랑스해안송껍질추출물
 포도씨 추출물
 나토키나제
 홍국
@@ -130,7 +131,7 @@ L-카르니틴 | 카르니틴
 키토산
 공액리놀레산
 시서스
-잔티젠
+미역 등 복합추출물
 상황버섯
 차가버섯
 영지버섯
@@ -144,7 +145,7 @@ L-카르니틴 | 카르니틴
 산수유
 흑염소 진액
 양배추즙
-녹즙 | = Greens Powder
+녹즙
 임산부 종합비타민
 어린이 종합비타민
 남성 종합비타민 | = Men's Multivitamin
@@ -163,7 +164,7 @@ NAC | = NAC
 산화마그네슘 | = Magnesium Oxide
 구연산칼슘 | = Calcium Citrate
 탄산칼슘 | = Calcium Carbonate
-킬레이트 철분 | = Iron Bisglycinate
+킬레이트 철분
 메틸폴레이트 | 활성엽산 | = Methylfolate
 메틸코발라민 | = Methylcobalamin
 그린커피빈

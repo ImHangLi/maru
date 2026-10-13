@@ -14,6 +14,9 @@ public struct NameIndex: Sendable {
         let compact: String
         /// The words of the name, in the same form.
         let words: [String]
+        /// For a query that ends in a Hangul syllable that the keyboard may still compose: the text without
+        /// the last consonant, and the syllables that can follow it, the ones that start with that consonant.
+        var open: (stem: String, next: ClosedRange<UInt32>)?
 
         init(_ text: String) {
             words = NameIndex.words(of: text)
@@ -22,14 +25,28 @@ public struct NameIndex: Sendable {
 
         /// 0 for a match at the start, 1 for a match at the start of a later word, 2 for a match in a word.
         func rank(of query: Key) -> Int? {
-            if compact.hasPrefix(query.compact) { return 0 }
+            if query.starts(compact[...]) { return 0 }
             if query.words.count > 1, let first = wordsMatch(query.words) { return first == 0 ? 0 : 1 }
             var rest = Substring(compact)
             for word in words.dropLast() {
                 rest = rest.dropFirst(word.count)
-                if rest.hasPrefix(query.compact) { return 1 }
+                if query.starts(rest) { return 1 }
             }
-            return compact.contains(query.compact) ? 2 : nil
+            rest = Substring(compact)
+            while !rest.isEmpty {
+                rest = rest.dropFirst()
+                if query.starts(rest) { return 2 }
+            }
+            return nil
+        }
+
+        /// The query matches at the start of the text: "아톰" starts "아톰…", and also "아토목…", where the
+        /// last consonant starts the next syllable.
+        private func starts(_ text: Substring) -> Bool {
+            if text.hasPrefix(compact) { return true }
+            guard let open, text.hasPrefix(open.stem),
+                  let next = text.dropFirst(open.stem.count).unicodeScalars.first else { return false }
+            return open.next.contains(next.value)
         }
 
         /// Each word of the query starts one word of the name, in the same order: "mag gly" for
@@ -120,8 +137,8 @@ public struct NameIndex: Sendable {
     /// The names to propose for the text in the name field.
     ///
     /// The search ignores case, accents, spaces, hyphens, and dots. It needs two letters or digits, or one
-    /// character of Chinese, Japanese, or Korean. Hiragana matches katakana, and a Hangul syllable that the
-    /// keyboard did not complete yet matches without its last consonant (D070).
+    /// character of Chinese, Japanese, or Korean. Hiragana matches katakana. In a Hangul syllable that the
+    /// keyboard did not complete yet, the last consonant ends that syllable or starts the next one (D070).
     /// A name of the user's own items comes first. Then come the matches at the start of a name, the matches
     /// at the start of a word, and the matches in a word, each in the order of the list.
     /// In one rank, the names of the type that the edit screen shows come first. The type only orders
@@ -133,12 +150,10 @@ public struct NameIndex: Sendable {
         ownNames: [String] = [],
         limit: Int = 4
     ) -> [String] {
-        let query = Key(text)
+        let query = Self.query(text)
         guard query.compact.count >= 2 || query.compact.unicodeScalars.contains(where: { $0.value >= 0x1100 }),
               limit > 0 else { return [] }
-        let found = names(for: query, typed: text, category: category, ownNames: ownNames, limit: limit)
-        guard found.isEmpty, let open = Self.withoutOpenConsonant(query.compact) else { return found }
-        return names(for: Key(open), typed: text, category: category, ownNames: ownNames, limit: limit)
+        return names(for: query, typed: text, category: category, ownNames: ownNames, limit: limit)
     }
 
     private func names(for query: Key, typed text: String, category: ItemCategory, ownNames: [String], limit: Int) -> [String] {
@@ -165,17 +180,57 @@ public struct NameIndex: Sendable {
             .map(\.element.name)
     }
 
-    /// The text while a Korean keyboard composes a syllable: "빝" on the way from "비" to "비타", or "비ㅌ".
-    /// It returns the text without the last consonant, or `nil` when the last character is complete.
-    private static func withoutOpenConsonant(_ text: String) -> String? {
-        guard let last = text.unicodeScalars.last?.value else { return nil }
-        let rest = String(text.dropLast())
-        // A consonant alone, from the compatibility jamo block.
-        if (0x3131...0x314E).contains(last) { return rest.isEmpty ? nil : rest }
-        // A syllable is 0xAC00 + (initial * 21 + vowel) * 28 + final. A final of 0 is no last consonant.
-        guard (0xAC00...0xD7A3).contains(last), (last - 0xAC00) % 28 != 0 else { return nil }
-        return rest + String(UnicodeScalar(last - (last - 0xAC00) % 28)!)
+    /// The query for the typed text. While a Korean keyboard composes a syllable, the last consonant can
+    /// end that syllable or start the next one: "아톰" and "아토ㅁ" both match "아톰…" and "아토목…", but not
+    /// "아토르…". The consonant narrows the result. It never drops out of the query.
+    private static func query(_ text: String) -> Key {
+        var key = Key(text)
+        var scalars = Array(key.compact.unicodeScalars)
+        guard var last = scalars.popLast()?.value else { return key }
+        // A consonant alone, from the compatibility jamo block, after a syllable with no last consonant:
+        // "비ㅌ" is "빝".
+        if let final = finalIndex[last], let previous = scalars.last?.value,
+           (0xAC00...0xD7A3).contains(previous), (previous - 0xAC00) % 28 == 0 {
+            scalars.removeLast()
+            last = previous + final
+            key = Key(String(String.UnicodeScalarView(scalars)) + String(UnicodeScalar(last)!))
+        }
+        let stem: UInt32?
+        let initial: UInt32
+        if let consonant = initialIndex[last], !scalars.isEmpty {
+            // A consonant alone that does not join the syllable before it: "각ㅁ".
+            (stem, initial) = (nil, consonant)
+        } else if (0xAC00...0xD7A3).contains(last), let split = finalSplit[(last - 0xAC00) % 28] {
+            // A syllable is 0xAC00 + (initial * 21 + vowel) * 28 + final. A double final such as "ㄺ" keeps
+            // its first part: "닭" can be "달" and then a syllable that starts with "ㄱ".
+            (stem, initial) = (last - (last - 0xAC00) % 28 + split.rest, split.initial)
+        } else {
+            return key
+        }
+        if let stem { scalars.append(UnicodeScalar(stem)!) }
+        let first = 0xAC00 + initial * 588
+        key.open = (String(String.UnicodeScalarView(scalars)), first...(first + 587))
+        return key
     }
+
+    /// The initial of each consonant of the compatibility jamo block, in the order of the Hangul syllables.
+    private static let initialIndex: [UInt32: UInt32] = Dictionary(uniqueKeysWithValues: zip(
+        [0x3131, 0x3132, 0x3134, 0x3137, 0x3138, 0x3139, 0x3141, 0x3142, 0x3143, 0x3145,
+         0x3146, 0x3147, 0x3148, 0x3149, 0x314A, 0x314B, 0x314C, 0x314D, 0x314E], 0...))
+
+    /// The final of each consonant of the compatibility jamo block that can end a syllable.
+    private static let finalIndex: [UInt32: UInt32] = Dictionary(uniqueKeysWithValues: zip(
+        [0x3131, 0x3132, 0x3133, 0x3134, 0x3135, 0x3136, 0x3137, 0x3139, 0x313A, 0x313B, 0x313C, 0x313D,
+         0x313E, 0x313F, 0x3140, 0x3141, 0x3142, 0x3144, 0x3145, 0x3146, 0x3147, 0x3148, 0x314A, 0x314B,
+         0x314C, 0x314D, 0x314E], 1...))
+
+    /// For each final: the final that stays on the syllable, and the initial that starts the next syllable.
+    private static let finalSplit: [UInt32: (rest: UInt32, initial: UInt32)] = [
+        1: (0, 0), 2: (0, 1), 3: (1, 9), 4: (0, 2), 5: (4, 12), 6: (4, 18), 7: (0, 3), 8: (0, 5),
+        9: (8, 0), 10: (8, 6), 11: (8, 7), 12: (8, 9), 13: (8, 16), 14: (8, 17), 15: (8, 18),
+        16: (0, 6), 17: (0, 7), 18: (17, 9), 19: (0, 9), 20: (0, 10), 21: (0, 11), 22: (0, 12),
+        23: (0, 14), 24: (0, 15), 25: (0, 16), 26: (0, 17), 27: (0, 18),
+    ]
 
     /// The words of a text in the form that the search compares: lowercase, no accent, full-width letters as
     /// plain letters, and hiragana as katakana. A voiced kana keeps its mark: "バ" is not "ハ".
