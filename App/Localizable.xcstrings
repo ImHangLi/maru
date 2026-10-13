@@ -12508,41 +12508,6 @@
         }
       }
     },
-    "Tips are not available now." : {
-      "comment" : "Settings: the footer of the tips when the store has no tip to show.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trinkgelder sind gerade nicht verfügbar."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las propinas no están disponibles ahora."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "現在、チップは利用できません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지금은 후원할 수 없어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂时无法赞赏。"
-          }
-        }
-      }
-    },
     "A tip is optional and unlocks nothing." : {
       "comment" : "Settings: the footer of the tips in the normal state.",
       "localizations" : {
