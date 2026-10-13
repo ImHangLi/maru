@@ -274,6 +274,31 @@ def phrases(text, load=True):
                    for i, part in enumerate(parts))
 
 
+# Response headers for Cloudflare. Pictures change rarely, so a browser keeps them for a week and checks again
+# after that. The style sheet and the script keep their names between releases, so they stay fresh for one hour.
+# The pages keep the default: a browser asks each time. HSTS tells a browser to use HTTPS for this site.
+HEADERS = """/*
+  Strict-Transport-Security: max-age=31536000
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/shots/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/badges/*
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/icon.png
+  Cache-Control: public, max-age=604800, stale-while-revalidate=86400
+
+/style.css
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+
+/site.js
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+"""
+
+
 def layout(code, page, title, desc, main, head=""):
     s = STRINGS[code]
     f = s["footer"]
@@ -552,6 +577,7 @@ def main():
     (SITE / "404.html").write_text(not_found(), "utf-8")
     (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
     (SITE / "_redirects").write_text(redirects(), "utf-8")
+    (SITE / "_headers").write_text(HEADERS, "utf-8")
     (SITE / "llms.txt").write_text(llms(), "utf-8")
     print(f"built {len(LANGS) * len(PAGES)} pages")
 
