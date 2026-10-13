@@ -355,16 +355,13 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 }
 .badge img { display: block; }
 
-/* The download unit: the app icon and name, Apple's badge, and one line that says where the app runs.
-   The icon is as high as the badge. The gaps are larger than the clear space of the badge. */
-.get { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-4) var(--space-5); }
+/* The download unit: Apple's badge, and under it a quiet row of the devices that the app runs on.
+   The row starts at the left edge of the badge on a wide screen, and is centered with it on a narrow one.
+   The gap is larger than the clear space of the badge. */
+.get { display: flex; flex-direction: column; align-items: center; gap: var(--space-4); }
 .get .badge { margin: 0; }
-.get-app { display: flex; align-items: center; gap: var(--space-3); text-align: left; }
-.get-icon { width: var(--badge-page); height: var(--badge-page); border-radius: var(--radius-icon); box-shadow: var(--shadow-card); }
-.get-name { margin: 0; display: grid; line-height: var(--lh-tight); }
-.get-name strong { font-size: var(--fs-lg); font-weight: var(--fw-semibold); letter-spacing: var(--track-tight); }
-.get-name span { font-size: var(--fs-sm); color: var(--text-2); }
-.get-runs { flex-basis: 100%; margin: 0; display: flex; align-items: center; justify-content: center; gap: var(--space-2); font-size: var(--fs-sm); color: var(--text-2); }
+.get-devices { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-5); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); color: var(--text-2); }
+.get-devices li { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
 
 /* Layout */
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
@@ -480,7 +477,8 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   .hero { text-align: left; padding-top: var(--space-8); }
   .hero-grid { grid-template-columns: 1.3fr 0.7fr; align-items: center; }
   .hero-copy { align-items: flex-start; }
-  .get, .get-runs { justify-content: flex-start; }
+  .get { align-items: flex-start; }
+  .get-devices { justify-content: flex-start; }
 }
 /* A narrow screen has no room for an island. The bar is the full width, with no round corners. */
 @media (max-width: 419px) {
@@ -493,6 +491,8 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   .nav-inner { padding: 0 var(--space-2) 0 var(--space-3); }
   .nav-links { gap: 0; }
   .bar-cta { padding: 0 var(--space-3); margin-left: var(--space-1); }
+  .get-devices { column-gap: var(--space-3); }
+  .get-devices li { gap: var(--space-1); }
 }
 
 /* Reduced motion: no movement, no blur, and each state shows at once. */

@@ -13,7 +13,7 @@
   "store": {
     "badge_alt": "在 App Store 下载",
     "download": "下载",
-    "runs": "适用于 iPhone，需要 iOS 17 或更高版本"
+    "devices": "适用设备"
   },
   "shots": {
     "today": {

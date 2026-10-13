@@ -33,7 +33,9 @@ The hero has Apple's "Download on the App Store" badge in the language of the pa
 
 `STORE_URL` in `build.py` is the one link of the badge, of the "Download" button in the top bar, and of the text link at the end of the home page. It also sets the Smart App Banner. The link opens a store page only when the app is on sale. Do not deploy the site before that.
 
-The badge is in the hero only, because Apple asks for one badge in a layout. It is a part of the download unit: the app icon and the name, the badge, and one line that says where the app runs (iPhone, iOS 17 or later, from `project.yml`). Name no other device there. The top bar has a plain "Download" button in its own style, with no Apple logo, and the end of the home page has a text link.
+The badge is in the hero only, because Apple asks for one badge in a layout. It is the download unit together with the row of devices under it.
+
+`DEVICES` in `build.py` is the list of devices that the row names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **Before a deploy, the list must match the devices that the released app supports.** It is all three now, for the preview, and the app on `main` runs on iPhone only (`project.yml`, device family 1). The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list too. The top bar has a plain "Download" button in its own style, with no Apple logo, and the end of the home page has a text link.
 
 ## Top bar
 
