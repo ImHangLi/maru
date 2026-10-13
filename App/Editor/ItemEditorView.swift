@@ -26,6 +26,7 @@ struct ItemEditorView: View {
     @State private var addsTime = false
     @State private var showsRestored: Bool
     @Environment(\.openURL) private var openURL
+    @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     @FocusState private var nameIsFocused: Bool
     /// The built-in name lists. They load when this screen opens, not at launch (spec 9).
     @State private var names: NameIndex?
@@ -214,6 +215,7 @@ struct ItemEditorView: View {
                         HStack(alignment: .firstTextBaseline, spacing: 6) {
                             Text("Scan Label")
                                 .fontWeight(.semibold)
+                                .rowText()
                             Image(systemName: "sparkles")
                                 .imageScale(.small)
                                 .accessibilityHidden(true)
@@ -249,6 +251,7 @@ struct ItemEditorView: View {
                     draft.name = name
                     nameIsFocused = false
                 }
+                .rowText()
                 .accessibilityHint(Text("Fills the name."))
             }
             Picker("Type", selection: $draft.category) {
@@ -270,16 +273,18 @@ struct ItemEditorView: View {
         ) {
             Picker("Form", selection: chosenForm) {
                 ForEach(ItemForm.allCases, id: \.self) { form in
-                    Label { Text(form.title) } icon: { form.image }
+                    Label { Text(form.title) } icon: { form.menuImage(in: appColor.tint) }
                         .tag(form)
                 }
             }
             .pickerStyle(.menu)
+            .tint(Color.primary)
             if let form = proposedForm {
                 Button(form.useTitle) {
                     draft.form = form
                     formIsChosen = true
                 }
+                .rowText()
             }
             Picker("Color", selection: $draft.color) {
                 ForEach(ItemColor.allCases, id: \.self) { color in
@@ -288,6 +293,7 @@ struct ItemEditorView: View {
                 }
             }
             .pickerStyle(.menu)
+            .tint(Color.primary)
         }
     }
 
@@ -317,6 +323,7 @@ struct ItemEditorView: View {
                 }
             }
             Button("Add a Time", systemImage: "plus") { addsTime = true }
+                .labelStyle(RowLabelStyle())
             if let parts = candidates?.times, !parts.isEmpty {
                 CandidateRow(candidates: parts) { part in
                     Text(part.title)
@@ -372,6 +379,7 @@ struct ItemEditorView: View {
                 Text("On an empty stomach").tag(ItemDraft.Note.emptyStomach)
                 Text("My own note").tag(ItemDraft.Note.custom)
             }
+            .tint(Color.primary)
             if draft.note == .custom {
                 TextField("Your note", text: $draft.noteText, axis: .vertical)
             }
@@ -525,6 +533,8 @@ private struct CandidateRow<Candidate: Hashable>: View {
             Button { choose(candidate) } label: { title(candidate) }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                // A gray capsule with the text color, not the app tint (D076).
+                .tint(Color.primary)
                 .accessibilityHint(hint(candidate))
         }
     }
@@ -760,6 +770,7 @@ private struct DayCountPicker<Label: View>: View {
                 label(value).tag(Int?.some(value))
             }
         }
+        .tint(Color.primary)
     }
 }
 

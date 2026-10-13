@@ -247,47 +247,6 @@
         }
       }
     },
-    "This is a test from Maru." : {
-      "comment" : "The text of the test notification from settings.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das ist ein Test von Maru."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This is a test from Maru."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esta es una prueba de Maru."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruからのテスト通知です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru의 테스트 알림이에요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这是来自 Maru 的测试通知。"
-          }
-        }
-      }
-    },
     "Time to take" : {
       "comment" : "The title of a reminder.",
       "localizations" : {

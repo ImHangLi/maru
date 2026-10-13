@@ -90,8 +90,6 @@ actor AppStore {
     /// Runs the reminder engine, then the follow-ups. Keep this order: a run can remove follow-ups to make room
     /// under the system limit, and the refresh sets them again (spec 8.4).
     ///
-    /// A pending test notification is cancelled first, so it never takes the room of a reminder.
-    ///
     /// The run waits for the notification updates before it, so no two updates overlap.
     /// It returns the follow-up outcome too: `nil` when the follow-up refresh failed.
     func reconcileReminders(
@@ -102,7 +100,6 @@ actor AppStore {
         let previous = updates
         let run = Task { () throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) in
             await previous?.value
-            await TestNotification.cancel()
             let outcome = try await self.reminderEngine().reconcile(
                 at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
             )
@@ -150,22 +147,10 @@ actor AppStore {
         let previous = updates
         let run = Task {
             await previous?.value
-            await TestNotification.cancel()
             _ = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
         }
         updates = run
         await run.value
-    }
-
-    /// Sends the test notification of settings in the notification queue, so no engine run overlaps it.
-    func sendTestNotification() async -> TestNotification.Result {
-        let previous = updates
-        let run = Task {
-            await previous?.value
-            return await TestNotification.send()
-        }
-        updates = Task { _ = await run.value }
-        return await run.value
     }
 
     /// Generates the occurrences around `now`, and builds the projection of the two tabs (spec 9).

@@ -21,6 +21,7 @@ struct FeedbackSection: View {
                     openURL(url)
                 }
             }
+            .rowText()
         } footer: {
             Text("The form opens a web page, and we read every message.")
         }

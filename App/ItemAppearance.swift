@@ -51,6 +51,14 @@ extension ItemForm {
         Image(self == .unknown ? "form-jar" : "form-\(rawValue)")
     }
 
+    /// The icon in one color for a system menu. A menu draws a template image in the color of its text,
+    /// so this image keeps its own color (D076).
+    func menuImage(in color: Color) -> Image {
+        let name = self == .unknown ? "form-jar" : "form-\(rawValue)"
+        let icon = UIImage(named: name) ?? UIImage()
+        return Image(uiImage: icon.withTintColor(UIColor(color), renderingMode: .alwaysOriginal))
+    }
+
     var title: LocalizedStringKey {
         switch self {
         case .capsule: "Capsule"

@@ -16,11 +16,6 @@ struct SettingsState {
     var isPresented = false
     /// The permission at the last read. `nil` before the first read, so no screen shows a guess.
     var permission: NotificationPermission?
-    var test = TestState.idle
-
-    enum TestState: Equatable {
-        case idle, sending, sent, notAllowed, noRoom, failed
-    }
 }
 
 extension AppModel {
@@ -30,7 +25,6 @@ extension AppModel {
     }
 
     func openSettings() {
-        settings.test = .idle
         settings.isPresented = true
         readNotificationPermission()
     }
@@ -74,28 +68,6 @@ extension AppModel {
             var told = Set<ReminderStatus>()
             for (id, status) in reminderStatus where status != before[id] && told.insert(status).inserted {
                 report(status, of: id, removes: false)
-            }
-        }
-    }
-
-    /// Sends one neutral notification in a few seconds. It changes no reminder, so no refresh follows.
-    func sendTestNotification() {
-        guard settings.test != .sending else { return }
-        settings.test = .sending
-        Task { [store] in
-            let result = await store.sendTestNotification()
-            switch result {
-            case .sent:
-                settings.test = .sent
-            case .notAllowed:
-                // Say "off" only after the permission read confirms it.
-                let permission = await NotificationPermission.current()
-                settings.permission = permission
-                settings.test = permission == .denied ? .notAllowed : .failed
-            case .noRoom:
-                settings.test = .noRoom
-            case .failed:
-                settings.test = .failed
             }
         }
     }

@@ -132,8 +132,9 @@ public struct FollowUpPlan: Hashable, Sendable {
     /// Follow-ups come for the slot times of the next seven days. The app sets them again at each run,
     /// so they stop when the app does not run for seven days. The series reminders continue.
     public static let days = 7
-    /// The requests of the system limit that the follow-ups never use. One is for the test notification
-    /// of settings. One lets the series engine add a new request before it removes the old one (spec 8.4).
+    /// The requests of the system limit that the follow-ups never use. One lets the series engine add a new
+    /// request before it removes the old one (spec 8.4). One is spare: it was for the test notification of
+    /// settings, which D076 removed.
     public static let reserve = 2
     /// The follow-ups of a dose stop at this time of the next day at the latest (D039).
     /// One hour after midnight: a dose late in the evening gets follow-ups, and a dose at bedtime

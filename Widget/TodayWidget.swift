@@ -2,7 +2,7 @@ import MaruCore
 import SwiftUI
 import WidgetKit
 
-/// "Today": counts and capsules, no names, no buttons. A tap opens Today at the slot (D048).
+/// "Today": counts, a progress bar, and capsules, no names, no buttons. A tap opens Today at the slot (D048).
 struct TodayWidget: Widget {
     static let kind = "com.imhangli.maru.today"
 
@@ -101,13 +101,15 @@ private struct MediumToday: View {
 
     var body: some View {
         let current = day.slotAtClock(at: date)?.part
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 0) {
             HStack {
-                Text("Today").font(.headline)
+                // The bar says "Today" and the count to VoiceOver.
+                Text("Today").font(.headline).accessibilityHidden(true)
                 Spacer()
-                Text("\(day.takenCount) of \(day.doses.count)").font(.headline).foregroundStyle(.secondary)
-                    .accessibilityLabel(Text("\(day.takenCount) of \(day.doses.count) taken"))
+                DayProgressBar(taken: day.takenCount, total: day.doses.count, tint: tint)
             }
+            // The columns end at the bottom edge, so the space over the title equals the space under the capsules.
+            Spacer(minLength: 10)
             HStack(alignment: .top, spacing: 8) {
                 ForEach(day.slots) { slot in
                     Link(destination: AppGroup.todayURL(slot.part)) {
@@ -128,10 +130,40 @@ private struct MediumToday: View {
                     }
                 }
             }
-            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .widgetURL(AppGroup.todayURL(nil))
+    }
+}
+
+/// The share of the doses of today that are taken, as one bar with no text (D076).
+///
+/// The track is the system fill, a gray with an alpha value, so it stays quiet in the light, dark, tinted, and
+/// clear looks. The fill is the app tint, and it takes the accent of a tinted Home Screen. VoiceOver reads the count.
+private struct DayProgressBar: View {
+    let taken: Int
+    let total: Int
+    let tint: Color
+
+    private let width: CGFloat = 96
+    private let height: CGFloat = 8
+
+    var body: some View {
+        Capsule()
+            .fill(Color(.systemFill))
+            .frame(width: width, height: height)
+            .overlay(alignment: .leading) {
+                if taken > 0, total > 0 {
+                    // At least a circle, so one taken dose of many shows.
+                    Capsule()
+                        .fill(tint)
+                        .frame(width: max(height, width * CGFloat(taken) / CGFloat(total)), height: height)
+                        .widgetAccentable()
+                }
+            }
+            .accessibilityElement()
+            .accessibilityLabel(Text("Today"))
+            .accessibilityValue(Text("\(taken) of \(total) taken"))
     }
 }
 
