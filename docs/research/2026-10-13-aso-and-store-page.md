@@ -386,16 +386,16 @@ Add the sample launch arguments only if the reviewer needs data. A reviewer cann
 
 ## 9. Privacy label
 
-The answers match `App/PrivacyInfo.xcprivacy` and `PRIVACY.md`.
+The data types match `App/PrivacyInfo.xcprivacy` and `PRIVACY.md`. The manifest still sets `NSPrivacyCollectedDataTypeLinked` to false for each type. Change it to true before the submission, so that it agrees with the decision below.
 
 "Do you or your third-party partners collect data from this app?" Yes.
 
 | Data type | Collected | Purpose | Linked to the user | Used for tracking | What it is |
 |---|---|---|---|---|---|
-| Identifiers › Device ID | Yes | Analytics | No | No | The random install ID |
-| Usage Data › Product Interaction | Yes | Analytics | No | No | The usage events |
-| Diagnostics › Other Diagnostic Data | Yes | Analytics | No | No | The error codes, the app version, and the major iOS version |
-| Other Data › Other Data Types | Yes | Analytics | No | No | The region setting as a two-letter code (D064) |
+| Identifiers › Device ID | Yes | Analytics | Yes | No | The random install ID |
+| Usage Data › Product Interaction | Yes | Analytics | Yes | No | The usage events |
+| Diagnostics › Other Diagnostic Data | Yes | Analytics | Yes | No | The error codes, the app version, and the major iOS version |
+| Other Data › Other Data Types | Yes | Analytics | Yes | No | The region setting as a two-letter code (D064) |
 
 Not collected, and so not selected:
 
@@ -409,7 +409,7 @@ Not collected, and so not selected:
 | Identifiers › User ID | No account |
 | Sensitive Info, Financial Info, Browsing History, Search History | None |
 
-**Open question for the maintainer (not decided):** two reviews say that the random install ID makes the analytics data "Linked to the user: Yes" under Apple's definition, because the ID stays the same over time. The answers above stay as they are until the maintainer decides.
+**Decision of the maintainer (2026-10-13):** "Linked to the user" is Yes for every analytics data type. The random install ID stays the same over time, so Apple's definition counts the data as linked. "Used for tracking" stays No.
 
 **Before the submission:** the privacy policy URL and the support URL must be live in every language. Both return 404 today.
 
