@@ -217,18 +217,16 @@ private struct ScheduleSection: View {
                 }
             }
             LabeledContent("Days") {
-                Text(
-                    verbatim: SchedulePreview.days(
-                        version.weeklyRule.weekdays, everyOtherDay: version.everyOtherDayFrom != nil
-                    )
-                )
+                Text(verbatim: SchedulePreview.days(of: version))
             }
             if let nextDose {
                 LabeledContent("Next Dose") {
                     switch nextDose.daysFromToday {
                     case 0: Text("Today")
                     case 1: Text("Tomorrow")
-                    default: Text(verbatim: weekday(nextDose.date))
+                    case 2...6: Text(verbatim: weekday(nextDose.date))
+                    // After a pause, a weekday alone does not tell the week.
+                    default: Text(verbatim: nextDose.date.shortLabel)
                     }
                 }
             }
@@ -279,8 +277,9 @@ private struct ScheduleSection: View {
         case .tooMany?: "The plan has too many times for iPhone."
         case .notSet?: "Maru tries again when you open it."
         case .notConfirmed?: "Maru checks again when you open it."
-        // iPhone has no repeating reminder for every second day, so "On" has a limit here. The page states it (D036).
-        case .set? where schedule?.versions.last?.everyOtherDayFrom != nil:
+        // iPhone has no repeating reminder for a plan that counts days, so "On" has a limit here.
+        // The page states it (D036, D065).
+        case .set? where schedule?.versions.last?.dayCycle != nil:
             "Maru sets the reminders of the next 7 dose days each time you open it."
         case .set?, .off?, .notAsked?, nil: nil
         }

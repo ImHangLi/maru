@@ -385,7 +385,7 @@ Owner decisions after the study in `docs/research/2026-10-11-user-feedback-cn.md
 - The first release answers the common questions directly, as a FAQ: `docs/faq.md`. The owner's words for the product: one single, separate, easy place for this job. A record is simple. A missed record is fine. The app exists to lower the mental load.
 - Do not build the app on the maintainer's Mac. CI is the build check. One local device build is acceptable for an install on the maintainer's iPhone.
 
-## D036 · 2026-10-11 · Every other day: rule and reminders (two notifications at one time replaced by D047)
+## D036 · 2026-10-11 · Every other day: rule and reminders (two notifications at one time replaced by D047, "no cycles" and "no date picker" replaced by D065)
 
 Agent decision, under the owner decision D035. It changes spec 2.1, 8.1, 8.2, 8.3, 8.5, and 15 (new acceptance ID T51, and a note on T22).
 
@@ -1102,6 +1102,56 @@ Maintainer decision, with agent detail. It adds one field to the events of D052.
 - The maintainer does not register for GST for now, so supporter tips may not be for sale in the Australian storefront. Check the state of the Paid Apps Agreement before the first release.
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody sent an event to the PostHog project, and nobody checked the packets (T42). The "Discard client IP data" setting is the report of the maintainer.
+
+## D065 · 2026-10-13 · Every few days, and days on and off
+
+Maintainer decision on the direction, with agent detail. The maintainer approved more schedule types on 2026-10-13: a cycle with a pause, and "every N days" only if it costs little. The feature must not delay the first release. If it is not ready, it ships in 1.1. It changes spec 1, 2.1, 8.1, 8.2, 8.3, 8.5, and 15 (new acceptance ID T52, and a note on T22). It replaces two lines of D036: "Only this rule. No cycles", and "no date picker".
+
+The rule:
+
+- One rule serves the three schedules. A schedule version can have a day cycle: a start date, a number of days with a dose (`daysOn`), and a number of days with none (`daysOff`). A date is due when it is on or after the start date and its count of calendar days from the start date, modulo `daysOn + daysOff`, is less than `daysOn`.
+- Every other day is 1 and 1. Every N days is 1 and N - 1. 21 days on and 7 days off is 21 and 7. The every-other-day rule of D036 is this rule with 1 and 1, so its dates did not change.
+- The other rules of D036 stay. The rule counts calendar dates in the calendar and the time zone of the plan, so a clock change, a time zone change, a missed dose, and a skip do not move the rhythm. An edit of a time or of the amount keeps the cycle. A change of a number or of the first day makes a new version from today. A day of the pause has no occurrence, so the item is not on Today, History has no "No record" row for it, and the widgets do not show it.
+- The start date can be before today, for a cycle that the user already started.
+- Hourly intervals and changing amounts stay out of scope (spec 1).
+
+The database:
+
+- Migration `v5` gives the column `scheduleVersion.everyOtherDayFrom` the name `cycleStart`, and adds `cycleDaysOn` and `cycleDaysOff`. A version with a start date gets 1 and 1. A version with no start date keeps `NULL` in the three columns. The store loads all three values or none, and any other row is invalid data.
+- The migration only renames, adds, and fills the new columns. It rebuilds no table and deletes no row (spec 7.3).
+- A backup from before `v5` restores: the restore applies `v5` to its copy of the backup, as it does for each later migration (D040). The backup format version stays 1.
+- The record export did not change. It has one line for each dose, and a day of the pause has no dose.
+
+The reminders:
+
+- No second mechanism. A plan with a day cycle gets the dated requests of D036: one request for each of its next 7 due dates at each of its times, set again at each run. The budget of 48, the order of the budget, the "all 7 or none" rule, the shared request of D047, and the tap resolver did not change. The plan now steps one day at a time and keeps the due dates, in place of a step of two days.
+- A day of the pause is not a due date. It gets no request, so no notification names the item on that day.
+- The limit is the same text as D036: "Maru sets the reminders of the next 7 dose days each time you open it." For every other day the 7 due dates cover 13 days. For a plan with a pause they can be 7 days in a row. So its reminders can stop after one week with no open of Maru.
+
+The screens:
+
+- The repeat page has four choices in the first section: "Every Day", "Every Other Day", "Every Few Days", and "Days On and Off".
+- "Every Few Days" has a menu "Interval" with 3 to 30 days. Two days is "Every Other Day", so the menu does not have it. "Days On and Off" has two menus, "Days On" and "Days Off", with 1 to 99. Each menu starts on "Choose". The app picks no number (spec 2.1). Save stays off, and the plan line says "Choose the number of days.", until the user chooses.
+- The first day of the two new choices: "Starting Today", "Starting Tomorrow", or a system date picker "Another Date". The app picks no first day. Until the user chooses, the date picker shows today, the draft has no date, the footer says "Choose the first day.", and Save stays off. A change of the choice in the first section clears the numbers and the first day.
+- Every other day keeps its two first-day choices and no date picker (D036), because it has only two possible rhythms.
+- The plan line names the first day as a date, also a past one, because the first day decides which days have a dose: "21 days on, 7 days off at 8:00 AM, from Tue, Oct 13, with no end date".
+- The item detail shows the rule under "Days", and "Next Dose" for each plan with a day cycle. "Next Dose" shows a date when the dose is 7 or more days away, because a weekday alone does not tell the week after a pause.
+- A stored cycle of 1 day on and 2 to 29 days off opens as "Every Few Days". The two forms give the same dates.
+- A draft file from before this change keeps its rule: the file names the cycle with the old key, and a cycle with no kind is every other day.
+- A save keeps the stored cycle only when the choice gives the same due dates from today on. A first day that the user moves to a later date is a new version from today, also when the date is in the rhythm of the stored cycle: the days before it then have no dose. This is from the review, which found that such a save kept the old first day.
+- The numbers of a cycle are 1 to 99, in the domain (`DayCycle.dayCounts`), in the checks of `v5`, and in the menus. Stored data or a backup with another number does not load, so a restore refuses the file before it replaces the data. This is from the review: a backup with a very large number passed, and the next due calculation overflowed.
+
+Rejected:
+
+- A second column set or a second rule type for cycles. One rule with two numbers gives all three schedules, and one migration.
+- More than 7 due dates for a plan with a pause. Each time of such a plan would use more of the 48 requests (D036).
+- A stepper or a number field for the days. A stepper needs a start value, which is a default. A number field with the number pad has no Return key, and nobody can check its commit behavior without a display.
+- "Every Few Days" from 2 days. It would give two choices for the same plan.
+- A change of `site/compare.html`, which says that Maru has no cycles. The site is published text, and it must follow the build that the store has.
+
+Tests (D016): four new tests. The rhythm and the pause across a clock change, the dated requests around a pause, the migration with a restore of an older backup, and the refusal of a backup with a number outside the limits.
+
+Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
 ## D068 · 2026-10-13 · Copy review: text states the record, not the intake
 

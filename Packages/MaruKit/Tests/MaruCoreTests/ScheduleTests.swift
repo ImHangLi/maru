@@ -53,6 +53,17 @@ struct ScheduleTests {
         #expect(schedule.slots.map(\.id) == [morning, evening, noon])
     }
 
+    /// A save keeps the stored cycle only when its due dates from today on stay the same (D065, spec 2).
+    @Test func aMovedFirstDayKeepsTheStoredCycleOnlyWithTheSameDueDates() {
+        let today = Fixtures.date(2026, 10, 13)
+        let past = Fixtures.cycle(from: Fixtures.date(2026, 10, 1), on: 3, off: 4)
+        #expect(Fixtures.cycle(from: Fixtures.date(2026, 10, 8), on: 3, off: 4).hasSameDueDates(as: past, from: today))
+        #expect(!Fixtures.cycle(from: Fixtures.date(2026, 10, 29), on: 3, off: 4).hasSameDueDates(as: past, from: today))
+        // A future first day moved one cycle later drops the doses on October 20 to 22.
+        let future = Fixtures.cycle(from: Fixtures.date(2026, 10, 20), on: 3, off: 4)
+        #expect(!Fixtures.cycle(from: Fixtures.date(2026, 10, 27), on: 3, off: 4).hasSameDueDates(as: future, from: today))
+    }
+
     @Test func versionRejectsDuplicateOrMissingSlots() {
         let slot = ScheduleSlotID()
         #expect(throws: ScheduleError.noSlotTimes) {

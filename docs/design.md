@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, and D058 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, and D065 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -37,7 +37,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A reminder for one item has one action, "Taken". It records with no open of Maru. When it can not record, a notification says "Not recorded" (spec §8.3, D034).
 - The item detail shows the reminder state in the plan: "On", "Not Set", or "Not Confirmed", and the reason in the footer (spec §8.1, T03).
 - The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses as three labelled values with space between them and no separator: "Taken: 5", "Skipped: 1", "No record: 1". They stand one under the other when the row is too narrow (D068). An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
-- For a plan of every other day, "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036).
+- For a plan that counts days (every other day, every few days, or days on and off), "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036, D065).
 
 ## Today
 
@@ -229,10 +229,11 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - Smart completion (D043): when the name of a supplement is a name of the built-in list, in full, the form changes to the form of the scanned label, else to the usual form. This happens only while the user did not choose a form on the screen. After that, a different form shows as a row under the form menu, for example "Use Softgel". A medication gets only the scanned form, as that row.
 - Under the amount field, the "Add a Time" button, and the note menu, a known supplement shows candidates as small bordered system buttons in one row: for example "1 softgel" and "2 softgels", "Evening", and "With food". A row that does not fit becomes a column. A tap fills the field or adds the time. Nothing fills before a tap. The footer under the note says "Suggestions come from common labels. Check your own label." The candidates come and go with the layout motion. A change of the type to "Medication" removes them at once.
 - "Add a Time" opens a sheet with a time wheel. The time counts only after "Add" (spec §2.1). For the first time of a supplement the wheel starts at a time that the user already confirmed for a supplement, else at 8:00.
-- "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day" and "Every Other Day". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and it has no date picker (D036).
-- The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date".
+- "Repeat" opens a list with check marks, as in Clock. The first section has "Every Day", "Every Other Day", "Every Few Days", and "Days On and Off". Under it are the seven days, or "Starting Today" and "Starting Tomorrow" for every other day. Maru picks no first day, and every other day has no date picker (D036).
+- "Every Few Days" has a menu "Interval" from "Every 3 days" to "Every 30 days". "Days On and Off" has two menus, "Days On" and "Days Off", from 1 to 99. Each menu starts on "Choose", and Maru picks no number. Under the menus are "Starting Today", "Starting Tomorrow", and a system date picker "Another Date" for any other first day, also a day in the past. The footers say "Choose the number of days." and "Choose the first day." until the user chooses (D065).
+- The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date". The plan line of the other two names the first day as a date: "21 days on, 7 days off at 8:00 AM, from Tue, Oct 13, with no end date".
 - The last section is "Photo (Optional)" (D056). The rows are "Choose Photo", "Take Photo", and "Remove Photo", with a preview of 56 points above them when the item has a photo. After a pick, a row with a progress view says "Removing the background…". When Maru finds one subject, the switch "Remove Background" shows, and it starts on. With no clear subject, the footer says that the photo stays as it is. Save is never off because of the photo.
-- The item detail shows "Every other day" under "Days", and a row "Next Dose" with "Today", "Tomorrow", or a weekday (D036).
+- The item detail shows "Every other day", "Every 3 days", or "21 days on, 7 days off" under "Days", and a row "Next Dose" with "Today", "Tomorrow", a weekday, or a date when the dose is 7 or more days away (D036, D065).
 
 ## Text and accessibility
 

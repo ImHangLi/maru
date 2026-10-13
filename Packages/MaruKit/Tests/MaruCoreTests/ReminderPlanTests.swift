@@ -78,7 +78,7 @@ struct ReminderPlanTests {
         let items = [Fixtures.item(name: "Zinc"), Fixtures.item(name: "Iron")]
         let daily = Fixtures.schedule(itemID: items[0].id, times: [Fixtures.time(8)])
         let alternate = Fixtures.schedule(
-            itemID: items[1].id, times: [Fixtures.time(8)], everyOtherDayFrom: Fixtures.date(2026, 3, 3)
+            itemID: items[1].id, times: [Fixtures.time(8)], dayCycle: Fixtures.cycle(from: Fixtures.date(2026, 3, 3))
         )
         // 08:00 on 2 March in Shanghai, a day with no dose of the second item.
         let plan = compile(items: items, schedules: [alternate])
@@ -127,6 +127,22 @@ struct ReminderPlanTests {
         }
     }
 
+    /// The dated requests of a cycle are for its days with a dose. So no request names the item on a day
+    /// of the pause, and the seven requests continue after the pause (D065, T52).
+    @Test func cycleGivesDatedRequestsOnlyForItsDaysOn() {
+        let item = Fixtures.item(name: "Iron")
+        // 3 days on and 4 days off from 1 March. The run is at 08:00 on 2 March in Shanghai.
+        let cycle = Fixtures.schedule(
+            itemID: item.id, times: [Fixtures.time(8)], dayCycle: Fixtures.cycle(from: Fixtures.date(2026, 3, 1), on: 3, off: 4)
+        )
+        let plan = compile(items: [item], schedules: [cycle])
+        #expect(
+            plan.requests.map { $0.userInfo[ReminderRequest.dueDateKey] }
+                == [3, 8, 9, 10, 15, 16, 17].map { String(format: "2026-03-%02d", $0) }
+        )
+        #expect(plan.needs[cycle.id] == .requests(Set(plan.requests.map(\.identifier))))
+    }
+
     /// A record before the time takes today out of the repeating request, and an item that is due on some days
     /// joins the one request of its time (D047). 2 March 2026 is a Monday, and the run is at 08:00.
     @Test func recordBeforeTheTimeAndEveryOtherDayItemKeepOneRequestForEachFireTime() throws {
@@ -161,7 +177,7 @@ struct ReminderPlanTests {
 
         // A daily item and an every-other-day item at one time: each date has one dated request, and a day names
         // an every-other-day item only when it is due.
-        let alternate = Fixtures.schedule(itemID: items[1].id, times: [Fixtures.time(9)], everyOtherDayFrom: Fixtures.date(2026, 3, 2))
+        let alternate = Fixtures.schedule(itemID: items[1].id, times: [Fixtures.time(9)], dayCycle: Fixtures.cycle(from: Fixtures.date(2026, 3, 2)))
         let mixed = plan([both[0], alternate]).requests
         #expect(mixed.count == 14)
         #expect(Array(mixed.prefix(3).map { $0.content.names ?? [] }) == [["Iron", "Zinc"], ["Iron"], ["Iron", "Zinc"]])
