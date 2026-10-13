@@ -161,6 +161,21 @@ struct GenerationTests {
         try await store.expectConsistent(after, events: [taken], status: .taken)
     }
 
+    /// A record of the widget or the Watch reads the clock in its transaction. A request from before midnight
+    /// that gets the writer after it records nothing for yesterday (D065).
+    @Test func recordInTheCurrentPlanReadsTheClockInTheTransaction() async throws {
+        let (store, _, _, _, evening) = try await prepare()
+        let dose = try #require(try await generate(store, at: late).first { $0.slotID == evening && $0.plannedDate == today })
+        let afterMidnight = Fixtures.instant("2026-03-01T16:01:00Z")
+        await #expect(throws: RecordFailure.versionChanged) {
+            try await store.record(
+                [(Fixtures.event(for: dose, .taken), dose.scheduleVersionID)],
+                currentPlan: { OccurrenceGeneration(now: afterMidnight, deviceTimeZone: Fixtures.shanghai) }
+            )
+        }
+        #expect(try await store.count("intakeEvent") == 0)
+    }
+
     @Test func occurrenceWithAnUndoneRecordKeepsItsPlan() async throws {
         var (store, _, schedule, morning, _) = try await prepare()
         let before = try #require(try await generate(store, at: early).first { $0.slotID == morning && $0.plannedDate == today })

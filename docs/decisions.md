@@ -1155,8 +1155,8 @@ Not verified: no build on this Mac. Nobody ran the Watch app on a Watch or in a 
 Maintainer decision on 2026-10-13, with agent detail. It replaces the file protection level of D014 and D048, and the unlock rule of D034 for an action on the Watch. It changes spec 10.
 
 - Reason: the user wears the Watch while the iPhone is locked in a pocket. With complete protection, a record from the Watch app (D065) and the "Taken" action of a reminder on the Watch could not write then.
-- Change: the database directory has the level "complete until first user authentication": the database, the WAL file, the SHM file, the restore epoch file, and a staged backup. iOS still encrypts the files. After a restart, nothing reads them until the first unlock.
-- What keeps complete protection: the item photos, the export files, and the draft file of the edit screen. A record does not need them.
+- Change: the database directory has the level "complete until first user authentication": the database, the WAL file, the SHM file, the rollback journal, the restore epoch file, and a staged backup. iOS still encrypts the files. After a restart, nothing reads them until the first unlock.
+- What keeps complete protection: the item photos, the export files, an exported backup, and the draft file of the edit screen. A record does not need them.
 - Existing installs: each open sets the level on the directory and on the files that exist, as it did before for a weaker file. It changes one attribute. It copies and rebuilds nothing (spec 7.3). The first launch of the new build must run on an unlocked iPhone to change the files. Until then the old level stays, and a locked iPhone records nothing, as before.
 - The earlier copy of the database in Application Support (D048) keeps complete protection. The app does not read it when the container has a database.
 

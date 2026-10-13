@@ -77,7 +77,8 @@ extension AppModel {
                 scheduleVersionID: scheduleVersionID
             )
             event.requiresCurrentPlan = true
-            committed = await commitAndWait([event], generation: generation)
+            // The read record stays on the Watch until the commit is flushed (spec 7.2).
+            committed = await commitAndWait([event], generation: generation, confirmed: [id: entry.record])
         }
         guard committed else { return .notRecorded }
         if let deviceTimeZone = NamedTimeZone(device: .current, at: Date()) {

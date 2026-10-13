@@ -66,7 +66,7 @@ extension LocalStore {
     public func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         generation: Int = 0,
-        currentPlan: OccurrenceGeneration? = nil,
+        currentPlan: (@Sendable () -> OccurrenceGeneration?)? = nil,
         restoreEpoch: Int? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         try await record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch, sync: Self.fullSync)
@@ -86,7 +86,7 @@ extension LocalStore {
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         inserting occurrences: [Occurrence] = [],
         generation: Int = 0,
-        currentPlan: OccurrenceGeneration? = nil,
+        currentPlan: (@Sendable () -> OccurrenceGeneration?)? = nil,
         restoreEpoch: Int? = nil,
         sync: @Sendable (Int32) -> Int32
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
@@ -98,12 +98,18 @@ extension LocalStore {
             for occurrence in occurrences {
                 try Self.insert(occurrence, db)
             }
+            // The plan of now reads the clock and the device time zone here, after the writer is free, so a
+            // request that waited for the writer past midnight records nothing (D065).
+            let plan = try currentPlan.map { currentPlan in
+                guard let plan = currentPlan() else { throw RecordFailure.storage(.unavailable) }
+                return plan
+            }
             return try events.map { event, scheduleVersionID in
                 guard let occurrence = try Self.fetchOccurrence(db, id: event.occurrenceID) else {
                     throw RecordFailure.unknownOccurrence
                 }
                 guard occurrence.scheduleVersionID == scheduleVersionID else { throw RecordFailure.versionChanged }
-                if let currentPlan { try Self.requireCurrentPlan(occurrence, currentPlan, db) }
+                if let plan { try Self.requireCurrentPlan(occurrence, plan, db) }
                 return try Self.append(event, db)
             }
         }
@@ -113,7 +119,7 @@ extension LocalStore {
     /// plan, and its schedule version is the planned one. The occurrence row of an archived item or of a removed
     /// slot stays, and a stale widget button must not record it (D048). The dose must also be of today in its own
     /// time zone at the time of the plan, so a request from before midnight records nothing after it (D065).
-    /// The check runs in the record transaction.
+    /// The check and the clock of the plan run in the record transaction.
     static func requireCurrentPlan(_ occurrence: Occurrence, _ plan: OccurrenceGeneration, _ db: Database) throws {
         let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)
         let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")

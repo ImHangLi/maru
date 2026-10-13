@@ -147,9 +147,12 @@ public struct LocalStore: Sendable {
             pool = try DatabasePool(path: file.path, configuration: configuration)
             // A new file gets the level of the directory on a device. Set the level on each file too,
             // before the migrations write to it. A file from an earlier build can have another level (D066),
-            // also the epoch file, which a record of the widget reads.
+            // also the rollback journal of a migration and the epoch file, which a record of the widget reads.
             try FileProtection.protect(
-                files: files(of: file) + [file.deletingLastPathComponent().appendingPathComponent(epochFileName)]
+                files: files(of: file) + [
+                    URL(fileURLWithPath: file.path + "-journal"),
+                    file.deletingLastPathComponent().appendingPathComponent(epochFileName),
+                ]
             )
             try makeDurable(pool)
             guard try !pool.read(migrator.hasBeenSuperseded) else { throw StorageError.newerSchema }
@@ -258,9 +261,10 @@ enum FileProtection {
 
     /// Sets the protection of files that exist. A file from an earlier build can have another level.
     /// The call changes only the attribute of the file. It copies and rebuilds nothing (spec 7.3).
-    static func protect(files: [URL]) throws {
+    /// A file that leaves the database directory, such as an exported backup, keeps `.complete` (D066).
+    static func protect(files: [URL], level: FileProtectionType = FileProtection.level) throws {
         for file in files where FileManager.default.fileExists(atPath: file.path) {
-            try protect(file)
+            try protect(file, level: level)
         }
     }
 
@@ -268,7 +272,7 @@ enum FileProtection {
         try FileManager.default.attributesOfItem(atPath: file.path)[.protectionKey] as? FileProtectionType
     }
 
-    private static func protect(_ url: URL) throws {
+    private static func protect(_ url: URL, level: FileProtectionType = FileProtection.level) throws {
         guard isRequired else { return }
         try FileManager.default.setAttributes([.protectionKey: level], ofItemAtPath: url.path)
     }

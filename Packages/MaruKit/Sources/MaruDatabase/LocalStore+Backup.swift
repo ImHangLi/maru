@@ -44,7 +44,7 @@ extension LocalStore {
             try await writer.writeWithoutTransaction { db in
                 try db.execute(sql: "VACUUM INTO ?", arguments: [file.path])
             }
-            try FileProtection.protect(files: [file])
+            try FileProtection.protect(files: [file], level: .complete)
             let copy = try DatabaseQueue(path: file.path)
             try await copy.writeWithoutTransaction { db in
                 guard try String.fetchOne(db, sql: "PRAGMA journal_mode = DELETE") == "delete" else {
