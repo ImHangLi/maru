@@ -14,15 +14,18 @@ extension AppModel {
             host: info?["MaruAnalyticsHost"] as? String ?? ""
         )
         let version = info?["CFBundleShortVersionString"] as? String ?? "0"
+        // One read for the consent rule and for the region field of the events, so the two always agree (D064).
+        let regionCode = Locale.current.region?.identifier
         return AnalyticsService(
             isAvailable: configuration != nil,
-            preference: AnalyticsPreference(regionCode: Locale.current.region?.identifier)
+            preference: AnalyticsPreference(regionCode: regionCode)
         ) {
             guard let configuration else { return NullAnalyticsClient() }
             return PostHogClient(
                 configuration: configuration,
                 appVersion: version,
-                osMajor: ProcessInfo.processInfo.operatingSystemVersion.majorVersion
+                osMajor: ProcessInfo.processInfo.operatingSystemVersion.majorVersion,
+                regionCode: regionCode
             )
         }
     }

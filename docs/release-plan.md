@@ -7,11 +7,11 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 | Step | State |
 |---|---|
 | Join the Apple Developer Program as an individual | Done on 2026-10-13 |
-| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open |
+| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open. The maintainer does not register for GST for now, so the tips may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
 | Give the agent the Team ID, and set the paid team in Xcode for both targets | Team ID `JBG4XL9NQK`. Xcode needs the Apple ID again |
 | Create an App Store Connect API key (App Manager). Enter it in a private prompt, never in chat | Open |
 | Buy the landing page domain | Done: `maru.day` |
-| Create the PostHog project (EU cloud) | Open |
+| Create the PostHog project | Done. "Discard client IP data" is on. The cloud region must match `MARU_ANALYTICS_HOST` and the sentence in `PRIVACY.md` (D063) |
 | Create the X, Reddit, and Product Hunt accounts for Maru | Open |
 | Search the "Maru" trademark in the main markets | Open |
 
@@ -26,8 +26,8 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 | Feature | Spec | Acceptance |
 |---|---|---|
-| Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, and Switzerland | §11, D051 | T41–T45 |
-| Supporter purchase with StoreKit 2, and a restore | §14 C | T48 |
+| Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, and Switzerland. Each event has the region setting of the iPhone as a two-letter code | §11, D051, D064 | T41–T45 |
+| Supporter tips with StoreKit 2 (D053). They may not be for sale in the Australian storefront (D064) | §14 C | T48 |
 | Optional photo with background removal | §5.2 | T30–T32 |
 | Six languages: en, zh-Hans, ja, es, de, ko | §13.2, D051 | T49 |
 | Privacy manifests and the export compliance key | §10 | Done in this change |
@@ -38,6 +38,10 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 - The open device checks in `docs/status.md`.
 - Dark Mode, the largest text sizes, VoiceOver, and Reduce Motion (T33).
 - Launch and record timing on a release build (T36).
+- Analytics, with a release build that has the key:
+  - "Discard client IP data" in the PostHog project: on. Look at the setting again before the release.
+  - Check the packets (T42). Each event has only the fields of `PRIVACY.md`. The region is two letters or absent, and no event has a language, a time zone, or a location.
+  - Check in PostHog that the events have no GeoIP properties and no person profile.
 - A TestFlight beta with external testers. It needs Beta App Review.
 
 ## 5. Store page
@@ -45,7 +49,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 - Name, subtitle, and keywords: see the research note. Six languages with fastlane `deliver`.
 - Screenshots for the 6.9-inch iPhone in each language.
 - A privacy policy page and a support page on the landing page domain.
-- Privacy labels that match the build: usage data and diagnostics, not linked to the user, no tracking.
+- Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, not linked to the user, and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
 - Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50).
 
 ## 6. Launch
