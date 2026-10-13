@@ -13,7 +13,7 @@ Maru asks iOS to encrypt the database file. After a restart of your device, noth
 
 ## What Maru does not do
 
-- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the request of the App Store for the tip prices when you open Settings.
+- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and one product request to the App Store when you open Settings. That request sends nothing about you or your items.
 - It contains no advertising or crash-reporting code.
 - It does not read your contacts, your location, or the advertising identifier.
 - It does not read from or write to Apple Health.
@@ -30,7 +30,6 @@ Some versions of Maru can send usage statistics to PostHog. A version that canno
   - `daily_usage_summary`: the day number since the statistics started, and four yes-or-no flags for one day: recorded a dose, opened History, opened the app from a reminder, opened the app from a widget.
   - `core_error`: whether a save or a read failed, with one of five fixed codes.
   - `feedback_entry`: that you tapped "Send Feedback".
-  - `purchase_result`: a fixed product and result. Maru does not send this event yet.
 - What Maru never sends: item names, doses, intake times, item IDs, notes, photos, or the text of a message. It sends no time of a single dose and no count of doses.
 - Each request also has the app version, the major version of iOS, a random install ID, and the region setting of your device as a two-letter code such as AU. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 - No session recording, no screen capture, and no automatic capture of taps or screens.
@@ -57,10 +56,6 @@ The name suggestions on the add screen come from a list inside the app. The name
 ## Feedback
 
 Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.
-
-## Tips
-
-Settings has a "Support Maru" section with three optional tips. A tip unlocks nothing. The purchase goes through the App Store. Apple handles your payment and your Apple Account, and Maru gets no payment data or account data. Maru does not send item names, doses, or records with a tip. Maru loads the tip prices from the App Store only when you open Settings.
 
 ## Notifications
 

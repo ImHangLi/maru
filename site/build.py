@@ -608,7 +608,7 @@ def llms():
 
 Facts:
 - Runs on: {devices}.
-- Free, with no subscription, no ads, no account, and no limit on items. Optional tips unlock nothing.
+- Free, with no subscription, no ads, no account, and no limit on items.
 - Items and records stay on the device. Optional usage statistics never include names, doses, or times.
 - Today screen: record a dose with one tap.
 - Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose.
