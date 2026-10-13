@@ -1,6 +1,6 @@
 # Privacy
 
-Maru keeps your health data on your iPhone. This file describes the app in this repository as it is today.
+Maru keeps your health data on your iPhone. If you install the Maru app on your Apple Watch, your iPhone sends the list of today's doses to your own Watch: the names, the amounts, the times, and whether each dose is recorded. It goes directly between the two devices and through no server of Maru. This file describes the app in this repository as it is today.
 
 ## What Maru stores
 
@@ -9,7 +9,7 @@ Maru keeps your health data on your iPhone. This file describes the app in this 
 - A draft of an item that you add or edit. Maru deletes the draft when you save or cancel.
 - The photo of an item, if you add one. See "Item photos".
 
-Maru asks iOS to encrypt the database file while your iPhone is locked. When Maru cannot open your records because the iPhone is locked, it records nothing and asks you to unlock.
+Maru asks iOS to encrypt the database file. After a restart of your iPhone, nothing can read the file until you unlock the iPhone one time. After that, Maru can read and write the file while the iPhone is locked, so a record from your Apple Watch works with the iPhone in your pocket. When Maru cannot open your records, it records nothing and asks you to unlock.
 
 ## What Maru does not do
 
@@ -47,7 +47,7 @@ An item can have a photo that you take or choose on the add or edit screen. It i
 
 - Maru makes a small copy of the photo, at most 512 pixels on the longest side, and keeps only that copy. It does not keep the original photo. The copy has no location and no camera data (EXIF).
 - Maru can remove the background of the photo on your iPhone. It uses Apple's Vision framework, and nothing leaves the iPhone.
-- The photo files are in the Maru data folder of your iPhone, next to the database, with the same file protection. Maru deletes a photo file when you remove the photo or delete the item.
+- The photo files are in the Maru data folder of your iPhone, next to the database. iOS encrypts them while your iPhone is locked. Maru deletes a photo file when you remove the photo or delete the item.
 - "Take Photo" does not save to your photo library. "Choose Photo" uses the system photo picker, so Maru sees only the photo that you pick.
 - The Maru backup file (see below) does not contain the photos. After a restore on another iPhone, items show the form icon, and you can add the photos again.
 - The record export has no photos.

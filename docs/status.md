@@ -6,7 +6,7 @@ Maru was developed in a private repository before it became public. Issue number
 
 ## Current state
 
-- The app and the package build. CI builds and tests the package and builds the app for the iOS Simulator.
+- The app and the package build. CI builds and tests the package and builds the app for the iOS Simulator, with the Watch app for the watchOS Simulator.
 - Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, optional follow-up reminders, and as-needed items.
 - The app has six languages (D059): English, zh-Hans, ja, es, de, and ko. The translation is not reviewed by a native speaker yet (`docs/localization-review.md`). Nobody saw it on a display.
 - The design rules are in `docs/design.md`. Native SwiftUI components only (D026).
@@ -29,13 +29,16 @@ Maru was developed in a private repository before it became public. Issue number
 - Optional supporter tips are in code (D053): three consumable tips in a "Support Maru" section in Settings, with StoreKit 2. Nothing is locked, and a tip never touches health data. Nobody ran it. It needs a check with the StoreKit configuration (`Config/Maru.storekit`): a buy, a cancel, a pending tip, a failure, and a refund. App Store Connect needs the three products with their prices before TestFlight. The maintainer does not register for GST for now, so the tips may not be for sale in the Australian storefront (D064).
 - The App Store listing is a draft in `metadata/`: name, subtitle, keywords, promotional text, and description in six languages, es-MX, and en-GB, in the layout of `asc metadata`. `docs/research/2026-10-13-aso-and-store-page.md` has the study, six screenshot frames for each language, and the drafts of the privacy label, the age rating, and the review notes. The app record exists with the name "Maru: Pill & Vitamin Reminder", and it has no other text yet. The secondary category is Medical. Mainland China is not in the first release. No native speaker read the text. The screenshot frames are HTML copies of the UI, outside the repository, and a capture session must confirm them. The support and privacy URLs return 404 until the new site is live.
 
+- A first Apple Watch app is in code (D071): one screen with the doses of today by part of the day, a tap for "Taken", and a swipe for "Skip" and "Undo". The Watch has no database. It asks the iPhone for each record and shows "recorded" only after the iPhone confirms the commit. Nobody built it on a Mac or ran it on a Watch. CI builds it with the app. The database is now readable on a locked iPhone after the first unlock (D066), so a record from the Watch, and the "Taken" action of a reminder on the Watch, can work with the iPhone locked. Nobody saw this on a device. One limit: an archive of the app includes the Watch app, so it needs Watch screenshots, or 1.0 must be archived without it. `PRIVACY.md` and the privacy pages of the site have the Watch sentence and the new protection sentence.
+
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the item photo (D056), the History graph and rows, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.
 2. Home Screen widgets are in code (D048), "Today" and "Record Dose" (named "Take Now" before D068). Nobody saw them. Check on the iPhone: the signing of the App Group with the free team, the one-time move of the database, the tap on a capsule with the app closed, and the reminders after it. The database now lives in the App Group container, and the old copy stays in Application Support.
 3. Acceptance on a real iPhone: one week of daily use by the maintainer. It started on 2026-10-12.
-4. Release: a native speaker checks each language with `docs/localization-review.md` (D059). Follow `docs/release-plan.md` (D051).
-5. Store page: one simulator session takes captures in six languages to confirm the screenshot frames (section 7.4 of the store page note). Then enter the text of `metadata/` with `asc metadata push`, after the maintainer approves it.
+4. The Watch app (D071) needs a check on a real iPhone and Watch. D071 has the list. D066 adds the checks for the locked iPhone. The maintainer decides if it ships in 1.0 or in 1.1.
+5. Release: a native speaker checks each language with `docs/localization-review.md` (D059). Follow `docs/release-plan.md` (D051).
+6. Store page: one simulator session takes captures in six languages to confirm the screenshot frames (section 7.4 of the store page note). Then enter the text of `metadata/` with `asc metadata push`, after the maintainer approves it.
 
 ## Known gaps
 

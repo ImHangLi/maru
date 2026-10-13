@@ -52,7 +52,7 @@
 <section class="card summary" aria-labelledby="summary-title"><h2 id="summary-title">En pocas palabras</h2><ul><li>Tus elementos y registros se quedan en tu iPhone. Maru no tiene cuentas ni un servidor para ellos.</li><li>Las estadísticas de uso son sencillas, nunca incluyen lo que tomas y se desactivan con un interruptor en Ajustes.</li><li>Maru no tiene anuncios y no lee tus contactos ni tu ubicación.</li></ul></section>
 <p class="note">La política completa está en inglés más abajo. El texto en inglés es el que vale.</p>
 <div class="policy" lang="en">
-<p>Maru keeps your health data on your iPhone. This page describes the app in this repository as it is today.</p>
+<p>Maru keeps your health data on your iPhone. If you install the Maru app on your Apple Watch, your iPhone sends the list of today's doses to your own Watch: the names, the amounts, the times, and whether each dose is recorded. It goes directly between the two devices and through no server of Maru. This page describes the app in this repository as it is today.</p>
 <h2 lang="es">Qué guarda Maru</h2>
 <ul>
 <li>Your items, schedules, notes, and records.
@@ -63,7 +63,7 @@
 </li>
 <li>The photo of an item, if you add one. See "Item photos".
 </li></ul>
-<p>Maru asks iOS to encrypt the database file while your iPhone is locked. When Maru cannot open your records because the iPhone is locked, it records nothing and asks you to unlock.</p>
+<p>Maru asks iOS to encrypt the database file. After a restart of your iPhone, nothing can read the file until you unlock the iPhone one time. After that, Maru can read and write the file while the iPhone is locked, so a record from your Apple Watch works with the iPhone in your pocket. When Maru cannot open your records, it records nothing and asks you to unlock.</p>
 <h2 lang="es">Qué no hace Maru</h2>
 <ul>
 <li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the request of the App Store for the tip prices when you open Settings.
@@ -115,7 +115,7 @@
 </li>
 <li>Maru can remove the background of the photo on your iPhone. It uses Apple's Vision framework, and nothing leaves the iPhone.
 </li>
-<li>The photo files are in the Maru data folder of your iPhone, next to the database, with the same file protection. Maru deletes a photo file when you remove the photo or delete the item.
+<li>The photo files are in the Maru data folder of your iPhone, next to the database. iOS encrypts them while your iPhone is locked. Maru deletes a photo file when you remove the photo or delete the item.
 </li>
 <li>"Take Photo" does not save to your photo library. "Choose Photo" uses the system photo picker, so Maru sees only the photo that you pick.
 </li>

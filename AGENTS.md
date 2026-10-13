@@ -21,6 +21,7 @@ When you work for another contributor, follow `CONTRIBUTING.md`, and do not make
 
 - `project.yml`: the XcodeGen definition of the app. `Maru.xcodeproj` is generated and ignored by Git. Change `project.yml`, then run `xcodegen generate`. Do not edit the `.xcodeproj` by hand.
 - `App/`: the SwiftUI app target. Keep views and app wiring here.
+- `Watch/`: the watchOS app target (D071). It links only `MaruCore`. It has no database, and the iPhone app makes each record.
 - `Packages/MaruKit/`: platform-neutral logic. `MaruCore` holds domain, scheduling, and record rules. It must not import SwiftUI, UIKit, StoreKit, or analytics SDKs, so `swift build` and `swift test` run on the Mac without a simulator. `MaruDatabase` holds the SQLite store and is the only target that imports GRDB. Record every third-party dependency in `docs/third-party-licenses.md`.
 - `docs/`: the spec and research notes.
 

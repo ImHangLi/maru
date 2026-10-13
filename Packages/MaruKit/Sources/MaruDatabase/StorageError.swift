@@ -19,7 +19,7 @@ public enum StorageError: Error, Equatable, Sendable {
     case conflict
     /// The disk is full.
     case diskFull
-    /// The files cannot be read or written now. On a locked device, file protection can be the cause (spec 10).
+    /// The files cannot be read or written now. After a restart and before the first unlock, file protection can be the cause (spec 10, D066).
     case unavailable
     /// The task was cancelled before the transaction committed.
     case cancelled

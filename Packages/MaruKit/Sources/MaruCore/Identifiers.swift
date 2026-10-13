@@ -1,7 +1,7 @@
 import Foundation
 
 /// A stable, type-safe identifier. The `Tag` type only keeps different kinds of IDs apart at compile time.
-public struct Identifier<Tag>: Hashable, Sendable {
+public struct Identifier<Tag>: Hashable, Sendable, Codable {
     public let rawValue: UUID
 
     public init(_ rawValue: UUID = UUID()) {
