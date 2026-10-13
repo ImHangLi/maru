@@ -6,34 +6,65 @@
   "nav_label": "Hauptmenü",
   "home": {
     "title": "Maru: Wissen, was du genommen hast",
-    "desc": "Maru erinnert dich an Vitamine, Nahrungsergänzung und Medikamente und merkt sich, was du genommen hast. Kostenlos und ohne Konto.",
+    "desc": "Maru erinnert dich an Vitamine, Supplements und Medikamente und merkt sich, was du genommen hast. Kostenlos und ohne Konto.",
     "h1": "Schon genommen? |Maru weiß es.",
-    "lede": "Maru erinnert dich an Vitamine, Nahrungsergänzung und Medikamente und merkt sich, was du genommen hast."
+    "lede": "Maru erinnert dich an Vitamine, Supplements und Medikamente und merkt sich, was du genommen hast."
   },
   "store": {
-    "soon_small": "Bald im",
-    "soon_label": "Bald im App Store",
-    "notify": "Sag mir Bescheid, wenn es so weit ist",
-    "nav_notify": "Bescheid sagen",
+    "soon": "Bald im",
+    "store_first": false,
+    "notify": "Sag mir Bescheid, wenn es da ist",
     "notify_subject": "Bitte Bescheid sagen",
-    "badge_alt": "Laden im App Store",
-    "nav_download": "Laden"
+    "badge_alt": "Laden im App Store"
   },
   "shots": {
-    "today": {"label": "Heute", "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."},
-    "reminder": {"label": "Erinnerung", "alt": "Eine Erinnerung von Maru auf dem Sperrbildschirm mit der Aktion „Eingenommen“."},
-    "history": {"label": "Verlauf", "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der vergangenen Tage und den letzten 7 Tagen jedes Eintrags."},
-    "widget": {"label": "Widget", "alt": "Ein Maru-Widget auf dem Home-Bildschirm des iPhone."},
-    "detail": {"label": "Eintrag", "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."}
+    "today": {
+      "label": "Heute",
+      "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
+    },
+    "reminder": {
+      "alt": "Eine Erinnerung von Maru an Vitamin D mit der Aktion „Eingenommen“."
+    },
+    "history": {
+      "label": "Verlauf",
+      "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der vergangenen Tage und den letzten 7 Tagen jedes Eintrags."
+    },
+    "widget": {
+      "alt": "Das Maru-Widget „Heute“: 2 von 5 eingenommen, mit Morgens, Mittags und Abends."
+    },
+    "detail": {
+      "label": "Eintrag",
+      "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."
+    }
   },
   "blocks": [
-    {"shot": "reminder", "title": "Erinnerung zu deiner Zeit", "text": "Du legst die Zeiten fest und tippst direkt in der Erinnerung auf „Eingenommen“."},
-    {"shot": "history", "title": "Sieh, was du genommen hast", "text": "Sieh ganze Monate auf einen Blick und die letzten sieben Tage jedes Eintrags."},
-    {"shot": "widget", "title": "Auf deinem Home-Bildschirm", "text": "Füge das Maru-Widget hinzu und behalte deinen Tag im Blick."},
-    {"shot": "detail", "title": "Eine Seite pro Eintrag", "text": "Dort stehen die Zeiten, die Menge und die letzten sieben Tage."}
+    {
+      "shot": "reminder",
+      "title": "Erinnerungen, wann du willst",
+      "text": "Du legst die Zeiten fest und tippst direkt in der Erinnerung auf „Eingenommen“."
+    },
+    {
+      "shot": "history",
+      "title": "Sieh, was du genommen hast",
+      "text": "Ganze Monate auf einen Blick, dazu die letzten sieben Tage jedes Eintrags."
+    },
+    {
+      "shot": "widget",
+      "title": "Auf deinem Home-Bildschirm",
+      "text": "Füge das Maru-Widget hinzu und behalte deinen Tag im Blick."
+    },
+    {
+      "shot": "detail",
+      "title": "Eine Seite pro Eintrag",
+      "text": "Dort stehen die Zeiten, die Menge und die letzten sieben Tage."
+    }
   ],
   "trust_title": "Gut zu wissen",
-  "trust": ["Kostenlos", "Kein Konto", "Deine Aufzeichnungen bleiben auf deinem iPhone"],
+  "trust": [
+    "Kostenlos und Open Source",
+    "Ohne Konto",
+    "Deine Aufzeichnungen bleiben auf deinem iPhone"
+  ],
   "footer": {
     "faq": "Fragen",
     "support": "Support",
@@ -47,20 +78,62 @@
     "desc": "Kurze Antworten zu Maru: Preis, deine Daten, Erinnerungen und der Umzug auf ein neues iPhone.",
     "h1": "Fragen und Antworten",
     "items": [
-      ["Ist Maru kostenlos?", "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge. Du kannst ein Trinkgeld geben, wenn du magst, aber es schaltet nichts frei."],
-      ["Brauche ich ein Konto?", "Nein. Öffne Maru und trag ein, was du nimmst."],
-      ["Wo sind meine Daten?", "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."],
-      ["Warum nicht ein Wecker oder Apple Health?", "Ein Wecker klingelt, aber er weiß nicht, was du genommen hast. Apple Health kann viel mehr, und Maru macht nur eine kleine Sache: Es zeigt, was jetzt dran ist, und ein Tippen erfasst es."],
-      ["Kann ich direkt in der Erinnerung erfassen?", "Ja, wenn die Erinnerung für einen Eintrag ist: Tippe auf „Eingenommen“. Eine Erinnerung für mehrere Einträge öffnet Maru."],
-      ["Erinnert mich Maru mehrmals?", "Schalte in den Einstellungen „Erneut erinnern“ ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Maru ist kein Wecker, deshalb können der Stummmodus oder ein Fokus eine Erinnerung zurückhalten."],
-      ["Was, wenn ich das Erfassen vergesse?", "Nichts passiert, und Maru kennt keine Serien. Du kannst später erfassen oder die Uhrzeit ändern."],
-      ["Sagt mir Maru, was ich nehmen soll?", "Nein. Maru gibt keinen medizinischen Rat: Du trägst ein, was du nimmst, und Maru erinnert dich."],
-      ["Zählt Maru, wie viele Tabletten ich noch habe?", "Nein. Maru erinnert und erfasst, mehr nicht."],
-      ["Wie ziehe ich auf ein neues iPhone um?", "Tippe in den Einstellungen auf dem alten iPhone auf „Backup erstellen“ und auf dem neuen auf „Aus Backup wiederherstellen“. Die Backup-Datei ist nicht verschlüsselt, also bewahre sie sicher auf."],
-      ["Kann ich meine Aufzeichnungen mitnehmen?", "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können."],
-      ["Gibt es eine App für die Apple Watch?", "Nein. Maru ist eine iPhone-App und gleicht nichts zwischen Geräten ab."],
-      ["Welche Sprachen spricht Maru?", "Englisch, vereinfachtes Chinesisch, Japanisch, Spanisch, Deutsch und Koreanisch."],
-      ["Ist Maru Open Source?", "Ja. Der Code steht unter der MIT-Lizenz auf <a href=\"{github}\">GitHub</a>."]
+      [
+        "Ist Maru kostenlos?",
+        "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge. Du kannst ein Trinkgeld geben, wenn du magst, aber es schaltet nichts frei."
+      ],
+      [
+        "Brauche ich ein Konto?",
+        "Nein. Öffne Maru und trag ein, was du nimmst."
+      ],
+      [
+        "Wo sind meine Daten?",
+        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."
+      ],
+      [
+        "Warum nicht ein Wecker oder Apple Health?",
+        "Ein Wecker klingelt, aber er weiß nicht, was du genommen hast. Apple Health kann viel mehr, und Maru macht nur eine kleine Sache: Es zeigt, was jetzt dran ist, und ein Tippen erfasst es."
+      ],
+      [
+        "Kann ich direkt in der Erinnerung erfassen?",
+        "Ja, wenn die Erinnerung für einen Eintrag ist: Tippe auf „Eingenommen“. Eine Erinnerung für mehrere Einträge öffnet Maru."
+      ],
+      [
+        "Erinnert mich Maru mehrmals?",
+        "Schalte in den Einstellungen „Erneut erinnern“ ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Maru ist kein Wecker, deshalb können der Stummmodus oder ein Fokus eine Erinnerung zurückhalten."
+      ],
+      [
+        "Was, wenn ich das Erfassen vergesse?",
+        "Nichts passiert, und Maru kennt keine Serien. Du kannst später erfassen oder die Uhrzeit ändern."
+      ],
+      [
+        "Sagt mir Maru, was ich nehmen soll?",
+        "Nein. Maru gibt keinen medizinischen Rat: Du trägst ein, was du nimmst, und Maru erinnert dich."
+      ],
+      [
+        "Zählt Maru, wie viele Tabletten ich noch habe?",
+        "Nein. Maru erinnert und erfasst, mehr nicht."
+      ],
+      [
+        "Wie ziehe ich auf ein neues iPhone um?",
+        "Tippe in den Einstellungen auf dem alten iPhone auf „Backup erstellen“ und auf dem neuen auf „Aus Backup wiederherstellen“. Die Backup-Datei ist nicht verschlüsselt, also bewahre sie sicher auf."
+      ],
+      [
+        "Kann ich meine Aufzeichnungen mitnehmen?",
+        "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können."
+      ],
+      [
+        "Gibt es eine App für die Apple Watch?",
+        "Nein. Maru ist eine iPhone-App und synchronisiert nicht zwischen Geräten."
+      ],
+      [
+        "Welche Sprachen spricht Maru?",
+        "Englisch, vereinfachtes Chinesisch, Japanisch, Spanisch, Deutsch und Koreanisch."
+      ],
+      [
+        "Ist Maru Open Source?",
+        "Ja. Der Code steht unter der MIT-Lizenz auf <a href=\"{github}\">GitHub</a>."
+      ]
     ]
   },
   "support": {
@@ -98,5 +171,6 @@
       "iPhone backups": "iPhone-Backups",
       "Changes": "Änderungen"
     }
-  }
+  },
+  "github": "Maru auf GitHub"
 }

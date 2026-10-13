@@ -20,10 +20,15 @@
   --device-bezel: #1D1D1F;
   --device-screen: #E5E5EA;
   --badge-bg: #000000;
-  --badge-bg-hover: #1D1D1F;
   --badge-text: #FFFFFF;
   --badge-text-2: rgba(255, 255, 255, 0.72);
-  --badge-ring: rgba(0, 0, 0, 0);
+  --badge-ring: #A6A6A6;
+
+  /* The stage behind a product picture: warm and calm, like a wallpaper out of focus. */
+  --stage-a: #F3ECE6;
+  --stage-b: #E4D8CE;
+  --stage-c: #CDBDB0;
+  --stage-shadow: rgba(60, 40, 25, 0.22);
 
   /* Radius */
   --radius-sm: 6px;
@@ -76,7 +81,9 @@
   --gutter: 20px;
   --max: 66rem;
   --max-prose: 44rem;
-  --nav-h: 56px;
+  --nav-h: 60px;
+  --badge-nav: 40px;
+  --badge-page: 56px;
   --device-w: 14.5rem;
 }
 
@@ -91,10 +98,12 @@
     --focus: #FF6482;
     --ring-color: rgba(255, 255, 255, 0.12);
     --nav-bg: rgba(0, 0, 0, 0.72);
+    --stage-a: #6E6259;
+    --stage-b: #4F4640;
+    --stage-c: #2E2926;
+    --stage-shadow: rgba(0, 0, 0, 0.4);
     --device-bezel: #3A3A3C;
     --device-screen: #1C1C1E;
-    --badge-bg-hover: #1C1C1E;
-    --badge-ring: rgba(255, 255, 255, 0.4);
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 0.5px var(--ring-color);
     --shadow-elevated: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 8px rgba(0, 0, 0, 0.3), 0 12px 24px rgba(0, 0, 0, 0.3), 0 0 0 0.5px var(--ring-color);
     --shadow-phone: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 24px rgba(0, 0, 0, 0.4), 0 40px 80px rgba(0, 0, 0, 0.5), 0 0 0 0.5px var(--ring-color);
@@ -167,32 +176,55 @@ code { font: 0.875em var(--font-mono); background: var(--fill-3); padding: 0.1em
 }
 .brand { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text); font-weight: 650; text-decoration: none; }
 .brand img { border-radius: 22%; box-shadow: 0 0 0 0.5px var(--ring-color); }
-.nav-links { display: flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
-.nav-links a {
-  color: var(--text-2); text-decoration: none; font-size: var(--fs-sm);
-  padding: var(--space-1) var(--space-3); border-radius: var(--radius-full);
+.nav-links { display: flex; align-items: center; gap: var(--space-1); white-space: nowrap; }
+.nav-text, .nav-icon, .lang-menu summary {
+  display: inline-flex; align-items: center; gap: var(--space-1); min-height: 36px; padding: 0 var(--space-2);
+  color: var(--text-2); text-decoration: none; font-size: var(--fs-sm); border-radius: var(--radius-full);
   transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
 }
-.nav-links a:hover { color: var(--text); background: var(--fill-3); }
-.nav-links a[aria-current] { color: var(--text); background: var(--fill-2); }
-.nav-links a.nav-cta {
-  display: inline-flex; align-items: center; min-height: 32px; padding: 0 var(--space-4);
-  background: var(--badge-bg); color: var(--badge-text); font-weight: 600; box-shadow: 0 0 0 1px var(--badge-ring);
-}
-.nav-links a.nav-cta:hover { background: var(--badge-bg-hover); color: var(--badge-text); }
+.nav-text:hover, .nav-icon:hover, .lang-menu summary:hover { color: var(--text); background: var(--fill-3); }
+.nav-text[aria-current] { color: var(--text); background: var(--fill-2); }
+.nav-icon { color: var(--text); }
+.icon { flex: none; }
 
-/* App Store button. Before the release it is plain text, with no Apple artwork. After the release it is Apple's badge. */
+/* Language menu: a details element with plain links, so it works with no script. */
+.lang-menu { position: relative; }
+.lang-menu summary { list-style: none; cursor: pointer; -webkit-user-select: none; user-select: none; }
+.lang-menu summary::-webkit-details-marker { display: none; }
+.lang-menu[open] summary { color: var(--text); background: var(--fill-2); }
+.lang-menu ul {
+  position: absolute; right: 0; top: calc(100% + var(--space-2)); z-index: 30; min-width: 11rem;
+  margin: 0; padding: var(--space-2); list-style: none;
+  background: var(--surface); border-radius: var(--radius-md); box-shadow: var(--shadow-elevated);
+}
+.lang-menu li a {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 40px;
+  padding: 0 var(--space-3); border-radius: var(--radius-sm); color: var(--text); text-decoration: none; font-size: var(--fs-sm);
+}
+.lang-menu li a:hover { background: var(--fill-3); }
+.lang-menu li a[aria-current] { font-weight: 600; }
+.lang-menu li a[aria-current]::after { content: ""; width: 6px; height: 11px; border: solid var(--link); border-width: 0 2px 2px 0; transform: translateY(-2px) rotate(45deg); }
+
+/* App Store button.
+   After the release it is Apple's badge, not changed, at 40 px or more, with a clear space of one quarter of its height.
+   Before the release it is this pill: the format of the badge (black, rounded, a small line and "App Store"), with no Apple logo. */
 .cta { display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
 .store {
-  display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  min-width: 11.5rem; min-height: 56px; padding: var(--space-2) var(--space-5);
-  background: var(--badge-bg); color: var(--badge-text); border-radius: var(--radius-md);
-  box-shadow: 0 0 0 1px var(--badge-ring); line-height: 1.15;
+  --h: var(--badge-page);
+  display: inline-flex; flex-direction: column; justify-content: center; flex: none;
+  height: var(--h); padding: 0 calc(var(--h) * 0.3); margin: calc(var(--h) * 0.25) 0;
+  background: var(--badge-bg); color: var(--badge-text); border: 1px solid var(--badge-ring); border-radius: calc(var(--h) * 0.17);
+  font-family: var(--font); letter-spacing: 0; line-height: 1; text-align: left; white-space: nowrap;
 }
-.store small { font-size: var(--fs-xs); font-weight: 500; color: var(--badge-text-2); }
-.store strong { font-size: var(--fs-lg); font-weight: 600; }
-.badge { display: inline-block; border-radius: var(--radius-md); transition: transform var(--dur-fast) var(--ease-out); }
-.badge:active { transform: scale(0.98); }
+.store-nav { --h: var(--badge-nav); margin: 0 0 0 calc(var(--h) * 0.25); }
+.store-small { font-size: calc(var(--h) * 0.235); font-weight: 500; line-height: 1.25; }
+.store-name { font-size: calc(var(--h) * 0.5); font-weight: 500; letter-spacing: -0.01em; line-height: 1.05; }
+:lang(zh-Hans) .store-small { font-family: var(--font-zh); }
+:lang(ja) .store-small { font-family: var(--font-ja); }
+:lang(ko) .store-small { font-family: var(--font-ko); }
+.badge { display: inline-block; flex: none; margin: calc(var(--badge-page) * 0.25) 0; border-radius: var(--radius-sm); }
+.badge img { display: block; }
+.nav-links .badge { margin: 0 0 0 calc(var(--badge-nav) * 0.25); }
 .notify { font-size: var(--fs-sm); font-weight: 600; }
 
 /* Layout */
@@ -203,7 +235,7 @@ code { font: 0.875em var(--font-mono); background: var(--fill-3); padding: 0.1em
 .hero-grid { display: grid; gap: var(--space-7); justify-items: center; }
 .hero-copy { display: flex; flex-direction: column; align-items: center; }
 .hero h1 { font-size: var(--fs-hero); margin-bottom: var(--space-4); }
-.hero .lede { margin-bottom: var(--space-6); }
+.hero .lede { margin-bottom: var(--space-4); }
 .hero-icon { margin-bottom: var(--space-5); border-radius: 22%; box-shadow: var(--shadow-elevated); }
 
 /* Device frame: iPhone 17 Pro proportions around a real screenshot of 1206 x 2622. */
@@ -228,6 +260,14 @@ code { font: 0.875em var(--font-mono); background: var(--fill-3); padding: 0.1em
   background: #000; border-radius: var(--radius-full);
 }
 
+/* Product picture: one real element of the app, with no phone, on a stage. */
+.stage {
+  width: 100%; max-width: 30rem; aspect-ratio: 5 / 4; display: grid; place-items: center; padding: var(--space-5);
+  border-radius: var(--radius-lg); box-shadow: 0 0 0 0.5px var(--ring-color);
+  background: linear-gradient(155deg, var(--stage-a), var(--stage-b) 55%, var(--stage-c));
+}
+.stage img { width: 100%; filter: drop-shadow(0 2px 4px var(--stage-shadow)) drop-shadow(0 18px 32px var(--stage-shadow)); }
+
 /* Feature panels */
 .feature {
   display: grid; gap: var(--space-6); justify-items: center; text-align: center;
@@ -239,12 +279,14 @@ code { font: 0.875em var(--font-mono); background: var(--fill-3); padding: 0.1em
 
 /* Closing panel */
 .closer {
-  display: grid; gap: var(--space-6); justify-items: center;
+  display: grid; gap: var(--space-4); justify-items: center;
   background: var(--bg-alt); border-radius: var(--radius-lg); padding: var(--space-7) var(--space-5);
   box-shadow: 0 0 0 0.5px var(--ring-color);
 }
 .nots { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; }
 .nots li { background: var(--surface); border-radius: var(--radius-full); padding: var(--space-3) var(--space-5); font-weight: 500; box-shadow: var(--shadow-card); text-align: center; }
+.nots a { display: inline-flex; align-items: center; gap: var(--space-2); color: inherit; text-decoration: none; }
+.nots a:hover { text-decoration: underline; }
 
 /* Footer */
 .site-footer { margin-top: var(--space-8); background: var(--bg-alt); box-shadow: 0 -0.5px 0 var(--ring-color); color: var(--text-2); font-size: var(--fs-sm); }
@@ -291,6 +333,7 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   :root { --gutter: 32px; --device-w: 17.5rem; }
   .feature { grid-template-columns: 1fr 1fr; align-items: center; padding: var(--space-8) var(--space-7); }
   .feature.flip .feature-copy { order: 2; }
+  .stage { aspect-ratio: 1; padding: var(--space-6); }
   .cards { grid-template-columns: repeat(2, 1fr); }
 }
 @media (min-width: 1024px) {
@@ -299,9 +342,16 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   .hero-copy { align-items: flex-start; }
   .hero .cta { align-items: flex-start; }
 }
+/* The narrow top bar: the FAQ link moves to the footer, and the language button shows the globe only. */
+@media (max-width: 599px) {
+  .nav-text { display: none; }
+  .lang-menu .lang-name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .lang-menu ul { right: calc(-1 * var(--space-7)); }
+}
 @media (max-width: 359px) {
-  .nav-links a { padding-inline: var(--space-2); font-size: var(--fs-xs); }
-  .nav-links a.nav-cta { padding-inline: var(--space-3); }
+  :root { --gutter: 12px; }
+  .nav-inner { gap: var(--space-1); }
+  .nav-icon, .lang-menu summary { padding: 0 var(--space-1); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -25,8 +25,19 @@
   function chosen() {
     try { return localStorage.getItem(KEY); } catch (e) { return null; }
   }
-  links.forEach(function (a) {
+  document.querySelectorAll("a[hreflang]").forEach(function (a) {
     a.addEventListener("click", function () { remember(a.hreflang); });
+  });
+
+  // The language menu in the top bar is a details element. Close it on Escape and on a click outside.
+  var menu = document.querySelector(".lang-menu");
+  document.addEventListener("click", function (event) {
+    if (menu.open && !menu.contains(event.target)) menu.open = false;
+  });
+  menu.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape" || !menu.open) return;
+    menu.open = false;
+    menu.querySelector("summary").focus();
   });
 
   function supported(tag) {
@@ -45,9 +56,10 @@
   if (!wanted || wanted === page || chosen()) return;
 
   var target = document.querySelector('.langs a[hreflang="' + wanted + '"]');
-  var hint = document.createElement("div");
+  var hint = document.createElement("aside");
   hint.className = "lang-hint";
   hint.lang = wanted;
+  hint.setAttribute("aria-label", target.textContent);
   var go = document.createElement("a");
   go.href = target.href;
   go.textContent = target.dataset.suggest;

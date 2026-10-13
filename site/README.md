@@ -21,23 +21,34 @@ Do not edit `index.html`, `faq.html`, `privacy.html`, `support.html`, or a langu
 
 ## Languages
 
-English is at `/`. The other languages are at `/zh-hans/`, `/ja/`, `/es/`, `/de/`, and `/ko/`. They are the languages of the app (D051, D059). Use the words of `App/Localizable.xcstrings` for the names of screens and buttons.
+English is at `/`. The other languages are at `/cn/` (Simplified Chinese), `/jp/`, `/es/`, `/de/`, and `/kr/`. A folder is a two-letter name, because ads and links carry it. The `lang` and `hreflang` values stay correct language tags (`zh-Hans`, `ja`, `ko`). `_redirects` sends `/us/` to `/` and the old folders (`/zh-hans/`, `/ja/`, `/ko/`) to the new ones. They are the languages of the app (D051, D059). Use the words of `App/Localizable.xcstrings` for the names of screens and buttons.
 
 A `|` in a headline marks a place where the line can break.
 
-## App Store link
+The top bar has a language menu. It is a `details` element with plain links, so it works with no script. A link goes to the same page in the other language.
 
-Set `STORE_URL` in `build.py` and build again. Every "Coming soon" button becomes Apple's "Download on the App Store" badge in the language of the page, and the Smart App Banner turns on. The badge files in `badges/` come from Apple's marketing tools. Follow Apple's badge rules when you change their size.
+## App Store button
 
-## Screenshots
+Set `STORE_URL` in `build.py` and build again. This one constant changes the top bar, the hero, and the end of the home page, and it turns on the Smart App Banner.
+
+- After the release, the button is Apple's "Download on the App Store" badge in the language of the page. The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height.
+- Before the release, the button is a plain black pill in the same format, with the line "Coming soon on the" and with no Apple logo. Apple keeps its badge and its logo for an app that is in the store. The pill is not Apple's badge.
+
+The rules are in Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
+
+## Pictures
 
 ```sh
-python3 site/build.py --shots /path/to/screenshots
+python3 site/build.py --shots /path/to/captures
+python3 site/concept.py /path/to/captures
 ```
 
-The command needs `sips` (macOS) and `cwebp`. It reads `today.png`, `reminder.png`, `history.png`, `widget.png`, and `detail.png`, and language files such as `today-ja.png`. It writes WebP files of 780 px width to `shots/`. A language page uses its own file, or the English file. A missing picture shows an empty frame with a label.
+Both commands need `sips` (macOS) and `cwebp`.
 
-Use only real screenshots of the app. Do not draw app screens.
+- `build.py --shots` reads `today.png`, `history.png`, and `detail.png`, and language files such as `today-ja.png`. It writes WebP files of 780 px width to `shots/`. The page shows them in an iPhone frame. A language page uses its own file, or the English file.
+- `concept.py` cuts two product pictures with a transparent background. `shots/widget.webp` is the widget from `widget.png`. `shots/reminder.webp` is the notification and its "Taken" action from `reminder-expanded.png`. The page shows them with no phone, on a stage. They are English on every page.
+
+Use only real captures of the app. Do not draw app screens.
 
 ## Preview
 

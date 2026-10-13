@@ -11,29 +11,60 @@
     "lede": "Maru reminds you to take your vitamins, supplements, and medicine, and remembers what you took."
   },
   "store": {
-    "soon_small": "Coming soon to the",
-    "soon_label": "Coming soon to the App Store",
-    "notify": "Tell me when it is ready",
-    "nav_notify": "Notify me",
+    "soon": "Coming soon on the",
+    "store_first": false,
+    "notify": "Tell me when it is out",
     "notify_subject": "Notify me",
-    "badge_alt": "Download on the App Store",
-    "nav_download": "Download"
+    "badge_alt": "Download on the App Store"
   },
   "shots": {
-    "today": {"label": "Today", "alt": "The Today screen of Maru with the items to take now."},
-    "reminder": {"label": "Reminder", "alt": "A Maru reminder on the Lock Screen with the action Taken."},
-    "history": {"label": "History", "alt": "The History screen of Maru with a graph of past days and the last 7 days of each item."},
-    "widget": {"label": "Widget", "alt": "A Maru widget on the iPhone Home Screen."},
-    "detail": {"label": "Item", "alt": "The page of one item in Maru with its times, its amount, and its last 7 days."}
+    "today": {
+      "label": "Today",
+      "alt": "The Today screen of Maru with the items to take now."
+    },
+    "reminder": {
+      "alt": "A Maru reminder to take Vitamin D, with the action Taken."
+    },
+    "history": {
+      "label": "History",
+      "alt": "The History screen of Maru with a graph of past days and the last 7 days of each item."
+    },
+    "widget": {
+      "alt": "The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening."
+    },
+    "detail": {
+      "label": "Item",
+      "alt": "The page of one item in Maru with its times, its amount, and its last 7 days."
+    }
   },
   "blocks": [
-    {"shot": "reminder", "title": "Reminders when you want them", "text": "Pick your times, then tap Taken right on the reminder."},
-    {"shot": "history", "title": "See what you took", "text": "See months at a glance, and the last seven days of every item."},
-    {"shot": "widget", "title": "On your Home Screen", "text": "Add the Maru widget and see your day at a glance."},
-    {"shot": "detail", "title": "One page per item", "text": "See its times, its amount, and its last seven days."}
+    {
+      "shot": "reminder",
+      "title": "Reminders when you want them",
+      "text": "Pick your times, then tap Taken right on the reminder."
+    },
+    {
+      "shot": "history",
+      "title": "See what you took",
+      "text": "See months at a glance, and the last seven days of every item."
+    },
+    {
+      "shot": "widget",
+      "title": "On your Home Screen",
+      "text": "Add the Maru widget and see your day at a glance."
+    },
+    {
+      "shot": "detail",
+      "title": "One page per item",
+      "text": "See its times, its amount, and its last seven days."
+    }
   ],
   "trust_title": "Good to know",
-  "trust": ["Free", "No account", "Your records stay on your iPhone"],
+  "trust": [
+    "Free and open source",
+    "No account",
+    "Your records stay on your iPhone"
+  ],
   "footer": {
     "faq": "FAQ",
     "support": "Support",
@@ -47,20 +78,62 @@
     "desc": "Short answers about Maru: the price, your data, reminders, and moving to a new iPhone.",
     "h1": "Questions and answers",
     "items": [
-      ["Is Maru free?", "Yes, with no subscription, no ads, and no limit on items. You can leave a tip if you like, but a tip unlocks nothing."],
-      ["Do I need an account?", "No. Open Maru and add what you take."],
-      ["Where is my data?", "Your items and records stay on your iPhone. The <a href=\"{privacy}\">privacy page</a> has the details."],
-      ["Why not an alarm or Apple Health?", "An alarm rings, but it does not know what you took. Apple Health does much more, and Maru does one small job: it shows what to take now, and one tap records it."],
-      ["Can I record from the reminder?", "Yes, when the reminder is for one item: tap Taken. A reminder for several items opens Maru."],
-      ["Will Maru keep reminding me?", "Turn on Remind Again in Settings, and Maru sends up to 12 more reminders for a dose. Maru is not an alarm, so silent mode or a Focus can hold a reminder."],
-      ["What if I forget to record?", "Nothing happens, and Maru has no streaks. You can record later or change the time."],
-      ["Does Maru tell me what to take?", "No. Maru gives no medical advice: you enter what you take, and Maru reminds you."],
-      ["Does Maru count the pills I have left?", "No. Maru reminds and records, and nothing more."],
-      ["How do I move to a new iPhone?", "In Settings, tap Back Up on the old iPhone and Restore from Backup on the new one. The backup file is not encrypted, so keep it private."],
-      ["Can I get my records out?", "Yes. Export Records in Settings makes a file that Numbers and Excel can open."],
-      ["Is there an Apple Watch app?", "No. Maru is an iPhone app, and it does not sync between devices."],
-      ["Which languages does Maru speak?", "English, Simplified Chinese, Japanese, Spanish, German, and Korean."],
-      ["Is Maru open source?", "Yes. The code is on <a href=\"{github}\">GitHub</a> under the MIT license."]
+      [
+        "Is Maru free?",
+        "Yes, with no subscription, no ads, and no limit on items. You can leave a tip if you like, but a tip unlocks nothing."
+      ],
+      [
+        "Do I need an account?",
+        "No. Open Maru and add what you take."
+      ],
+      [
+        "Where is my data?",
+        "Your items and records stay on your iPhone. The <a href=\"{privacy}\">privacy page</a> has the details."
+      ],
+      [
+        "Why not an alarm or Apple Health?",
+        "An alarm rings, but it does not know what you took. Apple Health does much more, and Maru does one small job: it shows what to take now, and one tap records it."
+      ],
+      [
+        "Can I record from the reminder?",
+        "Yes, when the reminder is for one item: tap Taken. A reminder for several items opens Maru."
+      ],
+      [
+        "Will Maru keep reminding me?",
+        "Turn on Remind Again in Settings, and Maru sends up to 12 more reminders for a dose. Maru is not an alarm, so silent mode or a Focus can hold a reminder."
+      ],
+      [
+        "What if I forget to record?",
+        "Nothing happens, and Maru has no streaks. You can record later or change the time."
+      ],
+      [
+        "Does Maru tell me what to take?",
+        "No. Maru gives no medical advice: you enter what you take, and Maru reminds you."
+      ],
+      [
+        "Does Maru count the pills I have left?",
+        "No. Maru reminds and records, and nothing more."
+      ],
+      [
+        "How do I move to a new iPhone?",
+        "In Settings, tap Back Up on the old iPhone and Restore from Backup on the new one. The backup file is not encrypted, so keep it private."
+      ],
+      [
+        "Can I get my records out?",
+        "Yes. Export Records in Settings makes a file that Numbers and Excel can open."
+      ],
+      [
+        "Is there an Apple Watch app?",
+        "No. Maru is an iPhone app, and it does not sync between devices."
+      ],
+      [
+        "Which languages does Maru speak?",
+        "English, Simplified Chinese, Japanese, Spanish, German, and Korean."
+      ],
+      [
+        "Is Maru open source?",
+        "Yes. The code is on <a href=\"{github}\">GitHub</a> under the MIT license."
+      ]
     ]
   },
   "support": {
@@ -86,5 +159,6 @@
     ],
     "binding": "",
     "headings": {}
-  }
+  },
+  "github": "Maru on GitHub"
 }

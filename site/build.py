@@ -24,10 +24,25 @@ GITHUB = "https://github.com/ImHangLi/maru"
 EMAIL = "hello@maru.day"
 FEEDBACK_FORM = "https://tally.so/r/jadWkR"
 # The language code (also the hreflang value) and the folder of each language. English is the default.
-LANGS = [("en", ""), ("zh-Hans", "zh-hans"), ("ja", "ja"), ("es", "es"), ("de", "de"), ("ko", "ko")]
+# A folder is a two-letter name, because ads and links carry it. The language code stays a correct language tag.
+LANGS = [("en", ""), ("zh-Hans", "cn"), ("ja", "jp"), ("es", "es"), ("de", "de"), ("ko", "kr")]
 PAGES = ["index.html", "faq.html", "privacy.html", "support.html"]
-SHOTS = ["today", "reminder", "history", "widget", "detail"]
+# Three screenshots go in an iPhone frame. Two product pictures show one element with no frame (see concept.py).
+SHOTS = ["today", "history", "detail"]
+PICTURES = ["reminder", "widget"]
 SHOT_WIDTH = 780
+# Apple asks for a badge height of 40 px or more on a screen.
+NAV_BADGE, PAGE_BADGE = 40, 56
+# The GitHub mark (Octicons "mark-github") and a globe for the language menu.
+GITHUB_MARK = ('<svg class="icon" viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0c4.42 0 8 '
+               '3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 '
+               '1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27'
+               '-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 '
+               '3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 '
+               '1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
+GLOBE = ('<svg class="icon" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" '
+         'stroke-width="1.5"><circle cx="10" cy="10" r="7.25"/><path d="M2.75 10h14.5M10 2.75c2.2 2.3 3.2 4.6 3.2 7.25s-1 4.95-3.2 '
+         '7.25c-2.2-2.3-3.2-4.6-3.2-7.25s1-4.95 3.2-7.25Z"/></svg>')
 
 SITE = Path(__file__).resolve().parent
 STRINGS = {code: json.loads((SITE / "src/strings" / f"{code}.json").read_text("utf-8")) for code, _ in LANGS}
@@ -72,8 +87,18 @@ def import_shots(source):
         print(f"shot {stem}")
 
 
+def picture(code, name):
+    """One real element of the app on a calm stage. The picture is English on every page."""
+    file = SITE / "shots" / f"{name}.webp"
+    width, height = webp_size(file)
+    return (f'<div class="stage"><img src="/shots/{file.name}" width="{width}" height="{height}" loading="lazy" '
+            f'decoding="async" alt="{e(STRINGS[code]["shots"][name]["alt"])}"></div>')
+
+
 def device(code, shot, eager=False):
     """An iPhone frame around a real screenshot. The language file wins, then the English file."""
+    if shot in PICTURES:
+        return picture(code, shot)
     s = STRINGS[code]["shots"][shot]
     files = [SITE / "shots" / f"{shot}-{code}.webp", SITE / "shots" / f"{shot}.webp"]
     file = next((f for f in files if f.exists()), None)
@@ -85,25 +110,26 @@ def device(code, shot, eager=False):
             f'height="{height}" {load} alt="{e(s["alt"])}"></div><span class="island" aria-hidden="true"></span></div>')
 
 
-def store_button(code):
+def store(code, height):
+    """The App Store button. After the release: Apple's badge, as Apple made it. Before the release: a plain
+    black pill in the same format with no Apple logo, because Apple keeps its badge for an app that is in the store."""
     s = STRINGS[code]["store"]
     if STORE_URL:
         svg = (SITE / "badges" / f"{code}.svg").read_text("utf-8")
-        width, height = (float(v) for v in re.search(r'width="([\d.]+)" height="([\d.]+)"', svg).groups())
-        return (f'<div class="cta"><a class="badge" href="{e(STORE_URL)}"><img src="/badges/{code}.svg" '
-                f'width="{round(width * 56 / height)}" height="56" alt="{e(s["badge_alt"])}"></a></div>')
-    mail = f"mailto:{EMAIL}?subject={quote(s['notify_subject'])}"
-    return (f'<div class="cta"><span class="store" role="img" aria-label="{e(s["soon_label"])}">'
-            f'<small>{e(s["soon_small"])}</small><strong>App Store</strong></span>'
-            f'<a class="notify" href="{mail}">{e(s["notify"])}</a></div>')
+        width, natural = (float(v) for v in re.search(r'width="([\d.]+)" height="([\d.]+)"', svg).groups())
+        return (f'<a class="badge" href="{e(STORE_URL)}"><img src="/badges/{code}.svg" '
+                f'width="{round(width * height / natural)}" height="{height}" alt="{e(s["badge_alt"])}"></a>')
+    lines = [f'<span class="store-small">{e(s["soon"])}</span>', '<span class="store-name">App Store</span>']
+    size = "store store-nav" if height == NAV_BADGE else "store"
+    return f'<span class="{size}">{"".join(reversed(lines) if s["store_first"] else lines)}</span>'
 
 
-def nav_cta(code):
+def cta(code):
     s = STRINGS[code]["store"]
     if STORE_URL:
-        return f'<a class="nav-cta" href="{e(STORE_URL)}">{e(s["nav_download"])}</a>'
+        return f'<div class="cta">{store(code, PAGE_BADGE)}</div>'
     mail = f"mailto:{EMAIL}?subject={quote(s['notify_subject'])}"
-    return f'<a class="nav-cta" href="{mail}">{e(s["nav_notify"])}</a>'
+    return f'<div class="cta">{store(code, PAGE_BADGE)}<a class="notify" href="{mail}">{e(s["notify"])}</a></div>'
 
 
 def phrases(text):
@@ -119,6 +145,9 @@ def layout(code, page, title, desc, main, head=""):
     banner = re.search(r"id(\d+)", STORE_URL)
     banner = f'<meta name="apple-itunes-app" content="app-id={banner.group(1)}">\n' if banner else ""
     current = ' aria-current="page"'
+    menu = "".join(
+        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}</a></li>'
+        for c, _ in LANGS)
     languages = "".join(
         f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
         f'data-close="{e(STRINGS[c]["close"])}"{current if c == code else ""}>{e(STRINGS[c]["name"])}</a></li>'
@@ -149,11 +178,19 @@ def layout(code, page, title, desc, main, head=""):
 </head>
 <body>
 <a class="skip" href="#main">{e(s["skip"])}</a>
-<header class="site-header"><div class="nav-inner"><a class="brand" href="{url(code, "index.html")}"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a><nav class="nav-links" aria-label="{e(s["nav_label"])}"><a href="{url(code, "faq.html")}"{current if page == "faq.html" else ""}>{e(f["faq"])}</a>{nav_cta(code)}</nav></div></header>
+<header class="site-header"><div class="nav-inner">
+<a class="brand" href="{url(code, "index.html")}"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
+<nav class="nav-links" aria-label="{e(s["nav_label"])}">
+<a class="nav-text" href="{url(code, "faq.html")}"{current if page == "faq.html" else ""}>{e(f["faq"])}</a>
+<a class="nav-icon" href="{GITHUB}" aria-label="{e(s["github"])}">{GITHUB_MARK}</a>
+<details class="lang-menu"><summary>{GLOBE}<span class="sr">{e(f["language"])}: </span><span class="lang-name">{e(s["name"])}</span></summary><ul>{menu}</ul></details>
+{store(code, NAV_BADGE)}
+</nav>
+</div></header>
 {main}
 <footer class="site-footer">
 <div class="footer-inner">
-<nav class="footer-links" aria-label="Maru"><a href="{url(code, "faq.html")}">{e(f["faq"])}</a><a href="{url(code, "support.html")}">{e(f["support"])}</a><a href="{url(code, "privacy.html")}">{e(f["privacy"])}</a><a href="{GITHUB}">{e(f["source"])}</a></nav>
+<ul class="footer-links"><li><a href="{url(code, "faq.html")}">{e(f["faq"])}</a></li><li><a href="{url(code, "support.html")}">{e(f["support"])}</a></li><li><a href="{url(code, "privacy.html")}">{e(f["privacy"])}</a></li><li><a href="{GITHUB}">{e(f["source"])}</a></li></ul>
 <nav class="langs" aria-label="{e(f["language"])}"><ul>{languages}</ul></nav>
 <p>{e(f["advice"])}</p>
 </div>
@@ -172,7 +209,8 @@ def home(code):
         f'<h2>{e(b["title"])}</h2><p class="lede">{e(b["text"])}</p></div>'
         f'<div class="feature-stage">{device(code, b["shot"])}</div></article>\n'
         for i, b in enumerate(s["blocks"]))
-    trust = "".join(f"<li>{e(t)}</li>" for t in s["trust"])
+    first, *rest = s["trust"]
+    trust = f'<li><a href="{GITHUB}">{GITHUB_MARK}{e(first)}</a></li>' + "".join(f"<li>{e(t)}</li>" for t in rest)
     main = f"""<main id="main">
 <section class="hero">
 <div class="wrap hero-grid">
@@ -180,7 +218,7 @@ def home(code):
 <img class="hero-icon" src="/icon.png" alt="" width="72" height="72">
 <h1>{phrases(h["h1"])}</h1>
 <p class="lede">{e(h["lede"])}</p>
-{store_button(code)}
+{cta(code)}
 </div>
 <div class="hero-stage">{device(code, "today", eager=True)}</div>
 </div>
@@ -191,7 +229,7 @@ def home(code):
 <div class="closer" data-reveal="large">
 <h2 id="trust-title" class="sr">{e(s["trust_title"])}</h2>
 <ul class="nots">{trust}</ul>
-{store_button(code)}
+{cta(code)}
 </div>
 </section>
 </main>"""

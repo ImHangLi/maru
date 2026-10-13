@@ -18,3 +18,11 @@ Pages:
 - [Privacy](https://maru.day/privacy.html): what the app stores and what it does not do.
 - [Support](https://maru.day/support.html): hello@maru.day and the feedback form.
 - [Source](https://github.com/ImHangLi/maru): MIT license.
+
+Languages:
+- English: https://maru.day/
+- Simplified Chinese: https://maru.day/cn/
+- Japanese: https://maru.day/jp/
+- Spanish: https://maru.day/es/
+- German: https://maru.day/de/
+- Korean: https://maru.day/kr/

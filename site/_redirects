@@ -1,1 +1,9 @@
 /compare.html /faq.html 301
+/us / 301
+/us/* /:splat 301
+/zh-hans /cn/ 301
+/zh-hans/* /cn/:splat 301
+/ja /jp/ 301
+/ja/* /jp/:splat 301
+/ko /kr/ 301
+/ko/* /kr/:splat 301
