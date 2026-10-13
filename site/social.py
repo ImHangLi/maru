@@ -35,7 +35,7 @@ HERO = """
 body {{ background: none; }}
 .card {{ overflow: hidden; border-radius: 40px; background: radial-gradient(60% 90% at 78% 62%, #FFE3E9, transparent 70%), #F5F5F7; }}
 """
-# The dark hero: the dark tokens of style.css, the pink of iOS in dark mode, and a capture of Today in dark mode.
+# The dark hero: the dark tokens, the pink of iOS in dark mode, and a capture of Today in dark mode.
 HERO_DARK = """
 body {{ background: none; color: #F5F5F7; }}
 .card {{
@@ -46,7 +46,7 @@ h1 span + span {{ color: #FF375F; }}
 .device {{ background: #3A3A3C; }}
 .screen {{ background: #000000; }}
 """
-# A feature picture is a block of the home page on a card, with style.css. The dark card gets the dark tokens.
+# A feature picture is a block of the home page on a card, with style.css. The dark card gets DARK_TOKENS.
 FEATURE = """<!DOCTYPE html>
 <html lang="en">
 <meta charset="utf-8">
@@ -129,6 +129,40 @@ def shoot(text, file, size, scale=1):
     print(f"card {file.name}")
 
 
+# The colors of the app and the page in dark mode, for the dark README pictures. The site itself is light only.
+DARK_TOKENS = """
+    --bg: #000000;
+    --bg-alt: #121214;
+    --surface: #1C1C1E;
+    --text: #F5F5F7;
+    --text-2: #A1A1A6;
+    --link: #FF6482;
+    --focus: #FF6482;
+    --tint-soft: rgba(255, 55, 95, 0.12);
+    --ring-color: rgba(255, 255, 255, 0.12);
+    --bar-bg: #1C1C1E;
+    --bar-ring: var(--hairline);
+    --tip-bg: #F5F5F7;
+    --tip-text: #1D1D1F;
+    --device-bezel: #3A3A3C;
+    --device-screen: #1C1C1E;
+    --app-label: #FFFFFF;
+    --app-label-2: #8D8D93;
+    --app-widget: #1C1C1E;
+    --app-cap-off: #2C2C2E;
+    --app-cap-line: #48484A;
+    --app-banner: rgba(255, 255, 255, 0.14);
+    --app-banner-rim: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    --app-banner-text: rgba(255, 255, 255, 0.93);
+    --app-banner-2: rgba(255, 255, 255, 0.85);
+    --app-icon-ring: rgba(0, 0, 0, 0.2);
+    --wallpaper: radial-gradient(120% 80% at 0% 0%, #4A1424, transparent 60%), radial-gradient(90% 70% at 100% 100%, #7A1B35, transparent 70%), linear-gradient(160deg, #1A080E, #33101C);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), var(--hairline);
+    --shadow-elevated: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3), var(--hairline);
+    --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 24px rgba(0, 0, 0, 0.4), 0 40px 80px rgba(0, 0, 0, 0.5), var(--hairline);
+"""
+
+
 def card(code, size, extra="", dark=False):
     """The card of one language. The dark card has one capture of Today in dark mode, with its bars."""
     parts = json.loads((SITE / "src/strings" / f"{code}.json").read_text("utf-8"))["home"]["h1"].split("|")
@@ -140,14 +174,13 @@ def card(code, size, extra="", dark=False):
 
 
 def feature(shot, dark):
-    """A block of the home page on a card. The dark tokens are the dark block of style.css.
+    """A block of the home page on a card. The dark tokens are DARK_TOKENS.
     The dark History card shows the capture of History in dark mode."""
     tokens = ""
     block = build.stage("en", shot).replace('src="/', 'src="')
     if dark:
         block = block.replace("shots/history-en.webp", "shots/history-dark-en.webp")
-        css = (SITE / "style.css").read_text("utf-8")
-        tokens = ":root {" + re.search(r"prefers-color-scheme: dark\) \{\s*:root \{(.*?)\}", css, re.S).group(1) + "}"
+        tokens = ":root {" + DARK_TOKENS + "}"
     return FEATURE.format(tokens=tokens, width=FEATURE_SIZE[0], height=FEATURE_SIZE[1],
                           background="#161618" if dark else "#F5F5F7",
                           ring="rgba(255, 255, 255, 0.08)" if dark else "transparent",

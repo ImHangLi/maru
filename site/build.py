@@ -392,9 +392,8 @@ def layout(code, page, title, desc, main, head=""):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{e(title)}</title>
 <meta name="description" content="{e(desc)}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#FFFFFF">
 {banner}<link rel="canonical" href="{here}">
 {alternates}<link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}">
 <link rel="icon" href="/icon.png" type="image/png">
