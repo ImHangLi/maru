@@ -93,7 +93,7 @@ struct ItemDetailView: View {
                     }
                 }
             }
-            WeekSection(week: detail.week, color: item.color.color)
+            WeekSection(week: detail.week, item: item)
             Section {
                 if item.isArchived {
                     Button("Restore") { change { try await model.setArchived(false, for: item.id) } }
@@ -287,30 +287,43 @@ private struct ScheduleSection: View {
     }
 }
 
-/// The strip of the last 7 days, the same view and rule as a row of History (D054, D057), and a line that
-/// counts the days. The History tab has the records.
+/// The strip of the last 7 days, the same view and rule as a row of History (D054, D057), after the form icon.
+/// A line under it counts the doses that are taken, skipped, and with no record (D061). The History tab has the
+/// records.
 private struct WeekSection: View {
     /// `nil` when the item had no planned dose and no taken as-needed dose in the week.
     let week: HistoryItemWeek?
-    let color: Color
+    let item: Item
 
     var body: some View {
         Section("Last 7 Days") {
             VStack(alignment: .leading, spacing: 8) {
-                WeekStrip(marks: week?.marks ?? Array(repeating: HistoryDayMark.none, count: 7), color: color)
-                Text(verbatim: summary)
+                HStack(spacing: 12) {
+                    FormIcon(form: item.form, color: item.color, photo: item.imageReference)
+                        .accessibilityHidden(true)
+                    WeekStrip(marks: week?.marks ?? Array(repeating: HistoryDayMark.none, count: 7), color: item.color.color)
+                }
+                Text(verbatim: counts)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .numberMotion(value: summary)
+                    .numberMotion(value: counts)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.vertical, 4)
-            // The strip says nothing to VoiceOver, so the row reads the summary.
+            // The strip says nothing to VoiceOver, so the row reads the counts.
             .accessibilityElement(children: .combine)
         }
     }
 
-    private var summary: String {
-        week?.summary ?? String(localized: "No records in the last 7 days.")
+    /// For example "Taken: 1 · Skipped: 0 · No record: 1". An as-needed item has only the taken doses.
+    private var counts: String {
+        guard let week else { return String(localized: "No records in the last 7 days.") }
+        let taken = String(localized: "Taken: \(week.takenDoses)", comment: "Item detail: the doses taken in the last 7 days. Example: Taken: 5.")
+        if week.isAsNeeded { return taken }
+        return [
+            taken,
+            String(localized: "Skipped: \(week.skippedDoses)", comment: "Item detail: the planned doses skipped in the last 7 days. Example: Skipped: 1."),
+            String(localized: "No record: \(week.unrecordedDoses)", comment: "Item detail: the planned doses with no record in the last 7 days. Example: No record: 1."),
+        ].joined(separator: " · ")
     }
 }

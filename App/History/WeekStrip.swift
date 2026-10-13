@@ -10,7 +10,7 @@ extension HistoryItemWeek {
 }
 
 /// 7 small capsules, the oldest day first (D054). The History rows and the item detail share it (D057).
-/// Filled: every planned dose taken, or an as-needed dose taken. Filled at 40%: some doses taken. Outline: planned, and none taken. An empty slot of the same width: nothing planned.
+/// Filled: every planned dose taken, or an as-needed dose taken. Filled at 40%: some doses taken. Outline: planned, and none taken. A faint gray capsule: nothing planned (D061).
 /// A capsule that changes after a record uses the state motion, which keeps its fade with Reduce Motion.
 struct WeekStrip: View {
     let marks: [HistoryDayMark]
@@ -28,6 +28,7 @@ struct WeekStrip: View {
     /// Both layers stay in the tree, so a change of the mark fades and never jumps.
     private func capsule(_ mark: HistoryDayMark) -> some View {
         ZStack {
+            Capsule().fill(.quaternary).opacity(mark == .none ? 1 : 0)
             Capsule().fill(color).opacity(mark == .all ? 1 : mark == .some ? 0.4 : 0)
             Capsule().strokeBorder(color, lineWidth: 1.5).opacity(mark == .missed ? 1 : 0)
         }

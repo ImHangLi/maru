@@ -944,7 +944,7 @@ Maintainer decision after use on the device.
 - A tap that folds a part removes the choice, so the part folds by itself again (D012, D028).
 - The choice is a display setting in `UserDefaults`, not a record. A backup does not carry it.
 
-## D054 · 2026-10-12 · History rows by item and logs by item and by day
+## D054 · 2026-10-12 · History rows by item and logs by item and by day (empty slot replaced by D061)
 
 Maintainer decision on 2026-10-12, from the pattern of the Finch app (concept "S2"). It replaces the long timeline on the main page of History (D032) and the scroll of the timeline to a day of the graph (D041).
 
@@ -967,7 +967,7 @@ Agent detail:
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in dark mode and at the largest text sizes, the push from the graph, the alerts from a log, and VoiceOver need a check on a real iPhone.
 
-## D057 · 2026-10-12 · Today never folds, and the item detail shows the week strip ("Record All" removed by D060)
+## D057 · 2026-10-12 · Today never folds, and the item detail shows the week strip ("Record All" removed by D060, line under the strip replaced by D061)
 
 Maintainer decision on 2026-10-12, after use on the device.
 
@@ -1044,5 +1044,16 @@ Maintainer decision on 2026-10-13, after use on the device.
 - A part of the day on Today has no "Record All" button. The user records each row on its own. This replaces the "Record All" rule of D021 and D057.
 - The model operation, the header button, its VoiceOver label, and the two catalog keys are gone. `TodaySnapshot.Group.openEntries` is gone, because only the button used it.
 - A record is still one event per row, so the store and the record rules do not change.
+
+Not verified: no build of the app on this Mac. CI builds the app.
+
+## D061 · 2026-10-13 · The week strip of the item detail has the icon and the counts
+
+Maintainer request on 2026-10-13, after use on the device.
+
+- The strip of the item detail starts with the form icon of the item, as a row of History does.
+- The line under the strip counts the doses of the last 7 days: taken, skipped, and with no record. An as-needed item has only the taken doses. This replaces the line of D057.
+- `HistoryItemWeek` has the three counts. They use the same doses as the marks, so a dose that is not due yet does not count.
+- A day with nothing planned shows a faint gray capsule in place of an empty slot, in the detail and in History. This replaces that rule of D054. The strip shows all 7 days, so it has no gap.
 
 Not verified: no build of the app on this Mac. CI builds the app.
