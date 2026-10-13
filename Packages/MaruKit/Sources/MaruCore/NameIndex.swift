@@ -4,7 +4,9 @@ import Foundation
 ///
 /// A match proposes a name and nothing else: no type, no amount, and no time. The lists are a typing aid.
 /// They are not medical information. A third list gives the smart completion of common supplements (D043).
-/// Build the index one time, off the main thread. A search reads it and is quick enough for each key press.
+/// The app gives the lists of its language first, then the English lists, because people type Latin names
+/// too (D069). Build the index one time, off the main thread. A search reads it and is quick enough for each
+/// key press.
 public struct NameIndex: Sendable {
     /// A name or an alias in the form that the search compares.
     private struct Key: Sendable {
@@ -48,6 +50,8 @@ public struct NameIndex: Sendable {
         let name: String
         let category: ItemCategory
         let keys: [Key]
+        /// The English name with the same smart completion, in compact form, for a name in another language.
+        let twin: String?
 
         /// A match in the name counts in full. An alias counts one rank lower, and only from the start of
         /// a word, because the row shows the name and not the alias.
@@ -66,7 +70,8 @@ public struct NameIndex: Sendable {
     private let completions: [String: SmartCompletion]
 
     /// Reads the lists. In the name lists, each line is one name, then its aliases after "|". The order is
-    /// from the most common name down. In the completion list, each line is a name and its fields after "|".
+    /// from the most common name down. A field that starts with "=" is not an alias: it names the English
+    /// twin of a name in another language. In the completion list, each line is a name and its fields after "|".
     /// A line that starts with "#" is a comment.
     public init(supplements: String, medications: String = "", completions: String = "") {
         entries = Self.entries(in: supplements, category: .supplement)
@@ -88,7 +93,9 @@ public struct NameIndex: Sendable {
 
     private static func entries(in list: String, category: ItemCategory) -> [Entry] {
         lines(of: list).map { fields in
-            Entry(name: fields[0], category: category, keys: fields.filter { !$0.isEmpty }.map(Key.init))
+            let twin = fields.first { $0.hasPrefix("=") }.map { Key(String($0.dropFirst())).compact }
+            let keys = fields.filter { !$0.isEmpty && !$0.hasPrefix("=") }.map(Key.init)
+            return Entry(name: fields[0], category: category, keys: keys, twin: twin)
         }
     }
 
@@ -97,6 +104,7 @@ public struct NameIndex: Sendable {
     /// Only for a supplement: the type on the screen is "Supplement", and the name is a supplement name or one
     /// of its aliases, in full. The match ignores case, accents, spaces, hyphens, and dots. A name that is also
     /// a medicine name gets none, and so does a longer name such as a brand with a supplement name in it.
+    /// A name in another language gets the completion of its English twin, and no data of its own (D069).
     public func completion(for text: String, category: ItemCategory) -> SmartCompletion? {
         guard category == .supplement else { return nil }
         let query = Key(text).compact
@@ -104,14 +112,16 @@ public struct NameIndex: Sendable {
         var listName: String?
         for entry in entries where entry.keys.contains(where: { $0.compact == query }) {
             guard entry.category == .supplement else { return nil }
-            if listName == nil { listName = entry.keys.first?.compact }
+            if listName == nil { listName = entry.twin ?? entry.keys.first?.compact }
         }
         return completions[listName ?? query]
     }
 
     /// The names to propose for the text in the name field.
     ///
-    /// The search ignores case, accents, spaces, hyphens, and dots. It needs two letters or digits.
+    /// The search ignores case, accents, spaces, hyphens, and dots. It needs two letters or digits, or one
+    /// character of Chinese, Japanese, or Korean. Hiragana matches katakana, and a Hangul syllable that the
+    /// keyboard did not complete yet matches without its last consonant (D069).
     /// A name of the user's own items comes first. Then come the matches at the start of a name, the matches
     /// at the start of a word, and the matches in a word, each in the order of the list.
     /// In one rank, the names of the type that the edit screen shows come first. The type only orders
@@ -124,7 +134,14 @@ public struct NameIndex: Sendable {
         limit: Int = 4
     ) -> [String] {
         let query = Key(text)
-        guard query.compact.count >= 2, limit > 0 else { return [] }
+        guard query.compact.count >= 2 || query.compact.unicodeScalars.contains(where: { $0.value >= 0x1100 }),
+              limit > 0 else { return [] }
+        let found = names(for: query, typed: text, category: category, ownNames: ownNames, limit: limit)
+        guard found.isEmpty, let open = Self.withoutOpenConsonant(query.compact) else { return found }
+        return names(for: Key(open), typed: text, category: category, ownNames: ownNames, limit: limit)
+    }
+
+    private func names(for query: Key, typed text: String, category: ItemCategory, ownNames: [String], limit: Int) -> [String] {
         let typed = text.trimmingCharacters(in: .whitespacesAndNewlines)
 
         var seen: Set<String> = []
@@ -137,7 +154,7 @@ public struct NameIndex: Sendable {
         }
         for name in ownNames {
             let name = name.trimmingCharacters(in: .whitespacesAndNewlines)
-            add(Entry(name: name, category: category, keys: [Key(name)]), base: -6)
+            add(Entry(name: name, category: category, keys: [Key(name)], twin: nil), base: -6)
         }
         for entry in entries { add(entry, base: 0) }
 
@@ -148,9 +165,28 @@ public struct NameIndex: Sendable {
             .map(\.element.name)
     }
 
-    private static func words(of text: String) -> [String] {
-        text.folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: nil)
-            .split(whereSeparator: { !$0.isLetter && !$0.isNumber })
-            .map(String.init)
+    /// The text while a Korean keyboard composes a syllable: "빝" on the way from "비" to "비타", or "비ㅌ".
+    /// It returns the text without the last consonant, or `nil` when the last character is complete.
+    private static func withoutOpenConsonant(_ text: String) -> String? {
+        guard let last = text.unicodeScalars.last?.value else { return nil }
+        let rest = String(text.dropLast())
+        // A consonant alone, from the compatibility jamo block.
+        if (0x3131...0x314E).contains(last) { return rest.isEmpty ? nil : rest }
+        // A syllable is 0xAC00 + (initial * 21 + vowel) * 28 + final. A final of 0 is no last consonant.
+        guard (0xAC00...0xD7A3).contains(last), (last - 0xAC00) % 28 != 0 else { return nil }
+        return rest + String(UnicodeScalar(last - (last - 0xAC00) % 28)!)
+    }
+
+    /// The words of a text in the form that the search compares: lowercase, no accent, full-width letters as
+    /// plain letters, and hiragana as katakana. A voiced kana keeps its mark: "バ" is not "ハ".
+    static func words(of text: String) -> [String] {
+        let plain = text.folding(options: [.caseInsensitive, .widthInsensitive], locale: nil)
+            .applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
+        return plain.split(whereSeparator: { !$0.isLetter && !$0.isNumber })
+            .map { word in
+                word.unicodeScalars.contains { (0x3040...0x30FF).contains($0.value) }
+                    ? String(word)
+                    : word.folding(options: .diacriticInsensitive, locale: nil)
+            }
     }
 }

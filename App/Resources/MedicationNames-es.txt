@@ -1,0 +1,217 @@
+# Common medicine names in Spanish, for the name suggestions of the add screen (D038, D069).
+# The format is the format of MedicationNames.txt: one name on each line, then its aliases after "|".
+# An alias is only another spelling or a clear abbreviation of the same name. Each other name is its own entry.
+# The order is from the most common name down. The names are the generic names (DCI) in Spanish. No brand names.
+# Written from general knowledge. A native speaker must check it. It is a typing aid, not medical information.
+Paracetamol | Acetaminofén
+Ibuprofeno
+Ácido acetilsalicílico | Aspirina
+Metamizol | Dipirona
+Naproxeno
+Diclofenaco
+Dexketoprofeno
+Ketorolaco
+Tramadol
+Celecoxib
+Omeprazol
+Pantoprazol
+Esomeprazol
+Lansoprazol
+Ranitidina
+Famotidina
+Almagato
+Domperidona
+Metoclopramida
+Ondansetrón
+Loperamida
+Lactulosa
+Macrogol
+Bisacodilo
+Butilescopolamina
+Simeticona
+Atorvastatina
+Rosuvastatina
+Simvastatina
+Pravastatina
+Ezetimiba
+Fenofibrato
+Enalapril
+Ramipril
+Lisinopril
+Captopril
+Losartán
+Valsartán
+Candesartán
+Olmesartán
+Telmisartán
+Irbesartán
+Amlodipino
+Nifedipino
+Bisoprolol
+Atenolol
+Carvedilol
+Metoprolol
+Propranolol
+Nebivolol
+Hidroclorotiazida
+Furosemida
+Espironolactona
+Indapamida
+Torasemida
+Clopidogrel
+Acenocumarol
+Warfarina
+Apixabán
+Rivaroxabán
+Edoxabán
+Dabigatrán
+Metformina
+Sitagliptina
+Linagliptina
+Vildagliptina
+Empagliflozina
+Dapagliflozina
+Glimepirida
+Gliclazida
+Pioglitazona
+Semaglutida
+Dulaglutida
+Liraglutida
+Tirzepatida
+Insulina
+Insulina glargina
+Levotiroxina
+Tiamazol | Metimazol
+Loratadina
+Desloratadina
+Cetirizina
+Levocetirizina
+Ebastina
+Bilastina
+Fexofenadina
+Clorfenamina
+Montelukast
+Salbutamol
+Budesonida
+Fluticasona
+Beclometasona
+Bromuro de ipratropio
+Tiotropio
+Acetilcisteína
+Ambroxol
+Carbocisteína
+Dextrometorfano
+Codeína
+Pseudoefedrina
+Fenilefrina
+Oximetazolina
+Amoxicilina
+Amoxicilina con ácido clavulánico | Amoxicilina-clavulánico
+Azitromicina
+Claritromicina
+Cefuroxima
+Cefalexina
+Cefixima
+Ciprofloxacino
+Levofloxacino
+Doxiciclina
+Nitrofurantoína
+Fosfomicina
+Metronidazol
+Trimetoprima con sulfametoxazol | Cotrimoxazol
+Oseltamivir
+Aciclovir
+Valaciclovir
+Fluconazol
+Clotrimazol
+Terbinafina
+Prednisona
+Prednisolona
+Metilprednisolona
+Dexametasona
+Hidrocortisona
+Deflazacort
+Alprazolam
+Lorazepam
+Diazepam
+Clonazepam
+Bromazepam
+Lormetazepam
+Zolpidem
+Sertralina
+Escitalopram
+Citalopram
+Fluoxetina
+Paroxetina
+Venlafaxina
+Desvenlafaxina
+Duloxetina
+Mirtazapina
+Trazodona
+Bupropión
+Vortioxetina
+Amitriptilina
+Quetiapina
+Olanzapina
+Risperidona
+Aripiprazol
+Litio | Carbonato de litio
+Ácido valproico | Valproato
+Lamotrigina
+Levetiracetam
+Carbamazepina
+Topiramato
+Pregabalina
+Gabapentina
+Donepezilo
+Memantina
+Metilfenidato
+Atomoxetina
+Levodopa con carbidopa | Levodopa
+Pramipexol
+Sumatriptán
+Rizatriptán
+Alopurinol
+Febuxostat
+Colchicina
+Ácido alendrónico | Alendronato
+Risedronato
+Denosumab
+Calcifediol
+Colecalciferol
+Tamsulosina
+Silodosina
+Dutasterida
+Finasterida
+Solifenacina
+Mirabegrón
+Sildenafilo
+Tadalafilo
+Metotrexato
+Hidroxicloroquina
+Azatioprina
+Ácido ursodesoxicólico
+Progesterona
+Estradiol
+Levonorgestrel
+Drospirenona con etinilestradiol | Drospirenona y etinilestradiol
+Desogestrel
+Tamoxifeno
+Letrozol
+Anastrozol
+Isotretinoína
+Adapaleno
+Peróxido de benzoilo
+Minoxidil
+Nitroglicerina
+Amiodarona
+Digoxina
+Ivabradina
+Sacubitril con valsartán
+Latanoprost
+Timolol
+Lágrimas artificiales
+Suero oral | Sales de rehidratación oral
+Butilbromuro de hioscina
+Mebendazol
+Albendazol

@@ -59,18 +59,67 @@ extension AppStore {
         )
     }
 
-    /// The supplements and medications that many people take, with generic names. They are not the data of a person.
+    /// The supplements and medications that many people take in the market of the app language, with the generic
+    /// names and the dose words of that language (D069). They are not the data of a person. Each language has the
+    /// same shape: the same forms and times, so the pictures stay comparable.
     /// An item with no time has no schedule, so it is as needed (D021).
-    private static let samples: [(
+    private typealias Sample = (
         name: String, category: ItemCategory, form: ItemForm, amount: String?, times: [(hour: Int, minute: Int)]
-    )] = [
-        ("Vitamin D", .supplement, .softgel, "1 softgel", [(8, 0)]),
-        ("Levothyroxine", .medication, .tablet, "1 tablet", [(7, 0)]),
-        ("Omega-3", .supplement, .softgel, "2 softgels", [(12, 30)]),
-        ("Magnesium", .supplement, .capsule, "2 capsules", [(21, 0)]),
-        ("Atorvastatin", .medication, .tablet, "1 tablet", [(21, 0)]),
-        ("Ibuprofen", .medication, .tablet, nil, []),
+    )
+    private static let samplesByLanguage: [String: [Sample]] = [
+        "en": [
+            ("Vitamin D", .supplement, .softgel, "1 softgel", [(8, 0)]),
+            ("Levothyroxine", .medication, .tablet, "1 tablet", [(7, 0)]),
+            ("Omega-3", .supplement, .softgel, "2 softgels", [(12, 30)]),
+            ("Magnesium", .supplement, .capsule, "2 capsules", [(21, 0)]),
+            ("Atorvastatin", .medication, .tablet, "1 tablet", [(21, 0)]),
+            ("Ibuprofen", .medication, .tablet, nil, []),
+        ],
+        "zh-Hans": [
+            ("维生素 D", .supplement, .softgel, "1 粒", [(8, 0)]),
+            ("氨氯地平", .medication, .tablet, "1 片", [(7, 0)]),
+            ("鱼油", .supplement, .softgel, "2 粒", [(12, 30)]),
+            ("益生菌", .supplement, .capsule, "1 粒", [(21, 0)]),
+            ("阿托伐他汀", .medication, .tablet, "1 片", [(21, 0)]),
+            ("布洛芬", .medication, .tablet, nil, []),
+        ],
+        "ja": [
+            ("ビタミンD", .supplement, .softgel, "1粒", [(8, 0)]),
+            ("アムロジピン", .medication, .tablet, "1錠", [(7, 0)]),
+            ("DHA・EPA", .supplement, .softgel, "2粒", [(12, 30)]),
+            ("乳酸菌", .supplement, .capsule, "2粒", [(21, 0)]),
+            ("ロスバスタチン", .medication, .tablet, "1錠", [(21, 0)]),
+            ("ロキソプロフェン", .medication, .tablet, nil, []),
+        ],
+        "ko": [
+            ("비타민 D", .supplement, .softgel, "1캡슐", [(8, 0)]),
+            ("암로디핀", .medication, .tablet, "1정", [(7, 0)]),
+            ("오메가3", .supplement, .softgel, "2캡슐", [(12, 30)]),
+            ("유산균", .supplement, .capsule, "1캡슐", [(21, 0)]),
+            ("아토르바스타틴", .medication, .tablet, "1정", [(21, 0)]),
+            ("아세트아미노펜", .medication, .tablet, nil, []),
+        ],
+        "es": [
+            ("Vitamina D", .supplement, .softgel, "1 cápsula", [(8, 0)]),
+            ("Levotiroxina", .medication, .tablet, "1 comprimido", [(7, 0)]),
+            ("Omega 3", .supplement, .softgel, "2 cápsulas", [(12, 30)]),
+            ("Magnesio", .supplement, .capsule, "2 cápsulas", [(21, 0)]),
+            ("Atorvastatina", .medication, .tablet, "1 comprimido", [(21, 0)]),
+            ("Paracetamol", .medication, .tablet, nil, []),
+        ],
+        "de": [
+            ("Vitamin D3", .supplement, .softgel, "1 Kapsel", [(8, 0)]),
+            ("Levothyroxin", .medication, .tablet, "1 Tablette", [(7, 0)]),
+            ("Omega-3", .supplement, .softgel, "2 Kapseln", [(12, 30)]),
+            ("Magnesium", .supplement, .capsule, "2 Kapseln", [(21, 0)]),
+            ("Simvastatin", .medication, .tablet, "1 Tablette", [(21, 0)]),
+            ("Ibuprofen", .medication, .tablet, nil, []),
+        ],
     ]
+
+    private static var samples: [Sample] {
+        samplesByLanguage[Bundle.main.preferredLocalizations.first ?? "en"] ?? samplesByLanguage["en"]!
+    }
 
     /// The sample records start this many days before today, so the graph of the history has 13 weeks or fewer.
     private static let sampleHistoryDays = 80

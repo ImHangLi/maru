@@ -196,3 +196,16 @@ The full text is in `App/Localizable.xcstrings`, `Widget/Localizable.xcstrings`,
 | 33 | Form | Form proposal after a label scan | Use Drops | 점적제 사용 |
 | 34 | History | Correction of a time | Time changed to %@ | 변경된 시간: %@ |
 | 35 | Footer | Item detail: every-other-day plan | Maru sets the reminders of the next 7 dose days each time you open it. | Maru를 열 때마다 다음 7번의 복용일에 맞춰 미리 알림을 설정해요. |
+
+## Name lists (D069)
+
+The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.
+
+| Language | Supplements | Medicines | Check first |
+|---|---|---|---|
+| zh-Hans | 181 | 250 | 氮泵, 增肌粉, 大麦若叶, 黑芝麻丸, 维生素 AD, 坦洛新 and 坦索罗辛 as two entries |
+| ja | 182 | 218 | 正露丸 (brand or generic), 非変性II型コラーゲン, ボラージオイル, 銀翹散, the readings of the Kampo names |
+| ko | 165 | 198 | 부스터 with 프리워크아웃, 잔티젠, 락티움, 흑염소 진액, 오메가-3-산 에틸에스테르, the dose words 1캡슐 and 1정 |
+| es | 165 | 212 | Pre-entreno, Omega 3-6-9, Tila, Butilescopolamina and Butilbromuro de hioscina as two entries, the dose word "cápsula" for a softgel |
+| de | 166 | 216 | Grünes Pulver, Pre-Workout with the alias Booster, Meerwasser-Nasenspray, Schüßler-Salze, Kurkuma mit Piperin |
+

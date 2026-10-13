@@ -1123,3 +1123,28 @@ Agent decision, after a copy review of all user-facing text by a different model
 - The item detail shows its three counts (D061) as separate labelled values with space between them, and one under the other when the row is too narrow. This was the last "·" separator in the app, the widgets, the reminders, and the String Catalogs.
 
 Not verified: no build of the app on this Mac, and nobody saw the text on a display.
+
+## D069 · 2026-10-13 · Name lists in each language
+
+Maintainer request: in each language, the names of supplements and medicines are the names that people in that market use. Agent decisions on the details. Parts of D038 and D043 change.
+
+- zh-Hans, ja, ko, es, and de each get two lists in `App/Resources`: `SupplementNames-<language>.txt` and `MedicationNames-<language>.txt`. Each list has about 150 to 250 common names in the local script and spelling. They are not translations of the English lists.
+
+| Language | Supplements | Medicines | Supplements with an English twin |
+|---|---|---|---|
+| Simplified Chinese (zh-Hans) | 181 | 250 | 89 |
+| Japanese (ja) | 182 | 218 | 71 |
+| Korean (ko) | 165 | 198 | 70 |
+| Spanish (es) | 165 | 212 | 83 |
+| German (de) | 166 | 216 | 80 |
+
+- Medicines are generic names: 通用名 in Chinese, 一般名 in katakana in Japanese, 성분명 in Korean, DCI in Spanish, and Wirkstoffe in German. Everyday traditional medicines are in the medicine list by their formula names: Chinese patent medicines, Kampo formulas with their reading in hiragana, and Korean herbal formulas. No brand names.
+- The app reads the lists of its language first, then the English lists, because people type Latin names too. English has no extra list.
+- The search keeps the rules of D038 and adds three for Chinese, Japanese, and Korean. One character of these scripts is enough. Hiragana matches katakana, so a typed reading finds a katakana name or a Kampo name. A Hangul syllable that the keyboard did not complete yet matches without its last consonant. There is no pinyin or romaji search.
+- Smart completion (D043): a field `= <English name>` in a supplement line names the entry of `SupplementCompletions.txt` that the local name uses. A local name gets the form and the candidates of its English twin, and no data of its own. The candidate amounts stay in English words, as before.
+- An alias never leads to another name. A test reads the real lists of each language with the English lists, and checks that each name and alias belongs to one name only, and that each twin exists.
+- The debug sample data follows the app language, with six items that many people in that market take, in the same forms and at the same times as the English sample.
+- Sources: general knowledge of the generic names and label names of each market, with the public national naming systems (Chinese 通用名, Japanese 一般名, Korean 성분명, INN/DCI) as the reference for spelling. No database or list was copied, so no license applies and `docs/third-party-licenses.md` does not change.
+
+Not verified: no native speaker read the lists. `docs/localization-review.md` lists them. No build of the app on this Mac, and nobody saw the suggestions on a display.
+
