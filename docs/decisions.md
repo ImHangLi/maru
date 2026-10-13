@@ -173,7 +173,7 @@ Not added: Critical Alerts (Apple grants this entitlement only on request, and s
 
 Agent decision, after the study in `docs/research/2026-10-11-healthkit-medications-api.md`. An app can only read the medications that the user allows and their dose events. It cannot write a dose, and it cannot read schedule times. So Maru cannot be a faster front end for Health. Option 2 of D021 is closed. An optional read-only name import stays a later candidate. It needs a device test of the entitlement first.
 
-## D023 · 2026-10-11 · Settings sheet and preference storage (display settings removed by D026 and D032, foreground rule replaced by D027, no-names rule replaced by D029, feedback row added by D037)
+## D023 · 2026-10-11 · Settings sheet and preference storage (display settings removed by D026 and D032, foreground rule replaced by D027, no-names rule replaced by D029, feedback row added by D037) (test notification removed by D076)
 
 Agent decisions from issue #11.
 
@@ -1330,3 +1330,16 @@ The maintainer approved the setup of the App Store Connect record and asked for 
 - The tips have the names "A Small Thanks", "A Warm Thanks", and "A Big Hug", at USD 0.99, 2.99, and 9.99. D053 had no names and no prices. `Config/Maru.storekit` has the same names and prices.
 - The store URLs use the paths of the live site: `/support/` and `/privacy/`, with the language folder.
 
+## D076 · 2026-10-13 · Row text in the text color, no test notification, and a progress bar in the "Today" widget
+
+Maintainer decisions after the test of the TestFlight build, for the build that goes to App Review. Agent decisions on the details.
+
+- The app tint is for icons, controls, and state, not for row text. Tinted text on a row looked like a warning. A row that is an action or a link has the text color: in Settings ("Open Settings", "Export Records", "Back Up", "Restore from Backup…", "Send Feedback", the tips, "Privacy Policy", "Support"), on the add and edit screen ("Scan Label", the name proposals, "Use Softgel", "Choose Photo", "Take Photo", "Add a Time"), and on the item detail ("Item Options…", "Restore", "Open Settings"). A row that is off is gray.
+- The value of a menu row has the text color: "Remind Again", "Every", "App Color", "Form", "Color", "Note", and the day counts of "Repeat". The form icon of the menu keeps the app tint, as an image with its own color. The smart completion candidates are gray capsules with the text color.
+- Symbols keep the tint. Toolbar buttons, switches, check marks, and the filled button of the scanner keep the tint. "Clear" on the scanner card is not a row and keeps the tint. A destructive row ("Remove Photo", "Start Over", "Delete Item…") stays red.
+- "Send a Test Notification" is removed from Settings, with its code, its footers, and its strings in the six languages. It was a user feature of D023, and the maintainer read it as test UI. This replaces that part of D023. The follow-up reserve of 2 requests (D039) stays, so the request budget does not change. One of the two is now spare.
+- Every other test tool was already in `App/Debug/` or `App/DebugLaunch.swift` inside `#if DEBUG`: the Debug section of Settings, the test scenarios, the data banner, the launch arguments, and the sample data. The sample photos are not in a Release build (D073).
+- The medium "Today" widget shows a progress bar in place of the count "4 of 7": a track in the system fill and a fill in the app tint for taken doses divided by all doses. The system fill has an alpha value, so the track stays quiet in the light, dark, tinted, and clear looks. The fill takes the accent of a tinted Home Screen. VoiceOver reads "Today, 4 of 7 taken".
+- The small "Today" widget gets no bar. Its first line holds the slot word and the time, and a bar did not fit beside them in a capture. It keeps the large "7 of 7" when every dose is done. "Record Dose" shows no count of taken doses.
+- The columns of the medium "Today" widget end at the bottom edge, so the space over the title equals the space under the capsules.
+- Checked in an iPhone 17 Pro simulator, light and dark, with a view of the widget layout inside the app. Nobody saw the widget on a Home Screen, in the tinted or clear look, or the item detail row. They need a check on a real iPhone.

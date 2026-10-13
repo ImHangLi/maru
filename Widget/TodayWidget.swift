@@ -2,7 +2,7 @@ import MaruCore
 import SwiftUI
 import WidgetKit
 
-/// "Today": a progress bar and capsules, no names, no buttons. A tap opens Today at the slot (D048).
+/// "Today": counts, a progress bar, and capsules, no names, no buttons. A tap opens Today at the slot (D048).
 struct TodayWidget: Widget {
     static let kind = "com.imhangli.maru.today"
 
@@ -77,7 +77,7 @@ private struct SmallToday: View {
 
     @ViewBuilder
     private func header(_ slot: WidgetDay.Slot?) -> some View {
-        let words = HStack(spacing: 6) {
+        HStack(spacing: 6) {
             if let slot {
                 Text(slot.part.title).foregroundStyle(tint)
                 Text(slot.time.formatted(.rowTime(in: day.timeZone))).foregroundStyle(.secondary)
@@ -90,15 +90,7 @@ private struct SmallToday: View {
         }
         .font(.subheadline.weight(.semibold))
         .lineLimit(1)
-        // The bar shows when the words leave room for it. Long words keep their size and show alone.
-        ViewThatFits(in: .horizontal) {
-            HStack(spacing: 6) {
-                words
-                Spacer(minLength: 0)
-                DayProgressBar(taken: day.takenCount, total: day.doses.count, tint: tint, width: 28)
-            }
-            words.minimumScaleFactor(0.7)
-        }
+        .minimumScaleFactor(0.7)
     }
 }
 
@@ -114,7 +106,7 @@ private struct MediumToday: View {
                 // The bar says "Today" and the count to VoiceOver.
                 Text("Today").font(.headline).accessibilityHidden(true)
                 Spacer()
-                DayProgressBar(taken: day.takenCount, total: day.doses.count, tint: tint, width: 96)
+                DayProgressBar(taken: day.takenCount, total: day.doses.count, tint: tint)
             }
             // The columns end at the bottom edge, so the space over the title equals the space under the capsules.
             Spacer(minLength: 10)
@@ -152,8 +144,8 @@ private struct DayProgressBar: View {
     let taken: Int
     let total: Int
     let tint: Color
-    let width: CGFloat
 
+    private let width: CGFloat = 96
     private let height: CGFloat = 8
 
     var body: some View {

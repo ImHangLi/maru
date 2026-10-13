@@ -26,6 +26,7 @@ struct ItemEditorView: View {
     @State private var addsTime = false
     @State private var showsRestored: Bool
     @Environment(\.openURL) private var openURL
+    @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     @FocusState private var nameIsFocused: Bool
     /// The built-in name lists. They load when this screen opens, not at launch (spec 9).
     @State private var names: NameIndex?
@@ -272,7 +273,7 @@ struct ItemEditorView: View {
         ) {
             Picker("Form", selection: chosenForm) {
                 ForEach(ItemForm.allCases, id: \.self) { form in
-                    Label { Text(form.title) } icon: { form.image }
+                    Label { Text(form.title) } icon: { form.menuImage(in: appColor.tint) }
                         .tag(form)
                 }
             }
