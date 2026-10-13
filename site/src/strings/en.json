@@ -31,6 +31,9 @@
     },
     "widget": {
       "alt": "The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening."
+    },
+    "photos": {
+      "alt": "Three supplement jars with made-up labels, cut out as item icons in Maru."
     }
   },
   "blocks": [
@@ -48,6 +51,11 @@
       "shot": "detail",
       "title": "Check times and amounts",
       "text": "See its times, its amount, and its last seven days."
+    },
+    {
+      "shot": "photos",
+      "title": "Your bottle, your icon",
+      "text": "Take or choose a photo of your own bottle, and it becomes the item icon. Maru can remove the background on your iPhone or iPad, and the photo stays on your device."
     }
   ],
   "trust_title": "Good to know",
@@ -108,6 +116,10 @@
       [
         "Does Maru count the pills I have left?",
         "No. Maru reminds and records, and nothing more."
+      ],
+      [
+        "Can I use a photo of my bottle?",
+        "Yes. On the add or edit screen, take or choose a photo, and it becomes the item icon. Maru keeps a small copy on your device and can remove the background there. Maru never sends the photo."
       ],
       [
         "How do I move to a new iPhone or iPad?",

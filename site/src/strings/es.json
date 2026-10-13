@@ -31,6 +31,9 @@
     },
     "widget": {
       "alt": "El widget Hoy de Maru: 2 de 5 tomados, con Mañana, Mediodía y Noche."
+    },
+    "photos": {
+      "alt": "Tres frascos de suplementos con etiquetas inventadas, recortados como iconos de elementos en Maru."
     }
   },
   "blocks": [
@@ -48,6 +51,11 @@
       "shot": "detail",
       "title": "Consulta horas y cantidades",
       "text": "Consulta sus horas, su cantidad y sus últimos siete días."
+    },
+    {
+      "shot": "photos",
+      "title": "Tu frasco, |tu icono",
+      "text": "Haz o elige una foto de tu propio frasco y será el icono del elemento. Maru puede quitar el fondo en tu iPhone o iPad, y la foto se queda en tu dispositivo."
     }
   ],
   "trust_title": "Bueno saberlo",
@@ -108,6 +116,10 @@
       [
         "¿Maru cuenta las pastillas que me quedan?",
         "No. Maru recuerda y registra, nada más."
+      ],
+      [
+        "¿Puedo usar una foto de mi frasco?",
+        "Sí. En la pantalla de añadir o editar, haz o elige una foto y será el icono del elemento. Maru guarda una copia pequeña en tu dispositivo y puede quitar el fondo allí mismo. Maru nunca envía la foto."
       ],
       [
         "¿Cómo paso a un iPhone o iPad nuevo?",

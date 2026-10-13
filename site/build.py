@@ -37,6 +37,8 @@ OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html",
 OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
 SHOTS = ["today", "history", "detail"]
 SHOT_WIDTH = 780
+# The jars of the photo block, from left to right. README.md names the source of each photo.
+JARS = ["omega3", "vitd3", "magnesium"]
 # Apple asks for a badge height of 40 px or more on a screen.
 PAGE_BADGE = 56
 # The devices that the line under the badge names. It must match the devices of the released app before a deploy.
@@ -118,12 +120,22 @@ def device(code, shot, eager=False):
             f'<span class="island" aria-hidden="true"></span></div>')
 
 
+def jars(code):
+    """Three supplement jars with made-up brand labels, cut out as the app cuts out a photo of an item."""
+    imgs = "".join(
+        f'<img src="/shots/jar-{name}.webp" width="{w}" height="{h}" loading="lazy" decoding="async" alt="">'
+        for name, w, h in [(n, *webp_size(SITE / "shots" / f"jar-{n}.webp")) for n in JARS])
+    return f'<div class="jars" role="img" aria-label="{e(STRINGS[code]["shots"]["photos"]["alt"])}">{imgs}</div>'
+
+
 def stage(code, shot):
     """The picture of a block. The reminder block shows the widget and the reminder on a wallpaper."""
     if shot == "duo":
         t = mock.load(code)
         return (f'<div class="wallpaper">{picture(code, "widget", mock.widget(t), " enter d2")}'
                 f'{picture(code, "notification", mock.reminder(t), " enter d3")}</div>')
+    if shot == "photos":
+        return jars(code)
     return device(code, shot)
 
 
@@ -401,6 +413,7 @@ Facts:
 - Schedules: every day, every other day, every few days (every 3 to 30 days), or days on and days off (for example 21 on and 7 off). As-needed items have no reminders.
 - History with undo and correction. Record export, backup, and restore.
 - Home Screen widgets.
+- Item photos: take or choose a photo of a bottle as the item icon. Maru can remove the background on the device, and it never sends the photo.
 - Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
 - Maru does not track stock, give medical advice, or pick a dose or a time for you.
 - Each iPhone or iPad keeps its own data. Maru has no sync between devices.

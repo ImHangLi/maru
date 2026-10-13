@@ -98,6 +98,8 @@
   --dim-press: 0.68;
 
   /* Shadows: layers of light with a hairline ring. No single blur. */
+  /* The shadow of a cut-out picture follows its shape, so it is a filter. */
+  --shadow-jar: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.12)) drop-shadow(0 14px 18px rgba(0, 0, 0, 0.14));
   --hairline: 0 0 0 0.5px var(--ring-color);
   --edge-below: 0 0.5px 0 var(--ring-color);
   --edge-above: 0 -0.5px 0 var(--ring-color);
@@ -484,6 +486,10 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .m-notif b, .m-body { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .m-notif b { flex: 1; font-weight: var(--fw-semibold); }
 .m-now { flex: none; position: relative; top: calc(1.07 * var(--pt)); font-size: calc(12 * var(--pt)); letter-spacing: 0; color: var(--app-banner-2); }
+
+/* The photo block: three jars cut out as the app cuts out the photo of an item, on the panel with a soft shadow. */
+.jars { width: 100%; max-width: var(--max-stage); display: flex; align-items: flex-end; justify-content: center; gap: var(--space-3); padding: var(--space-5) 0; }
+.jars img { flex: 1 1 0; min-width: 0; height: auto; filter: var(--shadow-jar); }
 
 /* Feature panels */
 .feature {

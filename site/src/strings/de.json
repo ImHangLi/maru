@@ -31,6 +31,9 @@
     },
     "widget": {
       "alt": "Das Maru-Widget „Heute“: 2 von 5 eingenommen, mit Morgens, Mittags und Abends."
+    },
+    "photos": {
+      "alt": "Drei Nahrungsergänzungsdosen mit erfundenen Etiketten, freigestellt als Symbole von Einträgen in Maru."
     }
   },
   "blocks": [
@@ -48,6 +51,11 @@
       "shot": "detail",
       "title": "Zeiten und Mengen im Blick",
       "text": "Dort stehen die Zeiten, die Menge und die letzten sieben Tage."
+    },
+    {
+      "shot": "photos",
+      "title": "Deine Dose |als Symbol",
+      "text": "Mach oder wähle ein Foto deiner eigenen Dose, und es wird zum Symbol des Eintrags. Maru kann den Hintergrund auf deinem iPhone oder iPad entfernen, und das Foto bleibt auf deinem Gerät."
     }
   ],
   "trust_title": "Gut zu wissen",
@@ -108,6 +116,10 @@
       [
         "Zählt Maru, wie viele Tabletten ich noch habe?",
         "Nein. Maru erinnert und erfasst, mehr nicht."
+      ],
+      [
+        "Kann ich ein Foto meiner Dose verwenden?",
+        "Ja. Mach oder wähle auf dem Bildschirm zum Hinzufügen oder Bearbeiten ein Foto, und es wird zum Symbol des Eintrags. Maru speichert eine kleine Kopie auf deinem Gerät und kann dort den Hintergrund entfernen. Maru sendet das Foto nie."
       ],
       [
         "Wie ziehe ich auf ein neues iPhone oder iPad um?",

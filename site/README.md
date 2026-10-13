@@ -74,6 +74,7 @@ The site uses the system fonts of each language and loads no font file: San Fran
 | Reminders | The medium Today widget and a Lock Screen reminder on a wallpaper, drawn in HTML |
 | History | A screenshot of History: the graph and the last 7 days of each item |
 | Item | A screenshot of one item: its plan and its last 7 days with the counts |
+| Photos | Three supplement jars, cut out as item icons |
 
 ### Screenshots
 
@@ -88,6 +89,16 @@ The command needs `sips` (macOS) and `cwebp`. It reads `today-<lang>.png`, `hist
 - Remove the app before each language, because the sample items load only into an empty store.
 - Set the status bar: `xcrun simctl status_bar <device> override --time 9:41 --batteryLevel 100`.
 - Use only real captures of the app.
+
+### Jars
+
+`shots/jar-*.webp` are three supplement jars with made-up brand labels: Driftholm, daywick, and Quietfield. The base photos are from Unsplash, under the [Unsplash License](https://unsplash.com/license), by Supliful:
+
+- Omega-3: <https://unsplash.com/photos/7low5R-nSDU>
+- Vitamin D3: <https://unsplash.com/photos/p3riFbawRgw>
+- Magnesium: <https://unsplash.com/photos/W95UhZ1lwFQ>
+
+The labels are new, and their numbers and barcodes are fake. Apple's Vision framework cut out each jar, as the app does.
 
 ### Widget and reminder
 

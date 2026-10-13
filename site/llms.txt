@@ -11,6 +11,7 @@ Facts:
 - Schedules: every day, every other day, every few days (every 3 to 30 days), or days on and days off (for example 21 on and 7 off). As-needed items have no reminders.
 - History with undo and correction. Record export, backup, and restore.
 - Home Screen widgets.
+- Item photos: take or choose a photo of a bottle as the item icon. Maru can remove the background on the device, and it never sends the photo.
 - Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
 - Maru does not track stock, give medical advice, or pick a dose or a time for you.
 - Each iPhone or iPad keeps its own data. Maru has no sync between devices.
