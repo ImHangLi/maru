@@ -94,6 +94,10 @@
         "Turn on Remind Again in Settings, and Maru sends up to 12 more reminders for a dose. Maru is not an alarm, so silent mode or a Focus can hold a reminder."
       ],
       [
+        "Can I take something every few days, or with a break?",
+        "Yes. Choose Every Day, Every Other Day, Every Few Days (every 3 to 30 days), or Days On and Off, for example 21 days on and 7 off. An As Needed item has no reminders, and you record it when you take it."
+      ],
+      [
         "What if I forget to record?",
         "You can record later or change the recorded time."
       ],
