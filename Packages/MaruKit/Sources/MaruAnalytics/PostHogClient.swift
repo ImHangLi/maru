@@ -19,7 +19,7 @@ public struct PostHogConfiguration: Sendable, Equatable {
 
 /// A minimal sender to the PostHog capture API (D052). It is not the PostHog SDK, so no automatic capture exists to
 /// switch off (spec 11.4): it sends only the events that the app gives it, with the fields of `AnalyticsEvent`, the
-/// install ID, the app version, and the major version of iOS.
+/// install ID, the app version, the major version of iOS, and the region setting of the device (D064).
 ///
 /// - The events wait in memory. At most `maxQueued` stay, and the oldest go first. An event older than `maxAge` goes.
 /// - One request carries up to `batchSize` events, a few seconds after the first event, so a burst is one request.
@@ -46,6 +46,7 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     private let defaults: UserDefaults
     private let appVersion: String
     private let osMajor: Int
+    private let region: String?
     private let send: Send
     private let flushDelay: Duration
     private let lock = NSLock()
@@ -59,6 +60,7 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         configuration: PostHogConfiguration,
         appVersion: String,
         osMajor: Int,
+        regionCode: String?,
         defaults: UserDefaults = .standard,
         flushDelay: Duration = .seconds(5),
         send: @escaping Send = PostHogClient.urlSessionSend
@@ -66,6 +68,7 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         self.configuration = configuration
         self.appVersion = appVersion
         self.osMajor = osMajor
+        region = Self.regionField(regionCode)
         self.defaults = defaults
         self.flushDelay = flushDelay
         self.send = send
@@ -84,6 +87,15 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         return URLSession(configuration: configuration)
     }()
 
+    /// The region setting of the device as two letters `A` to `Z`, in upper case (D064). `nil` for a missing value and
+    /// for any other form, such as the UN M.49 code `419`. The event then has no region field.
+    static func regionField(_ regionCode: String?) -> String? {
+        guard let code = regionCode?.uppercased(), code.unicodeScalars.count == 2,
+              code.unicodeScalars.allSatisfy({ ("A"..."Z").contains($0) })
+        else { return nil }
+        return code
+    }
+
     /// The pseudonymous install ID. It is made at the first event after consent, and `reset` removes it (spec 11.3).
     private var installID: String {
         if let id = defaults.string(forKey: Self.installIDKey) { return id }
@@ -100,6 +112,8 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
             "app_version": appVersion,
             "ios_major": osMajor,
         ]
+        // A setting of the device, not a place. The server still makes no location from the address.
+        if let region { properties["region"] = region }
         for (field, value) in event.properties {
             switch value {
             case let .text(text): properties[field] = text
