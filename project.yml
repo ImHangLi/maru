@@ -37,7 +37,7 @@ schemes:
       config: Debug
     archive:
       config: Release
-  # Runs the Watch app alone. The Maru scheme also builds it, because the app embeds it (D071).
+  # Builds and runs the Watch app alone. The app does not embed it until 1.1 (D074).
   MaruWatch:
     build:
       targets:
@@ -60,8 +60,6 @@ targets:
         product: MaruAnalytics
       # The Home Screen widgets (D048). XcodeGen embeds the extension in the app.
       - target: MaruWidgets
-      # The Watch app (D071). XcodeGen embeds it in the app.
-      - target: MaruWatch
     settings:
       base:
         # Placeholder. Freeze the bundle ID before the first TestFlight build.
@@ -111,6 +109,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Config/MaruWidgets.entitlements
         SKIP_INSTALL: YES
   # The Watch app (D071). It has no database: it links only MaruCore, and the iPhone app makes each record.
+  # The app does not embed it in 1.0 (D074). To embed it again, add `- target: MaruWatch` to the dependencies of Maru.
   MaruWatch:
     type: application
     platform: watchOS
