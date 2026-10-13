@@ -141,6 +141,41 @@
         }
       }
     },
+    "Not recorded" : {
+      "comment" : "Watch: VoiceOver label of the gray capsule of a dose with no record yet.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht erfasst"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin registrar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未記録"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록되지 않음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未记录"
+          }
+        }
+      }
+    },
     "Not recorded. Open Maru on your iPhone." : {
       "comment" : "Watch: shown after a tap when the iPhone answered that it recorded nothing, for example because the plan of the dose changed.",
       "localizations" : {

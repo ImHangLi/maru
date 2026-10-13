@@ -93,7 +93,7 @@ private struct DoseRow: View {
 
     private var label: some View {
         HStack {
-            CapsuleMark(isTaken: dose.status == .taken, tint: tint, size: 28)
+            CapsuleMark(status: dose.status, tint: tint, size: 28)
             VStack(alignment: .leading) {
                 Text(verbatim: dose.name)
                 Text(verbatim: detail)
