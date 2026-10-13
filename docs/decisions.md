@@ -1102,3 +1102,21 @@ Maintainer decision, with agent detail. It adds one field to the events of D052.
 - The maintainer does not register for GST for now, so supporter tips may not be for sale in the Australian storefront. Check the state of the Paid Apps Agreement before the first release.
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody sent an event to the PostHog project, and nobody checked the packets (T42). The "Discard client IP data" setting is the report of the maintainer.
+
+## D065 · 2026-10-13 · The app also runs on iPad
+
+Maintainer decision, with agent detail. The maintainer asked for iPad support before the first release, if it is ready. It must not delay the release.
+
+- Both targets have the device families iPhone and iPad. The iPhone stays portrait only. The iPad has the four orientations, in `Config/Maru-Info.plist`, and the generated launch screen. The app does not require the full screen, so Split View, Slide Over, and windows work.
+- Layout: the system does most of it. One rule is new, the readable column (`docs/design.md`, "iPad"). Today, History and its logs, My Items, the item detail, and the archived list keep their content in a column of 672 points in the middle of a wider display. The margins are safe area, so the scroll view keeps the full width.
+- My Items has three columns at a regular width, and two at the accessibility text sizes. The History graph fills the column. Its squares are larger than on an iPhone, and its rules do not change.
+- Settings, the add and edit screen, the scanner, and the time sheets stay system sheets. The system gives a sheet a fixed width on an iPad. The system shows the tab bar at the top on iPadOS 18 and later, with names and no icons. This is the system form of the rule of D026.
+- No presentation needs a new anchor. Each `confirmationDialog` is on its button: the record circle, the as-needed dose, and "Cancel" of the edit screen. SwiftUI shows it as a popover from that button on an iPad. The share sheet is a `UIActivityViewController` inside a SwiftUI sheet, so UIKit does not present it and it needs no source view. The file picker, the photo picker, and the camera are system presentations.
+- Text: 14 strings name the iPhone. Each has a device variation for the iPad in the String Catalog, in the six languages. The iPad text is the iPhone text with the other device name, and Korean has the particle for the new word. A native speaker did not check them.
+- Widgets: the small and the medium family exist on the iPad, and the layouts do not change. The large and the extra large family need a new design, so Maru does not offer them.
+- Each iPad has its own local database. Maru has no sync (D040). The backup file moves the data between an iPhone and an iPad, without the photos (D056).
+- Not done: no sidebar and no two-column layout, no keyboard shortcuts, no pointer effects of its own, and no iPad family of the widgets. `PRIVACY.md`, the site, and `docs/faq.md` still say "iPhone". They are published text, so a change needs a maintainer decision.
+- The stop rule: if the check on a real iPad fails before the first upload, set `TARGETED_DEVICE_FAMILY` to `"1"` in both targets. The other parts of this change do nothing on an iPhone. After a version with iPad support is on the App Store, Apple does not let an update remove the iPad.
+- The store page then needs iPad screenshots (`docs/release-plan.md`).
+
+Not verified: no build of the app on this Mac, and nobody saw the app on an iPad or in an iPad simulator. CI builds the app for the generic iOS Simulator destination, which compiles for both families. The readable column relies on a list that follows the horizontal safe area. If a list does not, its rows fill the width, and nothing breaks. The camera may not be available in Split View or Slide Over.

@@ -10,6 +10,7 @@ import SwiftUI
 struct MyListView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         NavigationStack {
@@ -28,7 +29,7 @@ struct MyListView: View {
                             }
                             // The order needs the plans. The page reads them when it shows.
                             if let times = model.listTimes {
-                                ItemGrid(entries: ordered(snapshot.list, by: times), columns: typeSize.isAccessibilitySize ? 1 : 2)
+                                ItemGrid(entries: ordered(snapshot.list, by: times), columns: columns)
                             }
                             if !snapshot.archived.isEmpty {
                                 NavigationLink {
@@ -69,6 +70,7 @@ struct MyListView: View {
             }
             // The gray page with white cards, also while the first read runs (D028).
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .readableColumn()
             .background(Color(.systemGroupedBackground).ignoresSafeArea())
             #if DEBUG
             .modifier(DebugDataBanner())
@@ -79,6 +81,11 @@ struct MyListView: View {
                 AddItemButton()
             }
         }
+    }
+
+    /// Two columns, and one at the accessibility text sizes. A regular width, such as an iPad, has one more (D065).
+    private var columns: Int {
+        (typeSize.isAccessibilitySize ? 1 : 2) + (sizeClass == .regular ? 1 : 0)
     }
 
     /// What gives the page its layout: the tiles in their order, and the two rows.
@@ -154,7 +161,7 @@ private struct ItemGrid: View {
                 HStack(alignment: .top, spacing: Tile.spacing) {
                     ForEach(entries[start..<min(start + columns, entries.count)]) { ItemTile(entry: $0) }
                     // The last row keeps the column width.
-                    if start + columns > entries.count {
+                    ForEach(entries.count..<max(entries.count, start + columns), id: \.self) { _ in
                         Color.clear.frame(maxWidth: .infinity, maxHeight: 0)
                     }
                 }
@@ -182,7 +189,7 @@ private struct ItemTile: View {
                         .foregroundStyle(entry.color.color)
                 }
                 .accessibilityHidden(true)
-                // With two columns the tile has room for two lines, so most rows have one height.
+                // With two or three columns the tile has room for two lines, so most rows have one height.
                 // A longer name wraps and makes the tile taller (spec 5.3).
                 ZStack(alignment: .topLeading) {
                     if !typeSize.isAccessibilitySize {

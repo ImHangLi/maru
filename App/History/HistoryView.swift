@@ -32,6 +32,7 @@ struct HistoryView: View {
                     }
             }
         }
+        .readableColumn()
         #if DEBUG
         .modifier(DebugDataBanner())
         #endif

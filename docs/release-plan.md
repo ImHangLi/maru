@@ -36,6 +36,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 - One week of daily use on the maintainer's iPhone, from 2026-10-12 to 2026-10-19.
 - The open device checks in `docs/status.md`.
+- The check on a real iPad (D065). If it fails, set `TARGETED_DEVICE_FAMILY` to `"1"` in both targets before the first upload. An update cannot remove the iPad later.
 - Dark Mode, the largest text sizes, VoiceOver, and Reduce Motion (T33).
 - Launch and record timing on a release build (T36).
 - Analytics, with a release build that has the key:
@@ -48,6 +49,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 
 - Name, subtitle, and keywords: see the research note. Six languages with fastlane `deliver`.
 - Screenshots for the 6.9-inch iPhone in each language.
+- Screenshots for the 13-inch iPad in each language (D065). App Store Connect requires them for an app that supports the iPad.
 - A privacy policy page and a support page on the landing page domain.
 - Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, not linked to the user, and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location.
 - Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50).

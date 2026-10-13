@@ -50,6 +50,7 @@ struct HistoryLogView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .readableColumn()
         // A row that comes or goes moves the list (D030).
         .motion(.layout, value: shown.flatMap { $0.entries.map(\.id) })
         .overlay {

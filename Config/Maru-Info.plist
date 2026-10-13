@@ -6,6 +6,13 @@
 	<string>$(MARU_ANALYTICS_KEY)</string>
 	<key>MaruAnalyticsHost</key>
 	<string>$(MARU_ANALYTICS_HOST)</string>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

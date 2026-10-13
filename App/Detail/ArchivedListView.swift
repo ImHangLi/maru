@@ -33,6 +33,7 @@ struct ArchivedListView: View {
                 .motion(.layout, value: snapshot.archived.map(\.id))
             }
         }
+        .readableColumn()
         #if DEBUG
         .modifier(DebugDataBanner())
         #endif

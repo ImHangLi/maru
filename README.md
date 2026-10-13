@@ -11,9 +11,9 @@
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-lightgrey"></a>
 </p>
 
-Maru is a small iPhone app for daily supplements and simple medication schedules. It reminds you on time, shows what to take now, and keeps a record you can trust.
+Maru is a small iPhone and iPad app for daily supplements and simple medication schedules. It reminds you on time, shows what to take now, and keeps a record you can trust.
 
-Your data stays on your iPhone. Maru has no account, no cloud, no ads, and no tracking. A missed dose is only a missed dose. There are no streaks, no scores, and no guilt. The app uses native iOS components only, so it feels like part of the system.
+Your data stays on your device. Maru has no account, no cloud, no ads, and no tracking. A missed dose is only a missed dose. There are no streaks, no scores, and no guilt. The app uses native iOS components only, so it feels like part of the system.
 
 <p align="center">
   <img src="docs/images/today.png" alt="Today" width="24%">
@@ -41,7 +41,7 @@ Why not Apple Health or an alarm? What if I forget to record? Read [the short an
 
 ## Privacy
 
-Maru stores everything on your iPhone. Your items and records are in a local database, protected by iOS file encryption. It has no account. A build with an analytics key can send simple usage statistics that never include item names, doses, or intake times. They are on by default outside the EU, the EEA, the UK, and Switzerland, and a switch in Settings turns them off. The only web page is the feedback form, which opens when you tap it. Reminders are local notifications. Read [PRIVACY.md](PRIVACY.md) for the details.
+Maru stores everything on your device, and it has no sync between two devices. Your items and records are in a local database, protected by iOS file encryption. It has no account. A build with an analytics key can send simple usage statistics that never include item names, doses, or intake times. They are on by default outside the EU, the EEA, the UK, and Switzerland, and a switch in Settings turns them off. The only web page is the feedback form, which opens when you tap it. Reminders are local notifications. Read [PRIVACY.md](PRIVACY.md) for the details.
 
 ## Build
 
@@ -55,7 +55,7 @@ xcodegen generate
 open Maru.xcodeproj
 ```
 
-Select the Maru scheme and an iPhone simulator, then press Cmd-R.
+Select the Maru scheme and an iPhone or iPad simulator, then press Cmd-R.
 
 To run Maru on your own iPhone, a free Apple ID is enough:
 

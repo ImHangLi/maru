@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, and D058 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, and D065 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -120,7 +120,7 @@ The log of an item and the log of a day use the timeline rows below. The log of 
 
 A grid of tiles, so the user sees at once which items they have (spec §3 P02, D032). It replaces the list of D020.
 
-- Two columns. One column at the accessibility text sizes.
+- Two columns. One column at the accessibility text sizes. A regular width, such as an iPad, has one column more (D065).
 - A tile shows two things: the form icon, large, in the item color, and the name in the headline weight under it. No plan line, no amount, and no other text. The plan is in the item detail.
 - The name wraps and never truncates. A tile has room for two lines, and a longer name makes its row taller. The tiles of one row have the same height.
 - Order: the first time of day of the plan, then the name. As-needed items come last. No section titles.
@@ -171,6 +171,18 @@ Two Home Screen widgets, small and medium each (D048). They use the capsule of t
 - "Take Now" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
 - The words "Today", "Morning", "Noon", and "Evening" match the app. The "·" in the header of the small "Today" widget is the owner design. It is the one use of the separator of principle 5.
+
+## iPad
+
+The iPad uses the pages of the iPhone, and the system adapts them (D065). Maru adds one rule.
+
+- The readable column: Today, History and its logs, My Items, the item detail, and the archived list keep their content in a column of 672 points in the middle of a wider display. This is the width of the readable content guide of UIKit at the default text size. The gray page fills the display. The margins are safe area, so a scroll starts in a margin too. The modifier `readableColumn()` holds the rule.
+- A display that is not wider than the column gets no margin: an iPhone, Slide Over, and a narrow Split View.
+- The History graph fills the column, so a square is larger than on an iPhone: a side of about 39 points at 13 weeks and about 18 points at 26 and 52 weeks. The card is about 365 points high at 13 weeks and about 400 at 52.
+- My Items has three columns at a regular width, and two at the accessibility text sizes.
+- Settings, the add and edit screen, the scanner, and the time sheets are system sheets. A dialog of choices shows as a popover from its button.
+- The iPad has the four orientations. The iPhone is portrait only.
+- No sidebar and no second column. The app has two tabs and short lists.
 
 ## Motion
 
@@ -239,4 +251,4 @@ One screen (spec §3 P03), in this order: name, type (supplement or medication, 
 - Follow the system text size at every size, with no maximum (D013). Names wrap and never truncate.
 - The icon has a size limit. The record circle follows the text size. Hide the icon at the three largest accessibility sizes.
 - Support VoiceOver, dark mode, Increase Contrast, and Reduce Motion (spec §5.3).
-- The tab bar always shows icons with names (D026).
+- The tab bar always shows icons with names (D026). On an iPad the system shows it at the top, in its own form (D065).

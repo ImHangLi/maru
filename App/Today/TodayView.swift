@@ -25,6 +25,7 @@ struct TodayView: View {
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .readableColumn()
             .background(Color(.systemGroupedBackground).ignoresSafeArea())
             #if DEBUG
             .modifier(DebugDataBanner())
