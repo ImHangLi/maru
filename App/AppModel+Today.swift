@@ -10,8 +10,8 @@ struct PendingEvent: Equatable, Sendable {
     /// The occurrence that a backfill of the history stores with the event, for a past dose that no generation
     /// run stored. A retry sends this same occurrence (D014).
     var backfill: Occurrence?
-    /// The record must still be in the plan of now: an active item, a slot of the plan, and the planned schedule
-    /// version. The widget sets it, because its button can be old (D048).
+    /// The record must still be in the plan of now: an active item, a slot of the plan, the planned schedule
+    /// version, and a dose of today. The widget and the Watch set it, because their rows can be old (D048, D065).
     var requiresCurrentPlan = false
     /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
     var restoreEpoch: Int?
@@ -113,7 +113,7 @@ extension AppModel {
     // MARK: Record transaction
 
     /// A new event revises the last event of the row, also after an undo.
-    func event(for entry: TodaySnapshot.Entry, _ action: IntakeAction, at time: Date? = nil) -> PendingEvent {
+    private func event(for entry: Entry, _ action: IntakeAction, at time: Date? = nil) -> PendingEvent {
         let now = Date()
         return PendingEvent(
             event: IntakeEvent(

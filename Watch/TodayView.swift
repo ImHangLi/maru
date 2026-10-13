@@ -5,7 +5,8 @@ import SwiftUI
 struct TodayView: View {
     @Environment(WatchModel.self) private var model
     @Environment(\.scenePhase) private var scenePhase
-    /// The time of the last activation. A list of an earlier day does not show as today (spec 9).
+    /// The time of the last activation, or of the end of the list. A list of an earlier day does not show
+    /// as today (spec 9).
     @State private var now = Date()
 
     var body: some View {
@@ -47,6 +48,14 @@ struct TodayView: View {
         // Only after the iPhone confirmed the commit (spec 7.2).
         .sensoryFeedback(.success, trigger: model.confirmedCount)
         .sensoryFeedback(trigger: model.notice) { _, notice in notice == nil ? nil : .error }
+        // The screen can stay in front over midnight, also with no iPhone in reach. The rows leave at the end of the list.
+        .task(id: model.day?.expiresAt) {
+            guard let expiresAt = model.day?.expiresAt else { return }
+            try? await Task.sleep(for: .seconds(max(expiresAt.timeIntervalSinceNow, 0) + 1))
+            guard !Task.isCancelled else { return }
+            now = Date()
+            model.refresh()
+        }
         .onChange(of: scenePhase, initial: true) { _, phase in
             guard phase == .active else { return }
             now = Date()
@@ -109,6 +118,7 @@ private extension WatchModel.Notice {
         switch self {
         case .notReachable: "Your iPhone is not reachable. Nothing was recorded."
         case .notConfirmed: "Your iPhone did not confirm. Check Maru on your iPhone."
+        case .changed: "This dose changed on your iPhone. Nothing was recorded."
         case .notRecorded: "Not recorded. Open Maru on your iPhone."
         case .locked: "Not recorded. Unlock your iPhone and try again."
         }

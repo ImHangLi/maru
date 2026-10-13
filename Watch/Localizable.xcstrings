@@ -421,6 +421,41 @@
         }
       }
     },
+    "This dose changed on your iPhone. Nothing was recorded." : {
+      "comment" : "Watch: shown after a tap when the dose on the iPhone is not the one that the Watch showed, for example after a change of its record on the iPhone. The Watch then shows the new list.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Dosis wurde auf deinem iPhone geändert. Es wurde nichts erfasst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta dosis cambió en tu iPhone. No se registró nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この服用はiPhoneで変更されました。何も記録されていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 복용이 iPhone에서 변경되었습니다. 기록된 내용이 없습니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此次服用已在 iPhone 上更改。未记录任何内容。"
+          }
+        }
+      }
+    },
     "Today" : {
       "comment" : "Watch: the title of the one screen.",
       "localizations" : {

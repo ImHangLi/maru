@@ -111,15 +111,19 @@ extension LocalStore {
 
     /// The widget records only a dose that the plan of now still has: its item is active, its slot is in the
     /// plan, and its schedule version is the planned one. The occurrence row of an archived item or of a removed
-    /// slot stays, and a stale widget button must not record it (D048). The check runs in the record transaction.
+    /// slot stays, and a stale widget button must not record it (D048). The dose must also be of today in its own
+    /// time zone at the time of the plan, so a request from before midnight records nothing after it (D065).
+    /// The check runs in the record transaction.
     static func requireCurrentPlan(_ occurrence: Occurrence, _ plan: OccurrenceGeneration, _ db: Database) throws {
         let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)
         let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
             .compactMap { try fetchSchedule(db, id: ScheduleID(text: $0)) }
         let planned = plan.outcome(items: items, schedules: schedules, stored: []).occurrences
-        guard planned.contains(where: {
-            $0.key == occurrence.key && $0.scheduleVersionID == occurrence.scheduleVersionID
-        }) else { throw RecordFailure.versionChanged }
+        guard occurrence.plannedDate == LocalDate(plan.now, in: occurrence.timeZone),
+              planned.contains(where: {
+                  $0.key == occurrence.key && $0.scheduleVersionID == occurrence.scheduleVersionID
+              })
+        else { throw RecordFailure.versionChanged }
     }
 
     /// Runs one record transaction, and returns only after the storage medium has the commit.

@@ -15,6 +15,8 @@ final class WatchModel {
         case notReachable
         /// The request left, and no reply came. The iPhone can have the record.
         case notConfirmed
+        /// The iPhone answered that the dose is not the one that the Watch showed. It recorded nothing.
+        case changed
         /// The iPhone answered that it recorded nothing, and it sent its list.
         case notRecorded
         /// The iPhone answered that it recorded nothing, and it could not read its data. It is locked,
@@ -29,6 +31,9 @@ final class WatchModel {
     private(set) var inFlight: Set<OccurrenceID> = []
     /// Counts the records that the iPhone confirmed, for the success haptic.
     private(set) var confirmedCount = 0
+    /// The request of each dose that got no reply. The same choice on the same row goes again with the same
+    /// intent ID, so the iPhone applies it one time (T18).
+    private var unanswered: [OccurrenceID: (action: IntakeAction, revision: IntakeEventID?, intent: IntakeEventID)] = [:]
     private let link = PhoneLink()
 
     init() {
@@ -48,20 +53,27 @@ final class WatchModel {
     func record(_ dose: WatchDay.Dose, as action: IntakeAction) {
         guard inFlight.insert(dose.id).inserted else { return }
         notice = nil
+        let intent = unanswered[dose.id].flatMap { $0.action == action && $0.revision == dose.revision ? $0.intent : nil }
+            ?? IntakeEventID()
         Task {
-            let answer = await link.send(.record(dose.id, scheduleVersionID: dose.scheduleVersionID, action: action))
+            let answer = await link.send(.record(
+                dose.id, scheduleVersionID: dose.scheduleVersionID, action: action,
+                revision: dose.revision, intent: intent
+            ))
             inFlight.remove(dose.id)
             switch answer {
             case let .reply(reply):
+                unanswered[dose.id] = nil
                 if let day = reply.day { show(day) }
-                if reply.recorded {
-                    confirmedCount += 1
-                } else {
-                    notice = reply.day == nil ? .locked : .notRecorded
+                switch reply.outcome {
+                case .recorded: confirmedCount += 1
+                case .changed: notice = .changed
+                case .notRecorded: notice = reply.day == nil ? .locked : .notRecorded
                 }
             case .notReachable:
                 notice = .notReachable
             case .noAnswer:
+                unanswered[dose.id] = (action, dose.revision, intent)
                 notice = .notConfirmed
                 // The next list tells what the iPhone has.
                 link.refresh()
