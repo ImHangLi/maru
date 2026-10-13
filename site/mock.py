@@ -46,6 +46,7 @@ def widget(t):
 
 
 def reminder(t):
-    """The Lock Screen reminder. The banner is a system view."""
-    return (f'<div class="m-notif"><span class="m-app-icon"></span><b>{e(t["reminder_title"])}</b>'
-            f'<span class="m-body">{e(t["reminder_item"])}</span><span class="m-now">{e(t["now"])}</span></div>')
+    """The Lock Screen reminder: the title and the body of a due reminder with the item name (MaruNotifications)."""
+    return (f'<div class="m-notif"><span class="m-app-icon"></span><span class="m-notif-text"><span class="m-notif-top">'
+            f'<b>{e(t["reminder_title"])}</b><span class="m-now">{e(t["now"])}</span></span>'
+            f'<span class="m-body">{e(t["reminder_item"])}</span></span></div>')

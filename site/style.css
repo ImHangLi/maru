@@ -31,8 +31,11 @@
   --app-cap-off: #E5E5EA;
   --app-cap-line: #C7C7CC;
   --app-cap-shine: rgba(255, 255, 255, 0.32);
-  --app-banner: rgba(255, 255, 255, 0.94);
-  --app-banner-2: #7C7C80;
+  /* The glass of a Lock Screen reminder: a light fill over a blur of the wallpaper, and a bright rim. */
+  --app-banner: rgba(255, 255, 255, 0.7);
+  --app-banner-rim: inset 0 0 0 0.5px rgba(255, 255, 255, 0.85);
+  --app-banner-text: #000000;
+  --app-banner-2: rgba(0, 0, 0, 0.55);
   --app-icon-bg: #FFFFFF;
   --app-icon-ring: #E4E4E6;
   --app-icon-mark: linear-gradient(#FF5C7C, #FF2D55);
@@ -89,6 +92,7 @@
   --blur-lift: 2px;
   --press: 0.98;
   --blur-glass: 20px;
+  --saturate-glass: 1.6;
   --scale-menu: 0.96;
   --dim-hover: 0.82;
   --dim-press: 0.68;
@@ -184,8 +188,10 @@
     --app-widget: #1C1C1E;
     --app-cap-off: #2C2C2E;
     --app-cap-line: #48484A;
-    --app-banner: rgba(37, 37, 39, 0.9);
-    --app-banner-2: #98989F;
+    --app-banner: rgba(255, 255, 255, 0.14);
+    --app-banner-rim: inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.24);
+    --app-banner-text: rgba(255, 255, 255, 0.93);
+    --app-banner-2: rgba(255, 255, 255, 0.85);
     --app-icon-ring: rgba(0, 0, 0, 0.2);
     --wallpaper: radial-gradient(120% 80% at 0% 0%, #4A1424, transparent 60%), radial-gradient(90% 70% at 100% 100%, #7A1B35, transparent 70%), linear-gradient(160deg, #1A080E, #33101C);
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), var(--hairline);
@@ -460,19 +466,24 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   border-radius: var(--radius-full); transform: rotate(-45deg); background: var(--app-cap-off); box-shadow: inset 0 0 0 calc(1.08 * var(--pt)) var(--app-cap-line);
 }
 .m-caps i.on::before { background: linear-gradient(var(--app-cap-shine), transparent), var(--app-tint); box-shadow: none; }
-/* The reminder. The banner is a system view, measured from a capture. */
+/* The reminder on the Lock Screen, measured from a capture of iOS 26 at 3x: a glass banner with the icon, the title and
+   the time in one row, and the body under them. It has the width of the widget, so the two have the same edges. */
 .m-notif {
-  position: relative; width: calc(370 * var(--pt)); height: calc(75 * var(--pt)); border-radius: calc(32 * var(--pt));
-  background: var(--app-banner); box-shadow: var(--shadow-elevated);
-  -webkit-backdrop-filter: blur(var(--blur-glass)); backdrop-filter: blur(var(--blur-glass));
+  position: relative; width: calc(349.33 * var(--pt));
+  padding: calc(12.1 * var(--pt)) calc(17.67 * var(--pt)) calc(13.2 * var(--pt)) calc(64.67 * var(--pt));
+  border-radius: calc(23.33 * var(--pt)); background: var(--app-banner); box-shadow: var(--app-banner-rim);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(var(--saturate-glass)); backdrop-filter: blur(var(--blur-glass)) saturate(var(--saturate-glass));
 }
-.m-notif > * { position: absolute; left: calc(64 * var(--pt)); white-space: nowrap; }
-.m-app-icon { left: calc(14.33 * var(--pt)); top: calc(18.67 * var(--pt)); width: calc(37 * var(--pt)); height: calc(37 * var(--pt)); border-radius: calc(9 * var(--pt)); background: var(--app-icon-bg); box-shadow: inset 0 0 0 calc(0.5 * var(--pt)) var(--app-icon-ring); }
-.m-app-icon::before { content: ""; position: absolute; left: calc(7 * var(--pt)); top: calc(13 * var(--pt)); width: calc(23 * var(--pt)); height: calc(11 * var(--pt)); border-radius: var(--radius-full); transform: rotate(-45deg); background: var(--app-icon-mark); }
-.m-now { left: auto; right: calc(17.67 * var(--pt)); top: calc(11.67 * var(--pt)); font-size: calc(13 * var(--pt)); line-height: calc(16 * var(--pt)); color: var(--app-banner-2); }
-.m-notif b, .m-body { font-size: calc(15 * var(--pt)); line-height: calc(18.67 * var(--pt)); color: var(--app-label); }
-.m-notif b { top: calc(25.33 * var(--pt)); font-weight: var(--fw-semibold); }
-.m-body { top: calc(43.33 * var(--pt)); }
+/* The text sets the height of the banner, and the icon is in the middle of it. */
+.m-app-icon { position: absolute; left: calc(14 * var(--pt)); top: 50%; translate: 0 -50%; width: calc(37.67 * var(--pt)); height: calc(37.67 * var(--pt)); border-radius: calc(8.5 * var(--pt)); background: var(--app-icon-bg); box-shadow: inset 0 0 0 calc(0.5 * var(--pt)) var(--app-icon-ring); }
+.m-app-icon::before { content: ""; position: absolute; left: calc(7.33 * var(--pt)); top: calc(13.33 * var(--pt)); width: calc(23 * var(--pt)); height: calc(11 * var(--pt)); border-radius: var(--radius-full); transform: rotate(-45deg); background: var(--app-icon-mark); }
+/* The system text of the banner has the tracking of iOS, not the extra tracking of the app captures. */
+.m-notif-text { display: grid; font-size: calc(15 * var(--pt)); line-height: calc(18 * var(--pt)); letter-spacing: calc(-0.15 * var(--pt)); color: var(--app-banner-text); }
+/* The time sits on the baseline of the title: 1.07 pt lower in the same 18 pt line. */
+.m-notif-top { display: flex; gap: calc(8 * var(--pt)); }
+.m-notif b, .m-body { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.m-notif b { flex: 1; font-weight: var(--fw-semibold); }
+.m-now { flex: none; position: relative; top: calc(1.07 * var(--pt)); font-size: calc(12 * var(--pt)); letter-spacing: 0; color: var(--app-banner-2); }
 
 /* Feature panels */
 .feature {

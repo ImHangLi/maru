@@ -93,7 +93,7 @@ The command needs `sips` (macOS) and `cwebp`. It reads `today-<lang>.png`, `hist
 
 `mock.py` draws the widget and the reminder in HTML and CSS. `src/mock/<lang>.json` holds their words in one language (from the String Catalogs) and the time format.
 
-- The components follow `Widget/` and `docs/design.md`: the system font, the sizes in points, and the default pink. The reminder shows the title, the item, and the time, with no action.
+- The components follow `Widget/` and `docs/design.md`: the system font, the sizes in points, and the default pink. The reminder is a Lock Screen banner of iOS 26, measured from a capture at 3x. It shows the title and the body of a due reminder from `MaruNotifications`, and the time, with no action. It has the width of the widget.
 - A component scales with its block. `--base` is the width that it fills, in points, and `--pt-max` stops it at a little more than its real size. The colors are tokens that start with `--app-`, with a dark set.
 - Each component is one picture for assistive technology: it has `role="img"` and the alt text of `shots` in `src/strings/<lang>.json`.
 
