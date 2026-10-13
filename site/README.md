@@ -52,6 +52,7 @@ Every icon is from [Hugeicons](https://hugeicons.com), the free stroke set, pack
 - The phone is in the first paint at 30% opacity, so the largest picture of the page does not wait for the entrance.
 - A block enters one time when it scrolls into view, with the same rise, blur, and duration as the hero parts. The blur clears at 60% of the time, so text is sharp when it comes to rest.
 - Content is visible with no script. `<html>` gets the class `motion` only when the visitor did not ask for reduced motion. `site.js` adds the class `is-in` to a block when it enters the view. A page from the back and forward cache shows at rest.
+- The language menu opens in 200 ms from its button (fade, scale from 96%, a few pixels of movement) and closes faster, in 130 ms (fade and scale). `site.js` keeps the menu in the layout until the close animation ends. With reduced motion it only fades.
 - A press scales a control to 0.98. The link of the App Store badge changes only its opacity, because the badge must not move.
 
 ## Pictures

@@ -96,8 +96,8 @@ def cutout(code, name, extra=""):
 
 
 def duo(code):
-    """The reminder and the widget as one product picture. The pictures are real cuts, and English on every page."""
-    return f'<div class="duo">{cutout(code, "widget", " enter d2")}{cutout(code, "notification", " enter d4")}</div>'
+    """The widget and the reminder as one product picture, in a plain stack. The pictures are real cuts, and English on every page."""
+    return f'<div class="duo">{cutout(code, "widget", " enter d2")}{cutout(code, "notification", " enter d3")}</div>'
 
 
 def device(code, shot, eager=False):

@@ -38,11 +38,13 @@
   --radius-bar: 20px;
   --radius-full: 999px;
   --radius-icon: 22%;
+  --radius-card-cut: 8.5cqw;
 
   /* Duration */
   --dur-fast: 150ms;
   --dur-base: 200ms;
   --dur-slow: 280ms;
+  --dur-close: 130ms;
   --dur-fade: 150ms;
   --dur-enter: 420ms;
   --dur-bar: 480ms;
@@ -57,6 +59,8 @@
   --ease-out: cubic-bezier(0.17, 1, 0.32, 1);
   --ease-spring: cubic-bezier(0.35, 1.55, 0.65, 1);
   --ease-in-out: cubic-bezier(0.66, 0, 0.34, 1);
+  /* A plain ease-in, only for a menu that closes. */
+  --ease-in: cubic-bezier(0.42, 0, 1, 1);
 
   /* Motion distances */
   --shift-enter: 14px;
@@ -68,6 +72,7 @@
   --blur-enter: 4px;
   --blur-lift: 2px;
   --press: 0.98;
+  --scale-menu: 0.96;
   --dim-hover: 0.82;
   --dim-press: 0.68;
 
@@ -78,8 +83,6 @@
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02), var(--hairline);
   --shadow-elevated: 0 4px 8px rgba(0, 0, 0, 0.02), 0 8px 12px rgba(0, 0, 0, 0.02), 0 2px 4px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.04), var(--hairline);
   --shadow-float: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 8px rgba(0, 0, 0, 0.04), 0 12px 24px rgba(0, 0, 0, 0.05), 0 32px 64px rgba(0, 0, 0, 0.08), var(--hairline);
-  /* The same light for a picture with a transparent background. */
-  --drop-float: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.06)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.06)) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.08));
 
   /* Icons: Hugeicons, 24 px grid, one stroke width */
   --icon-size: 20px;
@@ -158,7 +161,6 @@
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2), var(--hairline);
     --shadow-elevated: 0 4px 8px rgba(0, 0, 0, 0.2), 0 8px 12px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.3), var(--hairline);
     --shadow-float: 0 2px 4px rgba(0, 0, 0, 0.4), 0 12px 24px rgba(0, 0, 0, 0.4), 0 40px 80px rgba(0, 0, 0, 0.5), var(--hairline);
-    --drop-float: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3)) drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3)) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
   }
 }
 
@@ -244,10 +246,6 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   from { opacity: 0; transform: translateY(var(--shift-enter)); filter: blur(var(--blur-enter)); }
   60% { filter: none; }
 }
-@keyframes enter-cutout {
-  from { opacity: 0; transform: translateY(var(--shift-enter)); filter: var(--drop-float) blur(var(--blur-enter)); }
-  60%, to { filter: var(--drop-float) blur(0); }
-}
 /* The page entrance: one short moment when the page loads. The bar falls in from above the top edge, and its content
    fades in at the end. The hero parts rise in order, and the phone rises and grows to its size and settles last. */
 @keyframes bar-in {
@@ -262,11 +260,20 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 }
 .motion .load { animation: enter var(--dur-enter) var(--ease-smooth) both; animation-delay: calc(var(--delay-page) + var(--order, 0) * var(--stagger)); }
 .motion .load-phone { animation: phone-in var(--dur-phone) var(--ease-out) both; animation-delay: calc(var(--delay-page) + var(--stagger)); }
+/* A menu opens from its button: it fades in, grows from 96%, and moves a few pixels. It closes with opacity and scale only. */
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(calc(-1 * var(--shift-lift))) scale(var(--scale-menu)); }
+}
+@keyframes menu-out {
+  to { opacity: 0; transform: scale(var(--scale-menu)); }
+}
+@keyframes fade-out {
+  to { opacity: 0; }
+}
 @keyframes lift {
   from { opacity: 0; transform: translateY(var(--shift-lift)); filter: blur(var(--blur-lift)); }
 }
 .motion .is-in .enter { animation: enter var(--dur-enter) var(--ease-smooth) both; animation-delay: calc(var(--order, 0) * var(--stagger)); }
-.motion .is-in .duo .enter { animation-name: enter-cutout; }
 .d1 { --order: 1; }
 .d2 { --order: 2; }
 .d3 { --order: 3; }
@@ -316,8 +323,11 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   position: absolute; right: 0; top: calc(100% + var(--space-2)); z-index: 30; min-width: var(--menu-width);
   margin: 0; padding: var(--space-2); list-style: none;
   background: var(--surface); border-radius: var(--radius-md); box-shadow: var(--shadow-elevated);
-  animation: lift var(--dur-base) var(--ease-out);
+  transform-origin: top right;
+  animation: menu-in var(--dur-base) var(--ease-out);
 }
+/* site.js adds "closing" and waits for the end of this animation. Then it closes the menu. The close is faster than the open. */
+.lang-menu.closing ul { animation: menu-out var(--dur-close) var(--ease-in) forwards; }
 .lang-menu li a {
   display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: var(--hit);
   padding: 0 var(--space-3); border-radius: var(--radius-sm); color: var(--text); text-decoration: none; font-size: var(--fs-sm); white-space: nowrap;
@@ -380,16 +390,15 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .feature h2 { font-size: var(--fs-2xl); margin-bottom: var(--space-3); }
 .feature .lede { margin: 0 auto; max-width: var(--max-copy); }
 
-/* The widget and the reminder as one product picture: two real cuts with depth.
-   The widget is behind, to the left. The reminder is in front, lower and to the right, over the empty part of the widget. */
+/* The widget and the reminder as one product picture: two real cuts in a plain stack.
+   The widget is on top and the reminder is below it. The two cards have the same width, the same edges,
+   the same corner radius, and the same shadow. The radius is a part of the width of the stack. */
 .duo {
-  width: 100%; max-width: var(--max-duo); padding: var(--space-6) 0;
-  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr));
+  width: 100%; max-width: var(--max-duo); padding: var(--space-6) 0; container-type: inline-size;
+  display: grid; gap: var(--space-4);
   background: radial-gradient(closest-side, var(--tint-soft), transparent);
 }
-.duo img { width: 100%; filter: var(--drop-float); }
-.duo-widget { grid-column: 1 / 11; }
-.duo-notification { grid-column: 2 / 13; margin-top: -9%; position: relative; }
+.duo img { width: 100%; border-radius: var(--radius-card-cut); box-shadow: var(--shadow-float); }
 
 /* Closing panel */
 .closer {
@@ -472,6 +481,9 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .nots a:active, .closer-links a:active, .site-footer a:active { transform: none; }
   .icon-btn[data-tip]::after { filter: none; transform: translate(-50%, 0); }
+  /* A menu still fades in and out, with no movement. */
+  .lang-menu ul { animation: fade var(--dur-base) var(--ease-out) !important; }
+  .lang-menu.closing ul { animation: fade-out var(--dur-close) var(--ease-in) forwards !important; }
 }
 
 @media print {

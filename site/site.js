@@ -31,15 +31,36 @@
     a.addEventListener("click", function () { remember(a.hreflang); });
   });
 
-  // The language menu in the top bar is a details element. Close it on Escape and on a click outside.
+  // The language menu in the top bar is a details element. It closes on its button, on Escape, and on a click outside.
+  // A close plays the close animation first. The menu stays in the layout until the animation ends.
   var menu = document.querySelector(".lang-menu");
+  var summary = menu.querySelector("summary");
+  var list = menu.querySelector("ul");
+  function closeMenu() {
+    if (!menu.open || menu.classList.contains("closing")) return;
+    var done = function () {
+      list.removeEventListener("animationend", done);
+      clearTimeout(timer);
+      menu.open = false;
+      menu.classList.remove("closing");
+    };
+    // The timer closes the menu if the animation does not run.
+    var timer = setTimeout(done, 400);
+    list.addEventListener("animationend", done);
+    menu.classList.add("closing");
+  }
+  summary.addEventListener("click", function (event) {
+    if (!menu.open) return;
+    event.preventDefault();
+    closeMenu();
+  });
   document.addEventListener("click", function (event) {
-    if (menu.open && !menu.contains(event.target)) menu.open = false;
+    if (!menu.contains(event.target)) closeMenu();
   });
   menu.addEventListener("keydown", function (event) {
     if (event.key !== "Escape" || !menu.open) return;
-    menu.open = false;
-    menu.querySelector("summary").focus();
+    closeMenu();
+    summary.focus();
   });
 
   function supported(tag) {
