@@ -15,12 +15,19 @@ public struct PendingReminder: Hashable, Sendable {
     public let text: ReminderText?
     /// The request has the category of the "Taken" action (D034).
     public let hasTakenAction: Bool
+    /// The request has the time-sensitive level (D062). A request from a build before D062 has the default
+    /// level, so the engines replace it.
+    public let isTimeSensitive: Bool
 
-    public init(identifier: String, userInfo: [String: String], text: ReminderText? = nil, hasTakenAction: Bool = false) {
+    public init(
+        identifier: String, userInfo: [String: String], text: ReminderText? = nil, hasTakenAction: Bool = false,
+        isTimeSensitive: Bool = true
+    ) {
         self.identifier = identifier
         self.userInfo = userInfo
         self.text = text
         self.hasTakenAction = hasTakenAction
+        self.isTimeSensitive = isTimeSensitive
     }
 }
 
@@ -82,7 +89,7 @@ public struct ReminderChanges: Hashable, Sendable {
         add = wanted.filter { request in
             guard let held = current[request.identifier] else { return true }
             return held.userInfo != request.userInfo || held.text != text(request.content)
-                || held.hasTakenAction != request.content.hasTakenAction
+                || held.hasTakenAction != request.content.hasTakenAction || !held.isTimeSensitive
         }
         remove = pending.map(\.identifier).filter {
             $0.hasPrefix(ReminderSeries.identifierPrefix) && !identifiers.contains($0)

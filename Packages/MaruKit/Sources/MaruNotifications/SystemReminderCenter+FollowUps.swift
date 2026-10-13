@@ -34,6 +34,7 @@ extension UNNotificationRequest {
         content.title = text.title
         content.body = text.body
         content.sound = .default
+        content.interruptionLevel = .timeSensitive
         content.userInfo = request.userInfo
         // The follow-ups of one slot time show as one group in Notification Center (D039).
         content.threadIdentifier = request.threadIdentifier
