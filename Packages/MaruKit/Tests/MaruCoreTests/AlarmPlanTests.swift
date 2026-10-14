@@ -73,7 +73,7 @@ struct AlarmPlanTests {
                 if request.id == plan.requests[1].id { throw CocoaError(.fileWriteOutOfSpace) }
                 held.insert(request.id)
             }
-            func cancel(_ ids: [UUID]) async { held.subtract(ids) }
+            func cancel(_ ids: [UUID]) async throws { held.subtract(ids) }
             func alarmPlan(privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover) async throws -> AlarmPlan { plan }
         }
         struct Names: ReminderPrivacyStore {

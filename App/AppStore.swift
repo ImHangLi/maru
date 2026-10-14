@@ -19,13 +19,12 @@ actor AppStore {
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
     private var alarms: AlarmEngine?
-    /// The items with an alarm that the last alarm run did not schedule. The notification engines read it at their run,
-    /// so such an item gets its normal reminder in the same run (D079).
-    private let failedAlarms = OSAllocatedUnfairLock(initialState: Set<ItemID>())
-    /// Which items an alarm covers now. The closure is the one input of the notification engines.
-    private var cover: @Sendable () -> AlarmCover {
-        let failed = failedAlarms
-        return { AlarmCover(rings: AlarmSupport.isAuthorized, failed: failed.withLock { $0 }) }
+    /// Which items an alarm covers in the run that is going on (D079). Each run sets it again, so no run uses the cover of an earlier run.
+    private let cover = OSAllocatedUnfairLock(initialState: AlarmCover.none)
+    /// The input of the notification engines: which items an alarm covers in the run that is going on.
+    private var coverNow: @Sendable () -> AlarmCover {
+        let cover = cover
+        return { cover.withLock { $0 } }
     }
     /// The last notification update in the queue. Each update waits for the one before it, so the reminder
     /// engine and the follow-up engine never change the requests at the same time (spec 8.4).
@@ -86,7 +85,7 @@ actor AppStore {
             ledger: DefaultsRemovalLedger(),
             privacy: DefaultsReminderPrivacy(),
             zoneRecord: DefaultsTimeZoneRecord(),
-            alarms: cover
+            alarms: coverNow
         )
         self.engine = engine
         return engine
@@ -100,7 +99,7 @@ actor AppStore {
             center: SystemReminderCenter(),
             ledger: DefaultsRemovalLedger(key: DefaultsRemovalLedger.followUpKey),
             privacy: DefaultsReminderPrivacy(),
-            alarms: cover
+            alarms: coverNow
         )
         self.followUps = followUps
         return followUps
@@ -135,9 +134,12 @@ actor AppStore {
         let previous = updates
         let run = Task { () throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) in
             await previous?.value
-            // An alarm never blocks a notification. A failed run keeps the last result, and the next run tries again.
+            // The cover is valid for this run only, and it fails open (D079). It starts empty. Only a run of the alarm
+            // path with no error at all gives it items. An error of the read, a schedule, or a cancel keeps it empty,
+            // so every item with an alarm gets its normal reminder.
+            self.cover.withLock { $0 = .none }
             if let failed = try? await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone) {
-                self.failedAlarms.withLock { $0 = failed }
+                self.cover.withLock { $0 = AlarmCover(rings: AlarmSupport.isAuthorized, failed: failed) }
             }
             let outcome = try await self.reminderEngine().reconcile(
                 at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission

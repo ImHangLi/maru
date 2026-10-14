@@ -75,8 +75,12 @@ struct SystemAlarmCenter: AlarmCenter {
         )
     }
 
-    func cancel(_ ids: [UUID]) async {
-        for id in ids { try? AlarmManager.shared.cancel(id: id) }
+    func cancel(_ ids: [UUID]) async throws {
+        var failure: (any Error)?
+        for id in ids {
+            do { try AlarmManager.shared.cancel(id: id) } catch { failure = error }
+        }
+        if let failure { throw failure }
     }
 }
 

@@ -131,7 +131,8 @@ public protocol AlarmCenter: Sendable {
     /// Schedules the alarm. The system holds it until its time.
     func schedule(_ request: AlarmRequest) async throws
     /// Cancels the alarms with these identifiers.
-    func cancel(_ ids: [UUID]) async
+    /// Throws when the system could not cancel an alarm. It still tries each one.
+    func cancel(_ ids: [UUID]) async throws
 }
 
 /// Where the engine reads the alarms that the saved plan and the records ask for.
@@ -141,6 +142,9 @@ public protocol AlarmSource: Sendable {
         privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
     ) async throws -> AlarmPlan
 }
+
+/// A cancel of an alarm failed in a run.
+public enum AlarmRunError: Error { case cancelFailed }
 
 /// Keeps the alarms of the next seven days in the system (D079).
 ///
@@ -170,6 +174,7 @@ public struct AlarmEngine: Sendable {
     /// An error from the source stops the run before it changes an alarm. A failed schedule leaves
     /// the alarm out until the next run.
     ///
+    /// - Throws: An error of the read or of a cancel. The caller then uses an empty cover for this run (D079).
     /// - Returns: The items with an alarm that the system did not schedule. The notification engines give
     ///   them their normal reminder in the same run (D079). The notification of an item is one repeating request,
     ///   so coverage is for the whole item and not for one dose. When one alarm of an item fails, the run cancels
@@ -182,7 +187,18 @@ public struct AlarmEngine: Sendable {
         let waiting = await center.waiting()
         let wanted = Set(plan.requests.map(\.id))
         let obsolete = waiting.subtracting(wanted)
-        if !obsolete.isEmpty { await center.cancel(Array(obsolete)) }
+        /// Any cancel error makes the whole run fail open: the caller then has an empty cover (D079).
+        var cancelFailed = false
+        func cancel(_ ids: [UUID]) async -> Bool {
+            do {
+                try await center.cancel(ids)
+                return true
+            } catch {
+                cancelFailed = true
+                return false
+            }
+        }
+        if !obsolete.isEmpty { _ = await cancel(Array(obsolete)) }
         var failed = Set<ItemID>()
         /// The alarms that the system holds after this run. A ringing alarm is not in `waiting` and stays.
         var held = waiting.intersection(wanted)
@@ -199,13 +215,14 @@ public struct AlarmEngine: Sendable {
         while changed {
             changed = false
             for request in plan.requests where held.contains(request.id) && !failed.isDisjoint(with: request.itemIDs) {
-                await center.cancel([request.id])
-                held.remove(request.id)
+                // A cancel that failed leaves the alarm held. The run throws at the end, so no banner is dropped.
+                if await cancel([request.id]) { held.remove(request.id) }
                 let before = failed.count
                 failed.formUnion(request.itemIDs)
                 changed = changed || failed.count != before
             }
         }
+        if cancelFailed { throw AlarmRunError.cancelFailed }
         return failed
     }
 }
