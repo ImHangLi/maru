@@ -55,13 +55,13 @@ struct RecoveryTests {
 
     @Test func migratorNeverErasesTheDatabase() {
         #expect(!Schema.migrator.eraseDatabaseOnSchemaChange)
-        #expect(Schema.migrator.migrations == ["v1", "v2", "v3", "v4", "v5"])
+        #expect(Schema.migrator.migrations == ["v1", "v2", "v3", "v4", "v5", "v6"])
     }
 
     @Test func failedMigrationReturnsATypedErrorAndKeepsTheData() async throws {
         let (seed, taken) = try await storeARecord()
         // The migration changes and deletes data, and then fails.
-        let broken = migrator(adding: "v6") { db in
+        let broken = migrator(adding: "v7") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
             try db.execute(sql: "DELETE FROM occurrenceState")
             try db.execute(sql: "UPDATE item SET name = 'changed'")
@@ -72,7 +72,7 @@ struct RecoveryTests {
         }
         #expect(try fileNames().contains(LocalStore.fileName))
 
-        // The database is at version 4 with all its data. It is not empty and not rebuilt.
+        // The database is at the last migration of the app with all its data. It is not empty and not rebuilt.
         let store = try LocalStore(directory: directory.url)
         #expect(try await store.items() == [seed.item])
         #expect(try await store.schedule(id: seed.schedule.id) == seed.schedule)
@@ -80,8 +80,37 @@ struct RecoveryTests {
         let (applied, hasExtraTable) = try await store.writer.read { db in
             (try Schema.migrator.appliedMigrations(db), try db.tableExists("extra"))
         }
-        #expect(applied == ["v1", "v2", "v3", "v4", "v5"])
+        #expect(applied == ["v1", "v2", "v3", "v4", "v5", "v6"])
         #expect(!hasExtraTable)
+    }
+
+    /// A database of version 5 has no follow-up and no alarm on its items after `v6`. The global follow-up setting
+    /// of version 1.0 then moves to every item that has none, one time (D079).
+    @Test func version5ItemsGetTheGlobalFollowUpSettingAfterTheReminderOptionsMigration() async throws {
+        var version5 = DatabaseMigrator()
+        for (name, sql) in [("v1", Schema.v1), ("v2", Schema.v2), ("v3", Schema.v3), ("v4", Schema.v4), ("v5", Schema.v5)] {
+            version5.registerMigration(name) { db in try db.execute(sql: sql) }
+        }
+        do {
+            let store = try LocalStore(directory: directory.url, migrator: version5)
+            for name in ["Zinc", "Iron"] {
+                try await store.execute(
+                    "INSERT INTO item (id, category, name, isArchived) VALUES (?, 'supplement', ?, 0)", [ItemID().text, name]
+                )
+            }
+            try store.writer.close()
+        }
+
+        let store = try LocalStore(directory: directory.url)
+        #expect(try await store.items().allSatisfy { $0.followUp == nil && !$0.alarm })
+        var iron = try await store.items()[1]
+        let own = FollowUpSetting(count: .five, interval: .minutes10)
+        iron.followUp = own
+        try await store.save(iron)
+
+        let global = FollowUpSetting(count: .untilRecorded, interval: .minutes15)
+        try store.adoptFollowUpSetting(global)
+        #expect(try await store.items().map(\.followUp) == [global, own])
     }
 
     /// A database of version 1 keeps every item and record after `v2`. The items get the form `unknown`
@@ -144,7 +173,7 @@ struct RecoveryTests {
         let taken = Fixtures.event(for: occurrences[1], .taken)
         do {
             let store = try LocalStore(directory: directory.url, migrator: version2)
-            try await store.save(item)
+            try await store.saveBeforeVersion6(item)
             try await store.saveBeforeVersion4(schedule)
             for occurrence in occurrences {
                 // The insert of `save` names no item column, so it runs on version 2.
@@ -184,7 +213,7 @@ struct RecoveryTests {
         let taken = Fixtures.event(for: occurrence, .taken)
         do {
             let store = try LocalStore(directory: directory.url, migrator: version3)
-            try await store.save(item)
+            try await store.saveBeforeVersion6(item)
             try await store.saveBeforeVersion4(schedule)
             try await store.save(occurrence)
             try await store.record(taken, scheduleVersionID: occurrence.scheduleVersionID)
@@ -230,7 +259,7 @@ struct RecoveryTests {
         let backup = folder.url.appendingPathComponent("Maru Backup." + BackupFormat.fileExtension)
         do {
             let store = try LocalStore(directory: directory.url, migrator: version4)
-            try await store.save(item)
+            try await store.saveBeforeVersion6(item)
             try await store.saveBeforeVersion4(schedule)
             try await store.execute("UPDATE scheduleVersion SET everyOtherDayFrom = '2026-03-03'")
             try await store.backUp(to: backup, settings: [:])
@@ -329,7 +358,7 @@ struct RecoveryTests {
     }
 
     @Test func databaseFromANewerAppIsReportedAndLeftInPlace() async throws {
-        let newer = migrator(adding: "v6") { db in
+        let newer = migrator(adding: "v7") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
         }
         let seed: Seed

@@ -18,8 +18,14 @@ enum Fixtures {
         try! Date(text, strategy: .iso8601)
     }
 
-    static func item(category: ItemCategory = .supplement, name: String = "Vitamin D") -> Item {
-        try! Item(category: category, name: name, form: .capsule, color: .pink)
+    static func item(
+        category: ItemCategory = .supplement, name: String = "Vitamin D", followUp: FollowUpSetting? = nil,
+        followUpChanged: Date? = nil, alarm: Bool = false
+    ) -> Item {
+        try! Item(
+            category: category, name: name, form: .capsule, color: .pink,
+            followUp: followUp, followUpChanged: followUpChanged, alarm: alarm
+        )
     }
 
     /// The text of a test notification center: the kind, then the names, so a test sees each change of the text.

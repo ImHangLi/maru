@@ -19,11 +19,6 @@ struct SettingsState {
 }
 
 extension AppModel {
-    /// The follow-up setting. It starts off (spec 4).
-    var followUpSetting: FollowUpSetting? {
-        DefaultsFollowUpSetting().load()
-    }
-
     func openSettings() {
         settings.isPresented = true
         analytics.markUsed(.settings)
@@ -39,17 +34,6 @@ extension AppModel {
         }
     }
 
-    /// Saves the setting, then sets the follow-ups again in the notification queue (spec 4, D021, D039).
-    func setFollowUp(_ setting: FollowUpSetting?) {
-        DefaultsFollowUpSetting().save(setting)
-        analytics.capture(.remindAgainChanged(setting))
-        let now = Date()
-        guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
-        Task { [store] in
-            await store.refreshFollowUps(at: now, deviceTimeZone: deviceTimeZone)
-        }
-    }
-
     /// The user chose an app color in Settings. A restore of a backup sends nothing.
     func appColorDidChange(_ color: ItemColor) {
         analytics.capture(.appColorChanged(color))
@@ -60,7 +44,7 @@ extension AppModel {
         DefaultsReminderPrivacy().load() == .showNames
     }
 
-    /// Saves the setting, then replaces the reminders and the follow-ups with the new text (D029).
+    /// Saves the setting, then replaces the reminders, the follow-ups, and the alarms with the new text (D029).
     /// A repeating request keeps the text that it got when it was added, so the run adds each one again.
     ///
     /// With names, a time whose items have different weekdays needs one request for each weekday, so a plan

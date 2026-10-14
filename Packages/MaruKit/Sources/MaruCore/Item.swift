@@ -73,6 +73,13 @@ public struct Item: Hashable, Sendable {
     /// The name of the photo file that the app keeps for this item, or `nil` for no photo (D056).
     /// The core keeps only the name. The app owns the file, and a missing file shows the form icon.
     public var imageReference: String?
+    /// The follow-ups of this item (D039, D079). `nil` means off, which is the default.
+    public var followUp: FollowUpSetting?
+    /// The time of the last change of `followUp`. `nil` when no change is known. The plan counts the follow-ups
+    /// that a dose can have got before this time, so a change never lifts the limit of one dose (D039).
+    public var followUpChanged: Date?
+    /// The dose time rings as an alarm (D079). Off is the default.
+    public var alarm: Bool
 
     public init(
         id: ItemID = ItemID(),
@@ -82,7 +89,10 @@ public struct Item: Hashable, Sendable {
         color: ItemColor,
         isArchived: Bool = false,
         intakeNote: IntakeNote? = nil,
-        imageReference: String? = nil
+        imageReference: String? = nil,
+        followUp: FollowUpSetting? = nil,
+        followUpChanged: Date? = nil,
+        alarm: Bool = false
     ) throws {
         self.id = id
         self.category = category
@@ -92,6 +102,9 @@ public struct Item: Hashable, Sendable {
         self.isArchived = isArchived
         self.intakeNote = intakeNote
         self.imageReference = imageReference
+        self.followUp = followUp
+        self.followUpChanged = followUpChanged
+        self.alarm = alarm
     }
 
     public mutating func rename(_ name: String) throws {

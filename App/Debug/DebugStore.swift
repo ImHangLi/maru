@@ -27,13 +27,9 @@ enum DebugStore {
     private static let transitionKey = "debug.transitionDate"
     /// The longest wait for the removal of the pending requests at a store change.
     static let clearWait = Duration.seconds(3)
-    /// Every key that the settings sheet writes (D023). The follow-up keys are the keys of `DefaultsFollowUpSetting`.
-    private static let preferenceKeys = [
-        "reminders.followUp.v2",
-        "reminders.followUpMinutes",
-        "reminders.followUpCount",
-        "reminders.followUpChanged",
-    ]
+    /// Every key that a debug scenario can change and that a reset must put back (D023). The follow-up setting
+    /// moved from a key to the items (D079), so no key is left. Add a key here when a scenario writes one.
+    private static let preferenceKeys: [String] = []
 
     /// What this launch did. The first use applies the request, so each read of the store directory comes after it.
     static let launch = applyLaunchRequest()

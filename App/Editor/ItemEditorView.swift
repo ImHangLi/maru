@@ -48,9 +48,15 @@ struct ItemEditorView: View {
     /// kind goes to the usage statistics, never the name or the value (D077).
     @State private var nameSource = AnalyticsEvent.NameSource.typed
     @State private var usedCompletion = false
+    /// The delay of the follow-ups. It stays while the user turns "Remind Again" off and on again on this screen.
+    /// 30 minutes until the user picks one: the middle delay of D021, and the delay of Apple Health.
+    @State private var followUpInterval: FollowUpInterval
+    /// The system refused alarms at the first tap on the switch (D079).
+    @State private var alarmsAreOff = false
 
     init(session: EditorSession) {
         self.session = session
+        _followUpInterval = State(initialValue: session.start.followUp?.interval ?? .minutes30)
         _draft = State(initialValue: session.start)
         _showsRestored = State(initialValue: session.isRestored)
         _formIsChosen = State(initialValue: !session.isNew || session.replaced != nil || session.isRestored)
@@ -88,6 +94,10 @@ struct ItemEditorView: View {
                 lookSection
                 amountSection
                 timesSection
+                if !draft.times.isEmpty {
+                    followUpSection
+                    if #available(iOS 26, *) { alarmSection }
+                }
                 noteSection
             }
             .scrollDismissesKeyboard(.interactively)
@@ -158,6 +168,8 @@ struct ItemEditorView: View {
             draft.times.map(\.id),
             Dose(draft.amount) != nil,
             canRemoveTime,
+            draft.followUp != nil,
+            draft.followUp?.count == .untilRecorded,
             draft.note == .custom,
             suggestions.count,
             proposedForm?.rawValue ?? "",
@@ -381,6 +393,61 @@ struct ItemEditorView: View {
             .accessibilityLabel(Text("Plan: \(preview)"))
     }
 
+    /// "Remind Again" belongs to the item (D079). Each item has its own count and delay. It starts off.
+    private var followUpSection: some View {
+        Section {
+            Picker("Remind Again", selection: followUpCount) {
+                Text("Off").tag(FollowUpCount?.none)
+                Text("1 Time").tag(FollowUpCount?.some(.one))
+                Text("2 Times").tag(FollowUpCount?.some(.two))
+                Text("3 Times").tag(FollowUpCount?.some(.three))
+                Text("5 Times").tag(FollowUpCount?.some(.five))
+                Text("Until Recorded").tag(FollowUpCount?.some(.untilRecorded))
+            }
+            .tint(Color.primary)
+            if draft.followUp != nil {
+                Picker("Every", selection: followUpDelay) {
+                    Text("5 min").tag(FollowUpInterval.minutes5)
+                    Text("10 min").tag(FollowUpInterval.minutes10)
+                    Text("15 min").tag(FollowUpInterval.minutes15)
+                    Text("30 min").tag(FollowUpInterval.minutes30)
+                    Text("1 hr").tag(FollowUpInterval.minutes60)
+                }
+                .tint(Color.primary)
+            }
+        } header: {
+            Text("Reminders")
+        } footer: {
+            // iPhone has no reminder that repeats until Maru stops it, so "Until Recorded" has a limit.
+            // The footer states it, and the time at which the follow-ups of a dose stop (D039).
+            if draft.followUp?.count == .untilRecorded {
+                let latest = FollowUpPlan.latestTime
+                let time = SchedulePreview.format(hour: latest.hour, minute: latest.minute)
+                Text("Maru reminds you up to \(FollowUpCount.untilRecordedLimit) times for each dose, until \(time) at the latest.")
+            } else {
+                Text("Only for doses with no record.")
+            }
+        }
+    }
+
+    /// The alarm of the item (D079). The system asks at the first tap on the switch.
+    @available(iOS 26, *)
+    private var alarmSection: some View {
+        Section {
+            Toggle("Alarm", isOn: Binding(get: { draft.alarm == true }, set: turnAlarm))
+                .alert("Maru Can’t Set Alarms", isPresented: $alarmsAreOff) {
+                    Button("Open Settings") {
+                        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                    }
+                    Button("Cancel", role: .cancel) {}
+                } message: {
+                    Text("To use an alarm, allow alarms for Maru in Settings.")
+                }
+        } footer: {
+            Text("Rings like the Clock app at each dose time, also in silent mode and Focus. Follow-ups stay notifications.")
+        }
+    }
+
     private var noteSection: some View {
         Section {
             Picker("Note", selection: $draft.note) {
@@ -405,6 +472,38 @@ struct ItemEditorView: View {
     }
 
     // MARK: Actions
+
+    /// The count menu. The delay stays when the menu goes to "Off" and comes back (D039).
+    private var followUpCount: Binding<FollowUpCount?> {
+        Binding {
+            draft.followUp?.count
+        } set: { count in
+            draft.followUp = count.map { FollowUpSetting(count: $0, interval: followUpInterval) }
+        }
+    }
+
+    private var followUpDelay: Binding<FollowUpInterval> {
+        Binding {
+            followUpInterval
+        } set: { interval in
+            followUpInterval = interval
+            if let count = draft.followUp?.count { draft.followUp = FollowUpSetting(count: count, interval: interval) }
+        }
+    }
+
+    /// The switch turns on at once. If the user does not allow alarms, it turns off again with one sentence and a
+    /// button to Settings (D079).
+    private func turnAlarm(_ isOn: Bool) {
+        draft.alarm = isOn ? true : nil
+        guard isOn else { return }
+        Task {
+            guard await model.allowAlarms() else {
+                draft.alarm = nil
+                alarmsAreOff = true
+                return
+            }
+        }
+    }
 
     /// The form menu. A choice of the user stops the app from changing the form (D043).
     private var chosenForm: Binding<ItemForm> {

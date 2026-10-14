@@ -57,7 +57,10 @@ public protocol RemovalLedger: Sendable {
 
 /// Where the engine reads the saved plan.
 public protocol ReminderPlanSource: Sendable {
-    func reminderPlan(at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy) async throws -> ReminderPlan
+    /// - Parameter alarmsRing: Alarms can ring now, so the plan leaves out the items with an alarm (D079).
+    func reminderPlan(
+        at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarmsRing: Bool
+    ) async throws -> ReminderPlan
 }
 
 /// Where the setting "Show Names in Reminders" is kept. It is a preference, so it is not in the health database (D014, D029).
@@ -131,6 +134,8 @@ public struct ReminderOutcome: Hashable, Sendable {
             switch (need, authorization) {
             case (.nothing, _): removalPending ? .removalPending : .off
             case let (.blocked(problem), _): .notSet(problem)
+            // The alarm does not need the notification permission.
+            case (.alarm, _): removalPending ? .removalPending : .scheduled
             case (.requests, .notDetermined): .notSet(.permissionNotAsked)
             case (.requests, .denied): .notSet(.permissionDenied)
             case let (.requests(identifiers), .authorized):
@@ -165,6 +170,8 @@ public actor ReminderEngine {
     private let ledger: any RemovalLedger
     private let privacy: any ReminderPrivacyStore
     private let zoneRecord: DefaultsTimeZoneRecord?
+    /// Whether alarms can ring now, read at each run (D079).
+    private let alarmsRing: @Sendable () -> Bool
     /// The clock at the time of the call. A run reads it when it reads the pending requests, after every wait.
     private let clock: @Sendable () -> Date
     private var lastRun: Task<Void, Never>?
@@ -174,6 +181,7 @@ public actor ReminderEngine {
 
     /// - Parameters:
     ///   - zoneRecord: Gets the device time zone of each successful run, for the notification tap (spec 8.3).
+    ///   - alarmsRing: `true` when AlarmKit can schedule alarms. An item with an alarm then has no notification (D079).
     ///   - clock: The clock of the system. A run uses it only to see that the time of a dated request passed.
     public init(
         source: any ReminderPlanSource,
@@ -181,6 +189,7 @@ public actor ReminderEngine {
         ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
         zoneRecord: DefaultsTimeZoneRecord? = nil,
+        alarmsRing: @escaping @Sendable () -> Bool = { false },
         clock: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.source = source
@@ -188,6 +197,7 @@ public actor ReminderEngine {
         self.ledger = ledger
         self.privacy = privacy
         self.zoneRecord = zoneRecord
+        self.alarmsRing = alarmsRing
         self.clock = clock
         unremoved = ledger.load()
     }
@@ -227,7 +237,9 @@ public actor ReminderEngine {
     }
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone, mayAskForPermission: Bool) async throws -> ReminderOutcome {
-        let plan = try await source.reminderPlan(at: now, deviceTimeZone: deviceTimeZone, privacy: privacy.load())
+        let plan = try await source.reminderPlan(
+            at: now, deviceTimeZone: deviceTimeZone, privacy: privacy.load(), alarmsRing: alarmsRing()
+        )
         let wanted = plan.requests
         var authorization = await center.authorization()
         if authorization == .notDetermined, mayAskForPermission, !wanted.isEmpty {

@@ -36,6 +36,111 @@
         }
       }
     },
+    "Alarm" : {
+      "comment" : "Add and edit screen: the label of the switch that makes the dose time of the item ring like the alarm of the Clock app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wecker"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarma"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラーム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알람"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闹钟"
+          }
+        }
+      }
+    },
+    "Maru Can’t Set Alarms" : {
+      "comment" : "Add and edit screen: the title of the alert when the user turns on Alarm and the system does not allow alarms for Maru.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru kann keine Wecker stellen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru no puede programar alarmas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruはアラームを設定できません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru가 알람을 설정할 수 없어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 无法设置闹钟"
+          }
+        }
+      }
+    },
+    "Open Maru" : {
+      "comment" : "The second button of the alarm of a dose when the alarm stands for more than one item. It opens the app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru öffnen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Maru"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruを開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 열기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Maru"
+          }
+        }
+      }
+    },
     "Privacy Policy" : {
       "comment" : "Settings: a link to the privacy policy web page.",
       "localizations" : {
@@ -67,6 +172,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐私政策"
+          }
+        }
+      }
+    },
+    "Rings like the Clock app at each dose time, also in silent mode and Focus. Follow-ups stay notifications." : {
+      "comment" : "Add and edit screen: the footer under the Alarm switch. A follow-up is the repeated reminder of Remind Again, and it stays a normal notification.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klingelt zu jeder Einnahmezeit wie die Uhr-App, auch im Stumm-Modus und bei einem Fokus. Erneute Erinnerungen bleiben Mitteilungen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suena a cada hora de toma como la app Reloj, también en modo silencio y con un modo de concentración. Los recordatorios repetidos siguen siendo notificaciones."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用時刻ごとに「時計」アプリのように鳴り、消音モードや集中モードでも鳴ります。再通知は通常の通知のままです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 시간마다 시계 앱처럼 울리고, 무음 모드와 집중 모드에서도 울려요. 다시 알림은 일반 알림으로 와요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每次服用时间会像“时钟”App 一样响铃，静音模式和专注模式下也会响。再次提醒仍是普通通知。"
+          }
+        }
+      }
+    },
+    "Stop" : {
+      "comment" : "The stop button of the alarm of a dose. It silences the alarm and records nothing.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stopp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detener"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중지"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
           }
         }
       }
@@ -1485,7 +1660,7 @@
       }
     },
     "1 hr" : {
-      "comment" : "Settings: a time between follow-up reminders.",
+      "comment" : "Add and edit screen: a time between follow-up reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1520,7 +1695,7 @@
       }
     },
     "1 Time" : {
-      "comment" : "Settings: a number of follow-up reminders for each dose.",
+      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1555,7 +1730,7 @@
       }
     },
     "10 min" : {
-      "comment" : "Settings: a time between follow-up reminders.",
+      "comment" : "Add and edit screen: a time between follow-up reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1590,7 +1765,7 @@
       }
     },
     "15 min" : {
-      "comment" : "Settings: a time between follow-up reminders.",
+      "comment" : "Add and edit screen: a time between follow-up reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1625,7 +1800,7 @@
       }
     },
     "2 Times" : {
-      "comment" : "Settings: a number of follow-up reminders for each dose.",
+      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1660,7 +1835,7 @@
       }
     },
     "3 Times" : {
-      "comment" : "Settings: a number of follow-up reminders for each dose.",
+      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1695,7 +1870,7 @@
       }
     },
     "30 min" : {
-      "comment" : "Settings: a time between follow-up reminders.",
+      "comment" : "Add and edit screen: a time between follow-up reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1730,7 +1905,7 @@
       }
     },
     "5 min" : {
-      "comment" : "Settings: a time between follow-up reminders.",
+      "comment" : "Add and edit screen: a time between follow-up reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1765,7 +1940,7 @@
       }
     },
     "5 Times" : {
-      "comment" : "Settings: a number of follow-up reminders for each dose.",
+      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -3873,7 +4048,7 @@
       }
     },
     "Every" : {
-      "comment" : "Settings: the label of the picker for the time between follow-up reminders. The value follows, for example “10 min”.",
+      "comment" : "Add and edit screen: the label of the picker for the time between follow-up reminders. The value follows, for example “10 min”.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5655,7 +5830,7 @@
       }
     },
     "Maru reminds you up to %lld times for each dose, until %@ at the latest." : {
-      "comment" : "Settings: the footer of “Until Recorded”. iPhone has no reminder that repeats with no end, so Maru states the limit. The first placeholder is the number 12. The second is the time of the next day at which the reminders of a dose stop, for example “1:00 AM”.",
+      "comment" : "Add and edit screen: the footer of “Until Recorded”. iPhone has no reminder that repeats with no end, so Maru states the limit. The first placeholder is the number 12. The second is the time of the next day at which the reminders of a dose stop, for example “1:00 AM”.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6985,7 +7160,7 @@
       }
     },
     "Off" : {
-      "comment" : "Settings: notifications are off, or the follow-up reminders are off.",
+      "comment" : "Settings: notifications are off. Add and edit screen: the follow-up reminders of the item are off.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7090,7 +7265,7 @@
       }
     },
     "Only for doses with no record." : {
-      "comment" : "Settings: the footer under Remind Again. A follow-up reminder comes only for a dose that has no record.",
+      "comment" : "Add and edit screen: the footer under Remind Again. A follow-up reminder comes only for a dose that has no record.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7720,7 +7895,7 @@
       }
     },
     "Remind Again" : {
-      "comment" : "Settings: the label of the picker for the number of follow-up reminders.",
+      "comment" : "Add and edit screen: the label of the picker for the number of follow-up reminders of one item.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7860,7 +8035,7 @@
       }
     },
     "Reminders" : {
-      "comment" : "Settings: the header of the reminder section.",
+      "comment" : "The header of the reminder section, in Settings and on the add and edit screen.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10185,6 +10360,41 @@
         }
       }
     },
+    "To use an alarm, allow alarms for Maru in Settings." : {
+      "comment" : "Add and edit screen: the message of the alert when the system does not allow alarms for Maru. The Open Settings button follows.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlaube in den Einstellungen Wecker für Maru, um einen Wecker zu verwenden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para usar una alarma, permite las alarmas para Maru en Ajustes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームを使うには、設定でMaruのアラームを許可してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알람을 사용하려면 설정에서 Maru의 알람을 허용해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要使用闹钟，请在“设置”中允许 Maru 使用闹钟。"
+          }
+        }
+      }
+    },
     "Today" : {
       "comment" : "The title of the first tab and of its page.",
       "localizations" : {
@@ -10902,7 +11112,7 @@
       }
     },
     "Until Recorded" : {
-      "comment" : "Settings: follow-up reminders come until the user records the dose, up to a limit that the footer states.",
+      "comment" : "Add and edit screen: follow-up reminders come until the user records the dose, up to a limit that the footer states.",
       "localizations" : {
         "de" : {
           "stringUnit" : {

@@ -17,6 +17,7 @@ actor AppStore {
     private var opened: LocalStore?
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
+    private var alarms: AlarmEngine?
     /// The last notification update in the queue. Each update waits for the one before it, so the reminder
     /// engine and the follow-up engine never change the requests at the same time (spec 8.4).
     private var updates: Task<Void, Never>?
@@ -54,6 +55,14 @@ actor AppStore {
             try LocalStore.adopt(from: AppGroup.earlierDatabaseDirectory, into: directory)
         }
         let store = try LocalStore(directory: directory)
+        // The one-time move of the global follow-up setting of version 1.0 to the items (D079). A failure leaves
+        // the setting in place, and the next open tries again. A debug scenario has its own store and leaves it alone.
+        if directory == Self.directory, LegacyFollowUpSetting.exists() {
+            if let setting = LegacyFollowUpSetting.read() {
+                try store.adoptFollowUpSetting(setting)
+            }
+            LegacyFollowUpSetting.remove()
+        }
         opened = store
         return store
     }
@@ -67,7 +76,8 @@ actor AppStore {
             center: SystemReminderCenter(),
             ledger: DefaultsRemovalLedger(),
             privacy: DefaultsReminderPrivacy(),
-            zoneRecord: DefaultsTimeZoneRecord()
+            zoneRecord: DefaultsTimeZoneRecord(),
+            alarmsRing: { AlarmSupport.isAuthorized }
         )
         self.engine = engine
         return engine
@@ -80,15 +90,34 @@ actor AppStore {
             source: try open(),
             center: SystemReminderCenter(),
             ledger: DefaultsRemovalLedger(key: DefaultsRemovalLedger.followUpKey),
-            setting: DefaultsFollowUpSetting(),
-            privacy: DefaultsReminderPrivacy()
+            privacy: DefaultsReminderPrivacy(),
+            alarmsRing: { AlarmSupport.isAuthorized }
         )
         self.followUps = followUps
         return followUps
     }
 
-    /// Runs the reminder engine, then the follow-ups. Keep this order: a run can remove follow-ups to make room
-    /// under the system limit, and the refresh sets them again (spec 8.4).
+    /// Gives each restored item that has no follow-up the global setting of a backup of version 1.0 (D079).
+    func adoptFollowUpSetting(_ setting: FollowUpSetting) {
+        try? open().adoptFollowUpSetting(setting)
+    }
+
+    /// The alarm engine of the process. It is `nil` before iOS 26, where AlarmKit does not exist (D079).
+    func alarmEngine() throws(StorageError) -> AlarmEngine? {
+        guard #available(iOS 26, *) else { return nil }
+        if let alarms { return alarms }
+        let alarms = AlarmEngine(
+            source: try open(),
+            center: SystemAlarmCenter(),
+            privacy: DefaultsReminderPrivacy(),
+            alarmsRing: { AlarmSupport.isAuthorized }
+        )
+        self.alarms = alarms
+        return alarms
+    }
+
+    /// Runs the reminder engine, then the follow-ups, then the alarms. Keep this order: a run can remove follow-ups
+    /// to make room under the system limit, and the refresh sets them again (spec 8.4).
     ///
     /// The run waits for the notification updates before it, so no two updates overlap.
     /// It returns the follow-up outcome too: `nil` when the follow-up refresh failed.
@@ -104,6 +133,8 @@ actor AppStore {
                 at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
             )
             let followUps = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
+            // An alarm never blocks a notification, and a failed run changes no alarm. The next run tries again.
+            try? await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone)
             return (outcome, followUps)
         }
         updates = Task { _ = try? await run.value }
@@ -134,23 +165,10 @@ actor AppStore {
         }
         engine = nil
         followUps = nil
+        alarms = nil
         // The restored items replace the old ones. The photo files of the old items have no owner now (D056).
         await removeUnreferencedPhotos()
         return .success(result)
-    }
-
-    /// Sets the follow-ups again from the records. A failed run changes nothing, and the next trigger runs again.
-    ///
-    /// The refresh waits for the notification updates before it. It always runs, also behind a queued full run:
-    /// a skipped refresh could leave a follow-up for a recorded time if that full run then fails.
-    func refreshFollowUps(at now: Date, deviceTimeZone: NamedTimeZone) async {
-        let previous = updates
-        let run = Task {
-            await previous?.value
-            _ = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
-        }
-        updates = run
-        await run.value
     }
 
     /// Generates the occurrences around `now`, and builds the projection of the two tabs (spec 9).

@@ -136,6 +136,8 @@ extension AppModel {
         analytics.capture(.itemSaved(AnalyticsEvent.ItemSetup(
             mode: session.mode,
             hasReminder: schedule != nil,
+            hasAlarm: item.alarm,
+            hasFollowUp: item.followUp != nil,
             hasAmount: schedule?.versions.last?.dose != nil,
             hasNote: item.intakeNote != nil,
             hasPhoto: item.imageReference != nil,
@@ -162,6 +164,11 @@ extension AppModel {
             status = ReminderStatus(state)
         }
         report(status, of: reported.id, removes: removed != nil)
+    }
+
+    /// The first tap on the "Alarm" switch asks the system for the alarm permission (D079). `true` when alarms can ring.
+    func allowAlarms() async -> Bool {
+        await AlarmSupport.requestAuthorization()
     }
 
     /// The edit screen closed. A close after a save sends nothing more, because the save sent `item_saved`.

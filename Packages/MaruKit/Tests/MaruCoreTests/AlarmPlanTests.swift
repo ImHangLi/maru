@@ -1,0 +1,63 @@
+import Foundation
+import Testing
+@testable import MaruCore
+
+@Suite("Alarm plan (D079)")
+struct AlarmPlanTests {
+    private let now = Fixtures.instant("2026-03-02T00:05:00Z")
+
+    private func plan(
+        items: [Item], schedules: [Schedule], closed: Set<OccurrenceKey> = [], alarmsRing: Bool = true
+    ) -> (alarms: AlarmPlan, reminders: ReminderPlan) {
+        let reminders = ReminderPlan(
+            items: items, schedules: schedules, now: now, deviceTimeZone: Fixtures.shanghai, closed: closed, alarmsRing: alarmsRing
+        )
+        let alarms = AlarmPlan(
+            reminders: reminders, items: items, schedules: schedules, stored: [], closed: closed,
+            now: now, deviceTimeZone: Fixtures.shanghai
+        )
+        return (alarms, reminders)
+    }
+
+    @Test func anAlarmReplacesTheBannerAndAFollowUpStaysANotification() {
+        let zinc = Fixtures.item(name: "Zinc", followUp: FollowUpSetting(count: .one, interval: .minutes15), alarm: true)
+        let zincSchedule = Fixtures.schedule(itemID: zinc.id, times: [Fixtures.time(8)])
+        let result = plan(items: [zinc], schedules: [zincSchedule])
+
+        // One alarm for each of the next days, at 08:00 in Shanghai, with the "Taken" button for the one item.
+        let first = result.alarms.requests[0]
+        #expect(first.fireDate == Fixtures.instant("2026-03-03T00:00:00Z"))
+        #expect(first.names == ["Zinc"])
+        #expect(first.taken?[FollowUpRequest.itemIDKey] == zinc.id.rawValue.uuidString)
+        // The item has no series request. Its follow-ups still come.
+        #expect(result.reminders.requests.isEmpty)
+        let followUps = FollowUpPlan(
+            reminders: result.reminders, items: [zinc], schedules: [zincSchedule], stored: [], closed: [],
+            now: now, deviceTimeZone: Fixtures.shanghai
+        )
+        #expect(!followUps.requests.isEmpty)
+
+        // With no permission for alarms, the item gets its normal reminder and no alarm.
+        let denied = plan(items: [zinc], schedules: [zincSchedule], alarmsRing: false)
+        #expect(denied.alarms.requests.isEmpty)
+        #expect(!denied.reminders.requests.isEmpty)
+    }
+
+    @Test func aRecordedDoseHasNoAlarmAndAnItemAtTheSameTimeLosesTheTakenButton() {
+        let zinc = Fixtures.item(name: "Zinc", alarm: true)
+        let iron = Fixtures.item(name: "Iron")
+        let zincSchedule = Fixtures.schedule(itemID: zinc.id, times: [Fixtures.time(8)])
+        let ironSchedule = Fixtures.schedule(itemID: iron.id, times: [Fixtures.time(8)])
+        let both = plan(items: [zinc, iron], schedules: [zincSchedule, ironSchedule])
+        // The alarm names only its own item. Iron keeps its banner. A second item at the time means no "Taken" button.
+        #expect(both.alarms.requests[0].names == ["Zinc"])
+        #expect(both.alarms.requests[0].taken == nil)
+        #expect(both.reminders.requests.count == 1)
+
+        // The user records tomorrow's dose in advance: that dose has no alarm.
+        let key = OccurrenceKey(slotID: zincSchedule.slots[0].id, plannedDate: Fixtures.date(2026, 3, 3))
+        let recorded = plan(items: [zinc, iron], schedules: [zincSchedule, ironSchedule], closed: [key])
+        #expect(recorded.alarms.requests.count == both.alarms.requests.count - 1)
+        #expect(!recorded.alarms.requests.contains { $0.fireDate == Fixtures.instant("2026-03-03T00:00:00Z") })
+    }
+}

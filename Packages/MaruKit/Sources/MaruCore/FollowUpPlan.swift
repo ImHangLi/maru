@@ -68,15 +68,16 @@ public struct FollowUpGroup: Hashable, Sendable {
     /// for a rule that follows the device. It holds no item name, no dose, and no ID (spec 10),
     /// so the removal ledger can keep it outside the health database.
     ///
-    /// It is the identifier of the first follow-up, and the thread of every follow-up of the group.
+    /// It is the thread of every follow-up of the group, and the start of each request identifier.
     public var identifier: String {
         FollowUpRequest.identifierPrefix + (seriesTimeZone == nil ? "device@" : "") + timeZone.identifier
             + "|" + dateText + String(format: "|%02d:%02d", time.hour, time.minute)
     }
 
-    /// The identifier of the follow-up with this number, from 1. A later follow-up adds `|<number>` (D039).
-    func identifier(of number: Int) -> String {
-        number == 1 ? identifier : identifier + "|\(number)"
+    /// The identifier of the follow-up at `instant`: the group identifier and `|+<minutes>` after the slot time.
+    /// Items with other intervals can share a group, so the delay and not a count names a request (D079).
+    func identifier(at instant: Date, from slotInstant: Date) -> String {
+        identifier + "|+\(Int((instant.timeIntervalSince(slotInstant) / 60).rounded()))"
     }
 
     var dateText: String {
@@ -148,22 +149,16 @@ public struct FollowUpPlan: Hashable, Sendable {
     public let open: [String: ReminderContent]
 
     /// - Parameters:
-    ///   - setting: `nil` when the setting is off. The plan then has no request and no open follow-up,
-    ///     so the engine removes every pending and every delivered follow-up.
-    ///   - changed: The time of the last change of the setting, when the system held no follow-up of an earlier
-    ///     setting any more. `nil` when no change is known. `Date.distantFuture` while the removal is not confirmed:
-    ///     then a dose gets no follow-up.
     ///   - reminders: The series plan of the same read. A follow-up comes only for a schedule whose
     ///     series reminder is set up, so a paused, archived, ended, or blocked schedule gets none.
     ///     The follow-ups get only the room that the series requests of this plan do not need.
+    ///   - items: Every item. An item with no `followUp` gets none (D079).
     ///   - stored: The stored occurrences on `OccurrenceGeneration.candidateDates`.
     ///   - closed: The keys of the occurrences that have a current taken or skipped event.
     ///   - now: The clock of the run.
     ///   - deviceTimeZone: The time zone of the device, for the schedule versions that follow it.
     ///   - privacy: Whether the text names the open items (D029).
     public init(
-        setting: FollowUpSetting?,
-        changed: Date? = nil,
         reminders: ReminderPlan,
         items: [Item],
         schedules: [Schedule],
@@ -173,116 +168,70 @@ public struct FollowUpPlan: Hashable, Sendable {
         deviceTimeZone: NamedTimeZone,
         privacy: ReminderPrivacy = .showNames
     ) {
-        guard let setting else {
-            requests = []
-            open = [:]
-            return
-        }
         let reminding = schedules.filter {
-            if case .requests = reminders.needs[$0.id] { true } else { false }
+            switch reminders.needs[$0.id] {
+            case .requests?, .alarm?: true
+            default: false
+            }
         }
-        let scheduleOfSlot = Dictionary(
-            reminding.flatMap { schedule in schedule.slots.map { ($0.id, schedule) } },
-            uniquingKeysWith: { first, _ in first }
+        let groups = DoseGroups(
+            reminding: reminding, items: items, stored: stored, closed: closed, now: now, deviceTimeZone: deviceTimeZone
         )
-        let order = Dictionary(reminding.enumerated().map { ($1.id, $0) }, uniquingKeysWith: { first, _ in first })
         let itemOfID = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-        /// The instant of the slot time of each group that has an open occurrence.
-        var slotInstants: [FollowUpGroup: Date] = [:]
-        var openItems: [FollowUpGroup: [(order: Int, itemID: ItemID, name: String?)]] = [:]
-        /// Every item of a group with its schedule versions, also an item with a record.
-        /// A group of exactly one item in one version gets the "Taken" action (D034).
-        var members: [FollowUpGroup: [ItemID: Set<ScheduleVersionID>]] = [:]
-        /// The instant of every slot time of each item, with a record or not.
-        var doses: [ItemID: Set<Date>] = [:]
-        func add(_ key: OccurrenceKey, time: WallClockTime, timeZone: NamedTimeZone, versionID: ScheduleVersionID) {
-            guard let schedule = scheduleOfSlot[key.slotID] else { return }
-            let policy = schedule.versions.first { $0.id == versionID }?.timeZonePolicy ?? .fixed(timeZone)
-            let seriesZone: NamedTimeZone? = switch policy {
-            case let .fixed(zone): zone
-            case .followsDevice: nil
-            }
-            let group = FollowUpGroup(seriesTimeZone: seriesZone, timeZone: timeZone, plannedDate: key.plannedDate, time: time)
-            // A local time that a clock change removes or repeats uses its first instant (T25).
-            // The zone, the date, and the time give one instant, so every member of a group has it.
-            let instant = timeZone.resolve(time, on: key.plannedDate).earliestInstant
-            members[group, default: [:]][schedule.itemID, default: []].insert(versionID)
-            doses[schedule.itemID, default: []].insert(instant)
-            guard !closed.contains(key) else { return }
-            slotInstants[group] = instant
-            openItems[group, default: []].append((order[schedule.id] ?? 0, schedule.itemID, itemOfID[schedule.itemID]?.name))
-        }
-        // The occurrence window (yesterday to tomorrow) uses the stored occurrences, as the Today screen does.
-        // A stored occurrence with an intake event keeps its time after a schedule edit (D019), so its follow-ups
-        // stay at that time.
-        let window = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
-            .outcome(items: items, schedules: reminding, stored: stored)
-            .occurrences
-        for occurrence in window {
-            add(occurrence.key, time: occurrence.plannedTime, timeZone: occurrence.timeZone, versionID: occurrence.scheduleVersionID)
-        }
-        // The dates after the window have no stored occurrence yet, so they come from the schedule.
-        let covered = Set(stored.map(\.occurrence.key) + window.map(\.key))
-        // Yesterday in the earliest zone to the last day of the window in the latest zone.
-        let today = LocalDate(now, in: .utc)
-        for schedule in reminding {
-            for date in (-2...(Self.days + 1)).map({ today.adding(days: $0) }) {
-                for planned in schedule.plannedOccurrences(on: date, deviceTimeZone: deviceTimeZone)
-                where !covered.contains(planned.key) {
-                    add(planned.key, time: planned.plannedTime, timeZone: planned.timeZone, versionID: planned.scheduleVersionID)
-                }
-            }
-        }
-        /// The one item and its one schedule version, for a group that gets the "Taken" action.
-        func single(of group: FollowUpGroup) -> (itemID: ItemID, versionID: ScheduleVersionID)? {
-            guard let all = members[group], all.count == 1, let (itemID, versions) = all.first, versions.count == 1 else {
-                return nil
-            }
-            return (itemID, versions.first!)
-        }
-        let step = Double(setting.interval.rawValue * 60)
         let end = now.addingTimeInterval(Double(Self.days) * 86_400)
         var contents: [String: ReminderContent] = [:]
         /// The requests of each group that are still to come, in the order of their instants.
         var wanted: [[FollowUpRequest]] = []
-        for (group, slotInstant) in slotInstants {
+        for (group, slotInstant) in groups.slotInstants {
             let latest = Self.latestInstant(of: group.plannedDate, in: group.timeZone)
-            // The open items in the order of the schedules, each once, with the instant at which its follow-ups stop:
-            // `latestTime` of the next day, or the next slot time of the item, the first of the two.
-            var seen = Set<ItemID>()
-            let items = openItems[group]!.enumerated()
-                .sorted { ($0.element.order, $0.offset) < ($1.element.order, $1.offset) }
-                .map(\.element)
-                .filter { seen.insert($0.itemID).inserted }
-                .map { item in
-                    let next = doses[item.itemID]!.filter { $0 > slotInstant }.min()
-                    return (name: item.name, stop: min(latest, next ?? latest))
+            // The open items with follow-ups, in the order of the schedules, each once, with the instant at which
+            // their follow-ups stop: `latestTime` of the next day, or the next slot time of the item, the first of the two.
+            let reminded = groups.orderedOpenItems(of: group).compactMap { open -> (
+                name: String, setting: FollowUpSetting, changed: Date?, stop: Date
+            )? in
+                guard let item = itemOfID[open.itemID], let setting = item.followUp else { return nil }
+                let next = groups.doses[open.itemID]!.filter { $0 > slotInstant }.min()
+                return (item.name, setting, item.followUpChanged, min(latest, next ?? latest))
+            }
+            guard !reminded.isEmpty else { continue }
+            let single = groups.single(of: group)
+            /// The names of the items that each instant reminds for. `shown` has every instant that an item reaches,
+            /// and `due` only the instants that still get a request.
+            var shown: [Date: [String]] = [:]
+            var due: [Date: [String]] = [:]
+            for item in reminded {
+                let step = Double(item.setting.interval.rawValue * 60)
+                // A dose before the last change can have follow-ups of earlier settings. Each interval is a multiple of
+                // 5 minutes, so at most one came for each 5 minutes from the slot time to `changed`. The setting of now
+                // gets only the rest of the limit, and only after `changed`. A later dose gets the setting of now.
+                let came = item.changed.map {
+                    min(FollowUpCount.untilRecordedLimit, max(0, Int($0.timeIntervalSince(slotInstant) / 300)))
+                } ?? 0
+                let left = min(item.setting.count.limit, FollowUpCount.untilRecordedLimit - came)
+                var counted = 0
+                for number in 1... {
+                    guard counted < left || number <= item.setting.count.limit else { break }
+                    let fireDate = slotInstant.addingTimeInterval(Double(number) * step)
+                    // The instants only grow, so a later follow-up has no time left too.
+                    guard item.stop > fireDate else { break }
+                    // A delivered follow-up of an earlier setting can have this instant. It stays while its text is true.
+                    shown[fireDate, default: []].append(item.name)
+                    guard counted < left, fireDate > item.changed ?? .distantPast else { continue }
+                    counted += 1
+                    guard fireDate > now, fireDate <= end else { continue }
+                    due[fireDate, default: []].append(item.name)
                 }
-            let single = single(of: group)
-            // A dose before the last change can have follow-ups of earlier settings. Each interval is a multiple of
-            // 5 minutes, so at most one came for each 5 minutes from the slot time to `changed`. The setting of now
-            // gets only the rest of the limit, and only after `changed`. A later dose gets the setting of now.
-            let came = changed.map { min(FollowUpCount.untilRecordedLimit, max(0, Int($0.timeIntervalSince(slotInstant) / 300))) } ?? 0
-            let left = min(setting.count.limit, FollowUpCount.untilRecordedLimit - came)
-            var counted = 0
-            var future: [FollowUpRequest] = []
-            for number in 1... {
-                guard counted < left || number <= setting.count.limit else { break }
-                let fireDate = slotInstant.addingTimeInterval(Double(number) * step)
-                let due = items.filter { $0.stop > fireDate }
-                // The instants only grow, so a later follow-up has no item too.
-                guard !due.isEmpty else { break }
+            }
+            func content(_ names: [String]) -> ReminderContent {
                 // `nil` when the user hides the names.
-                let names = privacy == .showNames ? due.compactMap(\.name) : []
-                let content = ReminderContent(
-                    kind: .again, names: names.isEmpty ? nil : names, hasTakenAction: single != nil
-                )
-                let identifier = group.identifier(of: number)
-                // A delivered follow-up of an earlier setting can have this number. It stays while its text is true.
-                contents[identifier] = content
-                guard counted < left, fireDate > changed ?? .distantPast else { continue }
-                counted += 1
-                guard fireDate > now, fireDate <= end else { continue }
+                let shownNames = privacy == .showNames ? names : []
+                return ReminderContent(kind: .again, names: shownNames.isEmpty ? nil : shownNames, hasTakenAction: single != nil)
+            }
+            for (fireDate, names) in shown {
+                contents[group.identifier(at: fireDate, from: slotInstant)] = content(names)
+            }
+            var future: [FollowUpRequest] = []
+            for fireDate in due.keys.sorted() {
                 var userInfo = [
                     ReminderRequest.seriesIDKey: group.seriesID,
                     FollowUpRequest.plannedDateKey: group.dateText,
@@ -295,8 +244,8 @@ public struct FollowUpPlan: Hashable, Sendable {
                 }
                 future.append(
                     FollowUpRequest(
-                        identifier: identifier, threadIdentifier: group.identifier, content: content,
-                        userInfo: userInfo, fireDate: fireDate
+                        identifier: group.identifier(at: fireDate, from: slotInstant), threadIdentifier: group.identifier,
+                        content: content(due[fireDate]!), userInfo: userInfo, fireDate: fireDate
                     )
                 )
             }

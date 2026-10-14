@@ -111,11 +111,15 @@ struct ItemDraft: Codable, Equatable {
     var cycle: Cycle?
     var note = Note.none
     var noteText = ""
+    /// The follow-ups of this item (D039, D079). `nil` means off. A draft file from before D079 has no value, so it loads as off.
+    var followUp: FollowUpSetting?
+    /// The alarm at each dose time (D079). `nil` means off, so a switch that goes back to off equals the stored item.
+    var alarm: Bool?
 
     /// The draft file names `cycle` with its key from before D065, so an older file keeps its rule.
     /// A new property of the draft needs a case here, or the file does not keep it.
     private enum CodingKeys: String, CodingKey {
-        case itemID, scheduleID, name, category, form, color, amount, times, weekdays, note, noteText
+        case itemID, scheduleID, name, category, form, color, amount, times, weekdays, note, noteText, followUp, alarm
         case cycle = "everyOtherDay"
     }
 
@@ -135,6 +139,8 @@ struct ItemDraft: Codable, Equatable {
         category = item.category
         form = item.form
         color = item.color
+        followUp = item.followUp
+        alarm = item.alarm ? true : nil
         switch item.intakeNote {
         case nil: break
         case .preset(.withFood): note = .withFood
@@ -263,6 +269,11 @@ extension ItemDraft {
         item.form = form
         item.color = color
         item.intakeNote = intakeNote
+        // The reminder options belong to the reminder time. An item with no time keeps none (D079).
+        let chosen = times.isEmpty ? nil : followUp
+        if item.followUp != chosen { item.followUpChanged = now }
+        item.followUp = chosen
+        item.alarm = !times.isEmpty && alarm == true
 
         guard !times.isEmpty else { return (item, existingSchedule) }
         guard let deviceTimeZone else { throw DraftBuildError.noTimeZone }
