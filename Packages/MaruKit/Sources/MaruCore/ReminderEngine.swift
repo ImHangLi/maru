@@ -18,11 +18,14 @@ public struct PendingReminder: Hashable, Sendable {
     /// The request has the time-sensitive level (D062). A request from a build before D062 has the default
     /// level, so the engines replace it.
     public let isTimeSensitive: Bool
+    /// When the system delivered the notification. `nil` for a pending request.
+    public let deliveredAt: Date?
 
     public init(
         identifier: String, userInfo: [String: String], text: ReminderText? = nil, hasTakenAction: Bool = false,
-        isTimeSensitive: Bool = true
+        isTimeSensitive: Bool = true, deliveredAt: Date? = nil
     ) {
+        self.deliveredAt = deliveredAt
         self.identifier = identifier
         self.userInfo = userInfo
         self.text = text
@@ -251,7 +254,13 @@ public actor ReminderEngine {
         // The system rejects a new request while notifications are off. The removals still run,
         // so a paused schedule does not remind again when the user turns notifications on.
         guard authorization == .authorized else {
-            await remove(changes.remove)
+            // A pending request with the identifier of a wanted request and other names goes too (D084).
+            let held = Dictionary(pending.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
+            let stale = wanted.filter { request in
+                guard let old = held[request.identifier] else { return false }
+                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+            }.map(\.identifier)
+            await remove(changes.remove + stale)
             _ = await pendingAfterRemoval()
             return ReminderOutcome(
                 plan: plan, authorization: authorization, unregistered: [], removalPending: !unremoved.isEmpty
@@ -273,7 +282,40 @@ public actor ReminderEngine {
         // The clock is read at the read of the pending requests, and not taken from `now`: the caller can
         // wait in a queue before the run, and the run waits for the system. A request whose time is
         // still to come must be pending: a time that is near does not show a delivery.
-        let pendingNow = await pendingAfterRemoval()
+        var pendingNow = await pendingAfterRemoval()
+        // A replacement that did not land leaves the old request, with its old names. A request that names an archived,
+        // deleted, or recorded item must not stay (D084). The run first adds the replacement again. When the old request
+        // is still there, the run removes it through the ledger and, after the system confirms the removal, adds the
+        // replacement in the same run. So the dose time does not pass with no reminder. An identifier whose removal
+        // the system did not confirm stays blocked, as for every removal.
+        func staleRequests() -> [ReminderRequest] {
+            let held = Dictionary(pendingNow.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
+            return wanted.filter { request in
+                guard let old = held[request.identifier] else { return false }
+                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+            }
+        }
+        var stale = staleRequests()
+        if !stale.isEmpty {
+            // An add with the identifier of a pending request replaces it and takes no room.
+            for request in stale where !unremoved.contains(request.identifier) { try? await center.add(request) }
+            pendingNow = await pendingAfterRemoval()
+            stale = staleRequests()
+        }
+        if !stale.isEmpty {
+            await remove(stale.map(\.identifier))
+            pendingNow = await pendingAfterRemoval()
+            let held = Set(pendingNow.map(\.identifier))
+            var room = ReminderPlan.systemLimit - pendingNow.count
+            let now = clock()
+            for request in stale
+            where !unremoved.contains(request.identifier) && !held.contains(request.identifier)
+                && (request.fireDate.map { $0 > now } ?? true) && room > 0 {
+                room -= 1
+                try? await center.add(request)
+            }
+            pendingNow = await pendingAfterRemoval()
+        }
         let readAt = clock()
         let open = ReminderChanges(wanted: wanted, pending: pendingNow, text: center.text(for:)).add
             .filter { request in request.fireDate.map { $0 > readAt } ?? true }

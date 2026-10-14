@@ -313,6 +313,8 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 初版宁可使用明确的固定查看提示，也不采用“短滚动队列 + 未来某次后台续排”的隐性失效方案。按日历日计数的安排（隔天一次、每隔几天、周期）是唯一例外（§8.1，D036，D065）：它的队列长度和停止条件在项目详情中明示，补排只发生在 App 运行时，不依赖后台。若要宣称“提前记录后保证不再提醒本次，同时无限期不停后续提醒”，必须先提供独立真机原型和证据；未验证时不作此承诺。
 
+> Amendment (2026-10-14, D084): Every reminder, pending or delivered, names only the doses that Today shows. After a save, an archive, a delete, a pause, an end date, a change of the time, or a record, each run of the notification queue removes the delivered notification (first reminder or follow-up) that names an item that is no longer open, or replaces it. A delivered first reminder no longer stays.
+
 前台收到提示时可根据当前数据库抑制重复展示；后台不拥有同样的任意执行保证。记录后删掉当前已交付通知，不能假装同时完成了对未来重复内容的动态修改。
 
 ### 8.3 精确定位与旧通知

@@ -239,7 +239,7 @@ Owner decisions after use on the device. The owner asked to follow Apple apps su
 - Today rows have native swipe actions and a context menu. An open row: swipe right "Taken", swipe left "Skip". A taken row: swipe left "Undo". A skipped row: swipe right "Taken", swipe left "Undo". A row that is not saved: swipe right "Try Again". The menu has the same actions, "Change Time…" for a taken row, and "Details" and "Edit". An as-needed item has "Take Now", and a dose has "Undo" and "Change Time…". Every action uses the same domain operation as the circle, so success shows only after the commit (spec §7.2). The record circle stays a separate hit target. VoiceOver lists the swipe actions as actions of the row.
 - The page stays the gray grouped background with white cards, as in Apple Health and Settings. Every page uses it, also while it loads.
 
-## D029 · 2026-10-11 · Reminders say what to take
+## D029 · 2026-10-11 · Reminders say what to take (a delivered first reminder stays: replaced by D084)
 
 Owner decision, after use on the device: "The notification does not tell me what to do. I just got 'Check your 12:30 plan'." This replaces the neutral-text baseline of spec 8.2 and the "no show item names option" point of D023.
 
@@ -1473,3 +1473,39 @@ Agent decision, after a test on the maintainer's iPhone. With "Remind Again: Unt
 - `FollowUpEngine` does not change. The ledger can keep an identifier whose removal did not run, if the process stops between the save and the removal. That window stays as it was. A second removal can delete a wanted replacement that has the same identifier, as `ReminderEngine` documents.
 
 Not verified: the app build on this Mac, and the behavior on a real iPhone. CI builds the app. No new test (D016).
+
+## D084 · 2026-10-14 · Every reminder names only the doses that Today shows
+
+Agent decision, after a bug on the maintainer's iPhone (TestFlight build 4, version 1.0.0). A reminder named an item that the maintainer had archived. The maintainer made this a hard requirement.
+
+The rule:
+
+- Every reminder must be correct and must name only doses that Today shows. This holds for the series reminder, every follow-up, and every alarm, pending or delivered.
+- After a change is saved (archive, delete, pause, end date, edit of the time, a record), no pending request and no delivered notification names an item that is archived, deleted, paused, or ended, or a dose that has a record.
+- Each run of the notification queue enforces the rule. A save is not complete for the user until its run ends.
+
+Cause:
+
+- The pending requests were correct. A package test with the real plan and both engines (archive one item of two at 08:00) showed that the series request and the follow-ups were replaced with the text of the remaining item.
+- The delivered first reminder was not checked. `FollowUpEngine` removed a delivered follow-up with old text, and kept a delivered series notification on purpose (D029: "it was true for its time"). The notification system keeps the text that the app set before, so a first reminder that the user had not cleared kept naming the archived item in Notification Center (`FollowUpEngine.swift`, the filter of `center.delivered()`, before this change).
+- The archive, delete, edit, and pause paths ran the engines in an unstructured task with no background assertion. D083 added the assertion only to `refreshReminders` (after a record). The system could suspend the app between the commit and the removal. `AppStore.reconcileReminders` was the one call that every path shares.
+- The engines add a replacement before they remove. A replacement that does not land (the system drops it with no error) left the old request with the old names.
+
+Fix:
+
+- `FollowUpPlan.deliveredSeriesContent` gives the names that a delivered series notification may have now: the open items of its time and date whose series request the plan sets. A repeating request has no date, so the date of the delivery gives it (`PendingReminder.deliveredAt`). `FollowUpEngine` removes a delivered series notification whose text differs, and one with no open item left. This replaces the privacy-only rule for delivered first reminders (D029).
+- After the adds, each engine reads the pending requests again. For a wanted identifier whose pending request has other `userInfo` or text, the engine first adds the replacement again. If the old request is still there, the engine removes it through the ledger. After the system confirms the removal, the engine adds the replacement in the same run, when its fire time is still to come and there is room. So the dose time does not pass with no reminder. The cleanup of a stale request runs in every authorization state, and only the additions need the permission. With notifications off, the stale request still goes, so it does not fire when the user turns them on. An identifier whose removal the system did not confirm stays blocked, as for every removal. The removal is only for a replacement that did not land twice. It never runs before a replacement that did.
+- The expected names of a delivered series notification are the open items of its time and date in the order of the schedules, the order of the series text. So a merged group (a device series and a fixed zone that equals the device zone) gives the same text as the request. Only another set of items, or no open item, makes it stale.
+- The date of a delivered repeating notification is the latest date on its weekday whose planned instant is at or before the delivery, with the early tolerance of `ReminderTapResolver`. A 23:59 reminder that the system delivers at 00:01 belongs to the day before.
+- `AppStore.reconcileReminders` holds a background-task assertion (`BackgroundAssertion`) until the run ends, so archive, delete, edit, pause, restore, and launch runs all finish before the system can suspend the app. `refreshReminders` keeps its own assertion, which starts before its task.
+- Alarms: `AlarmEngine` already cancels a waiting alarm that the plan does not have, and the plan has no alarm for an archived, paused, ended, or recorded dose. A ringing alarm cannot be stopped by a run, and it is not changed.
+- Spec 8.2 has an amendment for the delivered first reminder.
+
+Limits:
+
+- If a removal of a stale request is sent and the system does not confirm it in the run, the run cannot add the replacement, and the next run does. The request can go away before. This needs two dropped adds in a row.
+- The cross-engine removal race that `ReminderEngine` documents (`pendingCount(afterRemoving:)`, where the series engine removes follow-ups without the ledger) is not changed.
+- A delivered notification of an older day (outside the window of the plan, about two days) names no dose that Today shows, so the next run removes it.
+- A recorded dose removes a delivered reminder that named it, also when it named other items. The next reminder names the others.
+
+Not verified: the app build on this Mac. CI builds the app. The behavior on a real iPhone needs a check: archive an item that a delivered reminder names, and look at Notification Center. One test (D016) covers the archive of an item in a shared time group, for the pending and the delivered series and follow-up requests.

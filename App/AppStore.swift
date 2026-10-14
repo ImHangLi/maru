@@ -131,6 +131,9 @@ actor AppStore {
         deviceTimeZone: NamedTimeZone,
         mayAskForPermission: Bool = false
     ) async throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) {
+        // Every caller waits for the run under one background-task assertion, so the system cannot suspend the app
+        // between a save and the removal of a reminder (D083, D084).
+        let assertion = await BackgroundAssertion(name: "Reminders")
         let previous = updates
         let run = Task { () throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) in
             await previous?.value
@@ -148,7 +151,9 @@ actor AppStore {
             return (outcome, followUps)
         }
         updates = Task { _ = try? await run.value }
-        return try await run.value
+        let result = await run.result
+        await assertion.end()
+        return try result.get()
     }
 
     /// Replaces the data with a checked backup that the user confirmed (D040). The store removes the staged files.
