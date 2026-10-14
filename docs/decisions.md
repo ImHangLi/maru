@@ -1434,3 +1434,10 @@ Rejected:
 Tests (D016): one test for the move of the global setting to the items (a database of version 5), one for items with different settings at one dose time, and three for the alarm plan (the last one for an alarm that the system refuses). The test of the limit across a change now uses the setting of the item. The other follow-up tests use the new identifier.
 
 Not verified: the app build on this Mac, and AlarmKit. Nobody ran an alarm. The system documents no limit of alarms, so 64 is a safe size and not a measured one. It needs a check on a real iPhone with iOS 26: the permission prompt and the refusal, an alarm in silent mode and in a Focus, the "Stop" button, the "Taken" button with the iPhone locked, the alarm of two items, a record before the time (no alarm), a rename, a change of the time, the alarm after a restart, and the order of the alarm and the notification of another item at the same time.
+
+## D080 · 2026-10-14 · No "Which Reminder?" sheet when every dose already has a record
+
+Agent decision, after a test on the maintainer's iPhone. The maintainer tapped an evening reminder after both of its doses were recorded. The reminder came from an older plan, so the app showed "Which Reminder?" with two rows that said "Taken" and the footer "Your plan or the clock changed". The maintainer could not understand it, and the sheet had nothing to ask.
+
+- When every candidate of a tapped reminder is of today and has a record (taken or skipped), the app opens Today on those rows and shows no sheet.
+- A candidate of another day, or a candidate with no record, still opens the sheet (spec 8.3, T15, T24).
