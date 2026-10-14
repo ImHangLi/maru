@@ -1332,11 +1332,11 @@ The maintainer approved the setup of the App Store Connect record and asked for 
 - The tips have the names "A Small Thanks", "A Warm Thanks", and "A Big Hug", at USD 0.99, 2.99, and 9.99. D053 had no names and no prices. `Config/Maru.storekit` has the same names and prices.
 - The store URLs use the paths of the live site: `/support/` and `/privacy/`, with the language folder.
 
-## D076 · 2026-10-13 · Row text in the text color, no test notification, and a progress bar in the "Today" widget
+## D076 · 2026-10-13 · Row text in the text color, no test notification, and a progress bar in the "Today" widget (suggestion color replaced by D082)
 
 Maintainer decisions after the test of the TestFlight build, for the build that goes to App Review. Agent decisions on the details.
 
-- The app tint is for icons, controls, and state, not for row text. Tinted text on a row looked like a warning. A row that is an action or a link has the text color: in Settings ("Open Settings", "Export Records", "Back Up", "Restore from Backup…", "Send Feedback", the tips, "Privacy Policy", "Support"), on the add and edit screen ("Scan Label", the name proposals, "Use Softgel", "Choose Photo", "Take Photo", "Add a Time"), and on the item detail ("Item Options…", "Restore", "Open Settings"). A row that is off is gray.
+- The app tint is for icons, controls, and state, not for row text. Tinted text on a row looked like a warning. A row that is an action or a link has the text color: in Settings ("Open Settings", "Export Records", "Back Up", "Restore from Backup…", "Send Feedback", the tips, "Privacy Policy", "Support"), on the add and edit screen ("Scan Label", "Choose Photo", "Take Photo", "Add a Time"), and on the item detail ("Item Options…", "Restore", "Open Settings"). A row that is off is gray.
 - The value of a menu row has the text color: "Remind Again", "Every", "App Color", "Form", "Color", "Note", and the day counts of "Repeat". The form icon of the menu keeps the app tint, as an image with its own color. The smart completion candidates are gray capsules with the text color.
 - Symbols keep the tint. Toolbar buttons, switches, check marks, and the filled button of the scanner keep the tint. "Clear" on the scanner card is not a row and keeps the tint. A destructive row ("Remove Photo", "Start Over", "Delete Item…") stays red.
 - "Send a Test Notification" is removed from Settings, with its code, its footers, and its strings in the six languages. It was a user feature of D023, and the maintainer read it as test UI. This replaces that part of D023. The follow-up reserve of 2 requests (D039) stays, so the request budget does not change. One of the two is now spare.
@@ -1454,3 +1454,11 @@ Maintainer decision, after a test on the iPhone. The maintainer saw the "Which R
 - Spec 8.3 and the rows T15 and T24 follow this rule. The debug scenarios `expiredTap` and `crossDayTap` check it.
 
 Not verified: the app build on this Mac. CI builds the app. The tap needs a check on a real iPhone.
+
+## D082 · 2026-10-14 · Suggestions on the add and edit screen have the app tint
+
+Maintainer decision on 2026-10-14. This replaces the part of D076 about suggestions. The maintainer wants every suggestion on the add and edit screen to show in the app tint, so it reads as a suggestion and not as text that the user typed.
+
+- The name proposals under the name field and the form proposal ("Use Softgel") have the app tint.
+- The smart completion candidates of the amount and the note are bordered capsules in the app tint.
+- The other rows of D076 keep the text color.
