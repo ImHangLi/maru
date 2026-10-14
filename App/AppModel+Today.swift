@@ -285,8 +285,11 @@ extension AppModel {
     func refreshReminders() {
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
+        // The system can suspend the app after a record. Hold background time until the run ends (D083).
+        let assertion = BackgroundAssertion(name: "Reminders")
         Task.detached { [store] in
             _ = try? await store.reconcileReminders(at: now, deviceTimeZone: deviceTimeZone)
+            await assertion.end()
         }
     }
 
@@ -341,5 +344,23 @@ extension AppModel {
             guard !Task.isCancelled else { return }
             self?.refresh()
         }
+    }
+}
+
+/// A background-task assertion of the system. `end()` is safe to call twice, and the expiry handler calls it.
+@MainActor
+private final class BackgroundAssertion {
+    private var identifier = UIBackgroundTaskIdentifier.invalid
+
+    init(name: String) {
+        identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+            MainActor.assumeIsolated { self?.end() }
+        }
+    }
+
+    func end() {
+        guard identifier != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(identifier)
+        identifier = .invalid
     }
 }
