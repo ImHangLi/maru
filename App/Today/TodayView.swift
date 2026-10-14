@@ -41,7 +41,6 @@ struct TodayView: View {
             }
             .navigationDestination(isPresented: $model.history.isOpen) { HistoryView() }
             .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
-            .sheet(item: $model.today.choice) { ReminderChoiceSheet(choice: $0) }
         }
         // A clock change, a new time zone, or a midnight in the device zone.
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in

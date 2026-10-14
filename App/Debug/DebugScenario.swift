@@ -58,14 +58,13 @@ enum DebugScenario: String, CaseIterable, Identifiable {
             ]
         case .expiredTap:
             [
-                "Today opens with a choice. It names the date of two days ago, not today.",
-                "Nothing is recorded until you choose. Today’s 08:00 stays open.",
-                "No generation run reached that date, so it offers no record for it (T15).",
+                "Today opens with no sheet and no focus on a row.",
+                "Nothing is recorded. Today’s 08:00 stays open (T15, D081).",
             ]
         case .crossDayTap:
             [
-                "A choice asks about yesterday’s 23:30. It does not record today (T15).",
-                "Record yesterday’s dose there. Today’s 23:30 stays open.",
+                "Today opens with no sheet. The tap does not record today (T15, D081).",
+                "Today’s 23:30 stays open. Record yesterday’s dose from History.",
             ]
         case .notificationsDenied:
             [
