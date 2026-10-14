@@ -56,6 +56,8 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, RemovalLedger, Remi
         )
     }
 
+    func confirmFollowUpChanges(at time: Date) {}
+
     func authorization() -> ReminderAuthorization { .authorized }
     func requestAuthorization() -> ReminderAuthorization { .authorized }
     func pendingRequests() -> [PendingReminder] {

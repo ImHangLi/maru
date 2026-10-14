@@ -63,11 +63,17 @@ struct AlarmPlanTests {
 
     /// An alarm that the system does not schedule must not leave the item with no reminder (D079).
     @Test func anAlarmThatTheSystemRefusesGivesTheItemItsNormalReminderBack() async throws {
-        struct Refusing: AlarmCenter, AlarmSource {
+        /// Refuses the alarm of the second day, and holds the others.
+        actor Refusing: AlarmCenter, AlarmSource {
             let plan: AlarmPlan
-            func waiting() async -> Set<UUID> { [] }
-            func schedule(_ request: AlarmRequest) async throws { throw CocoaError(.fileWriteOutOfSpace) }
-            func cancel(_ ids: [UUID]) async {}
+            var held: Set<UUID> = []
+            init(plan: AlarmPlan) { self.plan = plan }
+            func waiting() async -> Set<UUID> { held }
+            func schedule(_ request: AlarmRequest) async throws {
+                if request.id == plan.requests[1].id { throw CocoaError(.fileWriteOutOfSpace) }
+                held.insert(request.id)
+            }
+            func cancel(_ ids: [UUID]) async { held.subtract(ids) }
             func alarmPlan(privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover) async throws -> AlarmPlan { plan }
         }
         struct Names: ReminderPrivacyStore {
@@ -80,6 +86,8 @@ struct AlarmPlanTests {
         let failed = try await AlarmEngine(source: phone, center: phone, privacy: Names(), alarmsRing: { true })
             .refresh(at: now, deviceTimeZone: Fixtures.shanghai)
         #expect(failed == [zinc.id])
+        // One alarm failed, so the item holds no other alarm: a dose never gets an alarm and a banner together.
+        #expect(await phone.held.isEmpty)
 
         // The next notification run sees the failure and sets the banner.
         let covered = plan(items: [zinc], schedules: [schedule], alarms: AlarmCover(rings: true, failed: failed))

@@ -171,7 +171,10 @@ public struct AlarmEngine: Sendable {
     /// the alarm out until the next run.
     ///
     /// - Returns: The items with an alarm that the system did not schedule. The notification engines give
-    ///   them their normal reminder in the same run (D079).
+    ///   them their normal reminder in the same run (D079). The notification of an item is one repeating request,
+    ///   so coverage is for the whole item and not for one dose. When one alarm of an item fails, the run cancels
+    ///   the other alarms of that item and of every item that shares an alarm with it. So no dose gets an alarm and
+    ///   a banner together.
     public func refresh(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> Set<ItemID> {
         let plan = try await source.alarmPlan(
             privacy: privacy.load(), at: now, deviceTimeZone: deviceTimeZone, alarms: AlarmCover(rings: alarmsRing())
@@ -181,11 +184,26 @@ public struct AlarmEngine: Sendable {
         let obsolete = waiting.subtracting(wanted)
         if !obsolete.isEmpty { await center.cancel(Array(obsolete)) }
         var failed = Set<ItemID>()
+        /// The alarms that the system holds after this run. A ringing alarm is not in `waiting` and stays.
+        var held = waiting.intersection(wanted)
         for request in plan.requests where !waiting.contains(request.id) {
             do {
                 try await center.schedule(request)
+                held.insert(request.id)
             } catch {
                 failed.formUnion(request.itemIDs)
+            }
+        }
+        // Cancel each held alarm of a failed item, until no new item fails with it.
+        var changed = !failed.isEmpty
+        while changed {
+            changed = false
+            for request in plan.requests where held.contains(request.id) && !failed.isDisjoint(with: request.itemIDs) {
+                await center.cancel([request.id])
+                held.remove(request.id)
+                let before = failed.count
+                failed.formUnion(request.itemIDs)
+                changed = changed || failed.count != before
             }
         }
         return failed

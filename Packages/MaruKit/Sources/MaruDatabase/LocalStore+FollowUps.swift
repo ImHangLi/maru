@@ -29,6 +29,15 @@ extension LocalStore: FollowUpSource {
         }
     }
 
+    public func confirmFollowUpChanges(at time: Date) async throws(StorageError) {
+        try await write(generation: generation.withLock { $0 }) { db in
+            try db.execute(
+                sql: "UPDATE item SET followUpChanged = ? WHERE followUpChanged = ?",
+                arguments: [time.storedSeconds, Date.distantFuture.storedSeconds]
+            )
+        }
+    }
+
     /// What the plans of the follow-ups and of the alarms read, in one read transaction.
     struct DoseInputs {
         let items: [Item]

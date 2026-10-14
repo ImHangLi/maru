@@ -147,6 +147,9 @@ public struct FollowUpPlan: Hashable, Sendable {
     /// The text of each follow-up of each group that still has an open occurrence, by request identifier.
     /// A delivered follow-up with another identifier, or with another text, is removed.
     public let open: [String: ReminderContent]
+    /// An item with a follow-up setting has a change that the engine did not confirm yet (`Date.distantFuture`).
+    /// Old follow-ups can still come, so such an item gets none until the engine confirms their removal (D039, D079).
+    public let hasUnconfirmedChange: Bool
 
     /// - Parameters:
     ///   - reminders: The series plan of the same read. A follow-up comes only for a schedule whose
@@ -252,6 +255,7 @@ public struct FollowUpPlan: Hashable, Sendable {
             if !future.isEmpty { wanted.append(future) }
         }
         open = contents
+        hasUnconfirmedChange = items.contains { $0.followUp != nil && $0.followUpChanged == .distantFuture }
         requests = Self.share(
             wanted, room: ReminderPlan.systemLimit - Self.reserve - reminders.requests.count, from: now
         )

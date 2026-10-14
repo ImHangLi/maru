@@ -18,6 +18,10 @@ public protocol FollowUpSource: Sendable {
     func followUpPlan(
         privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
     ) async throws -> FollowUpPlan
+
+    /// Writes `time` as the change time of every item whose change is not confirmed (`Date.distantFuture`).
+    /// The engine calls it when the system holds no old follow-up (D039, D079).
+    func confirmFollowUpChanges(at time: Date) async throws
 }
 
 /// What one refresh found after its changes.
@@ -105,9 +109,24 @@ public actor FollowUpEngine {
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
-        let plan = try await source.followUpPlan(
+        var now = now
+        var plan = try await source.followUpPlan(
             privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms()
         )
+        // After the update, a change of the old setting can be open. An old follow-up can come until the system
+        // confirms its removal, so the plan sets none for such an item. The engine removes every follow-up first.
+        // When none is left, the time of now is the time of the change, and the plan reads again (D039, D079).
+        if plan.hasUnconfirmedChange {
+            await remove(Array(Self.followUps(await pendingAfterRemoval()).keys))
+            if Self.followUps(await pendingAfterRemoval()).isEmpty {
+                let confirmed = Date()
+                try await source.confirmFollowUpChanges(at: confirmed)
+                now = max(now, confirmed)
+                plan = try await source.followUpPlan(
+                    privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms()
+                )
+            }
+        }
         let authorization = await center.authorization()
         // Remove before add, the other order from `ReminderEngine`. A moved slot time or a new setting changes
         // every follow-up of the next seven days, and the old and the new requests together can pass the system limit.
