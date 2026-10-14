@@ -1462,3 +1462,14 @@ Maintainer decision on 2026-10-14. This replaces the part of D076 about suggesti
 - The name proposals under the name field and the form proposal ("Use Softgel") have the app tint.
 - The smart completion candidates of the amount and the note are bordered capsules in the app tint.
 - The other rows of D076 keep the text color.
+
+## D083 · 2026-10-14 · A record finishes the reminder run before the system can suspend the app
+
+Agent decision, after a test on the maintainer's iPhone. With "Remind Again: Until Recorded", follow-ups kept coming after the user recorded the dose with the circle on Today. The plan and the engine were correct.
+
+- Cause: the reminder run after a record was fire-and-forget. When iOS suspended the app before the run ended, the pending follow-up requests stayed.
+- `refreshReminders` holds a background-task assertion until the run ends. The expiry handler also ends it. The run stays off the main actor.
+- `takeReminder` (the "Taken" action) awaits the reminder run before it returns, as the widget and Watch paths do. The action limit of `ReminderTapDelegate` bounds the wait.
+- `FollowUpEngine` asks the system again to remove a ledger identifier that is still pending on the first read of a run. The process can stop between the ledger save and the removal. A second removal is harmless.
+
+Not verified: the app build on this Mac, and the behavior on a real iPhone. CI builds the app. No new test: the fake ledger of `FollowUpEngineTests` cannot start with a saved identifier without more code (D016).

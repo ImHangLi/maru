@@ -11,8 +11,9 @@ extension AppModel {
     /// record circle. The event revises the last event that the store read, so a second action writes nothing (T18).
     /// The follow-ups then update as after a record on Today.
     ///
-    /// The call returns when the record commits or fails. It waits for no notification call of the system:
-    /// the follow-up update and the notice run after it. `ReminderTapDelegate` also limits the whole call.
+    /// The call returns when the record commits and the follow-up update ends, or when the record fails. The system
+    /// can suspend the process when the call returns, and then an old follow-up stays (D083).
+    /// `ReminderTapDelegate` limits the whole call. The notice runs after it.
     ///
     /// In every other case it records nothing: another day, a late delivery, an older plan, two or more items,
     /// a skipped dose, an event that is not confirmed, or a database that is locked (T15, T24, T40).
@@ -44,8 +45,11 @@ extension AppModel {
                     ),
                     scheduleVersionID: occurrence.scheduleVersionID
                 )
-                // The commit starts the follow-up update, as a record on Today does.
-                if await commitAndWait([event], generation: generation) { return }
+                // The commit starts the follow-up update, as a record on Today does. Wait for the update.
+                if await commitAndWait([event], generation: generation) {
+                    await waitForReminders(deviceTimeZone: deviceTimeZone)
+                    return
+                }
             case .none:
                 break
             }

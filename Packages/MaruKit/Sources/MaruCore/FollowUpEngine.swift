@@ -219,6 +219,12 @@ public actor FollowUpEngine {
         while true {
             let pending = await center.pendingRequests()
             checks += 1
+            // The process can stop after the ledger save and before the removal. Then a ledger identifier stays
+            // pending, and `remove` skips it. Ask again on the first check. A second removal is harmless (D083).
+            if checks == 1 {
+                let stale = pending.map(\.identifier).filter { unremoved.contains($0) }
+                if !stale.isEmpty { await center.remove(identifiers: stale) }
+            }
             let before = unremoved
             unremoved.formIntersection(pending.map(\.identifier))
             if unremoved != before { ledger.save(unremoved) }
