@@ -1332,7 +1332,7 @@ The maintainer approved the setup of the App Store Connect record and asked for 
 - The tips have the names "A Small Thanks", "A Warm Thanks", and "A Big Hug", at USD 0.99, 2.99, and 9.99. D053 had no names and no prices. `Config/Maru.storekit` has the same names and prices.
 - The store URLs use the paths of the live site: `/support/` and `/privacy/`, with the language folder.
 
-## D076 · 2026-10-13 · Row text in the text color, no test notification, and a progress bar in the "Today" widget
+## D076 · 2026-10-13 · Row text in the text color, no test notification, and a progress bar in the "Today" widget (suggestion color replaced by D082)
 
 Maintainer decisions after the test of the TestFlight build, for the build that goes to App Review. Agent decisions on the details.
 
@@ -1454,3 +1454,11 @@ Maintainer decision, after a test on the iPhone. The maintainer saw the "Which R
 - Spec 8.3 and the rows T15 and T24 follow this rule. The debug scenarios `expiredTap` and `crossDayTap` check it.
 
 Not verified: the app build on this Mac. CI builds the app. The tap needs a check on a real iPhone.
+
+## D082 · 2026-10-14 · Suggestions on the add and edit screen have the app tint
+
+Maintainer decision on 2026-10-14. This replaces the part of D076 about suggestions. The maintainer wants every suggestion on the add and edit screen to show in the app tint, so it reads as a suggestion and not as text that the user typed.
+
+- The name proposals under the name field and the form proposal ("Use Softgel") have the app tint.
+- The smart completion candidates of the amount and the note are bordered capsules in the app tint.
+- The other rows of D076 keep the text color.

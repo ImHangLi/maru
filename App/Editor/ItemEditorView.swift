@@ -271,7 +271,8 @@ struct ItemEditorView: View {
                     nameSource = .suggestion
                     nameIsFocused = false
                 }
-                .rowText()
+                // A proposal has the app tint, so it reads as a suggestion and not as typed text (D082).
+                .foregroundStyle(.tint)
                 .accessibilityHint(Text("Fills the name."))
             }
             Picker("Type", selection: $draft.category) {
@@ -304,7 +305,7 @@ struct ItemEditorView: View {
                     draft.form = form
                     formIsChosen = true
                 }
-                .rowText()
+                .foregroundStyle(.tint)
             }
             Picker("Color", selection: $draft.color) {
                 ForEach(ItemColor.allCases, id: \.self) { color in
@@ -658,8 +659,7 @@ private struct CandidateRow<Candidate: Hashable>: View {
             Button { choose(candidate) } label: { title(candidate) }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                // A gray capsule with the text color, not the app tint (D076).
-                .tint(Color.primary)
+                // A capsule in the app tint, like the name proposals (D082).
                 .accessibilityHint(hint(candidate))
         }
     }
