@@ -1435,9 +1435,22 @@ Tests (D016): one test for the move of the global setting to the items (a databa
 
 Not verified: the app build on this Mac, and AlarmKit. Nobody ran an alarm. The system documents no limit of alarms, so 64 is a safe size and not a measured one. It needs a check on a real iPhone with iOS 26: the permission prompt and the refusal, an alarm in silent mode and in a Focus, the "Stop" button, the "Taken" button with the iPhone locked, the alarm of two items, a record before the time (no alarm), a rename, a change of the time, the alarm after a restart, and the order of the alarm and the notification of another item at the same time.
 
-## D080 · 2026-10-14 · No "Which Reminder?" sheet when every dose already has a record
+## D080 · 2026-10-14 · No "Which Reminder?" sheet when every dose already has a record (replaced by D081)
 
 Agent decision, after a test on the maintainer's iPhone. The maintainer tapped an evening reminder after both of its doses were recorded. The reminder came from an older plan, so the app showed "Which Reminder?" with two rows that said "Taken" and the footer "Your plan or the clock changed". The maintainer could not understand it, and the sheet had nothing to ask.
 
 - When every candidate of a tapped reminder is of today and has a record (taken or skipped), the app opens Today on those rows and shows no sheet.
 - A candidate of another day, or a candidate with no record, still opens the sheet (spec 8.3, T15, T24).
+
+## D081 · 2026-10-14 · A tap on a reminder always opens Today
+
+Maintainer decision, after a test on the iPhone. The maintainer saw the "Which Reminder?" sheet, could not understand it, and asked why the app has this page at all. D081 replaces D080, which removed the sheet only for doses that already had a record.
+
+- A tap on a reminder always opens Today. It never shows a sheet.
+- When some candidates of the reminder are doses of today, Today scrolls to their rows (D028). Otherwise Today opens with no focus.
+- The tap records nothing. A dose of an earlier day is recorded from History. An old reminder never writes the dose of today (T15, T24).
+- The "Taken" action (D034) does not change. The locked-iPhone path (T40) and the storage-error path do not change. Neither leads to a sheet.
+- Removed: the sheet, `ReminderChoice`, the `choice` field of the Today state, the record and retry code of the sheet, and seven String Catalog keys in six languages. `ReminderTapResolver` stays, because the app uses it to find the doses of the reminder and the "Taken" action uses it.
+- Spec 8.3 and the rows T15 and T24 follow this rule. The debug scenarios `expiredTap` and `crossDayTap` check it.
+
+Not verified: the app build on this Mac. CI builds the app. The tap needs a check on a real iPhone.

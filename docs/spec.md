@@ -319,17 +319,19 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 一次性通知可携带 occurrenceID。重复通知的 userInfo 是 seriesID + scheduleRevision，不能预写一个固定“今天的 occurrenceID”永远复用。
 
-隔天一次、每隔几天和周期的带日期请求（D036，D065）在 userInfo 中另带计划日期。点击时直接用这个日期，不从交付时间推断；其余规则不变：不是今天、延迟交付、时区不确定、旧版本或夏令时歧义时进入确认。只对应一个项目的带日期请求同样提供“已服”动作，用 scheduleRevision 校验身份。
+隔天一次、每隔几天和周期的带日期请求（D036，D065）在 userInfo 中另带计划日期。点击时直接用这个日期，不从交付时间推断；其余规则不变：不是今天、延迟交付、时区不确定、旧版本或夏令时歧义时，点击不确定对应哪一次（D081）。只对应一个项目的带日期请求同样提供“已服”动作，用 scheduleRevision 校验身份。
 
-点击时综合 `UNNotification.date`、触发规则、时区与历史版本解析候选事项；不能用用户点击时的 `Date()` 直接记为今天。[S12] 系统交付元数据不必然等于原定时间；跨日延迟、时区、旧版本或无法唯一解析时必须进入日期/事项确认，而不是猜。
+点击时综合 `UNNotification.date`、触发规则、时区与历史版本解析候选事项；不能用用户点击时的 `Date()` 直接记为今天。[S12] 系统交付元数据不必然等于原定时间；跨日延迟、时区、旧版本或无法唯一解析时点击只打开“今天”，不猜、不写任何记录（D081）。
 
-首版通知主路径为“打开并记录”。单项“已服”快捷动作只有在唯一事项可解析、认证和持久化均可用时开放；否则打开确认界面。组通知不提供盲记全组/全天。
+首版通知主路径为“打开并记录”。单项“已服”快捷动作只有在唯一事项可解析、认证和持久化均可用时开放；否则不记录，点通知只打开“今天”。组通知不提供盲记全组/全天。
 
 数据库在锁屏受保护不可访问时，必须要求解锁；不能为了锁屏一键快感降低健康数据保护，或在未写入时声称成功。
 
-> Amendment (2026-10-11, D034): A reminder or a follow-up for exactly one item has a "Taken" action. The system asks for an unlock first, then Maru records in the background. The action records only when the rules of this section give exactly one open dose of today. In every other case it records nothing, a notification says "Not recorded", and Maru shows the confirmation when the user opens it. A reminder for two or more items has no action.
+> Amendment (2026-10-11, D034): A reminder or a follow-up for exactly one item has a "Taken" action. The system asks for an unlock first, then Maru records in the background. The action records only when the rules of this section give exactly one open dose of today. In every other case it records nothing, a notification says "Not recorded", and Maru opens Today when the user opens it (D081). A reminder for two or more items has no action.
 
-> Amendment (2026-10-11, D039): A follow-up of a dose of the day before has the "Taken" action until 01:00, and the action records that dose. The follow-up carries its plan date and its item, so Maru does not guess the date. After 01:00 the action records nothing, and a tap shows the confirmation. Today still shows only the doses of today (D019).
+> Amendment (2026-10-11, D039): A follow-up of a dose of the day before has the "Taken" action until 01:00, and the action records that dose. The follow-up carries its plan date and its item, so Maru does not guess the date. After 01:00 the action records nothing, and a tap opens Today. Today still shows only the doses of today (D019).
+
+> Amendment (2026-10-14, D081): A tap on a reminder never shows a confirmation sheet. The tap always opens Today and records nothing. If some doses of the reminder are of today, Today scrolls to their rows. A dose of an earlier day is recorded from History. The "Taken" action is unchanged.
 
 ### 8.4 有结束日期的次要能力
 
@@ -546,7 +548,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T12 | 有限请求超预算 | 明确不支持，不静默截断或转无限 |
 | T13 | 拒绝通知 | 继续记录，提醒状态诚实，不反复弹权限 |
 | T14 | 后续关闭系统通知 | 回来能看到状态，没有虚假正常 |
-| T15 | 跨日点击旧通知 | 定位旧候选或明确核对，不写今天的新一次 |
+| T15 | 跨日点击旧通知 | 点击打开“今天”，不记录，不写今天的新一次；前一天的剂次从历史补记（D081） |
 | T16 | 早晚同一项 | 上午与晚上独立 |
 | T17 | 修改已记录时点 | 不生成当天第二个相同逻辑剂次 |
 | T18 | 重复点/多入口 | 一份有效记录，操作幂等 |
@@ -555,7 +557,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T21 | 提前记录 | 不假称重复通知一定消失，通知不宣称未服 |
 | T22 | 多日不启动/强制退出/离线 | 重复提醒不依赖后续后台续排；实际结果有测试记录。隔天一次、每隔几天和周期的提醒在已排的 7 个应服日之后停止，界面已说明（§8.1，T51，T52） |
 | T23 | App 前台接收提醒 | 正确读取当前状态，避免误导重复展示 |
-| T24 | 专注模式/摘要/延迟 | 不误报必达，不据延迟点击猜实际服用 |
+| T24 | 专注模式/摘要/延迟 | 点击只打开“今天”，不记录；不误报必达，不据延迟点击猜实际服用（D081） |
 | T25 | 时区与夏令时 | 明确策略，无重复或不明疗程转换 |
 | T26 | 未记录 1/7/30 天 | 直接今天，不要求补齐，不自动复活归档 |
 | T27 | 拍照拒绝/识别失败 | 手动路径可用，草稿不丢 |

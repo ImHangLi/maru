@@ -6669,41 +6669,6 @@
         }
       }
     },
-    "Not Available" : {
-      "comment" : "Reminder choice sheet: shown in place of an action when no record can be made for that date. It has a symbol and no tap.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht verfügbar"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No disponible"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "利用不可"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사용할 수 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不可用"
-          }
-        }
-      }
-    },
     "Not Confirmed" : {
       "comment" : "Item detail: the value of the Reminder row when the system did not confirm a change yet.",
       "localizations" : {
@@ -7334,41 +7299,6 @@
         }
       }
     },
-    "Open Today" : {
-      "comment" : "Reminder choice sheet: the button at the top left that closes the sheet and shows Today.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heute öffnen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir Hoy"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「今日」を開く"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘 열기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开“今天”"
-          }
-        }
-      }
-    },
     "Opens settings" : {
       "comment" : "VoiceOver hint of the notifications-off line on Today.",
       "localizations" : {
@@ -7855,41 +7785,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "记录为已服用。"
-          }
-        }
-      }
-    },
-    "Record…" : {
-      "comment" : "Reminder choice sheet: the action on a candidate of another day. It opens a sheet to enter the time when the dose was taken. The ellipsis means that a sheet follows.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erfassen …"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Registrar…"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記録…"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "记录…"
           }
         }
       }
@@ -10080,76 +9975,6 @@
         }
       }
     },
-    "This reminder came late, or your time zone changed." : {
-      "comment" : "Reminder choice sheet: the footer when the time of the notification is not certain.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Erinnerung kam verspätet, oder deine Zeitzone hat sich geändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este recordatorio llegó tarde o tu zona horaria ha cambiado."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このリマインダーは遅れて届いたか、タイムゾーンが変更されました。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 미리 알림이 늦게 왔거나 시간대가 바뀌었어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此提醒送达较晚，或你的时区已更改。"
-          }
-        }
-      }
-    },
-    "This reminder is for another day." : {
-      "comment" : "Reminder choice sheet: the footer when the notification is for a day that is not today.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Erinnerung gilt für einen anderen Tag."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este recordatorio es de otro día."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このリマインダーは別の日のものです。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 미리 알림은 다른 날짜의 것이에요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此提醒属于另一天。"
-          }
-        }
-      }
-    },
     "This version of Maru can’t open your data. Maru did not change or delete it." : {
       "comment" : "Storage problem: the text when the update of the data to this app version failed.",
       "localizations" : {
@@ -11461,41 +11286,6 @@
         }
       }
     },
-    "Which Reminder?" : {
-      "comment" : "The title of the sheet that asks which reminder the user means, when a tapped notification is not certain.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welche Erinnerung?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Qué recordatorio?"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "どのリマインダーですか？"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "어떤 미리 알림인가요?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "是哪个提醒？"
-          }
-        }
-      }
-    },
     "With food" : {
       "comment" : "Edit screen: the text “With food”.",
       "localizations" : {
@@ -12146,41 +11936,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的备注"
-          }
-        }
-      }
-    },
-    "Your plan or the clock changed after this reminder was set." : {
-      "comment" : "Reminder choice sheet: the footer when the plan or the device clock changed after the reminder was set.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Plan oder die Uhr hat sich geändert, nachdem diese Erinnerung festgelegt wurde."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu plan o el reloj cambiaron después de programar este recordatorio."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このリマインダーの設定後に、プランまたは時計が変更されました。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 미리 알림을 설정한 뒤에 계획이나 시계가 바뀌었어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此提醒设置后，你的计划或时钟发生了变化。"
           }
         }
       }

@@ -35,7 +35,7 @@ struct TodayFailure: Identifiable, Equatable {
 /// The state of the Today page that is not in the store.
 ///
 /// `pending`, `inFlight`, `confirmed`, and `backfills` are the one list of unconfirmed events of the app.
-/// Today, the reminder choice, and the history use it, and no navigation clears it (D014).
+/// Today and the history use it, and no navigation clears it (D014).
 struct TodayState {
     /// The events that failed, by occurrence. A row with one shows "not saved" until a retry succeeds (D014).
     var pending: [OccurrenceID: PendingEvent] = [:]
@@ -57,8 +57,6 @@ struct TodayState {
     var focus: TodayFocus?
     /// The pages over Today. A row action of the context menu opens the detail of its item here (D028).
     var path: [ItemID] = []
-    /// The candidates of a tapped reminder that the user must choose from (spec 8.3).
-    var choice: ReminderChoice?
     /// A tapped reminder that the app could not read while the iPhone was locked (T40).
     var lockedTap: DeliveredReminder?
     /// The state of the "As needed" card. See `AppModel+AsNeeded.swift`.
@@ -245,16 +243,13 @@ extension AppModel {
     }
 
     /// The records that a new read must not change: the last confirmed record of each occurrence with a running
-    /// transaction. Today and the reminder choice put them in place of what they read (spec 7.2, T19).
+    /// transaction. Today puts them in place of what they read (spec 7.2, T19).
     var heldRecords: [OccurrenceRecord] { Array(today.confirmed.values) }
 
-    /// The record that the page shows for an occurrence: on Today, in the reminder choice, or in the history.
+    /// The record that the page shows for an occurrence: on Today or in the history.
     private func shownRecord(of id: OccurrenceID) -> OccurrenceRecord? {
         if case let .loaded(snapshot) = content, let entry = snapshot.today?.entries.first(where: { $0.id == id }) {
             return entry.record
-        }
-        if let candidate = today.choice?.candidates.first(where: { $0.occurrence?.id == id }) {
-            return candidate.record
         }
         return history.days?.lazy.flatMap(\.doses).first { $0.occurrence.id == id }?.record
     }
@@ -271,7 +266,6 @@ extension AppModel {
             snapshot.today?.apply(records)
             content = .loaded(snapshot)
         }
-        today.choice?.apply(records)
         sendWatchDay()
         historyDidCommit(records)
         today.commitCount += 1
