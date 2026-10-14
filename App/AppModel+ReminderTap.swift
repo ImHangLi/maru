@@ -161,6 +161,10 @@ extension AppModel {
                 }
                 return focus(Set(planned.map(\.key)))
             }
+            // Every dose of the reminder is of today and has a record. The sheet has nothing to ask, so Today opens on them.
+            if candidates.allSatisfy({ $0.isToday && $0.record?.currentEvent != nil }) {
+                return focus(Set(planned.map(\.key)))
+            }
             show(ReminderChoice(candidates: candidates, doubts: doubts))
         } catch {
             if error == .unavailable {
