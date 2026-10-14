@@ -15,7 +15,7 @@ extension SystemReminderCenter: FollowUpCenter {
     public func delivered() async -> [PendingReminder] {
         await withCheckedContinuation { continuation in
             UNUserNotificationCenter.current().getDeliveredNotifications { notifications in
-                continuation.resume(returning: notifications.map { PendingReminder($0.request) })
+                continuation.resume(returning: notifications.map { PendingReminder($0.request, deliveredAt: $0.date) })
             }
         }
     }

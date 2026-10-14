@@ -30,7 +30,7 @@ public struct SystemReminderCenter: ReminderCenter {
     public func pendingRequests() async -> [PendingReminder] {
         await withCheckedContinuation { continuation in
             UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-                continuation.resume(returning: requests.map(PendingReminder.init))
+                continuation.resume(returning: requests.map { PendingReminder($0) })
             }
         }
     }
@@ -89,13 +89,14 @@ extension UNNotificationRequest {
 }
 
 extension PendingReminder {
-    init(_ request: UNNotificationRequest) {
+    init(_ request: UNNotificationRequest, deliveredAt: Date? = nil) {
         self.init(
             identifier: request.identifier,
             userInfo: request.content.userInfo as? [String: String] ?? [:],
             text: ReminderText(title: request.content.title, body: request.content.body),
             hasTakenAction: request.content.categoryIdentifier == ReminderAction.categoryIdentifier,
-            isTimeSensitive: request.content.interruptionLevel == .timeSensitive
+            isTimeSensitive: request.content.interruptionLevel == .timeSensitive,
+            deliveredAt: deliveredAt
         )
     }
 }

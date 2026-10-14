@@ -41,6 +41,8 @@ Maru was developed in a private repository before it became public. Issue number
 
 - A tap on a reminder always opens Today (D081). The "Which Reminder?" sheet is gone, and the tap records nothing. Nobody saw it on a device. It needs a check on a real iPhone: a tap with doses of today, with all doses recorded, and with a reminder of an older plan.
 
+- Reminders match Today (D084): after an archive, a delete, a pause, a time edit, or a record, no pending request and no delivered notification names an item that Today does not show. The cause was a delivered first reminder that stayed in Notification Center, and runs with no background assertion. It needs a check on a real iPhone: archive an item that a delivered reminder names, and look at Notification Center.
+
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the item photo (D056), the History graph and rows, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.

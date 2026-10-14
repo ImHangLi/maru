@@ -153,16 +153,24 @@ public actor FollowUpEngine {
                 try? await center.add(request)
             }
         }
-        // A delivered follow-up keeps its text. So one that names a recorded, renamed, or archived item goes (D029).
-        // A delivered first reminder stays: it is true for its time, and Today shows the records.
-        // The exception is the privacy setting: with names hidden, a delivered first reminder that shows names goes.
-        let neutral = center.text(for: ReminderContent(kind: .due, names: nil))
+        // A replacement that did not land leaves the old follow-up, with its old names. It goes through the ledger,
+        // and the next refresh adds the new one after the system confirms the removal (D084).
+        let heldNow = Self.followUps(await pendingAfterRemoval())
+        let stale = plan.requests.filter { request in
+            guard let old = heldNow[request.identifier] else { return false }
+            return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+        }.map(\.identifier)
+        await remove(stale)
+        // A delivered notification keeps the text that the app set before. So one that names a recorded, renamed,
+        // archived, deleted, or paused item goes (D029, D084). This holds for a first reminder too: it must name
+        // only the doses that Today shows. The text of a first reminder is compared with the open items of its date.
         let delivered = await center.delivered().filter { shown in
             if shown.identifier.hasPrefix(FollowUpRequest.identifierPrefix) {
                 return shown.text != plan.open[shown.identifier].map(center.text(for:))
             }
-            return privacy == .hideNames && shown.identifier.hasPrefix(ReminderSeries.identifierPrefix)
-                && shown.text != neutral
+            guard shown.identifier.hasPrefix(ReminderSeries.identifierPrefix) else { return false }
+            let content = plan.deliveredSeriesContent(identifier: shown.identifier, deliveredAt: shown.deliveredAt)
+            return shown.text != content.map(center.text(for:))
         }.map(\.identifier)
         if !delivered.isEmpty { await center.removeDelivered(identifiers: delivered) }
         let held = Self.followUps(await pendingAfterRemoval())

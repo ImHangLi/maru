@@ -151,6 +151,23 @@ public struct FollowUpPlan: Hashable, Sendable {
     /// Old follow-ups can still come, so such an item gets none until the engine confirms their removal (D039, D079).
     public let hasUnconfirmedChange: Bool
 
+    /// One open item of a dose group that a series reminder names (D084).
+    private struct SeriesDose: Hashable, Sendable {
+        let zoneText: String
+        let timeZone: NamedTimeZone?
+        let timeText: String
+        let dateText: String
+        let itemID: ItemID
+        let name: String
+    }
+
+    /// The open items that a series reminder names, for each dose group. A delivered series notification is
+    /// compared with this, and not with the series request that the plan wants now (D084).
+    private let seriesDoses: [SeriesDose]
+    private let deviceTimeZone: NamedTimeZone
+    private let now: Date
+    private let showsNames: Bool
+
     /// - Parameters:
     ///   - reminders: The series plan of the same read. A follow-up comes only for a schedule whose
     ///     series reminder is set up, so a paused, archived, ended, or blocked schedule gets none.
@@ -181,6 +198,24 @@ public struct FollowUpPlan: Hashable, Sendable {
             reminding: reminding, items: items, stored: stored, closed: closed, now: now, deviceTimeZone: deviceTimeZone
         )
         let itemOfID = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        // The items whose series request the plan sets. An item that an alarm covers has none (D079).
+        let seriesItems = Set(schedules.compactMap { schedule -> ItemID? in
+            if case .requests? = reminders.needs[schedule.id] { schedule.itemID } else { nil }
+        })
+        seriesDoses = groups.slotInstants.keys.sorted { $0.identifier < $1.identifier }.flatMap { group in
+            groups.orderedOpenItems(of: group).filter { seriesItems.contains($0.itemID) }.compactMap { open in
+                open.name.map {
+                    SeriesDose(
+                        zoneText: group.seriesTimeZone?.identifier ?? "device", timeZone: group.seriesTimeZone,
+                        timeText: String(format: "%02d:%02d", group.time.hour, group.time.minute),
+                        dateText: group.dateText, itemID: open.itemID, name: $0
+                    )
+                }
+            }
+        }
+        self.deviceTimeZone = deviceTimeZone
+        self.now = now
+        showsNames = privacy == .showNames
         let end = now.addingTimeInterval(Double(Self.days) * 86_400)
         var contents: [String: ReminderContent] = [:]
         /// The requests of each group that are still to come, in the order of their instants.
@@ -259,6 +294,28 @@ public struct FollowUpPlan: Hashable, Sendable {
         requests = Self.share(
             wanted, room: ReminderPlan.systemLimit - Self.reserve - reminders.requests.count, from: now
         )
+    }
+
+    /// What a delivered series notification may say now: the items of its time and date that are active and have
+    /// no record (D084). `nil` when no such item is left, so the notification must go. The notification system shows the
+    /// text that the app set before. It does not follow a record, an archive, or a delete.
+    ///
+    /// - Parameters:
+    ///   - identifier: The identifier of the notification, as `ReminderSeries` makes it.
+    ///   - deliveredAt: When the system delivered it. A repeating request has no date, so the date of the delivery gives it.
+    public func deliveredSeriesContent(identifier: String, deliveredAt: Date?) -> ReminderContent? {
+        let parts = identifier.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        guard parts.count == 4, parts[0] + "|" == ReminderSeries.identifierPrefix else { return nil }
+        let zone = parts[1] == "device" ? deviceTimeZone : (try? NamedTimeZone(identifier: parts[1])) ?? deviceTimeZone
+        let date = LocalDate(dayText: parts[3]) ?? LocalDate(deliveredAt ?? now, in: zone)
+        var seen = Set<ItemID>()
+        // A named zone that equals the device zone can join the series of the device (D047).
+        let names = seriesDoses.filter {
+            $0.dateText == date.dayText && $0.timeText == parts[2]
+                && ($0.zoneText == parts[1] || (parts[1] == "device" && $0.timeZone == deviceTimeZone))
+        }.filter { seen.insert($0.itemID).inserted }.map(\.name)
+        guard !names.isEmpty else { return nil }
+        return ReminderContent(kind: .due, names: showsNames ? names : nil)
     }
 
     /// The instant at which the follow-ups of a dose on `date` stop at the latest: `latestTime` of the next day.
