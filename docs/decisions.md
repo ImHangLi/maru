@@ -1494,13 +1494,17 @@ Cause:
 Fix:
 
 - `FollowUpPlan.deliveredSeriesContent` gives the names that a delivered series notification may have now: the open items of its time and date whose series request the plan sets. A repeating request has no date, so the date of the delivery gives it (`PendingReminder.deliveredAt`). `FollowUpEngine` removes a delivered series notification whose text differs, and one with no open item left. This replaces the privacy-only rule for delivered first reminders (D029).
-- After the adds, each engine reads the pending requests again. A wanted identifier whose pending request has other `userInfo` or text is removed through the ledger. The next run adds the new request after the system confirms the removal, so the ledger rule against a late removal of a wanted replacement stays. The removal is only for a replacement that did not land. It never runs before a replacement that did.
+- After the adds, each engine reads the pending requests again. For a wanted identifier whose pending request has other `userInfo` or text, the engine first adds the replacement again. If the old request is still there, the engine removes it through the ledger. After the system confirms the removal, the engine adds the replacement in the same run, when its fire time is still to come and there is room. So the dose time does not pass with no reminder. An identifier whose removal the system did not confirm stays blocked, as for every removal. The removal is only for a replacement that did not land twice. It never runs before a replacement that did.
+- The expected names of a delivered series notification are the open items of its time and date in the order of the schedules, the order of the series text. So a merged group (a device series and a fixed zone that equals the device zone) gives the same text as the request. Only another set of items, or no open item, makes it stale.
+- The date of a delivered repeating notification is the latest date on its weekday whose planned instant is at or before the delivery, with the early tolerance of `ReminderTapResolver`. A 23:59 reminder that the system delivers at 00:01 belongs to the day before.
 - `AppStore.reconcileReminders` holds a background-task assertion (`BackgroundAssertion`) until the run ends, so archive, delete, edit, pause, restore, and launch runs all finish before the system can suspend the app. `refreshReminders` keeps its own assertion, which starts before its task.
 - Alarms: `AlarmEngine` already cancels a waiting alarm that the plan does not have, and the plan has no alarm for an archived, paused, ended, or recorded dose. A ringing alarm cannot be stopped by a run, and it is not changed.
 - Spec 8.2 has an amendment for the delivered first reminder.
 
 Limits:
 
+- If a removal of a stale request is sent and the system does not confirm it in the run, the run cannot add the replacement, and the next run does. The request can go away before. This needs two dropped adds in a row.
+- The cross-engine removal race that `ReminderEngine` documents (`pendingCount(afterRemoving:)`, where the series engine removes follow-ups without the ledger) is not changed.
 - A delivered notification of an older day (outside the window of the plan, about two days) names no dose that Today shows, so the next run removes it.
 - A recorded dose removes a delivered reminder that named it, also when it named other items. The next reminder names the others.
 

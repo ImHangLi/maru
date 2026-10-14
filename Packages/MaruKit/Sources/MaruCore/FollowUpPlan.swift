@@ -159,6 +159,8 @@ public struct FollowUpPlan: Hashable, Sendable {
         let dateText: String
         let itemID: ItemID
         let name: String
+        /// The position of the schedule. The series text lists the items in this order.
+        let order: Int
     }
 
     /// The open items that a series reminder names, for each dose group. A delivered series notification is
@@ -208,7 +210,7 @@ public struct FollowUpPlan: Hashable, Sendable {
                     SeriesDose(
                         zoneText: group.seriesTimeZone?.identifier ?? "device", timeZone: group.seriesTimeZone,
                         timeText: String(format: "%02d:%02d", group.time.hour, group.time.minute),
-                        dateText: group.dateText, itemID: open.itemID, name: $0
+                        dateText: group.dateText, itemID: open.itemID, name: $0, order: open.order
                     )
                 }
             }
@@ -307,13 +309,32 @@ public struct FollowUpPlan: Hashable, Sendable {
         let parts = identifier.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
         guard parts.count == 4, parts[0] + "|" == ReminderSeries.identifierPrefix else { return nil }
         let zone = parts[1] == "device" ? deviceTimeZone : (try? NamedTimeZone(identifier: parts[1])) ?? deviceTimeZone
-        let date = LocalDate(dayText: parts[3]) ?? LocalDate(deliveredAt ?? now, in: zone)
+        let delivered = deliveredAt ?? now
+        let date: LocalDate
+        if let dated = LocalDate(dayText: parts[3]) {
+            date = dated
+        } else {
+            // A repeating request has no date. The planned date is the latest date on the weekday of the request whose
+            // planned instant is at or before the delivery, as `ReminderTapResolver` reads it. So a reminder of 23:59
+            // that the system delivers at 00:01 belongs to the day before.
+            let clock = parts[2].split(separator: ":").compactMap { Int($0) }
+            let time = clock.count == 2 ? try? WallClockTime(hour: clock[0], minute: clock[1]) : nil
+            let weekday = Int(parts[3]).flatMap(Weekday.init(rawValue:))
+            let last = LocalDate(delivered, in: zone)
+            date = time.flatMap { time in
+                (0...ReminderTapResolver.delayedLookBack).map { last.adding(days: -$0) }.first { day in
+                    (weekday.map { day.weekday == $0 } ?? true)
+                        && zone.resolve(time, on: day).earliestInstant <= delivered.addingTimeInterval(ReminderTapResolver.earlyTolerance)
+                }
+            } ?? last
+        }
         var seen = Set<ItemID>()
-        // A named zone that equals the device zone can join the series of the device (D047).
+        // A named zone that equals the device zone can join the series of the device (D047). The items are in the order
+        // of the schedules, as in the text of the series request, so the same set of items gives the same text.
         let names = seriesDoses.filter {
             $0.dateText == date.dayText && $0.timeText == parts[2]
                 && ($0.zoneText == parts[1] || (parts[1] == "device" && $0.timeZone == deviceTimeZone))
-        }.filter { seen.insert($0.itemID).inserted }.map(\.name)
+        }.sorted { $0.order < $1.order }.filter { seen.insert($0.itemID).inserted }.map(\.name)
         guard !names.isEmpty else { return nil }
         return ReminderContent(kind: .due, names: showsNames ? names : nil)
     }

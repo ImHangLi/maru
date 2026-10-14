@@ -278,16 +278,36 @@ public actor ReminderEngine {
         // still to come must be pending: a time that is near does not show a delivery.
         var pendingNow = await pendingAfterRemoval()
         // A replacement that did not land leaves the old request, with its old names. A request that names an archived,
-        // deleted, or recorded item must not stay (D084). So it goes through the ledger, and the next run adds the new
-        // one after the system confirms the removal. This is a removal of the same kind as the others: `remove` sends
-        // an identifier only once, and no run adds it again before the system confirms the removal.
-        let held = Dictionary(pendingNow.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
-        let stale = wanted.filter { request in
-            guard let old = held[request.identifier] else { return false }
-            return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
-        }.map(\.identifier)
+        // deleted, or recorded item must not stay (D084). The run first adds the replacement again. When the old request
+        // is still there, the run removes it through the ledger and, after the system confirms the removal, adds the
+        // replacement in the same run. So the dose time does not pass with no reminder. An identifier whose removal
+        // the system did not confirm stays blocked, as for every removal.
+        func staleRequests() -> [ReminderRequest] {
+            let held = Dictionary(pendingNow.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
+            return wanted.filter { request in
+                guard let old = held[request.identifier] else { return false }
+                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+            }
+        }
+        var stale = staleRequests()
         if !stale.isEmpty {
-            await remove(stale)
+            // An add with the identifier of a pending request replaces it and takes no room.
+            for request in stale where !unremoved.contains(request.identifier) { try? await center.add(request) }
+            pendingNow = await pendingAfterRemoval()
+            stale = staleRequests()
+        }
+        if !stale.isEmpty {
+            await remove(stale.map(\.identifier))
+            pendingNow = await pendingAfterRemoval()
+            let held = Set(pendingNow.map(\.identifier))
+            var room = ReminderPlan.systemLimit - pendingNow.count
+            let now = clock()
+            for request in stale
+            where !unremoved.contains(request.identifier) && !held.contains(request.identifier)
+                && (request.fireDate.map { $0 > now } ?? true) && room > 0 {
+                room -= 1
+                try? await center.add(request)
+            }
             pendingNow = await pendingAfterRemoval()
         }
         let readAt = clock()

@@ -153,14 +153,36 @@ public actor FollowUpEngine {
                 try? await center.add(request)
             }
         }
-        // A replacement that did not land leaves the old follow-up, with its old names. It goes through the ledger,
-        // and the next refresh adds the new one after the system confirms the removal (D084).
-        let heldNow = Self.followUps(await pendingAfterRemoval())
-        let stale = plan.requests.filter { request in
-            guard let old = heldNow[request.identifier] else { return false }
-            return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
-        }.map(\.identifier)
-        await remove(stale)
+        // A replacement that did not land leaves the old follow-up, with its old names (D084). The run adds the
+        // replacement again. When the old one is still there, the run removes it through the ledger and, after the
+        // system confirms the removal, adds the replacement in the same run. An identifier whose removal the system
+        // did not confirm stays blocked.
+        if authorization == .authorized {
+            let wanted = plan.requests
+            func stale() async -> [FollowUpRequest] {
+                let held = Self.followUps(await pendingAfterRemoval())
+                return wanted.filter { request in
+                    guard let old = held[request.identifier] else { return false }
+                    return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+                }
+            }
+            var old = await stale()
+            for request in old where !unremoved.contains(request.identifier) { try? await center.add(request) }
+            old = old.isEmpty ? [] : await stale()
+            if !old.isEmpty {
+                await remove(old.map(\.identifier))
+                let live = await pendingAfterRemoval()
+                let held = Set(live.map(\.identifier))
+                var room = max(0, Self.limit - live.count)
+                let time = Date()
+                for request in old
+                where !unremoved.contains(request.identifier) && !held.contains(request.identifier)
+                    && request.fireDate > time && room > 0 {
+                    room -= 1
+                    try? await center.add(request)
+                }
+            }
+        }
         // A delivered notification keeps the text that the app set before. So one that names a recorded, renamed,
         // archived, deleted, or paused item goes (D029, D084). This holds for a first reminder too: it must name
         // only the doses that Today shows. The text of a first reminder is compared with the open items of its date.
