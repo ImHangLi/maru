@@ -1470,6 +1470,6 @@ Agent decision, after a test on the maintainer's iPhone. With "Remind Again: Unt
 - Cause: the reminder run after a record was fire-and-forget. When iOS suspended the app before the run ended, the pending follow-up requests stayed.
 - `refreshReminders` holds a background-task assertion until the run ends. The expiry handler also ends it. The run stays off the main actor.
 - `takeReminder` (the "Taken" action) awaits the reminder run before it returns, as the widget and Watch paths do. The action limit of `ReminderTapDelegate` bounds the wait.
-- `FollowUpEngine` asks the system again to remove a ledger identifier that is still pending on the first read of a run. The process can stop between the ledger save and the removal. A second removal is harmless.
+- `FollowUpEngine` does not change. The ledger can keep an identifier whose removal did not run, if the process stops between the save and the removal. That window stays as it was. A second removal can delete a wanted replacement that has the same identifier, as `ReminderEngine` documents.
 
-Not verified: the app build on this Mac, and the behavior on a real iPhone. CI builds the app. No new test: the fake ledger of `FollowUpEngineTests` cannot start with a saved identifier without more code (D016).
+Not verified: the app build on this Mac, and the behavior on a real iPhone. CI builds the app. No new test (D016).
