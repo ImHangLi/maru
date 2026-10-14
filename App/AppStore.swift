@@ -2,6 +2,7 @@ import Foundation
 import MaruCore
 import MaruDatabase
 import MaruNotifications
+import os
 
 /// The database of the process, and the reads that the two tabs need.
 ///
@@ -17,6 +18,14 @@ actor AppStore {
     private var opened: LocalStore?
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
+    private var alarms: AlarmEngine?
+    /// Which items an alarm covers in the run that is going on (D079). Each run sets it again, so no run uses the cover of an earlier run.
+    private let cover = OSAllocatedUnfairLock(initialState: AlarmCover.none)
+    /// The input of the notification engines: which items an alarm covers in the run that is going on.
+    private var coverNow: @Sendable () -> AlarmCover {
+        let cover = cover
+        return { cover.withLock { $0 } }
+    }
     /// The last notification update in the queue. Each update waits for the one before it, so the reminder
     /// engine and the follow-up engine never change the requests at the same time (spec 8.4).
     private var updates: Task<Void, Never>?
@@ -54,6 +63,14 @@ actor AppStore {
             try LocalStore.adopt(from: AppGroup.earlierDatabaseDirectory, into: directory)
         }
         let store = try LocalStore(directory: directory)
+        // The one-time move of the global follow-up setting of version 1.0 to the items (D079). A failure leaves
+        // the setting in place, and the next open tries again. A debug scenario has its own store and leaves it alone.
+        if directory == Self.directory, LegacyFollowUpSetting.exists() {
+            if let setting = LegacyFollowUpSetting.read() {
+                try store.adoptFollowUpSetting(setting, changed: LegacyFollowUpSetting.changeTime())
+            }
+            LegacyFollowUpSetting.remove()
+        }
         opened = store
         return store
     }
@@ -67,7 +84,8 @@ actor AppStore {
             center: SystemReminderCenter(),
             ledger: DefaultsRemovalLedger(),
             privacy: DefaultsReminderPrivacy(),
-            zoneRecord: DefaultsTimeZoneRecord()
+            zoneRecord: DefaultsTimeZoneRecord(),
+            alarms: coverNow
         )
         self.engine = engine
         return engine
@@ -80,15 +98,31 @@ actor AppStore {
             source: try open(),
             center: SystemReminderCenter(),
             ledger: DefaultsRemovalLedger(key: DefaultsRemovalLedger.followUpKey),
-            setting: DefaultsFollowUpSetting(),
-            privacy: DefaultsReminderPrivacy()
+            privacy: DefaultsReminderPrivacy(),
+            alarms: coverNow
         )
         self.followUps = followUps
         return followUps
     }
 
-    /// Runs the reminder engine, then the follow-ups. Keep this order: a run can remove follow-ups to make room
-    /// under the system limit, and the refresh sets them again (spec 8.4).
+    /// The alarm engine of the process. It is `nil` before iOS 26, where AlarmKit does not exist (D079).
+    func alarmEngine() throws(StorageError) -> AlarmEngine? {
+        guard #available(iOS 26, *) else { return nil }
+        if let alarms { return alarms }
+        let alarms = AlarmEngine(
+            source: try open(),
+            center: SystemAlarmCenter(),
+            privacy: DefaultsReminderPrivacy(),
+            alarmsRing: { AlarmSupport.isAuthorized }
+        )
+        self.alarms = alarms
+        return alarms
+    }
+
+    /// Runs the alarms, then the reminder engine, then the follow-ups. The alarm run comes first, so an alarm that the
+    /// system did not schedule gives its item the normal reminder in the same run (D079). The reminder engine comes
+    /// before the follow-ups: a run can remove follow-ups to make room under the system limit, and the refresh sets
+    /// them again (spec 8.4).
     ///
     /// The run waits for the notification updates before it, so no two updates overlap.
     /// It returns the follow-up outcome too: `nil` when the follow-up refresh failed.
@@ -100,6 +134,13 @@ actor AppStore {
         let previous = updates
         let run = Task { () throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) in
             await previous?.value
+            // The cover is valid for this run only, and it fails open (D079). It starts empty. Only a run of the alarm
+            // path with no error at all gives it items. An error of the read, a schedule, or a cancel keeps it empty,
+            // so every item with an alarm gets its normal reminder.
+            self.cover.withLock { $0 = .none }
+            if let failed = try? await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone) {
+                self.cover.withLock { $0 = AlarmCover(rings: AlarmSupport.isAuthorized, failed: failed) }
+            }
             let outcome = try await self.reminderEngine().reconcile(
                 at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
             )
@@ -134,23 +175,10 @@ actor AppStore {
         }
         engine = nil
         followUps = nil
+        alarms = nil
         // The restored items replace the old ones. The photo files of the old items have no owner now (D056).
         await removeUnreferencedPhotos()
         return .success(result)
-    }
-
-    /// Sets the follow-ups again from the records. A failed run changes nothing, and the next trigger runs again.
-    ///
-    /// The refresh waits for the notification updates before it. It always runs, also behind a queued full run:
-    /// a skipped refresh could leave a follow-up for a recorded time if that full run then fails.
-    func refreshFollowUps(at now: Date, deviceTimeZone: NamedTimeZone) async {
-        let previous = updates
-        let run = Task {
-            await previous?.value
-            _ = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
-        }
-        updates = run
-        await run.value
     }
 
     /// Generates the occurrences around `now`, and builds the projection of the two tabs (spec 9).

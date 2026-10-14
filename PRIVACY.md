@@ -28,6 +28,7 @@ Some versions of Maru can send usage statistics to PostHog. A version that canno
 - What Maru sends: only these events and fields. Each value is a fixed word, a yes-or-no flag, or a range such as "2_3". None is a name, an amount, or a time of day.
   - `setup_step`: a step on the add or edit screen. `step` is one of `editor_opened`, `item_saved`, `editor_closed` (closed with no save), `scan_opened`, `scan_used`, or `scan_blocked` (the camera is off for Maru). `mode` is `new`, `edit`, or `replace`. A save also has:
     - `has_reminder`: yes if the plan has a reminder time. Not the kind of plan, the days, the times, or how many times.
+    - `has_alarm`, `has_follow_up`: yes if you turned on the alarm, or "Remind Again", for the item. Not the number of reminders or the time between them.
     - `has_amount`, `has_note`, `has_photo`: yes or no. Not the amount, the note, or the photo.
     - `name_source`, for a new item: `typed`, `suggestion`, or `scan`. Not the name.
     - `used_completion`: yes if you tapped a suggested amount, time, or note.
@@ -37,7 +38,7 @@ Some versions of Maru can send usage statistics to PostHog. A version that canno
   - `daily_usage_summary`: one summary for each day that you used the app. Maru sends it the next time that you open the app on a later day, never from the background. It has `day_index`, the day number since the statistics started, and yes-or-no flags for that day: `used_record` (recorded a dose), `used_history` (opened History), `used_notification` (opened the app from a reminder or used a reminder action), `used_widget` (used a widget), `used_reminder_action` (recorded from the "Taken" action of a reminder), `used_skip`, `used_undo`, `used_correction` (changed an earlier record), `used_my_items`, `used_item_detail`, and `used_settings`. It also has `app_opens`, how often the app came to the front that day, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, `active_items`, the number of your active items, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, and `has_widget`, yes if a Maru widget is on your Home Screen. It has no time and no count of doses.
   - `core_error`: `operation`, the operation that failed: `save`, `read`, `schedule` (setting a reminder), or `scan` (the label scanner). `code`, one of eight fixed codes: `locked`, `corrupt`, `newer_schema`, `migration_failed`, `failed`, `too_many`, `not_set`, or `not_confirmed`.
   - `notification_permission`: `state`, the notification permission: `not_asked`, `allowed`, `denied`, or `quiet`. `previous`, the permission that Maru sent before, or `unknown`. Maru sends it once when the statistics start, with `previous` = `unknown`, and after that only when the permission changes.
-  - `setting_changed`: a new value of one setting: `remind_again` (`off`, `1`, `2`, `3`, `5`, or `until_recorded`) with `remind_again_minutes` (`5`, `10`, `15`, `30`, or `60`), `show_names` (yes or no), or `app_color` (one of the eight color names).
+  - `setting_changed`: a new value of one setting: `show_names` (yes or no), or `app_color` (one of the eight color names).
   - `data_action`: `action`, one of `export`, `backup`, or `restore`, and `result`, one of `done`, `failed`, `cancelled`, `invalid_file`, `newer_file`, or `not_confirmed`. Not the file or its content.
   - `feedback_entry`: `entry` = `settings`, when you tap "Send Feedback".
 - What Maru never sends: item names, doses, amounts, intake times, reminder times, item IDs, notes, photos, or the text of a message. It sends no event at the moment of a record, no time of a single dose, and no count of doses.
@@ -71,12 +72,14 @@ Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) i
 
 Reminders are local notifications. iOS schedules and shows them on your device, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.
 
+An alarm (iOS 26 and later, when you turn on "Alarm" for an item) also runs on your device, through Apple's AlarmKit, and does not go through a server. It shows the item names on the Lock Screen, unless you turn off "Show Names in Reminders" in Settings.
+
 ## Export and backup files
 
 Settings has "Export Records", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first two.
 
 - The record export is a CSV file. It has your item names, your amounts, and your records.
-- The backup is a full copy of the database and of three settings: the app color, the names in reminders, and "Remind Again". It does not include the item photos.
+- The backup is a full copy of the database and of two settings: the app color and the names in reminders. The database holds the "Remind Again" and alarm choices of each item. The backup does not include the item photos.
 - The files are not encrypted. Anyone with a file can read it.
 - Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.
 - Maru keeps the file in a protected temporary folder and removes it when the share sheet closes.

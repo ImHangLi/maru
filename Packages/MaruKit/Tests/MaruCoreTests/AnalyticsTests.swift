@@ -20,7 +20,7 @@ struct AnalyticsTests {
         let built: [AnalyticsEvent] = [
             .setupStep(.editorOpened, mode: .new),
             .itemSaved(AnalyticsEvent.ItemSetup(
-                mode: .replace, hasReminder: true, hasAmount: true, hasNote: false,
+                mode: .replace, hasReminder: true, hasAlarm: true, hasFollowUp: false, hasAmount: true, hasNote: false,
                 hasPhoto: true, nameSource: .scan, usedCompletion: true, isFirstItem: false, duration: 95
             )),
             .editorClosed(mode: .edit, hadChanges: true, duration: 400),
@@ -28,8 +28,6 @@ struct AnalyticsTests {
             .dailyUsage(dayIndex: 5, AnalyticsEvent.UsageDay(used: [.reminderAction])),
             .coreError(.schedule, .tooMany),
             .notificationPermission(.quiet, previous: nil),
-            .remindAgainChanged(FollowUpSetting(count: .untilRecorded, interval: .minutes60)),
-            .remindAgainChanged(nil),
             .showNamesChanged(false),
             .appColorChanged(.mint),
             .dataAction(.restore, .newerFile),

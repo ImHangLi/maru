@@ -52,8 +52,10 @@ The settings:
 |---|---|
 | `appColor` | The app color: `pink`, `orange`, `yellow`, `green`, `mint`, `blue`, `purple`, or `brown` |
 | `reminderNames` | `showNames` or `hideNames` |
-| `remindAgainMinutes` | The time between follow-ups in minutes: `0` for off, or `5`, `10`, `15`, `30`, or `60` |
-| `remindAgainCount` | The number of follow-ups: `1`, `2`, `3`, or `5`, or `0` for "Until Recorded". A backup with no such row restores "1 Time" |
+| `remindAgainMinutes` | Version 1.0 only (D079). The time between follow-ups in minutes: `0` for off, or `5`, `10`, `15`, `30`, or `60`. Version 1.1 writes no such row. A restore copies a value above `0` to every restored item |
+| `remindAgainCount` | Version 1.0 only (D079). The number of follow-ups: `1`, `2`, `3`, or `5`, or `0` for "Until Recorded". A backup with no such row restores "1 Time" |
+
+The follow-ups and the alarm of each item are columns of the `item` table since migration `v6` (D079): `followUpCount` (`0` for "Until Recorded", else the number) and `followUpMinutes` (both empty for off), `followUpChanged` (an instant, or empty), and `alarm` (`0` or `1`). A backup from before `v6` has none of them. The restore applies `v6` to its copy, so every item has no follow-up and no alarm, and then it copies the two settings of version 1.0 above to the items.
 
 A backup does not hold the notification permission, the pending reminders, or an unsaved draft. They belong to one iPhone.
 

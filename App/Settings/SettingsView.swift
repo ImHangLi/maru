@@ -9,10 +9,6 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
-    /// `nil` means off.
-    @State private var followUpCount: FollowUpCount?
-    /// 30 minutes until the user picks one: the middle delay of D021, and the delay of Apple Health.
-    @State private var followUpInterval = FollowUpInterval.minutes30
     @State private var showsNames = true
     @State private var sharesStatistics = false
 
@@ -30,50 +26,6 @@ struct SettingsView: View {
                     ))
                 } footer: {
                     Text("Turn off to keep item names out of reminders.")
-                }
-                Section {
-                    Picker("Remind Again", selection: Binding(
-                        get: { followUpCount },
-                        set: { count in
-                            // The interval row comes and goes with "Off" (D039).
-                            withMotion(.layout) { followUpCount = count }
-                            model.setFollowUp(count.map { FollowUpSetting(count: $0, interval: followUpInterval) })
-                        }
-                    )) {
-                        Text("Off").tag(FollowUpCount?.none)
-                        Text("1 Time").tag(FollowUpCount?.some(.one))
-                        Text("2 Times").tag(FollowUpCount?.some(.two))
-                        Text("3 Times").tag(FollowUpCount?.some(.three))
-                        Text("5 Times").tag(FollowUpCount?.some(.five))
-                        Text("Until Recorded").tag(FollowUpCount?.some(.untilRecorded))
-                    }
-                    .tint(Color.primary)
-                    if followUpCount != nil {
-                        Picker("Every", selection: Binding(
-                            get: { followUpInterval },
-                            set: { interval in
-                                followUpInterval = interval
-                                model.setFollowUp(followUpCount.map { FollowUpSetting(count: $0, interval: interval) })
-                            }
-                        )) {
-                            Text("5 min").tag(FollowUpInterval.minutes5)
-                            Text("10 min").tag(FollowUpInterval.minutes10)
-                            Text("15 min").tag(FollowUpInterval.minutes15)
-                            Text("30 min").tag(FollowUpInterval.minutes30)
-                            Text("1 hr").tag(FollowUpInterval.minutes60)
-                        }
-                        .tint(Color.primary)
-                    }
-                } footer: {
-                    // iPhone has no reminder that repeats until Maru stops it, so "Until Recorded" has a limit.
-                    // The footer states it, and the time at which the follow-ups of a dose stop (D039).
-                    if followUpCount == .untilRecorded {
-                        let latest = FollowUpPlan.latestTime
-                        let time = SchedulePreview.format(hour: latest.hour, minute: latest.minute)
-                        Text("Maru reminds you up to \(FollowUpCount.untilRecordedLimit) times for each dose, until \(time) at the latest.")
-                    } else {
-                        Text("Only for doses with no record.")
-                    }
                 }
                 Section("Display") {
                     // A system menu of the eight colors (D025, D026).
@@ -135,9 +87,6 @@ struct SettingsView: View {
         // The sheet sets the tint again, so every control in it changes at once with a new app color.
         .tint(appColor.tint)
         .onAppear {
-            let followUp = model.followUpSetting
-            followUpCount = followUp?.count
-            if let followUp { followUpInterval = followUp.interval }
             showsNames = model.showsNamesInReminders
             sharesStatistics = model.sharesUsageStatistics
         }

@@ -39,6 +39,8 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "step": .choice(SetupStep.allCases.map(\.rawValue)),
             "mode": .choice(EditorMode.allCases.map(\.rawValue)),
             "has_reminder": .flag,
+            "has_alarm": .flag,
+            "has_follow_up": .flag,
             "has_amount": .flag,
             "has_note": .flag,
             "has_photo": .flag,
@@ -74,8 +76,6 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "previous": .choice(["unknown"] + Permission.allCases.map(\.rawValue)),
         ],
         "setting_changed": [
-            "remind_again": .choice(["off", "1", "2", "3", "5", "until_recorded"]),
-            "remind_again_minutes": .choice(["5", "10", "15", "30", "60"]),
             "show_names": .flag,
             "app_color": .choice(ItemColor.allCases.map(\.rawValue)),
         ],
@@ -175,6 +175,10 @@ public extension AnalyticsEvent {
         public var mode: EditorMode
         /// The plan has at least one reminder time.
         public var hasReminder: Bool
+        /// The item has the alarm option on (D079).
+        public var hasAlarm: Bool
+        /// The item has follow-ups on (D079). Not their count or their interval.
+        public var hasFollowUp: Bool
         public var hasAmount: Bool
         public var hasNote: Bool
         public var hasPhoto: Bool
@@ -185,11 +189,13 @@ public extension AnalyticsEvent {
         public var duration: TimeInterval
 
         public init(
-            mode: EditorMode, hasReminder: Bool, hasAmount: Bool, hasNote: Bool,
+            mode: EditorMode, hasReminder: Bool, hasAlarm: Bool, hasFollowUp: Bool, hasAmount: Bool, hasNote: Bool,
             hasPhoto: Bool, nameSource: NameSource?, usedCompletion: Bool, isFirstItem: Bool, duration: TimeInterval
         ) {
             self.mode = mode
             self.hasReminder = hasReminder
+            self.hasAlarm = hasAlarm
+            self.hasFollowUp = hasFollowUp
             self.hasAmount = hasAmount
             self.hasNote = hasNote
             self.hasPhoto = hasPhoto
@@ -252,6 +258,8 @@ public extension AnalyticsEvent {
             "step": .text(SetupStep.itemSaved.rawValue),
             "mode": .text(setup.mode.rawValue),
             "has_reminder": .flag(setup.hasReminder),
+            "has_alarm": .flag(setup.hasAlarm),
+            "has_follow_up": .flag(setup.hasFollowUp),
             "has_amount": .flag(setup.hasAmount),
             "has_note": .flag(setup.hasNote),
             "has_photo": .flag(setup.hasPhoto),
@@ -299,16 +307,6 @@ public extension AnalyticsEvent {
         AnalyticsEvent(unchecked: "notification_permission", [
             "state": .text(state.rawValue),
             "previous": .text(previous?.rawValue ?? "unknown"),
-        ])
-    }
-
-    /// "Remind Again" changed. `nil` is off.
-    static func remindAgainChanged(_ setting: FollowUpSetting?) -> AnalyticsEvent {
-        guard let setting else { return AnalyticsEvent(unchecked: "setting_changed", ["remind_again": .text("off")]) }
-        let count = setting.count == .untilRecorded ? "until_recorded" : String(setting.count.rawValue)
-        return AnalyticsEvent(unchecked: "setting_changed", [
-            "remind_again": .text(count),
-            "remind_again_minutes": .text(String(setting.interval.rawValue)),
         ])
     }
 

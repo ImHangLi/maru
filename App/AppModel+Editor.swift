@@ -54,10 +54,18 @@ extension AppModel {
                 var session = EditorSession(
                     context: context, original: original, start: original, isRestored: false, generation: generation
                 )
-                if let kept = DraftFile.load(key: session.draftKey), kept != original {
-                    session = EditorSession(
-                        context: context, original: original, start: kept, isRestored: true, generation: generation
-                    )
+                if var kept = DraftFile.load(key: session.draftKey) {
+                    // A draft of version 1.0 has no reminder options. It keeps the options of the stored item.
+                    if kept.hasReminderOptions != true {
+                        kept.followUp = original.followUp
+                        kept.alarm = original.alarm
+                        kept.hasReminderOptions = true
+                    }
+                    if kept != original {
+                        session = EditorSession(
+                            context: context, original: original, start: kept, isRestored: true, generation: generation
+                        )
+                    }
                 }
                 editor = session
                 analytics.capture(.setupStep(.editorOpened, mode: session.mode))
@@ -136,6 +144,8 @@ extension AppModel {
         analytics.capture(.itemSaved(AnalyticsEvent.ItemSetup(
             mode: session.mode,
             hasReminder: schedule != nil,
+            hasAlarm: item.alarm,
+            hasFollowUp: item.followUp != nil,
             hasAmount: schedule?.versions.last?.dose != nil,
             hasNote: item.intakeNote != nil,
             hasPhoto: item.imageReference != nil,
@@ -162,6 +172,11 @@ extension AppModel {
             status = ReminderStatus(state)
         }
         report(status, of: reported.id, removes: removed != nil)
+    }
+
+    /// The first tap on the "Alarm" switch asks the system for the alarm permission (D079). `true` when alarms can ring.
+    func allowAlarms() async -> Bool {
+        await AlarmSupport.requestAuthorization()
     }
 
     /// The edit screen closed. A close after a save sends nothing more, because the save sent `item_saved`.

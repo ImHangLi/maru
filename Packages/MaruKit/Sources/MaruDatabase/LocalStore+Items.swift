@@ -113,18 +113,23 @@ extension LocalStore {
         try db.execute(
             sql: """
                 INSERT INTO item (
-                    id, category, name, form, color, isArchived, intakeNotePreset, intakeNoteText, imageReference
+                    id, category, name, form, color, isArchived, intakeNotePreset, intakeNoteText, imageReference,
+                    followUpCount, followUpMinutes, followUpChanged, alarm
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (id) DO UPDATE SET
                     category = excluded.category, name = excluded.name, form = excluded.form,
                     color = excluded.color, isArchived = excluded.isArchived,
                     intakeNotePreset = excluded.intakeNotePreset, intakeNoteText = excluded.intakeNoteText,
-                    imageReference = excluded.imageReference
+                    imageReference = excluded.imageReference,
+                    followUpCount = excluded.followUpCount, followUpMinutes = excluded.followUpMinutes,
+                    followUpChanged = excluded.followUpChanged, alarm = excluded.alarm
                 """,
             arguments: [
                 item.id.text, item.category.rawValue, item.name, item.form.rawValue, item.color.rawValue,
                 item.isArchived, preset, text, item.imageReference,
+                item.followUp?.count.rawValue, item.followUp?.interval.rawValue, item.followUpChanged?.storedSeconds,
+                item.alarm,
             ]
         )
         // The load path checks the row with the domain rules. A failure rolls back the write.
@@ -144,6 +149,31 @@ extension LocalStore {
         }
     }
 
+    /// Gives every stored item that has no follow-up the follow-up setting of version 1.0, which was one global
+    /// setting (D079). The app runs it one time at the first open after the update, then removes that setting.
+    /// An item keeps a setting that it has. `changed` is the time of the last change of the old setting. It goes to
+    /// each item, so the limit of 12 follow-ups for a dose does not start again (D039).
+    /// It blocks until the write ends, like the open.
+    public func adoptFollowUpSetting(_ setting: FollowUpSetting, changed: Date? = nil) throws(StorageError) {
+        do {
+            try writer.write { db in
+                try Self.adopt(setting, changed: changed, db)
+            }
+        } catch {
+            throw StorageError(error)
+        }
+    }
+
+    static func adopt(_ setting: FollowUpSetting, changed: Date?, _ db: Database) throws {
+        try db.execute(
+            sql: """
+                UPDATE item SET followUpCount = ?, followUpMinutes = ?, followUpChanged = ?
+                WHERE followUpCount IS NULL
+                """,
+            arguments: [setting.count.rawValue, setting.interval.rawValue, changed?.storedSeconds]
+        )
+    }
+
     private static func fetchItem(_ db: Database, id: ItemID) throws -> Item? {
         try Row.fetchOne(db, sql: "SELECT * FROM item WHERE id = ?", arguments: [id.text]).map(decodeItem)
     }
@@ -152,6 +182,19 @@ extension LocalStore {
         let preset: String? = try row.decode(forColumn: "intakeNotePreset")
         let text: String? = try row.decode(forColumn: "intakeNoteText")
         let image: String? = try row.decode(forColumn: "imageReference")
+        let followUpCount: Int? = try row.decode(forColumn: "followUpCount")
+        let followUpMinutes: Int? = try row.decode(forColumn: "followUpMinutes")
+        let followUpChanged: Double? = try row.decode(forColumn: "followUpChanged")
+        let followUp: FollowUpSetting?
+        switch (followUpCount, followUpMinutes) {
+        case (nil, nil): followUp = nil
+        case let (count?, minutes?):
+            guard let count = FollowUpCount(rawValue: count), let interval = FollowUpInterval(rawValue: minutes) else {
+                throw StorageError.invalidData
+            }
+            followUp = FollowUpSetting(count: count, interval: interval)
+        default: throw StorageError.invalidData
+        }
         let note: IntakeNote? = switch (preset, text) {
         case (nil, nil): nil
         case let (preset?, nil): .preset(try IntakeNote.Preset(text: preset))
@@ -167,7 +210,10 @@ extension LocalStore {
                 color: ItemColor(text: row.decode(forColumn: "color")),
                 isArchived: row.decode(forColumn: "isArchived"),
                 intakeNote: note,
-                imageReference: image
+                imageReference: image,
+                followUp: followUp,
+                followUpChanged: followUpChanged.map(Date.init(storedSeconds:)),
+                alarm: row.decode(forColumn: "alarm")
             )
         }
     }

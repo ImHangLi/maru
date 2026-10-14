@@ -97,11 +97,11 @@ struct ReminderTapTests {
     }
 
     @Test func followUpAfterMidnightTakesTheDoseOfTheDayBeforeUntilOneOClock() throws {
+        let item = Fixtures.item(followUp: FollowUpSetting(count: .one, interval: .minutes30))
         let schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(23, 30)])
         // The follow-up of the 23:30 dose of 1 March comes at 00:00 on 2 March in Shanghai.
         let now = Fixtures.instant("2026-03-01T15:00:00Z")
         let plan = FollowUpPlan(
-            setting: FollowUpSetting(count: .one, interval: .minutes30),
             reminders: ReminderPlan(items: [item], schedules: [schedule], now: now, deviceTimeZone: Fixtures.shanghai),
             items: [item], schedules: [schedule], stored: [], closed: [], now: now, deviceTimeZone: Fixtures.shanghai
         )

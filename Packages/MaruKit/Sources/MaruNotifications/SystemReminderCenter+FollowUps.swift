@@ -48,70 +48,48 @@ extension UNNotificationRequest {
     }
 }
 
-/// The follow-up setting in `UserDefaults.standard`. No interval means off (spec 4).
+/// The global follow-up setting of version 1.0, in `UserDefaults.standard` (D079).
 ///
-/// The setting and the time of its last change live in one value under one key, so one write changes both.
-/// A stop of the app can never leave a new setting with an old confirmed time (D039). The keys from before
-/// this value are read only when the value is missing: the interval key of D021, with no count meaning one
-/// follow-up, and the change key. The value holds no health data (D014).
-public struct DefaultsFollowUpSetting: FollowUpSettingStore {
+/// Version 1.1 keeps the setting of each item in the database. The app reads this value one time at launch,
+/// copies it to every item, and removes it. The value is a dictionary with `minutes`, `count`, and `changed` under `reminders.followUp.v2`.
+/// The keys from before that value are read only when the value is missing: the interval key of D021, with no
+/// count meaning one follow-up. The value holds no health data (D014).
+public enum LegacyFollowUpSetting {
     static let valueKey = "reminders.followUp.v2"
     static let key = "reminders.followUpMinutes"
     static let countKey = "reminders.followUpCount"
     static let changedKey = "reminders.followUpChanged"
-    /// The engine confirms and the settings screen saves from different tasks. The lock makes each read and write of the value one step.
-    private static let lock = NSLock()
 
-    public init() {}
-
-    public func load() -> FollowUpSetting? {
-        Self.lock.withLock { Self.read().setting }
-    }
-
-    public func snapshot() -> (setting: FollowUpSetting?, changed: Date?) {
-        Self.lock.withLock { Self.read() }
-    }
-
-    public func save(_ setting: FollowUpSetting?) {
-        Self.lock.withLock {
-            let current = Self.read()
-            guard current.setting != setting else { return }
-            // "Off" also counts: the old follow-ups can still come until the engine confirms their removal.
-            Self.write(setting: setting, changed: .distantFuture)
-        }
-    }
-
-    public func confirmChange() -> (setting: FollowUpSetting?, changed: Date) {
-        Self.lock.withLock {
-            let current = Self.read()
-            // A confirmed time stays. Only an unconfirmed change gets the time of now.
-            guard current.changed == .distantFuture else { return (current.setting, current.changed ?? Date()) }
-            let now = Date()
-            Self.write(setting: current.setting, changed: now)
-            return (current.setting, now)
-        }
-    }
-
-    private static func read() -> (setting: FollowUpSetting?, changed: Date?) {
-        let defaults = UserDefaults.standard
+    /// The setting that an install of version 1.0 had, or `nil` when it was off or never set.
+    public static func read(in defaults: UserDefaults = .standard) -> FollowUpSetting? {
+        let minutes: Int?
+        let count: Int?
         if let value = defaults.dictionary(forKey: valueKey) {
-            let interval = (value["minutes"] as? Int).flatMap(FollowUpInterval.init)
-            let count = (value["count"] as? Int).flatMap(FollowUpCount.init)
-            return (interval.map { FollowUpSetting(count: count ?? .one, interval: $0) }, value["changed"] as? Date)
+            minutes = value["minutes"] as? Int
+            count = value["count"] as? Int
+        } else {
+            minutes = defaults.integer(forKey: key) == 0 ? nil : defaults.integer(forKey: key)
+            count = defaults.object(forKey: countKey) as? Int
         }
-        let interval = FollowUpInterval(rawValue: defaults.integer(forKey: key))
-        let count = (defaults.object(forKey: countKey) as? Int).flatMap(FollowUpCount.init)
-        return (interval.map { FollowUpSetting(count: count ?? .one, interval: $0) }, defaults.object(forKey: changedKey) as? Date)
+        guard let interval = minutes.flatMap(FollowUpInterval.init) else { return nil }
+        // A missing count means "1 Time", as for an install from before D039.
+        return FollowUpSetting(count: count.flatMap(FollowUpCount.init) ?? .one, interval: interval)
     }
 
-    private static func write(setting: FollowUpSetting?, changed: Date) {
-        var value: [String: Any] = ["changed": changed]
-        if let setting {
-            value["minutes"] = setting.interval.rawValue
-            value["count"] = setting.count.rawValue
-        }
-        let defaults = UserDefaults.standard
-        defaults.set(value, forKey: valueKey)
-        for old in [key, countKey, changedKey] { defaults.removeObject(forKey: old) }
+    /// The time of the last change of the setting, for the limit of a dose (D039, D079). A change that the engine
+    /// did not confirm has `Date.distantFuture`. Old follow-ups can still come until the system confirms their removal.
+    /// The items keep this value, and the follow-up engine writes the time of the confirmation, as D039 does.
+    public static func changeTime(in defaults: UserDefaults = .standard) -> Date? {
+        (defaults.dictionary(forKey: valueKey)?["changed"] as? Date) ?? defaults.object(forKey: changedKey) as? Date
+    }
+
+    /// Whether a value of version 1.0 is still there, also one that means off.
+    public static func exists(in defaults: UserDefaults = .standard) -> Bool {
+        [valueKey, key, countKey, changedKey].contains { defaults.object(forKey: $0) != nil }
+    }
+
+    /// Removes every key of the setting.
+    public static func remove(in defaults: UserDefaults = .standard) {
+        for old in [valueKey, key, countKey, changedKey] { defaults.removeObject(forKey: old) }
     }
 }

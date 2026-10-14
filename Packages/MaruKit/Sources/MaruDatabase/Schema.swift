@@ -22,6 +22,9 @@ enum Schema {
         migrator.registerMigration("v5") { db in
             try db.execute(sql: v5)
         }
+        migrator.registerMigration("v6") { db in
+            try db.execute(sql: v6)
+        }
         return migrator
     }
 
@@ -186,5 +189,17 @@ enum Schema {
         ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOn INTEGER CHECK (cycleDaysOn BETWEEN 1 AND 99);
         ALTER TABLE scheduleVersion ADD COLUMN cycleDaysOff INTEGER CHECK (cycleDaysOff BETWEEN 1 AND 99);
         UPDATE scheduleVersion SET cycleDaysOn = 1, cycleDaysOff = 1 WHERE cycleStart IS NOT NULL;
+        """
+
+    /// The reminder options of an item (D079). An item stored before this migration has no follow-up and no alarm,
+    /// as before. The app copies the global follow-up setting of version 1.0 to every item one time, after the
+    /// migration (`LocalStore.adoptFollowUpSetting`). A count and an interval come together or not at all.
+    /// The checks list the raw values of `FollowUpCount` and `FollowUpInterval`.
+    static let v6 = """
+        ALTER TABLE item ADD COLUMN followUpCount INTEGER CHECK (followUpCount IN (0, 1, 2, 3, 5));
+        ALTER TABLE item ADD COLUMN followUpMinutes INTEGER
+            CHECK (followUpMinutes IN (5, 10, 15, 30, 60) AND followUpCount IS NOT NULL OR followUpMinutes IS NULL AND followUpCount IS NULL);
+        ALTER TABLE item ADD COLUMN followUpChanged REAL;
+        ALTER TABLE item ADD COLUMN alarm INTEGER NOT NULL DEFAULT 0 CHECK (alarm IN (0, 1));
         """
 }

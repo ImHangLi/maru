@@ -6,6 +6,8 @@
 	<string>$(MARU_ANALYTICS_KEY)</string>
 	<key>MaruAnalyticsHost</key>
 	<string>$(MARU_ANALYTICS_HOST)</string>
+	<key>NSAlarmKitUsageDescription</key>
+	<string>Maru rings an alarm at the dose time of an item when you turn on Alarm for that item.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

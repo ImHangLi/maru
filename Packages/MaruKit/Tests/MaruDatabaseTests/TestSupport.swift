@@ -110,6 +110,14 @@ extension LocalStore {
 
     /// Stores a schedule with no day cycle in a database from before `v5`. `save` names the columns of `v5`,
     /// so a migration test writes the rows of an older schema with this.
+    /// Saves an item that has no reminder options, on a database that is older than `v6`.
+    func saveBeforeVersion6(_ item: Item) async throws {
+        try await execute(
+            "INSERT INTO item (id, category, name, form, color, isArchived) VALUES (?, ?, ?, ?, ?, ?)",
+            [item.id.text, item.category.rawValue, item.name, item.form.rawValue, item.color.rawValue, item.isArchived]
+        )
+    }
+
     func saveBeforeVersion4(_ schedule: Schedule) async throws {
         try await execute(
             "INSERT INTO schedule (id, itemID, isEnabled, endDate) VALUES (?, ?, ?, NULL)",

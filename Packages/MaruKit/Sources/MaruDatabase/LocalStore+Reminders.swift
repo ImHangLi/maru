@@ -12,8 +12,9 @@ extension LocalStore: ReminderPlanSource {
     ///   - now: The clock of the run.
     ///   - deviceTimeZone: The time zone of the device, for the schedule versions that follow it.
     ///   - privacy: Whether the reminder text names the items (D029).
+    ///   - alarms: Which items an alarm covers now, so the plan leaves them out (D079).
     public func reminderPlan(
-        at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy
+        at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover = .none
     ) async throws(StorageError) -> ReminderPlan {
         try await read { db in
             let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
@@ -37,7 +38,8 @@ extension LocalStore: ReminderPlanSource {
                 )
             })
             return ReminderPlan(
-                items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, closed: closed
+                items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, closed: closed,
+                alarms: alarms
             )
         }
     }

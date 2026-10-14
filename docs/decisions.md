@@ -338,7 +338,9 @@ Agent decision under the owner's direction: match Apple Health Medications, with
 - Spec §7.3 gets one sentence: a delete that the user asks for and confirms is not the forbidden "clear and rebuild". The "明确不做" list does not forbid a delete, and spec §3 P06 names "privacy and delete".
 - One archive and delete confirmation for the whole app is in `RootView`. Each page asks the model for it.
 - The swipe button "Delete Item…" has no destructive role. With that role the system removes the row before the confirmation.
-- Tests (D016): one new test, for the delete transaction.
+- A saved draft of version 1.0 has no reminder options. The editor takes them from the stored item and does not read them as "off".
+
+Tests (D016): one new test, for the delete transaction.
 
 ## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062, unlock rule changed by D066)
 
@@ -490,7 +492,7 @@ Tests (D016): two new tests in `MaruCore`. One for the cleaning of label text an
 
 Not verified: no build ran on a Mac of the maintainer, and nobody saw the screens. The scan needs a check on a real iPhone with real bottles.
 
-## D039 · 2026-10-11 · More follow-ups, and "Until Recorded" with a stated limit
+## D039 · 2026-10-11 · More follow-ups, and "Until Recorded" with a stated limit (the setting moved to each item, and an alarm option came: D079)
 
 Owner decision, with agent detail. Two studies of user feedback found one top wish: a reminder that comes again until the user confirms (`docs/research/evidence.md`, sections 1 and 7). The owner: users ask for this, so Maru must have it. The user chooses how many times, and can choose "until I confirm". The owner left the time between reminders to the agent. This replaces the one follow-up of D021 and the "Remind Again" row of D032. It changes spec 4.
 
@@ -537,7 +539,7 @@ The budget:
 Rejected:
 
 - An interval of 1 minute. It reads as an alarm that the user can not stop, and 12 requests then cover only 12 minutes.
-- An alarm through AlarmKit, for now. It is a different product: a full-screen alarm with its own permission. Maru stays a quiet reminder (spec 4).
+- An alarm through AlarmKit, for now. It is a different product: a full-screen alarm with its own permission. Maru stays a quiet reminder (spec 4). Replaced by D079: an alarm is a switch of each item in version 1.1.
 - A claim of reminders with no end. A fixed number that the page states is true. "Until Recorded" with no stated limit is not.
 - A repeating time interval trigger. It can not start at a dose time in the future, and it continues after a record until the app runs.
 - One limit for all follow-ups of the fixed 16. Three dose times with 12 follow-ups each need 36.
@@ -1383,3 +1385,52 @@ Not verified: the app build on this Mac. CI builds the app.
 
 Open legal risk, for the maintainer: the model review (GPT-6.1-Sol, 2026-10-14) gave an opinion that is not legal advice. It does not treat "on with no notice" as safe in every storefront, because a random install ID is not anonymity in law, and the data comes from a health app. It named the highest risk in Washington and Nevada (consumer health data laws with prior consent), then South Korea (PIPA), Brazil (LGPD), and Canada, mainly Quebec, if the data counts as health data. California, Japan, and Australia expect at least a notice at collection. On 2026-10-14 the maintainer added South Korea to the opt-in list, because PIPA asks for consent first and Korean is a store language. The other risks stay open.
 
+## D079 · 2026-10-14 · Reminder options of each item: "Remind Again" and an alarm (version 1.1)
+
+Maintainer decision on 2026-10-14, for version 1.1. Version 1.0.0 is in App Review with build 4 and does not change. It replaces the global setting of D039 and the AlarmKit line of its "Rejected" list. It changes spec 4. The project version is 1.1.0.
+
+The decision:
+
+1. "Remind Again" (the follow-ups of D039) leaves Settings. Each item has its own count and its own interval. The add and edit screen shows them under the plan. Each item is independent. The default is "Off".
+2. Each item has a switch "Alarm". The dose time of the item rings like the alarm of the Clock app, also in silent mode and in a Focus. It uses AlarmKit, so it needs iOS 26. The default is off.
+
+Follow-ups of each item:
+
+- The add and edit screen has a section "Reminders" after the plan, when the item has a time. It has the rows "Remind Again" and "Every" of D039, with the same choices and the same footers. The interval row shows only when the count is not "Off". The interval starts at 30 minutes when the user turns the count on.
+- Where it is stored: `item.followUpCount`, `item.followUpMinutes`, and `item.followUpChanged` (migration `v6`). Both of the first two are empty for "Off". `followUpChanged` is the time of the last change of the setting of that item, and the editor sets it at a save that changes the setting. `FollowUpSetting` stays the value type, and `Item.followUp` holds it.
+- The limit of D039 stays for each item and each dose: at most 12 follow-ups, also across a change. The plan counts the worst case before `followUpChanged`, as before, with the time of each item.
+- The system limit of D039 stays: the room is 64 minus a reserve of 2 and minus the series requests, and the groups share it in turns. One dose time can now hold more than 12 requests when the items of the time have different intervals. The room rule decides which requests stay.
+- The stop rules stay: before the next dose of the same item, and before 01:00 of the next day. The "Taken" action stays for a group of exactly one item, open or not, with the identity check of D034.
+- D047 stays, for one dose time: the follow-ups of one dose time that fire at the same instant are one notification. Follow-ups of two different dose times that fire at the same instant (for example 08:00 plus 30 minutes and 08:15 plus 15 minutes) stay two notifications. A merge would give one request two series and two plan dates, and the identity check of the "Taken" action (D034) needs one. This is accepted. The text names only the items that it still reminds for. So an item with 15 minutes and an item with 30 minutes at one dose time give a notification for the first at +15, and one for both at +30. An item with "Off" is never named in a follow-up.
+- The identifier of a follow-up is `followup|<zone>|<date>|<HH:MM>|+<minutes>`, with the minutes from the dose time. A count did not work any more, because items with other intervals share a dose time. All follow-ups of the dose time keep one thread identifier (D039). A pending request of version 1.0 has the old form, and the first run of 1.1 removes it and adds the new one.
+- The wait for the removal of the old follow-ups after a change (D039) is gone. The old setting was one value for the whole app, and a change had to confirm the removal of every follow-up. A change now belongs to one item and comes with a save. The run after the save removes the old requests of that item and adds the new ones in the same run. The accepted risk: a pending request that the system does not remove in time can still fire once.
+
+The move of the old setting:
+
+- The first open of the database after the update reads `reminders.followUp.v2` (and the older keys of D021 and D039), copies the setting to every item that has no setting, and removes the keys. So the behavior of an update does not change. The change time of the old setting goes to `followUpChanged` of each item, so the limit of 12 for a dose does not start again. A change that the old app did not confirm (`Date.distantFuture`) stays unconfirmed on the items, and the keys go. The follow-up engine then removes every pending follow-up, and only when the system holds none it writes the time of now as the change time. Until then the plan sets no follow-up for such an item. This is the confirm-after-removal rule of D039, so a stop of the app between the update and the first run cannot start the limit of 12 again. If the write fails, the keys stay and the next open tries again.
+- Settings has no "Remind Again" rows, no strings for them in Settings, and no key. The strings moved to the add and edit screen with their translations.
+- The backup is the database, so it holds the new columns. It no longer writes `remindAgainMinutes` and `remindAgainCount`. A backup of version 1.0 has these two settings and no new column. The staging of the restore copies the two settings to every staged item, as the update does, before the data is replaced. A failure then fails the restore with no change to the old data. A backup of 1.1 has no such setting, and its items keep their own. A restore never fails for a missing field: an item with no value has no follow-up and no alarm. `docs/export-format.md` says so.
+
+Alarm:
+
+- The switch is in the same section family, after "Remind Again", and shows only from iOS 26 (`if #available(iOS 26, *)`). The deployment target stays iOS 17.
+- The first turn-on asks for the AlarmKit permission. The text is `NSAlarmKitUsageDescription` in the six languages. If the user refuses, the switch goes back to off, and an alert says that alarms are off for Maru, with the button "Open Settings". Maru does not ask again, because the system does not.
+- One alarm for each dose time that has an open dose of an item with the switch on. Two items with an alarm at the same time share one alarm. The title is "Time to take" and the item names, or only "Time to take" when "Show Names in Reminders" is off (D029). The names follow the same switch as a notification.
+- An item with an alarm gets no normal reminder at that time. Other items at the same time keep their notification, and it does not name the alarm item. The follow-ups of the item stay notifications (D039).
+- Without the permission, or before iOS 26, the item gets its normal reminder, so a refused permission never leaves a dose with no reminder. The check runs at each engine run. The same holds when the system does not schedule an alarm, for example at its limit: the alarm engine runs first and names the items whose alarm failed, and the notification engines of the same run give those items their normal reminder. The banner of an item is one repeating request, so this is for the whole item and not for one dose. When one alarm of an item fails, the engine cancels the other alarms of that item and of every item that shares an alarm with it, so no dose gets an alarm and a banner together. The next run tries the alarms again. The cover is valid for the run that made it, and it fails open: it holds only the items whose alarms the system confirmed in that run with no error. An error of the alarm read, of a schedule, or of a cancel makes the cover empty for that run, so every item with an alarm gets its normal reminder. No run uses the cover of an earlier run. After a failed cancel, a dose can get an alarm and a banner together. This is accepted, because it is better than no reminder.
+- A dose that has a record gets no alarm. The alarm engine runs after the reminder engine and the follow-up engine, at launch, on return to the app, after a save, and after each record, skip, or undo. It cancels each waiting alarm that the plan no longer has. It never stops an alarm that rings now. The plan covers the next seven days, with at most 64 alarms, nearest first, as the follow-ups do. When the app does not run for seven days, no new alarm comes. The identifier of an alarm is a hash of the dose time, the items, the names, and the button, so an edit, a rename, or a record replaces only the alarm that it changes.
+- The alarm has the button "Stop" of the system, and a second button. For exactly one item, alone at its dose time, the second button is "Taken". It runs an App Intent in the app process and records through `takeReminder`, the path of the "Taken" action of a notification. So the identity check of D034 applies: the series, the plan date, the item, and the schedule version. It records only after the local transaction commits (spec 7.2). When a second item is at the time, even without an alarm, the button is "Open Maru" and records nothing, as for a notification.
+- No countdown, no snooze, and no widget extension for the alarm. AlarmKit needs the extension only for countdowns.
+
+Analytics (D077): `item_saved` has two new flags, `has_alarm` and `has_follow_up`. The event `setting_changed` no longer has `remind_again` and `remind_again_minutes`, because no setting row sends them. Nothing else changed. `PRIVACY.md` lists the two flags, drops the two fields, and says that the backup holds no "Remind Again" setting. The site privacy pages still show the text of 1.0. A maintainer changes them with the release of 1.1.
+
+Rejected:
+
+- A global switch for the alarm. The user wants it for one medication and not for each supplement.
+- An alarm for the follow-ups. They would ring many times, and the system alarm is too loud for this.
+- A second wait for the removal of follow-ups after a change. It needs a global value, and the setting is not global any more.
+- Treating an item with an alarm like an item with a notification. The state of its schedule would then say "permission needed" when only notifications are off. The state is "scheduled" with the alarm alone.
+
+Tests (D016): one test for the move of the global setting to the items (a database of version 5), one for items with different settings at one dose time, and three for the alarm plan (the last one for an alarm that the system refuses). The test of the limit across a change now uses the setting of the item. The other follow-up tests use the new identifier.
+
+Not verified: the app build on this Mac, and AlarmKit. Nobody ran an alarm. The system documents no limit of alarms, so 64 is a safe size and not a measured one. It needs a check on a real iPhone with iOS 26: the permission prompt and the refusal, an alarm in silent mode and in a Focus, the "Stop" button, the "Taken" button with the iPhone locked, the alarm of two items, a record before the time (no alarm), a rename, a change of the time, the alarm after a restart, and the order of the alarm and the notification of another item at the same time.

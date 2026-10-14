@@ -266,6 +266,9 @@ public struct ReminderPlan: Hashable, Sendable {
         case nothing
         /// The identifiers of the requests that remind for the schedule.
         case requests(Set<String>)
+        /// An alarm rings for the schedule, so the series has no request for it (D079).
+        /// The follow-ups still come for it, as notifications.
+        case alarm
         /// The engine registers no complete reminder for the schedule.
         case blocked(ReminderProblem)
     }
@@ -303,6 +306,9 @@ public struct ReminderPlan: Hashable, Sendable {
     ///   - deviceTimeZone: The time zone of the device, for the date of the versions that follow it.
     ///   - privacy: Whether the text names the items (D029).
     ///   - closed: The keys of the occurrences that have a current taken or skipped event (D047).
+    ///   - alarms: Which items an alarm covers now (D079). An item with `alarm` that an alarm covers gets no series
+    ///     request, because its dose time rings. Any other item gets its normal reminder, so a revoked permission or
+    ///     an alarm that the system did not schedule loses no reminder.
     public init(
         items: [Item],
         schedules: [Schedule],
@@ -310,6 +316,7 @@ public struct ReminderPlan: Hashable, Sendable {
         deviceTimeZone: NamedTimeZone,
         privacy: ReminderPrivacy = .showNames,
         closed: Set<OccurrenceKey> = [],
+        alarms: AlarmCover = .none,
         requestBudget: Int = ReminderPlan.requestBudget
     ) {
         struct Key: Hashable {
@@ -368,6 +375,10 @@ public struct ReminderPlan: Hashable, Sendable {
             }
             guard let version = inForce(schedule) else {
                 needs[schedule.id] = .blocked(.notStarted)
+                continue
+            }
+            if alarms.covers(item) {
+                needs[schedule.id] = .alarm
                 continue
             }
             for slotTime in version.slotTimes {
