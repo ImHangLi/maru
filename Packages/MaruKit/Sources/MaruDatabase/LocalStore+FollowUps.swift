@@ -12,10 +12,10 @@ extension LocalStore: FollowUpSource {
         privacy: ReminderPrivacy,
         at now: Date,
         deviceTimeZone: NamedTimeZone,
-        alarmsRing: Bool
+        alarms: AlarmCover
     ) async throws(StorageError) -> FollowUpPlan {
         try await read { db in
-            let inputs = try Self.doseInputs(db, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarmsRing: alarmsRing)
+            let inputs = try Self.doseInputs(db, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarms: alarms)
             return FollowUpPlan(
                 reminders: inputs.reminders,
                 items: inputs.items,
@@ -39,7 +39,7 @@ extension LocalStore: FollowUpSource {
     }
 
     static func doseInputs(
-        _ db: Database, now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarmsRing: Bool
+        _ db: Database, now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover
     ) throws -> DoseInputs {
         let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
         let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
@@ -72,7 +72,7 @@ extension LocalStore: FollowUpSource {
             closed: closed,
             reminders: ReminderPlan(
                 items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy,
-                closed: closed, alarmsRing: alarmsRing
+                closed: closed, alarms: alarms
             )
         )
     }
@@ -81,10 +81,10 @@ extension LocalStore: FollowUpSource {
 extension LocalStore: AlarmSource {
     /// The alarms that the stored plan and records ask for (D079). `AlarmPlan` has the rules.
     public func alarmPlan(
-        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarmsRing: Bool
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
     ) async throws(StorageError) -> AlarmPlan {
         try await read { db in
-            let inputs = try Self.doseInputs(db, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarmsRing: alarmsRing)
+            let inputs = try Self.doseInputs(db, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarms: alarms)
             return AlarmPlan(
                 reminders: inputs.reminders,
                 items: inputs.items,

@@ -57,9 +57,9 @@ public protocol RemovalLedger: Sendable {
 
 /// Where the engine reads the saved plan.
 public protocol ReminderPlanSource: Sendable {
-    /// - Parameter alarmsRing: Alarms can ring now, so the plan leaves out the items with an alarm (D079).
+    /// - Parameter alarms: Which items an alarm covers now, so the plan leaves them out (D079).
     func reminderPlan(
-        at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarmsRing: Bool
+        at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover
     ) async throws -> ReminderPlan
 }
 
@@ -170,8 +170,8 @@ public actor ReminderEngine {
     private let ledger: any RemovalLedger
     private let privacy: any ReminderPrivacyStore
     private let zoneRecord: DefaultsTimeZoneRecord?
-    /// Whether alarms can ring now, read at each run (D079).
-    private let alarmsRing: @Sendable () -> Bool
+    /// Which items an alarm covers now, read at each run (D079).
+    private let alarms: @Sendable () -> AlarmCover
     /// The clock at the time of the call. A run reads it when it reads the pending requests, after every wait.
     private let clock: @Sendable () -> Date
     private var lastRun: Task<Void, Never>?
@@ -181,7 +181,7 @@ public actor ReminderEngine {
 
     /// - Parameters:
     ///   - zoneRecord: Gets the device time zone of each successful run, for the notification tap (spec 8.3).
-    ///   - alarmsRing: `true` when AlarmKit can schedule alarms. An item with an alarm then has no notification (D079).
+    ///   - alarms: Which items an alarm covers. They have no notification (D079).
     ///   - clock: The clock of the system. A run uses it only to see that the time of a dated request passed.
     public init(
         source: any ReminderPlanSource,
@@ -189,7 +189,7 @@ public actor ReminderEngine {
         ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
         zoneRecord: DefaultsTimeZoneRecord? = nil,
-        alarmsRing: @escaping @Sendable () -> Bool = { false },
+        alarms: @escaping @Sendable () -> AlarmCover = { .none },
         clock: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.source = source
@@ -197,7 +197,7 @@ public actor ReminderEngine {
         self.ledger = ledger
         self.privacy = privacy
         self.zoneRecord = zoneRecord
-        self.alarmsRing = alarmsRing
+        self.alarms = alarms
         self.clock = clock
         unremoved = ledger.load()
     }
@@ -238,7 +238,7 @@ public actor ReminderEngine {
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone, mayAskForPermission: Bool) async throws -> ReminderOutcome {
         let plan = try await source.reminderPlan(
-            at: now, deviceTimeZone: deviceTimeZone, privacy: privacy.load(), alarmsRing: alarmsRing()
+            at: now, deviceTimeZone: deviceTimeZone, privacy: privacy.load(), alarms: alarms()
         )
         let wanted = plan.requests
         var authorization = await center.authorization()

@@ -1,5 +1,25 @@
 import Foundation
 
+/// Which items an alarm covers now (D079). A covered item gets no notification at its dose time.
+/// An item is not covered when alarms cannot ring (before iOS 26, or no permission), or when the system
+/// did not schedule one of its alarms. It then gets its normal reminder, so a failed alarm loses no reminder.
+public struct AlarmCover: Sendable, Equatable {
+    public var rings: Bool
+    /// The items with an alarm that the last run did not schedule.
+    public var failed: Set<ItemID>
+
+    public init(rings: Bool, failed: Set<ItemID> = []) {
+        self.rings = rings
+        self.failed = failed
+    }
+
+    public static let none = AlarmCover(rings: false)
+
+    func covers(_ item: Item) -> Bool {
+        rings && item.alarm && !failed.contains(item.id)
+    }
+}
+
 /// One alarm that rings at the time of a dose (D079). It is one alarm for one slot time on one date.
 /// The items with an alarm and an open dose at that time share it.
 public struct AlarmRequest: Hashable, Sendable {
@@ -7,6 +27,8 @@ public struct AlarmRequest: Hashable, Sendable {
     /// of the items or of a name gives another identifier, and the engine replaces the alarm.
     public let id: UUID
     public let fireDate: Date
+    /// The items with an open dose at this time that the alarm stands for.
+    public let itemIDs: [ItemID]
     /// The names of the items, in the order of the schedules. `nil` when the user hides the names (D029).
     public let names: [String]?
     /// What the "Taken" button needs, when the alarm stands for exactly one item that is alone at its time.
@@ -77,7 +99,10 @@ public struct AlarmPlan: Hashable, Sendable {
             let key = ([group.identifier] + open.map { $0.itemID.rawValue.uuidString } + names + [taken == nil ? "open" : "taken"])
                 .joined(separator: "\n")
             found.append(
-                AlarmRequest(id: Self.identifier(of: key), fireDate: instant, names: names.isEmpty ? nil : names, taken: taken)
+                AlarmRequest(
+                    id: Self.identifier(of: key), fireDate: instant, itemIDs: open.map(\.itemID),
+                    names: names.isEmpty ? nil : names, taken: taken
+                )
             )
         }
         requests = Array(found.sorted { ($0.fireDate, $0.id.uuidString) < ($1.fireDate, $1.id.uuidString) }.prefix(Self.limit))
@@ -111,9 +136,9 @@ public protocol AlarmCenter: Sendable {
 
 /// Where the engine reads the alarms that the saved plan and the records ask for.
 public protocol AlarmSource: Sendable {
-    /// - Parameter alarmsRing: Alarms can ring now. With `false`, the plan has no alarm.
+    /// - Parameter alarms: With `rings` false, the plan has no alarm.
     func alarmPlan(
-        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarmsRing: Bool
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
     ) async throws -> AlarmPlan
 }
 
@@ -144,16 +169,25 @@ public struct AlarmEngine: Sendable {
 
     /// An error from the source stops the run before it changes an alarm. A failed schedule leaves
     /// the alarm out until the next run.
-    public func refresh(at now: Date, deviceTimeZone: NamedTimeZone) async throws {
+    ///
+    /// - Returns: The items with an alarm that the system did not schedule. The notification engines give
+    ///   them their normal reminder in the same run (D079).
+    public func refresh(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> Set<ItemID> {
         let plan = try await source.alarmPlan(
-            privacy: privacy.load(), at: now, deviceTimeZone: deviceTimeZone, alarmsRing: alarmsRing()
+            privacy: privacy.load(), at: now, deviceTimeZone: deviceTimeZone, alarms: AlarmCover(rings: alarmsRing())
         )
         let waiting = await center.waiting()
         let wanted = Set(plan.requests.map(\.id))
         let obsolete = waiting.subtracting(wanted)
         if !obsolete.isEmpty { await center.cancel(Array(obsolete)) }
+        var failed = Set<ItemID>()
         for request in plan.requests where !waiting.contains(request.id) {
-            try? await center.schedule(request)
+            do {
+                try await center.schedule(request)
+            } catch {
+                failed.formUnion(request.itemIDs)
+            }
         }
+        return failed
     }
 }

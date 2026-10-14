@@ -115,11 +115,14 @@ struct ItemDraft: Codable, Equatable {
     var followUp: FollowUpSetting?
     /// The alarm at each dose time (D079). `nil` means off, so a switch that goes back to off equals the stored item.
     var alarm: Bool?
+    /// `true` when `followUp` and `alarm` hold the choice of the user. A draft file from before D079 has no value here,
+    /// so the app takes both from the stored item and does not read them as "off" (D079).
+    var hasReminderOptions: Bool? = true
 
     /// The draft file names `cycle` with its key from before D065, so an older file keeps its rule.
     /// A new property of the draft needs a case here, or the file does not keep it.
     private enum CodingKeys: String, CodingKey {
-        case itemID, scheduleID, name, category, form, color, amount, times, weekdays, note, noteText, followUp, alarm
+        case itemID, scheduleID, name, category, form, color, amount, times, weekdays, note, noteText, followUp, alarm, hasReminderOptions
         case cycle = "everyOtherDay"
     }
 

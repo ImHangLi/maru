@@ -127,9 +127,6 @@ extension AppModel {
             forgetReplacedData(generation: result.generation)
             transfer.isRestoring = false
             BackupSettings.apply(staged.settings)
-            // A backup of version 1.0 holds the global follow-up setting. It moves to the restored items, as at
-            // the update (D079). A newer backup has no such setting, and the items carry their own.
-            if let setting = BackupSettings.followUp(in: staged.settings) { await store.adoptFollowUpSetting(setting) }
             analytics.capture(.dataAction(.restore, result.isFlushed ? .done : .notConfirmed))
             if result.isFlushed {
                 // Today shows the restored data. No message says so (D028).
@@ -197,20 +194,6 @@ extension AppModel {
 private enum BackupSettings {
     private static let appColor = "appColor"
     private static let reminderNames = "reminderNames"
-    /// The global "Remind Again" setting of version 1.0 (D079). Version 1.1 writes neither key.
-    private static let remindAgainMinutes = "remindAgainMinutes"
-    private static let remindAgainCount = "remindAgainCount"
-
-    /// The follow-up setting of a backup of version 1.0, or `nil` when it was off or the backup has none.
-    static func followUp(in settings: [String: String]) -> FollowUpSetting? {
-        guard let interval = settings[remindAgainMinutes].flatMap({ Int($0) }).flatMap(FollowUpInterval.init(rawValue:)) else {
-            return nil
-        }
-        // A missing count means "1 Time", as for an install from before D039.
-        let count = settings[remindAgainCount].flatMap { Int($0) }.flatMap(FollowUpCount.init(rawValue:)) ?? .one
-        return FollowUpSetting(count: count, interval: interval)
-    }
-
     static func current() -> [String: String] {
         // The follow-ups and the alarm of each item are in the database (D079).
         [

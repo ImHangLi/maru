@@ -7,10 +7,10 @@ struct AlarmPlanTests {
     private let now = Fixtures.instant("2026-03-02T00:05:00Z")
 
     private func plan(
-        items: [Item], schedules: [Schedule], closed: Set<OccurrenceKey> = [], alarmsRing: Bool = true
+        items: [Item], schedules: [Schedule], closed: Set<OccurrenceKey> = [], alarms: AlarmCover = AlarmCover(rings: true)
     ) -> (alarms: AlarmPlan, reminders: ReminderPlan) {
         let reminders = ReminderPlan(
-            items: items, schedules: schedules, now: now, deviceTimeZone: Fixtures.shanghai, closed: closed, alarmsRing: alarmsRing
+            items: items, schedules: schedules, now: now, deviceTimeZone: Fixtures.shanghai, closed: closed, alarms: alarms
         )
         let alarms = AlarmPlan(
             reminders: reminders, items: items, schedules: schedules, stored: [], closed: closed,
@@ -38,7 +38,7 @@ struct AlarmPlanTests {
         #expect(!followUps.requests.isEmpty)
 
         // With no permission for alarms, the item gets its normal reminder and no alarm.
-        let denied = plan(items: [zinc], schedules: [zincSchedule], alarmsRing: false)
+        let denied = plan(items: [zinc], schedules: [zincSchedule], alarms: .none)
         #expect(denied.alarms.requests.isEmpty)
         #expect(!denied.reminders.requests.isEmpty)
     }
@@ -59,5 +59,30 @@ struct AlarmPlanTests {
         let recorded = plan(items: [zinc, iron], schedules: [zincSchedule, ironSchedule], closed: [key])
         #expect(recorded.alarms.requests.count == both.alarms.requests.count - 1)
         #expect(!recorded.alarms.requests.contains { $0.fireDate == Fixtures.instant("2026-03-03T00:00:00Z") })
+    }
+
+    /// An alarm that the system does not schedule must not leave the item with no reminder (D079).
+    @Test func anAlarmThatTheSystemRefusesGivesTheItemItsNormalReminderBack() async throws {
+        struct Refusing: AlarmCenter, AlarmSource {
+            let plan: AlarmPlan
+            func waiting() async -> Set<UUID> { [] }
+            func schedule(_ request: AlarmRequest) async throws { throw CocoaError(.fileWriteOutOfSpace) }
+            func cancel(_ ids: [UUID]) async {}
+            func alarmPlan(privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover) async throws -> AlarmPlan { plan }
+        }
+        struct Names: ReminderPrivacyStore {
+            func load() -> ReminderPrivacy { .showNames }
+            func save(_ privacy: ReminderPrivacy) {}
+        }
+        let zinc = Fixtures.item(name: "Zinc", alarm: true)
+        let schedule = Fixtures.schedule(itemID: zinc.id, times: [Fixtures.time(8)])
+        let phone = Refusing(plan: plan(items: [zinc], schedules: [schedule]).alarms)
+        let failed = try await AlarmEngine(source: phone, center: phone, privacy: Names(), alarmsRing: { true })
+            .refresh(at: now, deviceTimeZone: Fixtures.shanghai)
+        #expect(failed == [zinc.id])
+
+        // The next notification run sees the failure and sets the banner.
+        let covered = plan(items: [zinc], schedules: [schedule], alarms: AlarmCover(rings: true, failed: failed))
+        #expect(!covered.reminders.requests.isEmpty)
     }
 }

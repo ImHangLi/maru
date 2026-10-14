@@ -42,7 +42,7 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, RemovalLedger, Remi
     }
 
     func followUpPlan(
-        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarmsRing: Bool
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
     ) -> FollowUpPlan {
         FollowUpPlan(
             reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy),

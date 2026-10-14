@@ -76,6 +76,15 @@ public enum LegacyFollowUpSetting {
         return FollowUpSetting(count: count.flatMap(FollowUpCount.init) ?? .one, interval: interval)
     }
 
+    /// The time of the last change of the setting, for the limit of a dose (D039, D079). A change that the engine
+    /// did not confirm has `Date.distantFuture`. Old follow-ups can still come until the system confirms their removal,
+    /// so D039 counts such a change from the confirmation. The update is that confirmation: the first run of 1.1
+    /// removes every pending follow-up of 1.0. So the time is `now`.
+    public static func changeTime(in defaults: UserDefaults = .standard, now: Date = Date()) -> Date? {
+        let time = (defaults.dictionary(forKey: valueKey)?["changed"] as? Date) ?? defaults.object(forKey: changedKey) as? Date
+        return time == .distantFuture ? now : time
+    }
+
     /// Whether a value of version 1.0 is still there, also one that means off.
     public static func exists(in defaults: UserDefaults = .standard) -> Bool {
         [valueKey, key, countKey, changedKey].contains { defaults.object(forKey: $0) != nil }

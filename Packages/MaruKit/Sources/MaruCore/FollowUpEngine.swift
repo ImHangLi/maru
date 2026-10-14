@@ -13,10 +13,10 @@ public protocol FollowUpCenter: ReminderCenter {
 /// Where the engine reads the follow-ups that the saved plan and the records ask for.
 /// Each item carries its own setting (D079).
 public protocol FollowUpSource: Sendable {
-    /// - Parameter alarmsRing: Alarms can ring now, so the series reminders leave out the items with an alarm.
+    /// - Parameter alarms: Which items an alarm covers now, so the series reminders leave them out.
     ///   Their follow-ups still come (D079).
     func followUpPlan(
-        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarmsRing: Bool
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
     ) async throws -> FollowUpPlan
 }
 
@@ -65,8 +65,8 @@ public actor FollowUpEngine {
     private let center: any FollowUpCenter
     private let ledger: any RemovalLedger
     private let privacy: any ReminderPrivacyStore
-    /// Whether alarms can ring now, read at each run (D079).
-    private let alarmsRing: @Sendable () -> Bool
+    /// Which items an alarm covers now, read at each run (D079).
+    private let alarms: @Sendable () -> AlarmCover
     private var lastRun: Task<Void, Never>?
     /// Follow-up identifiers that the engine removed and that the system still held at the last read.
     /// The ledger has a copy. The rule is the one of `ReminderEngine`: an identifier is not added again
@@ -79,13 +79,13 @@ public actor FollowUpEngine {
         center: any FollowUpCenter,
         ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
-        alarmsRing: @escaping @Sendable () -> Bool = { false }
+        alarms: @escaping @Sendable () -> AlarmCover = { .none }
     ) {
         self.source = source
         self.center = center
         self.ledger = ledger
         self.privacy = privacy
-        self.alarmsRing = alarmsRing
+        self.alarms = alarms
         unremoved = ledger.load()
     }
 
@@ -106,7 +106,7 @@ public actor FollowUpEngine {
     private func run(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
         let plan = try await source.followUpPlan(
-            privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarmsRing: alarmsRing()
+            privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms()
         )
         let authorization = await center.authorization()
         // Remove before add, the other order from `ReminderEngine`. A moved slot time or a new setting changes

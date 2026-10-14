@@ -54,10 +54,18 @@ extension AppModel {
                 var session = EditorSession(
                     context: context, original: original, start: original, isRestored: false, generation: generation
                 )
-                if let kept = DraftFile.load(key: session.draftKey), kept != original {
-                    session = EditorSession(
-                        context: context, original: original, start: kept, isRestored: true, generation: generation
-                    )
+                if var kept = DraftFile.load(key: session.draftKey) {
+                    // A draft of version 1.0 has no reminder options. It keeps the options of the stored item.
+                    if kept.hasReminderOptions != true {
+                        kept.followUp = original.followUp
+                        kept.alarm = original.alarm
+                        kept.hasReminderOptions = true
+                    }
+                    if kept != original {
+                        session = EditorSession(
+                            context: context, original: original, start: kept, isRestored: true, generation: generation
+                        )
+                    }
                 }
                 editor = session
                 analytics.capture(.setupStep(.editorOpened, mode: session.mode))

@@ -124,6 +124,11 @@ extension LocalStore {
                 try db.execute(sql: "DETACH DATABASE source")
             }
             try migrator.migrate(pool)
+            // A backup of version 1.0 holds the global follow-up setting. It moves to the staged items now, so the
+            // restore replaces the data in one step and a failure here fails the restore before any change (D079).
+            if let setting = Self.legacyFollowUp(in: settings) {
+                try pool.write { db in try Self.adopt(setting, changed: nil, db) }
+            }
             try pool.read(Self.validate)
             // Move every page to the database file, so the one file is the whole database.
             try pool.writeWithoutTransaction { db in
@@ -143,6 +148,17 @@ extension LocalStore {
             case let error: throw error
             }
         }
+    }
+
+    /// The global "Remind Again" setting of a backup of version 1.0, or `nil` when it was off or the backup has none.
+    /// Version 1.1 writes neither key, and its items carry their own setting (D079).
+    static func legacyFollowUp(in settings: [String: String]) -> FollowUpSetting? {
+        guard let interval = settings["remindAgainMinutes"].flatMap({ Int($0) }).flatMap(FollowUpInterval.init(rawValue:)) else {
+            return nil
+        }
+        // A missing count means "1 Time", as for an install from before D039.
+        let count = settings["remindAgainCount"].flatMap { Int($0) }.flatMap(FollowUpCount.init(rawValue:)) ?? .one
+        return FollowUpSetting(count: count, interval: interval)
     }
 
     /// Reads what a backup file says about itself: the last migration that it has, and its settings.

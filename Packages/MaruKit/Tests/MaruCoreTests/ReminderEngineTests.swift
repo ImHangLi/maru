@@ -57,7 +57,7 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
         try change(self)
     }
 
-    func reminderPlan(at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarmsRing: Bool) throws -> ReminderPlan {
+    func reminderPlan(at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover) throws -> ReminderPlan {
         steps.append("plan")
         guard !planReadFails else { throw ReadFailure() }
         return ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy)
@@ -166,7 +166,7 @@ struct ReminderEngineTests {
         )
         // The evening request has the new schedule version, so it is the request of the plan of now.
         let plan = try await phone.reminderPlan(
-            at: Fixtures.instant("2026-03-02T00:00:00Z"), deviceTimeZone: Fixtures.shanghai, privacy: .showNames, alarmsRing: false
+            at: Fixtures.instant("2026-03-02T00:00:00Z"), deviceTimeZone: Fixtures.shanghai, privacy: .showNames, alarms: .none
         )
         #expect(await phone.pending["series|Asia/Shanghai|20:00|daily"] == plan.requests[1].userInfo)
     }

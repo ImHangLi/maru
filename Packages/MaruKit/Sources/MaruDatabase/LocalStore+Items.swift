@@ -151,19 +151,27 @@ extension LocalStore {
 
     /// Gives every stored item that has no follow-up the follow-up setting of version 1.0, which was one global
     /// setting (D079). The app runs it one time at the first open after the update, then removes that setting.
-    /// An item keeps a setting that it has. The change time stays empty, so no limit of a dose changes.
+    /// An item keeps a setting that it has. `changed` is the time of the last change of the old setting. It goes to
+    /// each item, so the limit of 12 follow-ups for a dose does not start again (D039).
     /// It blocks until the write ends, like the open.
-    public func adoptFollowUpSetting(_ setting: FollowUpSetting) throws(StorageError) {
+    public func adoptFollowUpSetting(_ setting: FollowUpSetting, changed: Date? = nil) throws(StorageError) {
         do {
             try writer.write { db in
-                try db.execute(
-                    sql: "UPDATE item SET followUpCount = ?, followUpMinutes = ? WHERE followUpCount IS NULL",
-                    arguments: [setting.count.rawValue, setting.interval.rawValue]
-                )
+                try Self.adopt(setting, changed: changed, db)
             }
         } catch {
             throw StorageError(error)
         }
+    }
+
+    static func adopt(_ setting: FollowUpSetting, changed: Date?, _ db: Database) throws {
+        try db.execute(
+            sql: """
+                UPDATE item SET followUpCount = ?, followUpMinutes = ?, followUpChanged = ?
+                WHERE followUpCount IS NULL
+                """,
+            arguments: [setting.count.rawValue, setting.interval.rawValue, changed?.storedSeconds]
+        )
     }
 
     private static func fetchItem(_ db: Database, id: ItemID) throws -> Item? {

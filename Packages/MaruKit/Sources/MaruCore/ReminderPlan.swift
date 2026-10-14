@@ -306,8 +306,9 @@ public struct ReminderPlan: Hashable, Sendable {
     ///   - deviceTimeZone: The time zone of the device, for the date of the versions that follow it.
     ///   - privacy: Whether the text names the items (D029).
     ///   - closed: The keys of the occurrences that have a current taken or skipped event (D047).
-    ///   - alarmsRing: Alarms can ring now. An item with `alarm` then gets no series request, because its dose time
-    ///     rings (D079). With `false`, the item gets its normal reminder, so a revoked permission loses no reminder.
+    ///   - alarms: Which items an alarm covers now (D079). An item with `alarm` that an alarm covers gets no series
+    ///     request, because its dose time rings. Any other item gets its normal reminder, so a revoked permission or
+    ///     an alarm that the system did not schedule loses no reminder.
     public init(
         items: [Item],
         schedules: [Schedule],
@@ -315,7 +316,7 @@ public struct ReminderPlan: Hashable, Sendable {
         deviceTimeZone: NamedTimeZone,
         privacy: ReminderPrivacy = .showNames,
         closed: Set<OccurrenceKey> = [],
-        alarmsRing: Bool = false,
+        alarms: AlarmCover = .none,
         requestBudget: Int = ReminderPlan.requestBudget
     ) {
         struct Key: Hashable {
@@ -376,7 +377,7 @@ public struct ReminderPlan: Hashable, Sendable {
                 needs[schedule.id] = .blocked(.notStarted)
                 continue
             }
-            if alarmsRing, item.alarm {
+            if alarms.covers(item) {
                 needs[schedule.id] = .alarm
                 continue
             }

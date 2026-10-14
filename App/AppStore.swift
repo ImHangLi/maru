@@ -2,6 +2,7 @@ import Foundation
 import MaruCore
 import MaruDatabase
 import MaruNotifications
+import os
 
 /// The database of the process, and the reads that the two tabs need.
 ///
@@ -18,6 +19,14 @@ actor AppStore {
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
     private var alarms: AlarmEngine?
+    /// The items with an alarm that the last alarm run did not schedule. The notification engines read it at their run,
+    /// so such an item gets its normal reminder in the same run (D079).
+    private let failedAlarms = OSAllocatedUnfairLock(initialState: Set<ItemID>())
+    /// Which items an alarm covers now. The closure is the one input of the notification engines.
+    private var cover: @Sendable () -> AlarmCover {
+        let failed = failedAlarms
+        return { AlarmCover(rings: AlarmSupport.isAuthorized, failed: failed.withLock { $0 }) }
+    }
     /// The last notification update in the queue. Each update waits for the one before it, so the reminder
     /// engine and the follow-up engine never change the requests at the same time (spec 8.4).
     private var updates: Task<Void, Never>?
@@ -59,7 +68,7 @@ actor AppStore {
         // the setting in place, and the next open tries again. A debug scenario has its own store and leaves it alone.
         if directory == Self.directory, LegacyFollowUpSetting.exists() {
             if let setting = LegacyFollowUpSetting.read() {
-                try store.adoptFollowUpSetting(setting)
+                try store.adoptFollowUpSetting(setting, changed: LegacyFollowUpSetting.changeTime())
             }
             LegacyFollowUpSetting.remove()
         }
@@ -77,7 +86,7 @@ actor AppStore {
             ledger: DefaultsRemovalLedger(),
             privacy: DefaultsReminderPrivacy(),
             zoneRecord: DefaultsTimeZoneRecord(),
-            alarmsRing: { AlarmSupport.isAuthorized }
+            alarms: cover
         )
         self.engine = engine
         return engine
@@ -91,15 +100,10 @@ actor AppStore {
             center: SystemReminderCenter(),
             ledger: DefaultsRemovalLedger(key: DefaultsRemovalLedger.followUpKey),
             privacy: DefaultsReminderPrivacy(),
-            alarmsRing: { AlarmSupport.isAuthorized }
+            alarms: cover
         )
         self.followUps = followUps
         return followUps
-    }
-
-    /// Gives each restored item that has no follow-up the global setting of a backup of version 1.0 (D079).
-    func adoptFollowUpSetting(_ setting: FollowUpSetting) {
-        try? open().adoptFollowUpSetting(setting)
     }
 
     /// The alarm engine of the process. It is `nil` before iOS 26, where AlarmKit does not exist (D079).
@@ -116,8 +120,10 @@ actor AppStore {
         return alarms
     }
 
-    /// Runs the reminder engine, then the follow-ups, then the alarms. Keep this order: a run can remove follow-ups
-    /// to make room under the system limit, and the refresh sets them again (spec 8.4).
+    /// Runs the alarms, then the reminder engine, then the follow-ups. The alarm run comes first, so an alarm that the
+    /// system did not schedule gives its item the normal reminder in the same run (D079). The reminder engine comes
+    /// before the follow-ups: a run can remove follow-ups to make room under the system limit, and the refresh sets
+    /// them again (spec 8.4).
     ///
     /// The run waits for the notification updates before it, so no two updates overlap.
     /// It returns the follow-up outcome too: `nil` when the follow-up refresh failed.
@@ -129,12 +135,14 @@ actor AppStore {
         let previous = updates
         let run = Task { () throws -> (reminders: ReminderOutcome, followUps: FollowUpOutcome?) in
             await previous?.value
+            // An alarm never blocks a notification. A failed run keeps the last result, and the next run tries again.
+            if let failed = try? await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone) {
+                self.failedAlarms.withLock { $0 = failed }
+            }
             let outcome = try await self.reminderEngine().reconcile(
                 at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
             )
             let followUps = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
-            // An alarm never blocks a notification, and a failed run changes no alarm. The next run tries again.
-            try? await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone)
             return (outcome, followUps)
         }
         updates = Task { _ = try? await run.value }
