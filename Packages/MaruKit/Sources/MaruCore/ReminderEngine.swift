@@ -254,7 +254,13 @@ public actor ReminderEngine {
         // The system rejects a new request while notifications are off. The removals still run,
         // so a paused schedule does not remind again when the user turns notifications on.
         guard authorization == .authorized else {
-            await remove(changes.remove)
+            // A pending request with the identifier of a wanted request and other names goes too (D084).
+            let held = Dictionary(pending.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
+            let stale = wanted.filter { request in
+                guard let old = held[request.identifier] else { return false }
+                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+            }.map(\.identifier)
+            await remove(changes.remove + stale)
             _ = await pendingAfterRemoval()
             return ReminderOutcome(
                 plan: plan, authorization: authorization, unregistered: [], removalPending: !unremoved.isEmpty

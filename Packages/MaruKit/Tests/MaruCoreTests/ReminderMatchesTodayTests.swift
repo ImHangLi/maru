@@ -18,6 +18,8 @@ private actor Phone: ReminderPlanSource, FollowUpSource, FollowUpCenter, Reminde
     var shown: [String: PendingReminder] = [:]
 
     var closed: Set<OccurrenceKey> = []
+    var status = ReminderAuthorization.authorized
+    func deny() { status = .denied }
     /// The system takes this many next adds with no error and does not keep them.
     var dropsNext = 0
 
@@ -59,7 +61,7 @@ private actor Phone: ReminderPlanSource, FollowUpSource, FollowUpCenter, Reminde
     }
 
     func confirmFollowUpChanges(at time: Date) {}
-    func authorization() -> ReminderAuthorization { .authorized }
+    func authorization() -> ReminderAuthorization { status }
     func requestAuthorization() -> ReminderAuthorization { .authorized }
     func pendingRequests() -> [PendingReminder] {
         pending.map { PendingReminder(identifier: $0.key, userInfo: $0.value.userInfo, text: $0.value.text) }
@@ -149,5 +151,19 @@ struct ReminderMatchesTodayTests {
         await phone.record(OccurrenceKey(slotID: iron.slots[0].id, plannedDate: Fixtures.date(2026, 3, 2)))
         try await run(phone, series, followUps, at: Fixtures.instant("2026-03-02T16:05:00Z"))
         #expect(await phone.shown.isEmpty)
+    }
+
+    /// With notifications off, a stale pending request must go too: it would fire when the user turns them on.
+    @Test func aStaleRequestGoesAlsoWhileNotificationsAreOff() async throws {
+        let phone = Phone()
+        let series = ReminderEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
+        let followUps = FollowUpEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
+        _ = await phone.save(name: "Zinc")
+        _ = await phone.save(name: "Iron")
+        try await run(phone, series, followUps, at: Fixtures.instant("2026-03-01T23:30:00Z"))
+        await phone.deny()
+        await phone.archive("Iron")
+        try await run(phone, series, followUps, at: Fixtures.instant("2026-03-01T23:40:00Z"))
+        #expect(await !phone.pending.values.contains { $0.text.body.contains("Iron") })
     }
 }

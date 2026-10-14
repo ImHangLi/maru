@@ -157,30 +157,32 @@ public actor FollowUpEngine {
         // replacement again. When the old one is still there, the run removes it through the ledger and, after the
         // system confirms the removal, adds the replacement in the same run. An identifier whose removal the system
         // did not confirm stays blocked.
-        if authorization == .authorized {
-            let wanted = plan.requests
-            func stale() async -> [FollowUpRequest] {
-                let held = Self.followUps(await pendingAfterRemoval())
-                return wanted.filter { request in
-                    guard let old = held[request.identifier] else { return false }
-                    return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
-                }
+        // The cleanup runs in every authorization state: a stale request would fire when the user turns notifications on.
+        // Only the additions need the permission.
+        let wanted = plan.requests
+        func stale() async -> [FollowUpRequest] {
+            let held = Self.followUps(await pendingAfterRemoval())
+            return wanted.filter { request in
+                guard let old = held[request.identifier] else { return false }
+                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
             }
-            var old = await stale()
+        }
+        var old = await stale()
+        if authorization == .authorized {
             for request in old where !unremoved.contains(request.identifier) { try? await center.add(request) }
             old = old.isEmpty ? [] : await stale()
-            if !old.isEmpty {
-                await remove(old.map(\.identifier))
-                let live = await pendingAfterRemoval()
-                let held = Set(live.map(\.identifier))
-                var room = max(0, Self.limit - live.count)
-                let time = Date()
-                for request in old
-                where !unremoved.contains(request.identifier) && !held.contains(request.identifier)
-                    && request.fireDate > time && room > 0 {
-                    room -= 1
-                    try? await center.add(request)
-                }
+        }
+        if !old.isEmpty {
+            await remove(old.map(\.identifier))
+            let live = await pendingAfterRemoval()
+            let held = Set(live.map(\.identifier))
+            var room = max(0, Self.limit - live.count)
+            let time = Date()
+            for request in old
+            where authorization == .authorized && !unremoved.contains(request.identifier)
+                && !held.contains(request.identifier) && request.fireDate > time && room > 0 {
+                room -= 1
+                try? await center.add(request)
             }
         }
         // A delivered notification keeps the text that the app set before. So one that names a recorded, renamed,
