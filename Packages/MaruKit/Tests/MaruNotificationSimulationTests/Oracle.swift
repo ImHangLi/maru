@@ -68,7 +68,10 @@ struct Oracle {
     }
 
     private func text(_ kind: ReminderContent.Kind, _ names: [String]) -> ReminderText {
-        phone.center.text(for: ReminderContent(kind: kind, names: showsNames ? names : nil))
+        // A reminder with group actions names every item, so its text has no "and N more" (D090).
+        phone.center.text(for: ReminderContent(
+            kind: kind, names: showsNames ? names : nil, category: showsNames && names.count >= 2 ? .group : .snooze
+        ))
     }
 
     // MARK: Independent calendar rules

@@ -146,7 +146,7 @@ extension PendingReminder {
 
 extension ReminderContent {
     /// The body names at most this many items. A longer list names the first ones and the count of the others,
-    /// so the lock screen shows the whole text.
+    /// so the lock screen shows the whole text. A reminder with group actions is the exception: it names every item.
     static let listedNames = 3
 
     /// The text of the reminder from the String Catalog of this target (D029). It never says that a dose
@@ -168,7 +168,8 @@ extension ReminderContent {
             )
             return ReminderText(title: title, body: body)
         }
-        if names.count > Self.listedNames {
+        // A reminder with group actions names every item: the user must see each dose that the action records (D090).
+        if names.count > Self.listedNames, category != .group {
             let more = String(
                 localized: "\(names.count - Self.listedNames + 1) more",
                 bundle: .module,

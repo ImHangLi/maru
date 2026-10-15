@@ -126,6 +126,21 @@ struct ActionTests {
         await p.expectCorrect("nothing recorded")
     }
 
+    /// With group actions the body names every item, so the user sees each dose that "Take All" records (D090).
+    @Test func aGroupOfFiveNamesEveryItemAndHasTakeAll() async throws {
+        let p = try await phone()
+        let names = ["Zinc", "Iron", "Copper", "Iodine", "Selenium"]
+        for name in names { try await p.addItem(name, at: ["09:00"]) }
+        await p.advance(to: "2026-10-15 09:01")
+        let id = try await shown(p, "series|")
+        let body = try #require(await p.center.shown[id]?.notification.text.body)
+        #expect(names.allSatisfy { body.contains($0) } && !body.contains("more"), "\(body)")
+        #expect(try await category(p, id) == .group)
+        let result = try #require(try await p.perform(.taken, on: id))
+        #expect(result.recorded.count == 5)
+        await p.expectCorrect("after Take All on five")
+    }
+
     // MARK: Skip
 
     @Test func skipOnOneItemRecordsASkipAndStopsTheFollowUps() async throws {

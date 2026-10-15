@@ -13,8 +13,21 @@ public enum ReminderAction {
     /// after the first unlock (D066). "Remind in 10 min" writes no record, so it needs no unlock.
     /// No action has a foreground option, so the system starts Maru in the background for it.
     public static func register(locale: Locale = .current) {
-        UNUserNotificationCenter.current().setNotificationCategories(Set(ReminderCategory.allCases.map { category($0, locale: locale) }))
+        var categories = Set(ReminderCategory.allCases.map { category($0, locale: locale) })
+        // A notification of version 1.1 that the system already delivered still has the category `reminder.single`.
+        // Keep it with its one action, so that "Taken" stays on it. No new request has it (D090).
+        categories.insert(UNNotificationCategory(
+            identifier: legacySingleIdentifier,
+            actions: [action(.taken, in: .single, locale: locale)],
+            intentIdentifiers: [],
+            options: []
+        ))
+        UNUserNotificationCenter.current().setNotificationCategories(categories)
     }
+
+    /// The only category of version 1.1.
+    static let legacySingleIdentifier = "reminder.single"
+
 
     static func category(_ category: ReminderCategory, locale: Locale) -> UNNotificationCategory {
         UNNotificationCategory(
