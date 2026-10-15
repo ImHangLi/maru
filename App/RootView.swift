@@ -1,3 +1,4 @@
+import MaruCore
 import SwiftUI
 
 /// The frame of the app: two tabs, or the storage problem in place of them.
