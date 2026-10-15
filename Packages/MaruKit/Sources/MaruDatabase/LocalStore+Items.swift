@@ -2,6 +2,15 @@ import Foundation
 import GRDB
 import MaruCore
 
+/// A change of one reminder option for every item that has a time (D085).
+public enum ReminderOptionChange: Hashable, Sendable {
+    /// "Remind Again" for every item: a count with an interval, or off.
+    case followUp(FollowUpSetting?)
+    /// A new interval for every item that has "Remind Again" on. An item with it off stays off.
+    case followUpInterval(FollowUpInterval)
+    case alarm(Bool)
+}
+
 extension LocalStore {
     /// Inserts the item, or updates the fields of the stored item with the same ID.
     /// An item that does not load again as the same value is `StorageError.invalidData`, and nothing changes.
@@ -172,6 +181,59 @@ extension LocalStore {
                 """,
             arguments: [setting.count.rawValue, setting.interval.rawValue, changed?.storedSeconds]
         )
+    }
+
+    /// Every active item that has a time, in the order of the first save. "Has a time" means that the item has a
+    /// schedule: an item with no time has none, and the editor keeps no reminder option for it (D079, D085).
+    public func timedItems() async throws(StorageError) -> [Item] {
+        try await read { db in
+            try Self.fetchTimedItems(db)
+        }
+    }
+
+    /// Changes one reminder option of every active item that has a time, in one transaction (D085). An item that
+    /// already has the value stays as it is. It returns the number of items that changed.
+    ///
+    /// A change of "Remind Again" sets `followUpChanged` of that item to `now`, as a save of the edit screen does, so
+    /// the limit of 12 follow-ups for one dose holds across the change (D039, D079).
+    /// `generation` is the generation of the data that the caller read. See `checkedWrite`.
+    @discardableResult
+    public func apply(
+        _ change: ReminderOptionChange, toTimedItemsAt now: Date, generation: Int = 0
+    ) async throws(StorageError) -> Int {
+        try await write(generation: generation) { db in
+            var changed = 0
+            for var item in try Self.fetchTimedItems(db) {
+                switch change {
+                case let .followUp(setting):
+                    guard item.followUp != setting else { continue }
+                    item.followUp = setting
+                    item.followUpChanged = now
+                case let .followUpInterval(interval):
+                    guard var setting = item.followUp, setting.interval != interval else { continue }
+                    setting.interval = interval
+                    item.followUp = setting
+                    item.followUpChanged = now
+                case let .alarm(isOn):
+                    guard item.alarm != isOn else { continue }
+                    item.alarm = isOn
+                }
+                try Self.upsert(item, db)
+                changed += 1
+            }
+            return changed
+        }
+    }
+
+    private static func fetchTimedItems(_ db: Database) throws -> [Item] {
+        try Row.fetchAll(
+            db,
+            sql: """
+                SELECT * FROM item
+                WHERE isArchived = 0 AND EXISTS (SELECT 1 FROM schedule WHERE schedule.itemID = item.id)
+                ORDER BY rowid
+                """
+        ).map(decodeItem)
     }
 
     private static func fetchItem(_ db: Database, id: ItemID) throws -> Item? {

@@ -30,6 +30,10 @@ struct AnalyticsTests {
             .notificationPermission(.quiet, previous: nil),
             .showNamesChanged(false),
             .appColorChanged(.mint),
+            .allAlarmChanged(true),
+            .allRemindAgainChanged(.untilRecorded),
+            .allRemindAgainChanged(nil),
+            .allRemindAgainIntervalChanged(.minutes60),
             .dataAction(.restore, .newerFile),
             .feedbackOpened,
         ]

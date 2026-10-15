@@ -26,11 +26,11 @@ struct DataSection: View {
                     Button("OK", role: .cancel) {}
                 } message: { failure in
                     switch failure {
-                    case .fileNotMade: Text("Maru couldn’t make the file. Try again.")
-                    case .notABackup: Text("This file is not a Maru backup, or it is damaged. Your data did not change.")
-                    case .newerBackup: Text("A newer version of Maru made this backup. Update Maru, then try again. Your data did not change.")
-                    case .notRestored: Text("Maru couldn’t restore this backup. Your data did not change.")
-                    case .restoredNotConfirmed: Text("Maru couldn’t confirm that your iPhone saved the restored data. If your data looks wrong later, restore the backup again.")
+                    case .fileNotMade: Text("Couldn’t make the file. Try again.")
+                    case .notABackup: Text("This isn’t a Maru backup, or the file is damaged. Nothing changed.")
+                    case .newerBackup: Text("A newer Maru made this backup. Update Maru, then try again. Nothing changed.")
+                    case .notRestored: Text("Couldn’t restore this backup. Nothing changed.")
+                    case .restoredNotConfirmed: Text("Couldn’t confirm the restore. If anything looks wrong later, restore the backup again.")
                     }
                 }
                 .onChange(of: model.transfer.failure) { _, failure in
@@ -53,21 +53,21 @@ struct DataSection: View {
                     Button("Replace", role: .destructive) { model.restore() }
                     Button("Cancel", role: .cancel) { model.cancelRestore() }
                 } message: {
-                    Text("This backup replaces all items and records in Maru. You can’t undo this.")
+                    Text("This replaces everything in Maru with the backup. You can’t undo it.")
                 }
         } header: {
             Text("Your Data")
         } footer: {
-            Text("A backup moves your items, records, and some settings to a new iPhone, but not photos. The files are not encrypted, so share them only with people you trust.")
+            Text("A backup has your items and records, but not photos. The file isn’t encrypted, so keep it private.")
         }
         .disabled(model.transfer.isWorking)
     }
 
     private var failureTitle: Text {
         switch shownFailure {
-        case .fileNotMade: Text("File Not Made")
-        case .restoredNotConfirmed: Text("Restore Not Confirmed")
-        default: Text("Not Restored")
+        case .fileNotMade: Text("Couldn’t Make the File")
+        case .restoredNotConfirmed: Text("Couldn’t Confirm the Restore")
+        default: Text("Couldn’t Restore")
         }
     }
 }

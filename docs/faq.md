@@ -16,7 +16,7 @@ Today keeps each recorded item in view with its mark. History shows every day, w
 
 ## Can Maru keep reminding me?
 
-Yes. On the screen of an item, "Remind Again" sends more reminders for a dose that you did not record. Each item has its own setting. You choose how many, and how long between them, from 5 minutes to 1 hour. "Until Recorded" reminds you up to 12 times for each dose, until 1:00 AM at the latest, and stops when you record. A change of the setting does not add more than 12 for a dose. iOS does not let an app remind with no end, so Maru states the number. A reminder is a notification, so a Focus or silent mode can hold it. With iOS 26, you can also turn on "Alarm" for an item. Its dose time then rings like the alarm of the Clock app, also in silent mode and in a Focus.
+Yes. "Remind Again" sends more reminders for a dose that you did not record. You choose how many, and how long between them, from 5 minutes to 1 hour. "Until I Record It" reminds you up to 12 times for each dose, until 1:00 AM at the latest, and stops when you record. A change of the setting does not add more than 12 for a dose. iOS does not let an app remind with no end, so Maru states the number. A reminder is a notification, so a Focus or silent mode can hold it. In Settings, under "For All Items", you set "Remind Again" for every item at once. On the screen of an item, you can set it for that item alone. With iOS 26, you can also turn on "Alarm", for all items or for one. The dose time then rings like the alarm of the Clock app, also in silent mode and in a Focus.
 
 ## Is there a limit on the number of items?
 

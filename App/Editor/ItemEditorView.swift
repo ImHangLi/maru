@@ -6,8 +6,9 @@ import VisionKit
 
 /// The one edit screen for a new or a stored item (spec 3 P03, docs/design.md "Add and edit").
 ///
-/// The order is name, type, the look of the item (icon, form, color, and photo), amount, times and repeat days,
-/// note. The plan line under the times states the whole plan.
+/// The first view is short (D085): name and type, the plan with its times and repeat days, and the reminders
+/// ("Alarm" and "Remind Again"). One row, "More Options", opens a page with the optional details: amount, the look of
+/// the item (form, color, and photo), and note. The plan line under the times states the whole plan.
 /// A new item has "Scan Label" above the name, and the name field proposes names from the built-in lists (D038).
 /// Both only propose: the user sees each value here before the save. A known supplement name gives candidates
 /// for the amount, the time, and the note, and it sets the usual form until the user chooses one (D043).
@@ -49,14 +50,14 @@ struct ItemEditorView: View {
     @State private var nameSource = AnalyticsEvent.NameSource.typed
     @State private var usedCompletion = false
     /// The delay of the follow-ups. It stays while the user turns "Remind Again" off and on again on this screen.
-    /// 30 minutes until the user picks one: the middle delay of D021, and the delay of Apple Health.
+    /// The interval that the user last chose in Settings, 30 minutes at first: the middle delay of D021, and the delay of Apple Health.
     @State private var followUpInterval: FollowUpInterval
     /// The system refused alarms at the first tap on the switch (D079).
     @State private var alarmsAreOff = false
 
     init(session: EditorSession) {
         self.session = session
-        _followUpInterval = State(initialValue: session.start.followUp?.interval ?? .minutes30)
+        _followUpInterval = State(initialValue: session.start.followUp?.interval ?? session.context.newItemReminders.interval)
         _draft = State(initialValue: session.start)
         _showsRestored = State(initialValue: session.isRestored)
         _formIsChosen = State(initialValue: !session.isNew || session.replaced != nil || session.isRestored)
@@ -91,14 +92,11 @@ struct ItemEditorView: View {
                     scanSection
                 }
                 nameSection
-                lookSection
-                amountSection
                 timesSection
                 if !draft.times.isEmpty {
-                    followUpSection
-                    if #available(iOS 26, *) { alarmSection }
+                    reminderSection
                 }
-                noteSection
+                moreSection
             }
             .scrollDismissesKeyboard(.interactively)
             // The photo work belongs to this screen. When it closes, a late result writes nothing (T30).
@@ -134,7 +132,7 @@ struct ItemEditorView: View {
                 }
             }
             .alert(item: $saveError) { error in
-                Alert(title: Text("Maru Couldn’t Save"), message: Text(error.message))
+                Alert(title: Text("Couldn’t Save"), message: Text(error.message))
             }
             .task { names = await NameList.index.value }
             .onChange(of: nameInput) {
@@ -215,7 +213,7 @@ struct ItemEditorView: View {
 
     private var restoredSection: some View {
         Section {
-            Label("Maru kept your unsaved changes.", systemImage: "clock.arrow.circlepath")
+            Label("Picked up where you left off.", systemImage: "clock.arrow.circlepath")
             Button("Start Over", role: .destructive) {
                 DraftFile.remove(key: session.draftKey)
                 draft = session.original
@@ -247,7 +245,7 @@ struct ItemEditorView: View {
                     Image(systemName: "camera.viewfinder")
                 }
             }
-            .alert("Maru Can’t Use the Camera", isPresented: $cameraIsOff) {
+            .alert("Camera Is Off", isPresented: $cameraIsOff) {
                 Button("Open Settings") {
                     if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                 }
@@ -280,60 +278,6 @@ struct ItemEditorView: View {
                 Text("Medication").tag(ItemCategory.medication)
             }
             .pickerStyle(.segmented)
-        }
-    }
-
-    /// The icon of the item, the form, the color, and the photo, in one section (D073). System menus of the six
-    /// forms (D013) and the eight item colors (D021). The value shows the icon or the color.
-    private var lookSection: some View {
-        LookSection(
-            state: $photo,
-            storedReference: session.context.item?.imageReference,
-            form: draft.form,
-            color: draft.color
-        ) {
-            Picker("Form", selection: chosenForm) {
-                ForEach(ItemForm.allCases, id: \.self) { form in
-                    Label { Text(form.title) } icon: { form.menuImage(in: appColor.tint) }
-                        .tag(form)
-                }
-            }
-            .pickerStyle(.menu)
-            .tint(Color.primary)
-            if let form = proposedForm {
-                Button(form.useTitle) {
-                    draft.form = form
-                    formIsChosen = true
-                }
-                .foregroundStyle(.tint)
-            }
-            Picker("Color", selection: $draft.color) {
-                ForEach(ItemColor.allCases, id: \.self) { color in
-                    Label { Text(color.title) } icon: { color.color.circleImage }
-                        .tag(color)
-                }
-            }
-            .pickerStyle(.menu)
-            .tint(Color.primary)
-        }
-    }
-
-    private var amountSection: some View {
-        Section {
-            TextField("For example 1000 IU", text: $draft.amount)
-            if let amounts = candidates?.amounts, !amounts.isEmpty {
-                CandidateRow(candidates: amounts, title: { Text(verbatim: $0) }, hint: { _ in Text("Fills the amount.") }) {
-                    draft.amount = $0
-                    usedCompletion = true
-                }
-            }
-        } header: {
-            Text("Amount (Optional)")
-        } footer: {
-            // The amount belongs to the reminder plan, so an item with no time saves no amount.
-            if draft.times.isEmpty, Dose(draft.amount) != nil {
-                Text("Add a time to save the amount.")
-            }
         }
     }
 
@@ -394,58 +338,138 @@ struct ItemEditorView: View {
             .accessibilityLabel(Text("Plan: \(preview)"))
     }
 
-    /// "Remind Again" belongs to the item (D079). Each item has its own count and delay. It starts off.
-    private var followUpSection: some View {
+    /// "Alarm" and "Remind Again" belong to the item (D079). Each item has its own value, and a new item starts with
+    /// the value that the user last chose in Settings (D085).
+    private var reminderSection: some View {
         Section {
+            if #available(iOS 26, *) { alarmRow }
             Picker("Remind Again", selection: followUpCount) {
                 Text("Off").tag(FollowUpCount?.none)
-                Text("1 Time").tag(FollowUpCount?.some(.one))
-                Text("2 Times").tag(FollowUpCount?.some(.two))
-                Text("3 Times").tag(FollowUpCount?.some(.three))
-                Text("5 Times").tag(FollowUpCount?.some(.five))
-                Text("Until Recorded").tag(FollowUpCount?.some(.untilRecorded))
+                ForEach(FollowUpCount.allCases, id: \.self) { count in
+                    Text(count.title).tag(FollowUpCount?.some(count))
+                }
             }
             .tint(Color.primary)
             if draft.followUp != nil {
                 Picker("Every", selection: followUpDelay) {
-                    Text("5 min").tag(FollowUpInterval.minutes5)
-                    Text("10 min").tag(FollowUpInterval.minutes10)
-                    Text("15 min").tag(FollowUpInterval.minutes15)
-                    Text("30 min").tag(FollowUpInterval.minutes30)
-                    Text("1 hr").tag(FollowUpInterval.minutes60)
+                    ForEach(FollowUpInterval.allCases, id: \.self) { interval in
+                        Text(interval.title).tag(interval)
+                    }
                 }
                 .tint(Color.primary)
             }
         } header: {
             Text("Reminders")
         } footer: {
-            // iPhone has no reminder that repeats until Maru stops it, so "Until Recorded" has a limit.
-            // The footer states it, and the time at which the follow-ups of a dose stop (D039).
-            if draft.followUp?.count == .untilRecorded {
-                let latest = FollowUpPlan.latestTime
-                let time = SchedulePreview.format(hour: latest.hour, minute: latest.minute)
-                Text("Maru reminds you up to \(FollowUpCount.untilRecordedLimit) times for each dose, until \(time) at the latest.")
-            } else {
-                Text("Only for doses with no record.")
+            // The one limit that matters: iPhone has no reminder that repeats with no end (D039).
+            if draft.followUp?.count == .untilRecorded { UntilRecordedLimitText() }
+        }
+    }
+
+    /// The system asks at the first tap on the switch (D079).
+    @available(iOS 26, *)
+    private var alarmRow: some View {
+        Toggle("Alarm", isOn: Binding(get: { draft.alarm == true }, set: turnAlarm))
+            .alert("Alarms Are Off", isPresented: $alarmsAreOff) {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("To use an alarm, allow alarms for Maru in Settings.")
+            }
+    }
+
+    /// One row that opens the optional details, so the first view stays short (D085). Its value shows what the
+    /// page holds: the amount and the note.
+    private var moreSection: some View {
+        Section {
+            NavigationLink {
+                moreOptionsPage
+            } label: {
+                LabeledContent("More Options") {
+                    Text(moreSummary)
+                }
             }
         }
     }
 
-    /// The alarm of the item (D079). The system asks at the first tap on the switch.
-    @available(iOS 26, *)
-    private var alarmSection: some View {
-        Section {
-            Toggle("Alarm", isOn: Binding(get: { draft.alarm == true }, set: turnAlarm))
-                .alert("Maru Can’t Set Alarms", isPresented: $alarmsAreOff) {
-                    Button("Open Settings") {
-                        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-                    }
-                    Button("Cancel", role: .cancel) {}
-                } message: {
-                    Text("To use an alarm, allow alarms for Maru in Settings.")
+    private var moreSummary: String {
+        let note: String? = switch draft.note {
+        case .none: nil
+        case .withFood: String(localized: "With food")
+        case .emptyStomach: String(localized: "On an empty stomach")
+        case .custom: draft.noteText.allSatisfy(\.isWhitespace) ? nil : draft.noteText
+        }
+        let amount = draft.amount.trimmingCharacters(in: .whitespacesAndNewlines)
+        return [amount, note].compactMap { $0 }.filter { !$0.isEmpty }.formatted(.list(type: .and, width: .narrow))
+    }
+
+    /// The optional details: the amount, the look of the item, and the note. The photo work stays on the first page,
+    /// so it runs while the user is here and after the user goes back (T30).
+    private var moreOptionsPage: some View {
+        Form {
+            amountSection
+            lookSection
+            noteSection
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .motion(.layout, value: layout)
+        .navigationTitle("More Options")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    /// The icon of the item, the form, the color, and the photo, in one section (D073). System menus of the six
+    /// forms (D013) and the eight item colors (D021). The value shows the icon or the color.
+    private var lookSection: some View {
+        LookSection(
+            state: $photo,
+            storedReference: session.context.item?.imageReference,
+            form: draft.form,
+            color: draft.color
+        ) {
+            Picker("Form", selection: chosenForm) {
+                ForEach(ItemForm.allCases, id: \.self) { form in
+                    Label { Text(form.title) } icon: { form.menuImage(in: appColor.tint) }
+                        .tag(form)
                 }
+            }
+            .pickerStyle(.menu)
+            .tint(Color.primary)
+            if let form = proposedForm {
+                Button(form.useTitle) {
+                    draft.form = form
+                    formIsChosen = true
+                }
+                .foregroundStyle(.tint)
+            }
+            Picker("Color", selection: $draft.color) {
+                ForEach(ItemColor.allCases, id: \.self) { color in
+                    Label { Text(color.title) } icon: { color.color.circleImage }
+                        .tag(color)
+                }
+            }
+            .pickerStyle(.menu)
+            .tint(Color.primary)
+        }
+    }
+
+    private var amountSection: some View {
+        Section {
+            TextField("For example 1000 IU", text: $draft.amount)
+            if let amounts = candidates?.amounts, !amounts.isEmpty {
+                CandidateRow(candidates: amounts, title: { Text(verbatim: $0) }, hint: { _ in Text("Fills the amount.") }) {
+                    draft.amount = $0
+                    usedCompletion = true
+                }
+            }
+        } header: {
+            Text("Amount")
         } footer: {
-            Text("Rings like the Clock app at each dose time, also in silent mode and Focus. Follow-ups stay notifications.")
+            // The amount belongs to the reminder plan, so an item with no time saves no amount.
+            if draft.times.isEmpty, Dose(draft.amount) != nil {
+                Text("Add a time to save the amount.")
+            }
         }
     }
 

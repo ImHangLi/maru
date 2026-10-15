@@ -13,6 +13,8 @@ struct EditorContext: Sendable {
     let supplementTimes: [WallClockTime]
     /// The names of the user's other items, active items first. The name suggestions show them first (D038).
     let itemNames: [String]
+    /// What a new item starts with for "Alarm" and "Remind Again": the last choice of the user in Settings (D085).
+    let newItemReminders: NewItemReminders
 }
 
 extension EditorContext {
@@ -42,7 +44,8 @@ extension AppStore {
             supplementTimes: confirmed.sorted(),
             itemNames: (items.filter { !$0.isArchived } + items.filter(\.isArchived))
                 .filter { $0.id != itemID }
-                .map(\.name)
+                .map(\.name),
+            newItemReminders: .load()
         )
     }
 

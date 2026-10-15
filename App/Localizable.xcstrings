@@ -37,7 +37,7 @@
       }
     },
     "Alarm" : {
-      "comment" : "Add and edit screen: the label of the switch that makes the dose time of the item ring like the alarm of the Clock app.",
+      "comment" : "Settings (For All Items) and add and edit screen: the label of the switch that makes the dose time ring like the alarm of the Clock app. In Settings it can also be a menu with the value Varies.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -67,41 +67,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "闹钟"
-          }
-        }
-      }
-    },
-    "Maru Can’t Set Alarms" : {
-      "comment" : "Add and edit screen: the title of the alert when the user turns on Alarm and the system does not allow alarms for Maru.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru kann keine Wecker stellen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no puede programar alarmas"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruはアラームを設定できません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 알람을 설정할 수 없어요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 无法设置闹钟"
           }
         }
       }
@@ -172,41 +137,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隐私政策"
-          }
-        }
-      }
-    },
-    "Rings like the Clock app at each dose time, also in silent mode and Focus. Follow-ups stay notifications." : {
-      "comment" : "Add and edit screen: the footer under the Alarm switch. A follow-up is the repeated reminder of Remind Again, and it stays a normal notification.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Klingelt zu jeder Einnahmezeit wie die Uhr-App, auch im Stumm-Modus und bei einem Fokus. Erneute Erinnerungen bleiben Mitteilungen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Suena a cada hora de toma como la app Reloj, también en modo silencio y con un modo de concentración. Los recordatorios repetidos siguen siendo notificaciones."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服用時刻ごとに「時計」アプリのように鳴り、消音モードや集中モードでも鳴ります。再通知は通常の通知のままです。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복용 시간마다 시계 앱처럼 울리고, 무음 모드와 집중 모드에서도 울려요. 다시 알림은 일반 알림으로 와요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每次服用时间会像“时钟”App 一样响铃，静音模式和专注模式下也会响。再次提醒仍是普通通知。"
           }
         }
       }
@@ -592,41 +522,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "共享使用统计信息"
-          }
-        }
-      }
-    },
-    "Maru shares how you use the app, and never item names, doses, or times." : {
-      "comment" : "Settings: the footer of the usage statistics switch. One sentence.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru teilt, wie du die App nutzt, aber nie Namen, Dosen oder Zeiten."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru comparte cómo usas la app, nunca nombres de elementos, dosis ni horas."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruが共有するのは機能の利用状況だけです。項目名、用量、時刻は共有しません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru는 앱 사용 정보만 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 只共享功能使用情况，绝不包含项目名称、剂量或时间。"
           }
         }
       }
@@ -1082,88 +977,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@时间"
-          }
-        }
-      }
-    },
-    "%@ at %@, from %@, with no end date" : {
-      "comment" : "Edit screen: the preview line of a plan that repeats every few days or has a pause. The first placeholder is the rule, for example Every 3 days, or 21 days on, 7 days off. The second is the times. The third is the first day, for example Tue, Aug 18.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ um %2$@, ab %3$@, ohne Enddatum"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ at %2$@, from %3$@, with no end date"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@: %2$@, desde %3$@, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@、%3$@から、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@, %3$@부터, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@，从 %3$@ 开始，无结束日期"
-          }
-        }
-      }
-    },
-    "%@ at %@, with no end date" : {
-      "comment" : "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ um %2$@, ohne Enddatum"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ at %2$@, with no end date"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@: %2$@, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@，无结束日期"
           }
         }
       }
@@ -1660,7 +1473,7 @@
       }
     },
     "1 hr" : {
-      "comment" : "Add and edit screen: a time between follow-up reminders.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1695,7 +1508,7 @@
       }
     },
     "1 Time" : {
-      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a number of repeated reminders for each dose.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1730,7 +1543,7 @@
       }
     },
     "10 min" : {
-      "comment" : "Add and edit screen: a time between follow-up reminders.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1765,7 +1578,7 @@
       }
     },
     "15 min" : {
-      "comment" : "Add and edit screen: a time between follow-up reminders.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1800,7 +1613,7 @@
       }
     },
     "2 Times" : {
-      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a number of repeated reminders for each dose.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1835,7 +1648,7 @@
       }
     },
     "3 Times" : {
-      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a number of repeated reminders for each dose.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1870,7 +1683,7 @@
       }
     },
     "30 min" : {
-      "comment" : "Add and edit screen: a time between follow-up reminders.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1905,7 +1718,7 @@
       }
     },
     "5 min" : {
-      "comment" : "Add and edit screen: a time between follow-up reminders.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1940,7 +1753,7 @@
       }
     },
     "5 Times" : {
-      "comment" : "Add and edit screen: a number of follow-up reminders for each dose of the item.",
+      "comment" : "Remind Again menu (Settings, add and edit screen): a number of repeated reminders for each dose.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -1970,154 +1783,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "5 次"
-          }
-        }
-      }
-    },
-    "A backup moves your items, records, and some settings to a new iPhone, but not photos. The files are not encrypted, so share them only with people you trust." : {
-      "comment" : "Settings: the footer of “Your Data”.",
-      "localizations" : {
-        "de" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Ein Backup überträgt deine Einträge, Aufzeichnungen und einige Einstellungen auf ein neues iPad, aber keine Fotos. Die Dateien sind nicht verschlüsselt. Teile sie nur mit Personen, denen du vertraust."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Ein Backup überträgt deine Einträge, Aufzeichnungen und einige Einstellungen auf ein neues iPhone, aber keine Fotos. Die Dateien sind nicht verschlüsselt. Teile sie nur mit Personen, denen du vertraust."
-                }
-              }
-            }
-          }
-        },
-        "en" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "A backup moves your items, records, and some settings to a new iPad, but not photos. The files are not encrypted, so share them only with people you trust."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "A backup moves your items, records, and some settings to a new iPhone, but not photos. The files are not encrypted, so share them only with people you trust."
-                }
-              }
-            }
-          }
-        },
-        "es" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Una copia de seguridad traslada tus elementos, registros y algunos ajustes a un iPad nuevo, pero no las fotos. Los archivos no están cifrados. Compártelos solo con personas de confianza."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Una copia de seguridad traslada tus elementos, registros y algunos ajustes a un iPhone nuevo, pero no las fotos. Los archivos no están cifrados. Compártelos solo con personas de confianza."
-                }
-              }
-            }
-          }
-        },
-        "ja" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "バックアップを使うと、項目、記録、一部の設定を新しいiPadに移せます。写真は含まれません。ファイルは暗号化されていないため、信頼できる相手とだけ共有してください。"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "バックアップを使うと、項目、記録、一部の設定を新しいiPhoneに移せます。写真は含まれません。ファイルは暗号化されていないため、信頼できる相手とだけ共有してください。"
-                }
-              }
-            }
-          }
-        },
-        "ko" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "백업하면 항목, 기록, 일부 설정을 새 iPad로 옮길 수 있어요. 사진은 포함되지 않아요. 파일은 암호화되지 않으니 믿을 수 있는 사람과만 공유하세요."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "백업하면 항목, 기록, 일부 설정을 새 iPhone으로 옮길 수 있어요. 사진은 포함되지 않아요. 파일은 암호화되지 않으니 믿을 수 있는 사람과만 공유하세요."
-                }
-              }
-            }
-          }
-        },
-        "zh-Hans" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "备份可将项目、记录和部分设置迁移到新 iPad，但不含照片。文件未加密，请只与你信任的人共享。"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "备份可将项目、记录和部分设置迁移到新 iPhone，但不含照片。文件未加密，请只与你信任的人共享。"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "A newer version of Maru made this backup. Update Maru, then try again. Your data did not change." : {
-      "comment" : "Settings: the alert for a backup file from a newer version of the app.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eine neuere Version von Maru hat dieses Backup erstellt. Aktualisiere Maru und versuche es erneut. Deine Daten haben sich nicht geändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una versión más reciente de Maru creó esta copia de seguridad. Actualiza Maru y vuelve a intentarlo. Tus datos no han cambiado."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このバックアップは、より新しいバージョンのMaruで作成されました。Maruをアップデートしてから、もう一度お試しください。データは変更されていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "더 최신 버전의 Maru에서 만든 백업이에요. Maru를 업데이트한 다음 다시 시도하세요. 데이터는 바뀌지 않았어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此备份由更新版本的 Maru 创建。请更新 Maru 后重试。你的数据没有变化。"
           }
         }
       }
@@ -2333,7 +1998,7 @@
       }
     },
     "Amount" : {
-      "comment" : "Item detail: the label of the amount that the user typed.",
+      "comment" : "Item detail: the label of the amount that the user typed. Add and edit screen: the title of the amount section on the More Options page.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2363,41 +2028,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用量"
-          }
-        }
-      }
-    },
-    "Amount (Optional)" : {
-      "comment" : "Edit screen: the text “Amount (Optional)”.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Menge (optional)"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cantidad (opcional)"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用量（任意）"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "용량(선택 사항)"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "用量（可选）"
           }
         }
       }
@@ -4048,7 +3678,7 @@
       }
     },
     "Every" : {
-      "comment" : "Add and edit screen: the label of the picker for the time between follow-up reminders. The value follows, for example “10 min”.",
+      "comment" : "Settings (For All Items) and add and edit screen: the label of the picker for the time between the repeated reminders. The value follows, for example “10 min”.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -4292,76 +3922,6 @@
         }
       }
     },
-    "Every other day at %@, starting today, with no end date" : {
-      "comment" : "Edit screen: the preview line of a plan that repeats every second day from today. The placeholder is the times.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeden zweiten Tag um %@, ab heute, ohne Enddatum"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un día sí y otro no: %@, desde hoy, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1日おき %@、今日から、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "격일 %@, 오늘부터, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隔天 %@，从今天开始，无结束日期"
-          }
-        }
-      }
-    },
-    "Every other day at %@, starting tomorrow, with no end date" : {
-      "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeden zweiten Tag um %@, ab morgen, ohne Enddatum"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un día sí y otro no: %@, desde mañana, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1日おき %@、明日から、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "격일 %@, 내일부터, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隔天 %@，从明天开始，无结束日期"
-          }
-        }
-      }
-    },
     "Export Records" : {
       "comment" : "Settings: the button that makes a spreadsheet file of the records and opens the share sheet.",
       "localizations" : {
@@ -4393,41 +3953,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "导出记录"
-          }
-        }
-      }
-    },
-    "File Not Made" : {
-      "comment" : "Settings: the title of the alert for a record export or a backup that failed.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datei nicht erstellt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha creado el archivo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ファイルを作成できません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "파일을 만들지 못함"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未能生成文件"
           }
         }
       }
@@ -5226,41 +4751,6 @@
         }
       }
     },
-    "Maru Can’t Use the Camera" : {
-      "comment" : "Edit screen: the title of the alert when the camera is off for Maru.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru kann die Kamera nicht verwenden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no puede usar la cámara"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruがカメラを使えません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 카메라를 사용할 수 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 无法使用相机"
-          }
-        }
-      }
-    },
     "Maru Can’t Use Your Time Zone" : {
       "comment" : "Today: the title when the time zone of the device is an offset such as GMT+8 and not a city.",
       "localizations" : {
@@ -5366,154 +4856,6 @@
         }
       }
     },
-    "Maru couldn’t confirm that your iPhone saved the restored data. If your data looks wrong later, restore the backup again." : {
-      "comment" : "Settings: the alert for a restore that replaced the data, when the storage did not confirm the save.",
-      "localizations" : {
-        "de" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru konnte nicht bestätigen, dass dein iPad die wiederhergestellten Daten gesichert hat. Wenn deine Daten später falsch aussehen, stelle das Backup erneut wieder her."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru konnte nicht bestätigen, dass dein iPhone die wiederhergestellten Daten gesichert hat. Wenn deine Daten später falsch aussehen, stelle das Backup erneut wieder her."
-                }
-              }
-            }
-          }
-        },
-        "en" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru couldn’t confirm that your iPad saved the restored data. If your data looks wrong later, restore the backup again."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru couldn’t confirm that your iPhone saved the restored data. If your data looks wrong later, restore the backup again."
-                }
-              }
-            }
-          }
-        },
-        "es" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru no ha podido confirmar que el iPad guardara los datos restaurados. Si más adelante tus datos parecen incorrectos, restaura la copia de seguridad otra vez."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru no ha podido confirmar que el iPhone guardara los datos restaurados. Si más adelante tus datos parecen incorrectos, restaura la copia de seguridad otra vez."
-                }
-              }
-            }
-          }
-        },
-        "ja" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "復元したデータがiPadに保存されたか確認できませんでした。あとでデータがおかしい場合は、バックアップをもう一度復元してください。"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "復元したデータがiPhoneに保存されたか確認できませんでした。あとでデータがおかしい場合は、バックアップをもう一度復元してください。"
-                }
-              }
-            }
-          }
-        },
-        "ko" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "복원한 데이터가 iPad에 저장되었는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원하세요."
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "복원한 데이터가 iPhone에 저장되었는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원하세요."
-                }
-              }
-            }
-          }
-        },
-        "zh-Hans" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru 无法确认 iPad 是否已存储恢复的数据。如果之后发现数据有误，请再次恢复备份。"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Maru 无法确认 iPhone 是否已存储恢复的数据。如果之后发现数据有误，请再次恢复备份。"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "Maru couldn’t make the file. Try again." : {
-      "comment" : "Settings: the alert for a record export or a backup that failed.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru konnte die Datei nicht erstellen. Versuche es erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no ha podido crear el archivo. Inténtalo de nuevo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruがファイルを作成できませんでした。もう一度お試しください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 파일을 만들지 못했어요. 다시 시도하세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 无法生成文件。请重试。"
-          }
-        }
-      }
-    },
     "Maru couldn’t read the history." : {
       "comment" : "History: the footer of the error section when the days did not read, other than a locked iPhone.",
       "localizations" : {
@@ -5580,76 +4922,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 无法读取此项目。"
-          }
-        }
-      }
-    },
-    "Maru couldn’t restore this backup. Your data did not change." : {
-      "comment" : "Settings: the alert for a restore that failed.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru konnte dieses Backup nicht wiederherstellen. Deine Daten haben sich nicht geändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no ha podido restaurar esta copia de seguridad. Tus datos no han cambiado."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruがこのバックアップを復元できませんでした。データは変更されていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 이 백업을 복원하지 못했어요. 데이터는 바뀌지 않았어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 无法恢复此备份。你的数据没有变化。"
-          }
-        }
-      }
-    },
-    "Maru Couldn’t Save" : {
-      "comment" : "Edit screen: the title of the alert when the item did not save. The message under it says that the entries are still on the screen.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru konnte nicht speichern"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no ha podido guardar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruが保存できません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 저장하지 못함"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 无法存储"
           }
         }
       }
@@ -5790,76 +5062,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 没有更改或删除你的数据。"
-          }
-        }
-      }
-    },
-    "Maru kept your unsaved changes." : {
-      "comment" : "Edit screen: the text “Maru kept your unsaved changes.”.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru hat deine nicht gespeicherten Änderungen behalten."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru ha conservado tus cambios sin guardar."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruは未保存の変更を保持しました。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 저장되지 않은 변경 사항을 유지했어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 保留了你尚未存储的更改。"
-          }
-        }
-      }
-    },
-    "Maru reminds you up to %lld times for each dose, until %@ at the latest." : {
-      "comment" : "Add and edit screen: the footer of “Until Recorded”. iPhone has no reminder that repeats with no end, so Maru states the limit. The first placeholder is the number 12. The second is the time of the next day at which the reminders of a dose stop, for example “1:00 AM”.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru erinnert dich bis zu %lld Mal pro Dosis, spätestens bis %@."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru te recuerda hasta %lld veces por dosis. Límite: %@."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruは1回の服用につき最大%lld回、遅くとも%@までリマインドします。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru는 복용 1회당 최대 %lld번, 늦어도 %@까지 미리 알려줘요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每次服用，Maru 最多提醒 %lld 次，最晚到 %@ 为止。"
           }
         }
       }
@@ -6704,41 +5906,6 @@
         }
       }
     },
-    "Not Restored" : {
-      "comment" : "Settings: the title of the alert for a backup file that Maru did not restore.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht wiederhergestellt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No restaurado"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "復元されていません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복원되지 않음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未恢复"
-          }
-        }
-      }
-    },
     "Not Set" : {
       "comment" : "Item detail: the value of the Reminder row when the system holds no reminder.",
       "localizations" : {
@@ -7125,7 +6292,7 @@
       }
     },
     "Off" : {
-      "comment" : "Settings: notifications are off. Add and edit screen: the follow-up reminders of the item are off.",
+      "comment" : "Settings: notifications are off. Remind Again is off, in Settings and on the add and edit screen.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7225,41 +6392,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "空腹"
-          }
-        }
-      }
-    },
-    "Only for doses with no record." : {
-      "comment" : "Add and edit screen: the footer under Remind Again. A follow-up reminder comes only for a dose that has no record.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nur für Dosen ohne Aufzeichnung."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Solo para las dosis sin registro."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "まだ記録していない服用にだけ通知します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아직 기록하지 않은 복용에만 와요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "仅提醒尚未记录的服用。"
           }
         }
       }
@@ -7790,7 +6922,7 @@
       }
     },
     "Remind Again" : {
-      "comment" : "Add and edit screen: the label of the picker for the number of follow-up reminders of one item.",
+      "comment" : "Settings (For All Items) and add and edit screen: the label of the picker for how many times a reminder comes again for a dose that has no record.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8485,41 +7617,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从备份恢复…"
-          }
-        }
-      }
-    },
-    "Restore Not Confirmed" : {
-      "comment" : "Settings: the title of the alert for a restore that replaced the data, when the storage did not confirm the save.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wiederherstellung nicht bestätigt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restauración sin confirmar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "復元を確認できません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복원이 확인되지 않음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "恢复未确认"
           }
         }
       }
@@ -9870,76 +8967,6 @@
         }
       }
     },
-    "This backup replaces all items and records in Maru. You can’t undo this." : {
-      "comment" : "The message of the restore confirmation.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dieses Backup ersetzt alle Einträge und Aufzeichnungen in Maru. Das kannst du nicht rückgängig machen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esta copia de seguridad reemplaza todos los elementos y registros de Maru. No se puede deshacer."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このバックアップは、Maruのすべての項目と記録を置き換えます。この操作は取り消せません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 백업은 Maru의 모든 항목과 기록을 교체해요. 이 동작은 되돌릴 수 없어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此备份会替换 Maru 中的所有项目和记录。此操作无法撤销。"
-          }
-        }
-      }
-    },
-    "This file is not a Maru backup, or it is damaged. Your data did not change." : {
-      "comment" : "Settings: the alert for a file that is not a backup or is damaged.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diese Datei ist kein Maru-Backup oder sie ist beschädigt. Deine Daten haben sich nicht geändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Este archivo no es una copia de seguridad de Maru o está dañado. Tus datos no han cambiado."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このファイルはMaruのバックアップではないか、破損しています。データは変更されていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 백업이 아니거나 손상된 파일이에요. 데이터는 바뀌지 않았어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此文件不是 Maru 备份，或已损坏。你的数据没有变化。"
-          }
-        }
-      }
-    },
     "This item changed. Check it, then try again." : {
       "comment" : "Alert message when the stored record is not the one that the page showed. The word item means the dose or the record.",
       "localizations" : {
@@ -10186,7 +9213,7 @@
       }
     },
     "To use an alarm, allow alarms for Maru in Settings." : {
-      "comment" : "Add and edit screen: the message of the alert when the system does not allow alarms for Maru. The Open Settings button follows.",
+      "comment" : "Settings and add and edit screen: the message of the alert when the system does not allow alarms for Maru. The Open Settings button follows.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10461,41 +9488,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关闭提醒"
-          }
-        }
-      }
-    },
-    "Turn off to keep item names out of reminders." : {
-      "comment" : "Settings footer of the switch Show Names in Reminders.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schalte dies aus, um Namen aus Erinnerungen herauszuhalten."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Desactívalo para que los nombres no aparezcan en los recordatorios."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "オフにすると、リマインダーに項目名が表示されません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "끄면 미리 알림에 항목 이름이 나오지 않아요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关闭后，提醒中不再包含项目名称。"
           }
         }
       }
@@ -10936,41 +9928,6 @@
         }
       }
     },
-    "Until Recorded" : {
-      "comment" : "Add and edit screen: follow-up reminders come until the user records the dose, up to a limit that the footer states.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bis erfasst"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hasta registrar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記録されるまで"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록할 때까지"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "直到记录为止"
-          }
-        }
-      }
-    },
     "Update Maru to Open Your Data" : {
       "comment" : "Storage problem: the title when a newer version of the app saved the data.",
       "localizations" : {
@@ -11212,41 +10169,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用此名称"
-          }
-        }
-      }
-    },
-    "The form opens a web page, and we read every message." : {
-      "comment" : "Settings: the footer of the feedback button. One sentence.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Formular öffnet eine Webseite, und wir lesen jede Nachricht."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El formulario abre una página web y leemos todos los mensajes."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "フォームからWebページが開きます。届いたメッセージはすべて読みます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "양식은 웹 페이지로 열리고, 모든 메시지를 읽어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "表单会打开网页，我们会阅读每条留言。"
           }
         }
       }
@@ -12216,6 +11138,893 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "数据"
+          }
+        }
+      }
+    },
+    "Until I Record It" : {
+      "comment" : "Remind Again menu (Settings, add and edit screen): the choice that keeps reminding until the user records the dose. “Record” is the word of the Taken button and the record circle. The reminders stop after a fixed number (see the footer).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bis ich es erfasse"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasta que lo registre"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録するまで"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록할 때까지"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直到我记录为止"
+          }
+        }
+      }
+    },
+    "Reminds you up to %lld times, until %@." : {
+      "comment" : "Footer under Remind Again when “Until I Record It” is chosen: the limit. The first placeholder is the number 12. The second is the time at which the reminders of a dose stop, for example “1:00 AM”.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnert bis zu %lld Mal, spätestens bis %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasta %lld recordatorios, como mucho hasta las %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最大%lld回、%@までリマインドします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대 %lld번, %@까지 알려줘요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最多提醒 %lld 次，到 %@ 为止。"
+          }
+        }
+      }
+    },
+    "Varies" : {
+      "comment" : "Settings, “For All Items”: the value of a row when the items have different values. Short, it sits at the end of a row.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterschiedlich"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varía"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目ごとに異なる"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목마다 달라요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各不相同"
+          }
+        }
+      }
+    },
+    "For All Items" : {
+      "comment" : "Settings: the title of the section with Alarm and Remind Again. A change there sets every item that has a time.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für alle Einträge"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para todos los elementos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての項目に"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 항목에"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有项目"
+          }
+        }
+      }
+    },
+    "Alarms Are Off" : {
+      "comment" : "Title of the alert when the user turns on Alarm and the system does not allow alarms for Maru. Settings and the add and edit screen.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wecker sind aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las alarmas están desactivadas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームがオフです"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알람이 꺼져 있어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闹钟未开启"
+          }
+        }
+      }
+    },
+    "More Options" : {
+      "comment" : "Add and edit screen: the row that opens the page with the optional details: amount, form, color, photo, and note. The value on the row shows the amount and the note.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weitere Optionen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más opciones"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その他のオプション"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추가 옵션"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多选项"
+          }
+        }
+      }
+    },
+    "Picked up where you left off." : {
+      "comment" : "Add and edit screen: the line at the top when the app brought back the unsaved changes of an earlier session. A button “Start Over” follows.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter, wo du aufgehört hast."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguimos donde lo dejaste."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回の続きから再開しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "하던 내용을 이어서 불러왔어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已恢复上次未存储的内容。"
+          }
+        }
+      }
+    },
+    "Camera Is Off" : {
+      "comment" : "Title of the alert when the camera is not allowed or not available, for Scan Label and Take Photo on the add and edit screen.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamera ist aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cámara está desactivada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラがオフです"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카메라가 꺼져 있어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "相机未开启"
+          }
+        }
+      }
+    },
+    "Couldn’t Save" : {
+      "comment" : "Add and edit screen: the title of the alert when a save fails. The message says that the entries are still there.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern nicht möglich"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存できませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장하지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法存储"
+          }
+        }
+      }
+    },
+    "Never includes item names, doses, or times." : {
+      "comment" : "Settings: the footer under the switch Share Usage Statistics.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enthält nie Namen, Dosen oder Zeiten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nunca incluye nombres, dosis ni horas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目名、用量、時刻は含まれません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목 이름, 용량, 시간은 포함되지 않아요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不包含项目名称、剂量或时间。"
+          }
+        }
+      }
+    },
+    "A backup has your items and records, but not photos. The file isn’t encrypted, so keep it private." : {
+      "comment" : "Settings: the footer of the section Your Data. A backup is a file that the user makes with Back Up.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Backup enthält deine Einträge und Aufzeichnungen, aber keine Fotos. Die Datei ist nicht verschlüsselt, geh also sorgsam damit um."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La copia incluye tus elementos y registros, pero no las fotos. El archivo no está cifrado, así que guárdalo con cuidado."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックアップに入るのは項目と記録で、写真は含まれません。ファイルは暗号化されていないので、取り扱いに気をつけてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "백업에는 항목과 기록이 담겨요. 사진은 빠져요. 파일은 암호화되지 않으니 조심해서 다뤄 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "备份包含你的项目和记录，不含照片。文件未加密，请妥善保管。"
+          }
+        }
+      }
+    },
+    "Opens a web page. We read every message." : {
+      "comment" : "Settings: the footer under Send Feedback. The feedback form is a web page.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es öffnet sich eine Webseite. Wir lesen jede Nachricht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se abre una página web. Leemos todos los mensajes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webページが開きます。届いたメッセージはすべて読んでいます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "웹 페이지가 열려요. 보내 주신 메시지는 모두 읽어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会打开网页。我们会看每一条留言。"
+          }
+        }
+      }
+    },
+    "Couldn’t Make the File" : {
+      "comment" : "Settings, Your Data: the title of the alert when Maru could not make the export or backup file.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei nicht erstellt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se creó el archivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルを作れませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 만들지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法生成文件"
+          }
+        }
+      }
+    },
+    "Couldn’t Confirm the Restore" : {
+      "comment" : "Settings, Your Data: the title of the alert when Maru could not confirm that the restored data is saved.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederherstellung nicht bestätigt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar la restauración"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元を確認できませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원을 확인하지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法确认恢复"
+          }
+        }
+      }
+    },
+    "Couldn’t Restore" : {
+      "comment" : "Settings, Your Data: the title of the alert when a restore did not run.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederherstellung fehlgeschlagen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo restaurar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元できませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원하지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法恢复"
+          }
+        }
+      }
+    },
+    "Couldn’t make the file. Try again." : {
+      "comment" : "Settings, Your Data: the message when Maru could not make the export or backup file.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Datei konnte nicht erstellt werden. Versuche es noch einmal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo crear el archivo. Inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルを作れませんでした。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 만들지 못했어요. 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法生成文件。请重试。"
+          }
+        }
+      }
+    },
+    "This isn’t a Maru backup, or the file is damaged. Nothing changed." : {
+      "comment" : "Settings, Your Data: the message when the chosen file is not a Maru backup. The data of the app did not change.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das ist kein Maru-Backup, oder die Datei ist beschädigt. Es hat sich nichts geändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto no es una copia de Maru o el archivo está dañado. No ha cambiado nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruのバックアップではないか、ファイルが壊れています。データは変わっていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 백업이 아니거나 파일이 손상됐어요. 데이터는 그대로예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是 Maru 备份，或文件已损坏。你的数据没有变化。"
+          }
+        }
+      }
+    },
+    "A newer Maru made this backup. Update Maru, then try again. Nothing changed." : {
+      "comment" : "Settings, Your Data: the message when the backup file comes from a newer version of the app. The data of the app did not change.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Backup stammt von einer neueren Maru-Version. Aktualisiere Maru und versuche es noch einmal. Es hat sich nichts geändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta copia es de una versión más nueva de Maru. Actualiza Maru e inténtalo de nuevo. No ha cambiado nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいバージョンのMaruで作られたバックアップです。Maruをアップデートして、もう一度お試しください。データは変わっていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 최신 버전의 Maru에서 만든 백업이에요. Maru를 업데이트하고 다시 시도해 주세요. 데이터는 그대로예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这份备份来自更新的 Maru。请先更新 Maru，再试一次。你的数据没有变化。"
+          }
+        }
+      }
+    },
+    "Couldn’t restore this backup. Nothing changed." : {
+      "comment" : "Settings, Your Data: the message when a restore did not run. The data of the app did not change.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Backup ließ sich nicht wiederherstellen. Es hat sich nichts geändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo restaurar esta copia. No ha cambiado nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このバックアップを復元できませんでした。データは変わっていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 백업을 복원하지 못했어요. 데이터는 그대로예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法恢复这份备份。你的数据没有变化。"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm the restore. If anything looks wrong later, restore the backup again." : {
+      "comment" : "Settings, Your Data: the message when Maru could not confirm that the restored data is saved.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ob die Wiederherstellung geklappt hat, ließ sich nicht bestätigen. Wenn später etwas nicht stimmt, stelle das Backup noch einmal wieder her."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar la restauración. Si más adelante algo no cuadra, vuelve a restaurar la copia."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元できたか確認できませんでした。あとでデータがおかしいときは、もう一度復元してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원이 끝났는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法确认恢复是否完成。如果之后发现数据不对，请再恢复一次备份。"
+          }
+        }
+      }
+    },
+    "This replaces everything in Maru with the backup. You can’t undo it." : {
+      "comment" : "Settings, Your Data: the message of the alert that asks the user to confirm a restore.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dadurch wird alles in Maru durch das Backup ersetzt. Das lässt sich nicht rückgängig machen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto reemplaza todo lo de Maru por la copia. No se puede deshacer."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruのすべてのデータがバックアップの内容に置き換わります。この操作は取り消せません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru의 모든 데이터가 백업 내용으로 바뀌어요. 되돌릴 수 없어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这会用备份替换 Maru 里的所有内容，且无法撤销。"
+          }
+        }
+      }
+    },
+    "Every other day at %@, starting today, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every second day from today. The placeholder is the times.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden zweiten Tag um %@, ab heute, ohne Enddatum"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un día sí y otro no: %@, desde hoy, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日おき %@、今日から、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "격일 %@, 오늘부터, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隔天 %@，从今天开始，无结束日期"
+          }
+        }
+      }
+    },
+    "Every other day at %@, starting tomorrow, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden zweiten Tag um %@, ab morgen, ohne Enddatum"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un día sí y otro no: %@, desde mañana, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日おき %@、明日から、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "격일 %@, 내일부터, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隔天 %@，从明天开始，无结束日期"
+          }
+        }
+      }
+    },
+    "%@ at %@, from %@, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every few days or has a pause. The first placeholder is the rule, for example Every 3 days, or 21 days on, 7 days off. The second is the times. The third is the first day, for example Tue, Aug 18.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ um %2$@, ab %3$@, ohne Enddatum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ at %2$@, from %3$@, with no end date"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@, desde %3$@, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@、%3$@から、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, %3$@부터, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@，从 %3$@ 开始，无结束日期"
+          }
+        }
+      }
+    },
+    "%@ at %@, with no end date" : {
+      "comment" : "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ um %2$@, ohne Enddatum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ at %2$@, with no end date"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@，无结束日期"
           }
         }
       }

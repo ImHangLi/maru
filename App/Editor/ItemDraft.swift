@@ -133,6 +133,15 @@ struct ItemDraft: Codable, Equatable {
         self.color = color
     }
 
+    /// A new item with the reminder style that the user last chose in Settings (D085). The style is not a dose or a
+    /// time, so a start value is allowed (spec 2.1). The draft keeps it only when the item gets a time.
+    /// Alarms need iOS 26, so an older system gets none.
+    init(color: ItemColor, reminders: NewItemReminders) {
+        self.init(color: color)
+        followUp = reminders.followUpSetting
+        if #available(iOS 26, *), reminders.alarm { alarm = true }
+    }
+
     /// The stored item and the version of its schedule that applies now. A plan that counts days keeps
     /// its stored start date.
     init(item: Item, schedule: Schedule?) {

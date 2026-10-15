@@ -78,6 +78,9 @@ public struct AnalyticsEvent: Sendable, Equatable {
         "setting_changed": [
             "show_names": .flag,
             "app_color": .choice(ItemColor.allCases.map(\.rawValue)),
+            "all_alarm": .flag,
+            "all_remind_again": .choice(["off", "1", "2", "3", "5", "until_recorded"]),
+            "all_remind_again_minutes": .choice(["5", "10", "15", "30", "60"]),
         ],
         "data_action": [
             "action": .choice(DataAction.allCases.map(\.rawValue)),
@@ -316,6 +319,25 @@ public extension AnalyticsEvent {
 
     static func appColorChanged(_ color: ItemColor) -> AnalyticsEvent {
         AnalyticsEvent(unchecked: "setting_changed", ["app_color": .text(color.rawValue)])
+    }
+
+    /// The user set "Alarm" for every item in Settings (D085). It holds no item.
+    static func allAlarmChanged(_ isOn: Bool) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setting_changed", ["all_alarm": .flag(isOn)])
+    }
+
+    /// The user set "Remind Again" for every item in Settings (D085). `nil` is off.
+    static func allRemindAgainChanged(_ count: FollowUpCount?) -> AnalyticsEvent {
+        let text = switch count {
+        case nil: "off"
+        case .untilRecorded?: "until_recorded"
+        case let count?: String(count.rawValue)
+        }
+        return AnalyticsEvent(unchecked: "setting_changed", ["all_remind_again": .text(text)])
+    }
+
+    static func allRemindAgainIntervalChanged(_ interval: FollowUpInterval) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setting_changed", ["all_remind_again_minutes": .text(String(interval.rawValue))])
     }
 
     static func dataAction(_ action: DataAction, _ result: DataResult) -> AnalyticsEvent {

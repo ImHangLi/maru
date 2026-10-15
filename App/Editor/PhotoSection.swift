@@ -147,7 +147,7 @@ struct LookSection<Choices: View>: View {
                         }
                         .ignoresSafeArea()
                     }
-                    .alert("Maru Can’t Use the Camera", isPresented: $cameraIsOff) {
+                    .alert("Camera Is Off", isPresented: $cameraIsOff) {
                         Button("Open Settings") {
                             if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
                         }

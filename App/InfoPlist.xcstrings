@@ -2,42 +2,42 @@
   "sourceLanguage" : "en",
   "strings" : {
     "NSAlarmKitUsageDescription" : {
-      "comment" : "The text of the system alarm permission prompt. The prompt shows at the first tap on the Alarm switch on the add and edit screen.",
+      "comment" : "The text of the system alarm permission prompt. The prompt shows at the first turn-on of Alarm, on the add and edit screen or in Settings.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru lässt zur Einnahmezeit eines Eintrags einen Wecker klingeln, wenn du für diesen Eintrag „Wecker“ aktivierst."
+            "value" : "Maru lässt zur Einnahmezeit einen Wecker klingeln, wenn du „Wecker“ aktivierst."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru rings an alarm at the dose time of an item when you turn on Alarm for that item."
+            "value" : "Maru rings an alarm at dose time when you turn on Alarm."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru hace sonar una alarma a la hora de toma de un elemento cuando activas Alarma para ese elemento."
+            "value" : "Maru hace sonar una alarma a la hora de la toma cuando activas Alarma."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "項目の「アラーム」をオンにすると、Maruはその項目の服用時刻にアラームを鳴らします。"
+            "value" : "「アラーム」をオンにすると、Maruは服用時刻にアラームを鳴らします。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "항목의 ‘알람’을 켜면 Maru가 그 항목의 복용 시간에 알람을 울려요."
+            "value" : "‘알람’을 켜면 Maru가 복용 시간에 알람을 울려요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为某个项目开启“闹钟”后，Maru 会在该项目的服用时间响铃。"
+            "value" : "开启“闹钟”后，Maru 会在服用时间响铃。"
           }
         }
       }

@@ -19,7 +19,7 @@ struct FeedbackSection: View {
             }
             .rowText()
         } footer: {
-            Text("The form opens a web page, and we read every message.")
+            Text("Opens a web page. We read every message.")
         }
     }
 }

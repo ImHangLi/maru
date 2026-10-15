@@ -50,7 +50,7 @@ extension AppModel {
                 let context = try await store.editorContext(for: itemID)
                 if itemID != nil, context.item == nil { throw EditorOpenError.itemNotFound }
                 let original = context.item.map { ItemDraft(item: $0, schedule: context.schedule) }
-                    ?? ItemDraft(color: context.newItemColor)
+                    ?? ItemDraft(color: context.newItemColor, reminders: context.newItemReminders)
                 var session = EditorSession(
                     context: context, original: original, start: original, isRestored: false, generation: generation
                 )
