@@ -37,7 +37,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "另外 %lld 项"
+            "value" : "还有 %lld 个"
           }
         }
       }
@@ -78,7 +78,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未记录"
+            "value" : "没记录"
           }
         }
       }
@@ -113,13 +113,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru를 열어 기록하세요."
+            "value" : "Maru를 열어 기록해 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Maru 以记录。"
+            "value" : "打开 Maru 来记录。"
           }
         }
       }
@@ -154,13 +154,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru를 열어 계획을 확인하세요."
+            "value" : "Maru를 열어 계획을 확인해 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Maru 查看你的计划。"
+            "value" : "打开 Maru 看看你的计划。"
           }
         }
       }
@@ -201,7 +201,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "尚未记录"
+            "value" : "还没记录"
           }
         }
       }

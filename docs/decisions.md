@@ -1385,7 +1385,7 @@ Not verified: the app build on this Mac. CI builds the app.
 
 Open legal risk, for the maintainer: the model review (GPT-6.1-Sol, 2026-10-14) gave an opinion that is not legal advice. It does not treat "on with no notice" as safe in every storefront, because a random install ID is not anonymity in law, and the data comes from a health app. It named the highest risk in Washington and Nevada (consumer health data laws with prior consent), then South Korea (PIPA), Brazil (LGPD), and Canada, mainly Quebec, if the data counts as health data. California, Japan, and Australia expect at least a notice at collection. On 2026-10-14 the maintainer added South Korea to the opt-in list, because PIPA asks for consent first and Korean is a store language. The other risks stay open.
 
-## D079 · 2026-10-14 · Reminder options of each item: "Remind Again" and an alarm (version 1.1)
+## D079 · 2026-10-14 · Reminder options of each item: "Remind Again" and an alarm (version 1.1) (Settings got rows for all items in D085)
 
 Maintainer decision on 2026-10-14, for version 1.1. Version 1.0.0 is in App Review with build 4 and does not change. It replaces the global setting of D039 and the AlarmKit line of its "Rejected" list. It changes spec 4. The project version is 1.1.0.
 
@@ -1509,3 +1509,30 @@ Limits:
 - A recorded dose removes a delivered reminder that named it, also when it named other items. The next reminder names the others.
 
 Not verified: the app build on this Mac. CI builds the app. The behavior on a real iPhone needs a check: archive an item that a delivered reminder names, and look at Notification Center. One test (D016) covers the archive of an item in a shared time group, for the pending and the delivered series and follow-up requests.
+
+## D085 · 2026-10-15 · Settings for all items, plain copy, and a short add and edit screen
+
+Maintainer decision on 2026-10-15, after the use of build 5 (version 1.1.0, TestFlight). The maintainer gave four points in one message. This replaces the line of D079 that says Settings has no rows for "Remind Again", and the "Rejected" line of D079 about a global switch for the alarm. A global setting that replaces the setting of each item stays rejected. The new rows only set every item at once, and each item keeps its own value.
+
+1. Settings for all items.
+   - Settings has a section "For All Items", after "Reminders". It has a row "Alarm" (from iOS 26), a menu "Remind Again", and a menu "Every". "Every" shows only while at least one item has "Remind Again" on. The menus have the same choices and the same words as the add and edit screen.
+   - A row shows the value that every active item with a time has. When the items differ, the row says "Varies". "Alarm" is then a menu with "Varies", "On", and "Off". A choice sets every active item that has a time. "Every" sets only the items that have "Remind Again" on, because an item with it off has no interval to change.
+   - "Has a time" means that the item has a schedule. An archived item and an item with no time stay as they are, as on the edit screen (D079).
+   - One transaction in `MaruDatabase` writes all items (`LocalStore.apply(_:toTimedItemsAt:)`). Then one run of the reminder engines follows, with the report of a save. An item that already has the value does not change.
+   - The follow-up rules of D039 and D079 hold for a bulk change. An item whose "Remind Again" changes gets `followUpChanged` = the time of the change, as a save of the edit screen does, so the limit of 12 for a dose holds across the change. An item whose value is the same keeps its old change time.
+   - "Alarm" asks for the AlarmKit permission at the first turn-on, as the item switch does. A refusal changes nothing and shows the alert "Alarms Are Off" with "Open Settings". Below iOS 26 the row is hidden.
+   - A new item starts with the value that the user last chose in Settings (`reminders.newItem.*` in `UserDefaults.standard`, D014). It starts with "Remind Again" off, 30 minutes, and "Alarm" off until the user chooses. This is a reminder style and not a dose or a time, so spec 2.1 still holds. The draft shows the value before the save, and the user can change it. The start value does not count as a change of the draft. The alarm start value applies only from iOS 26.
+   - Analytics (D077): `setting_changed` has three new fixed fields: `all_alarm` (yes or no), `all_remind_again` (`off`, `1`, `2`, `3`, `5`, or `until_recorded`), and `all_remind_again_minutes` (`5`, `10`, `15`, `30`, or `60`). They hold no item data. `PRIVACY.md` and spec 11 list them.
+
+2. Plain copy. The maintainer said the text of Settings and of the add and edit screen is too formal and hard to understand.
+   - The choice "Until Recorded" is now "Until I Record It". "Record" stays, because the button and the circle say "record" and the app records and does not claim intake (D068, D058).
+   - The footers that explain how the app works are gone: "Only for doses with no record.", "Turn off to keep item names out of reminders.", and the long text under "Alarm". The one limit that matters stays as one short line under "Remind Again": "Reminds you up to 12 times, until 1:00 AM."
+   - The alerts and the footers of "Your Data", "Share Usage Statistics", "Send Feedback", the camera alert, the alarm alert, and the save alert are shorter and use everyday words. The alert titles lose "Maru can’t" and say what is wrong ("Camera Is Off", "Alarms Are Off", "Couldn’t Save").
+   - The plan line keeps "with no end date" (spec 2.1, T03).
+   - One word for one thing: "Remind Again", "Every", "Alarm", "Reminders", and the counts and intervals come from one place in the code (`ReminderOptionText.swift`), so Settings and the edit screen cannot differ.
+
+3. A short add and edit screen. The first view has: the name and the type, the plan with its times and repeat days, and the section "Reminders" ("Alarm", "Remind Again", "Every"). One row, "More Options", opens a page with the optional details: "Amount", the look of the item (form, color, and photo), and "Note". The row shows the amount and the note as its value. This follows Apple Health Medications, Reminders, and the alarm editor in Clock. The photo work stays on the first page, so it does not stop when the user goes back. The smart completion candidates for the amount and the note are on the page "More Options", and the candidates for the times stay under the times. Settings groups its rows as: "Reminders" (state, names), "For All Items", "Display", usage statistics, "Your Data", feedback, tips, and "About". Each section has at most one footer.
+
+4. Six languages. All changed text is in English, zh-Hans, ja, es, de, and ko, with a translator comment, and the keys that no code uses any more are gone. The voice: zh-Hans like a friendly Chinese app, ja polite and light, ko "해요체", es "tú", de "du". The text is a draft until a native speaker reads it (`docs/localization-review.md`). A second pass followed a review of the zh-Hans text, in every catalog (app, notifications, Watch, widgets, and `InfoPlist`): one term for an item (药品), supplements are 保健品, save is 保存, and the tone is casual (没, 还没, 点, no 请, 尚未, or 无法). The other four languages got a lighter pass: ko uses 해요체 everywhere (the Watch text no longer uses 합니다체), and es and de lose perfect-tense and stiff phrases.
+
+Not verified: the app build and the screens on this Mac. CI builds the app. The layout needs a check on a real iPhone: the page "More Options" (the pickers, the photo section, the candidates, VoiceOver, and the largest text sizes), the Settings section at the largest text sizes, the "Varies" state with items that differ, a change of "Remind Again" for all items with the reminders in Notification Center, and the alarm permission from Settings. One test (D016) covers the bulk write and the change time.

@@ -6,12 +6,12 @@ public enum FollowUpCount: Int, CaseIterable, Hashable, Sendable, Codable {
     case two = 2
     case three = 3
     case five = 5
-    /// "Until Recorded". The system has no request that repeats from a later time until the app stops it,
+    /// "Until I Record It". The system has no request that repeats from a later time until the app stops it,
     /// and the app does not run in the background. So this is `untilRecordedLimit` dated requests, and
     /// the settings text states the number.
     case untilRecorded = 0
 
-    /// The most follow-ups of one slot time with "Until Recorded". Four slot times of one day get this
+    /// The most follow-ups of one slot time with "Until I Record It". Four slot times of one day get this
     /// number each in the system limit: 4 × 12 follow-ups, 4 series requests, and the reserve are 54 of 64.
     public static let untilRecordedLimit = 12
 

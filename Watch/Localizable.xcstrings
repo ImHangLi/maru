@@ -171,7 +171,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未记录"
+            "value" : "没记录"
           }
         }
       }
@@ -200,13 +200,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록되지 않음. iPhone에서 Maru를 여세요."
+            "value" : "기록되지 않았어요. iPhone에서 Maru를 열어 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未记录。请在 iPhone 上打开 Maru。"
+            "value" : "没记录。去 iPhone 上打开 Maru。"
           }
         }
       }
@@ -235,13 +235,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록되지 않음. iPhone을 잠금 해제하고 다시 시도하세요."
+            "value" : "기록되지 않았어요. iPhone 잠금을 풀고 다시 시도해 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未记录。请解锁 iPhone 后重试。"
+            "value" : "没记录。解锁 iPhone 再试一次。"
           }
         }
       }
@@ -276,7 +276,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未服用"
+            "value" : "没服用"
           }
         }
       }
@@ -311,7 +311,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "今天无需服用"
+            "value" : "今天没有要服用的"
           }
         }
       }
@@ -340,13 +340,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhone에서 Maru를 열어 업데이트하세요."
+            "value" : "iPhone에서 Maru를 열어 업데이트해 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在 iPhone 上打开 Maru 以更新。"
+            "value" : "打开 iPhone 上的 Maru 来更新。"
           }
         }
       }
@@ -515,13 +515,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 복용이 iPhone에서 변경되었습니다. 기록된 내용이 없습니다."
+            "value" : "이 복용이 iPhone에서 바뀌었어요. 기록된 내용은 없어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "此次服用已在 iPhone 上更改。未记录任何内容。"
+            "value" : "这次服用在 iPhone 上有变化，没有记录任何内容。"
           }
         }
       }
@@ -655,13 +655,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhone에서 확인을 받지 못했습니다. iPhone의 Maru를 확인하세요."
+            "value" : "iPhone에서 확인을 받지 못했어요. iPhone의 Maru를 확인해 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhone 未确认。请在 iPhone 上查看 Maru。"
+            "value" : "iPhone 没确认，去 iPhone 上看看 Maru。"
           }
         }
       }
@@ -690,13 +690,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "iPhone에 연결할 수 없습니다. 기록된 내용이 없습니다."
+            "value" : "iPhone에 연결할 수 없어요. 기록된 내용은 없어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法连接 iPhone。未记录任何内容。"
+            "value" : "连不上 iPhone，没有记录任何内容。"
           }
         }
       }

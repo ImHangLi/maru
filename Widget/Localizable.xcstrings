@@ -31,7 +31,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "剩余 %lld 项"
+            "value" : "还剩 %lld 个"
           }
         }
       }
@@ -416,7 +416,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未记录"
+            "value" : "没记录"
           }
         }
       }
@@ -480,13 +480,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru를 열어 업데이트하세요."
+            "value" : "Maru를 열어 업데이트해 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 Maru 以更新。"
+            "value" : "打开 Maru 来更新。"
           }
         }
       }
@@ -591,7 +591,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "将此次服用记录为已服用"
+            "value" : "把这次服用记为已服用"
           }
         }
       }
@@ -626,7 +626,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "查看还剩多少次服用。不显示名称。"
+            "value" : "看看还剩几次服用，不显示药名。"
           }
         }
       }
@@ -760,13 +760,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "캡슐을 눌러 현재 시간대의 복용을 기록하세요."
+            "value" : "캡슐을 눌러 현재 시간대의 복용을 기록해요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "轻点胶囊，记录当前时段的一次服用。"
+            "value" : "点胶囊，记录当前时段的一次服用。"
           }
         }
       }

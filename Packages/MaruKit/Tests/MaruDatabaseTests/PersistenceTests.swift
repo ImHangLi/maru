@@ -34,6 +34,48 @@ struct PersistenceTests {
         #expect(try await store.item(id: ItemID()) == nil)
     }
 
+    /// "For all items" in Settings changes every active item that has a time, in one write, and no other item (D085).
+    /// A changed "Remind Again" gets the time of the change, so the limit of 12 for one dose holds. An item that
+    /// already has the value keeps its old change time.
+    @Test func bulkReminderOptionsChangeOnlyActiveItemsWithATimeAndStampTheChange() async throws {
+        let store = try LocalStore(directory: directory.url)
+        let earlier = Fixtures.instant("2026-03-01T00:00:00Z")
+        let now = Fixtures.instant("2026-03-02T00:00:00Z")
+        let target = FollowUpSetting(count: .untilRecorded, interval: .minutes30)
+        let off = try Item(category: .supplement, name: "Zinc", form: .capsule, color: .pink)
+        let same = try Item(
+            category: .supplement, name: "Iron", form: .capsule, color: .blue, followUp: target, followUpChanged: earlier
+        )
+        let other = try Item(
+            category: .medication, name: "Metformin", form: .tablet, color: .green,
+            followUp: FollowUpSetting(count: .five, interval: .minutes10), followUpChanged: earlier
+        )
+        // A migrated item whose old change was not confirmed keeps its marker, so the legacy removal check still runs (D079).
+        let pending = try Item(
+            category: .supplement, name: "Calcium", form: .tablet, color: .orange,
+            followUp: FollowUpSetting(count: .two, interval: .minutes15), followUpChanged: .distantFuture
+        )
+        let archived = try Item(category: .supplement, name: "Old", form: .capsule, color: .brown, isArchived: true)
+        let untimed = try Item(category: .supplement, name: "Arnica", form: .drop, color: .mint)
+        for item in [off, same, other, pending, archived, untimed] { try await store.save(item) }
+        for item in [off, same, other, pending, archived] {
+            try await store.save(Fixtures.twiceDailySchedule(itemID: item.id).schedule)
+        }
+
+        #expect(try await store.timedItems().map(\.name) == ["Zinc", "Iron", "Metformin", "Calcium"])
+        #expect(try await store.apply(.followUp(target), toTimedItemsAt: now) == 3)
+        let items = try await store.items()
+        #expect(items.map(\.followUp) == [target, target, target, target, nil, nil])
+        #expect(items.map(\.followUpChanged) == [now, earlier, now, .distantFuture, nil, nil])
+
+        // A new interval changes only the items that have "Remind Again" on, and the alarm changes every timed item.
+        #expect(try await store.apply(.followUp(nil), toTimedItemsAt: now) == 4)
+        #expect(try await store.apply(.followUpInterval(.minutes5), toTimedItemsAt: now) == 0)
+        #expect(try await store.apply(.alarm(true), toTimedItemsAt: now) == 4)
+        #expect(try await store.items().map(\.alarm) == [true, true, true, true, false, false])
+        #expect(ReminderOptionsSummary(items: try await store.timedItems()).alarm == .same(true))
+    }
+
     /// A delete removes one item with its schedule, its occurrences, and its events. Another item keeps
     /// every row, and its event history and projection still agree (D033).
     @Test func deleteRemovesOneItemWithItsRecordsAndLeavesAnotherItemUnchanged() async throws {

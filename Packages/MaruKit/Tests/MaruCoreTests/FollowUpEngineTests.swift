@@ -209,7 +209,7 @@ struct FollowUpEngineTests {
     }
 
     @Test func aChangeOfTheSettingKeepsTheLimitOfTheDose() {
-        // One item at 08:00 in Shanghai. "Until Recorded" every 30 minutes, changed at a time after the slot.
+        // One item at 08:00 in Shanghai. "Until I Record It" every 30 minutes, changed at a time after the slot.
         let slot = Fixtures.instant("2026-03-02T00:00:00Z")
         /// The follow-ups of the 08:00 dose on 2 March, as minutes after 08:00, when the setting of the item
         /// changed `seconds` after 08:00.

@@ -5,6 +5,8 @@
 平台：iPhone 与 iPad 原生（iPad 见 `docs/decisions.md` D072，各设备数据独立、不同步），建议兼容 iOS 17 起；正式提交采用 Apple 当时要求的 SDK，依赖按可用稳定版本锁定。  
 优先级：本文件取代旧版 `supplement_app_v1_spec.md` 与 `supplement_app_v1_retention_addendum.md` 中相冲突的范围、默认值、库存/换瓶流程、指标和技术选择。旧文件保留为历史资料，不再直接作为开发指令。
 
+> Amendment (2026-10-15, D085): Settings has a section "For All Items" with "Alarm" and "Remind Again" for every active item that has a time, and a new item starts with the value that the user last chose there (§4). The add and edit screen has a short first view, and the optional details are on a page "More Options" (`docs/design.md`).
+>
 > Amendments (2026-10-11, see `docs/decisions.md` D032): a new item starts as a supplement with the capsule form, and the user can change both. No default amount and no default reminder time (§2.1) stay. The example time of a supplement is the start value of the time picker, not a time in the draft. The plan preview uses no "·" separator. The English name of "我的清单" is "My Items", and it is a grid. These amendments override conflicting text below.
 >
 > Amendments after V1.2 (2026-10-10, see `docs/decisions.md` D006): add a user-entered intake note per item, for example "with food" or "empty stomach" (milestone A), and a passive history heatmap with no streaks (milestone B). These amendments override conflicting text below.
@@ -148,8 +150,8 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 - 未记录一天或一周：直接今天；旧状态不变，不先展示欠账清单。
 - 很久后回来：可进入“核对当前安排”；不强制补旧记录，不复活已关闭的提醒。
 - 只要提醒的人：不打卡不加频、不自动降频，不触发营销召回。
-- 默认每个已确认时点一条提示，不无限追问。后续提示默认关闭，在每个项目的添加/编辑页单独设置（D039、D079）：次数（1、2、3、5 次或“直到记录”）和间隔（5、10、15、30 分钟或 1 小时）；各项目互不影响，同一时点、同一刻到点的后续提示合并为一条，只列出仍要提醒的项目；不同时点恰好同刻到点的后续提示不合并。“直到记录”也有上限：系统最多保留 64 条待发请求，App 不在后台运行，所以每个项目每个时点最多 12 条；中途修改设置也不超过 12 条，已发出的照算。后续提示在同一项目的下一个时点之前、且最晚到次日 01:00 之前发出，所以深夜的时点也有后续提示；设置中写明这个数字和时间，不宣称无限提醒。
-- 闹钟默认关闭，每个项目单独开启（iOS 26 及以上，AlarmKit，D079；低版本不显示开关）：该项目的服药时点像系统闹钟一样响铃，静音和专注模式下也响。首次打开开关时请求闹钟权限；被拒绝则开关退回关闭，并说明和提供“打开设置”。已记录的剂量不响；开启闹钟的项目在该时点不再发普通通知，后续提示仍是通知；没有闹钟权限、低于 iOS 26，或系统未能排入闹钟时，仍发普通通知，不会漏提醒。闹钟只有一个项目时带“已服用”按钮，仍按 D034 校验身份，提交本地事务后才算已记录（§7.2）；多于一个项目时该按钮只打开 App。
+- 默认每个已确认时点一条提示，不无限追问。后续提示默认关闭，在每个项目的添加/编辑页单独设置，设置页也可一次改全部有时间的项目（D039、D079、D085）：次数（1、2、3、5 次或“直到记录”）和间隔（5、10、15、30 分钟或 1 小时）；各项目互不影响，同一时点、同一刻到点的后续提示合并为一条，只列出仍要提醒的项目；不同时点恰好同刻到点的后续提示不合并。“直到记录”也有上限：系统最多保留 64 条待发请求，App 不在后台运行，所以每个项目每个时点最多 12 条；中途修改设置也不超过 12 条，已发出的照算。后续提示在同一项目的下一个时点之前、且最晚到次日 01:00 之前发出，所以深夜的时点也有后续提示；设置中写明这个数字和时间，不宣称无限提醒。
+- 闹钟默认关闭，每个项目单独开启，设置页也可一次改全部有时间的项目（D085）；新项目从用户在设置页最后选的值开始，这是提醒方式，不是剂量或时间（§2.1 不变）（iOS 26 及以上，AlarmKit，D079；低版本不显示开关）：该项目的服药时点像系统闹钟一样响铃，静音和专注模式下也响。首次打开开关时请求闹钟权限；被拒绝则开关退回关闭，并说明和提供“打开设置”。已记录的剂量不响；开启闹钟的项目在该时点不再发普通通知，后续提示仍是通知；没有闹钟权限、低于 iOS 26，或系统未能排入闹钟时，仍发普通通知，不会漏提醒。闹钟只有一个项目时带“已服用”按钮，仍按 D034 校验身份，提交本地事务后才算已记录（§7.2）；多于一个项目时该按钮只打开 App。
 - 同一时点可以合并提示，但不为合并移动用户的安排，也不表示药品被证明可同服。
 - 记录完成后不跳到下一个页面、不播放必须等待的动画，不让列表突然重排导致误点。
 - 再次查看时必须区分“没有记录”和“确认没有服用”。
@@ -454,7 +456,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 | daily_usage_summary | 同意后的相对日序号、是否用过记录/历史/通知入口/小组件入口/提醒动作/跳过/撤销/修改记录/我的项目/项目详情/设置等布尔标志、打开次数桶、活动项目数桶、是否有小组件 | 每次“已服”时间序列、已服/跳过明细、一天几剂、稳定药品 ID |
 | core_error | 保存/读取/调度/扫描等操作枚举、预定义错误码 | 原始 exception message、SQL 内容、文件路径或 userInfo |
 | notification_permission | 新的通知权限枚举、之前的权限枚举（只在变化时发送） | 通知内容、提醒钟点 |
-| setting_changed | “再次提醒”次数与间隔枚举、是否在提醒中显示名称、App 颜色枚举 | 其他设置值；分析开关关闭后不再发送 |
+| setting_changed | “再次提醒”次数与间隔枚举（设置页“所有项目”，D085）、是否开启全部项目的闹钟、是否在提醒中显示名称、App 颜色枚举 | 其他设置值；分析开关关闭后不再发送 |
 | data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
 | purchase_result | 商品枚举、结果枚举 | Apple 账号、原始交易收据、金融身份 |
