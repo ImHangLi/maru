@@ -82,6 +82,10 @@ extension LocalStore {
 
     /// Loads a schedule through the domain operations, so stored data that breaks a schedule rule does not load.
     static func fetchSchedule(_ db: Database, id: ScheduleID) throws -> Schedule? {
+        try named(.scheduleRow) { try fetchScheduleRow(db, id: id) }
+    }
+
+    private static func fetchScheduleRow(_ db: Database, id: ScheduleID) throws -> Schedule? {
         guard let row = try Row.fetchOne(db, sql: "SELECT * FROM schedule WHERE id = ?", arguments: [id.text]) else {
             return nil
         }
@@ -102,11 +106,14 @@ extension LocalStore {
             sql: "SELECT * FROM scheduleVersion WHERE scheduleID = ? ORDER BY position",
             arguments: [id.text]
         )
-        try domain {
+        try domain(.scheduleSlot) {
             for slotID in slotIDs {
                 try schedule.addSlot(id: ScheduleSlotID(text: slotID))
             }
-            for version in versions {
+        }
+        for version in versions {
+            // A rule of the schedule that rejects the version gives its own rule, for example `version_order`.
+            try domain(.versionRow) {
                 try schedule.appendVersion(decodeVersion(version, scheduleID: id, db))
             }
         }
@@ -127,23 +134,24 @@ extension LocalStore {
         }
         let dose = try (row.decode(forColumn: "dose") as String?).map { text in
             // `Dose` rejects blank text, so a stored dose is never blank.
-            guard let dose = Dose(text) else { throw StorageError.invalidData }
+            guard let dose = Dose(text) else { throw DecodeRule(rule: .versionDose) }
             return dose
         }
         let policy: String = try row.decode(forColumn: "timeZonePolicy")
         let timeZone: String? = try row.decode(forColumn: "timeZone")
         let timeZonePolicy: TimeZonePolicy = switch (policy, timeZone) {
-        case let ("fixed", zone?): .fixed(try NamedTimeZone(text: zone))
+        case let ("fixed", zone?): .fixed(try Self.named(.versionZone) { try NamedTimeZone(text: zone) })
         case ("followsDevice", nil): .followsDevice
-        default: throw StorageError.invalidData
+        default: throw DecodeRule(rule: .versionZone)
         }
         let cycleStart: String? = try row.decode(forColumn: "cycleStart")
         let cycleDaysOn: Int? = try row.decode(forColumn: "cycleDaysOn")
         let cycleDaysOff: Int? = try row.decode(forColumn: "cycleDaysOff")
         let dayCycle: DayCycle? = switch (cycleStart, cycleDaysOn, cycleDaysOff) {
         case (nil, nil, nil): nil
-        case let (start?, daysOn?, daysOff?): try DayCycle(start: LocalDate(text: start), daysOn: daysOn, daysOff: daysOff)
-        default: throw StorageError.invalidData
+        case let (start?, daysOn?, daysOff?):
+            try Self.named(.versionCycle) { try DayCycle(start: LocalDate(text: start), daysOn: daysOn, daysOff: daysOff) }
+        default: throw DecodeRule(rule: .versionCycle)
         }
         return try ScheduleVersion(
             id: ScheduleVersionID(text: id),

@@ -50,9 +50,7 @@ extension LocalStore: FollowUpSource {
     static func doseInputs(
         _ db: Database, now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover
     ) throws -> DoseInputs {
-        let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-        let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-            .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+        let (items, schedules) = try Self.itemsAndSchedules(db)
         let dates = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone).candidateDates
         // The query of `generateOccurrences`, with the state of each occurrence. Records exist only for these dates.
         let rows = try Row.fetchAll(

@@ -17,17 +17,16 @@ extension LocalStore: ReminderPlanSource {
         at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover = .none
     ) async throws(StorageError) -> ReminderPlan {
         try await read { db in
-            let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-            let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-                .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
-            // An occurrence is closed when its projection row says taken or skipped (D047).
+            let (items, schedules) = try Self.itemsAndSchedules(db)
+            // An occurrence is closed when its projection row says taken or skipped (D047). A dose of an as-needed item has
+            // no slot and no reminder, so the query leaves it out. Before D088 it stopped every run with `invalidData`.
             let dates = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone).candidateDates
             let rows = try Row.fetchAll(
                 db,
                 sql: """
                     SELECT occurrence.slotID, occurrence.plannedDate FROM occurrence
                     JOIN occurrenceState ON occurrenceState.occurrenceID = occurrence.id
-                    WHERE occurrence.plannedDate BETWEEN ? AND ?
+                    WHERE occurrence.slotID IS NOT NULL AND occurrence.plannedDate BETWEEN ? AND ?
                     """,
                 arguments: [try dates[0].text, try dates[dates.count - 1].text]
             )

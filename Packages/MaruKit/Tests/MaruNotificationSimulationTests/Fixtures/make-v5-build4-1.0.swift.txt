@@ -1,0 +1,112 @@
+import Foundation
+import GRDB
+import MaruCore
+import Testing
+@testable import MaruDatabase
+
+/// Builds the database that the app of version 1.0 (build 4, schema v5) leaves after realistic use.
+@Suite struct MakeFixture {
+    @Test func make() async throws {
+        let directory = TestDirectory()
+        let store = try LocalStore(directory: directory.url)
+        let sydney = try NamedTimeZone(identifier: "Australia/Sydney")
+        let shanghai = try NamedTimeZone(identifier: "Asia/Shanghai")
+        func d(_ day: Int) -> LocalDate { Fixtures.date(2026, 10, day) }
+        func at(_ text: String) -> Date {
+            let f = DateFormatter()
+            f.locale = Locale(identifier: "en_US_POSIX")
+            f.dateFormat = "yyyy-MM-dd HH:mm"
+            f.timeZone = TimeZone(identifier: "Australia/Sydney")
+            return f.date(from: text)!
+        }
+
+        func add(
+            _ name: String, _ category: ItemCategory, _ form: ItemForm, _ color: ItemColor, times: [(Int, Int)], from: LocalDate,
+            policy: TimeZonePolicy, dose: String? = nil, rule: WeeklyRule = .everyDay, cycle: DayCycle? = nil, note: IntakeNote? = nil
+        ) async throws -> (Item, Schedule) {
+            let item = try Item(category: category, name: name, form: form, color: color, intakeNote: note)
+            var schedule = Schedule(itemID: item.id, isEnabled: true)
+            var slotTimes: [SlotTime] = []
+            for (hour, minute) in times {
+                slotTimes.append(SlotTime(slotID: try schedule.addSlot().id, time: Fixtures.time(hour, minute)))
+            }
+            try schedule.appendVersion(
+                ScheduleVersion(
+                    scheduleID: schedule.id, effectiveFrom: from, weeklyRule: rule, dayCycle: cycle, slotTimes: slotTimes,
+                    dose: dose.flatMap(Dose.init), timeZonePolicy: policy
+                )
+            )
+            try await store.save(item, schedule: schedule)
+            return (item, schedule)
+        }
+
+        let (coq, coqSchedule) = try await add(
+            "Coenzyme Q10", .supplement, .softgel, .orange, times: [(9, 0), (16, 0), (21, 0)], from: d(9),
+            policy: .followsDevice, dose: "150mg, 2 tablets "
+        )
+        let (b, bSchedule) = try await add("Vitamin B Complex", .supplement, .capsule, .yellow, times: [(8, 0)], from: d(9), policy: .followsDevice)
+        let (mg, _) = try await add(
+            "Magnesium Glycinate", .supplement, .tablet, .blue, times: [(21, 0)], from: d(9), policy: .fixed(sydney), dose: "15g",
+            note: .preset(.withFood)
+        )
+        var (fish, fishSchedule) = try await add(
+            "Fish Oil", .supplement, .softgel, .green, times: [(21, 0)], from: d(9), policy: .followsDevice, note: try .custom("with dinner")
+        )
+        let (med, _) = try await add(
+            "Metformin", .medication, .tablet, .pink, times: [(7, 30), (19, 30)], from: d(10), policy: .fixed(shanghai),
+            rule: try WeeklyRule(weekdays: [.monday, .wednesday, .friday])
+        )
+        let (alt, _) = try await add(
+            "Iron", .supplement, .tablet, .purple, times: [(10, 0)], from: d(11), policy: .followsDevice,
+            cycle: try DayCycle(start: d(11), daysOn: 1, daysOff: 1)
+        )
+        try await store.save(try Item(category: .supplement, name: "Creatine", form: .powder, color: .mint))
+        _ = (med, alt)
+
+        // Same day edit: Vitamin B gets a second time, then a third.
+        var b2 = bSchedule
+        let slot2 = try b2.addSlot()
+        try b2.appendVersion(
+            ScheduleVersion(
+                scheduleID: b2.id, effectiveFrom: d(15), weeklyRule: .everyDay,
+                slotTimes: b2.versions[0].slotTimes + [SlotTime(slotID: slot2.id, time: Fixtures.time(0, 0))],
+                timeZonePolicy: .followsDevice
+            )
+        )
+        try await store.save(b, schedule: b2)
+        // A change of time on the same day, and a version across midnight.
+        var coq2 = coqSchedule
+        try coq2.changeTime(of: coq2.slots[2].id, to: Fixtures.time(23, 0), effectiveFrom: d(15))
+        try await store.save(coq, schedule: coq2)
+        try coq2.changeTime(of: coq2.slots[2].id, to: Fixtures.time(22, 30), effectiveFrom: d(16))
+        try await store.save(coq, schedule: coq2)
+
+        // Records over a week.
+        for day in 9...15 {
+            let now = at("2026-10-\(String(format: "%02d", day)) 23:00")
+            let occurrences = try await store.generateOccurrences(at: now, deviceTimeZone: sydney)
+            for (index, occurrence) in occurrences.enumerated() where occurrence.plannedDate == d(day) && index % 2 == 0 {
+                let event = Fixtures.event(for: occurrence, index % 4 == 0 ? .taken : .skipped)
+                try await store.record(event, scheduleVersionID: occurrence.scheduleVersionID)
+            }
+        }
+        // As-needed doses: an item with no schedule, taken on two days (D021).
+        let ibu = try Item(category: .medication, name: "Ibuprofen", form: .tablet, color: .brown)
+        try await store.save(ibu)
+        for (day, hour) in [(14, 10), (15, 14), (15, 22)] {
+            let instant = at("2026-10-\(day) \(hour):05")
+            let dose = AsNeededOccurrence(itemID: ibu.id, at: instant, in: sydney)
+            let event = IntakeEvent(occurrenceID: dose.id, action: .taken, occurredAt: instant, recordedAt: instant, source: .app)
+            try await store.recordAsNeeded(event, occurrence: dose)
+        }
+        // Archive and edit.
+        fish.isArchived = true
+        try await store.save(fish, schedule: fishSchedule)
+        fishSchedule.isEnabled = false
+        try await store.save(fish, schedule: fishSchedule)
+
+        try await store.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+        try? FileManager.default.removeItem(atPath: "/tmp/fixture-b4.sqlite")
+        try FileManager.default.copyItem(at: directory.databaseFile, to: URL(fileURLWithPath: "/tmp/fixture-b4.sqlite"))
+    }
+}

@@ -43,9 +43,7 @@ extension LocalStore {
         days: Int,
         deviceTimeZone: NamedTimeZone
     ) throws -> HistoryPage {
-        let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-        let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-            .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+        let (items, schedules) = try Self.itemsAndSchedules(db)
         let newest = today.adding(days: -1)
         let oldest = today.adding(days: -max(days, 1))
         // The join to the slot is a LEFT JOIN, so an as-needed dose (no slot, D021) loads too. Its item is
@@ -104,9 +102,7 @@ extension LocalStore {
         deviceTimeZone: NamedTimeZone
     ) async throws(StorageError) -> HistoryCounts {
         try await read { db in
-            let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-            let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-                .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+            let (items, schedules) = try Self.itemsAndSchedules(db)
             guard let firstDay = try Self.firstDay(db, schedules: schedules) else {
                 return HistoryCounts(firstDay: nil, days: [:])
             }

@@ -42,6 +42,16 @@ A pull request alone cannot make these decisions. A maintainer makes them and re
 5. Merge when CI passes and the review has no open blocking finding.
 6. Update `docs/status.md`.
 
+## Release checks
+
+A fix of a reminder or of stored data is not done until a device check passes (D088).
+
+1. Install the build on the iPhone and open the app.
+2. Read the live log: `uvx pymobiledevice3 syslog live --udid <UDID>`. Filter for `Maru` and the category `reminders`.
+3. Save an item, record a dose, and take an as-needed dose. Each action must end with a log line "Reminder run" and no line "Reminder run failed".
+4. A line "A stored row did not load" names a rule. Fix the cause of that rule before the release.
+5. A change of the schema adds a fixture to `Packages/MaruKit/Tests/MaruNotificationSimulationTests/Fixtures`: a database that the shipped version left after real use. `UpgradeTests` opens it with the new code and runs the whole reminder queue.
+
 ## Token budget for agents
 
 The maintainer asked for a lean, token-efficient way of work (D045).

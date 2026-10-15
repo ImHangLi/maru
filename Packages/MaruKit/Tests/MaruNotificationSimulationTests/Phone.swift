@@ -278,19 +278,28 @@ final class Phone: @unchecked Sendable {
     var checks = Oracle.Checks()
     /// Check the invariant after every run. A scenario of a known gap can turn it off.
     var autoCheck = true
+    /// The random edit tests check the run (no error, no "not set"). They leave the content checks to the scenarios.
+    var checkOracle = true
 
-    static func make(zone: String = "Australia/Sydney", start: String = "2026-10-14 12:00") async throws -> Phone {
+    /// - Parameter fixture: A database file that an earlier version of the app left. The phone opens a copy of it, so the
+    ///   store migrates it as an update does. The oracle knows nothing of its items, so a scenario turns it off.
+    static func make(
+        zone: String = "Australia/Sydney", start: String = "2026-10-14 12:00", fixture: URL? = nil
+    ) async throws -> Phone {
         let zone = try NamedTimeZone(identifier: zone)
         let device = SimDevice(now: Date(), zone: zone)
-        let phone = try Phone(device: device)
+        let phone = try Phone(device: device, fixture: fixture)
         device.now = phone.instant(start)
         return phone
     }
 
-    private init(device: SimDevice) throws {
+    private init(device: SimDevice, fixture: URL?) throws {
         self.device = device
         center = FakeNotificationCenter(device: device)
         let directory = directory
+        if let fixture {
+            try FileManager.default.copyItem(at: fixture, to: directory.url.appendingPathComponent("maru.sqlite"))
+        }
         store = try LocalStore(directory: directory.url)
     }
 
@@ -379,7 +388,7 @@ final class Phone: @unchecked Sendable {
         guard autoCheck, check, process.life.alive else { return }
         let label = "after the run at \(Oracle.format(device.now, device.zone))"
         if let lastError { Issue.record("\(label): the run threw \(lastError)") }
-        await expectCorrect(label)
+        if checkOracle { await expectCorrect(label) }
         if let outcome = lastOutcome { expectOutcomeIsClean(outcome, label) }
     }
 
@@ -447,14 +456,21 @@ final class Phone: @unchecked Sendable {
     @discardableResult
     func addItem(
         _ name: String, at times: [String], days: SimDays = .everyDay, zone: SimZone = .device,
-        followUp: FollowUpSetting? = nil, alarm: Bool = false, paused: Bool = false
+        followUp: FollowUpSetting? = nil, alarm: Bool = false, paused: Bool = false, dose: String? = nil,
+        startsToday: Bool = false
     ) async throws -> ItemID {
         await open()
         let item = try Item(category: .supplement, name: name, form: .capsule, color: .pink, followUp: followUp, alarm: alarm)
         var schedule = Schedule(itemID: item.id, isEnabled: !paused)
         var slots: [SimSlot] = []
         var slotTimes: [SlotTime] = []
-        let start = try LocalDate(year: 2026, month: 1, day: 1)
+        // The edit screen starts a new schedule on the day of the save, in the zone of the schedule (spec 7.1).
+        let start: LocalDate
+        if startsToday {
+            start = if case let .fixed(zone) = zone { today(in: zone) } else { today() }
+        } else {
+            start = try LocalDate(year: 2026, month: 1, day: 1)
+        }
         for text in times {
             let slot = try schedule.addSlot()
             let time = Self.wallClock(text)
@@ -477,7 +493,7 @@ final class Phone: @unchecked Sendable {
         try schedule.appendVersion(
             ScheduleVersion(
                 scheduleID: schedule.id, effectiveFrom: start, weeklyRule: rule, dayCycle: cycle, slotTimes: slotTimes,
-                timeZonePolicy: policy
+                dose: dose.flatMap(Dose.init), timeZonePolicy: policy
             )
         )
         try await store.save(item, schedule: schedule)
@@ -497,7 +513,7 @@ final class Phone: @unchecked Sendable {
         var model = models[name]!
         let slotID = model.schedule.slots[slot].id
         let time = Self.wallClock(text)
-        let from = today()
+        let from = zoneToday(of: name)
         try model.schedule.changeTime(of: slotID, to: time, effectiveFrom: from)
         try await store.save(model.item, schedule: model.schedule)
         models[name] = model
@@ -511,19 +527,52 @@ final class Phone: @unchecked Sendable {
         await open()
         var model = models[name]!
         let latest = model.schedule.versions.last!
+        let from = zoneToday(of: name)
         let slot = try model.schedule.addSlot()
         let time = Self.wallClock(text)
         try model.schedule.appendVersion(
             ScheduleVersion(
-                scheduleID: model.schedule.id, effectiveFrom: today(), weeklyRule: latest.weeklyRule, dayCycle: latest.dayCycle,
-                slotTimes: latest.slotTimes + [SlotTime(slotID: slot.id, time: time)], timeZonePolicy: latest.timeZonePolicy
+                scheduleID: model.schedule.id, effectiveFrom: from, weeklyRule: latest.weeklyRule, dayCycle: latest.dayCycle,
+                slotTimes: latest.slotTimes + [SlotTime(slotID: slot.id, time: time)], dose: latest.dose,
+                timeZonePolicy: latest.timeZonePolicy
             )
         )
         try await store.save(model.item, schedule: model.schedule)
         models[name] = model
         let index = truth.index(of: name)
-        truth.items[index].slots.append(SimSlot(id: slot.id, times: [(today(), time)]))
+        truth.items[index].slots.append(SimSlot(id: slot.id, times: [(from, time)]))
         await runAfterChange()
+    }
+
+    /// The date from which an edit applies: today in the zone of the schedule, as the edit screen computes it.
+    private func zoneToday(of name: String) -> LocalDate {
+        if case let .fixed(zone) = truth.items[truth.index(of: name)].zone { today(in: zone) } else { today() }
+    }
+
+    /// An item with no schedule. The user can record it at any time (D021).
+    func addAsNeededItem(_ name: String) async throws -> Item {
+        await open()
+        let item = try Item(category: .medication, name: name, form: .tablet, color: .orange)
+        try await store.save(item)
+        await runAfterChange()
+        return item
+    }
+
+    /// "Take Now" on an as-needed item. The app runs the notification queue after each record.
+    func takeAsNeeded(_ item: Item) async throws {
+        await open()
+        let dose = AsNeededOccurrence(itemID: item.id, at: device.now, in: device.zone)
+        let event = IntakeEvent(
+            occurrenceID: dose.id, action: .taken, occurredAt: device.now, recordedAt: device.now, source: .app
+        )
+        try await store.recordAsNeeded(event, occurrence: dose)
+        await runAfterChange()
+    }
+
+    /// The current times of the item as `HH:MM`, in the order of its slots.
+    func times(of name: String) async -> [String] {
+        truth.items[truth.index(of: name)].slots.compactMap { $0.times.last?.time }
+            .map { String(format: "%02d:%02d", $0.hour, $0.minute) }
     }
 
     func rename(_ name: String, to newName: String) async throws {

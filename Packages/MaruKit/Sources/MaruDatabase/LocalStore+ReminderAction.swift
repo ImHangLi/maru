@@ -24,9 +24,7 @@ extension LocalStore {
     ) async throws(StorageError) -> ReminderActionTarget {
         _ = try await generate(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
         return try await read { db -> ReminderActionTarget in
-            let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-            let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-                .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+            let (items, schedules) = try Self.itemsAndSchedules(db)
             let resolver = ReminderTapResolver(now: now, deviceTimeZone: deviceTimeZone, observedTimeZone: observedTimeZone)
             guard let planned = resolver.takenTarget(of: reminder, items: items, schedules: schedules),
                   let occurrence = try Row.fetchOne(

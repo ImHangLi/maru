@@ -4,12 +4,7 @@ import UserNotifications
 
 extension SystemReminderCenter: FollowUpCenter {
     public func add(_ request: FollowUpRequest) async throws {
-        let request = UNNotificationRequest(request)
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-            UNUserNotificationCenter.current().add(request) { error in
-                continuation.resume(with: error.map(Result.failure) ?? .success(()))
-            }
-        }
+        try await Self.submit(UNNotificationRequest(request))
     }
 
     public func delivered() async -> [PendingReminder] {
