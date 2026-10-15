@@ -173,6 +173,16 @@ struct ProcessAlarmCenter: AlarmCenter {
         return await base.waiting()
     }
 
+    func active() async throws -> Set<UUID> {
+        _ = await life.gate()
+        return await base.active()
+    }
+
+    func snapshot() async throws -> AlarmSnapshot {
+        _ = await life.gate()
+        return await base.snapshot()
+    }
+
     func schedule(_ request: AlarmRequest) async throws {
         guard await life.gate() else { return }
         try await base.schedule(request)
@@ -225,7 +235,8 @@ final class SimProcess: @unchecked Sendable {
             center: TimedAlarmCenter(base: ProcessAlarmCenter(base: phone.alarmCenter, life: life), wanted: wanted, limit: .milliseconds(200)), privacy: phone.privacy,
             alarmsRing: { device.alarmsAllowed },
             wanted: wanted,
-            generations: phone.counter
+            generations: phone.counter,
+            index: phone.alarmIndex
         )
     }
 
@@ -256,6 +267,8 @@ final class Phone: @unchecked Sendable {
     let device: SimDevice
     let center: FakeNotificationCenter
     let alarmCenter = FakeAlarmCenter()
+    /// The durable index of the alarms. It survives the stop of the app process.
+    let alarmIndex = MemoryAlarmIndex()
     let store: LocalStore
     let privacy = SimPrivacy()
     let counter = SimCounter()
@@ -279,6 +292,8 @@ final class Phone: @unchecked Sendable {
     var checks = Oracle.Checks()
     /// Check the invariant after every run. A scenario of a known gap can turn it off.
     var autoCheck = true
+    /// The next run may show the permission prompt, as the run after a confirmed save does (spec 2.2). `addItem` sets it.
+    var asksForPermissionInNextRun = false
     /// The random edit tests check the run (no error, no "not set"). They leave the content checks to the scenarios.
     var checkOracle = true
 
@@ -331,8 +346,9 @@ final class Phone: @unchecked Sendable {
 
     func advance(to time: Date) async {
         let before = await center.deliveries.count
+        let from = device.now
         await center.advance(to: time)
-        await alarmCenter.advance(to: time)
+        await alarmCenter.advance(from: from, to: time, zone: device.zone)
         let delivered = await center.deliveries.dropFirst(before)
         for delivery in delivered {
             deliveryViolations += Oracle(phone: self).violations(of: delivery)
@@ -377,8 +393,10 @@ final class Phone: @unchecked Sendable {
 
     private func run(_ process: SimProcess, check: Bool = true) async {
         lastError = nil
+        let mayAsk = asksForPermissionInNextRun
+        asksForPermissionInNextRun = false
         do {
-            lastOutcome = try await process.reconcile(at: device.now, zone: device.zone)
+            lastOutcome = try await process.reconcile(at: device.now, zone: device.zone, mayAskForPermission: mayAsk)
         } catch {
             lastOutcome = nil
             lastError = error
@@ -498,6 +516,7 @@ final class Phone: @unchecked Sendable {
             )
         )
         try await store.save(item, schedule: schedule)
+        asksForPermissionInNextRun = true
         models[name] = (item, schedule)
         truth.items.append(
             SimItem(

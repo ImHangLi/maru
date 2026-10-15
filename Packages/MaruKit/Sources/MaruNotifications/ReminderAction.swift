@@ -42,7 +42,16 @@ public enum ReminderAction {
 public enum ActionNotice {
     public static let identifier = "action|notRecorded"
 
-    public static func send(locale: Locale = .current) async {
+    /// Why the action recorded nothing (D089). The body says it in one line.
+    public enum Reason: Sendable {
+        /// The reminder does not match exactly one open dose of today: another day, an older plan, a dose with a record,
+        /// or a late delivery.
+        case noMatch
+        /// The database did not read or did not commit.
+        case notSaved
+    }
+
+    public static func send(_ reason: Reason, locale: Locale = .current) async {
         let content = UNMutableNotificationContent()
         content.title = String(
             localized: "Not recorded",
@@ -50,12 +59,22 @@ public enum ActionNotice {
             locale: locale,
             comment: "The title of the notification after the Taken action of a reminder recorded nothing."
         )
-        content.body = String(
-            localized: "Open Maru to record it.",
-            bundle: .module,
-            locale: locale,
-            comment: "The body of the notification after the Taken action of a reminder recorded nothing."
-        )
+        switch reason {
+        case .noMatch:
+            content.body = String(
+                localized: "This reminder no longer matches one dose of today. Open Maru to record it.",
+                bundle: .module,
+                locale: locale,
+                comment: "The body of the notification after the Taken action of a reminder recorded nothing, because the reminder does not match exactly one open dose of today."
+            )
+        case .notSaved:
+            content.body = String(
+                localized: "Maru could not save the dose. Open Maru to try again.",
+                bundle: .module,
+                locale: locale,
+                comment: "The body of the notification after the Taken action of a reminder recorded nothing, because the record did not save."
+            )
+        }
         content.sound = .default
         // An error leaves no notification. Maru still shows the state when the user opens it.
         try? await UNUserNotificationCenter.current().add(

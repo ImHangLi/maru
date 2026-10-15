@@ -384,6 +384,32 @@ actor FakeAlarmCenter: AlarmCenter {
         while hangs { try? await Task.sleep(for: .milliseconds(50)) }
     }
 
+    /// The alarms that ring now. They are not waiting.
+    private(set) var ringing: Set<UUID> = []
+    private var restingRequests: [UUID: AlarmRequest] = [:]
+
+    /// A repeating alarm starts to ring: it leaves the waiting set and stays registered.
+    func startRinging() {
+        for (id, request) in alarms where request.repeating != nil {
+            ringing.insert(id)
+            restingRequests[id] = request
+            alarms[id] = nil
+        }
+    }
+
+    func active() async -> Set<UUID> { ringing }
+
+    func snapshot() async -> AlarmSnapshot {
+        await hangIfAsked()
+        return AlarmSnapshot(waiting: Set(alarms.keys), active: ringing)
+    }
+
+    /// The user taps "Stop": a repeating alarm waits for its next ring again.
+    func stopRinging() {
+        for id in ringing { alarms[id] = restingRequests[id] }
+        ringing = []
+    }
+
     func waiting() async -> Set<UUID> {
         await hangIfAsked()
         return Set(alarms.keys)
@@ -402,10 +428,30 @@ actor FakeAlarmCenter: AlarmCenter {
         ids.forEach { alarms[$0] = nil }
     }
 
-    func advance(to time: Date) {
-        for request in alarms.values.filter({ $0.fireDate <= time }).sorted(by: { $0.fireDate < $1.fireDate }) {
-            rang.append(request)
-            alarms[request.id] = nil
+    /// The alarms that ring in `(from, time]`. An alarm of one date rings once and leaves. A repeating alarm stays
+    /// and rings on each matching date, on the clock of the device (D089).
+    func advance(from: Date, to time: Date, zone: NamedTimeZone) {
+        for request in alarms.values.sorted(by: { $0.fireDate < $1.fireDate }) {
+            if let repeating = request.repeating {
+                let count = Self.rings(of: repeating, after: from, through: time, zone: zone).count
+                rang += Array(repeating: request, count: count)
+            } else if request.fireDate <= time {
+                rang.append(request)
+                alarms[request.id] = nil
+            }
         }
+    }
+
+    /// The instants at which a repeating alarm rings in `(after, through]`.
+    static func rings(of repeating: AlarmRequest.Repeat, after: Date, through: Date, zone: NamedTimeZone) -> [Date] {
+        repeating.weekdays.flatMap { weekday -> [Date] in
+            var components = DateComponents()
+            components.hour = repeating.time.hour
+            components.minute = repeating.time.minute
+            components.weekday = weekday.rawValue % 7 + 1
+            return FakeNotificationCenter.fireDates(
+                of: .calendar(components, repeats: true), after: after, through: through, deviceZone: zone
+            )
+        }.sorted()
     }
 }

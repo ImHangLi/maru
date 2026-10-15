@@ -158,4 +158,15 @@ struct BackupTests {
         #expect(try await store.records(of: [seed.occurrence.id])[seed.occurrence.id]?.status == .taken)
         #expect(LocalStore.restoreEpoch(in: directory.url)! % 2 == 0)
     }
+
+    /// N8 (D089): a restore that the system stopped leaves the epoch odd. The next start of the app makes it even,
+    /// so the widget works again.
+    @Test func anInterruptedRestoreDoesNotLeaveTheEpochOdd() async throws {
+        _ = try LocalStore(directory: directory.url)
+        let file = directory.url.appendingPathComponent(LocalStore.epochFileName)
+        try Data("3".utf8).write(to: file)
+        #expect(LocalStore.restoreEpoch(in: directory.url) == 3)
+        _ = try LocalStore(directory: directory.url)
+        #expect(LocalStore.restoreEpoch(in: directory.url) == 4)
+    }
 }

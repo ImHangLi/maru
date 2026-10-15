@@ -17,7 +17,7 @@ extension LocalStore: ReminderPlanSource {
         at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover = .none
     ) async throws -> ReminderPlan {
         try await readPlan { db in
-            let (items, schedules, unreadable) = try Self.planInputs(db)
+            let (items, schedules, unreadableSchedules) = try Self.planInputs(db)
             // An occurrence is closed when its projection row says taken or skipped (D047). A dose of an as-needed item has
             // no slot and no reminder, so the query leaves it out. Before D088 it stopped every run with `invalidData`.
             let dates = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone).candidateDates
@@ -30,12 +30,22 @@ extension LocalStore: ReminderPlanSource {
                     """,
                 arguments: [try dates[0].text, try dates[dates.count - 1].text]
             )
-            let closed = try Self.named(.occurrenceRow) { try Set(rows.map { row in
-                OccurrenceKey(
-                    slotID: try ScheduleSlotID(text: row.decode(forColumn: "slotID")),
-                    plannedDate: try LocalDate(text: row.decode(forColumn: "plannedDate"))
-                )
-            }) }
+            var closed: Set<OccurrenceKey> = []
+            var unreadable = unreadableSchedules
+            // One row that does not decode is skipped and logged, and its schedule is marked (D089).
+            for row in rows {
+                do {
+                    try Self.named(.occurrenceRow) {
+                        closed.insert(OccurrenceKey(
+                            slotID: try ScheduleSlotID(text: row.decode(forColumn: "slotID")),
+                            plannedDate: try LocalDate(text: row.decode(forColumn: "plannedDate"))
+                        ))
+                    }
+                } catch let error as DecodeRule {
+                    DecodeFaults.skipped(error.rule)
+                    if let id = try Self.scheduleID(ofOccurrenceRow: row, db) { unreadable.insert(id) }
+                }
+            }
             return ReminderPlan(
                 items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, closed: closed,
                 alarms: alarms, unreadable: unreadable

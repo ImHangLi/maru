@@ -152,6 +152,8 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 - 只要提醒的人：不打卡不加频、不自动降频，不触发营销召回。
 - 默认每个已确认时点一条提示，不无限追问。后续提示默认关闭，在每个项目的添加/编辑页单独设置，设置页也可一次改全部有时间的项目（D039、D079、D085）：次数（1、2、3、5 次或“直到记录”）和间隔（5、10、15、30 分钟或 1 小时）；各项目互不影响，同一时点、同一刻到点的后续提示合并为一条，只列出仍要提醒的项目；不同时点恰好同刻到点的后续提示不合并。“直到记录”也有上限：系统最多保留 64 条待发请求，App 不在后台运行，所以每个项目每个时点最多 12 条；中途修改设置也不超过 12 条，已发出的照算。后续提示在同一项目的下一个时点之前、且最晚到次日 01:00 之前发出，所以深夜的时点也有后续提示；设置中写明这个数字和时间，不宣称无限提醒。
 - 闹钟默认关闭，每个项目单独开启，设置页也可一次改全部有时间的项目（D085）；新项目从用户在设置页最后选的值开始，这是提醒方式，不是剂量或时间（§2.1 不变）（iOS 26 及以上，AlarmKit，D079；低版本不显示开关）：该项目的服药时点像系统闹钟一样响铃，静音和专注模式下也响。首次打开开关时请求闹钟权限；被拒绝则开关退回关闭，并说明和提供“打开设置”。已记录的剂量不响；开启闹钟的项目在该时点不再发普通通知，后续提示仍是通知；没有闹钟权限、低于 iOS 26，或系统未能排入闹钟时，仍发普通通知，不会漏提醒。闹钟只有一个项目时带“已服用”按钮，仍按 D034 校验身份，提交本地事务后才算已记录（§7.2）；多于一个项目时该按钮只打开 App。
+
+> Amendment (2026-10-16, D089): The alarm of an item that follows the device and has no day cycle is a repeating alarm of AlarmKit (one time of day on some weekdays), so it never runs out when the app does not open. A dose with a record before its time, a dose of a fixed zone, and a dose of a plan with a day cycle have one alarm for each date, for 28 days. At most 64 alarms are held, the repeating ones first. A dose that is due within 7 days and has no alarm because of this limit gives its item the normal reminder. The "Taken" button of a repeating alarm records today's dose when the dose time has come, with the checks of D034, and otherwise records nothing.
 - 同一时点可以合并提示，但不为合并移动用户的安排，也不表示药品被证明可同服。
 - 记录完成后不跳到下一个页面、不播放必须等待的动画，不让列表突然重排导致误点。
 - 再次查看时必须区分“没有记录”和“确认没有服用”。
@@ -301,6 +303,8 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 > Amendment (2026-10-12, D047): One fire time gives one notification that names the open items. A dose that is recorded (taken or skipped) before its time does not remind: the repeating request of that weekday is replaced by weekly requests for the other weekdays, and by dated requests for the next two dates of that weekday. A daily or weekly item and an every-other-day item at one time share one dated request on a due day. Each run (launch, return to the front, save, record, undo) compiles again, and after the time passes the plan has the repeating request again. Without room in the budget of 48, the plain requests stay. The limits are in `docs/decisions.md` D047.
 
+> Amendment (2026-10-16, D089): The reach of the dated requests changed. A plan with a day cycle gets dated requests for at least 7 due dates, and for up to 28 when the series requests stay within 32 of the 48 and no series is lost. A weekday that a record before its time took out of the repeat gets dated requests for at least 2 weeks, and for up to 8. The engine reports the instant of the last dated request of each schedule, and the item detail states the date when the plan counts days or when the date is within 21 days. The repeating requests have no limit. The app asks for the notification permission when the plan has a reminder or an item with an alarm.
+
 没有常驻 timer、假后台音频、依赖每晚后台刷新、APNs 续命或逐日服务端推送。计划本身可以持续存在，实际通知显示仍受系统权限、专注模式、摘要、关机等影响；不宣传必达、永不漏服或自动绕过静音。
 
 ### 8.2 重复通知的内容与局限
@@ -326,6 +330,8 @@ A delete of one item with its records, which the user asks for and confirms, is 
 一次性通知可携带 occurrenceID。重复通知的 userInfo 是 seriesID + scheduleRevision，不能预写一个固定“今天的 occurrenceID”永远复用。
 
 隔天一次、每隔几天和周期的带日期请求（D036，D065）在 userInfo 中另带计划日期。点击时直接用这个日期，不从交付时间推断；其余规则不变：不是今天、延迟交付、时区不确定、旧版本或夏令时歧义时，点击不确定对应哪一次（D081）。只对应一个项目的带日期请求同样提供“已服”动作，用 scheduleRevision 校验身份。
+
+> Amendment (2026-10-16, D089): The "Taken" action of every reminder records only when the stored occurrence has the schedule version that the plan of now gives the dose. After an undo and a plan edit on the same day, the action records nothing and the notice says why: "This reminder no longer matches one dose of today. Open Maru to record it." A record that does not save gives "Maru could not save the dose. Open Maru to try again."
 
 点击时综合 `UNNotification.date`、触发规则、时区与历史版本解析候选事项；不能用用户点击时的 `Date()` 直接记为今天。[S12] 系统交付元数据不必然等于原定时间；跨日延迟、时区、旧版本或无法唯一解析时点击只打开“今天”，不猜、不写任何记录（D081）。
 

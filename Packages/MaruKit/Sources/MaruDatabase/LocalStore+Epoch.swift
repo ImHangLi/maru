@@ -25,6 +25,16 @@ extension LocalStore {
         try FileProtection.protect(files: [file])
     }
 
+    /// Makes an odd epoch even. A restore that the system stopped between its two changes leaves the epoch odd, and every widget
+    /// action refuses an odd epoch. The change of the number also refuses an action that read the data before the stop (D048, D089).
+    /// It is best effort: when the file cannot be written, the widget stays off until the next start.
+    static func closeInterruptedRestoreEpoch(in directory: URL) {
+        guard let current = restoreEpoch(in: directory), current % 2 == 1 else { return }
+        let file = directory.appendingPathComponent(epochFileName)
+        guard (try? Data(String(current + 1).utf8).write(to: file, options: .atomic)) != nil else { return }
+        try? FileProtection.protect(files: [file])
+    }
+
     /// The restore epoch of this store. See `restoreEpoch(in:)`.
     public var restoreEpoch: Int? { Self.restoreEpoch(in: directory) }
 

@@ -26,13 +26,15 @@ struct DoseGroups {
     ///   - reminding: The schedules whose reminder the plan sets up, in a stable order.
     ///   - stored: The stored occurrences on `OccurrenceGeneration.candidateDates`.
     ///   - closed: The keys of the occurrences that have a current taken or skipped event.
+    ///   - days: How many days after today the groups reach.
     init(
         reminding: [Schedule],
         items: [Item],
         stored: [StoredOccurrence],
         closed: Set<OccurrenceKey>,
         now: Date,
-        deviceTimeZone: NamedTimeZone
+        deviceTimeZone: NamedTimeZone,
+        days: Int = FollowUpPlan.days
     ) {
         let scheduleOfSlot = Dictionary(
             reminding.flatMap { schedule in schedule.slots.map { ($0.id, schedule) } },
@@ -73,7 +75,7 @@ struct DoseGroups {
         // Yesterday in the earliest zone to the last day of the window in the latest zone.
         let today = LocalDate(now, in: .utc)
         for schedule in reminding {
-            for date in (-2...(FollowUpPlan.days + 1)).map({ today.adding(days: $0) }) {
+            for date in (-2...(days + 1)).map({ today.adding(days: $0) }) {
                 for planned in schedule.plannedOccurrences(on: date, deviceTimeZone: deviceTimeZone)
                 where !covered.contains(planned.key) {
                     add(planned.key, time: planned.plannedTime, timeZone: planned.timeZone, versionID: planned.scheduleVersionID)

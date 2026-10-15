@@ -110,6 +110,50 @@ struct RecordTransactionTests {
         try await store.expectConsistent(seed.occurrence, events: [event], status: .taken)
     }
 
+    /// N1 (D089): after an undo and a plan edit on the same day, the stored occurrence keeps the old schedule version.
+    /// The action of a reminder of the new plan must not record into it, for a series reminder and for a follow-up.
+    @Test func takenActionAfterUndoAndAPlanEditRecordsNothing() async throws {
+        let store = try LocalStore(directory: directory.url)
+        let seed = try await store.seed()
+        let taken = Fixtures.event(for: seed.occurrence, .taken)
+        try await store.record(taken, scheduleVersionID: seed.versionID)
+        try await store.record(Fixtures.event(for: seed.occurrence, .undo, supersedes: taken.id), scheduleVersionID: seed.versionID)
+        // The user edits the dose on the same day. The new version is in force from today.
+        var edited = seed.schedule
+        let latest = try #require(edited.versions.last)
+        try edited.appendVersion(
+            ScheduleVersion(
+                scheduleID: edited.id, effectiveFrom: Fixtures.date(2026, 3, 1), weeklyRule: latest.weeklyRule,
+                slotTimes: latest.slotTimes, dose: try #require(Dose("2 capsules")), timeZonePolicy: latest.timeZonePolicy
+            )
+        )
+        try await store.save(edited)
+        let plan = ReminderPlan(
+            items: [seed.item], schedules: [edited], now: Fixtures.instant("2026-03-01T00:00:00Z"), deviceTimeZone: Fixtures.shanghai
+        )
+        let request = try #require(plan.requests.first { $0.trigger.time == Fixtures.time(8) })
+        let series = DeliveredReminder(
+            deliveredAt: Fixtures.instant("2026-03-01T00:00:00Z"), userInfo: request.userInfo, triggerWeekday: nil
+        )
+        let followUp = DeliveredReminder(
+            deliveredAt: Fixtures.instant("2026-03-01T00:15:00Z"),
+            userInfo: [
+                ReminderRequest.seriesIDKey: plan.series[0].id,
+                FollowUpRequest.plannedDateKey: "2026-03-01",
+                FollowUpRequest.itemIDKey: seed.item.id.rawValue.uuidString,
+                // A follow-up takes the version of the stored occurrence, so it carries the old one.
+                FollowUpRequest.scheduleVersionIDKey: seed.versionID.rawValue.uuidString,
+            ],
+            triggerWeekday: nil
+        )
+        for reminder in [series, followUp] {
+            let target = try await store.actionTarget(
+                of: reminder, at: Fixtures.instant("2026-03-01T00:20:00Z"), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
+            )
+            #expect(target == .none)
+        }
+    }
+
     @Test func sameEventIDWithOtherContentIsRejected() async throws {
         let store = try LocalStore(directory: directory.url)
         let seed = try await store.seed()

@@ -48,6 +48,8 @@ public struct LocalStore: Sendable {
             throw StorageError(error)
         }
         writer = try Self.open(database, migrator: migrator)
+        // No restore runs in a process that has just opened its store, so an odd epoch is the rest of an interrupted restore (D089).
+        Self.closeInterruptedRestoreEpoch(in: directory)
     }
 
     /// Tells a first launch from a database that lost its file or its content.

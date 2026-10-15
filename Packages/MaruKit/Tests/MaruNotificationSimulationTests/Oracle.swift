@@ -318,21 +318,34 @@ struct Oracle {
 
     // MARK: Alarms
 
+    /// The instants at which a waiting alarm rings in the next days: one for an alarm of one date, many for a repeating alarm.
+    private func rings(of alarm: AlarmRequest, from now: Date, days: Int) -> [Date] {
+        if let repeating = alarm.repeating {
+            return FakeAlarmCenter.rings(
+                of: repeating, after: now, through: now.addingTimeInterval(Double(days) * 86_400), zone: device.zone
+            )
+        }
+        return alarm.fireDate > now ? [alarm.fireDate] : []
+    }
+
     private func alarms(now: Date) async -> [String] {
         var found: [String] = []
         let waiting = await phone.alarmCenter.alarms.values
+        var held = Set<Date>()
         for alarm in waiting.sorted(by: { $0.fireDate < $1.fireDate }) {
-            let doses = openDoses(at: alarm.fireDate, covered: true)
-            let expected = names(doses)
-            let label = "alarm at \(Self.format(alarm.fireDate, device.zone)) (\(alarm.names ?? []))"
-            if doses.isEmpty {
-                found.append("\(label) waits, and no open dose of an alarm item is due then")
-            } else if (alarm.names ?? []) != (showsNames ? expected : []) {
-                found.append("\(label) names the wrong doses. They are: \(expected)")
+            for fire in rings(of: alarm, from: now, days: 28) {
+                if fire <= now.addingTimeInterval(7 * 86_400) { held.insert(fire) }
+                let doses = openDoses(at: fire, covered: true)
+                let expected = names(doses)
+                let label = "alarm at \(Self.format(fire, device.zone)) (\(alarm.names ?? []))"
+                if doses.isEmpty {
+                    found.append("\(label) waits, and no open dose of an alarm item is due then")
+                } else if (alarm.names ?? []) != (showsNames ? expected : []) {
+                    found.append("\(label) names the wrong doses. They are: \(expected)")
+                }
             }
         }
         let horizon = now.addingTimeInterval(7 * 86_400)
-        let held = Set(waiting.map(\.fireDate))
         for dose in truth.doses(from: now, through: horizon, deviceZone: device.zone)
         where truth.isOpen(dose) && !dose.item.isPaused && isCovered(dose.item) && !held.contains(dose.instant) {
             found.append("no alarm for \(dose.item.name) at \(Self.format(dose.instant, device.zone))")

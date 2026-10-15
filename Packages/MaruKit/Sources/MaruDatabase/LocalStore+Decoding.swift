@@ -110,6 +110,15 @@ extension LocalStore {
         return (items, schedules, unreadable)
     }
 
+    /// The schedule of the slot that a raw occurrence row names, or `nil` when the row or the slot does not say it.
+    /// A row that does not decode marks this schedule as unreadable, so the engines remove nothing for it (D089).
+    static func scheduleID(ofOccurrenceRow row: Row, _ db: Database) throws -> ScheduleID? {
+        guard let slot = row["slotID"] as String?,
+              let text = try String.fetchOne(db, sql: "SELECT scheduleID FROM scheduleSlot WHERE id = ?", arguments: [slot])
+        else { return nil }
+        return try? ScheduleID(text: text)
+    }
+
     /// Reads for a reminder plan. A decode failure carries its rule (D088).
     func readPlan<T: Sendable>(_ value: @Sendable (Database) throws -> T) async throws -> T {
         do {

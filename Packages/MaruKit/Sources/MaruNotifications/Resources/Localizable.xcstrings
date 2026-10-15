@@ -42,125 +42,43 @@
         }
       }
     },
-    "Not recorded" : {
-      "comment" : "The title of the notification after the Taken action of a reminder recorded nothing.",
+    "Maru could not save the dose. Open Maru to try again." : {
+      "comment" : "The body of the notification after the Taken action of a reminder recorded nothing, because the record did not save.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Nicht erfasst"
+            "value" : "Maru konnte die Einnahme nicht speichern. Öffne Maru und versuche es erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not recorded"
+            "value" : "Maru could not save the dose. Open Maru to try again."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No registrado"
+            "value" : "Maru no pudo guardar la toma. Abre Maru para intentarlo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "記録されていません"
+            "value" : "Maruは記録を保存できませんでした。Maruを開いてもう一度お試しください。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "기록되지 않음"
+            "value" : "Maru가 기록을 저장하지 못했습니다. Maru를 열어 다시 시도해 주세요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "没记录"
-          }
-        }
-      }
-    },
-    "Open Maru to record it." : {
-      "comment" : "The body of the notification after the Taken action of a reminder recorded nothing.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Öffne Maru, um es zu erfassen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Maru to record it."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre Maru para registrarlo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruを開いて記録してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru를 열어 기록해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 Maru 来记录。"
-          }
-        }
-      }
-    },
-    "Open Maru to see your plan." : {
-      "comment" : "The body of a reminder with the item names turned off.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Öffne Maru, um deinen Plan zu sehen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Maru to see your plan."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre Maru para ver tu plan."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruを開いてプランを確認してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru를 열어 계획을 확인해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 Maru 看看你的计划。"
+            "value" : "Maru 没能保存这次记录。打开 Maru 再试一次。"
           }
         }
       }
@@ -206,6 +124,88 @@
         }
       }
     },
+    "Not recorded" : {
+      "comment" : "The title of the notification after the Taken action of a reminder recorded nothing.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht erfasst"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not recorded"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No registrado"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録されていません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록되지 않음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没记录"
+          }
+        }
+      }
+    },
+    "Open Maru to see your plan." : {
+      "comment" : "The body of a reminder with the item names turned off.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne Maru, um deinen Plan zu sehen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Maru to see your plan."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Maru para ver tu plan."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruを開いてプランを確認してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru를 열어 계획을 확인해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Maru 看看你的计划。"
+          }
+        }
+      }
+    },
     "Taken" : {
       "comment" : "The action of a reminder for one item. It records the item as taken.",
       "localizations" : {
@@ -243,6 +243,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已服用"
+          }
+        }
+      }
+    },
+    "This reminder no longer matches one dose of today. Open Maru to record it." : {
+      "comment" : "The body of the notification after the Taken action of a reminder recorded nothing, because the reminder does not match exactly one open dose of today.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Erinnerung passt nicht mehr zu genau einer Einnahme von heute. Öffne Maru, um sie zu erfassen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This reminder no longer matches one dose of today. Open Maru to record it."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este recordatorio ya no corresponde a una sola toma de hoy. Abre Maru para registrarla."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このリマインダーは、今日の1回分と一致しなくなりました。Maruを開いて記録してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 알림은 더 이상 오늘의 한 회분과 맞지 않습니다. Maru를 열어 기록해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这条提醒已不对应今天的某一次服用。打开 Maru 来记录。"
           }
         }
       }

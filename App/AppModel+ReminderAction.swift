@@ -17,6 +17,7 @@ extension AppModel {
     ///
     /// In every other case it records nothing: another day, a late delivery, an older plan, two or more items,
     /// a skipped dose, an event that is not confirmed, or a database that is locked (T15, T24, T40).
+    /// The notice says which of two reasons it was: no match with one open dose, or a record that did not save (D089).
     /// Maru can not come to the front from a background action. So the model prepares what a tap on the
     /// reminder shows, and a notification tells the user to open Maru.
     func takeReminder(_ reminder: DeliveredReminder) async {
@@ -24,6 +25,7 @@ extension AppModel {
         let now = Date()
         // The target comes from this read, so the record carries its generation (D040).
         let generation = dataGeneration
+        var reason = ActionNotice.Reason.notSaved
         if let deviceTimeZone = NamedTimeZone(device: .current, at: now),
            let target = try? await store.actionTarget(
                of: reminder, at: now, deviceTimeZone: deviceTimeZone, generation: generation
@@ -51,11 +53,11 @@ extension AppModel {
                     return
                 }
             case .none:
-                break
+                reason = .noMatch
             }
         }
         openReminder(reminder)
-        Task { await ActionNotice.send() }
+        Task { await ActionNotice.send(reason) }
     }
 }
 

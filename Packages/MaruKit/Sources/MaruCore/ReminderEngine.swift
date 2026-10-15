@@ -119,6 +119,8 @@ public struct ReminderOutcome: Hashable, Sendable {
     /// The run did not confirm a removal. A schedule that the plan no longer has, for example of a deleted
     /// item, has no entry in `schedules`, so this value says whether its requests are gone.
     public let removalPending: Bool
+    /// For each schedule with dated requests: the instant of its last one. After it, the reminder stops until the app runs (D089).
+    public let coverageEnds: [ScheduleID: Date]
 
     /// - Parameters:
     ///   - unregistered: The identifiers of wanted requests that the system does not hold.
@@ -126,6 +128,7 @@ public struct ReminderOutcome: Hashable, Sendable {
     init(plan: ReminderPlan, authorization: ReminderAuthorization, unregistered: Set<String>, removalPending: Bool) {
         self.authorization = authorization
         self.removalPending = removalPending
+        coverageEnds = plan.coverageEnds
         schedules = plan.needs.mapValues { need in
             switch (need, authorization) {
             case (.nothing, _): removalPending ? .removalPending : .off
@@ -215,7 +218,7 @@ public actor ReminderEngine {
     ///   - now: The clock of the run. The plan uses the schedule versions that are in force on this date.
     ///   - deviceTimeZone: The time zone of the device, for the schedule versions that follow it.
     ///   - mayAskForPermission: Pass `true` only after the user confirms a save. The engine then
-    ///     shows the permission prompt, if the plan has a reminder and the user did not answer before (spec 2.2).
+    ///     shows the permission prompt, if the plan has a reminder or an alarm and the user did not answer before (spec 2.2, D089).
     public func reconcile(
         at now: Date,
         deviceTimeZone: NamedTimeZone,
@@ -246,7 +249,10 @@ public actor ReminderEngine {
         )
         let wanted = plan.requests
         var authorization = await center.authorization()
-        if authorization == .notDetermined, mayAskForPermission, !wanted.isEmpty {
+        // An item with an alarm has no series request while its alarm stands. It still needs a notification for its follow-ups
+        // and for the banner that stands in for a failed alarm, so it asks too (D089).
+        let mayNeedNotification = !wanted.isEmpty || plan.needs.values.contains(.alarm)
+        if authorization == .notDetermined, mayAskForPermission, mayNeedNotification {
             authorization = await center.requestAuthorization()
         }
         // A removal of a run before this one can still be open. This read waits for it first.

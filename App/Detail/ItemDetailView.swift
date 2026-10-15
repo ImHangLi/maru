@@ -82,6 +82,7 @@ struct ItemDetailView: View {
                 schedule: detail.schedule,
                 nextDose: item.isArchived ? nil : detail.nextDose,
                 status: detail.schedule.flatMap { model.reminderStatus[$0.id] },
+                coverageEnd: detail.schedule.flatMap { model.reminderCoverageEnds[$0.id] },
                 asksForReminder: detail.schedule?.isEnabled == true && !item.isArchived
             )
             if let note = item.intakeNote {
@@ -192,6 +193,8 @@ private struct ScheduleSection: View {
     let nextDose: ItemDetail.NextDose?
     /// `nil` until a run of the reminder engine reports this schedule.
     let status: ReminderStatus?
+    /// The last dated reminder of the plan, when it has dated reminders (D089).
+    let coverageEnd: Date?
     /// The plan asks for a reminder: its reminders are on, and the item is not archived.
     let asksForReminder: Bool
 
@@ -272,6 +275,17 @@ private struct ScheduleSection: View {
         }
     }
 
+    /// The plan counts days, or its last dated reminder is near.
+    private var hasDatedReminders: Bool {
+        schedule?.versions.last?.dayCycle != nil || (coverageEnd.map { $0.timeIntervalSinceNow < 21 * 86_400 } ?? false)
+    }
+
+    private var coverageText: LocalizedStringKey {
+        guard let coverageEnd else { return "Maru sets the reminders of the next 7 dose days each time you open it." }
+        let date = coverageEnd.formatted(date: .abbreviated, time: .omitted)
+        return "Reminders are set until \(date). Maru sets them again each time you open it."
+    }
+
     private var problem: LocalizedStringKey? {
         guard asksForReminder else {
             return status == .notConfirmed ? "The reminders may still be on until Maru checks again." : nil
@@ -282,9 +296,9 @@ private struct ScheduleSection: View {
         case .notSet?: "Maru tries again when you open it."
         case .notConfirmed?: "Maru checks again when you open it."
         // iPhone has no repeating reminder for a plan that counts days, so "On" has a limit here.
-        // The page states it (D036, D065).
-        case .set? where schedule?.versions.last?.dayCycle != nil:
-            "Maru sets the reminders of the next 7 dose days each time you open it."
+        // A plan with a record before its time has a short limit too. The page states it (D036, D065, D089).
+        case .set? where hasDatedReminders:
+            coverageText
         case .set?, .off?, .notAsked?, nil: nil
         }
     }

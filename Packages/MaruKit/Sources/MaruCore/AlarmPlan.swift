@@ -20,12 +20,20 @@ public struct AlarmCover: Sendable, Equatable {
     }
 }
 
-/// One alarm that rings at the time of a dose (D079). It is one alarm for one slot time on one date.
-/// The items with an alarm and an open dose at that time share it.
+/// One alarm that rings at the time of a dose (D079). It is one alarm for one slot time on one date, or one alarm that
+/// repeats on some weekdays at one time of day (D089). The items with an alarm and an open dose at that time share it.
 public struct AlarmRequest: Hashable, Sendable {
+    /// A repeating alarm of the system: one time of day on some weekdays, on the clock of the device.
+    /// It never runs out, so an app that does not open for a month still has its alarm (D089).
+    public struct Repeat: Hashable, Sendable {
+        public let time: WallClockTime
+        public let weekdays: Set<Weekday>
+    }
+
     /// The identifier of the alarm in the system. It comes from the group, the items, and the names, so a change
     /// of the items or of a name gives another identifier, and the engine replaces the alarm.
     public let id: UUID
+    /// The instant of the alarm, or of its first ring when it repeats.
     public let fireDate: Date
     /// The items with an open dose at this time that the alarm stands for.
     public let itemIDs: [ItemID]
@@ -33,7 +41,42 @@ public struct AlarmRequest: Hashable, Sendable {
     public let names: [String]?
     /// What the "Taken" button needs, when the alarm stands for exactly one item that is alone at its time.
     /// The keys are the ones of a follow-up (D034), so the same checks run. `nil`: the button opens the app.
+    /// A repeating alarm has no plan date and no fire time. The button finds the date when it runs (D089).
     public let taken: [String: String]?
+    /// `nil` for an alarm of one date.
+    public let repeating: Repeat?
+    /// The schedules of the items. The engine keeps them in the `AlarmIndex`, so a run with an unreadable schedule knows which
+    /// obsolete alarm it must keep (D089). They are not part of the identifier.
+    public let scheduleIDs: Set<ScheduleID>
+
+    public init(
+        id: UUID, fireDate: Date, itemIDs: [ItemID], names: [String]?, taken: [String: String]?, repeating: Repeat? = nil,
+        scheduleIDs: Set<ScheduleID> = []
+    ) {
+        self.scheduleIDs = scheduleIDs
+        self.id = id
+        self.fireDate = fireDate
+        self.itemIDs = itemIDs
+        self.names = names
+        self.taken = taken
+        self.repeating = repeating
+    }
+}
+
+extension AlarmRequest {
+    /// The plan date that the "Taken" button of a repeating alarm stands for, as `YYYY-MM-DD` (D089).
+    /// The alarm repeats, so it holds no date. The button is for today's dose, when the dose time of the series has come.
+    /// `nil` for a series of a named zone, a bad series ID, or a time that has not come on today's date. The action then records
+    /// nothing, and the notice tells the user to open Maru.
+    public static func plannedDate(ofSeries seriesID: String, at now: Date, deviceTimeZone: NamedTimeZone) -> String? {
+        let parts = seriesID.split(separator: "|", omittingEmptySubsequences: false)
+        guard parts.count == 3, parts[1] == "device" else { return nil }
+        let clock = parts[2].split(separator: ":").compactMap { Int($0) }
+        guard clock.count == 2, let time = try? WallClockTime(hour: clock[0], minute: clock[1]) else { return nil }
+        let today = LocalDate(now, in: deviceTimeZone)
+        guard deviceTimeZone.resolve(time, on: today).earliestInstant <= now else { return nil }
+        return today.dayText
+    }
 }
 
 extension UUID {
@@ -75,27 +118,76 @@ public final class WantedAlarms: @unchecked Sendable {
     func begin(keeping content: Set<UUID>) { lock.withLock { exact = exact.filter { content.contains($0.alarmContent) } } }
     func set(_ ids: Set<UUID>) { lock.withLock { exact = ids } }
     func insert(_ id: UUID) { lock.withLock { _ = exact.insert(id) } }
+    func remove(_ id: UUID) { lock.withLock { _ = exact.remove(id) } }
 
     func isWanted(_ id: UUID) -> Bool { lock.withLock { exact.contains(id) } }
 }
 
 /// The alarms that the saved plan, the records, and the items ask for (D079).
 ///
-/// An alarm comes for a slot time with an open dose of an item with `alarm`, in the next seven days.
-/// A dose that has a record gets none, so a record cancels its alarm at the next run (D047).
-/// The app sets the alarms again at each run, as it does for the follow-ups. When the app does not run for
-/// seven days, the last alarm passes and no new one comes.
+/// An alarm comes for a slot time with an open dose of an item with `alarm`. A dose that has a record gets none, so a record
+/// cancels its alarm at the next run (D047). The app sets the alarms again at each run, as it does for the follow-ups.
+///
+/// A time of day on a weekday that has the same open items on every date of the next `datedDays` days becomes one repeating
+/// alarm of the system, when the item follows the device and has no day cycle (D089). It never runs out. Every other dose,
+/// also the dose of a weekday with a record before its time, gets one alarm for its date, for the next `datedDays` days.
+/// A dose that is due within `minimumDays` and that the limit cut gives its item the normal reminder back.
 ///
 /// It is a value of its inputs and reads no system state.
 public struct AlarmPlan: Hashable, Sendable {
-    /// The most alarms that the plan holds, the nearest first. The system documents no limit,
+    /// The most alarms that the plan holds, the repeating alarms first, then the nearest date. The system documents no limit,
     /// so this is a safe size and not a measured one.
     public static let limit = 64
+    /// The alarms of one date come for this many days.
+    public static let datedDays = 28
+    /// A dose that is due within this many days has an alarm, or its item has the normal reminder (D089).
+    public static let minimumDays = 7
 
     /// The alarms, nearest first.
     public let requests: [AlarmRequest]
     /// A schedule did not load (D088). The engine cancels no waiting alarm, because the plan does not know its alarms.
     public let hasUnreadable: Bool
+    /// The schedules that did not load. A waiting alarm of such a schedule stays (D089).
+    public let unreadableSchedules: Set<ScheduleID>
+    /// The items with a dose within `minimumDays` that has no alarm, because the limit cut it (D089).
+    /// The engine reports them as failed, so they get the normal reminder.
+    public let cutItems: Set<ItemID>
+
+    /// What the doses of one time must have in common to share one repeating alarm.
+    private struct Signature: Hashable {
+        let items: [ItemID]
+        let names: [String]
+        let takenItem: ItemID?
+        let takenVersion: ScheduleVersionID?
+        let seriesID: String
+    }
+
+    /// One dose group with an alarm.
+    private struct Candidate {
+        let group: FollowUpGroup
+        let instant: Date
+        let items: [ItemID]
+        let names: [String]
+        let single: (itemID: ItemID, versionID: ScheduleVersionID)?
+        /// The item follows the device, and its plan has no day cycle, so a repeating alarm can stand for it.
+        let isRepeatable: Bool
+
+        var signature: Signature {
+            Signature(
+                items: items, names: names, takenItem: single?.itemID, takenVersion: single?.versionID, seriesID: group.seriesID
+            )
+        }
+    }
+
+    private struct ClassKey: Hashable {
+        let time: WallClockTime
+        let weekday: Weekday
+    }
+
+    private struct SharedKey: Hashable {
+        let time: WallClockTime
+        let signature: Signature
+    }
 
     /// - Parameter reminders: The series plan of the same read, built with `alarmsRing`. Only a schedule
     ///   with the need `.alarm` can ring, so a paused, archived, or ended schedule gets none.
@@ -110,9 +202,11 @@ public struct AlarmPlan: Hashable, Sendable {
         privacy: ReminderPrivacy = .showNames
     ) {
         hasUnreadable = !reminders.unreadable.isEmpty
+        unreadableSchedules = reminders.unreadable
         let ringing = Set(schedules.filter { reminders.needs[$0.id] == .alarm }.map(\.itemID))
         guard !ringing.isEmpty else {
             requests = []
+            cutItems = []
             return
         }
         // Every schedule that reminds counts for the groups: a dose of another item at the same time means that
@@ -124,34 +218,114 @@ public struct AlarmPlan: Hashable, Sendable {
             }
         }
         let groups = DoseGroups(
-            reminding: reminding, items: items, stored: stored, closed: closed, now: now, deviceTimeZone: deviceTimeZone
+            reminding: reminding, items: items, stored: stored, closed: closed, now: now, deviceTimeZone: deviceTimeZone,
+            days: Self.datedDays
         )
-        let end = now.addingTimeInterval(Double(FollowUpPlan.days) * 86_400)
-        var found: [AlarmRequest] = []
+        let end = now.addingTimeInterval(Double(Self.datedDays) * 86_400)
+        let scheduleOfItem = Dictionary(schedules.map { ($0.itemID, $0) }, uniquingKeysWith: { first, _ in first })
+        var candidates: [Candidate] = []
         for (group, instant) in groups.slotInstants where instant > now && instant <= end {
             let open = groups.orderedOpenItems(of: group).filter { ringing.contains($0.itemID) }
             guard !open.isEmpty else { continue }
-            let names = privacy == .showNames ? open.compactMap(\.name) : []
+            var single: (itemID: ItemID, versionID: ScheduleVersionID)?
+            if open.count == 1, let one = groups.single(of: group), one.itemID == open[0].itemID { single = one }
+            let isRepeatable = group.seriesTimeZone == nil && group.timeZone == deviceTimeZone
+                && open.allSatisfy { scheduleOfItem[$0.itemID]?.version(on: group.plannedDate)?.dayCycle == nil }
+            candidates.append(
+                Candidate(
+                    group: group, instant: instant, items: open.map(\.itemID),
+                    names: privacy == .showNames ? open.compactMap(\.name) : [], single: single, isRepeatable: isRepeatable
+                )
+            )
+        }
+
+        // A time and a weekday that has the same open items on every date of the horizon is one repeating alarm.
+        let today = LocalDate(now, in: deviceTimeZone)
+        func dateCount(of key: ClassKey) -> Int {
+            (-1...(Self.datedDays + 1)).filter { offset in
+                let date = today.adding(days: offset)
+                guard date.weekday == key.weekday else { return false }
+                let instant = deviceTimeZone.resolve(key.time, on: date).earliestInstant
+                return instant > now && instant <= end
+            }.count
+        }
+        var classes: [ClassKey: [Candidate]] = [:]
+        for candidate in candidates where candidate.isRepeatable {
+            classes[ClassKey(time: candidate.group.time, weekday: candidate.group.plannedDate.weekday), default: []].append(candidate)
+        }
+        let uniform = classes.filter { key, list in
+            let count = dateCount(of: key)
+            return count >= 2 && list.count == count && Set(list.map(\.signature)).count == 1
+        }
+        var shared: [SharedKey: (weekdays: Set<Weekday>, first: Date, single: (itemID: ItemID, versionID: ScheduleVersionID)?)] = [:]
+        for (key, list) in uniform {
+            let sharedKey = SharedKey(time: key.time, signature: list[0].signature)
+            let first = list.map(\.instant).min()!
+            let old = shared[sharedKey]
+            shared[sharedKey] = ((old?.weekdays ?? []).union([key.weekday]), min(first, old?.first ?? first), list[0].single)
+        }
+        var repeating: [AlarmRequest] = []
+        for (key, value) in shared {
+            let signature = key.signature
             var taken: [String: String]?
-            if open.count == 1, let single = groups.single(of: group), single.itemID == open[0].itemID {
+            if let single = value.single {
                 taken = [
-                    ReminderRequest.seriesIDKey: group.seriesID,
-                    FollowUpRequest.plannedDateKey: group.dateText,
-                    FollowUpRequest.fireTimeKey: instant.formatted(.iso8601),
+                    ReminderRequest.seriesIDKey: signature.seriesID,
                     FollowUpRequest.itemIDKey: single.itemID.rawValue.uuidString,
                     FollowUpRequest.scheduleVersionIDKey: single.versionID.rawValue.uuidString,
                 ]
             }
-            let key = ([group.identifier] + open.map { $0.itemID.rawValue.uuidString } + names + [taken == nil ? "open" : "taken"])
-                .joined(separator: "\n")
-            found.append(
+            let text = (
+                ["repeat", signature.seriesID, value.weekdays.sorted().map { String($0.rawValue) }.joined()]
+                    + signature.items.map { $0.rawValue.uuidString } + signature.names
+                    + [taken == nil ? "open" : "taken", value.single?.versionID.rawValue.uuidString ?? ""]
+            ).joined(separator: "\n")
+            repeating.append(
                 AlarmRequest(
-                    id: Self.identifier(of: key), fireDate: instant, itemIDs: open.map(\.itemID),
-                    names: names.isEmpty ? nil : names, taken: taken
+                    id: Self.identifier(of: text), fireDate: value.first, itemIDs: signature.items,
+                    names: signature.names.isEmpty ? nil : signature.names, taken: taken,
+                    repeating: AlarmRequest.Repeat(time: key.time, weekdays: value.weekdays),
+                    scheduleIDs: Set(signature.items.compactMap { scheduleOfItem[$0]?.id })
                 )
             )
         }
-        requests = Array(found.sorted { ($0.fireDate, $0.id.uuidString) < ($1.fireDate, $1.id.uuidString) }.prefix(Self.limit))
+
+        // Every other dose has an alarm for its date. A repeating alarm stands for the doses of its classes.
+        var dated: [AlarmRequest] = []
+        for candidate in candidates {
+            if candidate.isRepeatable,
+               uniform[ClassKey(time: candidate.group.time, weekday: candidate.group.plannedDate.weekday)] != nil { continue }
+            var taken: [String: String]?
+            if let single = candidate.single {
+                taken = [
+                    ReminderRequest.seriesIDKey: candidate.group.seriesID,
+                    FollowUpRequest.plannedDateKey: candidate.group.dateText,
+                    FollowUpRequest.fireTimeKey: candidate.instant.formatted(.iso8601),
+                    FollowUpRequest.itemIDKey: single.itemID.rawValue.uuidString,
+                    FollowUpRequest.scheduleVersionIDKey: single.versionID.rawValue.uuidString,
+                ]
+            }
+            let key = ([candidate.group.identifier] + candidate.items.map { $0.rawValue.uuidString } + candidate.names
+                + [taken == nil ? "open" : "taken", candidate.single?.versionID.rawValue.uuidString ?? ""])
+                .joined(separator: "\n")
+            dated.append(
+                AlarmRequest(
+                    id: Self.identifier(of: key), fireDate: candidate.instant, itemIDs: candidate.items,
+                    names: candidate.names.isEmpty ? nil : candidate.names, taken: taken,
+                    scheduleIDs: Set(candidate.items.compactMap { scheduleOfItem[$0]?.id })
+                )
+            )
+        }
+        let order = { (first: AlarmRequest, second: AlarmRequest) in
+            (first.fireDate, first.id.uuidString) < (second.fireDate, second.id.uuidString)
+        }
+        dated.sort(by: order)
+        // The repeating alarms come first. Of the others, the nearest dates stay. A dose that the limit cut and that is due
+        // soon gives its item the normal reminder back (D089).
+        let room = max(0, Self.limit - repeating.count)
+        let soon = now.addingTimeInterval(Double(Self.minimumDays) * 86_400)
+        cutItems = Set(dated.dropFirst(room).filter { $0.fireDate <= soon }.flatMap(\.itemIDs))
+        requests = (repeating + dated.prefix(room)).sorted(by: order)
     }
 
     /// A stable identifier from a text: two FNV-1a hashes with two starts make 16 bytes. It tells two texts apart
@@ -170,17 +344,82 @@ public struct AlarmPlan: Hashable, Sendable {
     }
 }
 
+/// Which schedules each alarm of the system stands for, by the exact alarm identifier (D089). AlarmKit gives the app no
+/// field to read back, so the engine keeps this index. A run with an unreadable schedule keeps only the obsolete alarms of
+/// that schedule, and cancels the others.
+public protocol AlarmIndex: Sendable {
+    func schedules(of id: UUID) -> Set<ScheduleID>?
+    func record(_ id: UUID, schedules: Set<ScheduleID>)
+    /// Forgets every alarm that is not in `ids`.
+    func keep(only ids: Set<UUID>)
+    func forget(_ ids: [UUID])
+    /// Obsolete alarms that ring now. The engine never stops a ringing alarm. It cancels these at the first run in which they
+    /// ring no more (D089). The set survives the stop of the process.
+    func quiet() -> Set<UUID>
+    func setQuiet(_ ids: Set<UUID>)
+    /// `true` after the first complete run of the engine with this index. Before it, an alarm with no entry comes from a build
+    /// with no index. The first run cancels it and schedules the alarms of the plan again, so the index is complete after (D089).
+    var isComplete: Bool { get }
+    func markComplete()
+}
+
+/// An index in memory. A test uses it, and an engine with no durable index.
+public final class MemoryAlarmIndex: AlarmIndex, @unchecked Sendable {
+    private let lock = NSLock()
+    private var entries: [UUID: Set<ScheduleID>] = [:]
+
+    public init() {}
+
+    public func schedules(of id: UUID) -> Set<ScheduleID>? { lock.withLock { entries[id] } }
+    public func record(_ id: UUID, schedules: Set<ScheduleID>) { lock.withLock { entries[id] = schedules } }
+    public func keep(only ids: Set<UUID>) { lock.withLock { entries = entries.filter { ids.contains($0.key) } } }
+    public func forget(_ ids: [UUID]) { lock.withLock { ids.forEach { entries[$0] = nil } } }
+    private var quietIDs: Set<UUID> = []
+    public func quiet() -> Set<UUID> { lock.withLock { quietIDs } }
+    public func setQuiet(_ ids: Set<UUID>) { lock.withLock { quietIDs = ids } }
+    private var complete = false
+    public var isComplete: Bool { lock.withLock { complete } }
+    public func markComplete() { lock.withLock { complete = true } }
+
+    /// The state of a phone with alarms from a build with no index. A test uses it.
+    func reset() { lock.withLock { entries = [:]; quietIDs = []; complete = false } }
+}
+
 /// The alarm system. The rules of the engine use only this protocol, so they run without AlarmKit (D079).
 public protocol AlarmCenter: Sendable {
     /// The identifiers of the alarms that wait for their time. An alarm that rings now is not in the set,
     /// so a run never stops a ringing alarm.
     /// Throws when the system cannot list the alarms, also when it does not answer in time (D086).
     func waiting() async throws -> Set<UUID>
+    /// The identifiers of the alarms that ring or count down now. A repeating alarm in this set is still registered, and it
+    /// goes back to waiting after "Stop". The run must not register a second one (D089).
+    func active() async throws -> Set<UUID>
+    /// The waiting and the active alarms from one read. A "Stop" between two reads could hide a repeating alarm from both,
+    /// so the engine uses this call (D089). The default makes two reads. A real center reads once.
+    func snapshot() async throws -> AlarmSnapshot
     /// Schedules the alarm. The system holds it until its time.
     func schedule(_ request: AlarmRequest) async throws
     /// Cancels the alarms with these identifiers.
     /// Throws when the system could not cancel an alarm. It still tries each one.
     func cancel(_ ids: [UUID]) async throws
+}
+
+/// The alarms of the system at one moment (D089).
+public struct AlarmSnapshot: Sendable, Equatable {
+    public let waiting: Set<UUID>
+    public let active: Set<UUID>
+
+    public init(waiting: Set<UUID>, active: Set<UUID>) {
+        self.waiting = waiting
+        self.active = active
+    }
+}
+
+extension AlarmCenter {
+    public func active() async throws -> Set<UUID> { [] }
+    public func snapshot() async throws -> AlarmSnapshot {
+        AlarmSnapshot(waiting: try await waiting(), active: try await active())
+    }
 }
 
 /// Where the engine reads the alarms that the saved plan and the records ask for.
@@ -221,12 +460,21 @@ public struct TimedAlarmCenter: AlarmCenter {
         try await timed("waiting") { try await base.waiting() }
     }
 
+    public func active() async throws -> Set<UUID> {
+        try await timed("active") { try await base.active() }
+    }
+
+    public func snapshot() async throws -> AlarmSnapshot {
+        try await timed("snapshot") { try await base.snapshot() }
+    }
+
     public func schedule(_ request: AlarmRequest) async throws {
         let wanted = wanted
         let base = base
         // A schedule that returns after the limit can register an alarm for a dose that has a record by now. It checks the
         // latest plan, and it cancels an alarm that the plan does not want (D086).
-        try await timed("schedule", late: { _ in
+        // When the limit wins, the id stops being wanted in the same step, before the caller or the late call goes on (D089).
+        try await timed("schedule", onTimeout: { wanted.remove(request.id) }, late: { _ in
             if !wanted.isWanted(request.id) { try? await base.cancel([request.id]) }
         }) { try await base.schedule(request) }
     }
@@ -236,7 +484,8 @@ public struct TimedAlarmCenter: AlarmCenter {
     }
 
     private func timed<T: Sendable>(
-        _ name: String, late: (@Sendable (T) async -> Void)? = nil, _ call: @escaping @Sendable () async throws -> T
+        _ name: String, onTimeout: (@Sendable () -> Void)? = nil, late: (@Sendable (T) async -> Void)? = nil,
+        _ call: @escaping @Sendable () async throws -> T
     ) async throws -> T {
         let gate = Gate<T>()
         let limit = limit
@@ -252,7 +501,7 @@ public struct TimedAlarmCenter: AlarmCenter {
             }
             Task {
                 try? await Task.sleep(for: limit)
-                if gate.finish(.failure(AlarmRunError.timedOut)) { didTimeOut(name) }
+                if gate.finish(.failure(AlarmRunError.timedOut), whileLocked: onTimeout) { didTimeOut(name) }
             }
         }
     }
@@ -267,9 +516,11 @@ public struct TimedAlarmCenter: AlarmCenter {
         }
 
         @discardableResult
-        func finish(_ result: Result<T, any Error>) -> Bool {
+        func finish(_ result: Result<T, any Error>, whileLocked action: (@Sendable () -> Void)? = nil) -> Bool {
             let taken = lock.withLock { () -> CheckedContinuation<T, any Error>? in
                 defer { continuation = nil }
+                // The action runs in the same step that takes the continuation, so a late result never sees the old state.
+                if continuation != nil { action?() }
                 return continuation
             }
             guard let taken else { return false }
@@ -293,6 +544,7 @@ public struct AlarmEngine: Sendable {
     private let alarmsRing: @Sendable () -> Bool
     private let wanted: WantedAlarms
     private let generations: any GenerationCounter
+    private let index: any AlarmIndex
 
     /// - Parameter wanted: The box that the engine fills with the exact ids that the current plan wants. A `TimedAlarmCenter`
     ///   reads it, so a schedule that returns after its time out is cancelled when the plan does not want it any more.
@@ -302,8 +554,10 @@ public struct AlarmEngine: Sendable {
         privacy: any ReminderPrivacyStore,
         alarmsRing: @escaping @Sendable () -> Bool,
         wanted: WantedAlarms = WantedAlarms(),
-        generations: any GenerationCounter = MemoryGenerationCounter.shared
+        generations: any GenerationCounter = MemoryGenerationCounter.shared,
+        index: any AlarmIndex = MemoryAlarmIndex()
     ) {
+        self.index = index
         self.generations = generations
         self.source = source
         self.center = center
@@ -329,14 +583,21 @@ public struct AlarmEngine: Sendable {
         // also when the next call of this run does not answer.
         let wantedContent = Set(plan.requests.map(\.id))
         wanted.begin(keeping: wantedContent)
-        let waiting = try await center.waiting()
+        // One read gives both sets. A repeating alarm that rings now is not waiting, and it is not missing (D089).
+        let snapshot = try await center.snapshot()
+        let waiting = snapshot.waiting
+        let active = snapshot.active
+        let activeContent = Set(active.map(\.alarmContent))
         /// The alarms of the system by content. An alarm that the plan does not want goes. Of one content only the alarm with
         /// the highest generation stays.
         var actual: [UUID: UUID] = [:]
         var obsolete: [UUID] = []
         for id in waiting.sorted(by: { $0.alarmGeneration > $1.alarmGeneration }) {
             let content = id.alarmContent
-            if wantedContent.contains(content), actual[content] == nil { actual[content] = id } else { obsolete.append(id) }
+            // Until the index is complete, an alarm with no entry is from a build with no index. It goes, and the plan schedules
+            // its alarm again with an entry (D089).
+            let known = index.isComplete || index.schedules(of: id) != nil
+            if known, wantedContent.contains(content), actual[content] == nil { actual[content] = id } else { obsolete.append(id) }
         }
         wanted.set(Set(actual.values))
         /// Any cancel error makes the whole run fail open: the caller then has an empty cover (D079).
@@ -350,23 +611,56 @@ public struct AlarmEngine: Sendable {
                 return false
             }
         }
-        if !obsolete.isEmpty, !plan.hasUnreadable { _ = await cancel(obsolete) }
-        var failed = Set<ItemID>()
+        // With an unreadable schedule, an obsolete alarm of that schedule stays, because the plan does not know it. Every other
+        // obsolete alarm goes, also one with no index entry: the first run made the index complete (D089).
+        index.keep(only: waiting.union(active))
+        func isKept(_ id: UUID) -> Bool {
+            guard plan.hasUnreadable, let schedules = index.schedules(of: id) else { return false }
+            return !schedules.isDisjoint(with: plan.unreadableSchedules)
+        }
+        // An obsolete alarm that rings now stays until it is quiet. Its id waits in a durable set. An alarm in the set that
+        // waits again (a repeating alarm after "Stop") goes now, also when an unreadable schedule keeps the others (D089).
+        let obsoleteActive = active.filter { !wantedContent.contains($0.alarmContent) && !isKept($0) }
+        // An id that the plan wants again (A, then B, then A while it rings) is not obsolete any more (D089).
+        let quiet = index.quiet().filter { !wantedContent.contains($0.alarmContent) }.union(obsoleteActive)
+            .intersection(waiting.union(active))
+        let returned = quiet.intersection(waiting)
+        index.setQuiet(quiet.subtracting(returned))
+        let toCancel = Array(Set(obsolete.filter { !isKept($0) }).union(returned))
+        if !toCancel.isEmpty, await cancel(toCancel) {
+            index.forget(toCancel)
+            // A wanted alarm that was cancelled is scheduled again in this run.
+            for (content, id) in actual where toCancel.contains(id) {
+                actual[content] = nil
+                wanted.remove(id)
+            }
+        }
+        // A dose that the limit cut and that is due soon has no alarm. Its item gets the normal reminder (D089).
+        var failed = plan.cutItems
         /// The alarms that the system holds after this run, by content. A ringing alarm is not in `waiting` and stays.
         var held = Set(actual.keys)
         for request in plan.requests where actual[request.id] == nil {
+            if request.repeating != nil, activeContent.contains(request.id) {
+                held.insert(request.id)
+                continue
+            }
             // A fresh identifier for each alarm that the app gives the system (D086).
             let registered = AlarmRequest(
                 id: request.id.withGeneration(generations.next()), fireDate: request.fireDate, itemIDs: request.itemIDs,
-                names: request.names, taken: request.taken
+                names: request.names, taken: request.taken, repeating: request.repeating,
+                scheduleIDs: request.scheduleIDs
             )
             // The id is wanted while the call runs. A call that returns after its limit is checked with it.
             wanted.insert(registered.id)
             do {
                 try await center.schedule(registered)
+                index.record(registered.id, schedules: request.scheduleIDs)
                 held.insert(request.id)
                 actual[request.id] = registered.id
             } catch {
+                // The item now gets its banner. An answer that comes late must not ring beside it, so the id is not wanted
+                // any more, and the late check of `TimedAlarmCenter` cancels the alarm (D089).
+                wanted.remove(registered.id)
                 failed.formUnion(request.itemIDs)
             }
         }
@@ -376,13 +670,17 @@ public struct AlarmEngine: Sendable {
             changed = false
             for request in plan.requests where held.contains(request.id) && !failed.isDisjoint(with: request.itemIDs) {
                 // A cancel that failed leaves the alarm held. The run throws at the end, so no banner is dropped.
-                if let id = actual[request.id], await cancel([id]) { held.remove(request.id) }
+                if let id = actual[request.id], await cancel([id]) {
+                    held.remove(request.id)
+                    index.forget([id])
+                }
                 let before = failed.count
                 failed.formUnion(request.itemIDs)
                 changed = changed || failed.count != before
             }
         }
         if cancelFailed { throw AlarmRunError.cancelFailed }
+        index.markComplete()
         return failed
     }
 }
