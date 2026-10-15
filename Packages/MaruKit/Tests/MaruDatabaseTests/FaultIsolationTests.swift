@@ -58,4 +58,34 @@ import Testing
         // Today, the history, and every write keep the strict load: the damage shows and nothing is hidden (spec 7.3).
         await #expect(throws: StorageError.invalidData) { try await store.generateOccurrences(at: now, deviceTimeZone: Fixtures.shanghai) }
     }
+
+    /// N7 (D089): one occurrence row that does not decode stopped the whole plan with `invalidData`. Now the plan skips the
+    /// row, names the rule, and marks only the schedule of the row. The others plan as before.
+    @Test func aBadOccurrenceRowDoesNotStopTheReminderPlans() async throws {
+        let directory = TestDirectory()
+        let store = try LocalStore(directory: directory.url)
+        let good = try await store.seed()
+        let other = try Item(category: .supplement, name: "Other", form: .capsule, color: .blue)
+        try await store.save(other)
+        let (schedule, morning, _) = Fixtures.twiceDailySchedule(itemID: other.id)
+        try await store.save(schedule)
+        // An occurrence of the second item with a time zone that no zone has.
+        try await store.execute(
+            """
+            INSERT INTO occurrence (id, slotID, plannedDate, plannedTime, timeZone, scheduleVersionID)
+            VALUES (?, ?, '2026-03-01', '08:00', 'Nowhere/Land', ?)
+            """,
+            [UUID().uuidString, morning.text, schedule.versions[0].id.text]
+        )
+        _ = LocalStore.takeSkippedRules()
+        let now = Fixtures.instant("2026-03-01T01:00:00Z")
+        let plan = try await store.followUpPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none)
+        #expect(plan.hasUnreadable)
+        let alarms = try await store.alarmPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none)
+        #expect(alarms.hasUnreadable)
+        let reminders = try await store.reminderPlan(at: now, deviceTimeZone: Fixtures.shanghai, privacy: .showNames)
+        #expect(reminders.needs[good.schedule.id] != nil)
+        // Today keeps the strict load (spec 7.3).
+        await #expect(throws: StorageError.invalidData) { try await store.generateOccurrences(at: now, deviceTimeZone: Fixtures.shanghai) }
+    }
 }

@@ -23,7 +23,8 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 3 | Notification | Action of a reminder | Taken | 已服用 |
 | 4 | Notification | Body with names off | Open Maru to see your plan. | 打开 Maru 查看你的计划。 |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | 未记录 |
-| 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | 打开 Maru 以记录。 |
+| 6 | Notification | Body after the action recorded nothing, no match with one dose (D089) | This reminder no longer matches one dose of today. Open Maru to record it. | 这条提醒已不对应今天的某一次服用。打开 Maru 来记录。 |
+| 7 | Notification | Body after the action recorded nothing, record not saved (D089) | Maru could not save the dose. Open Maru to try again. | Maru 没能保存这次记录。打开 Maru 再试一次。 |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 记录为已服用。 |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | %@ 服用 |
 | 11 | Dose wording | State of a skipped dose | Skipped | 已跳过 |
@@ -59,7 +60,8 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 3 | Notification | Action of a reminder | Taken | 服用済み |
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Maruを開いてプランを確認してください。 |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | 記録されていません |
-| 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Maruを開いて記録してください。 |
+| 6 | Notification | Body after the action recorded nothing, no match with one dose (D089) | This reminder no longer matches one dose of today. Open Maru to record it. | このリマインダーは、今日の1回分と一致しなくなりました。Maruを開いて記録してください。 |
+| 7 | Notification | Body after the action recorded nothing, record not saved (D089) | Maru could not save the dose. Open Maru to try again. | Maruは記録を保存できませんでした。Maruを開いてもう一度お試しください。 |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 服用として記録します。 |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | %@に服用 |
 | 11 | Dose wording | State of a skipped dose | Skipped | スキップ済み |
@@ -95,7 +97,8 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 3 | Notification | Action of a reminder | Taken | Tomado |
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Abre Maru para ver tu plan. |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | No registrado |
-| 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Abre Maru para registrarlo. |
+| 6 | Notification | Body after the action recorded nothing, no match with one dose (D089) | This reminder no longer matches one dose of today. Open Maru to record it. | Este recordatorio ya no corresponde a una sola toma de hoy. Abre Maru para registrarla. |
+| 7 | Notification | Body after the action recorded nothing, record not saved (D089) | Maru could not save the dose. Open Maru to try again. | Maru no pudo guardar la toma. Abre Maru para intentarlo de nuevo. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | La registra como tomada. |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | Tomado: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | Omitido |
@@ -129,7 +132,8 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 3 | Notification | Action of a reminder | Taken | Eingenommen |
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Öffne Maru, um deinen Plan zu sehen. |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | Nicht erfasst |
-| 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Öffne Maru, um es zu erfassen. |
+| 6 | Notification | Body after the action recorded nothing, no match with one dose (D089) | This reminder no longer matches one dose of today. Open Maru to record it. | Diese Erinnerung passt nicht mehr zu genau einer Einnahme von heute. Öffne Maru, um sie zu erfassen. |
+| 7 | Notification | Body after the action recorded nothing, record not saved (D089) | Maru could not save the dose. Open Maru to try again. | Maru konnte die Einnahme nicht speichern. Öffne Maru und versuche es erneut. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | Erfasst sie als eingenommen. |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | Eingenommen: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | Übersprungen |
@@ -163,7 +167,8 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 3 | Notification | Action of a reminder | Taken | 복용함 |
 | 4 | Notification | Body with names off | Open Maru to see your plan. | Maru를 열어 계획을 확인하세요. |
 | 5 | Notification | Title after the action recorded nothing | Not recorded | 기록되지 않음 |
-| 6 | Notification | Body after the action recorded nothing | Open Maru to record it. | Maru를 열어 기록하세요. |
+| 6 | Notification | Body after the action recorded nothing, no match with one dose (D089) | This reminder no longer matches one dose of today. Open Maru to record it. | 이 알림은 더 이상 오늘의 한 회분과 맞지 않습니다. Maru를 열어 기록해 주세요. |
+| 7 | Notification | Body after the action recorded nothing, record not saved (D089) | Maru could not save the dose. Open Maru to try again. | Maru가 기록을 저장하지 못했습니다. Maru를 열어 다시 시도해 주세요. |
 | 8 | Dose wording | VoiceOver hint of a dose circle | Records it as taken. | 복용함으로 기록해요. |
 | 10 | Dose wording | Row text of a taken dose | Taken at %@ | 복용 시간: %@ |
 | 11 | Dose wording | State of a skipped dose | Skipped | 건너뜀 |

@@ -51,6 +51,8 @@ Maru was developed in a private repository before it became public. Issue number
 
 - The reminder run stopped on a taken as-needed dose (D088): the plan read a slot that such a dose does not have, so every run of build 7 failed with `invalidData` and set nothing. The fix, the fault isolation of bad rows, the named rules in the log and in `core_error`, the upgrade fixtures, and the random edit test are in the branch `leon/midnight-reminders`. It needs the device check of `docs/process.md`, "Release checks", with the live log, before it counts as done.
 
+- Phase A of the reminder plan is in code (D089, branch `leon/phase-a-correctness`): the "Taken" action checks the schedule version, alarms of weekly plans repeat and never run out, a record before the time keeps the later weeks, the notification permission is asked with an alarm at the first save, dated requests reach further, one bad occurrence row does not stop the reminders, an interrupted restore does not leave the widget off, a late alarm is cancelled beside its banner, and the notice after a refused "Taken" says why. The package tests pass. Nobody built the app on this Mac (CI builds it). It needs the device checks that D089 lists, with the live log of `docs/process.md`, before it counts as done.
+
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the item photo (D056), the History graph and rows, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.

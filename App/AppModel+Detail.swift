@@ -169,6 +169,7 @@ extension AppModel {
         forgetUnconfirmed(of: itemID, versions: Set(versions))
         for id in schedules {
             reminderStatus[id] = nil
+            reminderCoverageEnds[id] = nil
         }
         refresh()
         forgetHistory(of: itemID)
@@ -288,6 +289,7 @@ extension AppModel {
         let unconfirmed = outcome.followUps?.removalPending != false
             ? reminderStatus.filter { $0.value == .notConfirmed }.keys.map(\.self) : []
         reminderStatus = outcome.reminders.schedules.mapValues(ReminderStatus.init)
+        reminderCoverageEnds = outcome.reminders.coverageEnds
         for id in unconfirmed where reminderStatus[id] == .off || reminderStatus[id] == .set {
             reminderStatus[id] = .notConfirmed
         }

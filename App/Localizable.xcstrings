@@ -5148,6 +5148,41 @@
         }
       }
     },
+    "Reminders are set until %@. Maru sets them again each time you open it." : {
+      "comment" : "Item detail: the footer of a plan whose reminders are dated, for example a plan that counts days. The placeholder is the date of its last reminder. Opening Maru sets the reminders again.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Erinnerungen sind bis %@ eingerichtet. Maru richtet sie bei jedem Öffnen neu ein."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los recordatorios están programados hasta el %@. Maru los vuelve a programar cada vez que lo abres."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リマインダーは%@まで設定されています。Maruを開くたびに、設定し直します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림이 %@까지 설정되어 있습니다. Maru를 열 때마다 다시 설정합니다."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提醒已设置到 %@。每次打开 Maru 都会重新设置。"
+          }
+        }
+      }
+    },
     "Maru stops its reminders and hides it from Today and My Items. Your records stay. This is not advice to stop taking it." : {
       "comment" : "Message of the archive confirmation. The word it means the item that the title names. Archive hides an item, and the records stay.",
       "localizations" : {

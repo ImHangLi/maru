@@ -10,7 +10,8 @@ struct ReminderPlanTests {
         schedules: [Schedule],
         at now: String = "2026-03-02T00:00:00Z",
         privacy: ReminderPrivacy = .showNames,
-        requestBudget: Int = ReminderPlan.requestBudget
+        requestBudget: Int = ReminderPlan.requestBudget,
+        longerReach: Bool = false
     ) -> ReminderPlan {
         ReminderPlan(
             items: items,
@@ -18,7 +19,8 @@ struct ReminderPlanTests {
             now: Fixtures.instant(now),
             deviceTimeZone: Fixtures.shanghai,
             privacy: privacy,
-            requestBudget: requestBudget
+            requestBudget: requestBudget,
+            longerReach: longerReach
         )
     }
 
@@ -127,6 +129,33 @@ struct ReminderPlanTests {
         }
     }
 
+    /// D089: with room in the budget, the dated requests reach further than the minimum, and the plan says where they end.
+    @Test func datedRequestsReachFurtherWhenTheBudgetHasRoom() throws {
+        let item = Fixtures.item(name: "Iron")
+        let alternate = Fixtures.schedule(
+            itemID: item.id, times: [Fixtures.time(8)], dayCycle: Fixtures.cycle(from: Fixtures.date(2026, 3, 3))
+        )
+        let plan = compile(items: [item], schedules: [alternate], longerReach: true)
+        #expect(plan.requests.count == 28)
+        #expect(plan.requests.last?.userInfo[ReminderRequest.dueDateKey] == "2026-04-26")
+        #expect(plan.coverageEnds[alternate.id] == Fixtures.instant("2026-04-26T00:00:00Z"))
+        // The minimum reach stays the rule when a longer one would drop a series (D036).
+        let tight = compile(items: [item], schedules: [alternate], requestBudget: 7, longerReach: true)
+        #expect(tight.requests.count == 7)
+        // A plan with repeating requests only has no end.
+        let daily = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(8)])
+        #expect(compile(items: [item], schedules: [daily], longerReach: true).coverageEnds.isEmpty)
+
+        // A record before the time takes today's weekday out of the repeat. Its next weeks get dated requests, up to eight.
+        let key = OccurrenceKey(slotID: daily.slots[0].id, plannedDate: Fixtures.date(2026, 3, 2))
+        let recorded = ReminderPlan(
+            items: [item], schedules: [daily], now: Fixtures.instant("2026-03-01T23:00:00Z"), deviceTimeZone: Fixtures.shanghai,
+            closed: [key]
+        )
+        #expect(recorded.requests.filter { !$0.trigger.repeats }.count == 7)
+        #expect(recorded.coverageEnds[daily.id] == Fixtures.instant("2026-04-20T00:00:00Z"))
+    }
+
     /// The dated requests of a cycle are for its days with a dose. So no request names the item on a day
     /// of the pause, and the seven requests continue after the pause (D065, T52).
     @Test func cycleGivesDatedRequestsOnlyForItsDaysOn() {
@@ -154,7 +183,7 @@ struct ReminderPlanTests {
         func plan(_ schedules: [Schedule], closed: Set<OccurrenceKey> = [], budget: Int = ReminderPlan.requestBudget) -> ReminderPlan {
             ReminderPlan(
                 items: items, schedules: schedules, now: Fixtures.instant("2026-03-02T00:00:00Z"),
-                deviceTimeZone: Fixtures.shanghai, closed: closed, requestBudget: budget
+                deviceTimeZone: Fixtures.shanghai, closed: closed, requestBudget: budget, longerReach: false
             )
         }
 

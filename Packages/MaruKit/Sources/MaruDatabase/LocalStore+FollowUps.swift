@@ -50,7 +50,7 @@ extension LocalStore: FollowUpSource {
     static func doseInputs(
         _ db: Database, now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover
     ) throws -> DoseInputs {
-        let (items, schedules, unreadable) = try Self.planInputs(db)
+        let (items, schedules, unreadableSchedules) = try Self.planInputs(db)
         let dates = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone).candidateDates
         // The query of `generateOccurrences`, with the state of each occurrence. Records exist only for these dates.
         let rows = try Row.fetchAll(
@@ -67,11 +67,18 @@ extension LocalStore: FollowUpSource {
         )
         var stored: [StoredOccurrence] = []
         var closed: Set<OccurrenceKey> = []
-        try Self.named(.occurrenceRow) {
-            for row in rows {
-                let occurrence = try Self.decodeOccurrence(row)
-                stored.append(StoredOccurrence(occurrence: occurrence, hasEvents: try row.decode(forColumn: "hasEvents")))
-                if try row.decode(forColumn: "isClosed") as Bool { closed.insert(occurrence.key) }
+        var unreadable = unreadableSchedules
+        // One row that does not decode is skipped and logged, and its schedule is marked. The other rows plan as before (D089).
+        for row in rows {
+            do {
+                try Self.named(.occurrenceRow) {
+                    let occurrence = try Self.decodeOccurrence(row)
+                    stored.append(StoredOccurrence(occurrence: occurrence, hasEvents: try row.decode(forColumn: "hasEvents")))
+                    if try row.decode(forColumn: "isClosed") as Bool { closed.insert(occurrence.key) }
+                }
+            } catch let error as DecodeRule {
+                DecodeFaults.skipped(error.rule)
+                if let id = try Self.scheduleID(ofOccurrenceRow: row, db) { unreadable.insert(id) }
             }
         }
         return DoseInputs(

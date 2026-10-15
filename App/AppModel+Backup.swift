@@ -165,6 +165,7 @@ extension AppModel {
         editor = nil
         endRequest = nil
         reminderStatus = [:]
+        reminderCoverageEnds = [:]
         reminderAlerts = []
         DraftFile.removeAll()
     }

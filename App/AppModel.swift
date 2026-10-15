@@ -36,6 +36,8 @@ final class AppModel {
     /// What the system holds for each schedule after the last run of the reminder engine. The item detail
     /// shows it (T03). `AppModel+Detail.swift` has its operations.
     var reminderStatus: [ScheduleID: ReminderStatus] = [:]
+    /// The instant of the last dated reminder of each schedule that has them. After it, the reminder stops until Maru opens (D089).
+    var reminderCoverageEnds: [ScheduleID: Date] = [:]
     /// The reminders that failed with a save or a change and wait for their alert, the oldest first (D028).
     /// Two results can wait, because a save closes the edit screen before its reminder run ends.
     var reminderAlerts: [ReminderAlert] = []
@@ -182,8 +184,9 @@ final class AppModel {
                 sendWatchDay()
                 showPendingWidgetSlot()
             }
-            // After the content shows, so Today never waits for the reminders (spec 8.1, 9).
-            if case .loaded = content, needsReconcile, let deviceTimeZone = NamedTimeZone(device: .current, at: now) {
+            // After the content shows, so Today never waits for the reminders (spec 8.1, 9). A Today that did not load, for
+            // example for one damaged row, does not stop the run: the plans read their rows with their own checks (D088, D089).
+            if needsReconcile, let deviceTimeZone = NamedTimeZone(device: .current, at: now) {
                 needsReconcile = false
                 reconcileReminders(at: now, deviceTimeZone: deviceTimeZone)
             }

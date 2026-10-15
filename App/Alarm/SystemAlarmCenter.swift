@@ -64,16 +64,36 @@ struct SystemAlarmCenter: AlarmCenter {
         let attributes = AlarmAttributes<MaruAlarmMetadata>(
             presentation: AlarmPresentation(alert: alert), tintColor: color.tint
         )
+        // An alarm that repeats on weekdays uses the clock of the device and never runs out (D089).
+        let schedule: Alarm.Schedule
+        if let repeating = request.repeating {
+            let time = Alarm.Schedule.Relative.Time(hour: repeating.time.hour, minute: repeating.time.minute)
+            schedule = .relative(.init(time: time, repeats: .weekly(repeating.weekdays.sorted().map(Self.weekday))))
+        } else {
+            schedule = .fixed(request.fireDate)
+        }
         _ = try await AlarmManager.shared.schedule(
             id: request.id,
             configuration: .alarm(
-                schedule: .fixed(request.fireDate),
+                schedule: schedule,
                 attributes: attributes,
                 stopIntent: nil,
                 secondaryIntent: intent,
                 sound: .default
             )
         )
+    }
+
+    private static func weekday(_ day: Weekday) -> Locale.Weekday {
+        switch day {
+        case .monday: .monday
+        case .tuesday: .tuesday
+        case .wednesday: .wednesday
+        case .thursday: .thursday
+        case .friday: .friday
+        case .saturday: .saturday
+        case .sunday: .sunday
+        }
     }
 
     func cancel(_ ids: [UUID]) async throws {
@@ -88,6 +108,7 @@ struct SystemAlarmCenter: AlarmCenter {
 /// The "Taken" button of an alarm for one item. It runs in the app process, in the background (D034, D079).
 ///
 /// It holds the keys of a follow-up reminder: the series, the plan date, the item, and the schedule version.
+/// A repeating alarm has no plan date and no fire time, and the button finds the date when it runs.
 /// It holds no name and no dose. `AppModel.takeReminder` records through the same checks as the "Taken" action
 /// of a notification, so an alarm of an older plan, a dose of another day, or a dose with a record changes nothing.
 struct TakeFromAlarmIntent: LiveActivityIntent {
@@ -118,9 +139,15 @@ struct TakeFromAlarmIntent: LiveActivityIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        // A repeating alarm holds no date. The dose is today's, when its time has come (D089).
+        let resolvedDate = plannedDate.isEmpty
+            ? NamedTimeZone(device: .current, at: .now).flatMap {
+                AlarmRequest.plannedDate(ofSeries: seriesID, at: .now, deviceTimeZone: $0)
+            } ?? ""
+            : plannedDate
         let userInfo = [
             ReminderRequest.seriesIDKey: seriesID,
-            FollowUpRequest.plannedDateKey: plannedDate,
+            FollowUpRequest.plannedDateKey: resolvedDate,
             FollowUpRequest.fireTimeKey: fireTime,
             FollowUpRequest.itemIDKey: itemID,
             FollowUpRequest.scheduleVersionIDKey: scheduleVersionID,

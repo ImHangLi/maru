@@ -61,6 +61,46 @@ struct AlarmPlanTests {
         #expect(!recorded.alarms.requests.contains { $0.fireDate == Fixtures.instant("2026-03-03T00:00:00Z") })
     }
 
+    /// N2 (D089): an item that follows the device and has no day cycle gets one repeating alarm, which never runs out.
+    @Test func aDeviceFollowingWeeklyItemGetsOneRepeatingAlarm() throws {
+        let zinc = Fixtures.item(name: "Zinc", alarm: true)
+        let schedule = Fixtures.schedule(
+            itemID: zinc.id, times: [Fixtures.time(8)], weeklyRule: try WeeklyRule(weekdays: [.monday, .thursday]),
+            timeZonePolicy: .followsDevice
+        )
+        let requests = plan(items: [zinc], schedules: [schedule]).alarms.requests
+        #expect(requests.count == 1)
+        let repeating = try #require(requests[0].repeating)
+        #expect(repeating.weekdays == [.monday, .thursday] && repeating.time == Fixtures.time(8))
+        // The first ring is the next one. The button has no date, so the app finds it when the button runs.
+        #expect(requests[0].fireDate == Fixtures.instant("2026-03-05T00:00:00Z"))
+        #expect(requests[0].taken?[FollowUpRequest.itemIDKey] == zinc.id.rawValue.uuidString)
+        #expect(requests[0].taken?[FollowUpRequest.plannedDateKey] == nil)
+
+        // A record before the time of one day takes that weekday out of the repeat. Its dates keep their alarms.
+        let key = OccurrenceKey(slotID: schedule.slots[0].id, plannedDate: Fixtures.date(2026, 3, 5))
+        let recorded = plan(items: [zinc], schedules: [schedule], closed: [key]).alarms.requests
+        #expect(recorded.filter { $0.repeating != nil }.map { $0.repeating!.weekdays } == [[.monday]])
+        #expect(recorded.filter { $0.repeating == nil }.count == 3)
+    }
+
+    @Test func theButtonOfARepeatingAlarmFindsTodaysDoseOnlyAfterItsTime() {
+        // 08:05 on 2 March in Shanghai.
+        #expect(AlarmRequest.plannedDate(ofSeries: "series|device|08:00", at: now, deviceTimeZone: Fixtures.shanghai) == "2026-03-02")
+        #expect(AlarmRequest.plannedDate(ofSeries: "series|device|09:00", at: now, deviceTimeZone: Fixtures.shanghai) == nil)
+        #expect(AlarmRequest.plannedDate(ofSeries: "series|Asia/Shanghai|08:00", at: now, deviceTimeZone: Fixtures.shanghai) == nil)
+    }
+
+    /// N3 (D089): the limit cut doses that are due soon, and the item did not know. Now it gets its banner back.
+    @Test func aDoseThatTheLimitCutGivesItsItemTheBannerBack() throws {
+        let zinc = Fixtures.item(name: "Zinc", alarm: true)
+        let times = (6..<16).map { Fixtures.time($0) }
+        let schedule = Fixtures.schedule(itemID: zinc.id, times: times)
+        let result = plan(items: [zinc], schedules: [schedule])
+        #expect(result.alarms.requests.count == AlarmPlan.limit)
+        #expect(result.alarms.cutItems == [zinc.id])
+    }
+
     /// An alarm that the system does not schedule must not leave the item with no reminder (D079).
     @Test func anAlarmThatTheSystemRefusesGivesTheItemItsNormalReminderBack() async throws {
         /// Refuses the alarm of the second day, and holds the others.

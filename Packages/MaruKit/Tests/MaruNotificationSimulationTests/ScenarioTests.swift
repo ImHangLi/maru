@@ -236,6 +236,32 @@ struct ScenarioTests {
         await p.expectCorrect("the late alarm is gone")
     }
 
+    /// N9 (D089): the alarm call times out, so the item keeps its banner. When AlarmKit answers late, the alarm that it
+    /// registers must go, or the alarm rings beside its fallback banner.
+    @Test func aLateAlarmThatTheRunGaveUpOnIsCancelledBesideItsBanner() async throws {
+        let p = try await phone()
+        p.checks.alarmsFail = true
+        await p.alarmCenter.setScheduleHangs(true)
+        try await p.addItem("Zinc", at: ["09:00"], alarm: true)
+        await p.expectCorrect("the banner stands in for the alarm that timed out")
+        await p.alarmCenter.setScheduleHangs(false)
+        try await Task.sleep(for: .milliseconds(600))
+        #expect(await p.alarmCenter.alarms.isEmpty, "the late alarm rings beside the banner")
+        await p.expectCorrect("banner only")
+    }
+
+    /// N5 (D089): with the alarm on at the first save, the series run has no request, so it never asked for the notification
+    /// permission. Then no banner stands in for a failed alarm, and no follow-up ever comes.
+    @Test func anAlarmItemAtTheFirstSaveAsksForTheNotificationPermission() async throws {
+        let p = try await phone()
+        await p.setNotifications(.notDetermined)
+        p.checks.followUpCoverage = true
+        try await p.addItem("Zinc", at: ["09:00"], followUp: again, alarm: true)
+        #expect(p.device.authorization == .authorized, "the prompt was never shown")
+        #expect(await p.center.pending.keys.contains { $0.hasPrefix("followup|") }, "no follow-up is set")
+        await p.expectCorrect("alarm, then follow-ups")
+    }
+
     // MARK: A delivered reminder and a later record (maintainer requirement of D086)
 
     @Test func recordedAtOneAfterAReminderOfNoonLeavesNotificationCenter() async throws {

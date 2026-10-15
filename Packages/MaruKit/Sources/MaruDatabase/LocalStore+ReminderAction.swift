@@ -8,6 +8,7 @@ extension LocalStore {
     /// `ReminderTapResolver.takenTarget` has the rules for the reminder. The store adds the stored state:
     /// the occurrence must be stored, its date must be today in its own time zone, and it must be open.
     /// For a follow-up, the date can also be the day before, until `FollowUpPlan.latestTime` (D039).
+    /// The stored occurrence must have the schedule version of the plan of now, for every action (D089).
     /// A generation run comes first, so a launch by the action finds the occurrences of yesterday and today.
     /// The read writes no event. The caller records with `record`, the transaction of the record circle,
     /// and the event revises the last event of the returned record, so a second event is rejected (T18).
@@ -38,6 +39,9 @@ extension LocalStore {
                       ? FollowUpPlan.takesDose(on: occurrence.plannedDate, at: now, in: occurrence.timeZone)
                       : occurrence.plannedDate == LocalDate(now, in: occurrence.timeZone)
             else { return .none }
+            // The stored occurrence must have the schedule version that the plan of now has for the dose. An occurrence with
+            // an event keeps its old version after an undo and a plan edit. A record would then keep the old plan (D089).
+            guard occurrence.scheduleVersionID == planned.scheduleVersionID else { return .none }
             // A follow-up has no revision. It records only the schedule version that it was made for.
             if reminder.userInfo[FollowUpRequest.plannedDateKey] != nil,
                reminder.userInfo[FollowUpRequest.scheduleVersionIDKey] != occurrence.scheduleVersionID.text {
