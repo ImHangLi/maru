@@ -50,24 +50,29 @@ struct PersistenceTests {
             category: .medication, name: "Metformin", form: .tablet, color: .green,
             followUp: FollowUpSetting(count: .five, interval: .minutes10), followUpChanged: earlier
         )
+        // A migrated item whose old change was not confirmed keeps its marker, so the legacy removal check still runs (D079).
+        let pending = try Item(
+            category: .supplement, name: "Calcium", form: .tablet, color: .orange,
+            followUp: FollowUpSetting(count: .two, interval: .minutes15), followUpChanged: .distantFuture
+        )
         let archived = try Item(category: .supplement, name: "Old", form: .capsule, color: .brown, isArchived: true)
         let untimed = try Item(category: .supplement, name: "Arnica", form: .drop, color: .mint)
-        for item in [off, same, other, archived, untimed] { try await store.save(item) }
-        for item in [off, same, other, archived] {
+        for item in [off, same, other, pending, archived, untimed] { try await store.save(item) }
+        for item in [off, same, other, pending, archived] {
             try await store.save(Fixtures.twiceDailySchedule(itemID: item.id).schedule)
         }
 
-        #expect(try await store.timedItems().map(\.name) == ["Zinc", "Iron", "Metformin"])
-        #expect(try await store.apply(.followUp(target), toTimedItemsAt: now) == 2)
+        #expect(try await store.timedItems().map(\.name) == ["Zinc", "Iron", "Metformin", "Calcium"])
+        #expect(try await store.apply(.followUp(target), toTimedItemsAt: now) == 3)
         let items = try await store.items()
-        #expect(items.map(\.followUp) == [target, target, target, nil, nil])
-        #expect(items.map(\.followUpChanged) == [now, earlier, now, nil, nil])
+        #expect(items.map(\.followUp) == [target, target, target, target, nil, nil])
+        #expect(items.map(\.followUpChanged) == [now, earlier, now, .distantFuture, nil, nil])
 
         // A new interval changes only the items that have "Remind Again" on, and the alarm changes every timed item.
-        #expect(try await store.apply(.followUp(nil), toTimedItemsAt: now) == 3)
+        #expect(try await store.apply(.followUp(nil), toTimedItemsAt: now) == 4)
         #expect(try await store.apply(.followUpInterval(.minutes5), toTimedItemsAt: now) == 0)
-        #expect(try await store.apply(.alarm(true), toTimedItemsAt: now) == 3)
-        #expect(try await store.items().map(\.alarm) == [true, true, true, false, false])
+        #expect(try await store.apply(.alarm(true), toTimedItemsAt: now) == 4)
+        #expect(try await store.items().map(\.alarm) == [true, true, true, true, false, false])
         #expect(ReminderOptionsSummary(items: try await store.timedItems()).alarm == .same(true))
     }
 

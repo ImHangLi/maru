@@ -208,12 +208,12 @@ extension LocalStore {
                 case let .followUp(setting):
                     guard item.followUp != setting else { continue }
                     item.followUp = setting
-                    item.followUpChanged = now
+                    item.followUpChanged = Self.changeTime(of: item, now)
                 case let .followUpInterval(interval):
                     guard var setting = item.followUp, setting.interval != interval else { continue }
                     setting.interval = interval
                     item.followUp = setting
-                    item.followUpChanged = now
+                    item.followUpChanged = Self.changeTime(of: item, now)
                 case let .alarm(isOn):
                     guard item.alarm != isOn else { continue }
                     item.alarm = isOn
@@ -223,6 +223,12 @@ extension LocalStore {
             }
             return changed
         }
+    }
+
+    /// The change time after a change of "Remind Again". An unconfirmed marker of a migrated item (`.distantFuture`,
+    /// D079) stays, so the legacy removal confirmation still runs and the limit of 12 holds.
+    private static func changeTime(of item: Item, _ now: Date) -> Date {
+        item.followUpChanged == .distantFuture ? .distantFuture : now
     }
 
     private static func fetchTimedItems(_ db: Database) throws -> [Item] {

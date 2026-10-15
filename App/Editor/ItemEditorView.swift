@@ -99,8 +99,6 @@ struct ItemEditorView: View {
                 moreSection
             }
             .scrollDismissesKeyboard(.interactively)
-            // The photo work belongs to this screen. When it closes, a late result writes nothing (T30).
-            .photoWork($photo)
             // A row or a footer that comes or goes moves the form (D030).
             .motion(.layout, value: layout)
             #if DEBUG
@@ -143,6 +141,9 @@ struct ItemEditorView: View {
                 if case let .set(form) = formStep { draft.form = form }
             }
         }
+        // The photo work belongs to the whole screen, not to one page of it, so a push to "More Options" and back
+        // does not cancel it. When the screen closes, a late result writes nothing (T30).
+        .photoWork($photo)
         // Only unsaved changes ask before the screen closes (spec 3 P03).
         .interactiveDismissDisabled(hasChanges)
         // Every close: Cancel, a swipe, a save, or a restore. The model ignores the close after a save.
@@ -406,7 +407,7 @@ struct ItemEditorView: View {
     }
 
     /// The optional details: the amount, the look of the item, and the note. The photo work stays on the first page,
-    /// so it runs while the user is here and after the user goes back (T30).
+    /// so it runs while the user is on the page and after the user goes back (T30).
     private var moreOptionsPage: some View {
         Form {
             amountSection
