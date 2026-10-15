@@ -35,8 +35,9 @@ enum AlarmSupport {
 /// AlarmKit as an `AlarmCenter`. It only translates: `AlarmPlan` and `AlarmEngine` in `MaruCore` have every rule.
 @available(iOS 26, *)
 struct SystemAlarmCenter: AlarmCenter {
-    func waiting() async -> Set<UUID> {
-        guard let alarms = try? AlarmManager.shared.alarms else { return [] }
+    func waiting() async throws -> Set<UUID> {
+        // An error is an error of the alarm path: the run then has an empty cover, and every item gets its notification (D079).
+        let alarms = try AlarmManager.shared.alarms
         return Set(alarms.filter { $0.state == .scheduled }.map(\.id))
     }
 

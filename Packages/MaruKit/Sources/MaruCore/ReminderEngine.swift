@@ -51,13 +51,6 @@ public protocol ReminderCenter: Sendable {
     func text(for content: ReminderContent) -> ReminderText
 }
 
-/// Where the engine keeps the identifiers of removals that the system did not complete yet.
-/// It must keep them after the app stops, so that the next start does not take such a request as current.
-public protocol RemovalLedger: Sendable {
-    func load() -> Set<String>
-    func save(_ identifiers: Set<String>)
-}
-
 /// Where the engine reads the saved plan.
 public protocol ReminderPlanSource: Sendable {
     /// - Parameter alarms: Which items an alarm covers now, so the plan leaves them out (D079).
@@ -157,7 +150,7 @@ public struct ReminderOutcome: Hashable, Sendable {
 /// The database and the notification system do not commit together. So the plan is saved first, and a run
 /// follows: after each save, at each launch, and when the app comes back to the foreground. A run compares
 /// the plan with the pending requests and changes only the difference. A run that stops early leaves
-/// a difference, and the next run removes it. The only state on disk is the set of open removals in the `RemovalLedger`.
+/// a difference, and the next run removes it. The engine keeps no state on disk (D086).
 ///
 /// A repeating request needs no later run. A dated request of a plan that repeats every second day does:
 /// each run adds the requests of the new due dates, as `FollowUpEngine` does for the follow-ups (D036).
@@ -169,8 +162,7 @@ public actor ReminderEngine {
     public static let removalWait = Duration.milliseconds(50)
 
     private let source: any ReminderPlanSource
-    private let center: any ReminderCenter
-    private let ledger: any RemovalLedger
+    private let center: GenerationCenter
     private let privacy: any ReminderPrivacyStore
     private let zoneRecord: DefaultsTimeZoneRecord?
     /// Which items an alarm covers now, read at each run (D079).
@@ -179,8 +171,7 @@ public actor ReminderEngine {
     private let clock: @Sendable () -> Date
     private var lastRun: Task<Void, Never>?
     /// The identifiers that the engine removed and that the system still held at the last read.
-    /// The ledger has a copy, so a new start of the app also waits for a removal of the process before it.
-    private var unremoved: Set<String>
+    private var unremoved: Set<String> = []
 
     /// - Parameters:
     ///   - zoneRecord: Gets the device time zone of each successful run, for the notification tap (spec 8.3).
@@ -189,20 +180,22 @@ public actor ReminderEngine {
     public init(
         source: any ReminderPlanSource,
         center: any ReminderCenter,
-        ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
         zoneRecord: DefaultsTimeZoneRecord? = nil,
         alarms: @escaping @Sendable () -> AlarmCover = { .none },
-        clock: @escaping @Sendable () -> Date = { Date() }
+        clock: @escaping @Sendable () -> Date = { Date() },
+        generations: any GenerationCounter = MemoryGenerationCounter.shared,
+        migration: any LegacyMigration = NoMigration()
     ) {
         self.source = source
-        self.center = center
-        self.ledger = ledger
+        self.center = GenerationCenter(
+            center, counter: generations, migration: migration, ownPrefix: ReminderSeries.identifierPrefix
+        )
         self.privacy = privacy
         self.zoneRecord = zoneRecord
         self.alarms = alarms
         self.clock = clock
-        unremoved = ledger.load()
+        unremoved = []
     }
 
     /// Runs one reconciliation and returns the state after it.
@@ -240,6 +233,14 @@ public actor ReminderEngine {
     }
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone, mayAskForPermission: Bool) async throws -> ReminderOutcome {
+        // First: at most one generation of each base stays (D086).
+        await center.prune()
+        let outcome = try await perform(at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission)
+        await center.finishMigration()
+        return outcome
+    }
+
+    private func perform(at now: Date, deviceTimeZone: NamedTimeZone, mayAskForPermission: Bool) async throws -> ReminderOutcome {
         let plan = try await source.reminderPlan(
             at: now, deviceTimeZone: deviceTimeZone, privacy: privacy.load(), alarms: alarms()
         )
@@ -269,7 +270,7 @@ public actor ReminderEngine {
         // Add before remove. If the app stops between the two, the user gets one reminder too many
         // until the next run, and not one too few.
         // An open removal can still take a request with its identifier, so the run does not add that request.
-        let additions = changes.add.filter { !unremoved.contains($0.identifier) }
+        let additions = changes.add
         let (fitting, removedFirst) = await makeRoom(for: additions, pending: pending, obsolete: changes.remove)
         for request in fitting {
             // The second read below is the result. The system can also drop a request with no error.
@@ -285,7 +286,7 @@ public actor ReminderEngine {
         var pendingNow = await pendingAfterRemoval()
         // A replacement that did not land leaves the old request, with its old names. A request that names an archived,
         // deleted, or recorded item must not stay (D084). The run first adds the replacement again. When the old request
-        // is still there, the run removes it through the ledger and, after the system confirms the removal, adds the
+        // is still there, the run removes it and, after the system confirms the removal, adds the
         // replacement in the same run. So the dose time does not pass with no reminder. An identifier whose removal
         // the system did not confirm stays blocked, as for every removal.
         func staleRequests() -> [ReminderRequest] {
@@ -298,7 +299,7 @@ public actor ReminderEngine {
         var stale = staleRequests()
         if !stale.isEmpty {
             // An add with the identifier of a pending request replaces it and takes no room.
-            for request in stale where !unremoved.contains(request.identifier) { try? await center.add(request) }
+            for request in stale { try? await center.add(request) }
             pendingNow = await pendingAfterRemoval()
             stale = staleRequests()
         }
@@ -309,7 +310,7 @@ public actor ReminderEngine {
             var room = ReminderPlan.systemLimit - pendingNow.count
             let now = clock()
             for request in stale
-            where !unremoved.contains(request.identifier) && !held.contains(request.identifier)
+            where !held.contains(request.identifier)
                 && (request.fireDate.map { $0 > now } ?? true) && room > 0 {
                 room -= 1
                 try? await center.add(request)
@@ -372,7 +373,7 @@ public actor ReminderEngine {
     }
 
     /// Removes follow-ups and reads the pending requests until the system holds none of them, at most
-    /// `removalChecks` times. They stay out of the ledger of this engine. `FollowUpEngine` adds the same
+    /// `removalChecks` times. `FollowUpEngine` adds the same
     /// identifiers again, so an entry here would never close. A late removal can then delete a new follow-up,
     /// and the next refresh sets it again.
     private func pendingCount(afterRemoving followUps: [String]) async -> Int {
@@ -388,31 +389,23 @@ public actor ReminderEngine {
         }
     }
 
-    /// Asks the system to remove the identifiers that have no open removal.
-    ///
-    /// An identifier of an open removal is not sent again. With two removals open, the first one could complete,
-    /// a run could then add the request again, and the second removal could delete it. So each identifier has
-    /// at most one open removal, and its disappearance from the pending requests confirms that removal.
-    /// The ledger gets the identifiers before the call, so a stop of the app after the call does not lose them.
+    /// Asks the system to remove the requests of these bases. The call is safe to repeat: a request that the app adds
+    /// later has another identifier, so no removal can delete it (D086). Each run removes what the plan does not have,
+    /// so a removal that the system did not do is asked for again by the next run.
     private func remove(_ identifiers: [String]) async {
-        let new = identifiers.filter { !unremoved.contains($0) }
-        if !new.isEmpty {
-            unremoved.formUnion(new)
-            ledger.save(unremoved)
-        }
-        await center.remove(identifiers: new)
+        guard !identifiers.isEmpty else { return }
+        unremoved.formUnion(identifiers)
+        await center.remove(identifiers: identifiers)
     }
 
-    /// Reads the pending requests until the system holds none that the engine removed, at most
-    /// `removalChecks` times. The identifiers that the last read still has stay in `unremoved`.
+    /// Reads the pending requests until the system holds none that this process asked to remove, at most
+    /// `removalChecks` times. The bases that the last read still has stay in `unremoved`.
     private func pendingAfterRemoval() async -> [PendingReminder] {
         var checks = 0
         while true {
             let pending = await center.pendingRequests()
             checks += 1
-            let before = unremoved
             unremoved.formIntersection(pending.map(\.identifier))
-            if unremoved != before { ledger.save(unremoved) }
             if unremoved.isEmpty || checks == Self.removalChecks { return pending }
             try? await Task.sleep(for: Self.removalWait)
         }

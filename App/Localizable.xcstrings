@@ -1,846 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "About" : {
-      "comment" : "Settings: the title of the section with the privacy policy, the support page, and the licenses.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Info"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Información"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "情報"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "정보"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "关于"
-          }
-        }
-      }
-    },
-    "Alarm" : {
-      "comment" : "Settings (For All Items) and add and edit screen: the label of the switch that makes the dose time ring like the alarm of the Clock app. In Settings it can also be a menu with the value Varies.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wecker"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alarma"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アラーム"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알람"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "闹钟"
-          }
-        }
-      }
-    },
-    "Open Maru" : {
-      "comment" : "The second button of the alarm of a dose when the alarm stands for more than one item. It opens the app.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru öffnen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir Maru"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruを開く"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 열기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 Maru"
-          }
-        }
-      }
-    },
-    "Privacy Policy" : {
-      "comment" : "Settings: a link to the privacy policy web page.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datenschutzerklärung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Política de privacidad"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プライバシーポリシー"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "개인정보 처리방침"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐私政策"
-          }
-        }
-      }
-    },
-    "Stop" : {
-      "comment" : "The stop button of the alarm of a dose. It silences the alarm and records nothing.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Stopp"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Detener"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "停止"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "중지"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "停止"
-          }
-        }
-      }
-    },
-    "Support" : {
-      "comment" : "Settings: a link to the support web page.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Support"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Soporte"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サポート"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지원"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "支持"
-          }
-        }
-      }
-    },
-    "Licenses" : {
-      "comment" : "Settings: the row and the page with the license text of third-party code.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lizenzen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Licencias"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ライセンス"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "라이선스"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "开源许可"
-          }
-        }
-      }
-    },
-    "Taken: %lld" : {
-      "comment" : "Item detail: the doses taken in the last 7 days. Example: Taken: 5.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eingenommen: %lld"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomadas: %lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服用 %lld回"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복용 %lld회"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已服用 %lld 次"
-          }
-        }
-      }
-    },
-    "Skipped: %lld" : {
-      "comment" : "Item detail: the planned doses skipped in the last 7 days. Example: Skipped: 1.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Übersprungen: %lld"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Omitidas: %lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "スキップ %lld回"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "건너뜀 %lld회"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已跳过 %lld 次"
-          }
-        }
-      }
-    },
-    "No record: %lld" : {
-      "comment" : "Item detail: the planned doses with no record in the last 7 days. Example: No record: 1.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ohne Eintrag: %lld"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin registro: %lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記録なし %lld回"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록 없음 %lld회"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没记录 %lld 次"
-          }
-        }
-      }
-    },
-    ", " : {
-      "comment" : "The separator between the parts of a detail line. Example: 2 capsules, 8:00 AM.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ", "
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ", "
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "、"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ", "
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "，"
-          }
-        }
-      }
-    },
-    "Choose Photo" : {
-      "comment" : "Edit screen: the button that opens the photo library to pick a photo for the item.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto auswählen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Elegir foto"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "写真を選択"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진 선택"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选照片"
-          }
-        }
-      }
-    },
-    "Maru couldn’t read this photo." : {
-      "comment" : "Edit screen: the footer when the chosen file is not an image that Maru can read.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru konnte dieses Foto nicht lesen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no pudo leer esta foto."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruはこの写真を読み取れませんでした。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 이 사진을 읽지 못했어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 读不了这张照片。"
-          }
-        }
-      }
-    },
-    "Maru found no single subject, so the photo stays as it is." : {
-      "comment" : "Edit screen: the footer when the background removal found no subject or more than one. The plain crop stays.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru hat kein einzelnes Motiv gefunden. Das Foto bleibt unverändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no encontró un solo objeto, así que la foto se queda como está."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ボトルを1つだけ見つけられなかったため、写真はそのままです。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "병 하나만 보이지 않아서 사진은 그대로예요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没找到单独的瓶子，照片保持原样。"
-          }
-        }
-      }
-    },
-    "Share Usage Statistics" : {
-      "comment" : "Settings: the switch for usage statistics.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nutzungsstatistik teilen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir estadísticas de uso"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "利用状況の統計を共有"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사용 통계 공유"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "分享使用数据"
-          }
-        }
-      }
-    },
-    "Help Improve Maru?" : {
-      "comment" : "The one-time question about usage statistics in the EU, the UK, and Switzerland: the title.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru verbessern helfen?"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Quieres ayudar a mejorar Maru?"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruの改善にご協力いただけますか？"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 개선에 도움을 주시겠어요?"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "要帮助改进 Maru 吗？"
-          }
-        }
-      }
-    },
-    "Share Statistics" : {
-      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that turns the statistics on.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Statistik teilen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compartir estadísticas"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "統計を共有"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "통계 공유"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "分享使用数据"
-          }
-        }
-      }
-    },
-    "Not Now" : {
-      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that leaves the statistics off.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht jetzt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ahora no"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今はしない"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "나중에"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "先不了"
-          }
-        }
-      }
-    },
-    "Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings." : {
-      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the message. The statistics are off until the user agrees.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Teile, wie du die App nutzt, zum Beispiel ob du heute eine Dosis erfasst hast. Maru teilt nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ändern."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Comparte cómo usas la app, por ejemplo si has registrado una dosis hoy. Maru nunca comparte nombres de elementos, dosis ni horas. Puedes cambiarlo en Ajustes."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日服用を記録したかどうかなど、機能の利用状況を共有します。項目名、用量、時刻は共有しません。「設定」でいつでも変更できます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘 복용을 기록했는지 같은 앱 사용 정보를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 바꿀 수 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "分享你怎么使用 App，比如今天有没有记录。Maru 绝不分享药品名称、剂量或时间。你可以随时在“设置”里改。"
-          }
-        }
-      }
-    },
-    "Open Maru to record this dose." : {
-      "comment" : "Widget: the prompt after a tap on a capsule that could not record. The system then opens the app.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Öffne Maru, um diese Dosis zu erfassen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abre Maru para registrar esta dosis."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruを開いてこの服用を記録してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru를 열어 이 복용을 기록해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开 Maru 来记录这次服用。"
-          }
-        }
-      }
-    },
-    "Photo" : {
-      "comment" : "Edit screen: the VoiceOver label of the photo of the item.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "写真"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "照片"
-          }
-        }
-      }
-    },
-    "Reading the photo…" : {
-      "comment" : "Edit screen: the status while Maru reads the chosen photo.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Foto wird gelesen …"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leyendo la foto…"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "写真を読み取り中…"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사진을 읽는 중…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "正在读取照片…"
-          }
-        }
-      }
-    },
-    "Record a Dose" : {
-      "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dosis erfassen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Registrar una dosis"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服用を記録"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복용 기록"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "记录一次服用"
-          }
-        }
-      }
-    },
-    "Dose" : {
-      "comment" : "Widget action: the name of the dose parameter.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dosis"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dosis"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服用"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복용"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "剂量"
-          }
-        }
-      }
-    },
     "%@ %@" : {
       "comment" : "Edit screen: a reminder time on the device with its days, when the kept zone of a medication is on another day. Example: Sun 6:00 PM.",
       "localizations" : {
@@ -977,6 +137,88 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@时间"
+          }
+        }
+      }
+    },
+    "%@ at %@, from %@, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every few days or has a pause. The first placeholder is the rule, for example Every 3 days, or 21 days on, 7 days off. The second is the times. The third is the first day, for example Tue, Aug 18.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ um %2$@, ab %3$@, ohne Enddatum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ at %2$@, from %3$@, with no end date"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@, desde %3$@, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@、%3$@から、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, %3$@부터, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@，从 %3$@ 开始，没有结束日期"
+          }
+        }
+      }
+    },
+    "%@ at %@, with no end date" : {
+      "comment" : "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ um %2$@, ohne Enddatum"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ at %2$@, with no end date"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@，没有结束日期"
           }
         }
       }
@@ -1472,37 +714,37 @@
         }
       }
     },
-    "1 hr" : {
-      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
+    ", " : {
+      "comment" : "The separator between the parts of a detail line. Example: 2 capsules, 8:00 AM.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 Std."
+            "value" : ", "
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 h"
+            "value" : ", "
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1時間"
+            "value" : "、"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1시간"
+            "value" : ", "
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1 小时"
+            "value" : "，"
           }
         }
       }
@@ -1538,6 +780,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "1 次"
+          }
+        }
+      }
+    },
+    "1 hr" : {
+      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Std."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 h"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1時間"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1시간"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 小时"
           }
         }
       }
@@ -1717,41 +994,6 @@
         }
       }
     },
-    "5 min" : {
-      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 Min."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 min"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5分"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5분"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "5 分钟"
-          }
-        }
-      }
-    },
     "5 Times" : {
       "comment" : "Remind Again menu (Settings, add and edit screen): a number of repeated reminders for each dose.",
       "localizations" : {
@@ -1787,6 +1029,111 @@
         }
       }
     },
+    "5 min" : {
+      "comment" : "Remind Again menu (Settings, add and edit screen): a time between repeated reminders.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 Min."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 min"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5분"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 分钟"
+          }
+        }
+      }
+    },
+    "A backup has your items and records, but not photos. The file isn’t encrypted, so keep it private." : {
+      "comment" : "Settings: the footer of the section Your Data. A backup is a file that the user makes with Back Up.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Backup enthält deine Einträge und Aufzeichnungen, aber keine Fotos. Die Datei ist nicht verschlüsselt, geh also sorgsam damit um."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La copia incluye tus elementos y registros, pero no las fotos. El archivo no está cifrado, así que guárdalo con cuidado."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バックアップに入るのは項目と記録で、写真は含まれません。ファイルは暗号化されていないので、取り扱いに気をつけてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "백업에는 항목과 기록이 담겨요. 사진은 빠져요. 파일은 암호화되지 않으니 조심해서 다뤄 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "备份包含你的药品和记录，不含照片。文件没加密，自己收好。"
+          }
+        }
+      }
+    },
+    "A newer Maru made this backup. Update Maru, then try again. Nothing changed." : {
+      "comment" : "Settings, Your Data: the message when the backup file comes from a newer version of the app. The data of the app did not change.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Backup stammt von einer neueren Maru-Version. Aktualisiere Maru und versuche es noch einmal. Es hat sich nichts geändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta copia es de una versión más nueva de Maru. Actualiza Maru e inténtalo de nuevo. No cambió nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新しいバージョンのMaruで作られたバックアップです。Maruをアップデートして、もう一度お試しください。データは変わっていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 최신 버전의 Maru에서 만든 백업이에요. Maru를 업데이트하고 다시 시도해 주세요. 데이터는 그대로예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这份备份来自更新的 Maru。先更新 Maru，再试一次。你的数据没有变化。"
+          }
+        }
+      }
+    },
     "A newer version of Maru saved your data. Maru did not change or delete it." : {
       "comment" : "Storage problem: the text when a newer version of the app saved the data.",
       "localizations" : {
@@ -1818,6 +1165,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更新版本的 Maru 保存了你的数据。Maru 没有改动或删除这些数据。"
+          }
+        }
+      }
+    },
+    "A tip is optional and unlocks nothing." : {
+      "comment" : "Settings: the footer of the tips in the normal state.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein Trinkgeld ist freiwillig und schaltet nichts frei."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Una propina es opcional y no desbloquea nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チップは任意です。何かが解除されることはありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "후원은 선택 사항이며 아무것도 잠금 해제하지 않아요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "赞赏完全自愿，不会解锁任何内容。"
+          }
+        }
+      }
+    },
+    "About" : {
+      "comment" : "Settings: the title of the section with the privacy policy, the support page, and the licenses.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Info"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Información"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "情報"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "정보"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关于"
           }
         }
       }
@@ -1993,6 +1410,111 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 %@ 添加提醒时间。"
+          }
+        }
+      }
+    },
+    "Alarm" : {
+      "comment" : "Settings (For All Items) and add and edit screen: the label of the switch that makes the dose time ring like the alarm of the Clock app. In Settings it can also be a menu with the value Varies.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wecker"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alarma"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラーム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알람"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闹钟"
+          }
+        }
+      }
+    },
+    "Alarms Are Off" : {
+      "comment" : "Title of the alert when the user turns on Alarm and the system does not allow alarms for Maru. Settings and the add and edit screen.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wecker sind aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las alarmas están desactivadas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アラームがオフです"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알람이 꺼져 있어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闹钟没开"
+          }
+        }
+      }
+    },
+    "All doses taken on %lld of %lld planned days" : {
+      "comment" : "History: the VoiceOver summary of an item row with planned doses on some of the last 7 days. Example: All doses taken on 2 of 3 planned days.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tage mit allen Dosen eingenommen: %1$lld von %2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Días con todas las dosis tomadas: %1$lld de %2$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予定した%2$lld日のうち%1$lld日で、すべて服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예정된 %2$lld일 중 %1$lld일은 모두 복용함"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "计划的 %2$lld 天中，有 %1$lld 天全部服用"
           }
         }
       }
@@ -2417,6 +1939,41 @@
         }
       }
     },
+    "Camera Is Off" : {
+      "comment" : "Title of the alert when the camera is not allowed or not available, for Scan Label and Take Photo on the add and edit screen.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamera ist aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La cámara está desactivada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カメラがオフです"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "카메라가 꺼져 있어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "相机没开"
+          }
+        }
+      }
+    },
     "Cancel" : {
       "comment" : "Edit screen: the text “Cancel”.",
       "localizations" : {
@@ -2483,6 +2040,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示不了历史记录"
+          }
+        }
+      }
+    },
+    "Can’t Show Item" : {
+      "comment" : "Item detail: the title of the page when the item did not read from the store. The description and a Try Again button are under it.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eintrag kann nicht angezeigt werden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede mostrar el elemento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目を表示できません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목을 표시할 수 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示不了药品"
           }
         }
       }
@@ -2592,41 +2184,6 @@
         }
       }
     },
-    "Item Options…" : {
-      "comment" : "Item detail: the row that opens the menu to change the product, turn off reminders, archive, or delete.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eintragsoptionen …"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opciones del elemento…"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "項目のオプション…"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "항목 옵션…"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "药品选项…"
-          }
-        }
-      }
-    },
     "Checking…" : {
       "comment" : "Settings: the notification permission while the app reads it.",
       "localizations" : {
@@ -2693,6 +2250,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择"
+          }
+        }
+      }
+    },
+    "Choose Photo" : {
+      "comment" : "Edit screen: the button that opens the photo library to pick a photo for the item.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto auswählen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elegir foto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真を選択"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진 선택"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选照片"
           }
         }
       }
@@ -2868,6 +2460,286 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "颜色"
+          }
+        }
+      }
+    },
+    "Couldn’t Confirm the Restore" : {
+      "comment" : "Settings, Your Data: the title of the alert when Maru could not confirm that the restored data is saved.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederherstellung nicht bestätigt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar la restauración"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元を確認できませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원을 확인하지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没能确认恢复"
+          }
+        }
+      }
+    },
+    "Couldn’t Make the File" : {
+      "comment" : "Settings, Your Data: the title of the alert when Maru could not make the export or backup file.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datei nicht erstellt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se creó el archivo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルを作れませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 만들지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件生成失败"
+          }
+        }
+      }
+    },
+    "Couldn’t Restore" : {
+      "comment" : "Settings, Your Data: the title of the alert when a restore did not run.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiederherstellung fehlgeschlagen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo restaurar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元できませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원하지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复失败"
+          }
+        }
+      }
+    },
+    "Couldn’t Save" : {
+      "comment" : "Add and edit screen: the title of the alert when a save fails. The message says that the entries are still there.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern nicht möglich"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存できませんでした"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장하지 못했어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存失败"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm the restore. If anything looks wrong later, restore the backup again." : {
+      "comment" : "Settings, Your Data: the message when Maru could not confirm that the restored data is saved.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ob die Wiederherstellung geklappt hat, ließ sich nicht bestätigen. Wenn später etwas nicht stimmt, stelle das Backup noch einmal wieder her."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar la restauración. Si más adelante algo no cuadra, vuelve a restaurar la copia."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元できたか確認できませんでした。あとでデータがおかしいときは、もう一度復元してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원이 끝났는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没能确认恢复是否完成。如果之后发现数据不对，再恢复一次备份。"
+          }
+        }
+      }
+    },
+    "Couldn’t make the file. Try again." : {
+      "comment" : "Settings, Your Data: the message when Maru could not make the export or backup file.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Datei konnte nicht erstellt werden. Versuche es noch einmal."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo crear el archivo. Inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファイルを作れませんでした。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "파일을 만들지 못했어요. 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文件生成失败，再试一次。"
+          }
+        }
+      }
+    },
+    "Couldn’t restore this backup. Nothing changed." : {
+      "comment" : "Settings, Your Data: the message when a restore did not run. The data of the app did not change.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Backup ließ sich nicht wiederherstellen. Es hat sich nichts geändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo restaurar esta copia. No cambió nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このバックアップを復元できませんでした。データは変わっていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 백업을 복원하지 못했어요. 데이터는 그대로예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复失败。你的数据没有变化。"
+          }
+        }
+      }
+    },
+    "Data" : {
+      "comment" : "Widget action: the name of the restore counter parameter. Shortcuts can show it.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数据"
           }
         }
       }
@@ -3292,6 +3164,41 @@
         }
       }
     },
+    "Dose" : {
+      "comment" : "Widget action: the name of the dose parameter.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剂量"
+          }
+        }
+      }
+    },
     "Dose of %@" : {
       "comment" : "VoiceOver label of the row of one as-needed dose. The placeholder is the item name.",
       "localizations" : {
@@ -3358,181 +3265,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每天已服用的次数"
-          }
-        }
-      }
-    },
-    "Last 7 Days" : {
-      "comment" : "History and item detail: the title of the section with the 7-day strip of each item, or of one item.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Letzte 7 Tage"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Últimos 7 días"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "過去7日間"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "최근 7일"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最近 7 天"
-          }
-        }
-      }
-    },
-    "Nothing planned or recorded." : {
-      "comment" : "History: the text of the section of the last 7 days when no item had a planned or recorded dose. Also the text of a log with no dose.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nichts geplant oder erfasst."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nada planificado ni registrado."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "予定も記録もありません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "예정되거나 기록된 내용이 없어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有计划或记录。"
-          }
-        }
-      }
-    },
-    "No Doses" : {
-      "comment" : "History: the title of the log of a day with no planned or recorded dose.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Dosen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin dosis"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服用なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복용 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有服用"
-          }
-        }
-      }
-    },
-    "Taken on %lld of the last 7 days" : {
-      "comment" : "History: the VoiceOver summary of an item row with a dose on each of the last 7 days, or an as-needed item. Example: Taken on 5 of the last 7 days.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "An %lld der letzten 7 Tage eingenommen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tomado en %lld de los últimos 7 días"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "過去7日間のうち%lld日服用"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "최근 7일 중 %lld일 복용함"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最近 7 天中有 %lld 天已服用"
-          }
-        }
-      }
-    },
-    "All doses taken on %lld of %lld planned days" : {
-      "comment" : "History: the VoiceOver summary of an item row with planned doses on some of the last 7 days. Example: All doses taken on 2 of 3 planned days.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tage mit allen Dosen eingenommen: %1$lld von %2$lld"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Días con todas las dosis tomadas: %1$lld de %2$lld"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "予定した%2$lld日のうち%1$lld日で、すべて服用"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "예정된 %2$lld일 중 %1$lld일은 모두 복용함"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "计划的 %2$lld 天中，有 %1$lld 天全部服用"
           }
         }
       }
@@ -3747,41 +3479,6 @@
         }
       }
     },
-    "Every day" : {
-      "comment" : "Edit screen: the days of a plan that reminds on all seven days.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeden Tag"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Todos los días"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "毎日"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "매일"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每天"
-          }
-        }
-      }
-    },
     "Every Day" : {
       "comment" : "Repeat page: the choice of a plan that reminds on all seven days.",
       "localizations" : {
@@ -3887,6 +3584,41 @@
         }
       }
     },
+    "Every day" : {
+      "comment" : "Edit screen: the days of a plan that reminds on all seven days.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden Tag"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los días"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "毎日"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "매일"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每天"
+          }
+        }
+      }
+    },
     "Every other day" : {
       "comment" : "The days of a plan that repeats every second day.",
       "localizations" : {
@@ -3918,6 +3650,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "隔天"
+          }
+        }
+      }
+    },
+    "Every other day at %@, starting today, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every second day from today. The placeholder is the times.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden zweiten Tag um %@, ab heute, ohne Enddatum"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un día sí y otro no: %@, desde hoy, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日おき %@、今日から、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "격일 %@, 오늘부터, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隔天 %@，从今天开始，没有结束日期"
+          }
+        }
+      }
+    },
+    "Every other day at %@, starting tomorrow, with no end date" : {
+      "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeden zweiten Tag um %@, ab morgen, ohne Enddatum"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un día sí y otro no: %@, desde mañana, sin fecha de fin"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1日おき %@、明日から、終了日なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "격일 %@, 내일부터, 종료일 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隔天 %@，从明天开始，没有结束日期"
           }
         }
       }
@@ -4023,6 +3825,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "填入名称。"
+          }
+        }
+      }
+    },
+    "For All Items" : {
+      "comment" : "Settings: the title of the section with Alarm and Remind Again. A change there sets every item that has a time.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für alle Einträge"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para todos los elementos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての項目に"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 항목에"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有药品"
           }
         }
       }
@@ -4163,6 +4000,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "绿色"
+          }
+        }
+      }
+    },
+    "Help Improve Maru?" : {
+      "comment" : "The one-time question about usage statistics in the EU, the UK, and Switzerland: the title.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru verbessern helfen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Quieres ayudar a mejorar Maru?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruの改善にご協力いただけますか？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 개선에 도움을 주시겠어요?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要帮助改进 Maru 吗？"
           }
         }
       }
@@ -4498,6 +4370,41 @@
         }
       }
     },
+    "Item Options…" : {
+      "comment" : "Item detail: the row that opens the menu to change the product, turn off reminders, archive, or delete.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eintragsoptionen …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opciones del elemento…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目のオプション…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목 옵션…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "药品选项…"
+          }
+        }
+      }
+    },
     "Keep Editing" : {
       "comment" : "Edit screen: the text “Keep Editing”.",
       "localizations" : {
@@ -4533,37 +4440,72 @@
         }
       }
     },
-    "Maru asks when you save an item with a time." : {
-      "comment" : "Settings footer before the system asked for the notification permission.",
+    "Last 7 Days" : {
+      "comment" : "History and item detail: the title of the section with the 7-day strip of each item, or of one item.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru fragt, wenn du einen Eintrag mit Zeit speicherst."
+            "value" : "Letzte 7 Tage"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru lo pide cuando guardas un elemento con hora."
+            "value" : "Últimos 7 días"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "時刻のある項目を保存するときに、Maruが通知の許可を求めます。"
+            "value" : "過去7日間"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "시간이 있는 항목을 저장할 때 Maru가 권한을 물어봐요."
+            "value" : "최근 7일"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "保存带时间的药品时，Maru 会请你开通知。"
+            "value" : "最近 7 天"
+          }
+        }
+      }
+    },
+    "Licenses" : {
+      "comment" : "Settings: the row and the page with the license text of third-party code.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lizenzen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licencias"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライセンス"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "라이선스"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开源许可"
           }
         }
       }
@@ -4599,6 +4541,111 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 打不开你的数据"
+          }
+        }
+      }
+    },
+    "Maru Can’t Read Your Data Right Now" : {
+      "comment" : "Storage problem: the title when the data can be read later, for example after the user unlocks the device.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru kann deine Daten gerade nicht lesen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru no puede leer tus datos ahora"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruが今はデータを読み取れません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru가 지금은 데이터를 읽을 수 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 暂时读不了你的数据"
+          }
+        }
+      }
+    },
+    "Maru Can’t Use Your Time Zone" : {
+      "comment" : "Today: the title when the time zone of the device is an offset such as GMT+8 and not a city.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru kann deine Zeitzone nicht verwenden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru no puede usar tu zona horaria"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruがタイムゾーンを使えません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru가 시간대를 사용할 수 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 用不了你的时区"
+          }
+        }
+      }
+    },
+    "Maru asks when you save an item with a time." : {
+      "comment" : "Settings footer before the system asked for the notification permission.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru fragt, wenn du einen Eintrag mit Zeit speicherst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru lo pide cuando guardas un elemento con hora."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "時刻のある項目を保存するときに、Maruが通知の許可を求めます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시간이 있는 항목을 저장할 때 Maru가 권한을 물어봐요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存带时间的药品时，Maru 会请你开通知。"
           }
         }
       }
@@ -4716,76 +4763,6 @@
         }
       }
     },
-    "Maru Can’t Read Your Data Right Now" : {
-      "comment" : "Storage problem: the title when the data can be read later, for example after the user unlocks the device.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru kann deine Daten gerade nicht lesen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no puede leer tus datos ahora"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruが今はデータを読み取れません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 지금은 데이터를 읽을 수 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 暂时读不了你的数据"
-          }
-        }
-      }
-    },
-    "Maru Can’t Use Your Time Zone" : {
-      "comment" : "Today: the title when the time zone of the device is an offset such as GMT+8 and not a city.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru kann deine Zeitzone nicht verwenden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no puede usar tu zona horaria"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruがタイムゾーンを使えません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 시간대를 사용할 수 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 用不了你的时区"
-          }
-        }
-      }
-    },
     "Maru can’t use your time zone for reminders." : {
       "comment" : "Edit screen: the preview line when the device time zone is an offset and not a city.",
       "localizations" : {
@@ -4817,41 +4794,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒用不了你的时区。"
-          }
-        }
-      }
-    },
-    "Maru checks again when you open it." : {
-      "comment" : "Item detail footer and alert message: the system did not confirm the reminder change yet.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru prüft erneut, wenn du die App öffnest."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru lo comprueba de nuevo cuando lo abres."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruを開くと、もう一度確認します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru를 열면 다시 확인해요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "下次打开时，Maru 会再次检查。"
           }
         }
       }
@@ -4922,6 +4864,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 读不了这个药品。"
+          }
+        }
+      }
+    },
+    "Maru couldn’t read this photo." : {
+      "comment" : "Edit screen: the footer when the chosen file is not an image that Maru can read.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru konnte dieses Foto nicht lesen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru no pudo leer esta foto."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruはこの写真を読み取れませんでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru가 이 사진을 읽지 못했어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 读不了这张照片。"
           }
         }
       }
@@ -5062,6 +5039,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 没有更改或删除你的数据。"
+          }
+        }
+      }
+    },
+    "Maru found no single subject, so the photo stays as it is." : {
+      "comment" : "Edit screen: the footer when the background removal found no subject or more than one. The plain crop stays.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru hat kein einzelnes Motiv gefunden. Das Foto bleibt unverändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru no encontró un solo objeto, así que la foto se queda como está."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボトルを1つだけ見つけられなかったため、写真はそのままです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "병 하나만 보이지 않아서 사진은 그대로예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没找到单独的瓶子，照片保持原样。"
           }
         }
       }
@@ -5276,6 +5288,41 @@
         }
       }
     },
+    "More Options" : {
+      "comment" : "Add and edit screen: the row that opens the page with the optional details: amount, form, color, photo, and note. The value on the row shows the amount and the note.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weitere Optionen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más opciones"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "その他のオプション"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추가 옵션"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多选项"
+          }
+        }
+      }
+    },
     "Morning" : {
       "comment" : "Today: the title of the group of items with a planned time before 11:00.",
       "localizations" : {
@@ -5451,6 +5498,41 @@
         }
       }
     },
+    "Never includes item names, doses, or times." : {
+      "comment" : "Settings: the footer under the switch Share Usage Statistics.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enthält nie Namen, Dosen oder Zeiten."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nunca incluye nombres, dosis ni horas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目名、用量、時刻は含まれません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목 이름, 용량, 시간은 포함되지 않아요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不包含药品名称、剂量或时间。"
+          }
+        }
+      }
+    },
     "New Product" : {
       "comment" : "Edit screen: the title when the user replaces an item with a new product.",
       "localizations" : {
@@ -5517,6 +5599,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下次服用"
+          }
+        }
+      }
+    },
+    "No Archived Items" : {
+      "comment" : "Archived list: the title of the empty page when no item is archived.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine archivierten Einträge"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay elementos archivados"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アーカイブした項目はありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보관된 항목 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有已归档的药品"
+          }
+        }
+      }
+    },
+    "No Doses" : {
+      "comment" : "History: the title of the log of a day with no planned or recorded dose.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Dosen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有服用"
           }
         }
       }
@@ -5591,41 +5743,6 @@
         }
       }
     },
-    "No Archived Items" : {
-      "comment" : "Archived list: the title of the empty page when no item is archived.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine archivierten Einträge"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay elementos archivados"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アーカイブした項目はありません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보관된 항목 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有已归档的药品"
-          }
-        }
-      }
-    },
     "No record" : {
       "comment" : "History: the words of a planned dose of a past day that has no record. It is not the same as skipped.",
       "localizations" : {
@@ -5657,6 +5774,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "没记录"
+          }
+        }
+      }
+    },
+    "No record: %lld" : {
+      "comment" : "Item detail: the planned doses with no record in the last 7 days. Example: No record: 1.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne Eintrag: %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin registro: %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録なし %lld回"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록 없음 %lld회"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没记录 %lld 次"
           }
         }
       }
@@ -5871,6 +6023,41 @@
         }
       }
     },
+    "Not Changed" : {
+      "comment" : "Alert title when a change of an item did not save: a restore from the archive, a reminder switch, an archive, or a delete.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht geändert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin cambios"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "変更なし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "변경되지 않음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没改动"
+          }
+        }
+      }
+    },
     "Not Confirmed" : {
       "comment" : "Item detail: the value of the Reminder row when the system did not confirm a change yet.",
       "localizations" : {
@@ -5906,6 +6093,76 @@
         }
       }
     },
+    "Not Now" : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that leaves the statistics off.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht jetzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ahora no"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今はしない"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나중에"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "先不了"
+          }
+        }
+      }
+    },
+    "Not Saved" : {
+      "comment" : "Alert title on Today, the as-needed section, and History when a record or a correction did not save. Title Case, as the title of every alert.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht gespeichert"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin guardar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存されていません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장되지 않음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没保存"
+          }
+        }
+      }
+    },
     "Not Set" : {
       "comment" : "Item detail: the value of the Reminder row when the system holds no reminder.",
       "localizations" : {
@@ -5937,41 +6194,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "没设置"
-          }
-        }
-      }
-    },
-    "Not Changed" : {
-      "comment" : "Alert title when a change of an item did not save: a restore from the archive, a reminder switch, an archive, or a delete.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht geändert"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin cambios"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "変更なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "변경되지 않음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没改动"
           }
         }
       }
@@ -6151,6 +6373,41 @@
         }
       }
     },
+    "Nothing planned or recorded." : {
+      "comment" : "History: the text of the section of the last 7 days when no item had a planned or recorded dose. Also the text of a log with no dose.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nichts geplant oder erfasst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nada planificado ni registrado."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予定も記録もありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예정되거나 기록된 내용이 없어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有计划或记录。"
+          }
+        }
+      }
+    },
     "Notifications" : {
       "comment" : "Settings: the label of the notification permission row.",
       "localizations" : {
@@ -6186,41 +6443,6 @@
         }
       }
     },
-    "Notifications off" : {
-      "comment" : "Today and My Items: a plain row while notifications are off for Maru. A tap opens settings. It matches the line Reminders off.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mitteilungen aus"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Notificaciones desactivadas"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知オフ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알림 꺼짐"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "通知没开"
-          }
-        }
-      }
-    },
     "Notifications are off for Maru." : {
       "comment" : "Item detail: the footer of the plan when the reminder is not set because notifications are off.",
       "localizations" : {
@@ -6252,6 +6474,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 的通知没开。"
+          }
+        }
+      }
+    },
+    "Notifications off" : {
+      "comment" : "Today and My Items: a plain row while notifications are off for Maru. A tap opens settings. It matches the line Reminders off.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitteilungen aus"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notificaciones desactivadas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知オフ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림 꺼짐"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知没开"
           }
         }
       }
@@ -6396,6 +6653,76 @@
         }
       }
     },
+    "Open Maru" : {
+      "comment" : "The second button of the alarm of a dose when the alarm stands for more than one item. It opens the app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru öffnen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir Maru"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruを開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 열기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Maru"
+          }
+        }
+      }
+    },
+    "Open Maru to record this dose." : {
+      "comment" : "Widget: the prompt after a tap on a capsule that could not record. The system then opens the app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne Maru, um diese Dosis zu erfassen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Maru para registrar esta dosis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruを開いてこの服用を記録してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru를 열어 이 복용을 기록해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Maru 来记录这次服用。"
+          }
+        }
+      }
+    },
     "Open Settings" : {
       "comment" : "Settings, item detail, and edit screen: opens the settings of Maru in the Settings app.",
       "localizations" : {
@@ -6427,6 +6754,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开“设置”"
+          }
+        }
+      }
+    },
+    "Opens a web page. We read every message." : {
+      "comment" : "Settings: the footer under Send Feedback. The feedback form is a web page.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es öffnet sich eine Webseite. Wir lesen jede Nachricht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se abre una página web. Leemos todos los mensajes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Webページが開きます。届いたメッセージはすべて読んでいます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "웹 페이지가 열려요. 보내 주신 메시지는 모두 읽어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会打开网页。我们会看每一条留言。"
           }
         }
       }
@@ -6532,6 +6894,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "橙色"
+          }
+        }
+      }
+    },
+    "Photo" : {
+      "comment" : "Edit screen: the VoiceOver label of the photo of the item.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照片"
+          }
+        }
+      }
+    },
+    "Picked up where you left off." : {
+      "comment" : "Add and edit screen: the line at the top when the app brought back the unsaved changes of an earlier session. A button “Start Over” follows.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter, wo du aufgehört hast."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguimos donde lo dejaste."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回の続きから再開しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "하던 내용을 이어서 불러왔어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已恢复上次没保存的内容。"
           }
         }
       }
@@ -6711,6 +7143,41 @@
         }
       }
     },
+    "Privacy Policy" : {
+      "comment" : "Settings: a link to the privacy policy web page.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutzerklärung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Política de privacidad"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシーポリシー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 처리방침"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私政策"
+          }
+        }
+      }
+    },
     "Purple" : {
       "comment" : "Item form or color name: the text “Purple”.",
       "localizations" : {
@@ -6781,6 +7248,41 @@
         }
       }
     },
+    "Reading the photo…" : {
+      "comment" : "Edit screen: the status while Maru reads the chosen photo.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Foto wird gelesen …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leyendo la foto…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写真を読み取り中…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사진을 읽는 중…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在读取照片…"
+          }
+        }
+      }
+    },
     "Record %@" : {
       "comment" : "VoiceOver label of the record circle of an open dose. Record means to write down that the dose was taken. The placeholder is the item name.",
       "localizations" : {
@@ -6812,6 +7314,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "记录 %@"
+          }
+        }
+      }
+    },
+    "Record Dose" : {
+      "comment" : "Today: a row action of an as-needed item. Records one dose now.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis erfassen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用を記録"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 기록"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录服用"
+          }
+        }
+      }
+    },
+    "Record a Dose" : {
+      "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis erfassen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrar una dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用を記録"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 기록"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录一次服用"
           }
         }
       }
@@ -6991,41 +7563,6 @@
         }
       }
     },
-    "Reminder Not Confirmed" : {
-      "comment" : "Alert title after a save or a change when the system did not confirm the reminder.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erinnerung nicht bestätigt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recordatorio sin confirmar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "リマインダーが未確認です"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "미리 알림이 확인되지 않음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "提醒没确认"
-          }
-        }
-      }
-    },
     "Reminder Not Set" : {
       "comment" : "Alert title after a save or a change when the reminder failed.",
       "localizations" : {
@@ -7197,6 +7734,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒没开"
+          }
+        }
+      }
+    },
+    "Reminds you up to %lld times, until %@." : {
+      "comment" : "Footer under Remind Again when “Until I Record It” is chosen: the limit. The first placeholder is the number 12. The second is the time at which the reminders of a dose stop, for example “1:00 AM”.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnert bis zu %lld Mal, spätestens bis %@."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasta %lld recordatorios, como mucho hasta las %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最大%lld回、%@までリマインドします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최대 %lld번, %@까지 알려줘요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最多提醒 %lld 次，最晚到%@。"
           }
         }
       }
@@ -7831,6 +8403,111 @@
         }
       }
     },
+    "Share Statistics" : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that turns the statistics on.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Statistik teilen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir estadísticas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統計を共有"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "통계 공유"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享使用数据"
+          }
+        }
+      }
+    },
+    "Share Usage Statistics" : {
+      "comment" : "Settings: the switch for usage statistics.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzungsstatistik teilen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir estadísticas de uso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用状況の統計を共有"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용 통계 공유"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享使用数据"
+          }
+        }
+      }
+    },
+    "Share how you use the app, such as whether you recorded a dose today. Maru never shares item names, doses, or times. You can change this in Settings." : {
+      "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the message. The statistics are off until the user agrees.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teile, wie du die App nutzt, zum Beispiel ob du heute eine Dosis erfasst hast. Maru teilt nie Namen, Dosen oder Zeiten. Du kannst das in den Einstellungen ändern."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparte cómo usas la app, por ejemplo si has registrado una dosis hoy. Maru nunca comparte nombres de elementos, dosis ni horas. Puedes cambiarlo en Ajustes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日服用を記録したかどうかなど、機能の利用状況を共有します。項目名、用量、時刻は共有しません。「設定」でいつでも変更できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘 복용을 기록했는지 같은 앱 사용 정보를 공유해요. 항목 이름, 용량, 시간은 절대 공유하지 않아요. 설정에서 언제든 바꿀 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享你怎么使用 App，比如今天有没有记录。Maru 绝不分享药品名称、剂量或时间。你可以随时在“设置”里改。"
+          }
+        }
+      }
+    },
     "Show" : {
       "comment" : "Reminder choice sheet: the action on a candidate of today. It shows that dose on Today. The verb, not a theater show.",
       "localizations" : {
@@ -7866,41 +8543,6 @@
         }
       }
     },
-    "Shows ways to change it." : {
-      "comment" : "VoiceOver hint of the record circle of a recorded dose. It opens a menu of corrections.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeigt Möglichkeiten, es zu ändern."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra formas de cambiarlo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "変更方法を表示します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "변경하는 방법을 보여줘요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示更改方式。"
-          }
-        }
-      }
-    },
     "Show Names in Reminders" : {
       "comment" : "Settings: a switch that adds the item names to reminders.",
       "localizations" : {
@@ -7932,6 +8574,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒里显示药名"
+          }
+        }
+      }
+    },
+    "Shows ways to change it." : {
+      "comment" : "VoiceOver hint of the record circle of a recorded dose. It opens a menu of corrections.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt Möglichkeiten, es zu ändern."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra formas de cambiarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "変更方法を表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "변경하는 방법을 보여줘요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示更改方式。"
           }
         }
       }
@@ -8037,6 +8714,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已跳过"
+          }
+        }
+      }
+    },
+    "Skipped: %lld" : {
+      "comment" : "Item detail: the planned doses skipped in the last 7 days. Example: Skipped: 1.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Übersprungen: %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Omitidas: %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "スキップ %lld回"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "건너뜀 %lld회"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已跳过 %lld 次"
           }
         }
       }
@@ -8181,6 +8893,41 @@
         }
       }
     },
+    "Stop" : {
+      "comment" : "The stop button of the alarm of a dose. It silences the alarm and records nothing.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stopp"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detener"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "중지"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "停止"
+          }
+        }
+      }
+    },
     "Suggestions come from common labels, so check your own label." : {
       "comment" : "Edit screen: the footer under the candidates of the smart completion for a known supplement.",
       "localizations" : {
@@ -8247,6 +8994,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "保健品"
+          }
+        }
+      }
+    },
+    "Support" : {
+      "comment" : "Settings: a link to the support web page.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Support"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Soporte"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サポート"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지원"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持"
+          }
+        }
+      }
+    },
+    "Support Maru" : {
+      "comment" : "Settings: the title of the section with three optional tips. A tip unlocks nothing.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru unterstützen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apoyar a Maru"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruを応援"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 후원"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持 Maru"
           }
         }
       }
@@ -8321,41 +9138,6 @@
         }
       }
     },
-    "Record Dose" : {
-      "comment" : "Today: a row action of an as-needed item. Records one dose now.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dosis erfassen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Registrar dosis"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服用を記録"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복용 기록"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "记录服用"
-          }
-        }
-      }
-    },
     "Take Photo" : {
       "comment" : "Edit screen: the button that opens the camera to take a photo for the item.",
       "localizations" : {
@@ -8422,6 +9204,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已服用"
+          }
+        }
+      }
+    },
+    "Taken Earlier…" : {
+      "comment" : "Today: the menu button of an open row. It opens the time sheet and records the dose as taken at the chosen time.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Früher eingenommen …"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomado antes…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用時刻を指定…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앞서 복용함…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "较早服用…"
           }
         }
       }
@@ -8496,37 +9313,72 @@
         }
       }
     },
-    "Taken Earlier…" : {
-      "comment" : "Today: the menu button of an open row. It opens the time sheet and records the dose as taken at the chosen time.",
+    "Taken on %lld of the last 7 days" : {
+      "comment" : "History: the VoiceOver summary of an item row with a dose on each of the last 7 days, or an as-needed item. Example: Taken on 5 of the last 7 days.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Früher eingenommen …"
+            "value" : "An %lld der letzten 7 Tage eingenommen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomado antes…"
+            "value" : "Tomado en %lld de los últimos 7 días"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服用時刻を指定…"
+            "value" : "過去7日間のうち%lld日服用"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "앞서 복용함…"
+            "value" : "최근 7일 중 %lld일 복용함"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "较早服用…"
+            "value" : "最近 7 天中有 %lld 天已服用"
+          }
+        }
+      }
+    },
+    "Taken: %lld" : {
+      "comment" : "Item detail: the doses taken in the last 7 days. Example: Taken: 5.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingenommen: %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomadas: %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用 %lld回"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 %lld회"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已服用 %lld 次"
           }
         }
       }
@@ -8667,6 +9519,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "点标签上的名称"
+          }
+        }
+      }
+    },
+    "Thank you for your support." : {
+      "comment" : "Settings: the footer of the tips after a successful tip.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danke für deine Unterstützung."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gracias por tu apoyo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ご支援ありがとうございます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "후원해 주셔서 감사해요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "感谢你的支持。"
           }
         }
       }
@@ -8897,41 +9784,6 @@
         }
       }
     },
-    "The plan is saved. Maru tries again when you open it." : {
-      "comment" : "Alert message after a save when the reminder is not set yet.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Der Plan ist gespeichert. Maru versucht es erneut, wenn du die App öffnest."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "El plan se guardó. Maru lo intenta de nuevo cuando lo abres."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "プランは保存されました。Maruを開くと、もう一度試します。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "계획을 저장했어요. Maru를 열면 다시 시도해요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "计划已保存。下次打开时，Maru 会再试一次。"
-          }
-        }
-      }
-    },
     "The reminders may still be on until Maru checks again." : {
       "comment" : "Item detail: the footer when the system did not confirm that the reminders of an archived or ended item are removed.",
       "localizations" : {
@@ -8967,6 +9819,76 @@
         }
       }
     },
+    "The tip did not go through." : {
+      "comment" : "Settings: the footer of the tips after a failed purchase.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Trinkgeld ist nicht durchgegangen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La propina no se completó."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チップを送れませんでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "후원이 완료되지 않았어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "赞赏没成功。"
+          }
+        }
+      }
+    },
+    "This isn’t a Maru backup, or the file is damaged. Nothing changed." : {
+      "comment" : "Settings, Your Data: the message when the chosen file is not a Maru backup. The data of the app did not change.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das ist kein Maru-Backup, oder die Datei ist beschädigt. Es hat sich nichts geändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto no es una copia de Maru o el archivo está dañado. No cambió nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruのバックアップではないか、ファイルが壊れています。データは変わっていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 백업이 아니거나 파일이 손상됐어요. 데이터는 그대로예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这不是 Maru 备份，或者文件坏了。你的数据没有变化。"
+          }
+        }
+      }
+    },
     "This item changed. Check it, then try again." : {
       "comment" : "Alert message when the stored record is not the one that the page showed. The word item means the dose or the record.",
       "localizations" : {
@@ -8998,6 +9920,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这个药品有变化，看一下再试。"
+          }
+        }
+      }
+    },
+    "This replaces everything in Maru with the backup. You can’t undo it." : {
+      "comment" : "Settings, Your Data: the message of the alert that asks the user to confirm a restore.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dadurch wird alles in Maru durch das Backup ersetzt. Das lässt sich nicht rückgängig machen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto reemplaza todo lo de Maru por la copia. No se puede deshacer."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruのすべてのデータがバックアップの内容に置き換わります。この操作は取り消せません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru의 모든 데이터가 백업 내용으로 바뀌어요. 되돌릴 수 없어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这会用备份替换 Maru 里的所有内容，替换后不能撤销。"
           }
         }
       }
@@ -9928,6 +10885,41 @@
         }
       }
     },
+    "Until I Record It" : {
+      "comment" : "Remind Again menu (Settings, add and edit screen): the choice that keeps reminding until the user records the dose. “Record” is the word of the Taken button and the record circle. The reminders stop after a fixed number (see the footer).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bis ich es erfasse"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hasta que lo registre"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録するまで"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록할 때까지"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "直到我记录"
+          }
+        }
+      }
+    },
     "Update Maru to Open Your Data" : {
       "comment" : "Storage problem: the title when a newer version of the app saved the data.",
       "localizations" : {
@@ -10169,6 +11161,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "用这个名称"
+          }
+        }
+      }
+    },
+    "Varies" : {
+      "comment" : "Settings, “For All Items”: the value of a row when the items have different values. Short, it sits at the end of a row.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unterschiedlich"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Varía"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目ごとに異なる"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목마다 달라요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "各不相同"
           }
         }
       }
@@ -10449,6 +11476,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的数据"
+          }
+        }
+      }
+    },
+    "Your change is saved, but the old reminder may still go off." : {
+      "comment" : "Alert message after reminders off or archive when the system did not confirm that the old reminder is gone.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Änderung ist gespeichert, aber die alte Erinnerung kann noch auslösen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu cambio se guardó, pero el recordatorio anterior aún puede sonar."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "変更は保存しましたが、以前のリマインダーがまだ通知される可能性があります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "변경 내용은 저장했지만, 이전 미리 알림이 아직 울릴 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修改已保存，但旧的提醒可能还会响。"
+          }
+        }
+      }
+    },
+    "Your change is saved, but the reminder for this item isn’t set yet." : {
+      "comment" : "Alert message after a save or a change when the reminder is not set. It says what went wrong and what did not get done.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Änderung ist gespeichert, aber die Erinnerung für diesen Eintrag ist noch nicht festgelegt."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu cambio se guardó, pero el recordatorio de este elemento aún no está programado."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "変更は保存しましたが、この項目のリマインダーはまだ設定できていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "변경 내용은 저장했지만, 이 항목의 미리 알림은 아직 설정되지 않았어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "修改已保存，但这个药品的提醒还没设好。"
           }
         }
       }
@@ -10862,146 +11959,6 @@
         }
       }
     },
-    "Not Saved" : {
-      "comment" : "Alert title on Today, the as-needed section, and History when a record or a correction did not save. Title Case, as the title of every alert.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht gespeichert"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin guardar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存されていません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "저장되지 않음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没保存"
-          }
-        }
-      }
-    },
-    "Can’t Show Item" : {
-      "comment" : "Item detail: the title of the page when the item did not read from the store. The description and a Try Again button are under it.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eintrag kann nicht angezeigt werden"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se puede mostrar el elemento"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "項目を表示できません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "항목을 표시할 수 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示不了药品"
-          }
-        }
-      }
-    },
-    "Support Maru" : {
-      "comment" : "Settings: the title of the section with three optional tips. A tip unlocks nothing.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru unterstützen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apoyar a Maru"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruを応援"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 후원"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "支持 Maru"
-          }
-        }
-      }
-    },
-    "Thank you for your support." : {
-      "comment" : "Settings: the footer of the tips after a successful tip.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Danke für deine Unterstützung."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gracias por tu apoyo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ご支援ありがとうございます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "후원해 주셔서 감사해요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "感谢你的支持。"
-          }
-        }
-      }
-    },
     "Your tip waits for approval." : {
       "comment" : "Settings: the footer of the tips when the purchase waits for approval, for example Ask to Buy.",
       "localizations" : {
@@ -11033,998 +11990,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的赞赏正在等待批准。"
-          }
-        }
-      }
-    },
-    "The tip did not go through." : {
-      "comment" : "Settings: the footer of the tips after a failed purchase.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Trinkgeld ist nicht durchgegangen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La propina no se completó."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "チップを送れませんでした。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "후원이 완료되지 않았어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "赞赏没成功。"
-          }
-        }
-      }
-    },
-    "A tip is optional and unlocks nothing." : {
-      "comment" : "Settings: the footer of the tips in the normal state.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein Trinkgeld ist freiwillig und schaltet nichts frei."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una propina es opcional y no desbloquea nada."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "チップは任意です。何かが解除されることはありません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "후원은 선택 사항이며 아무것도 잠금 해제하지 않아요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "赞赏完全自愿，不会解锁任何内容。"
-          }
-        }
-      }
-    },
-    "Data" : {
-      "comment" : "Widget action: the name of the restore counter parameter. Shortcuts can show it.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Daten"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datos"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "データ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "데이터"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "数据"
-          }
-        }
-      }
-    },
-    "Until I Record It" : {
-      "comment" : "Remind Again menu (Settings, add and edit screen): the choice that keeps reminding until the user records the dose. “Record” is the word of the Taken button and the record circle. The reminders stop after a fixed number (see the footer).",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bis ich es erfasse"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hasta que lo registre"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記録するまで"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록할 때까지"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "直到我记录"
-          }
-        }
-      }
-    },
-    "Reminds you up to %lld times, until %@." : {
-      "comment" : "Footer under Remind Again when “Until I Record It” is chosen: the limit. The first placeholder is the number 12. The second is the time at which the reminders of a dose stop, for example “1:00 AM”.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Erinnert bis zu %lld Mal, spätestens bis %@."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hasta %lld recordatorios, como mucho hasta las %@."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最大%lld回、%@までリマインドします。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "최대 %lld번, %@까지 알려줘요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最多提醒 %lld 次，最晚到%@。"
-          }
-        }
-      }
-    },
-    "Varies" : {
-      "comment" : "Settings, “For All Items”: the value of a row when the items have different values. Short, it sits at the end of a row.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unterschiedlich"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Varía"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "項目ごとに異なる"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "항목마다 달라요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "各不相同"
-          }
-        }
-      }
-    },
-    "For All Items" : {
-      "comment" : "Settings: the title of the section with Alarm and Remind Again. A change there sets every item that has a time.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Für alle Einträge"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Para todos los elementos"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "すべての項目に"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "모든 항목에"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "所有药品"
-          }
-        }
-      }
-    },
-    "Alarms Are Off" : {
-      "comment" : "Title of the alert when the user turns on Alarm and the system does not allow alarms for Maru. Settings and the add and edit screen.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wecker sind aus"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Las alarmas están desactivadas"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アラームがオフです"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "알람이 꺼져 있어요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "闹钟没开"
-          }
-        }
-      }
-    },
-    "More Options" : {
-      "comment" : "Add and edit screen: the row that opens the page with the optional details: amount, form, color, photo, and note. The value on the row shows the amount and the note.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weitere Optionen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más opciones"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "その他のオプション"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "추가 옵션"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更多选项"
-          }
-        }
-      }
-    },
-    "Picked up where you left off." : {
-      "comment" : "Add and edit screen: the line at the top when the app brought back the unsaved changes of an earlier session. A button “Start Over” follows.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weiter, wo du aufgehört hast."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seguimos donde lo dejaste."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "前回の続きから再開しました。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "하던 내용을 이어서 불러왔어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已恢复上次没保存的内容。"
-          }
-        }
-      }
-    },
-    "Camera Is Off" : {
-      "comment" : "Title of the alert when the camera is not allowed or not available, for Scan Label and Take Photo on the add and edit screen.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kamera ist aus"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La cámara está desactivada"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "カメラがオフです"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "카메라가 꺼져 있어요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "相机没开"
-          }
-        }
-      }
-    },
-    "Couldn’t Save" : {
-      "comment" : "Add and edit screen: the title of the alert when a save fails. The message says that the entries are still there.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Speichern nicht möglich"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo guardar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存できませんでした"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "저장하지 못했어요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "保存失败"
-          }
-        }
-      }
-    },
-    "Never includes item names, doses, or times." : {
-      "comment" : "Settings: the footer under the switch Share Usage Statistics.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enthält nie Namen, Dosen oder Zeiten."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nunca incluye nombres, dosis ni horas."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "項目名、用量、時刻は含まれません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "항목 이름, 용량, 시간은 포함되지 않아요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不包含药品名称、剂量或时间。"
-          }
-        }
-      }
-    },
-    "A backup has your items and records, but not photos. The file isn’t encrypted, so keep it private." : {
-      "comment" : "Settings: the footer of the section Your Data. A backup is a file that the user makes with Back Up.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein Backup enthält deine Einträge und Aufzeichnungen, aber keine Fotos. Die Datei ist nicht verschlüsselt, geh also sorgsam damit um."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La copia incluye tus elementos y registros, pero no las fotos. El archivo no está cifrado, así que guárdalo con cuidado."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "バックアップに入るのは項目と記録で、写真は含まれません。ファイルは暗号化されていないので、取り扱いに気をつけてください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "백업에는 항목과 기록이 담겨요. 사진은 빠져요. 파일은 암호화되지 않으니 조심해서 다뤄 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "备份包含你的药品和记录，不含照片。文件没加密，自己收好。"
-          }
-        }
-      }
-    },
-    "Opens a web page. We read every message." : {
-      "comment" : "Settings: the footer under Send Feedback. The feedback form is a web page.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Es öffnet sich eine Webseite. Wir lesen jede Nachricht."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se abre una página web. Leemos todos los mensajes."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Webページが開きます。届いたメッセージはすべて読んでいます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "웹 페이지가 열려요. 보내 주신 메시지는 모두 읽어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "会打开网页。我们会看每一条留言。"
-          }
-        }
-      }
-    },
-    "Couldn’t Make the File" : {
-      "comment" : "Settings, Your Data: the title of the alert when Maru could not make the export or backup file.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datei nicht erstellt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se creó el archivo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ファイルを作れませんでした"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "파일을 만들지 못했어요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文件生成失败"
-          }
-        }
-      }
-    },
-    "Couldn’t Confirm the Restore" : {
-      "comment" : "Settings, Your Data: the title of the alert when Maru could not confirm that the restored data is saved.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wiederherstellung nicht bestätigt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo confirmar la restauración"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "復元を確認できませんでした"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복원을 확인하지 못했어요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没能确认恢复"
-          }
-        }
-      }
-    },
-    "Couldn’t Restore" : {
-      "comment" : "Settings, Your Data: the title of the alert when a restore did not run.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wiederherstellung fehlgeschlagen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo restaurar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "復元できませんでした"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복원하지 못했어요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "恢复失败"
-          }
-        }
-      }
-    },
-    "Couldn’t make the file. Try again." : {
-      "comment" : "Settings, Your Data: the message when Maru could not make the export or backup file.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Die Datei konnte nicht erstellt werden. Versuche es noch einmal."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo crear el archivo. Inténtalo de nuevo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ファイルを作れませんでした。もう一度お試しください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "파일을 만들지 못했어요. 다시 시도해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "文件生成失败，再试一次。"
-          }
-        }
-      }
-    },
-    "This isn’t a Maru backup, or the file is damaged. Nothing changed." : {
-      "comment" : "Settings, Your Data: the message when the chosen file is not a Maru backup. The data of the app did not change.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das ist kein Maru-Backup, oder die Datei ist beschädigt. Es hat sich nichts geändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esto no es una copia de Maru o el archivo está dañado. No cambió nada."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruのバックアップではないか、ファイルが壊れています。データは変わっていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 백업이 아니거나 파일이 손상됐어요. 데이터는 그대로예요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这不是 Maru 备份，或者文件坏了。你的数据没有变化。"
-          }
-        }
-      }
-    },
-    "A newer Maru made this backup. Update Maru, then try again. Nothing changed." : {
-      "comment" : "Settings, Your Data: the message when the backup file comes from a newer version of the app. The data of the app did not change.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dieses Backup stammt von einer neueren Maru-Version. Aktualisiere Maru und versuche es noch einmal. Es hat sich nichts geändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esta copia es de una versión más nueva de Maru. Actualiza Maru e inténtalo de nuevo. No cambió nada."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新しいバージョンのMaruで作られたバックアップです。Maruをアップデートして、もう一度お試しください。データは変わっていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "더 최신 버전의 Maru에서 만든 백업이에요. Maru를 업데이트하고 다시 시도해 주세요. 데이터는 그대로예요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这份备份来自更新的 Maru。先更新 Maru，再试一次。你的数据没有变化。"
-          }
-        }
-      }
-    },
-    "Couldn’t restore this backup. Nothing changed." : {
-      "comment" : "Settings, Your Data: the message when a restore did not run. The data of the app did not change.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Backup ließ sich nicht wiederherstellen. Es hat sich nichts geändert."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo restaurar esta copia. No cambió nada."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "このバックアップを復元できませんでした。データは変わっていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이 백업을 복원하지 못했어요. 데이터는 그대로예요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "恢复失败。你的数据没有变化。"
-          }
-        }
-      }
-    },
-    "Couldn’t confirm the restore. If anything looks wrong later, restore the backup again." : {
-      "comment" : "Settings, Your Data: the message when Maru could not confirm that the restored data is saved.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ob die Wiederherstellung geklappt hat, ließ sich nicht bestätigen. Wenn später etwas nicht stimmt, stelle das Backup noch einmal wieder her."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo confirmar la restauración. Si más adelante algo no cuadra, vuelve a restaurar la copia."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "復元できたか確認できませんでした。あとでデータがおかしいときは、もう一度復元してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복원이 끝났는지 확인하지 못했어요. 나중에 데이터가 이상하면 백업을 다시 복원해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没能确认恢复是否完成。如果之后发现数据不对，再恢复一次备份。"
-          }
-        }
-      }
-    },
-    "This replaces everything in Maru with the backup. You can’t undo it." : {
-      "comment" : "Settings, Your Data: the message of the alert that asks the user to confirm a restore.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dadurch wird alles in Maru durch das Backup ersetzt. Das lässt sich nicht rückgängig machen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esto reemplaza todo lo de Maru por la copia. No se puede deshacer."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruのすべてのデータがバックアップの内容に置き換わります。この操作は取り消せません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru의 모든 데이터가 백업 내용으로 바뀌어요. 되돌릴 수 없어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这会用备份替换 Maru 里的所有内容，替换后不能撤销。"
-          }
-        }
-      }
-    },
-    "Every other day at %@, starting today, with no end date" : {
-      "comment" : "Edit screen: the preview line of a plan that repeats every second day from today. The placeholder is the times.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeden zweiten Tag um %@, ab heute, ohne Enddatum"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un día sí y otro no: %@, desde hoy, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1日おき %@、今日から、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "격일 %@, 오늘부터, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隔天 %@，从今天开始，没有结束日期"
-          }
-        }
-      }
-    },
-    "Every other day at %@, starting tomorrow, with no end date" : {
-      "comment" : "Edit screen: the preview line of a plan that repeats every second day from tomorrow. The placeholder is the times.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jeden zweiten Tag um %@, ab morgen, ohne Enddatum"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un día sí y otro no: %@, desde mañana, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1日おき %@、明日から、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "격일 %@, 내일부터, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隔天 %@，从明天开始，没有结束日期"
-          }
-        }
-      }
-    },
-    "%@ at %@, from %@, with no end date" : {
-      "comment" : "Edit screen: the preview line of a plan that repeats every few days or has a pause. The first placeholder is the rule, for example Every 3 days, or 21 days on, 7 days off. The second is the times. The third is the first day, for example Tue, Aug 18.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ um %2$@, ab %3$@, ohne Enddatum"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ at %2$@, from %3$@, with no end date"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@: %2$@, desde %3$@, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@、%3$@から、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@, %3$@부터, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@，从 %3$@ 开始，没有结束日期"
-          }
-        }
-      }
-    },
-    "%@ at %@, with no end date" : {
-      "comment" : "Edit screen: the preview line. The first placeholder is the days, for example Every day. The second is the times.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ um %2$@, ohne Enddatum"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ at %2$@, with no end date"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@: %2$@, sin fecha de fin"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@、終了日なし"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@, 종료일 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ %2$@，没有结束日期"
           }
         }
       }

@@ -9,6 +9,10 @@ import os
 /// Only `AppModel` uses this type. The actor runs its work outside the main actor (spec 9),
 /// and it opens the database one time (D014).
 actor AppStore {
+    /// The log of the notification runs (D086). It holds error types and counts only, never an item name, a dose, a time, or an ID
+    /// (spec 10). Read it with `log stream --predicate 'category == "reminders"'` or in Console.
+    private static let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Maru", category: "reminders")
+
     /// The store sets strict file protection on its whole directory (spec 10), so the database has a directory of its own.
     ///
     /// The database lives in the App Group container, so the widgets reach it (D048). A build with no container
@@ -19,6 +23,10 @@ actor AppStore {
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
     private var alarms: AlarmEngine?
+    /// The alarms that the latest plan wants. A call of AlarmKit that returns late checks it (D086).
+    private let wantedAlarms = WantedAlarms()
+    /// The durable counter of the generations of requests and alarms. It lives in the App Group (D086).
+    private let generations = DefaultsGenerationCounter(defaults: AppGroup.defaults)
     /// Which items an alarm covers in the run that is going on (D079). Each run sets it again, so no run uses the cover of an earlier run.
     private let cover = OSAllocatedUnfairLock(initialState: AlarmCover.none)
     /// The input of the notification engines: which items an alarm covers in the run that is going on.
@@ -71,6 +79,8 @@ actor AppStore {
             }
             LegacyFollowUpSetting.remove()
         }
+        // The ledger of open removals of builds before D086 is gone, so its keys go too.
+        LegacyRemovalLedger.remove()
         opened = store
         return store
     }
@@ -82,24 +92,26 @@ actor AppStore {
         let engine = ReminderEngine(
             source: try open(),
             center: SystemReminderCenter(),
-            ledger: DefaultsRemovalLedger(),
             privacy: DefaultsReminderPrivacy(),
             zoneRecord: DefaultsTimeZoneRecord(),
-            alarms: coverNow
+            alarms: coverNow,
+            generations: generations,
+            migration: DefaultsLegacyMigration(name: "series")
         )
         self.engine = engine
         return engine
     }
 
-    /// The one follow-up engine of the process, with a removal ledger of its own (spec 4, 8.2).
+    /// The one follow-up engine of the process, (spec 4, 8.2).
     func followUpEngine() throws(StorageError) -> FollowUpEngine {
         if let followUps { return followUps }
         let followUps = FollowUpEngine(
             source: try open(),
             center: SystemReminderCenter(),
-            ledger: DefaultsRemovalLedger(key: DefaultsRemovalLedger.followUpKey),
             privacy: DefaultsReminderPrivacy(),
-            alarms: coverNow
+            alarms: coverNow,
+            generations: generations,
+            migration: DefaultsLegacyMigration(name: "followUp")
         )
         self.followUps = followUps
         return followUps
@@ -111,9 +123,13 @@ actor AppStore {
         if let alarms { return alarms }
         let alarms = AlarmEngine(
             source: try open(),
-            center: SystemAlarmCenter(),
+            center: TimedAlarmCenter(base: SystemAlarmCenter(), wanted: wantedAlarms) { call in
+                Self.log.error("AlarmKit call timed out: \(call, privacy: .public)")
+            },
             privacy: DefaultsReminderPrivacy(),
-            alarmsRing: { AlarmSupport.isAuthorized }
+            alarmsRing: { AlarmSupport.isAuthorized },
+            wanted: wantedAlarms,
+            generations: generations
         )
         self.alarms = alarms
         return alarms
@@ -144,10 +160,26 @@ actor AppStore {
             if let failed = try? await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone) {
                 self.cover.withLock { $0 = AlarmCover(rings: AlarmSupport.isAuthorized, failed: failed) }
             }
-            let outcome = try await self.reminderEngine().reconcile(
-                at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
+            let outcome: ReminderOutcome
+            do {
+                outcome = try await self.reminderEngine().reconcile(
+                    at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
+                )
+            } catch {
+                Self.log.error("Reminder run failed: \(String(describing: error), privacy: .public)")
+                throw error
+            }
+            let followUps: FollowUpOutcome?
+            do {
+                followUps = try await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
+            } catch {
+                Self.log.error("Follow-up refresh failed: \(String(describing: error), privacy: .public)")
+                followUps = nil
+            }
+            let notSet = outcome.schedules.values.filter { if case .notSet = $0 { true } else { false } }.count
+            Self.log.info(
+                "Reminder run: \(outcome.schedules.count) schedules, \(notSet) not set, removal pending \(outcome.removalPending), follow-ups \(followUps?.scheduled ?? -1) set and \(followUps?.notScheduled ?? -1) not"
             )
-            let followUps = try? await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
             return (outcome, followUps)
         }
         updates = Task { _ = try? await run.value }

@@ -3,7 +3,7 @@ import Testing
 @testable import MaruCore
 
 /// The saved plan, the records, the setting, and the notification system of a test. Removals complete in the call.
-private actor FollowUpPhone: FollowUpSource, FollowUpCenter, RemovalLedger, ReminderPrivacyStore {
+private actor FollowUpPhone: FollowUpSource, FollowUpCenter, ReminderPrivacyStore {
     var items: [Item] = []
     var schedules: [Schedule] = []
     var stored: [StoredOccurrence] = []
@@ -67,10 +67,10 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, RemovalLedger, Remi
     }
     func add(_ request: ReminderRequest) {}
     func add(_ request: FollowUpRequest) {
-        pending[request.identifier] = request.userInfo
-        texts[request.identifier] = text(for: request.content)
-        actions.remove(request.identifier)
-        if request.content.hasTakenAction { actions.insert(request.identifier) }
+        pending[RequestGeneration.base(of: request.identifier)] = request.userInfo
+        texts[RequestGeneration.base(of: request.identifier)] = text(for: request.content)
+        actions.remove(RequestGeneration.base(of: request.identifier))
+        if request.content.hasTakenAction { actions.insert(RequestGeneration.base(of: request.identifier)) }
     }
     func remove(identifiers: [String]) {
         identifiers.forEach { pending[$0] = nil }
@@ -82,8 +82,6 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, RemovalLedger, Remi
         identifiers.forEach { shown[$0] = nil }
     }
 
-    nonisolated func load() -> Set<String> { [] }
-    nonisolated func save(_ identifiers: Set<String>) {}
     nonisolated func load() -> ReminderPrivacy { .showNames }
     nonisolated func save(_ privacy: ReminderPrivacy) {}
     nonisolated func text(for content: ReminderContent) -> ReminderText { Fixtures.text(for: content) }
@@ -93,7 +91,7 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, RemovalLedger, Remi
 struct FollowUpEngineTests {
     @Test func recordedOccurrenceHasNoPendingOrDeliveredFollowUpAfterARefresh() async throws {
         let phone = FollowUpPhone()
-        let engine = FollowUpEngine(source: phone, center: phone, ledger: phone, privacy: phone)
+        let engine = FollowUpEngine(source: phone, center: phone, privacy: phone)
         let schedule = await phone.save(times: [8, 20])
         let today = Fixtures.date(2026, 3, 2)
 
@@ -119,7 +117,7 @@ struct FollowUpEngineTests {
 
     @Test func deliveredFollowUpThatNamesARecordedItemIsRemoved() async throws {
         let phone = FollowUpPhone()
-        let engine = FollowUpEngine(source: phone, center: phone, ledger: phone, privacy: phone)
+        let engine = FollowUpEngine(source: phone, center: phone, privacy: phone)
         let first = await phone.save(times: [8])
         _ = await phone.save(times: [8])
         let morning = "followup|Asia/Shanghai|2026-03-02|08:00|+30"
@@ -138,7 +136,7 @@ struct FollowUpEngineTests {
 
     @Test func undoneOccurrenceKeepsItsStoredTimeAfterAScheduleEdit() async throws {
         let phone = FollowUpPhone()
-        let engine = FollowUpEngine(source: phone, center: phone, ledger: phone, privacy: phone)
+        let engine = FollowUpEngine(source: phone, center: phone, privacy: phone)
         var schedule = await phone.save(times: [8])
         let today = Fixtures.date(2026, 3, 2)
         // The user recorded and undid the 08:00 dose, so the stored occurrence has events and no state.
@@ -166,7 +164,7 @@ struct FollowUpEngineTests {
 
     @Test func deviceSeriesInTwoZonesKeepsTheFutureFollowUp() async throws {
         let phone = FollowUpPhone()
-        let engine = FollowUpEngine(source: phone, center: phone, ledger: phone, privacy: phone)
+        let engine = FollowUpEngine(source: phone, center: phone, privacy: phone)
         let chicago = try NamedTimeZone(identifier: "America/Chicago")
         let undone = await phone.save(times: [8], timeZonePolicy: .followsDevice)
         _ = await phone.save(times: [8], timeZonePolicy: .followsDevice)
@@ -192,7 +190,7 @@ struct FollowUpEngineTests {
 
     @Test func eachItemKeepsItsOwnSettingAndItemsAtOneInstantShareARequest() async throws {
         let phone = FollowUpPhone()
-        let engine = FollowUpEngine(source: phone, center: phone, ledger: phone, privacy: phone)
+        let engine = FollowUpEngine(source: phone, center: phone, privacy: phone)
         // Three items at 08:00 in Shanghai: one reminds 2 times every 15 minutes, one 1 time every 30 minutes, one never.
         _ = await phone.save(times: [8], followUp: FollowUpSetting(count: .two, interval: .minutes15), name: "Zinc")
         _ = await phone.save(times: [8], followUp: FollowUpSetting(count: .one, interval: .minutes30), name: "Iron")

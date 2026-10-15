@@ -30,6 +30,11 @@ let package = Package(
         .testTarget(name: "MaruCoreTests", dependencies: ["MaruCore"]),
         .testTarget(name: "MaruAnalyticsTests", dependencies: ["MaruCore", "MaruAnalytics"]),
         .testTarget(name: "MaruNotificationsTests", dependencies: ["MaruCore", "MaruNotifications"]),
+        // The simulator of iOS notifications around the real engines (D086). See `Phone.swift`.
+        .testTarget(
+            name: "MaruNotificationSimulationTests",
+            dependencies: ["MaruCore", "MaruDatabase", "MaruNotifications"]
+        ),
         .testTarget(
             name: "MaruDatabaseTests",
             dependencies: ["MaruCore", "MaruDatabase", .product(name: "GRDB", package: "GRDB.swift")]

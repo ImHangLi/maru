@@ -66,31 +66,33 @@ public actor FollowUpEngine {
     static let limit = ReminderPlan.systemLimit - FollowUpPlan.reserve
 
     private let source: any FollowUpSource
-    private let center: any FollowUpCenter
-    private let ledger: any RemovalLedger
+    private let center: GenerationCenter
     private let privacy: any ReminderPrivacyStore
     /// Which items an alarm covers now, read at each run (D079).
     private let alarms: @Sendable () -> AlarmCover
+    /// The clock at the time of the call. A run reads it where it must know whether a request time passed.
+    private let clock: @Sendable () -> Date
     private var lastRun: Task<Void, Never>?
-    /// Follow-up identifiers that the engine removed and that the system still held at the last read.
-    /// The ledger has a copy. The rule is the one of `ReminderEngine`: an identifier is not added again
-    /// before its removal is confirmed, so a late removal cannot delete the new request.
-    private var unremoved: Set<String>
+    /// The bases that this engine asked the system to remove and that the system still held at the last read.
+    /// It is a state of one process only. The next run asks again for each request that the plan does not have (D086).
+    private var unremoved: Set<String> = []
 
-    /// - Parameter ledger: A ledger of its own. It must not share its storage with the ledger of `ReminderEngine`.
     public init(
         source: any FollowUpSource,
         center: any FollowUpCenter,
-        ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
-        alarms: @escaping @Sendable () -> AlarmCover = { .none }
+        alarms: @escaping @Sendable () -> AlarmCover = { .none },
+        clock: @escaping @Sendable () -> Date = { Date() },
+        generations: any GenerationCounter = MemoryGenerationCounter.shared,
+        migration: any LegacyMigration = NoMigration()
     ) {
         self.source = source
-        self.center = center
-        self.ledger = ledger
+        self.center = GenerationCenter(
+            center, counter: generations, migration: migration, ownPrefix: FollowUpRequest.identifierPrefix
+        )
         self.privacy = privacy
         self.alarms = alarms
-        unremoved = ledger.load()
+        self.clock = clock
     }
 
     /// Makes the pending and the delivered follow-ups agree with the plan, the records, and the setting of each item.
@@ -108,6 +110,13 @@ public actor FollowUpEngine {
     }
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
+        await center.prune()
+        let outcome = try await perform(at: now, deviceTimeZone: deviceTimeZone)
+        await center.finishMigration()
+        return outcome
+    }
+
+    private func perform(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
         var now = now
         var plan = try await source.followUpPlan(
@@ -119,7 +128,7 @@ public actor FollowUpEngine {
         if plan.hasUnconfirmedChange {
             await remove(Array(Self.followUps(await pendingAfterRemoval()).keys))
             if Self.followUps(await pendingAfterRemoval()).isEmpty {
-                let confirmed = Date()
+                let confirmed = clock()
                 try await source.confirmFollowUpChanges(at: confirmed)
                 now = max(now, confirmed)
                 plan = try await source.followUpPlan(
@@ -143,7 +152,7 @@ public actor FollowUpEngine {
             // A request that the system still holds, also one with an open removal, takes room.
             var room = max(0, Self.limit - pending.count)
             for request in Self.fitting(plan.requests, pending: pending)
-            where !isCurrent(current[request.identifier], request) && !unremoved.contains(request.identifier) {
+            where !isCurrent(current[request.identifier], request) {
                 // A request with the same identifier replaces the pending one and takes no more room.
                 if current[request.identifier] == nil {
                     guard room > 0 else { continue }
@@ -154,7 +163,7 @@ public actor FollowUpEngine {
             }
         }
         // A replacement that did not land leaves the old follow-up, with its old names (D084). The run adds the
-        // replacement again. When the old one is still there, the run removes it through the ledger and, after the
+        // replacement again. When the old one is still there, the run removes it and, after the
         // system confirms the removal, adds the replacement in the same run. An identifier whose removal the system
         // did not confirm stays blocked.
         // The cleanup runs in every authorization state: a stale request would fire when the user turns notifications on.
@@ -169,7 +178,7 @@ public actor FollowUpEngine {
         }
         var old = await stale()
         if authorization == .authorized {
-            for request in old where !unremoved.contains(request.identifier) { try? await center.add(request) }
+            for request in old { try? await center.add(request) }
             old = old.isEmpty ? [] : await stale()
         }
         if !old.isEmpty {
@@ -177,10 +186,9 @@ public actor FollowUpEngine {
             let live = await pendingAfterRemoval()
             let held = Set(live.map(\.identifier))
             var room = max(0, Self.limit - live.count)
-            let time = Date()
+            let time = clock()
             for request in old
-            where authorization == .authorized && !unremoved.contains(request.identifier)
-                && !held.contains(request.identifier) && request.fireDate > time && room > 0 {
+            where authorization == .authorized && !held.contains(request.identifier) && request.fireDate > time && room > 0 {
                 room -= 1
                 try? await center.add(request)
             }
@@ -190,10 +198,13 @@ public actor FollowUpEngine {
         // only the doses that Today shows. The text of a first reminder is compared with the open items of its date.
         let delivered = await center.delivered().filter { shown in
             if shown.identifier.hasPrefix(FollowUpRequest.identifierPrefix) {
-                return shown.text != plan.open[shown.identifier].map(center.text(for:))
+                if let day = shown.userInfo[FollowUpRequest.plannedDateKey].flatMap(LocalDate.init(dayText:)),
+                   !plan.isShownByToday(day, in: FollowUpPlan.zone(ofFollowUp: RequestGeneration.base(of: shown.identifier)) ?? deviceTimeZone)
+                { return true }
+                return shown.text != plan.open[RequestGeneration.base(of: shown.identifier)].map(center.text(for:))
             }
             guard shown.identifier.hasPrefix(ReminderSeries.identifierPrefix) else { return false }
-            let content = plan.deliveredSeriesContent(identifier: shown.identifier, deliveredAt: shown.deliveredAt)
+            let content = plan.deliveredSeriesContent(identifier: RequestGeneration.base(of: shown.identifier), deliveredAt: shown.deliveredAt)
             return shown.text != content.map(center.text(for:))
         }.map(\.identifier)
         if !delivered.isEmpty { await center.removeDelivered(identifiers: delivered) }
@@ -234,26 +245,21 @@ public actor FollowUpEngine {
             && held.hasTakenAction == request.content.hasTakenAction && held.isTimeSensitive
     }
 
-    /// The same rule as `ReminderEngine`: each identifier has at most one open removal, and the ledger
-    /// gets it before the call.
+    /// The same rule as `ReminderEngine`: a removal is safe to repeat, because a later request has another identifier (D086).
     private func remove(_ identifiers: [String]) async {
-        let new = identifiers.filter { !unremoved.contains($0) }
-        guard !new.isEmpty else { return }
-        unremoved.formUnion(new)
-        ledger.save(unremoved)
-        await center.remove(identifiers: new)
+        guard !identifiers.isEmpty else { return }
+        unremoved.formUnion(identifiers)
+        await center.remove(identifiers: identifiers)
     }
 
-    /// Reads the pending requests until the system holds none that the engine removed, at most
+    /// Reads the pending requests until the system holds none that this process asked to remove, at most
     /// `ReminderEngine.removalChecks` times.
     private func pendingAfterRemoval() async -> [PendingReminder] {
         var checks = 0
         while true {
             let pending = await center.pendingRequests()
             checks += 1
-            let before = unremoved
             unremoved.formIntersection(pending.map(\.identifier))
-            if unremoved != before { ledger.save(unremoved) }
             if unremoved.isEmpty || checks == ReminderEngine.removalChecks { return pending }
             try? await Task.sleep(for: ReminderEngine.removalWait)
         }

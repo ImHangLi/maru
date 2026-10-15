@@ -4,20 +4,6 @@ import Testing
 
 private struct ReadFailure: Error {}
 
-/// The ledger of a test. It is the disk that a new engine reads after a stop of the app.
-private final class MemoryLedger: RemovalLedger, @unchecked Sendable {
-    private let lock = NSLock()
-    private var identifiers: Set<String> = []
-
-    func load() -> Set<String> {
-        lock.withLock { identifiers }
-    }
-
-    func save(_ identifiers: Set<String>) {
-        lock.withLock { self.identifiers = identifiers }
-    }
-}
-
 /// The saved plan and the notification system of a test. It keeps one request for each identifier, as the system does.
 private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
     var items: [Item] = []
@@ -78,6 +64,7 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
     }
 
     func pendingRequests() -> [PendingReminder] {
+        steps.append("read")
         let read = pending.map {
             PendingReminder(identifier: $0.key, userInfo: $0.value, text: texts[$0.key], hasTakenAction: actions.contains($0.key))
         }
@@ -88,12 +75,12 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
     }
 
     func add(_ request: ReminderRequest) {
-        added.append(request.identifier)
+        added.append(RequestGeneration.base(of: request.identifier))
         if !dropsRequests {
-            pending[request.identifier] = request.userInfo
-            texts[request.identifier] = text(for: request.content)
-            actions.remove(request.identifier)
-            if request.content.hasTakenAction { actions.insert(request.identifier) }
+            pending[RequestGeneration.base(of: request.identifier)] = request.userInfo
+            texts[RequestGeneration.base(of: request.identifier)] = text(for: request.content)
+            actions.remove(RequestGeneration.base(of: request.identifier))
+            if request.content.hasTakenAction { actions.insert(RequestGeneration.base(of: request.identifier)) }
         }
         peak = max(peak, pending.count)
     }
@@ -111,11 +98,10 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
 @Suite("Reminder reconciliation (spec 2.2, 8.1, 8.5, T07, T08, T13, T14)")
 struct ReminderEngineTests {
     private let phone = Phone()
-    private let ledger = MemoryLedger()
     private let engine: ReminderEngine
 
     init() {
-        engine = ReminderEngine(source: phone, center: phone, ledger: ledger, privacy: phone)
+        engine = ReminderEngine(source: phone, center: phone, privacy: phone)
     }
 
     /// A run on 2 March 2026 in Shanghai.
@@ -146,7 +132,10 @@ struct ReminderEngineTests {
         #expect(await phone.pending == pending)
         #expect(await phone.added.count == 2)
         // Each run reads the plan and makes its changes before the next run reads the plan.
-        #expect(await phone.steps == Array(repeating: ["plan", "remove"], count: 11).flatMap { $0 })
+        // A run reads the pending requests after its plan and before the next run reads the plan.
+        let steps = await phone.steps
+        #expect(steps.filter { $0 == "plan" }.count == 11)
+        #expect(!zip(steps, steps.dropFirst()).contains { $0 == "plan" && $1 == "plan" })
     }
 
     @Test func editOfATimeMovesTheRequestAndKeepsTheRequestsOfOthers() async throws {
@@ -307,46 +296,6 @@ struct ReminderEngineTests {
         for _ in 0..<3 { _ = await phone.pendingRequests() }
         #expect(enabled.schedules == [schedule.id: .scheduled])
         #expect(Set(await phone.pending.keys) == ["series|Asia/Shanghai|08:00|daily"])
-    }
-
-    @Test func removalThatIsStillOpenIsNotSentAgain() async throws {
-        let schedule = await phone.save(times: [8])
-        _ = try await reconcile()
-
-        // The removal completes after more reads than two runs make.
-        await phone.update {
-            $0.readsBeforeRemoval = 25
-            $0.schedules[0].isEnabled = false
-        }
-        #expect(try await reconcile().schedules == [schedule.id: .removalPending])
-        // A second paused run. A second removal of the identifier would delete the request of the re-enable below.
-        _ = try await reconcile()
-
-        await phone.update { $0.schedules[0].isEnabled = true }
-        let enabled = try await reconcile()
-        for _ in 0..<30 { _ = await phone.pendingRequests() }
-        #expect(enabled.schedules == [schedule.id: .scheduled])
-        #expect(Set(await phone.pending.keys) == ["series|Asia/Shanghai|08:00|daily"])
-    }
-
-    @Test func newStartOfTheAppWaitsForTheRemovalOfTheProcessBeforeIt() async throws {
-        let schedule = await phone.save(times: [8])
-        _ = try await reconcile()
-
-        await phone.update {
-            $0.readsBeforeRemoval = 15
-            $0.schedules[0].isEnabled = false
-        }
-        #expect(try await reconcile().schedules == [schedule.id: .removalPending])
-
-        // The user turns the reminders on again, and the app stops. A new engine reads the same ledger.
-        await phone.update { $0.schedules[0].isEnabled = true }
-        let restarted = ReminderEngine(source: phone, center: phone, ledger: ledger, privacy: phone)
-        let enabled = try await reconcile(on: restarted)
-        for _ in 0..<30 { _ = await phone.pendingRequests() }
-        #expect(enabled.schedules == [schedule.id: .scheduled])
-        #expect(Set(await phone.pending.keys) == ["series|Asia/Shanghai|08:00|daily"])
-        #expect(ledger.load().isEmpty)
     }
 
     @Test func requestThatTheSystemDoesNotKeepIsReportedAndTheNextRunAddsIt() async throws {

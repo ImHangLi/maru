@@ -3,6 +3,7 @@ import SwiftUI
 /// The frame of the app: two tabs, or the storage problem in place of them.
 struct RootView: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.openURL) private var openURL
     /// The edit screen is on the display, also while it closes. A reminder alert waits for its end.
     @State private var editorIsUp = false
     /// The reminder alert on the display. It is a copy, so a later result does not change it.
@@ -57,13 +58,21 @@ struct RootView: View {
         }
         // A save or a change shows no message. The list updates in place. Only a failed reminder says so (D028).
         // One alert shows at a time, and the next one comes after the edit screen and the alert before it end.
-        .alert(reminderAlertTitle, isPresented: $showsAlert, presenting: shownAlert) { _ in
+        // A failure says what went wrong, and "Send Feedback" opens the form of Settings. Nothing is sent by itself (D086).
+        .alert(reminderAlertTitle, isPresented: $showsAlert, presenting: shownAlert) { alert in
             Button("OK", role: .cancel) {}
+            if alert.kind != .tooMany {
+                Button("Send Feedback") {
+                    guard let url = FeedbackSection.formURL else { return }
+                    model.analytics.capture(.feedbackOpened)
+                    openURL(url)
+                }
+            }
         } message: { alert in
             switch alert.kind {
             case .tooMany: Text("The plan is saved. It has too many times for iPhone.")
-            case .notSet: Text("The plan is saved. Maru tries again when you open it.")
-            case .notConfirmed, .mayStillRemind: Text("Maru checks again when you open it.")
+            case .notSet, .notConfirmed: Text("Your change is saved, but the reminder for this item isn’t set yet.")
+            case .mayStillRemind: Text("Your change is saved, but the old reminder may still go off.")
             }
         }
         // The one confirmation of an archive or a delete, for each page that offers it (D033).
@@ -136,7 +145,6 @@ struct RootView: View {
 
     private var reminderAlertTitle: Text {
         switch shownAlert?.kind {
-        case .notConfirmed: Text("Reminder Not Confirmed")
         case .mayStillRemind: Text("Reminders May Still Be On")
         default: Text("Reminder Not Set")
         }

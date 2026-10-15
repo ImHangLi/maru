@@ -1463,7 +1463,7 @@ Maintainer decision on 2026-10-14. This replaces the part of D076 about suggesti
 - The smart completion candidates of the amount and the note are bordered capsules in the app tint.
 - The other rows of D076 keep the text color.
 
-## D083 · 2026-10-14 · A record finishes the reminder run before the system can suspend the app
+## D083 · 2026-10-14 · A record finishes the reminder run before the system can suspend the app (the open-removal window replaced by D086)
 
 Agent decision, after a test on the maintainer's iPhone. With "Remind Again: Until Recorded", follow-ups kept coming after the user recorded the dose with the circle on Today. The plan and the engine were correct.
 
@@ -1474,7 +1474,7 @@ Agent decision, after a test on the maintainer's iPhone. With "Remind Again: Unt
 
 Not verified: the app build on this Mac, and the behavior on a real iPhone. CI builds the app. No new test (D016).
 
-## D084 · 2026-10-14 · Every reminder names only the doses that Today shows
+## D084 · 2026-10-14 · Every reminder names only the doses that Today shows (the removal ledger and its blocked identifier replaced by D086)
 
 Agent decision, after a bug on the maintainer's iPhone (TestFlight build 4, version 1.0.0). A reminder named an item that the maintainer had archived. The maintainer made this a hard requirement.
 
@@ -1536,3 +1536,63 @@ Maintainer decision on 2026-10-15, after the use of build 5 (version 1.1.0, Test
 4. Six languages. All changed text is in English, zh-Hans, ja, es, de, and ko, with a translator comment, and the keys that no code uses any more are gone. The voice: zh-Hans like a friendly Chinese app, ja polite and light, ko "해요체", es "tú", de "du". The text is a draft until a native speaker reads it (`docs/localization-review.md`). A second pass followed a review of the zh-Hans text, in every catalog (app, notifications, Watch, widgets, and `InfoPlist`): one term for an item (药品), supplements are 保健品, save is 保存, and the tone is casual (没, 还没, 点, no 请, 尚未, or 无法). The other four languages got a lighter pass: ko uses 해요체 everywhere (the Watch text no longer uses 합니다체), and es and de lose perfect-tense and stiff phrases.
 
 Not verified: the app build and the screens on this Mac. CI builds the app. The layout needs a check on a real iPhone: the page "More Options" (the pickers, the photo section, the candidates, VoiceOver, and the largest text sizes), the Settings section at the largest text sizes, the "Varies" state with items that differ, a change of "Remind Again" for all items with the reminders in Notification Center, and the alarm permission from Settings. One test (D016) covers the bulk write and the change time.
+
+## D086 · 2026-10-15 · Notifications are checked against a simulator, and a lost removal no longer blocks a request for good
+
+Agent decision, after a second report from the maintainer's iPhone (TestFlight build 6, version 1.1.0, with D083 and D084). The maintainer's goal: every notification of the app is always correct.
+
+Evidence on the iPhone, in Sydney time:
+
+- The notification of 21:00 named Magnesium Glycinate, Coenzyme Q10, and Fish Oil. Fish Oil was archived a day before, and Magnesium was recorded at 18:44.
+- The notification of 09:00 stayed in Notification Center after the three doses were recorded at 14:17.
+- A save of a fourth time (23:00) showed "Reminder Not Set".
+
+Cause, proved with the simulator:
+
+- `ReminderEngine` and `FollowUpEngine` write the identifier of a removal in the ledger (`UserDefaults`) before they call the system. An identifier in the ledger is blocked: the engine does not add it, and it does not send the removal again (`ReminderEngine.remove`, `ReminderEngine.run`, the filter `additions`, D083 "That window stays as it was").
+- If the app stops between the ledger write and the system call, the removal never happens. The ledger keeps the identifier, also across a restart and an update of the app, because it is in `UserDefaults`. The old request stays pending with its old text, and no later run replaces it, because the identifier is blocked. A repeating request fires every day, so the stale text comes back every day.
+- The run then reports `notRegistered` for the blocked identifier, and the app shows "Reminder Not Set" at each save.
+- The simulator stops a run at each of its calls. Before this change, a stop at one call after a record, an archive, a delete, or a change of "Remind Again" left a wrong request that no run repaired (`KillSweepTests`, `StuckRemovalTests`). The record of Magnesium before 21:00 gives exactly the first notification above: the daily request of 21:00 keeps the names of Fish Oil and Magnesium.
+- D084 tested only the case where every call of a run ends. D083 and D084 reduce how often a run stops, but they cannot make it zero: the system can end the process at any call.
+- Not proved: why the notification of 09:00 stayed. In the simulator, a run that completes removes it, also with a blocked identifier. The simulator does not model a run that never starts or never ends. Two cases remain open: a system call of UserNotifications that never returns, and a hang that the 3-second limit of item 5 does not reach. A hang inside AlarmKit, which would block the queue (every run waits for the run before it), is now limited by item 5. The new log of the runs (below) shows these cases on the next device check.
+
+The design (the engines keep their plan and their rules, and the removal ledger is gone):
+
+1. Every request that the app gives the system has a fresh identifier: the base identifier of the plan and a generation, `<base>|g<counter>r<4 hex>` (`RequestGeneration`, `GenerationCenter`). The counter is durable and only grows: the app saves it in the `UserDefaults` of the App Group before each add, under a lock (`DefaultsGenerationCounter`), so no restart and no change of the clock can repeat or reorder a number. All adds run in the app process. The 4 random hex digits make two identifiers differ also when two counters ever meet. Order is the counter only. A build with no App Group uses the standard defaults. The system never sees an identifier twice, so a removal can name only requests that the system held when the app read them. A removal that the system does late, and a removal that a run sends again, can never delete a newer request with the same base. This removes the race class and the need for a ledger. The ledger, the 5-second rule, and `RemovalLedger` are deleted. The engines keep only a state of the process: the bases that they asked the system to remove and that it still held at the last read. The old keys in `UserDefaults` go at the first open (`LegacyRemovalLedger`).
+   - The plan, the tap resolver, and the engines use base identifiers. The generation lives at the border to the system. Each run prunes first: for each base only the request with the highest counter stays, and the older ones are removed. A stop between an add and its removal can leave two generations of one base until the next run. This rare window is accepted: a second banner is better than a missing one. The check of the oracle allows it only while the system holds an open removal. An add gives a fresh identifier, and it removes the older requests of the base only after a read shows that the system holds the new one. A dropped add keeps the old request, and the engine replaces it as before (D084). A removal removes every request of the bases that it names.
+   - The limit of 64 counts physical requests. When an add would pass it, the older request of that base goes first (remove, then add, for that base only). If it still does not fit, the add fails, the request is not dropped silently, and the schedule shows as not set. The room rules of the plan keep this rare.
+   - Move from build 6: build 6 made requests with no generation. At the first run of this build, a request without a generation, with the prefix of the engine, looks like a request with other content. So the engine adds the request with a generation, and the add removes the old one. A request that the plan does not have is removed. Each engine marks its move as done in `UserDefaults` (`DefaultsLegacyMigration`) when the system holds none of its legacy requests. A removal that build 6 sent and the system did late can name only the old identifier, so it cannot delete a new request. A delivered notification of build 6 follows the same content rules as every delivered notification.
+   - Each run removes every pending request that the plan does not have, matched by base, so a removal that the system did not do is asked for again by the next run. No state can block that.
+   - "Taken" action identity (D034) is in `userInfo`, not in the identifier. The counting of follow-ups (D039) uses the base. Requests of an older build have no generation, and each is its own base, so the first run of a new build replaces them.
+   - Replacement needs room for one more request until the removal of the old one shows. The reserve of 2 in the follow-up plan (spec 8.4) covers this, because a replacement is one request at a time.
+2. A delivered notification goes when its dose is not shown by Today. A dose is shown on its day in its own time zone, and on the day after until 01:00 of that zone, because the "Taken" action of a follow-up records it until then (D034, D039). Code: `FollowUpPlan.isShownByToday(_:in:)` and the zone in the identifier.
+3. `FollowUpEngine` takes a clock, as `ReminderEngine` does, so a test can run it with a virtual clock.
+4. `AppStore.reconcileReminders` logs each failed run with `os.Logger` (subsystem of the app, category `reminders`). It logs the error type and counts of schedules, not-set schedules, open removals, and follow-ups. It logs no item name, dose, time, or ID (spec 10). The error still goes to the caller, as before.
+5. Every AlarmKit call of the alarm path (`waiting`, `schedule`, `cancel`) has a limit of 3 seconds (`TimedAlarmCenter`). A call that does not answer throws `AlarmRunError.timedOut`, and `AppStore` logs its name in the category `reminders`. The run then fails open as D079 says: the cover is empty, and every item with an alarm gets its notification. A hang inside AlarmKit can no longer block the one queue of runs. `AlarmCenter.waiting` now throws, and `SystemAlarmCenter` no longer turns a read error into an empty list. The read of `AlarmManager.shared.authorizationState` is a synchronous property and has no limit.
+   - Alarms have generations too. An alarm identifier is 12 bytes of content and 4 bytes of generation, taken from the same durable counter. The plan has the content. The engine gives each alarm that it schedules a new generation, and it matches the waiting alarms by content. Each run cancels every waiting alarm whose content the plan does not have, and every older alarm of one content (the highest generation stays). So no cancel, late or repeated, reaches a newer alarm.
+   - A call that timed out keeps running in the background. When a `schedule` returns after its limit, `TimedAlarmCenter` checks its exact identifier (content and generation) against `WantedAlarms` and cancels the alarm when the current plan does not hold exactly that alarm. `WantedAlarms` has the ids of the alarms that the system holds and of the alarms that a call of the run is scheduling. So a late older generation is cancelled also when its content matches, and an alarm of a dose that has a record by now is cancelled too. While AlarmKit hangs, a waiting alarm cannot be cancelled, so an alarm and a banner can both ring (D079 accepts this).
+
+Why not rebuild all requests as dated one-shot requests: a repeating request keeps a stable plan correct while the app does not run for days (spec 8.1). Dated requests would stop after their last date, and the user would miss doses. Both kinds have the same limit: the content is true only as long as the run after each change ends. The design makes that limit as short as it can be on iOS: every run compares the whole system state with the database and repairs the difference, and no saved state can block a repair.
+
+A reminder that was delivered and then recorded (maintainer requirement): a reminder is delivered at 12:00, and the dose is recorded at 13:00 in the app, with the "Taken" action, from the widget, or the next morning for yesterday. The run after the record removes the 12:00 notification from Notification Center. If it named two items and one is recorded, the old notification goes, because it names a closed dose. The open item stays on Today, and the run posts no new banner for it. Follow-ups follow their own rules (D039). Scenarios in `ScenarioTests` check this with the oracle.
+
+What no design can guarantee on iOS:
+
+- Between a change and the end of its run, a pending request or a delivered notification can be wrong. If the app is suspended or stopped in that time, the content stays wrong until the user opens the app again. The window is the run, which takes milliseconds to a few seconds. D083 and D084 hold a background-task assertion for it.
+- iOS can refuse to start the app. For example, after a restart before the first unlock, the app cannot read the database, so no run happens.
+- A notification that fires in this window shows the old content. It can name an item that is recorded or archived.
+
+The failure alerts ("Reminder Not Set", "Reminders May Still Be On"), maintainer decision of 2026-10-15:
+
+- First, the failure must not happen: the change above removes the stuck state that caused it.
+- If an alert still shows, it says in one plain sentence what went wrong and what did not get done: "Your change is saved, but the reminder for this item isn't set yet." For a removal: "Your change is saved, but the old reminder may still go off." The title for "not set" and "not confirmed" is "Reminder Not Set". "Reminder Not Confirmed" and the line "Maru checks again when you open it." are gone.
+- The alert has two buttons: "OK" and "Send Feedback". "Send Feedback" opens the form of Settings in Safari (D037). Maru attaches nothing. The alert for too many times (`tooMany`) has only "OK", because it is a limit of the plan and not a failure.
+- The text is in six languages, in casual tone.
+
+The harness (maintainer request, so it goes beyond the test limit of D016):
+
+- `Packages/MaruKit/Tests/MaruNotificationSimulationTests/`: a simulator of the notification system (`FakeNotificationCenter`) with pending and delivered sets, repeating and dated triggers, delivery by a virtual clock, replace by identifier, removal that completes late or never, dropped adds, the 64 limit, permissions, a time zone change, a process that stops at any call, and an app that does not open for days. The real `ReminderPlan`, `ReminderEngine`, `FollowUpEngine`, `AlarmPlan`, `AlarmEngine`, and a `LocalStore` on a real SQLite file run inside it, in the order of `AppStore.reconcileReminders`.
+- `Oracle` compares every pending request, every delivered notification, and every alarm with a list of what the user did. It never reads the engines. It checks after every run of every scenario. The invariant: each notification names exactly the open doses of its occurrence, and each open dose with a time has a reminder before its time.
+- The scenarios and the gaps between the simulator and real iOS are in `docs/research/2026-10-15-notification-correctness.md`.
+
+Not verified: the app build on this Mac (CI builds it), the alert in the six languages on a display, and the behavior on a real iPhone. A check on the iPhone: install the build, open the app, and read the log of the category `reminders` in Console after a record and an archive.
