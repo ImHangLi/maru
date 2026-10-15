@@ -23,6 +23,8 @@ actor AppStore {
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
     private var alarms: AlarmEngine?
+    /// The alarms that the latest plan wants. A call of AlarmKit that returns late checks it (D086).
+    private let wantedAlarms = WantedAlarms()
     /// Which items an alarm covers in the run that is going on (D079). Each run sets it again, so no run uses the cover of an earlier run.
     private let cover = OSAllocatedUnfairLock(initialState: AlarmCover.none)
     /// The input of the notification engines: which items an alarm covers in the run that is going on.
@@ -75,6 +77,8 @@ actor AppStore {
             }
             LegacyFollowUpSetting.remove()
         }
+        // The ledger of open removals of builds before D086 is gone, so its keys go too.
+        LegacyRemovalLedger.remove()
         opened = store
         return store
     }
@@ -86,7 +90,6 @@ actor AppStore {
         let engine = ReminderEngine(
             source: try open(),
             center: SystemReminderCenter(),
-            ledger: DefaultsRemovalLedger(),
             privacy: DefaultsReminderPrivacy(),
             zoneRecord: DefaultsTimeZoneRecord(),
             alarms: coverNow
@@ -95,13 +98,12 @@ actor AppStore {
         return engine
     }
 
-    /// The one follow-up engine of the process, with a removal ledger of its own (spec 4, 8.2).
+    /// The one follow-up engine of the process, (spec 4, 8.2).
     func followUpEngine() throws(StorageError) -> FollowUpEngine {
         if let followUps { return followUps }
         let followUps = FollowUpEngine(
             source: try open(),
             center: SystemReminderCenter(),
-            ledger: DefaultsRemovalLedger(key: DefaultsRemovalLedger.followUpKey),
             privacy: DefaultsReminderPrivacy(),
             alarms: coverNow
         )
@@ -115,11 +117,12 @@ actor AppStore {
         if let alarms { return alarms }
         let alarms = AlarmEngine(
             source: try open(),
-            center: TimedAlarmCenter(base: SystemAlarmCenter()) { call in
+            center: TimedAlarmCenter(base: SystemAlarmCenter(), wanted: wantedAlarms) { call in
                 Self.log.error("AlarmKit call timed out: \(call, privacy: .public)")
             },
             privacy: DefaultsReminderPrivacy(),
-            alarmsRing: { AlarmSupport.isAuthorized }
+            alarmsRing: { AlarmSupport.isAuthorized },
+            wanted: wantedAlarms
         )
         self.alarms = alarms
         return alarms

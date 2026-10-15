@@ -317,7 +317,7 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 > Amendment (2026-10-14, D084): Every reminder, pending or delivered, names only the doses that Today shows. After a save, an archive, a delete, a pause, an end date, a change of the time, or a record, each run of the notification queue removes the delivered notification (first reminder or follow-up) that names an item that is no longer open, or replaces it. A delivered first reminder no longer stays.
 
-> Amendment (2026-10-15, D086): Each run compares the whole system state with the database, and it repairs the difference, so a request that an earlier run or an earlier build left cannot stay wrong. A removal that the system did not do in 5 seconds is sent again. A delivered notification of a day before yesterday is removed. The content of a notification is true only as long as the run after each change ends. If the app is suspended or stopped in that time, the content stays wrong until the app opens again. The spec does not promise more.
+> Amendment (2026-10-15, D086): Each run compares the whole system state with the database, and it repairs the difference, so a request that an earlier run or an earlier build left cannot stay wrong. Each request has a fresh identifier, so a removal that the system does late or that a run sends again cannot delete a newer request, and nothing blocks a repair. A delivered notification whose dose Today no longer shows is removed. The content of a notification is true only as long as the run after each change ends. If the app is suspended or stopped in that time, the content stays wrong until the app opens again. The spec does not promise more.
 
 前台收到提示时可根据当前数据库抑制重复展示；后台不拥有同样的任意执行保证。记录后删掉当前已交付通知，不能假装同时完成了对未来重复内容的动态修改。
 

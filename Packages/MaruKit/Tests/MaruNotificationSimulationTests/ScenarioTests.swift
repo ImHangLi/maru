@@ -217,6 +217,114 @@ struct ScenarioTests {
         await p.expectCorrect("the alarm system answers again")
     }
 
+    @Test func aLateAlarmScheduleIsCancelledWhenTheDoseHasARecord() async throws {
+        let p = try await phone()
+        p.checks.alarmsFail = true
+        // AlarmKit holds the schedule call, so the call times out, and the item keeps its banner.
+        await p.alarmCenter.setScheduleHangs(true)
+        p.checks.alarms = false
+        try await p.addItem("Zinc", at: ["09:00"], alarm: true)
+        try await p.record("Zinc")
+        // AlarmKit answers late. The alarm that it registers now is for a dose with a record.
+        await p.alarmCenter.setScheduleHangs(false)
+        try await Task.sleep(for: .milliseconds(600))
+        // The late schedule checks the newest plan by itself, before any new run.
+        #expect(!(await p.alarmCenter.alarms.values.contains { $0.fireDate == p.instant("2026-10-15 09:00") }))
+        p.checks.alarmsFail = false
+        p.checks.alarms = true
+        await p.foreground()
+        await p.expectCorrect("the late alarm is gone")
+    }
+
+    // MARK: A delivered reminder and a later record (maintainer requirement of D086)
+
+    @Test func recordedAtOneAfterAReminderOfNoonLeavesNotificationCenter() async throws {
+        let p = try await phone("2026-10-15 11:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        await p.advance(to: "2026-10-15 12:01")
+        #expect(await p.center.shown.count == 1)
+        await p.advance(to: "2026-10-15 13:00")
+        try await p.record("Zinc")
+        #expect(await p.center.shown.isEmpty)
+        await p.expectCorrect("recorded at 13:00")
+    }
+
+    @Test func oneOfTwoItemsRecordedRemovesTheOldNotificationAndPostsNoNewBanner() async throws {
+        let p = try await phone("2026-10-15 11:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        try await p.addItem("Iron", at: ["12:00"])
+        await p.advance(to: "2026-10-15 12:01")
+        let deliveries = await p.center.deliveries.count
+        await p.advance(to: "2026-10-15 13:00")
+        try await p.record("Zinc")
+        #expect(await p.center.shown.isEmpty, "the old notification names a closed dose")
+        #expect(await p.center.deliveries.count == deliveries, "no new banner for Iron")
+        await p.expectCorrect("Zinc recorded, Iron still open on Today")
+    }
+
+    @Test func recordedFromTheTakenActionLeavesNotificationCenter() async throws {
+        let p = try await phone("2026-10-15 11:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        await p.advance(to: "2026-10-15 12:01")
+        try await p.takenFromNotification(try #require(await p.center.shown.keys.first))
+        #expect(await p.center.shown.isEmpty)
+        await p.expectCorrect("Taken action")
+    }
+
+    @Test func recordedFromTheWidgetLeavesNotificationCenter() async throws {
+        let p = try await phone("2026-10-15 11:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        await p.advance(to: "2026-10-15 12:01")
+        p.terminate()
+        await p.advance(to: "2026-10-15 13:00")
+        try await p.recordFromWidget("Zinc")
+        #expect(await p.center.shown.isEmpty)
+        await p.expectCorrect("widget")
+    }
+
+    @Test func recordedTheNextMorningForYesterdayLeavesNotificationCenter() async throws {
+        let p = try await phone("2026-10-15 11:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        await p.advance(to: "2026-10-15 12:01")
+        await p.advance(to: "2026-10-16 08:00")
+        try await p.record("Zinc", date: p.date("2026-10-15"))
+        #expect(await !p.center.shown.keys.contains { $0.contains("2026-10-15") })
+        await p.expectCorrect("next morning")
+    }
+
+    // MARK: The system is slow or loses calls
+
+    @Test func aSlowRemovalThatTheAppSendsAgainNeverDeletesTheNewRequest() async throws {
+        let p = try await phone("2026-10-15 08:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        try await p.addItem("Iron", at: ["12:00"])
+        // The system does a removal after 25 reads. A record removes the daily request, and an undo wants it again.
+        await p.center.setRemovalLatency(25)
+        // While the system is slow, a run ends with removals open, and an old request can still be pending.
+        p.autoCheck = false
+        try await p.record("Zinc")
+        try await p.undo("Zinc")
+        try await p.record("Zinc")
+        try await p.undo("Zinc")
+        for _ in 0..<40 { _ = await p.center.pendingRequests() }
+        p.autoCheck = true
+        await p.foreground()
+        await p.expectCorrect("slow removals have completed")
+    }
+
+    @Test func aRemovalThatTheSystemNeverDoesIsAskedAgainByEveryRun() async throws {
+        let p = try await phone("2026-10-15 08:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        try await p.addItem("Iron", at: ["12:00"])
+        await p.center.setDropsRemovals(true)
+        p.autoCheck = false
+        try await p.record("Zinc")
+        await p.center.setDropsRemovals(false)
+        p.autoCheck = true
+        await p.foreground()
+        await p.expectCorrect("the next run removed it")
+    }
+
     // MARK: Settings and the world
 
     @Test func hiddenNamesAndShownNames() async throws {

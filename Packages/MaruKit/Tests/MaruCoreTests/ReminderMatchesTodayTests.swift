@@ -2,13 +2,6 @@ import Foundation
 import Testing
 @testable import MaruCore
 
-private final class MemoryLedger: RemovalLedger, @unchecked Sendable {
-    private let lock = NSLock()
-    private var identifiers: Set<String> = []
-    func load() -> Set<String> { lock.withLock { identifiers } }
-    func save(_ identifiers: Set<String>) { lock.withLock { self.identifiers = identifiers } }
-}
-
 /// The saved plan and the notification system of a test, for the series engine and the follow-up engine together.
 /// A repeating series request stays pending after it is delivered, as in the system.
 private actor Phone: ReminderPlanSource, FollowUpSource, FollowUpCenter, ReminderPrivacyStore {
@@ -68,11 +61,11 @@ private actor Phone: ReminderPlanSource, FollowUpSource, FollowUpCenter, Reminde
     }
     func add(_ request: ReminderRequest) {
         guard dropsNext == 0 else { return dropsNext -= 1 }
-        pending[request.identifier] = (request.userInfo, text(for: request.content))
+        pending[RequestGeneration.base(of: request.identifier)] = (request.userInfo, text(for: request.content))
     }
     func add(_ request: FollowUpRequest) {
         guard dropsNext == 0 else { return dropsNext -= 1 }
-        pending[request.identifier] = (request.userInfo, text(for: request.content))
+        pending[RequestGeneration.base(of: request.identifier)] = (request.userInfo, text(for: request.content))
     }
     func remove(identifiers: [String]) { identifiers.forEach { pending[$0] = nil } }
     func delivered() -> [PendingReminder] { Array(shown.values) }
@@ -93,8 +86,8 @@ struct ReminderMatchesTodayTests {
 
     @Test func anArchivedItemOfASharedTimeIsNamedByNoPendingOrDeliveredReminder() async throws {
         let phone = Phone()
-        let series = ReminderEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
-        let followUps = FollowUpEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
+        let series = ReminderEngine(source: phone, center: phone, privacy: phone)
+        let followUps = FollowUpEngine(source: phone, center: phone, privacy: phone)
         _ = await phone.save(name: "Zinc")
         _ = await phone.save(name: "Iron")
 
@@ -119,8 +112,8 @@ struct ReminderMatchesTodayTests {
     /// The system drops the replacement twice. The run still ends with the new request and not with the old names or none.
     @Test func aReplacementThatTheSystemDropsIsAddedAgainInTheSameRun() async throws {
         let phone = Phone()
-        let series = ReminderEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
-        let followUps = FollowUpEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
+        let series = ReminderEngine(source: phone, center: phone, privacy: phone)
+        let followUps = FollowUpEngine(source: phone, center: phone, privacy: phone)
         _ = await phone.save(name: "Zinc")
         _ = await phone.save(name: "Iron")
         try await run(phone, series, followUps, at: Fixtures.instant("2026-03-01T23:30:00Z"))
@@ -137,8 +130,8 @@ struct ReminderMatchesTodayTests {
     /// day before, and a reminder that the system delivered after midnight belongs to that day.
     @Test func aDeliveredReminderKeepsItsItemsInAnyOrderAndItsPlannedDate() async throws {
         let phone = Phone()
-        let series = ReminderEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
-        let followUps = FollowUpEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
+        let series = ReminderEngine(source: phone, center: phone, privacy: phone)
+        let followUps = FollowUpEngine(source: phone, center: phone, privacy: phone)
         _ = await phone.save(name: "Zinc", timeZonePolicy: .followsDevice, hour: 23)
         let iron = await phone.save(name: "Iron", hour: 23)
         // 2 March 2026 is a Monday. The reminder of 23:00 is delivered at 00:01 on Tuesday, Shanghai time.
@@ -156,8 +149,8 @@ struct ReminderMatchesTodayTests {
     /// With notifications off, a stale pending request must go too: it would fire when the user turns them on.
     @Test func aStaleRequestGoesAlsoWhileNotificationsAreOff() async throws {
         let phone = Phone()
-        let series = ReminderEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
-        let followUps = FollowUpEngine(source: phone, center: phone, ledger: MemoryLedger(), privacy: phone)
+        let series = ReminderEngine(source: phone, center: phone, privacy: phone)
+        let followUps = FollowUpEngine(source: phone, center: phone, privacy: phone)
         _ = await phone.save(name: "Zinc")
         _ = await phone.save(name: "Iron")
         try await run(phone, series, followUps, at: Fixtures.instant("2026-03-01T23:30:00Z"))

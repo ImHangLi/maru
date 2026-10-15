@@ -66,7 +66,7 @@ public struct FollowUpGroup: Hashable, Sendable {
 
     /// `followup|<zone>|<YYYY-MM-DD>|<HH:MM>` for a fixed rule, and `followup|device@<zone>|<YYYY-MM-DD>|<HH:MM>`
     /// for a rule that follows the device. It holds no item name, no dose, and no ID (spec 10),
-    /// so the removal ledger can keep it outside the health database.
+    /// so no log or notification holds health data.
     ///
     /// It is the thread of every follow-up of the group, and the start of each request identifier.
     public var identifier: String {
@@ -328,7 +328,7 @@ public struct FollowUpPlan: Hashable, Sendable {
                 }
             } ?? last
         }
-        guard isShownByToday(date) else { return nil }
+        guard isShownByToday(date, in: zone) else { return nil }
         var seen = Set<ItemID>()
         // A named zone that equals the device zone can join the series of the device (D047). The items are in the order
         // of the schedules, as in the text of the series request, so the same set of items gives the same text.
@@ -340,10 +340,19 @@ public struct FollowUpPlan: Hashable, Sendable {
         return ReminderContent(kind: .due, names: showsNames ? names : nil)
     }
 
-    /// A notification of an older day names no dose that Today shows, so it must go (D086). Today and yesterday stay:
-    /// the "Taken" action of a follow-up can still record yesterday's dose until `latestTime`.
-    public func isShownByToday(_ plannedDate: LocalDate) -> Bool {
-        plannedDate >= LocalDate(now, in: deviceTimeZone).adding(days: -1)
+    /// A notification of an older day names no dose that Today shows, so it must go (D086). The dose is of today in its own
+    /// time zone, or of the day before until `latestTime` of that zone: the "Taken" action of a follow-up records it
+    /// until then (D034, D039).
+    public func isShownByToday(_ plannedDate: LocalDate, in zone: NamedTimeZone) -> Bool {
+        Self.takesDose(on: plannedDate, at: now, in: zone)
+    }
+
+    /// The time zone that a follow-up identifier names: `followup|<zone>|...` or `followup|device@<zone>|...`.
+    static func zone(ofFollowUp identifier: String) -> NamedTimeZone? {
+        let parts = identifier.split(separator: "|", omittingEmptySubsequences: false)
+        guard parts.count >= 2, parts[0] + "|" == FollowUpRequest.identifierPrefix else { return nil }
+        let text = parts[1].hasPrefix("device@") ? String(parts[1].dropFirst("device@".count)) : String(parts[1])
+        return try? NamedTimeZone(identifier: text)
     }
 
     /// The instant at which the follow-ups of a dose on `date` stop at the latest: `latestTime` of the next day.

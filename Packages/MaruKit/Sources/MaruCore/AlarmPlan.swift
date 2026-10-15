@@ -36,6 +36,40 @@ public struct AlarmRequest: Hashable, Sendable {
     public let taken: [String: String]?
 }
 
+extension UUID {
+    /// The alarm identifier without its generation: the 12 bytes of content (D086).
+    var alarmContent: UUID {
+        let b = uuid
+        return UUID(uuid: (b.0, b.1, b.2, b.3, b.4, b.5, b.6, b.7, b.8, b.9, b.10, b.11, 0, 0, 0, 0))
+    }
+
+    /// The same content with a fresh generation. The system never sees an alarm identifier twice, so no cancel of an
+    /// earlier alarm, late or repeated, can reach a newer alarm of the same content (D086).
+    func withFreshGeneration() -> UUID {
+        let b = uuid
+        var generation = UInt32.random(in: 1...UInt32.max)
+        if generation == 0 { generation = 1 }
+        return UUID(uuid: (
+            b.0, b.1, b.2, b.3, b.4, b.5, b.6, b.7, b.8, b.9, b.10, b.11,
+            UInt8(truncatingIfNeeded: generation >> 24), UInt8(truncatingIfNeeded: generation >> 16),
+            UInt8(truncatingIfNeeded: generation >> 8), UInt8(truncatingIfNeeded: generation)
+        ))
+    }
+}
+
+/// The content of the alarms that the latest plan wants. A call of the alarm system that returns late checks it (D086).
+public final class WantedAlarms: @unchecked Sendable {
+    private let lock = NSLock()
+    private var contents: Set<UUID> = []
+
+    public init() {}
+
+    func set(_ ids: Set<UUID>) { lock.withLock { contents = ids } }
+
+    /// Whether the latest plan wants an alarm with the content of this identifier.
+    func isWanted(_ id: UUID) -> Bool { lock.withLock { contents.contains(id.alarmContent) } }
+}
+
 /// The alarms that the saved plan, the records, and the items ask for (D079).
 ///
 /// An alarm comes for a slot time with an open dose of an item with `alarm`, in the next seven days.
@@ -116,9 +150,10 @@ public struct AlarmPlan: Hashable, Sendable {
             return (0..<8).map { UInt8(truncatingIfNeeded: value >> UInt64(56 - 8 * $0)) }
         }
         let bytes = hash(0xcbf2_9ce4_8422_2325) + hash(0x8422_2325_cbf2_9ce4)
+        // 12 bytes of content. The last 4 bytes are the generation, and the plan has none (D086).
         return UUID(uuid: (
             bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
-            bytes[8], bytes[9], bytes[10], bytes[11], bytes[12], bytes[13], bytes[14], bytes[15]
+            bytes[8], bytes[9], bytes[10], bytes[11], 0, 0, 0, 0
         ))
     }
 }
@@ -155,12 +190,19 @@ public struct TimedAlarmCenter: AlarmCenter {
     private let base: any AlarmCenter
     private let limit: Duration
     private let didTimeOut: @Sendable (String) -> Void
+    private let wanted: WantedAlarms
 
-    /// - Parameter didTimeOut: Called with the name of the call. It is for a log. It must not hold item data.
-    public init(base: any AlarmCenter, limit: Duration = .seconds(3), didTimeOut: @escaping @Sendable (String) -> Void = { _ in }) {
+    /// - Parameters:
+    ///   - didTimeOut: Called with the name of the call. It is for a log. It must not hold item data.
+    ///   - wanted: The same box as the `AlarmEngine` has.
+    public init(
+        base: any AlarmCenter, wanted: WantedAlarms, limit: Duration = .seconds(3),
+        didTimeOut: @escaping @Sendable (String) -> Void = { _ in }
+    ) {
         self.base = base
         self.limit = limit
         self.didTimeOut = didTimeOut
+        self.wanted = wanted
     }
 
     public func waiting() async throws -> Set<UUID> {
@@ -168,21 +210,33 @@ public struct TimedAlarmCenter: AlarmCenter {
     }
 
     public func schedule(_ request: AlarmRequest) async throws {
-        try await timed("schedule") { try await base.schedule(request) }
+        let wanted = wanted
+        let base = base
+        // A schedule that returns after the limit can register an alarm for a dose that has a record by now. It checks the
+        // latest plan, and it cancels an alarm that the plan does not want (D086).
+        try await timed("schedule", late: { _ in
+            if !wanted.isWanted(request.id) { try? await base.cancel([request.id]) }
+        }) { try await base.schedule(request) }
     }
 
     public func cancel(_ ids: [UUID]) async throws {
         try await timed("cancel") { try await base.cancel(ids) }
     }
 
-    private func timed<T: Sendable>(_ name: String, _ call: @escaping @Sendable () async throws -> T) async throws -> T {
+    private func timed<T: Sendable>(
+        _ name: String, late: (@Sendable (T) async -> Void)? = nil, _ call: @escaping @Sendable () async throws -> T
+    ) async throws -> T {
         let gate = Gate<T>()
         let limit = limit
         let didTimeOut = didTimeOut
         return try await withCheckedThrowingContinuation { continuation in
             gate.install(continuation)
             Task {
-                do { gate.finish(.success(try await call())) } catch { gate.finish(.failure(error)) }
+                do {
+                    let value = try await call()
+                    // The limit came first: the caller has its error, so the late result goes to the check.
+                    if !gate.finish(.success(value)) { await late?(value) }
+                } catch { gate.finish(.failure(error)) }
             }
             Task {
                 try? await Task.sleep(for: limit)
@@ -225,17 +279,22 @@ public struct AlarmEngine: Sendable {
     private let center: any AlarmCenter
     private let privacy: any ReminderPrivacyStore
     private let alarmsRing: @Sendable () -> Bool
+    private let wanted: WantedAlarms
 
+    /// - Parameter wanted: The box that the engine fills with the content that the latest plan wants. A `TimedAlarmCenter`
+    ///   reads it, so a schedule that returns after its time out is cancelled when the plan does not want it any more.
     public init(
         source: any AlarmSource,
         center: any AlarmCenter,
         privacy: any ReminderPrivacyStore,
-        alarmsRing: @escaping @Sendable () -> Bool
+        alarmsRing: @escaping @Sendable () -> Bool,
+        wanted: WantedAlarms = WantedAlarms()
     ) {
         self.source = source
         self.center = center
         self.privacy = privacy
         self.alarmsRing = alarmsRing
+        self.wanted = wanted
     }
 
     /// An error from the source stops the run before it changes an alarm. A failed schedule leaves
@@ -251,9 +310,18 @@ public struct AlarmEngine: Sendable {
         let plan = try await source.alarmPlan(
             privacy: privacy.load(), at: now, deviceTimeZone: deviceTimeZone, alarms: AlarmCover(rings: alarmsRing())
         )
+        // The latest plan goes in the box first, so a call of the system that returns late checks the newest plan,
+        // also when the next call of this run does not answer.
+        let wantedContent = Set(plan.requests.map(\.id))
+        wanted.set(wantedContent)
         let waiting = try await center.waiting()
-        let wanted = Set(plan.requests.map(\.id))
-        let obsolete = waiting.subtracting(wanted)
+        /// The alarms of the system by content. An alarm that the plan does not want, and a second alarm of one content, go.
+        var actual: [UUID: UUID] = [:]
+        var obsolete: [UUID] = []
+        for id in waiting.sorted(by: { $0.uuidString < $1.uuidString }) {
+            let content = id.alarmContent
+            if wantedContent.contains(content), actual[content] == nil { actual[content] = id } else { obsolete.append(id) }
+        }
         /// Any cancel error makes the whole run fail open: the caller then has an empty cover (D079).
         var cancelFailed = false
         func cancel(_ ids: [UUID]) async -> Bool {
@@ -265,14 +333,20 @@ public struct AlarmEngine: Sendable {
                 return false
             }
         }
-        if !obsolete.isEmpty { _ = await cancel(Array(obsolete)) }
+        if !obsolete.isEmpty { _ = await cancel(obsolete) }
         var failed = Set<ItemID>()
-        /// The alarms that the system holds after this run. A ringing alarm is not in `waiting` and stays.
-        var held = waiting.intersection(wanted)
-        for request in plan.requests where !waiting.contains(request.id) {
+        /// The alarms that the system holds after this run, by content. A ringing alarm is not in `waiting` and stays.
+        var held = Set(actual.keys)
+        for request in plan.requests where actual[request.id] == nil {
+            // A fresh identifier for each alarm that the app gives the system (D086).
+            let registered = AlarmRequest(
+                id: request.id.withFreshGeneration(), fireDate: request.fireDate, itemIDs: request.itemIDs,
+                names: request.names, taken: request.taken
+            )
             do {
-                try await center.schedule(request)
+                try await center.schedule(registered)
                 held.insert(request.id)
+                actual[request.id] = registered.id
             } catch {
                 failed.formUnion(request.itemIDs)
             }
@@ -283,7 +357,7 @@ public struct AlarmEngine: Sendable {
             changed = false
             for request in plan.requests where held.contains(request.id) && !failed.isDisjoint(with: request.itemIDs) {
                 // A cancel that failed leaves the alarm held. The run throws at the end, so no banner is dropped.
-                if await cancel([request.id]) { held.remove(request.id) }
+                if let id = actual[request.id], await cancel([id]) { held.remove(request.id) }
                 let before = failed.count
                 failed.formUnion(request.itemIDs)
                 changed = changed || failed.count != before

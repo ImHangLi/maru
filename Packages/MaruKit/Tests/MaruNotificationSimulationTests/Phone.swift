@@ -36,27 +36,6 @@ final class SimDirectory: Sendable {
     deinit { try? FileManager.default.removeItem(at: url) }
 }
 
-/// `UserDefaults` of the simulated device: it keeps its content when the process stops.
-final class SimLedger: @unchecked Sendable {
-    private let lock = NSLock()
-    private var identifiers: Set<String> = []
-    private var times: [String: Date] = [:]
-    var value: Set<String> {
-        get { lock.withLock { identifiers } }
-        set { lock.withLock { identifiers = newValue } }
-    }
-
-    /// Saves the set, and gives each new identifier the time of the virtual clock, as `DefaultsRemovalLedger` does.
-    func save(_ new: Set<String>, at now: Date) {
-        lock.withLock {
-            times = Dictionary(uniqueKeysWithValues: new.map { ($0, times[$0] ?? now) })
-            identifiers = new
-        }
-    }
-
-    func since(_ identifier: String) -> Date? { lock.withLock { times[identifier] } }
-}
-
 final class SimPrivacy: ReminderPrivacyStore, @unchecked Sendable {
     private let lock = NSLock()
     private var privacy = ReminderPrivacy.showNames
@@ -143,19 +122,6 @@ struct ProcessCenter: FollowUpCenter {
     func text(for content: ReminderContent) -> ReminderText { base.text(for: content) }
 }
 
-struct ProcessLedger: RemovalLedger {
-    let base: SimLedger
-    let life: Life
-    let device: SimDevice
-    func load() -> Set<String> { base.value }
-    func save(_ identifiers: Set<String>) {
-        guard life.alive else { return }
-        base.save(identifiers, at: device.now)
-    }
-
-    func since(_ identifier: String) -> Date? { base.since(identifier) }
-}
-
 /// The database as one process sees it. A write after the process stopped does not happen.
 struct ProcessSource: ReminderPlanSource, FollowUpSource, AlarmSource {
     let store: LocalStore
@@ -226,18 +192,20 @@ final class SimProcess: @unchecked Sendable {
         let coverNow: @Sendable () -> AlarmCover = { cover.get() }
         let device = phone.device
         alarmsAllowed = { device.alarmsAllowed }
+        let wanted = WantedAlarms()
         reminders = ReminderEngine(
-            source: source, center: center, ledger: ProcessLedger(base: phone.seriesLedger, life: life, device: phone.device), privacy: phone.privacy,
+            source: source, center: center, privacy: phone.privacy,
             alarms: coverNow, clock: { device.now }
         )
         followUps = FollowUpEngine(
-            source: source, center: center, ledger: ProcessLedger(base: phone.followUpLedger, life: life, device: phone.device), privacy: phone.privacy,
+            source: source, center: center, privacy: phone.privacy,
             alarms: coverNow, clock: { device.now }
         )
         alarms = AlarmEngine(
             source: source,
-            center: TimedAlarmCenter(base: ProcessAlarmCenter(base: phone.alarmCenter, life: life), limit: .milliseconds(200)), privacy: phone.privacy,
-            alarmsRing: { device.alarmsAllowed }
+            center: TimedAlarmCenter(base: ProcessAlarmCenter(base: phone.alarmCenter, life: life), wanted: wanted, limit: .milliseconds(200)), privacy: phone.privacy,
+            alarmsRing: { device.alarmsAllowed },
+            wanted: wanted
         )
     }
 
@@ -269,8 +237,6 @@ final class Phone: @unchecked Sendable {
     let center: FakeNotificationCenter
     let alarmCenter = FakeAlarmCenter()
     let store: LocalStore
-    let seriesLedger = SimLedger()
-    let followUpLedger = SimLedger()
     let privacy = SimPrivacy()
     private let directory = SimDirectory()
     var truth = Truth()
@@ -617,6 +583,13 @@ final class Phone: @unchecked Sendable {
     func record(_ name: String, slot: Int = 0, _ action: IntakeAction = .taken, date: LocalDate? = nil) async throws {
         await open()
         try await write(name, slot: slot, action, date: date)
+        await runAfterChange()
+    }
+
+    /// A record from the widget: the app starts in the background if it is not running, records, and runs the queue (D048).
+    func recordFromWidget(_ name: String, slot: Int = 0) async throws {
+        if process == nil || process?.life.alive == false { await launch() }
+        try await write(name, slot: slot, .taken, date: nil)
         await runAfterChange()
     }
 

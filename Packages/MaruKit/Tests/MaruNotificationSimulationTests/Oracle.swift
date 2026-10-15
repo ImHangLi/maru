@@ -67,6 +67,44 @@ struct Oracle {
         phone.center.text(for: ReminderContent(kind: kind, names: showsNames ? names : nil))
     }
 
+    // MARK: Independent calendar rules
+    // The oracle does not call production helpers for dates. It uses Foundation only.
+
+    private func calendar(_ zone: NamedTimeZone) -> Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = zone.systemZone
+        return calendar
+    }
+
+    /// 01:00 on the day after `date` in `zone`: the follow-ups stop, and the "Taken" action of a follow-up stops (D039).
+    private func oneAMAfter(_ date: LocalDate, in zone: NamedTimeZone) -> Date {
+        let calendar = calendar(zone)
+        let next = calendar.date(from: DateComponents(year: date.year, month: date.month, day: date.day, hour: 12))!
+            .addingTimeInterval(86_400)
+        let parts = calendar.dateComponents([.year, .month, .day], from: next)
+        return calendar.date(from: DateComponents(year: parts.year, month: parts.month, day: parts.day, hour: 1, minute: 0))!
+    }
+
+    /// Today shows the doses of today in their zone. A notification of yesterday's dose can stay until 01:00 of today.
+    private func isVisible(_ date: LocalDate, at now: Date, in zone: NamedTimeZone) -> Bool {
+        let parts = calendar(zone).dateComponents([.year, .month, .day], from: now)
+        let today = (parts.year!, parts.month!, parts.day!)
+        if (date.year, date.month, date.day) == today { return true }
+        let yesterday = calendar(zone).dateComponents(
+            [.year, .month, .day], from: now.addingTimeInterval(-86_400)
+        )
+        return (date.year, date.month, date.day) == (yesterday.year!, yesterday.month!, yesterday.day!)
+            && now < oneAMAfter(date, in: zone)
+    }
+
+    /// The identifier without its generation (`|g<digits>` at the end).
+    private func baseID(_ identifier: String) -> String {
+        guard let range = identifier.range(of: "|g", options: .backwards),
+              identifier[range.upperBound...].count >= 6, identifier[range.upperBound...].allSatisfy(\.isNumber)
+        else { return identifier }
+        return String(identifier[..<range.lowerBound])
+    }
+
     // MARK: Identifier parts
 
     private struct SeriesID {
@@ -76,7 +114,7 @@ struct Oracle {
     }
 
     private func series(_ identifier: String) -> SeriesID? {
-        let parts = identifier.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        let parts = baseID(identifier).split(separator: "|", omittingEmptySubsequences: false).map(String.init)
         guard parts.count == 4, parts[0] == "series" else { return nil }
         return SeriesID(zone: parts[1], time: Phone.wallClock(parts[2]), date: Self.parseDate(parts[3]))
     }
@@ -89,7 +127,7 @@ struct Oracle {
     }
 
     private func followUp(_ identifier: String) -> FollowUpID? {
-        let parts = identifier.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        let parts = baseID(identifier).split(separator: "|", omittingEmptySubsequences: false).map(String.init)
         guard parts.count == 5, parts[0] == "followup", let date = Self.parseDate(parts[2]) else { return nil }
         return FollowUpID(zone: parts[1], date: date, time: Phone.wallClock(parts[3]), minutes: Int(parts[4].dropFirst())!)
     }
@@ -122,7 +160,7 @@ struct Oracle {
                 // The follow-ups of a dose stop before the next dose of the item and before 01:00 of the next day.
                 let later = truth.doses(from: slotInstant, through: slotInstant.addingTimeInterval(3 * 86_400), deviceZone: device.zone)
                     .filter { $0.item.id == item.id }.map(\.instant).min()
-                let stop = min(FollowUpPlan.latestInstant(of: date, in: zone), later ?? .distantFuture)
+                let stop = min(oneAMAfter(date, in: zone), later ?? .distantFuture)
                 guard fire < stop else { continue }
                 doses.append(SimDose(item: item, slot: slot.id, date: date, time: time, instant: slotInstant, zone: zone, rule: item.zone))
             }
@@ -189,14 +227,13 @@ struct Oracle {
         let at = now ?? delivery.date
         let zone = delivery.deviceZone
         let label = "delivered \(notification.identifier) (\"\(notification.text.body)\") at \(Self.format(delivery.date, zone))"
-        let today = LocalDate(at, in: device.zone)
         if let id = series(notification.identifier) {
             let named: NamedTimeZone = id.zone == "device" ? zone : ((try? NamedTimeZone(identifier: id.zone)) ?? zone)
             let date = id.date ?? LocalDate(delivery.date, in: named)
             let instant = named.resolve(id.time, on: date).earliestInstant
             let all = openDoses(at: instant)
             let ruled = rule(id.zone, all)
-            if date < today.adding(days: -1) { return ["\(label) is older than yesterday and must be gone"] }
+            if !isVisible(date, at: at, in: named) { return ["\(label) is of a day that Today no longer shows and must be gone"] }
             if all.isEmpty { return ["\(label) names no open dose: every dose of it is recorded, archived, paused, or deleted"] }
             let candidates = [text(.due, names(all)), text(.due, names(ruled))]
             if !candidates.contains(notification.text) {
@@ -205,7 +242,8 @@ struct Oracle {
             return []
         }
         if let id = followUp(notification.identifier) {
-            if id.date < today.adding(days: -1) { return ["\(label) is older than yesterday and must be gone"] }
+            let followUpZone = (try? NamedTimeZone(identifier: id.zone.replacingOccurrences(of: "device@", with: ""))) ?? zone
+            if !isVisible(id.date, at: at, in: followUpZone) { return ["\(label) is of a day that Today no longer shows and must be gone"] }
             let expected = followUpNames(date: id.date, time: id.time, minutes: id.minutes)
             if expected.isEmpty { return ["\(label) has no dose that needs a follow-up"] }
             if notification.text != text(.again, expected) {
@@ -247,7 +285,7 @@ struct Oracle {
     private func followUpCoverage(pending: [SimNotification], now: Date) -> [String] {
         var found: [String] = []
         let horizon = now.addingTimeInterval(phone.checks.followUpHours * 3600)
-        let ids = Set(pending.map(\.identifier))
+        let ids = Set(pending.map { baseID($0.identifier) })
         let zone = device.zone
         for item in truth.items where !item.isArchived && !item.isPaused {
             guard let setting = item.followUp else { continue }

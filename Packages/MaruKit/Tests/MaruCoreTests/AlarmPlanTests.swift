@@ -70,7 +70,7 @@ struct AlarmPlanTests {
             init(plan: AlarmPlan) { self.plan = plan }
             func waiting() async -> Set<UUID> { held }
             func schedule(_ request: AlarmRequest) async throws {
-                if request.id == plan.requests[1].id { throw CocoaError(.fileWriteOutOfSpace) }
+                if request.id.alarmContent == plan.requests[1].id { throw CocoaError(.fileWriteOutOfSpace) }
                 held.insert(request.id)
             }
             func cancel(_ ids: [UUID]) async throws { held.subtract(ids) }
