@@ -34,13 +34,15 @@ enum Report {
             let version = schedule?.versions.last
             var facts: [String] = []
             if item.form != .unknown { facts.append(item.form.localizedName) }
-            if let amount = version?.dose ?? item.asNeededDose { facts.append(amount.text) }
+            if let amount = version?.dose ?? item.asNeededDose { facts.append(amount.text.trimmingCharacters(in: .whitespacesAndNewlines)) }
             if !facts.isEmpty { document.add(.body, facts.formatted(.list(type: .and, width: .narrow))) }
             if let version {
                 let times = version.slotTimes.sorted { $0.time < $1.time }
                     .map { SchedulePreview.format(hour: $0.time.hour, minute: $0.time.minute) }
                     .formatted(.list(type: .and, width: .narrow))
-                document.add(.body, "\(times) · \(SchedulePreview.days(of: version))")
+                // The times and the days are on two lines, so they need no separator in any language.
+                document.add(.body, times)
+                document.add(.body, SchedulePreview.days(of: version))
             } else {
                 document.add(.body, String(localized: "As Needed"))
             }
@@ -83,7 +85,8 @@ enum Report {
             if summary.asNeededTaken > 0 {
                 counts.append(String(localized: "As needed: \(summary.asNeededTaken)"))
             }
-            document.add(.body, counts.joined(separator: " · "))
+            // One count on each line, so the counts need no separator in any language.
+            for count in counts { document.add(.body, count) }
         }
         document.add(
             .note,

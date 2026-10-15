@@ -221,8 +221,13 @@ extension AppModel {
         if case var .loaded(snapshot) = content, snapshot.today?.date == pending.occurrence.plannedDate {
             snapshot.today?.asNeeded.apply(record, of: pending.occurrence)
             content = .loaded(snapshot)
-            // A read that started before the commit can show the old state, so read again after it.
-            refreshAfterRunningRead()
+            if record.status == .taken {
+                // A read that started before the commit can show the old state, so read again after it.
+                refreshAfterRunningRead()
+            } else {
+                // An undo or a skip can remove the newest taken dose. Only the store has the one before it (D091).
+                refresh()
+            }
         } else {
             refresh()
         }

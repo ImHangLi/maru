@@ -5,6 +5,10 @@ import SwiftUI
 /// back to Today and My Items, and its reminders follow its own setting (T08). A swipe or a long press
 /// deletes an item with its records, after one confirmation (D033).
 struct ArchivedListView: View {
+    /// The value that opens this page. My Items pushes every page by value, so the item link of a row
+    /// can push the item detail on the same path.
+    struct Route: Hashable {}
+
     @Environment(AppModel.self) private var model
     @State private var restoring: Set<ItemID> = []
     @State private var restoreFailed = false
@@ -62,13 +66,15 @@ struct ArchivedListView: View {
                 .disabled(restoring.contains(entry.id))
                 .accessibilityLabel(Text("Restore \(entry.name)"))
         }
-        .swipeActions(edge: .trailing, allowsFullSwipe: false) { deleteButton(entry).tint(.red) }
-        .contextMenu { deleteButton(entry) }
+        // The swipe button has no destructive role: with that role the row leaves the list before the confirmation.
+        .swipeActions(edge: .trailing, allowsFullSwipe: false) { deleteButton(entry, role: nil).tint(.red) }
+        .contextMenu { deleteButton(entry, role: .destructive) }
     }
 
-    /// It has no destructive role: with that role the row leaves the list before the confirmation.
-    private func deleteButton(_ entry: ListEntry) -> some View {
-        Button("Delete Item…", systemImage: "trash") { model.askToEnd(.delete, itemID: entry.id, name: entry.name) }
+    private func deleteButton(_ entry: ListEntry, role: ButtonRole?) -> some View {
+        Button("Delete Item…", systemImage: "trash", role: role) {
+            model.askToEnd(.delete, itemID: entry.id, name: entry.name)
+        }
     }
 
     private func restore(_ itemID: ItemID) {

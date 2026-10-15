@@ -367,8 +367,9 @@ extension TodaySnapshot.Entry {
 
 extension [String] {
     /// The parts of a detail line, such as an amount and a time. The parts are not a list of like things,
-    /// so a list format joins them with "and" ("150 mg and 8:00 AM"), which is wrong.
+    /// so a list format joins them with "and" ("150 mg and 8:00 AM"), which is wrong. The amount is free text
+    /// and can end with a space, so each part is trimmed before the separator.
     var detailLine: String {
-        joined(separator: String(localized: ", ", comment: "The separator between the parts of a detail line. Example: 2 capsules, 8:00 AM."))
+        map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.joined(separator: String(localized: ", ", comment: "The separator between the parts of a detail line. Example: 2 capsules, 8:00 AM."))
     }
 }
