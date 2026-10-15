@@ -25,6 +25,8 @@ actor AppStore {
     private var alarms: AlarmEngine?
     /// The alarms that the latest plan wants. A call of AlarmKit that returns late checks it (D086).
     private let wantedAlarms = WantedAlarms()
+    /// The durable counter of the generations of requests and alarms. It lives in the App Group (D086).
+    private let generations = DefaultsGenerationCounter(defaults: AppGroup.defaults)
     /// Which items an alarm covers in the run that is going on (D079). Each run sets it again, so no run uses the cover of an earlier run.
     private let cover = OSAllocatedUnfairLock(initialState: AlarmCover.none)
     /// The input of the notification engines: which items an alarm covers in the run that is going on.
@@ -92,7 +94,9 @@ actor AppStore {
             center: SystemReminderCenter(),
             privacy: DefaultsReminderPrivacy(),
             zoneRecord: DefaultsTimeZoneRecord(),
-            alarms: coverNow
+            alarms: coverNow,
+            generations: generations,
+            migration: DefaultsLegacyMigration(name: "series")
         )
         self.engine = engine
         return engine
@@ -105,7 +109,9 @@ actor AppStore {
             source: try open(),
             center: SystemReminderCenter(),
             privacy: DefaultsReminderPrivacy(),
-            alarms: coverNow
+            alarms: coverNow,
+            generations: generations,
+            migration: DefaultsLegacyMigration(name: "followUp")
         )
         self.followUps = followUps
         return followUps
@@ -122,7 +128,8 @@ actor AppStore {
             },
             privacy: DefaultsReminderPrivacy(),
             alarmsRing: { AlarmSupport.isAuthorized },
-            wanted: wantedAlarms
+            wanted: wantedAlarms,
+            generations: generations
         )
         self.alarms = alarms
         return alarms

@@ -82,10 +82,14 @@ public actor FollowUpEngine {
         center: any FollowUpCenter,
         privacy: any ReminderPrivacyStore,
         alarms: @escaping @Sendable () -> AlarmCover = { .none },
-        clock: @escaping @Sendable () -> Date = { Date() }
+        clock: @escaping @Sendable () -> Date = { Date() },
+        generations: any GenerationCounter = MemoryGenerationCounter.shared,
+        migration: any LegacyMigration = NoMigration()
     ) {
         self.source = source
-        self.center = GenerationCenter(center)
+        self.center = GenerationCenter(
+            center, counter: generations, migration: migration, ownPrefix: FollowUpRequest.identifierPrefix
+        )
         self.privacy = privacy
         self.alarms = alarms
         self.clock = clock
@@ -106,6 +110,13 @@ public actor FollowUpEngine {
     }
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
+        await center.prune()
+        let outcome = try await perform(at: now, deviceTimeZone: deviceTimeZone)
+        await center.finishMigration()
+        return outcome
+    }
+
+    private func perform(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
         var now = now
         var plan = try await source.followUpPlan(

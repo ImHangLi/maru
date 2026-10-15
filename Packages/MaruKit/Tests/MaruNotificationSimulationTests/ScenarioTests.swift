@@ -325,6 +325,87 @@ struct ScenarioTests {
         await p.expectCorrect("the next run removed it")
     }
 
+    // MARK: Generations (D086)
+
+    @Test func aRollbackOfTheClockAndARestartNeverRepeatNorReorderAGeneration() async throws {
+        let p = try await phone("2026-10-15 08:00")
+        try await p.addItem("Zinc", at: ["12:00"])
+        try await p.addItem("Iron", at: ["12:00"])
+        let before = p.counter.current
+        // The iPhone restarts and its clock goes back by two days.
+        p.restart()
+        p.device.now = p.instant("2026-10-13 09:00")
+        await p.foreground()
+        try await p.record("Zinc")
+        try await p.undo("Zinc")
+        try await p.record("Iron")
+        #expect(p.counter.current > before)
+        let ids = await p.center.pending.keys
+        #expect(Set(ids).count == ids.count)
+        await p.expectCorrect("after the rollback")
+    }
+
+    @Test func aStopBetweenAnAddAndTheRemovalLeavesTwoGenerationsUntilTheNextRun() async throws {
+        for newer in [true, false] {
+            let p = try await phone("2026-10-15 08:00")
+            try await p.addItem("Zinc", at: ["12:00"])
+            let id = try #require(await p.center.pending.keys.first { $0.hasPrefix("series|device|12:00|daily") })
+            let held = try #require(await p.center.pending[id])
+            // A second generation of the base: with a higher counter and old text (newer), or with a lower counter (older).
+            let second = SimNotification(
+                identifier: id.replacingOccurrences(of: #"g\d{12}"#, with: newer ? "g999999999999" : "g000000000001", options: .regularExpression),
+                text: newer ? ReminderText(title: "Time to take", body: "Iron") : held.text, userInfo: held.userInfo,
+                hasTakenAction: held.hasTakenAction, threadIdentifier: nil, trigger: held.trigger
+            )
+            await p.center.inject(second)
+            p.terminate()
+            await p.foreground()
+            await p.expectCorrect("the next run keeps one generation (newer \(newer))")
+        }
+    }
+
+    @Test func atTheLimitAReplacementRemovesItsOlderGenerationFirstAndDropsNothing() async throws {
+        let p = try await phone("2026-10-15 08:00")
+        try await p.addItem("Zinc", at: ["10:00"])
+        try await p.addItem("Iron", at: ["11:00"])
+        try await p.addItem("Copper", at: ["12:00"])
+        // Other requests of the app fill the system to the limit of 64.
+        let filler = 64 - (await p.center.pending.count)
+        for number in 0..<filler {
+            await p.center.inject(SimNotification(
+                identifier: "other|\(number)", text: ReminderText(title: "x", body: "y"), userInfo: [:], hasTakenAction: false,
+                threadIdentifier: nil, trigger: .instant(p.instant("2026-12-01 09:00").addingTimeInterval(Double(number)))
+            ))
+        }
+        #expect(await p.center.pending.count == 64)
+        // Three replacements.
+        try await p.rename("Zinc", to: "Zinc Citrate")
+        try await p.rename("Iron", to: "Iron Bisglycinate")
+        try await p.rename("Copper", to: "Copper Gluconate")
+        #expect(await p.center.pending.count <= 64)
+        await p.expectCorrect("three replacements at the limit")
+    }
+
+    @Test func requestsOfBuild6AreMovedToGenerationsAndAnOldRemovalChangesNothing() async throws {
+        let p = try await phone("2026-10-15 08:00")
+        try await p.addItem("Zinc", at: ["09:00", "12:00"], followUp: again)
+        try await p.addItem("Iron", at: ["12:00"], followUp: again)
+        await p.advance(to: "2026-10-15 09:05")
+        let legacy = await p.center.pending.keys.sorted().filter { $0.hasPrefix("series|") || $0.hasPrefix("followup|") }
+        // Build 6 sent a removal of two of its requests, and the system did not do it yet.
+        await p.downgradeToBuild6(pendingRemovals: Array(legacy.prefix(2)).map {
+            $0.replacingOccurrences(of: #"\|g\d{12}r[0-9a-f]{4}$"#, with: "", options: .regularExpression)
+        })
+        #expect(await p.center.pending.keys.allSatisfy { !$0.contains("|g") })
+        await p.foreground()
+        await p.expectCorrect("first run of the new build")
+        let ids = await p.center.pending.keys
+        #expect(ids.allSatisfy { $0.contains("|g") }, "no request of build 6 is left")
+        #expect(p.seriesMigration.isDone && p.followUpMigration.isDone)
+        for _ in 0..<10 { _ = await p.center.pendingRequests() }
+        await p.expectCorrect("after the old removals took effect")
+    }
+
     // MARK: Settings and the world
 
     @Test func hiddenNamesAndShownNames() async throws {

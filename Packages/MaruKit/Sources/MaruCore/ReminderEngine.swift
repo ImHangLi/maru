@@ -183,10 +183,14 @@ public actor ReminderEngine {
         privacy: any ReminderPrivacyStore,
         zoneRecord: DefaultsTimeZoneRecord? = nil,
         alarms: @escaping @Sendable () -> AlarmCover = { .none },
-        clock: @escaping @Sendable () -> Date = { Date() }
+        clock: @escaping @Sendable () -> Date = { Date() },
+        generations: any GenerationCounter = MemoryGenerationCounter.shared,
+        migration: any LegacyMigration = NoMigration()
     ) {
         self.source = source
-        self.center = GenerationCenter(center)
+        self.center = GenerationCenter(
+            center, counter: generations, migration: migration, ownPrefix: ReminderSeries.identifierPrefix
+        )
         self.privacy = privacy
         self.zoneRecord = zoneRecord
         self.alarms = alarms
@@ -229,6 +233,14 @@ public actor ReminderEngine {
     }
 
     private func run(at now: Date, deviceTimeZone: NamedTimeZone, mayAskForPermission: Bool) async throws -> ReminderOutcome {
+        // First: at most one generation of each base stays (D086).
+        await center.prune()
+        let outcome = try await perform(at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission)
+        await center.finishMigration()
+        return outcome
+    }
+
+    private func perform(at now: Date, deviceTimeZone: NamedTimeZone, mayAskForPermission: Bool) async throws -> ReminderOutcome {
         let plan = try await source.reminderPlan(
             at: now, deviceTimeZone: deviceTimeZone, privacy: privacy.load(), alarms: alarms()
         )

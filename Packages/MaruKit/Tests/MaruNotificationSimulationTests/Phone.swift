@@ -36,6 +36,24 @@ final class SimDirectory: Sendable {
     deinit { try? FileManager.default.removeItem(at: url) }
 }
 
+/// The durable counter in the defaults of the simulated device. It keeps its value when the process stops.
+final class SimCounter: GenerationCounter, @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = 0
+    func next() -> Int { lock.withLock { value += 1; return value } }
+    var current: Int { lock.withLock { value } }
+}
+
+/// The flag of the move from build 6, in the defaults of the simulated device.
+final class SimMigration: LegacyMigration, @unchecked Sendable {
+    private let lock = NSLock()
+    private var done: Bool
+    init(done: Bool = false) { self.done = done }
+    var isDone: Bool { lock.withLock { done } }
+    func markDone() { lock.withLock { done = true } }
+    func reset() { lock.withLock { done = false } }
+}
+
 final class SimPrivacy: ReminderPrivacyStore, @unchecked Sendable {
     private let lock = NSLock()
     private var privacy = ReminderPrivacy.showNames
@@ -195,17 +213,18 @@ final class SimProcess: @unchecked Sendable {
         let wanted = WantedAlarms()
         reminders = ReminderEngine(
             source: source, center: center, privacy: phone.privacy,
-            alarms: coverNow, clock: { device.now }
+            alarms: coverNow, clock: { device.now }, generations: phone.counter, migration: phone.seriesMigration
         )
         followUps = FollowUpEngine(
             source: source, center: center, privacy: phone.privacy,
-            alarms: coverNow, clock: { device.now }
+            alarms: coverNow, clock: { device.now }, generations: phone.counter, migration: phone.followUpMigration
         )
         alarms = AlarmEngine(
             source: source,
             center: TimedAlarmCenter(base: ProcessAlarmCenter(base: phone.alarmCenter, life: life), wanted: wanted, limit: .milliseconds(200)), privacy: phone.privacy,
             alarmsRing: { device.alarmsAllowed },
-            wanted: wanted
+            wanted: wanted,
+            generations: phone.counter
         )
     }
 
@@ -238,6 +257,9 @@ final class Phone: @unchecked Sendable {
     let alarmCenter = FakeAlarmCenter()
     let store: LocalStore
     let privacy = SimPrivacy()
+    let counter = SimCounter()
+    let seriesMigration = SimMigration()
+    let followUpMigration = SimMigration()
     private let directory = SimDirectory()
     var truth = Truth()
     /// The records that the app keeps of each item, so an edit can save the whole value again.
@@ -591,6 +613,20 @@ final class Phone: @unchecked Sendable {
         if process == nil || process?.life.alive == false { await launch() }
         try await write(name, slot: slot, .taken, date: nil)
         await runAfterChange()
+    }
+
+    /// The state of an iPhone with build 6: no request has a generation, the move to generations is not done, and the system
+    /// still holds two removals that build 6 sent.
+    func downgradeToBuild6(pendingRemovals: [String] = []) async {
+        let strip: (String) -> String = { id in
+            guard let range = id.range(of: #"\|g\d{12}r[0-9a-f]{4}$"#, options: .regularExpression) else { return id }
+            return String(id[..<range.lowerBound])
+        }
+        await center.rewriteIdentifiers(strip)
+        seriesMigration.reset()
+        followUpMigration.reset()
+        for (id, latency) in zip(pendingRemovals, 3...) { await center.queueRemoval([id], afterReads: latency) }
+        terminate()
     }
 
     /// A record that commits while a run is in progress. It starts no run of its own.

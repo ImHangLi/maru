@@ -102,6 +102,7 @@ actor FakeNotificationCenter: FollowUpCenter {
     }
 
     func setRemovalLatency(_ reads: Int) { removalLatency = reads }
+    var hasOpenRemovals: Bool { !openRemovals.isEmpty || removalLatency > 0 }
     func setDropsRemovals(_ drops: Bool) { dropsRemovals = drops }
     func setDropsNextAdds(_ count: Int) { dropsNextAdds = count }
 
@@ -176,6 +177,26 @@ actor FakeNotificationCenter: FollowUpCenter {
 
     /// The user clears a notification, or taps its action.
     func dismiss(_ identifier: String) { shown[identifier] = nil }
+
+    /// Gives every pending request and every delivered notification another identifier, as an earlier build made them.
+    func rewriteIdentifiers(_ transform: (String) -> String) {
+        func rewrite(_ n: SimNotification) -> SimNotification {
+            SimNotification(
+                identifier: transform(n.identifier), text: n.text, userInfo: n.userInfo, hasTakenAction: n.hasTakenAction,
+                threadIdentifier: n.threadIdentifier, trigger: n.trigger
+            )
+        }
+        pending = Dictionary(uniqueKeysWithValues: pending.values.map(rewrite).map { ($0.identifier, $0) })
+        shown = Dictionary(uniqueKeysWithValues: shown.values.map { delivery in
+            let n = rewrite(delivery.notification)
+            return (n.identifier, SimDelivery(notification: n, date: delivery.date, deviceZone: delivery.deviceZone))
+        })
+    }
+
+    /// A removal that an earlier build sent, and that the system does after this many reads.
+    func queueRemoval(_ identifiers: [String], afterReads reads: Int) {
+        openRemovals.append((identifiers, reads))
+    }
 
     /// A request that an earlier build of the app registered. The current build did not make it.
     func inject(_ notification: SimNotification, delivered at: Date? = nil) {

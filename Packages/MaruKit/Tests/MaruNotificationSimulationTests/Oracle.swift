@@ -99,9 +99,10 @@ struct Oracle {
 
     /// The identifier without its generation (`|g<digits>` at the end).
     private func baseID(_ identifier: String) -> String {
-        guard let range = identifier.range(of: "|g", options: .backwards),
-              identifier[range.upperBound...].count >= 6, identifier[range.upperBound...].allSatisfy(\.isNumber)
-        else { return identifier }
+        // `|g<12 digits>r<4 hex>` at the end.
+        guard let range = identifier.range(of: "|g", options: .backwards) else { return identifier }
+        let tail = identifier[range.upperBound...].split(separator: "r", omittingEmptySubsequences: false)
+        guard tail.count == 2, tail[0].count == 12, tail[0].allSatisfy(\.isNumber), tail[1].count == 4 else { return identifier }
         return String(identifier[..<range.lowerBound])
     }
 
@@ -206,9 +207,18 @@ struct Oracle {
                 } else if notification.hasTakenAction, expected.count != 1 {
                     found.append("\(label) has the Taken action for more than one dose")
                 }
-            } else {
+            } else if !notification.identifier.hasPrefix("other|") {
+                // A request that another part of the app owns is not checked and not touched.
                 found.append("pending request with an unknown identifier \(notification.identifier)")
             }
+        }
+
+        // One generation of each base stays after a run (D086).
+        let bases = Dictionary(grouping: pending.values.map(\.identifier), by: baseID)
+        // While the system still holds a removal that the app asked for, an older generation can still be there.
+        let slow = await phone.center.hasOpenRemovals
+        for (base, ids) in bases.sorted(by: { $0.key < $1.key }) where ids.count > 1 && !slow {
+            found.append("pending \(base) is held \(ids.count) times")
         }
 
         // The delivered notifications.

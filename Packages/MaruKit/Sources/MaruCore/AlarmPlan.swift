@@ -43,12 +43,17 @@ extension UUID {
         return UUID(uuid: (b.0, b.1, b.2, b.3, b.4, b.5, b.6, b.7, b.8, b.9, b.10, b.11, 0, 0, 0, 0))
     }
 
-    /// The same content with a fresh generation. The system never sees an alarm identifier twice, so no cancel of an
-    /// earlier alarm, late or repeated, can reach a newer alarm of the same content (D086).
-    func withFreshGeneration() -> UUID {
+    /// The generation: the last 4 bytes. The plan has 0.
+    var alarmGeneration: UInt32 {
         let b = uuid
-        var generation = UInt32.random(in: 1...UInt32.max)
-        if generation == 0 { generation = 1 }
+        return UInt32(b.12) << 24 | UInt32(b.13) << 16 | UInt32(b.14) << 8 | UInt32(b.15)
+    }
+
+    /// The same content with a generation. The system never sees an alarm identifier twice, so no cancel of an
+    /// earlier alarm, late or repeated, can reach a newer alarm of the same content (D086).
+    func withGeneration(_ number: Int) -> UUID {
+        let b = uuid
+        let generation = UInt32(truncatingIfNeeded: number)
         return UUID(uuid: (
             b.0, b.1, b.2, b.3, b.4, b.5, b.6, b.7, b.8, b.9, b.10, b.11,
             UInt8(truncatingIfNeeded: generation >> 24), UInt8(truncatingIfNeeded: generation >> 16),
@@ -57,17 +62,21 @@ extension UUID {
     }
 }
 
-/// The content of the alarms that the latest plan wants. A call of the alarm system that returns late checks it (D086).
+/// The exact identifiers (content and generation) of the alarms that the current plan wants: the alarms that the system
+/// holds and the alarms that a call of this run is scheduling. A call that returns late checks it, so a late older
+/// generation is cancelled also when its content matches (D086).
 public final class WantedAlarms: @unchecked Sendable {
     private let lock = NSLock()
-    private var contents: Set<UUID> = []
+    private var exact: Set<UUID> = []
 
     public init() {}
 
-    func set(_ ids: Set<UUID>) { lock.withLock { contents = ids } }
+    /// The start of a run: the ids of the earlier run that the plan still has, by content.
+    func begin(keeping content: Set<UUID>) { lock.withLock { exact = exact.filter { content.contains($0.alarmContent) } } }
+    func set(_ ids: Set<UUID>) { lock.withLock { exact = ids } }
+    func insert(_ id: UUID) { lock.withLock { _ = exact.insert(id) } }
 
-    /// Whether the latest plan wants an alarm with the content of this identifier.
-    func isWanted(_ id: UUID) -> Bool { lock.withLock { contents.contains(id.alarmContent) } }
+    func isWanted(_ id: UUID) -> Bool { lock.withLock { exact.contains(id) } }
 }
 
 /// The alarms that the saved plan, the records, and the items ask for (D079).
@@ -280,16 +289,19 @@ public struct AlarmEngine: Sendable {
     private let privacy: any ReminderPrivacyStore
     private let alarmsRing: @Sendable () -> Bool
     private let wanted: WantedAlarms
+    private let generations: any GenerationCounter
 
-    /// - Parameter wanted: The box that the engine fills with the content that the latest plan wants. A `TimedAlarmCenter`
+    /// - Parameter wanted: The box that the engine fills with the exact ids that the current plan wants. A `TimedAlarmCenter`
     ///   reads it, so a schedule that returns after its time out is cancelled when the plan does not want it any more.
     public init(
         source: any AlarmSource,
         center: any AlarmCenter,
         privacy: any ReminderPrivacyStore,
         alarmsRing: @escaping @Sendable () -> Bool,
-        wanted: WantedAlarms = WantedAlarms()
+        wanted: WantedAlarms = WantedAlarms(),
+        generations: any GenerationCounter = MemoryGenerationCounter.shared
     ) {
+        self.generations = generations
         self.source = source
         self.center = center
         self.privacy = privacy
@@ -313,15 +325,17 @@ public struct AlarmEngine: Sendable {
         // The latest plan goes in the box first, so a call of the system that returns late checks the newest plan,
         // also when the next call of this run does not answer.
         let wantedContent = Set(plan.requests.map(\.id))
-        wanted.set(wantedContent)
+        wanted.begin(keeping: wantedContent)
         let waiting = try await center.waiting()
-        /// The alarms of the system by content. An alarm that the plan does not want, and a second alarm of one content, go.
+        /// The alarms of the system by content. An alarm that the plan does not want goes. Of one content only the alarm with
+        /// the highest generation stays.
         var actual: [UUID: UUID] = [:]
         var obsolete: [UUID] = []
-        for id in waiting.sorted(by: { $0.uuidString < $1.uuidString }) {
+        for id in waiting.sorted(by: { $0.alarmGeneration > $1.alarmGeneration }) {
             let content = id.alarmContent
             if wantedContent.contains(content), actual[content] == nil { actual[content] = id } else { obsolete.append(id) }
         }
+        wanted.set(Set(actual.values))
         /// Any cancel error makes the whole run fail open: the caller then has an empty cover (D079).
         var cancelFailed = false
         func cancel(_ ids: [UUID]) async -> Bool {
@@ -340,9 +354,11 @@ public struct AlarmEngine: Sendable {
         for request in plan.requests where actual[request.id] == nil {
             // A fresh identifier for each alarm that the app gives the system (D086).
             let registered = AlarmRequest(
-                id: request.id.withFreshGeneration(), fireDate: request.fireDate, itemIDs: request.itemIDs,
+                id: request.id.withGeneration(generations.next()), fireDate: request.fireDate, itemIDs: request.itemIDs,
                 names: request.names, taken: request.taken
             )
+            // The id is wanted while the call runs. A call that returns after its limit is checked with it.
+            wanted.insert(registered.id)
             do {
                 try await center.schedule(registered)
                 held.insert(request.id)

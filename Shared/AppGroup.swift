@@ -8,6 +8,9 @@ import MaruCore
 enum AppGroup {
     static let identifier = "group.com.imhangli.maru"
 
+    /// The `UserDefaults` of the group, or the standard ones when the build has no group.
+    static var defaults: UserDefaults { UserDefaults(suiteName: identifier) ?? .standard }
+
     /// The directory of the database in the container, or `nil` when the build has no container.
     static var databaseDirectory: URL? {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: identifier)?
