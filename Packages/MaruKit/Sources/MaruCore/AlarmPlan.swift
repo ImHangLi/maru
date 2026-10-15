@@ -94,6 +94,8 @@ public struct AlarmPlan: Hashable, Sendable {
 
     /// The alarms, nearest first.
     public let requests: [AlarmRequest]
+    /// A schedule did not load (D088). The engine cancels no waiting alarm, because the plan does not know its alarms.
+    public let hasUnreadable: Bool
 
     /// - Parameter reminders: The series plan of the same read, built with `alarmsRing`. Only a schedule
     ///   with the need `.alarm` can ring, so a paused, archived, or ended schedule gets none.
@@ -107,6 +109,7 @@ public struct AlarmPlan: Hashable, Sendable {
         deviceTimeZone: NamedTimeZone,
         privacy: ReminderPrivacy = .showNames
     ) {
+        hasUnreadable = !reminders.unreadable.isEmpty
         let ringing = Set(schedules.filter { reminders.needs[$0.id] == .alarm }.map(\.itemID))
         guard !ringing.isEmpty else {
             requests = []
@@ -347,7 +350,7 @@ public struct AlarmEngine: Sendable {
                 return false
             }
         }
-        if !obsolete.isEmpty { _ = await cancel(obsolete) }
+        if !obsolete.isEmpty, !plan.hasUnreadable { _ = await cancel(obsolete) }
         var failed = Set<ItemID>()
         /// The alarms that the system holds after this run, by content. A ringing alarm is not in `waiting` and stays.
         var held = Set(actual.keys)

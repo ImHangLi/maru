@@ -24,7 +24,7 @@ import Testing
         _ = try await store.followUpPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none)
     }
 
-    @Test func oneBadScheduleIsSkippedAndNamed() async throws {
+    @Test func aBadScheduleIsSkippedOnlyByTheReminderPlan() async throws {
         let directory = TestDirectory()
         let store = try LocalStore(directory: directory.url)
         let good = try await store.seed()
@@ -46,16 +46,16 @@ import Testing
             [version, morning.text]
         )
         _ = LocalStore.takeSkippedRules()
-
         await #expect(throws: StorageError.invalidData) { try await store.schedule(id: schedule.id) }
-        #expect(LocalStore.lastInvalidDataRule == .versionOrder)
 
+        // The reminder plan skips the schedule, names it, and keeps the others.
         let now = Fixtures.instant("2026-03-01T01:00:00Z")
         let plan = try await store.reminderPlan(at: now, deviceTimeZone: Fixtures.shanghai, privacy: .showNames)
         #expect(plan.needs[good.schedule.id] != nil)
-        #expect(plan.needs[schedule.id] == nil)
-        #expect(try await store.items().count == 2)
-        _ = try await store.generateOccurrences(at: now, deviceTimeZone: Fixtures.shanghai)
+        #expect(plan.needs[schedule.id] == .blocked(.unreadable))
+        #expect(plan.unreadable == [schedule.id])
         #expect(LocalStore.takeSkippedRules() == [.versionOrder])
+        // Today, the history, and every write keep the strict load: the damage shows and nothing is hidden (spec 7.3).
+        await #expect(throws: StorageError.invalidData) { try await store.generateOccurrences(at: now, deviceTimeZone: Fixtures.shanghai) }
     }
 }

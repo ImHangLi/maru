@@ -9,31 +9,31 @@ struct DecodeRule: Error, Sendable {
     let rule: StoredDataRule
 }
 
+/// A read for the reminder plans failed with `invalidData`. It carries the rule of the row that did not load (D088).
+/// It holds a fixed word and nothing else, so it is safe to log and to send as a statistic (spec 10).
+public struct PlanReadError: Error, Sendable {
+    public let storage: StorageError
+    public let rule: StoredDataRule
+}
+
 /// What the process knows about rows that did not load. The log names the rule, and never a name, a dose, a time, or an ID.
 enum DecodeFaults {
     private struct State {
         var logged: Set<StoredDataRule> = []
         var skipped: [StoredDataRule] = []
         var reported: Set<StoredDataRule> = []
-        var thrown: StoredDataRule?
     }
 
     private static let state = OSAllocatedUnfairLock(initialState: State())
     private static let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Maru", category: "reminders")
 
-    /// A row did not load, and the read skipped it. The log has one line for each rule in each process.
+    /// A row did not load, and the reminder plan skipped it. The log has one line for each rule in each process.
     static func skipped(_ rule: StoredDataRule) {
         let first = state.withLock { state -> Bool in
             if !state.skipped.contains(rule) { state.skipped.append(rule) }
             return state.logged.insert(rule).inserted
         }
-        if first { log.error("A stored row did not load and was skipped. Rule: \(rule.rawValue, privacy: .public)") }
-    }
-
-    /// A read or a write failed with `invalidData`, and this rule was broken.
-    static func thrown(_ rule: StoredDataRule) {
-        state.withLock { $0.thrown = rule }
-        log.error("A stored row did not load. Rule: \(rule.rawValue, privacy: .public)")
+        if first { log.error("A stored row did not load and the reminder run skipped it. Rule: \(rule.rawValue, privacy: .public)") }
     }
 
     /// The rules that no call returned before, so a bad row gives one report in a process and not one for each read.
@@ -45,16 +45,11 @@ enum DecodeFaults {
             return fresh
         }
     }
-
-    static var lastThrown: StoredDataRule? { state.withLock { $0.thrown } }
 }
 
 extension LocalStore {
-    /// The rules of the rows that reads skipped, each one time in a process (D088). The app reports them.
+    /// The rules of the rows that the reminder plans skipped, each one time in a process (D088). The app reports them.
     public static func takeSkippedRules() -> [StoredDataRule] { DecodeFaults.takeSkipped() }
-
-    /// The rule that the last `invalidData` of this process broke, for the log line of a failed run (D088).
-    public static var lastInvalidDataRule: StoredDataRule? { DecodeFaults.lastThrown }
 
     /// Runs `body`. A decode failure inside it becomes a `DecodeRule`. A rule of the schedule or the item that the
     /// domain rejected gives its own rule, and the others give `rule`. An error of the database goes through.
@@ -76,32 +71,53 @@ extension LocalStore {
         }
     }
 
-    /// The items and the schedules that load. A row that does not load is skipped and logged, so one bad row does not stop
-    /// Today, the history, or the reminders of the other items (D088). A schedule of a skipped item is skipped too.
+    /// Every item and every schedule. A row that does not load is `invalidData`. Today, History, My Items, the widget, and every
+    /// write use this, so a damaged row shows the storage problem and never hides data (spec 7.3).
     static func itemsAndSchedules(_ db: Database) throws -> (items: [Item], schedules: [Schedule]) {
-        let items = try decodeItemsSkippingFaults(Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid"))
-        let known = Set(items.map(\.id))
-        var schedules: [Schedule] = []
-        for id in try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid") {
-            do {
-                guard let schedule = try named(.scheduleRow, { try fetchSchedule(db, id: ScheduleID(text: id)) }) else { continue }
-                if known.contains(schedule.itemID) { schedules.append(schedule) }
-            } catch let error as DecodeRule {
-                DecodeFaults.skipped(error.rule)
-            }
-        }
+        let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)
+        let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
+            .compactMap { try fetchSchedule(db, id: ScheduleID(text: $0)) }
         return (items, schedules)
     }
 
-    static func decodeItemsSkippingFaults(_ rows: [Row]) throws -> [Item] {
+    /// The inputs of the reminder plans (D088). An item or a schedule that does not load is skipped and logged, so one bad row
+    /// does not stop the reminders of the other items. The schedules that were skipped, and the schedules of a skipped item,
+    /// are in `unreadable`. The plan reports each as not set, and the engines remove nothing while there is one.
+    static func planInputs(_ db: Database) throws -> (items: [Item], schedules: [Schedule], unreadable: Set<ScheduleID>) {
         var items: [Item] = []
-        for row in rows {
+        for row in try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid") {
             do {
                 items.append(try decodeItem(row))
             } catch let error as DecodeRule {
                 DecodeFaults.skipped(error.rule)
             }
         }
-        return items
+        let known = Set(items.map(\.id))
+        var schedules: [Schedule] = []
+        var unreadable: Set<ScheduleID> = []
+        for row in try Row.fetchAll(db, sql: "SELECT id, itemID FROM schedule ORDER BY rowid") {
+            let id = try? ScheduleID(text: row["id"] as String)
+            do {
+                guard let id else { throw DecodeRule(rule: .scheduleRow) }
+                let itemID = try named(.scheduleRow) { try ItemID(text: row["itemID"] as String) }
+                guard known.contains(itemID) else { throw DecodeRule(rule: .itemRow) }
+                if let schedule = try fetchSchedule(db, id: id) { schedules.append(schedule) }
+            } catch let error as DecodeRule {
+                DecodeFaults.skipped(error.rule)
+                if let id { unreadable.insert(id) }
+            }
+        }
+        return (items, schedules, unreadable)
+    }
+
+    /// Reads for a reminder plan. A decode failure carries its rule (D088).
+    func readPlan<T: Sendable>(_ value: @Sendable (Database) throws -> T) async throws -> T {
+        do {
+            return try await writer.read(value)
+        } catch {
+            let storage = StorageError(error)
+            if let rule = (error as? DecodeRule)?.rule { throw PlanReadError(storage: storage, rule: rule) }
+            throw storage
+        }
     }
 }

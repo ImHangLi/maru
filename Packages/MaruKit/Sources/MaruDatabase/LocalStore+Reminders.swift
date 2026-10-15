@@ -15,9 +15,9 @@ extension LocalStore: ReminderPlanSource {
     ///   - alarms: Which items an alarm covers now, so the plan leaves them out (D079).
     public func reminderPlan(
         at now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover = .none
-    ) async throws(StorageError) -> ReminderPlan {
-        try await read { db in
-            let (items, schedules) = try Self.itemsAndSchedules(db)
+    ) async throws -> ReminderPlan {
+        try await readPlan { db in
+            let (items, schedules, unreadable) = try Self.planInputs(db)
             // An occurrence is closed when its projection row says taken or skipped (D047). A dose of an as-needed item has
             // no slot and no reminder, so the query leaves it out. Before D088 it stopped every run with `invalidData`.
             let dates = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone).candidateDates
@@ -30,15 +30,15 @@ extension LocalStore: ReminderPlanSource {
                     """,
                 arguments: [try dates[0].text, try dates[dates.count - 1].text]
             )
-            let closed = Set(try rows.map { row in
+            let closed = try Self.named(.occurrenceRow) { try Set(rows.map { row in
                 OccurrenceKey(
                     slotID: try ScheduleSlotID(text: row.decode(forColumn: "slotID")),
                     plannedDate: try LocalDate(text: row.decode(forColumn: "plannedDate"))
                 )
-            })
+            }) }
             return ReminderPlan(
                 items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, closed: closed,
-                alarms: alarms
+                alarms: alarms, unreadable: unreadable
             )
         }
     }

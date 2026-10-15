@@ -24,7 +24,8 @@
 // The gaps between the fake and real iOS are in `docs/research/2026-10-15-notification-correctness.md`.
 
 import Foundation
-import MaruDatabase
+import GRDB
+@testable import MaruDatabase
 import Testing
 @testable import MaruCore
 @testable import MaruNotifications
@@ -567,6 +568,28 @@ final class Phone: @unchecked Sendable {
         )
         try await store.recordAsNeeded(event, occurrence: dose)
         await runAfterChange()
+    }
+
+    /// Adds a version that starts before the version before it. The schedule of the item does not load any more, as stored
+    /// data from a bug of an older build would not (D088).
+    func corruptSchedule(_ name: String) async throws {
+        let item = truth.items[truth.index(of: name)]
+        let version = UUID().uuidString
+        let scheduleID = item.scheduleID.rawValue.uuidString
+        let slotID = item.slots[0].id.rawValue.uuidString
+        try await store.writer.write { db in
+            try db.execute(
+                sql: """
+                    INSERT INTO scheduleVersion (id, scheduleID, position, effectiveFrom, weekdays, dose, timeZonePolicy, timeZone)
+                    VALUES (?, ?, 99, '2000-01-01', '1234567', NULL, 'followsDevice', NULL)
+                    """,
+                arguments: [version, scheduleID]
+            )
+            try db.execute(
+                sql: "INSERT INTO scheduleVersionSlot (scheduleVersionID, slotID, position, time) VALUES (?, ?, 0, '09:00')",
+                arguments: [version, slotID]
+            )
+        }
     }
 
     /// The current times of the item as `HH:MM`, in the order of its slots.

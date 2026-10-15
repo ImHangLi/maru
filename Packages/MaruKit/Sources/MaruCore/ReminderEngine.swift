@@ -252,6 +252,8 @@ public actor ReminderEngine {
         // A removal of a run before this one can still be open. This read waits for it first.
         let pending = await pendingAfterRemoval()
         let changes = ReminderChanges(wanted: wanted, pending: pending, text: center.text(for:))
+        // A schedule that did not load has unknown requests. The run removes none, so a bad row loses no reminder (D088).
+        let removals = plan.unreadable.isEmpty ? changes.remove : []
         // The system rejects a new request while notifications are off. The removals still run,
         // so a paused schedule does not remind again when the user turns notifications on.
         guard authorization == .authorized else {
@@ -261,7 +263,7 @@ public actor ReminderEngine {
                 guard let old = held[request.identifier] else { return false }
                 return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
             }.map(\.identifier)
-            await remove(changes.remove + stale)
+            await remove(removals + stale)
             _ = await pendingAfterRemoval()
             return ReminderOutcome(
                 plan: plan, authorization: authorization, unregistered: [], removalPending: !unremoved.isEmpty
@@ -271,12 +273,12 @@ public actor ReminderEngine {
         // until the next run, and not one too few.
         // An open removal can still take a request with its identifier, so the run does not add that request.
         let additions = changes.add
-        let (fitting, removedFirst) = await makeRoom(for: additions, pending: pending, obsolete: changes.remove)
+        let (fitting, removedFirst) = await makeRoom(for: additions, pending: pending, obsolete: removals)
         for request in fitting {
             // The second read below is the result. The system can also drop a request with no error.
             try? await center.add(request)
         }
-        if !removedFirst { await remove(changes.remove) }
+        if !removedFirst { await remove(removals) }
         // An addition with no room waits for the next run. Its schedule is not confirmed, and it is not a failure.
         let deferred = Set(additions.map(\.identifier)).subtracting(fitting.map(\.identifier))
         // A dated request whose time passed is not pending, because the system delivered it (D036).

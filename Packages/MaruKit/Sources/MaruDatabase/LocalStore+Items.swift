@@ -154,7 +154,7 @@ extension LocalStore {
     /// Every item, archived or not, in the order of the first save.
     public func items() async throws(StorageError) -> [Item] {
         try await read { db in
-            try Self.decodeItemsSkippingFaults(Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid"))
+            try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
         }
     }
 
@@ -232,14 +232,14 @@ extension LocalStore {
     }
 
     private static func fetchTimedItems(_ db: Database) throws -> [Item] {
-        try decodeItemsSkippingFaults(Row.fetchAll(
+        try Row.fetchAll(
             db,
             sql: """
                 SELECT * FROM item
                 WHERE isArchived = 0 AND EXISTS (SELECT 1 FROM schedule WHERE schedule.itemID = item.id)
                 ORDER BY rowid
                 """
-        ))
+        ).map(decodeItem)
     }
 
     private static func fetchItem(_ db: Database, id: ItemID) throws -> Item? {

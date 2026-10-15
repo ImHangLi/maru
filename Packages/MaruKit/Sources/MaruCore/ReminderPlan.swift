@@ -241,6 +241,9 @@ public enum ReminderProblem: Hashable, Sendable {
     case notStarted
     /// The plan has more series requests than `ReminderPlan.requestBudget`.
     case overLimit
+    /// The schedule, or its item, did not load from the database. The run skips it and keeps the pending requests that it may
+    /// have, so a bad row never removes a reminder (D088).
+    case unreadable
     /// The schedule has an end date. A repeating request has no end, so the engine registers none (spec 8.4).
     case endDate
 }
@@ -277,6 +280,9 @@ public struct ReminderPlan: Hashable, Sendable {
     public let series: [ReminderSeries]
     /// Every schedule of the plan. An item with no schedule is a list-only item and has no entry (T02).
     public let needs: [ScheduleID: Need]
+    /// The schedules that did not load (D088). Each has the need `.blocked(.unreadable)`. A run with such a schedule removes no
+    /// request and no alarm, because the plan does not know what the schedule wants.
+    public let unreadable: Set<ScheduleID>
 
     public var requests: [ReminderRequest] {
         series.flatMap(\.requests)
@@ -317,7 +323,8 @@ public struct ReminderPlan: Hashable, Sendable {
         privacy: ReminderPrivacy = .showNames,
         closed: Set<OccurrenceKey> = [],
         alarms: AlarmCover = .none,
-        requestBudget: Int = ReminderPlan.requestBudget
+        requestBudget: Int = ReminderPlan.requestBudget,
+        unreadable: Set<ScheduleID> = []
     ) {
         struct Key: Hashable {
             let timeZone: NamedTimeZone?
@@ -525,6 +532,8 @@ public struct ReminderPlan: Hashable, Sendable {
                 ? .requests(Set(series.joined().flatMap(\.requests).map(\.identifier)))
                 : .blocked(.overLimit)
         }
+        for id in unreadable { needs[id] = .blocked(.unreadable) }
+        self.unreadable = unreadable
         self.series = keys.flatMap { kept[$0] ?? [] }
         self.needs = needs
     }

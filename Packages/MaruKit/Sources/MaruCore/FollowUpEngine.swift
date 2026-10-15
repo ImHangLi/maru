@@ -145,7 +145,8 @@ public actor FollowUpEngine {
             Self.fitting(plan.requests, pending: before).map { ($0.identifier, $0.userInfo) },
             uniquingKeysWith: { first, _ in first }
         )
-        await remove(Self.followUps(before).keys.filter { kept[$0] == nil })
+        // A schedule that did not load has unknown follow-ups, so the run removes none (D088).
+        if !plan.hasUnreadable { await remove(Self.followUps(before).keys.filter { kept[$0] == nil }) }
         let pending = await pendingAfterRemoval()
         if authorization == .authorized {
             let current = Self.followUps(pending)
@@ -207,7 +208,7 @@ public actor FollowUpEngine {
             let content = plan.deliveredSeriesContent(identifier: RequestGeneration.base(of: shown.identifier), deliveredAt: shown.deliveredAt)
             return shown.text != content.map(center.text(for:))
         }.map(\.identifier)
-        if !delivered.isEmpty { await center.removeDelivered(identifiers: delivered) }
+        if !delivered.isEmpty, !plan.hasUnreadable { await center.removeDelivered(identifiers: delivered) }
         let held = Self.followUps(await pendingAfterRemoval())
         let scheduled = authorization == .authorized
             ? plan.requests.filter { isCurrent(held[$0.identifier], $0) }.count

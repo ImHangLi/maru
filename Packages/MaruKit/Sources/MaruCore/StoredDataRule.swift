@@ -17,6 +17,8 @@ public enum StoredDataRule: String, CaseIterable, Hashable, Sendable {
     /// `ScheduleError.noSlotTimes`, `duplicateSlot`, `weekdaysWithDayCycle`, `invalidDayCycle`, `conflictingVersion`,
     /// `foreignVersion`, or `noVersion`.
     case versionRule = "version_rule"
+    /// An occurrence row that the reminder plans read, for example the slot of a closed dose.
+    case occurrenceRow = "occurrence_row"
     case other
 
     /// The rule for a domain error that the schedule or the item rejected.

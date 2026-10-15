@@ -172,21 +172,21 @@ actor AppStore {
                     at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
                 )
             } catch {
-                // The rule is a fixed word of the row that did not load, for the next device check (D088).
-                let rule = (error as? StorageError) == .invalidData ? LocalStore.lastInvalidDataRule : nil
+                // The rule is a fixed word of the row that did not load, for the next device check (D088). It comes with the error.
+                let rule = (error as? PlanReadError)?.rule
                 Self.log.error(
-                    "Reminder run failed: \(String(describing: error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
+                    "Reminder run failed: \(String(describing: (error as? PlanReadError)?.storage ?? error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
                 )
-                if (error as? StorageError) == .invalidData { self.runProblem?(.invalidData, rule) }
+                if rule != nil || (error as? StorageError) == .invalidData { self.runProblem?(.invalidData, rule) }
                 throw error
             }
             let followUps: FollowUpOutcome?
             do {
                 followUps = try await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
             } catch {
-                let rule = (error as? StorageError) == .invalidData ? LocalStore.lastInvalidDataRule : nil
+                let rule = (error as? PlanReadError)?.rule
                 Self.log.error(
-                    "Follow-up refresh failed: \(String(describing: error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
+                    "Follow-up refresh failed: \(String(describing: (error as? PlanReadError)?.storage ?? error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
                 )
                 followUps = nil
             }

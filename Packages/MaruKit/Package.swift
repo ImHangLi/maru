@@ -33,7 +33,7 @@ let package = Package(
         // The simulator of iOS notifications around the real engines (D086). See `Phone.swift`.
         .testTarget(
             name: "MaruNotificationSimulationTests",
-            dependencies: ["MaruCore", "MaruDatabase", "MaruNotifications"],
+            dependencies: ["MaruCore", "MaruDatabase", "MaruNotifications", .product(name: "GRDB", package: "GRDB.swift")],
             // Databases that earlier versions of the app left. See `UpgradeTests`.
             resources: [.copy("Fixtures")]
         ),
