@@ -25,6 +25,9 @@ enum Schema {
         migrator.registerMigration("v6") { db in
             try db.execute(sql: v6)
         }
+        migrator.registerMigration("v7") { db in
+            try db.execute(sql: v7)
+        }
         return migrator
     }
 
@@ -201,5 +204,15 @@ enum Schema {
             CHECK (followUpMinutes IN (5, 10, 15, 30, 60) AND followUpCount IS NOT NULL OR followUpMinutes IS NULL AND followUpCount IS NULL);
         ALTER TABLE item ADD COLUMN followUpChanged REAL;
         ALTER TABLE item ADD COLUMN alarm INTEGER NOT NULL DEFAULT 0 CHECK (alarm IN (0, 1));
+        """
+    /// The tracker (D091). `archivedAt` is the instant of the archive, so History plans the "No record" doses of an
+    /// archived item up to that day. An item archived before this migration has `NULL` and shows only its records, as
+    /// before. `asNeededDose` is the usual amount of an as-needed item, and `occurrence.dose` is the amount that one
+    /// as-needed dose got when the user recorded it. A scheduled occurrence has no `dose`: its amount is in its
+    /// schedule version. Every old row keeps `NULL` and loads unchanged.
+    static let v7 = """
+        ALTER TABLE item ADD COLUMN archivedAt REAL;
+        ALTER TABLE item ADD COLUMN asNeededDose TEXT;
+        ALTER TABLE occurrence ADD COLUMN dose TEXT CHECK (dose IS NULL OR itemID IS NOT NULL);
         """
 }

@@ -48,14 +48,17 @@ struct HistoryEntryRow: View {
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
             if state == .taken || state == .skipped { undoButton.tint(.gray) }
+            // A past dose with no record can be marked as skipped in place (D091).
+            if state == .open, case let .planned(dose) = entry.dose { skipButton(dose).tint(.gray) }
         }
         .contextMenu {
             switch (state, entry.dose) {
-            case (.open, .planned):
+            case (.open, .planned(let dose)):
                 takenButton
+                skipButton(dose)
             case (.taken, .planned(let dose)):
                 changeTimeButton
-                Button("Skip", systemImage: "minus.circle") { model.markSkipped(dose) }
+                skipButton(dose)
                 undoButton
             case (.taken, .asNeeded):
                 changeTimeButton
@@ -104,6 +107,11 @@ struct HistoryEntryRow: View {
                     }
                 }
                 .font(.subheadline)
+                if let detail = detailText(item) {
+                    Text(verbatim: detail)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
             }
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
@@ -125,6 +133,10 @@ struct HistoryEntryRow: View {
     /// The time sheet saves it. The store keeps the earlier events (T20).
     private var takenButton: some View {
         Button("Taken", systemImage: "checkmark") { showsTimeEditor = true }
+    }
+
+    private func skipButton(_ dose: HistoryDose) -> some View {
+        Button("Skip", systemImage: "minus.circle") { model.markSkipped(dose) }
     }
 
     private var changeTimeButton: some View {
@@ -249,6 +261,28 @@ struct HistoryEntryRow: View {
         case .noRecord: return String(localized: "No record")
         case .notSaved: return String(localized: "Not saved")
         }
+    }
+
+    /// The line under the action (D091): "Replaced" for an action that a later one replaced, the planned time and the amount of
+    /// a planned dose, the amount of an as-needed dose, and the form when another item has the same name, so two items
+    /// with one name differ (spec 3 T34). The newest row of a dose has no mark: it is the record that counts.
+    private func detailText(_ item: TodaySnapshot.ItemLook?) -> String? {
+        var parts: [String] = []
+        if entry.event != nil, !entry.isCurrent { parts.append(String(localized: "Replaced")) }
+        switch entry.dose {
+        case let .planned(dose):
+            let time = dose.occurrence.resolvedTime.earliestInstant.formatted(.rowTime(in: timeZone))
+            parts.append(String(localized: "Planned \(time)"))
+            if let amount = model.history.amounts[dose.occurrence.scheduleVersionID] { parts.append(amount.text) }
+        case let .asNeeded(dose):
+            if let amount = dose.occurrence.dose { parts.append(amount.text) }
+        }
+        if let item, item.form != .unknown, model.history.looks.values.contains(where: {
+            $0.itemID != item.itemID && $0.name.localizedCaseInsensitiveCompare(item.name) == .orderedSame
+        }) {
+            parts.append(item.form.localizedName)
+        }
+        return parts.isEmpty ? nil : parts.formatted(.list(type: .and, width: .narrow))
     }
 
     /// The time of the action. A dose with no record has no action, so it shows its part of the day.

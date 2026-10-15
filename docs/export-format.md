@@ -20,7 +20,7 @@ One line is one dose, with the state that is valid now. The lines are in the ord
 | Planned Time | The planned clock time, `HH:MM`, 24 hours. Empty for an as-needed dose | `08:00` |
 | Item | The name of the item | `Vitamin D` |
 | Type | `Supplement` or `Medication`. Empty when the item has neither type | `Supplement` |
-| Amount | The amount as you wrote it, with no conversion. Empty for an item with no amount and for an as-needed dose | `1000 IU` |
+| Amount | The amount as you wrote it, with no conversion. Empty for a dose with no amount. An as-needed dose has the amount that the item had when you recorded it | `1000 IU` |
 | State | `Taken`, `Skipped`, or `No record` | `Taken` |
 | Time Taken | When you took the dose, `YYYY-MM-DD HH:MM`. Empty for a dose that is not taken | `2026-03-01 08:05` |
 | Time Zone | The IANA name of the zone of the date and of the two times | `Asia/Shanghai` |
@@ -30,7 +30,7 @@ Which doses are in the file:
 - Every dose that History shows: a dose with a record, and a planned dose with no record.
 - The doses of today or of a later date that have a record. A dose in a fixed time zone, or a dose of a stay in another zone, can have a date after the date of the iPhone. A dose of today or a later date with no record is not in the file, because the day did not end.
 - A record that you took back counts as no record. An as-needed dose that you took back is not in the file.
-- The recorded doses of an archived item are in the file. The doses of a deleted item are not.
+- The doses of an archived item are in the file: its recorded doses, and its planned doses with no record up to the day before it was archived. An item archived before the app kept the archive time has only its recorded doses. The doses of a deleted item are not.
 
 ## Backup
 

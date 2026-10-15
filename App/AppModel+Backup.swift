@@ -45,16 +45,37 @@ extension AppModel {
         }
     }
 
-    private func share(_ action: AnalyticsEvent.DataAction, _ make: @escaping @Sendable (AppStore, Date) async throws -> URL) {
+    /// "Share Medication List": a PDF with the name, form, amount, times, and note of each item (D091).
+    func shareMedicationList() {
+        share(nil) { store, now in
+            let rows = try await store.medicationListData()
+            let pdf = await Report.pdf(Report.medicationList(rows, at: now))
+            return try await store.writeReport(pdf, named: "Maru Medication List", at: now)
+        }
+    }
+
+    /// "Share Summary": a PDF with the counts of each chosen item over the last `days` days (D091).
+    func shareSummary(days: Int, excluding: Set<ItemID>) {
+        share(nil) { store, now in
+            guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw StorageError.invalidData }
+            let read = try await store.summaryData(days: days, at: now, deviceTimeZone: deviceTimeZone)
+            let today = LocalDate(now, in: deviceTimeZone)
+            let pdf = await Report.pdf(Report.summary(read, days: days, excluding: excluding, today: today))
+            return try await store.writeReport(pdf, named: "Maru Summary", at: now)
+        }
+    }
+
+    /// The report files send no analytics event: the privacy table has no field for them (spec 11).
+    private func share(_ action: AnalyticsEvent.DataAction?, _ make: @escaping @Sendable (AppStore, Date) async throws -> URL) {
         guard !transfer.isWorking else { return }
         transfer.isWorking = true
         Task { [store] in
             do {
                 transfer.shared = DataTransferState.SharedFile(url: try await make(store, Date()))
-                analytics.capture(.dataAction(action, .done))
+                if let action { analytics.capture(.dataAction(action, .done)) }
             } catch {
                 transfer.failure = .fileNotMade
-                analytics.capture(.dataAction(action, .failed))
+                if let action { analytics.capture(.dataAction(action, .failed)) }
             }
             transfer.isWorking = false
         }

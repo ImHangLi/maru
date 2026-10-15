@@ -95,6 +95,7 @@ struct ItemDetailView: View {
                 }
             }
             WeekSection(week: detail.week, item: item)
+            MonthSection(month: detail.month, item: item)
             Section {
                 if item.isArchived {
                     Button("Restore") { change { try await model.setArchived(false, for: item.id) } }
@@ -350,5 +351,37 @@ private struct WeekSection: View {
             String(localized: "Skipped: \(week.skippedDoses)", comment: "Item detail: the planned doses skipped in the last 7 days. Example: Skipped: 1."),
             String(localized: "No record: \(week.unrecordedDoses)", comment: "Item detail: the planned doses with no record in the last 7 days. Example: No record: 1."),
         ]
+    }
+}
+
+/// The counts of the last 30 days, and the way to the full log (D091). Plain numbers: no percent, no streak, no score.
+/// The full log lists every day of the item, also an archived item and a day older than the graph.
+private struct MonthSection: View {
+    let month: ItemSummary?
+    let item: Item
+
+    var body: some View {
+        Section("Last 30 Days") {
+            ForEach(counts, id: \.self) { Text(verbatim: $0) }
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .numberMotion(value: counts)
+            NavigationLink {
+                ItemLogView(itemID: item.id)
+            } label: {
+                Text("All Records")
+            }
+        }
+    }
+
+    /// For example "Taken: 26 of 30", "Skipped: 1", and "No record: 3". An as-needed item has only the taken doses.
+    private var counts: [String] {
+        guard let month else { return [String(localized: "No records in the last 30 days.")] }
+        let skipped = String(localized: "Skipped: \(month.skipped)", comment: "Item detail: the planned doses skipped in the last 30 days. Example: Skipped: 1.")
+        let noRecord = String(localized: "No record: \(month.noRecord)", comment: "Item detail: the planned doses with no record in the last 30 days. Example: No record: 1.")
+        let asNeeded = String(localized: "As needed: \(month.asNeededTaken)", comment: "Item detail and summary: the doses taken as needed in the period. They have no plan. Example: As needed: 3.")
+        if month.planned == 0 { return [String(localized: "Taken: \(month.asNeededTaken)")] }
+        let taken = String(localized: "Taken: \(month.taken) of \(month.planned)", comment: "Item detail: the planned doses taken of the planned doses in the last 30 days. Example: Taken: 26 of 30.")
+        return month.asNeededTaken > 0 ? [taken, skipped, noRecord, asNeeded] : [taken, skipped, noRecord]
     }
 }

@@ -75,7 +75,8 @@ extension AppModel {
         guard row.canRecord, !isRecordingAsNeeded(row),
               let deviceTimeZone = NamedTimeZone(device: .current, at: .now) else { return }
         let now = Date()
-        let occurrence = AsNeededOccurrence(itemID: row.itemID, at: now, in: deviceTimeZone)
+        // The dose copies the usual amount of the item, so a later change of the amount does not rewrite it (D091).
+        let occurrence = AsNeededOccurrence(itemID: row.itemID, at: now, in: deviceTimeZone, dose: row.amount)
         commitAsNeeded(
             AsNeededEvent(
                 event: IntakeEvent(occurrenceID: occurrence.id, action: .taken, occurredAt: now, recordedAt: now, source: .app),

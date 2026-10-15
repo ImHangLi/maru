@@ -9,11 +9,11 @@ struct TodayWidget: Widget {
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: Self.kind, intent: NoConfiguration.self, provider: DayProvider()) { entry in
             TodayWidgetView(entry: entry)
-                .containerBackground(for: .widget) { Color(.systemBackground) }
         }
         .configurationDisplayName("Today")
         .description("See how many doses are left. It shows no names.")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        // The two Lock Screen families show the next part of the day and the progress, and no names (D091).
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryRectangular])
     }
 }
 
@@ -21,10 +21,28 @@ private struct TodayWidgetView: View {
     @Environment(\.widgetFamily) private var family
     let entry: DayEntry
 
+    private var isLockScreen: Bool {
+        family == .accessoryCircular || family == .accessoryRectangular
+    }
+
     var body: some View {
+        content
+            // The Lock Screen draws its own background.
+            .containerBackground(for: .widget) {
+                if isLockScreen { Color.clear } else { Color(.systemBackground) }
+            }
+    }
+
+    @ViewBuilder private var content: some View {
         switch entry.content {
+        case .unavailable where isLockScreen:
+            Text("Open Maru to update.")
+                .font(.caption)
+                .widgetURL(AppGroup.todayURL(nil))
         case .unavailable:
             UnavailableView()
+        case let .day(day) where isLockScreen:
+            LockScreenToday(day: day, date: entry.date, isCircular: family == .accessoryCircular)
         case let .day(day) where day.doses.isEmpty:
             Text("Nothing Planned Today")
                 .font(.subheadline.weight(.semibold))
@@ -37,6 +55,56 @@ private struct TodayWidgetView: View {
                 SmallToday(day: day, date: entry.date, tint: entry.tint.tint)
             }
         }
+    }
+}
+
+/// The Lock Screen widget (D091): the progress of today as a gauge, and in the wide form the next part of the day with
+/// the number of open doses. It shows no names, like the other "Today" widgets (D048). A tap opens Today at the slot.
+private struct LockScreenToday: View {
+    let day: WidgetDay
+    let date: Date
+    let isCircular: Bool
+
+    var body: some View {
+        let slot = day.slotWithOpenDose(at: date)
+        let total = day.doses.count
+        Group {
+            if isCircular {
+                Gauge(value: Double(day.takenCount), in: 0...Double(max(total, 1))) {
+                    Text("Today")
+                } currentValueLabel: {
+                    Text(verbatim: total == 0 ? "–" : "\(day.takenCount)")
+                }
+                .gaugeStyle(.accessoryCircularCapacity)
+            } else {
+                VStack(alignment: .leading, spacing: 2) {
+                    if total == 0 {
+                        Text("Nothing Planned Today").font(.headline)
+                    } else if let slot {
+                        HStack(spacing: 4) {
+                            Text(slot.part.title)
+                            Text(slot.time.formatted(.rowTime(in: day.timeZone)))
+                        }
+                        .font(.headline)
+                        Text("\(slot.openCount) left")
+                    } else {
+                        Text("All done").font(.headline)
+                        if let next = day.nextTime {
+                            Text("Next \(next.formatted(.rowTime(in: day.timeZone)))")
+                        }
+                    }
+                    if total > 0 {
+                        Gauge(value: Double(day.takenCount), in: 0...Double(total)) { Text("Today") }
+                            .gaugeStyle(.accessoryLinearCapacity)
+                    }
+                }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+            }
+        }
+        .widgetURL(AppGroup.todayURL(slot?.part))
+        .accessibilityElement(children: .combine)
+        .accessibilityValue(Text("\(day.takenCount) of \(total) taken"))
     }
 }
 

@@ -42,9 +42,10 @@ extension LocalStore {
     ///
     /// A missing old item, or a new item with the ID of the old one, is `StorageError.conflict`, and nothing changes.
     /// The same values again change nothing, so a second tap on Save does not add a second item.
+    /// `archivedAt` is the instant that the old item gets as its archive time (D091).
     /// `generation` is the generation of the data that the caller read. See `checkedWrite`.
     public func replace(
-        _ oldItemID: ItemID, with item: Item, schedule: Schedule?, generation: Int = 0
+        _ oldItemID: ItemID, with item: Item, schedule: Schedule?, at archivedAt: Date = Date(), generation: Int = 0
     ) async throws(StorageError) {
         try await write(generation: generation) { db in
             guard item.id != oldItemID, var old = try Self.fetchItem(db, id: oldItemID) else {
@@ -52,6 +53,7 @@ extension LocalStore {
             }
             if !old.isArchived {
                 old.isArchived = true
+                old.archivedAt = archivedAt
                 try Self.upsert(old, db)
             }
             try Self.upsert(item, db)
@@ -123,22 +125,23 @@ extension LocalStore {
             sql: """
                 INSERT INTO item (
                     id, category, name, form, color, isArchived, intakeNotePreset, intakeNoteText, imageReference,
-                    followUpCount, followUpMinutes, followUpChanged, alarm
+                    followUpCount, followUpMinutes, followUpChanged, alarm, archivedAt, asNeededDose
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (id) DO UPDATE SET
                     category = excluded.category, name = excluded.name, form = excluded.form,
                     color = excluded.color, isArchived = excluded.isArchived,
                     intakeNotePreset = excluded.intakeNotePreset, intakeNoteText = excluded.intakeNoteText,
                     imageReference = excluded.imageReference,
                     followUpCount = excluded.followUpCount, followUpMinutes = excluded.followUpMinutes,
-                    followUpChanged = excluded.followUpChanged, alarm = excluded.alarm
+                    followUpChanged = excluded.followUpChanged, alarm = excluded.alarm,
+                    archivedAt = excluded.archivedAt, asNeededDose = excluded.asNeededDose
                 """,
             arguments: [
                 item.id.text, item.category.rawValue, item.name, item.form.rawValue, item.color.rawValue,
                 item.isArchived, preset, text, item.imageReference,
                 item.followUp?.count.rawValue, item.followUp?.interval.rawValue, item.followUpChanged?.storedSeconds,
-                item.alarm,
+                item.alarm, item.archivedAt?.storedSeconds, item.asNeededDose?.text,
             ]
         )
         // The load path checks the row with the domain rules. A failure rolls back the write.
@@ -257,6 +260,12 @@ extension LocalStore {
         let followUpCount: Int? = try row.decode(forColumn: "followUpCount")
         let followUpMinutes: Int? = try row.decode(forColumn: "followUpMinutes")
         let followUpChanged: Double? = try row.decode(forColumn: "followUpChanged")
+        let archivedAt: Double? = try row.decode(forColumn: "archivedAt")
+        // `Dose` rejects blank text, so a stored amount is never blank.
+        let asNeededDose = try (row.decode(forColumn: "asNeededDose") as String?).map { text in
+            guard let dose = Dose(text) else { throw DecodeRule(rule: .itemRow) }
+            return dose
+        }
         let followUp: FollowUpSetting?
         switch (followUpCount, followUpMinutes) {
         case (nil, nil): followUp = nil
@@ -285,7 +294,9 @@ extension LocalStore {
                 imageReference: image,
                 followUp: followUp,
                 followUpChanged: followUpChanged.map(Date.init(storedSeconds:)),
-                alarm: row.decode(forColumn: "alarm")
+                alarm: row.decode(forColumn: "alarm"),
+                archivedAt: archivedAt.map(Date.init(storedSeconds:)),
+                asNeededDose: asNeededDose
             )
         }
     }

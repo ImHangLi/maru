@@ -106,6 +106,28 @@ extension AppModel {
         await finishChange(isOn ? .remindersOn : .remindersOff, schedule: schedule, mayAsk: isOn && !item.isArchived)
     }
 
+    /// The user said yes to the one offer after a first save with a time (D091): "Remind Again" turns on for that item,
+    /// two more times, 30 minutes apart. The item detail and the edit screen show it, and the user can change it there.
+    /// A failure changes nothing, and the user can still turn it on in the item.
+    func turnOnRemindAgain(for itemID: ItemID) {
+        let now = Date()
+        let generation = dataGeneration
+        Task {
+            let schedule: Schedule?
+            do throws(StorageError) {
+                schedule = try await store.setFollowUp(
+                    FollowUpSetting(count: .two, interval: .minutes30), for: itemID, at: now, generation: generation
+                )
+            } catch .replaced {
+                return refresh()
+            } catch {
+                reportCoreError(.save, error)
+                return
+            }
+            await finishChange(.remindersOn, schedule: schedule, mayAsk: false)
+        }
+    }
+
     /// Archives an item, or restores it. Archive cancels the future reminders and keeps the records (T08).
     /// A failure throws, and the store is unchanged. After a restore the store refuses the change, and the pages
     /// read again (D040).

@@ -105,3 +105,17 @@ struct HistoryLogView: View {
         }
     }
 }
+
+/// The full log of one item from the item detail (D091). It reads the history for its own use when the History page is
+/// not open, and it lets the read go when it closes. The list loads older days until the first day of the item, so a day
+/// older than the graph and a day of an archived item are in reach.
+struct ItemLogView: View {
+    @Environment(AppModel.self) private var model
+    let itemID: ItemID
+
+    var body: some View {
+        HistoryLogView(scope: .item(itemID))
+            .onAppear { model.openItemLog() }
+            .onDisappear { model.closeItemLog() }
+    }
+}

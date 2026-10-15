@@ -89,8 +89,8 @@ public struct HistoryDayCount: Hashable, Sendable {
 /// - A dose with no event shows only when the plan of that day has it. A stored occurrence that is
 ///   no longer planned and has no event does not show.
 /// - The plan of a day is the schedule version in force on that day, so the history has no day before
-///   the first version of an item. An archived item shows only its records, because the store does not
-///   keep the date of the archive.
+///   the first version of an item. An archived item keeps its plan up to the day before its archive, so its past
+///   doses with no record stay (D091). An item archived before the app kept the archive time shows only its records.
 /// - An as-needed dose has no plan, so it shows only with an event (D021).
 public enum History {
     public static func days(
@@ -102,7 +102,7 @@ public enum History {
         deviceTimeZone: NamedTimeZone
     ) -> [HistoryDay] {
         let storedByKey = Dictionary(stored.map { ($0.occurrence.key, $0) }, uniquingKeysWith: { first, _ in first })
-        let active = activeSchedules(schedules, items: items)
+        let active = pastSchedules(schedules, items: items, deviceTimeZone: deviceTimeZone)
         return dates.compactMap { date in
             var doses: [HistoryDose] = []
             for dose in stored where dose.occurrence.plannedDate == date && !dose.record.events.isEmpty {
@@ -130,19 +130,23 @@ public enum History {
     /// The planned doses of each date and how many of them are taken, for the graph of the history page (D041).
     /// A day has the same doses as in `days`, so the graph and the timeline agree. A skipped dose is not taken.
     /// An as-needed dose has no plan, so it does not count. A date with no dose has no entry.
+    /// A planned dose of `today` with no event and a time after `now` is not due yet, so it does not count (`isCounted`).
     public static func counts(
         _ dates: [LocalDate],
         items: [Item],
         schedules: [Schedule],
         stored: [StoredDoseState],
+        today: LocalDate,
+        now: Date,
         deviceTimeZone: NamedTimeZone
     ) -> [LocalDate: HistoryDayCount] {
-        let active = activeSchedules(schedules, items: items)
+        let active = pastSchedules(schedules, items: items, deviceTimeZone: deviceTimeZone)
         let recordedByDate = Dictionary(grouping: stored.filter(\.hasEvents), by: \.key.plannedDate)
         var counts: [LocalDate: HistoryDayCount] = [:]
         for date in dates {
             let recorded = recordedByDate[date] ?? []
             let planned = plannedDoses(on: date, besides: Set(recorded.map(\.key)), schedules: active, deviceTimeZone: deviceTimeZone)
+                .filter { isCounted(hasEvent: false, date: date, plannedAt: $0.plan.timeZone.resolve($0.plan.plannedTime, on: date).earliestInstant, today: today, now: now) }
             let scheduled = recorded.count + planned.count
             guard scheduled > 0 else { continue }
             counts[date] = HistoryDayCount(scheduled: scheduled, taken: recorded.filter(\.isTaken).count)
@@ -150,10 +154,27 @@ public enum History {
         return counts
     }
 
-    /// An archived item gets no planned dose. Its records still show.
-    private static func activeSchedules(_ schedules: [Schedule], items: [Item]) -> [Schedule] {
-        let activeItems = Set(items.filter { !$0.isArchived }.map(\.id))
-        return schedules.filter { activeItems.contains($0.itemID) }
+    /// The one rule of what counts in a summary, the week strip, and the graph (D091, R5). A dose with an event always
+    /// counts. A dose with no event counts when its day is over, or when its time came. A dose of today that is not due yet
+    /// is nothing planned until its time, so no view shows a miss before the user can take the dose.
+    public static func isCounted(hasEvent: Bool, date: LocalDate, plannedAt: Date, today: LocalDate, now: Date) -> Bool {
+        hasEvent || date != today || plannedAt <= now
+    }
+
+    /// The schedules that plan doses in the past. An item that is not archived keeps its schedules. An archived item keeps
+    /// them up to the day before its archive, so its doses with no record stay in the history and the graph (D091).
+    /// An archived item with no archive time plans nothing. Its records still show.
+    private static func pastSchedules(_ schedules: [Schedule], items: [Item], deviceTimeZone: NamedTimeZone) -> [Schedule] {
+        let byID = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return schedules.compactMap { schedule in
+            guard let item = byID[schedule.itemID] else { return nil }
+            guard item.isArchived else { return schedule }
+            guard let archivedAt = item.archivedAt else { return nil }
+            var bounded = schedule
+            let last = LocalDate(archivedAt, in: deviceTimeZone).adding(days: -1)
+            bounded.endDate = min(last, schedule.endDate ?? last)
+            return bounded
+        }
     }
 
     /// The doses of the plan of a date that are not in `recorded`, the stored doses of the date with an event.
@@ -229,7 +250,10 @@ extension History {
         var asNeededTaken: [ItemID: Int] = [:]
         for day in days where dates.contains(day.date) {
             for dose in day.doses {
-                let isDue = !dose.record.events.isEmpty || day.date != today || dose.occurrence.resolvedTime.earliestInstant <= now
+                let isDue = isCounted(
+                    hasEvent: !dose.record.events.isEmpty, date: day.date, plannedAt: dose.occurrence.resolvedTime.earliestInstant,
+                    today: today, now: now
+                )
                 if isDue { planned[dose.itemID, default: [:]][day.date, default: []].append(dose) }
             }
             for dose in day.asNeeded where dose.record.status == .taken {

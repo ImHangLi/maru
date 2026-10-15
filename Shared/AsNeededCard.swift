@@ -22,6 +22,10 @@ struct AsNeededCard: Equatable, Sendable {
         /// added a time to it. Its row shows the doses and no record button.
         let canRecord: Bool
         var doses: [Dose]
+        /// The usual amount of the item. A new dose copies it (D091). `nil` when the item has none.
+        var amount: MaruCore.Dose?
+        /// When the user last took a dose of the item, also on an earlier day (D091). `nil` when there is none.
+        var lastTaken: Date?
 
         var id: ItemID { itemID }
     }
@@ -43,14 +47,22 @@ struct AsNeededCard: Equatable, Sendable {
             ))
         })
         rows = day.items.compactMap { item in
-            looks[item.id].map { Row(itemID: item.id, look: $0, canRecord: true, doses: []) }
+            looks[item.id].map {
+                Row(
+                    itemID: item.id, look: $0, canRecord: true, doses: [],
+                    amount: item.asNeededDose, lastTaken: day.lastTaken[item.id]
+                )
+            }
         }
         for record in day.records {
             let dose = Dose(occurrence: record.occurrence, record: record.record)
             if let index = rows.firstIndex(where: { $0.itemID == record.occurrence.itemID }) {
                 rows[index].doses.append(dose)
             } else if let look = looks[record.occurrence.itemID] {
-                rows.append(Row(itemID: record.occurrence.itemID, look: look, canRecord: false, doses: [dose]))
+                rows.append(Row(
+                    itemID: record.occurrence.itemID, look: look, canRecord: false, doses: [dose],
+                    lastTaken: day.lastTaken[record.occurrence.itemID]
+                ))
             }
         }
     }
@@ -67,6 +79,14 @@ struct AsNeededCard: Equatable, Sendable {
             }
         } else if record.status != .unrecorded {
             rows[row].doses.append(Dose(occurrence: occurrence, record: record))
+        }
+        // "Last dose" follows every record, undo, and time change at once (D091). A taken dose of the shown day
+        // gives the newest time. With none left, the value of an earlier day stays, and a value of the shown day
+        // goes until the next read gives the stored one.
+        if let newest = rows[row].doses.compactMap({ $0.record.status == .taken ? $0.time : nil }).max() {
+            rows[row].lastTaken = newest
+        } else if let last = rows[row].lastTaken, LocalDate(last, in: occurrence.timeZone) >= occurrence.plannedDate {
+            rows[row].lastTaken = nil
         }
     }
 }

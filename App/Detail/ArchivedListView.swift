@@ -47,9 +47,15 @@ struct ArchivedListView: View {
     private func row(_ entry: ListEntry) -> some View {
         HStack(spacing: 12) {
             FormIcon(form: entry.form, color: entry.color, photo: entry.imageReference)
-            Text(verbatim: entry.name)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
+            // The name opens the item, with its counts and its full log (D091). Restore stays its own button.
+            NavigationLink(value: entry.id) {
+                Text(verbatim: entry.name)
+                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .contentShape(Rectangle())
+            }
+            .navigationLinkIndicatorVisibility(.hidden)
+            .accessibilityHint(Text("Shows its records"))
             Button("Restore") { restore(entry.id) }
                 .buttonStyle(.bordered)
                 .frame(minHeight: 44)

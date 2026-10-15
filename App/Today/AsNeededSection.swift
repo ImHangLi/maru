@@ -42,7 +42,7 @@ struct AsNeededSection: View {
 }
 
 /// One item: the form icon, the name, and the record button. Like a row of a part of the day, the name area
-/// never records (spec 3 P01). An as-needed item has no amount, because the amount belongs to a schedule.
+/// never records (spec 3 P01). A second line shows the usual amount and the last dose (D091).
 /// A swipe and a long press offer the same record, plus the details and the edit screen (D028).
 private struct AsNeededItemRow: View {
     @Environment(AppModel.self) private var model
@@ -60,14 +60,22 @@ private struct AsNeededItemRow: View {
             // The name area opens the details, like a row of a part of the day (spec 3 P01).
             NavigationLink(value: row.itemID) {
                 // Names wrap and never truncate (spec 5.3).
-                Text(row.look.name)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
-                    .contentShape(Rectangle())
-                    // Two VoiceOver stops, like the two touch areas: the name, then the record button (spec 3 P01).
-                    .accessibilityElement(children: .ignore)
-                    .accessibilityLabel(Text(verbatim: row.look.name))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(row.look.name)
+                    if let detail {
+                        Text(verbatim: detail)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(maxWidth: .infinity, minHeight: 44, alignment: .leading)
+                .contentShape(Rectangle())
+                // Two VoiceOver stops, like the two touch areas: the name, then the record button (spec 3 P01).
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text(verbatim: row.look.name))
+                .accessibilityValue(Text(verbatim: detail ?? ""))
             }
             .navigationLinkIndicatorVisibility(.hidden)
             .accessibilityHint(Text("Opens the details"))
@@ -93,6 +101,24 @@ private struct AsNeededItemRow: View {
 
     private var canRecord: Bool {
         row.canRecord || isNotSaved
+    }
+
+    /// The amount that a new dose gets, and when the user last took a dose, also on an earlier day (D091).
+    private var detail: String? {
+        var parts: [String] = []
+        if row.canRecord, let amount = row.amount { parts.append(amount.text) }
+        if let last = row.lastTaken { parts.append(String(localized: "Last dose \(lastDoseText(last))")) }
+        return parts.isEmpty ? nil : parts.formatted(.list(type: .and, width: .narrow))
+    }
+
+    /// The time alone for today, else the day and the time, for example "Yesterday, 9:12 PM" or "Oct 9, 9:12 PM".
+    private func lastDoseText(_ date: Date) -> String {
+        let calendar = Calendar.current
+        if calendar.isDateInToday(date) { return date.formatted(date: .omitted, time: .shortened) }
+        if calendar.isDateInYesterday(date) {
+            return String(localized: "Yesterday, \(date.formatted(date: .omitted, time: .shortened))")
+        }
+        return date.formatted(.dateTime.month(.abbreviated).day().hour().minute())
     }
 
     private var isNotSaved: Bool {

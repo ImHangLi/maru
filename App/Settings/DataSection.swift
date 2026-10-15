@@ -10,6 +10,10 @@ struct DataSection: View {
     /// The failure on the display. It is a copy, so the alert keeps its text while it closes.
     @State private var shownFailure: DataTransferState.Failure?
     @State private var showsFailure = false
+    /// The summary sheet, and the choice that it made. The report starts after the sheet closes, so the share sheet
+    /// never opens over it (D091).
+    @State private var showsSummary = false
+    @State private var summaryRequest: SummaryRequest?
 
     var body: some View {
         @Bindable var model = model
@@ -19,6 +23,17 @@ struct DataSection: View {
                 .sheet(item: $model.transfer.shared, onDismiss: { model.shareDidEnd() }) { file in
                     ShareSheet(url: file.url) { model.transfer.shared = nil }
                         .smallSheet()
+                }
+            Button("Share Medication List") { model.shareMedicationList() }
+                .rowText()
+            Button("Share Summary…") { showsSummary = true }
+                .rowText()
+                .sheet(isPresented: $showsSummary, onDismiss: {
+                    guard let request = summaryRequest else { return }
+                    summaryRequest = nil
+                    model.shareSummary(days: request.days, excluding: request.excluded)
+                }) {
+                    SummarySheet { summaryRequest = $0 }
                 }
             Button("Back Up") { model.backUp() }
                 .rowText()
