@@ -122,7 +122,7 @@ struct SystemAlarmCenter: AlarmCenter {
 ///
 /// It holds the keys of a follow-up reminder: the series, the plan date, the item, and the schedule version.
 /// A repeating alarm has no plan date and no fire time, and the button finds the date when it runs.
-/// It holds no name and no dose. `AppModel.takeReminder` records through the same checks as the "Taken" action
+/// It holds no name and no dose. `AppModel.performReminderAction` records through the same checks as the "Taken" action
 /// of a notification, so an alarm of an older plan, a dose of another day, or a dose with a record changes nothing.
 struct TakeFromAlarmIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Record a Dose"
@@ -166,7 +166,9 @@ struct TakeFromAlarmIntent: LiveActivityIntent {
             FollowUpRequest.scheduleVersionIDKey: scheduleVersionID,
         ]
         let firedAt = (try? Date(fireTime, strategy: .iso8601)) ?? Date()
-        await AppModel.shared.takeReminder(DeliveredReminder(deliveredAt: firedAt, userInfo: userInfo, triggerWeekday: nil))
+        await AppModel.shared.performReminderAction(
+            .taken, on: DeliveredReminder(deliveredAt: firedAt, userInfo: userInfo, triggerWeekday: nil)
+        )
         return .result()
     }
 }

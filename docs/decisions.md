@@ -342,7 +342,7 @@ Agent decision under the owner's direction: match Apple Health Medications, with
 
 Tests (D016): one new test, for the delete transaction.
 
-## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062, unlock rule changed by D066)
+## D034 · 2026-10-11 · A "Taken" action on a single-item reminder, and time-sensitive reminders (time-sensitive level done by D062, unlock rule changed by D066, the group clause and "Skip" changed by D090)
 
 Agent decision, under the owner's direction to match Apple Health Medications (`docs/research/2026-10-11-apple-health-gap.md`, rows 22 and 23).
 
@@ -1039,7 +1039,7 @@ The maintainer asked for the six languages of D051. English stays the source. Th
 
 Not verified: no build of the app ran on this Mac. CI builds the app. Nobody saw the text on a display. Needs a check on a real iPhone in each language: the longest German and Spanish text in buttons, rows, the widgets, and the notification, the Japanese and Korean line breaks, and the camera prompt.
 
-## D060 · 2026-10-13 · No "Record All" on Today
+## D060 · 2026-10-13 · No "Record All" on Today (a "Take All" on a reminder, not on Today: D090)
 
 Maintainer decision on 2026-10-13, after use on the device.
 
@@ -1684,3 +1684,52 @@ D089 follow-up 2: the engine keeps an alarm index (alarm id to schedule IDs, `Al
 D089 follow-up 3 (Codex round 2): the engine reads the waiting and the active alarms from one call, `AlarmCenter.snapshot()` (`SystemAlarmCenter` reads `AlarmManager.alarms` once), so a "Stop" between two reads cannot hide a repeating alarm. The engine never stops a ringing alarm. An obsolete alarm that rings goes in a durable set (`AlarmIndex.quiet`, App Group defaults). The first run in which it waits again cancels it, also when an unreadable schedule keeps the other obsolete alarms. The Stop button of an alarm (`RunAfterAlarmIntent`) starts a reminder run one second later, so this cleanup comes soon. Tests: `theEngineReadsOneSnapshotOfTheAlarms`, `anObsoleteRingingAlarmIsCancelledAfterStop`. Not verified: the `stopIntent` and the state `.alerting` on a device, and that the app compiles (CI).
 
 D089 follow-up 4 (Codex round 3): (1) The durable cancel-when-quiet set drops every id that the plan wants again, at the start of each run, and the engine removes a cancelled alarm from its own list, so a wanted alarm is scheduled again in the same run (rename A, B, A while the alarm rings). (2) The alarm index becomes complete by a one-time clean slate: until `AlarmIndex.isComplete` (App Group flag, set only after a run with no error), the first run treats every waiting alarm with no entry as obsolete, cancels it, and schedules the alarms of the plan again with entries. After that, an alarm with no entry is never kept, also with an unreadable schedule. An alarm of an unreadable schedule that had no entry is cancelled once, and the normal fail-open rule applies. Tests: `aWantedAlarmInTheQuietSetIsNotCancelled`, `theFirstRunMakesTheAlarmIndexComplete`.
+
+## D090 · 2026-10-16 · Reminder actions: "Take All", "Skip", and "Remind in 10 min" (changes the group clause of D034, spec 8.3, and the "no group record" idea of D060)
+
+Maintainer approval on 2026-10-16 (Phase 1 of `~/Documents/Research/maru/2026-10-16-reminder-tracker-plan.md`). The agent made the design choices below. It changes spec 8.3 and 4 by amendment, and it adds T53 to T55.
+
+What the user sees:
+
+- A reminder that names two or more items, with "Show Names in Reminders" on, has "Take All", "Skip All", and "Remind in 10 min". A reminder that stands for one item has "Taken", "Skip", and "Remind in 10 min". Every other reminder has only "Remind in 10 min". With the names hidden there is no group action, because the user cannot see what the action records. A reminder for one item keeps its actions with the names hidden (D034).
+- "Take All" records every dose that the notification names and that is still open. A dose that has a record stays as it is. A skip is never replaced (D034). "Skip All" never replaces a taken dose.
+- A dose that fails its own check is not recorded, and the others are. The notice then says how many were recorded: "Partly recorded", "2 of 3 recorded. Open Maru to check the rest." With no dose recorded, the notice is the "Not recorded" notice of D089. A success is silent, as for "Taken".
+- "Remind in 10 min" makes one new reminder for the group, ten minutes later. It names every dose of the group that is still open, also an item with no "Remind Again". Until its time, the "Remind Again" follow-ups of that group wait. Later follow-ups continue. A record or a skip of the last open dose of the group ends the snooze. A second snooze of the same group replaces the first. After 01:00 on the day after the dose, a snooze is not set, and the notice says so.
+- AlarmKit has no new button. See "Alarms".
+
+How it works:
+
+- Identity. A first reminder needs no new key: its revision names its doses, so "Take All" records all of them or none (a plan edit that keeps the names makes the delivered reminder older, and the action records nothing). A follow-up or a snooze with a group action carries `members` in `userInfo`: one entry for each named open dose, `<slot ID>=<schedule version ID>`, and no name (spec 10). The action keeps a dose only when the plan of now still has that slot with that version. A dose that does not stay is a dose that failed, and the other doses go on. A follow-up for one item keeps the item and version keys of D034 (the alarm button uses them).
+- One category for each set of actions: `reminder.single.v2`, `reminder.group.v2`, and `reminder.snooze.v2`. The system looks a category up by its identifier when it shows a notification, so each identifier names one fixed set. `ReminderAction.register` in `MaruNotifications` registers all of them, because `setNotificationCategories` replaces the whole set. The old category `reminder.single` is not registered any more. A delivered notification of version 1.1 loses its button. A pending request of version 1.1 is replaced at the first run (its category is not one that this build knows).
+- The record is `LocalStore.recordOpenDoses` in `MaruDatabase`. One transaction reads each named dose and appends an event only for a dose that is open, with the source `notificationAction`. It checks, for each dose, that the stored occurrence exists, that its date is today in its own zone (for a follow-up also the day before until 01:00, D039), and that it has the schedule version of the plan of now (D089). The result has one outcome for each dose: recorded, unchanged (taken or skipped before), or not recorded. A change of one dose between the read and the write does not undo the others. The app, the alarm button, and the harness call this one command.
+- The snooze is a `SnoozeEntry` (series ID, plan date, instant) in the App Group defaults (`DefaultsSnoozeStore`). It holds no item ID and no name, and it needs no database change. `FollowUpPlan` turns each entry into one request with the identifier `<group>|snooze`, while the group has an open dose and the instant is before 01:00 on the day after the dose. After the instant, the entry still stands, so the delivered snooze stays while its text is true (I3). `FollowUpEngine` removes every entry that does not stand, at each run. So a record, a skip, an archive, or a delete ends a snooze, and the store needs no clean-up. A snooze is a request of the user: it takes room before the follow-ups under the limit of 64 (spec 8.4). The store keeps at most 12 entries.
+- The snooze action does not need an unlock, because it writes no record. After it, the delegate removes the delivered notification, so only the new reminder stays.
+
+Refactors done, with no change of behavior (the harness and the old tests guard them):
+
+- H. `Phone.perform` drives the real use case on the real database. It replaces `takenFromNotification`, which wrote the record by hand. The fake notification center keeps the category and the level of each request. The oracle checks both for every pending request: a group category needs two or more named doses and shown names (I8), and the level is time sensitive (I9). It checks that a snooze of the user has one request, and that the follow-ups of its group wait (I10). `Phone` also checks that the stored state of each dose equals what the user closed (I11). A test seeds a wrong category and a wrong level, and the oracle finds both.
+- R1. `ReminderPresentation` (category and level) replaces `hasTakenAction` and `isTimeSensitive`. One function, `PendingReminder.isCurrent`, compares a pending request with a wanted request in `ReminderChanges`, in `FollowUpEngine.isCurrent`, and in both `stale` checks. Before, the `stale` checks did not compare the action or the level. One builder makes the system content of both request types.
+- R3. `recordOpenDoses` (above). Today and the widget keep their own paths: they record one dose that the user chose, with a time, an undo, an epoch, or a plan check that the notification action does not have. Moving them would add risk, and no feature needs it.
+- R4. `OccurrenceRecord.nextEvent` makes the next event of a record. The notification action, the Today rows, and the widget use it. The Watch and the as-needed paths keep their own builders: the Watch needs an event ID from the request, and the as-needed paths are in the files of another change.
+
+Refactors not done: R2 (one identity for every one-shot request: only the group actions need the list, and the single identity of D034 stays), R5 (the history range reader belongs to the tracker phase).
+
+Alarms: AlarmKit supports a snooze button. `AlarmPresentation.Alert.secondaryButtonBehavior = .countdown` makes the secondary button a "Repeat" button, and `Alarm.CountdownDuration.postAlert` is the snooze time (documentation read on 2026-10-16). The alert has one secondary button, so a snooze button would replace "Taken" (one item) or "Open Maru" (several items). The system, not Maru, then restarts the alarm, so the plan does not own it, and the alarm engine sees a state (a countdown) that it does not model. That can give a second ring after the next run. I did not add it. "Taken" stays for one item, and "Open Maru" for several. A later decision can use `.countdown` for the alarm of several items if a device check shows that the engine copes.
+
+Rare cases, stated and not chased (the maintainer's rule for this phase):
+
+- A first reminder of an older plan, with the same names, gives no group record. A follow-up and a snooze record the doses that still match.
+- Another path records a dose between the delivery and the tap: the group action leaves that dose as it is. The next run removes the notification.
+- An item with an alarm at the same time as an item with a banner: the banner names only the second item, and its revision comes from both schedules, so the action finds an older plan and records nothing. This is the limit that D089 states. It also applies to "Take All". Not changed.
+- A snooze of a notification that names a device-following item and a fixed-zone item in the zone of the device (D047) can give two snooze banners at the same time, one for each group of the follow-up plan.
+- A record and an undo with no reminder run between them can bring a snooze back. The run after the record removes the entry, so this needs a stop of the app between them.
+- A snooze needs the notification permission. With it off, the app stores the entry, and nothing is delivered. The entry goes at 01:00 on the next day.
+- iOS shows at most four actions. The set has three. I did not check how the Watch shows three actions.
+
+Strings (six languages, `MaruNotifications`): "Take All", "Skip", "Skip All", "Remind in 10 min", "Partly recorded", "%lld of %lld recorded. Open Maru to check the rest.", "Reminder not set", and "This reminder no longer matches a dose of today. Open Maru to see your plan." The text is a draft: a native speaker has not read ja, ko, es, and de.
+
+Tests: 16 harness scenarios in `ActionTests` (Take All with one dose recorded, after a plan edit for a follow-up and for a first reminder, a skip kept, a record before the time, Skip and Skip All, a snooze that comes back, a record before the snooze fires, follow-ups that wait, a group snooze with one dose recorded, a late snooze that is refused, hidden names, the seeded fault of the oracle, and the update from 1.1), one database test for `recordOpenDoses`, and two plan tests for the snooze (`SnoozePlanTests`). Two mutations of the code (no pause of the follow-ups, no version check of a member) made the matching tests fail.
+
+Not verified: the app target. No build on this Mac (CI builds it): `AppModel+ReminderAction`, `ReminderTapDelegate`, `AppStore`, `AppModel+Today`, `AppModel+Widget`, `SystemAlarmCenter`, and `MaruApp` changed. Everything that needs a device: the buttons on the lock screen and on the Watch after an unlock, the three actions in one notification, the second banner ten minutes later, a Focus, and the removal of the delivered notification after "Remind in 10 min".
+
+Device check, with the live log of `docs/process.md`: (1) two items at one time, names on: the reminder has "Take All", "Skip All", and "Remind in 10 min". (2) "Take All" on the lock screen after an unlock: both doses are recorded, and the notification goes. (3) Names off: only "Remind in 10 min" shows for the group. (4) "Skip" on one item. (5) "Remind in 10 min" with "Remind Again" on: one banner after ten minutes, and no follow-up before it. (6) "Remind in 10 min", then record the dose in the app: no banner. (7) Update an iPhone that has version 1.1 reminders: the pending requests get the new buttons after the first run.

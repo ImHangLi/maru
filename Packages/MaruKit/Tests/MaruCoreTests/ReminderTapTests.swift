@@ -109,7 +109,7 @@ struct ReminderTapTests {
         let delivered = DeliveredReminder(deliveredAt: request.fireDate, userInfo: request.userInfo, triggerWeekday: nil)
         func target(at now: String) -> PlannedOccurrence? {
             ReminderTapResolver(now: Fixtures.instant(now), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil)
-                .takenTarget(of: delivered, items: [item], schedules: [schedule])
+                .actionDoses(of: delivered, items: [item], schedules: [schedule]).doses.first
         }
 
         // At 00:10 the "Taken" action records the dose of 1 March, not a dose of 2 March.

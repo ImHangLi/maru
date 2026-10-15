@@ -18,14 +18,16 @@ public struct ReminderContent: Hashable, Sendable {
     public let kind: Kind
     /// The names of the items, in the order of the schedules. `nil` when the user hides the names.
     public let names: [String]?
-    /// The request has the "Taken" action, because it stands for exactly one item at its time (spec 8.3, D034).
-    public let hasTakenAction: Bool
+    /// How the request looks and acts: its actions and its level (D034, D090).
+    public let presentation: ReminderPresentation
 
-    public init(kind: Kind, names: [String]?, hasTakenAction: Bool = false) {
+    public init(kind: Kind, names: [String]?, category: ReminderCategory = .snooze, level: ReminderLevel = .timeSensitive) {
         self.kind = kind
         self.names = names
-        self.hasTakenAction = hasTakenAction
+        presentation = ReminderPresentation(category: category, level: level)
     }
+
+    public var category: ReminderCategory { presentation.category }
 }
 
 /// The text that the system shows for a request.
@@ -195,7 +197,10 @@ public struct ReminderSeries: Hashable, Sendable {
                 ReminderRequest(
                     identifier: id + "|" + date.dayText,
                     trigger: ReminderTrigger(time: time, weekday: nil, date: date, timeZone: timeZone),
-                    content: ReminderContent(kind: .due, names: showsNames ? names : nil, hasTakenAction: names.count == 1),
+                    content: ReminderContent(
+                        kind: .due, names: showsNames ? names : nil,
+                        category: .choose(named: names.count, showsNames: showsNames, singleItem: names.count == 1)
+                    ),
                     userInfo: userInfo,
                     fireDate: fireDate
                 ),
@@ -225,7 +230,10 @@ public struct ReminderSeries: Hashable, Sendable {
     private func content(on weekday: Weekday) -> ReminderContent {
         var seen = Set<ItemID>()
         let names = entries.filter { $0.weekdays.contains(weekday) && seen.insert($0.itemID).inserted }.map(\.name)
-        return ReminderContent(kind: .due, names: showsNames ? names : nil, hasTakenAction: names.count == 1)
+        return ReminderContent(
+            kind: .due, names: showsNames ? names : nil,
+            category: .choose(named: names.count, showsNames: showsNames, singleItem: names.count == 1)
+        )
     }
 }
 

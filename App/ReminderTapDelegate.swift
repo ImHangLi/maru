@@ -3,7 +3,7 @@ import MaruNotifications
 import UserNotifications
 import os
 
-/// Receives a tap on a delivered reminder, or its "Taken" action, and gives it to the model (spec 8.3, D034).
+/// Receives a tap on a delivered reminder, or one of its actions, and gives it to the model (spec 8.3, D034, D090).
 ///
 /// The system keeps a weak reference to its delegate, so the app keeps this object.
 final class ReminderTapDelegate: NSObject, UNUserNotificationCenterDelegate, Sendable {
@@ -12,28 +12,28 @@ final class ReminderTapDelegate: NSObject, UNUserNotificationCenterDelegate, Sen
     /// the system after this time at the latest. A record that runs then still ends by its own rules.
     private static let actionLimit = Duration.seconds(5)
 
-    /// The "Taken" action. It returns when the record commits or fails.
-    private let take: @MainActor @Sendable (DeliveredReminder) async -> Void
+    /// An action button: "Taken", "Skip", "Take All", "Skip All", or "Remind in 10 min". It returns when the action ends.
+    private let act: @MainActor @Sendable (ReminderActionKind, DeliveredReminder) async -> Void
     #if DEBUG
     /// Opens Today with no reminder, for a tap on a notification of the other debug store.
     private let showToday: @MainActor @Sendable () -> Void
 
     init(
         open: @escaping @MainActor @Sendable (DeliveredReminder) -> Void,
-        take: @escaping @MainActor @Sendable (DeliveredReminder) async -> Void,
+        act: @escaping @MainActor @Sendable (ReminderActionKind, DeliveredReminder) async -> Void,
         showToday: @escaping @MainActor @Sendable () -> Void
     ) {
         self.open = open
-        self.take = take
+        self.act = act
         self.showToday = showToday
     }
     #else
     init(
         open: @escaping @MainActor @Sendable (DeliveredReminder) -> Void,
-        take: @escaping @MainActor @Sendable (DeliveredReminder) async -> Void
+        act: @escaping @MainActor @Sendable (ReminderActionKind, DeliveredReminder) async -> Void
     ) {
         self.open = open
-        self.take = take
+        self.act = act
     }
     #endif
 
@@ -64,9 +64,11 @@ final class ReminderTapDelegate: NSObject, UNUserNotificationCenterDelegate, Sen
     }
 
     private func handle(_ response: UNNotificationResponse) async {
-        // A tap on the reminder opens it. "Taken" records its one dose in the background (spec 8.3, D034).
-        let isTaken = response.actionIdentifier == ReminderAction.takenIdentifier
-        guard isTaken || response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
+        let center = UNUserNotificationCenter.current()
+        // A tap on the reminder opens it. An action button works in the background (spec 8.3, D034, D090).
+        // The raw value is the `actionIdentifier` of the response. A tap has another identifier, and gives `nil`.
+        let action = ReminderActionKind(rawValue: response.actionIdentifier)
+        guard action != nil || response.actionIdentifier == UNNotificationDefaultActionIdentifier else { return }
         // The "not recorded" notice is not a reminder. A tap only opens the app.
         guard response.notification.request.identifier != ActionNotice.identifier else { return }
         let notification = response.notification
@@ -89,20 +91,25 @@ final class ReminderTapDelegate: NSObject, UNUserNotificationCenterDelegate, Sen
             // `nil` is a request that fires every day.
             triggerWeekday: trigger?.dateComponents.weekday.flatMap(Weekday.init(calendarWeekday:))
         )
-        if isTaken {
-            // Return to the system when the record ends or at the limit, the first of the two. The record is not
+        if let action {
+            // Return to the system when the action ends or at the limit, the first of the two. The record is not
             // cancelled at the limit: a cancelled write could leave an event that Maru does not know.
-            let take = take
+            let act = act
             await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
                 let end = ActionEnd(continuation)
                 Task {
-                    await take(reminder)
+                    await act(action, reminder)
                     end.finish()
                 }
                 Task {
                     try? await Task.sleep(for: ReminderTapDelegate.actionLimit)
                     end.finish()
                 }
+            }
+            // The system removes the notification after an action. A snooze keeps the doses open, so the reminder runs
+            // would keep a notification that is still true. Remove it here, so only the new reminder stays (D090).
+            if action == .snooze {
+                center.removeDeliveredNotifications(withIdentifiers: [notification.request.identifier])
             }
         } else {
             await open(reminder)

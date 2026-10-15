@@ -112,16 +112,8 @@ extension AppModel {
 
     /// A new event revises the last event of the row, also after an undo.
     private func event(for entry: Entry, _ action: IntakeAction, at time: Date? = nil) -> PendingEvent {
-        let now = Date()
-        return PendingEvent(
-            event: IntakeEvent(
-                occurrenceID: entry.id,
-                action: action,
-                occurredAt: time ?? now,
-                recordedAt: now,
-                source: .app,
-                supersedes: entry.record.events.last?.id
-            ),
+        PendingEvent(
+            event: entry.record.nextEvent(action, at: Date(), occurredAt: time, source: .app),
             scheduleVersionID: entry.occurrence.scheduleVersionID
         )
     }
@@ -254,7 +246,7 @@ extension AppModel {
         return history.days?.lazy.flatMap(\.doses).first { $0.occurrence.id == id }?.record
     }
 
-    private func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
+    func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
         noteRecords(records)
         for record in records {
             today.pending[record.occurrenceID] = nil
@@ -293,7 +285,7 @@ extension AppModel {
         }
     }
 
-    private func didFail(_ events: [PendingEvent], _ failure: RecordFailure) {
+    func didFail(_ events: [PendingEvent], _ failure: RecordFailure) {
         // The open history shows the alert. Today is under it.
         func show(_ failure: TodayFailure) {
             if history.isOpen { history.failure = failure } else { today.failure = failure }

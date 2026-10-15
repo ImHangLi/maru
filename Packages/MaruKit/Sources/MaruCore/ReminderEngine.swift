@@ -13,24 +13,22 @@ public struct PendingReminder: Hashable, Sendable {
     public let userInfo: [String: String]
     /// The text that the system shows. It can name items, so it stays in memory and is never logged (spec 10).
     public let text: ReminderText?
-    /// The request has the category of the "Taken" action (D034).
-    public let hasTakenAction: Bool
-    /// The request has the time-sensitive level (D062). A request from a build before D062 has the default
-    /// level, so the engines replace it.
-    public let isTimeSensitive: Bool
+    /// The category and the level that the system holds (D034, D062, D090). `nil` when the category is not one that this build
+    /// registers, for example the category of a build before D090. A request from a build before D062 has the default level.
+    /// Either way the engines replace the request.
+    public let presentation: ReminderPresentation?
     /// When the system delivered the notification. `nil` for a pending request.
     public let deliveredAt: Date?
 
     public init(
-        identifier: String, userInfo: [String: String], text: ReminderText? = nil, hasTakenAction: Bool = false,
-        isTimeSensitive: Bool = true, deliveredAt: Date? = nil
+        identifier: String, userInfo: [String: String], text: ReminderText? = nil,
+        presentation: ReminderPresentation? = nil, deliveredAt: Date? = nil
     ) {
         self.deliveredAt = deliveredAt
         self.identifier = identifier
         self.userInfo = userInfo
         self.text = text
-        self.hasTakenAction = hasTakenAction
-        self.isTimeSensitive = isTimeSensitive
+        self.presentation = presentation
     }
 }
 
@@ -68,8 +66,8 @@ public protocol ReminderPrivacyStore: Sendable {
 
 /// What a run must change in the system to make the pending requests the wanted ones.
 ///
-/// A pending request is current when it has the identifier, the `userInfo`, the text, and the action of a wanted
-/// request. The identifier gives the trigger, the revision in `userInfo` gives the members, and the text gives
+/// A pending request is current when it has the identifier, the `userInfo`, the text, and the presentation (category and
+/// level) of a wanted request (`PendingReminder.isCurrent`). The identifier gives the trigger, the revision in `userInfo` gives the members, and the text gives
 /// the names, the setting, and the language (D029). So a second run with the same plan changes nothing,
 /// and a rename replaces only the requests that name the item. A request from before the "Taken" action
 /// has no category, so the first run after the update replaces it (D034).
@@ -87,8 +85,7 @@ public struct ReminderChanges: Hashable, Sendable {
         let identifiers = Set(wanted.map(\.identifier))
         add = wanted.filter { request in
             guard let held = current[request.identifier] else { return true }
-            return held.userInfo != request.userInfo || held.text != text(request.content)
-                || held.hasTakenAction != request.content.hasTakenAction || !held.isTimeSensitive
+            return !held.isCurrent(userInfo: request.userInfo, text: text(request.content), presentation: request.content.presentation)
         }
         remove = pending.map(\.identifier).filter {
             $0.hasPrefix(ReminderSeries.identifierPrefix) && !identifiers.contains($0)
@@ -267,7 +264,9 @@ public actor ReminderEngine {
             let held = Dictionary(pending.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
             let stale = wanted.filter { request in
                 guard let old = held[request.identifier] else { return false }
-                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+                return !old.isCurrent(
+                    userInfo: request.userInfo, text: center.text(for: request.content), presentation: request.content.presentation
+                )
             }.map(\.identifier)
             await remove(removals + stale)
             _ = await pendingAfterRemoval()
@@ -301,7 +300,9 @@ public actor ReminderEngine {
             let held = Dictionary(pendingNow.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
             return wanted.filter { request in
                 guard let old = held[request.identifier] else { return false }
-                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+                return !old.isCurrent(
+                    userInfo: request.userInfo, text: center.text(for: request.content), presentation: request.content.presentation
+                )
             }
         }
         var stale = staleRequests()

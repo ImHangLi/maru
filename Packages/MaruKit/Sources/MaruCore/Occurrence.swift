@@ -154,3 +154,22 @@ public struct OccurrenceRecord: Hashable, Sendable {
         events.append(event)
     }
 }
+
+extension OccurrenceRecord {
+    /// The one place that makes the next event of a record (D090). The event revises the last event of the record, also after
+    /// an undo, so a second event from a stale read is rejected (T18).
+    ///
+    /// - Parameters:
+    ///   - now: When the app writes the event.
+    ///   - occurredAt: When the user says that the intake happened. `nil` means `now`.
+    public func nextEvent(_ action: IntakeAction, at now: Date, occurredAt: Date? = nil, source: EventSource) -> IntakeEvent {
+        IntakeEvent(
+            occurrenceID: occurrenceID,
+            action: action,
+            occurredAt: occurredAt ?? now,
+            recordedAt: now,
+            source: source,
+            supersedes: events.last?.id
+        )
+    }
+}

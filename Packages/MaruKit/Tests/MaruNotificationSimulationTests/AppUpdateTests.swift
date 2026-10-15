@@ -9,7 +9,7 @@ struct AppUpdateTests {
     private func oldRequest(_ id: String, _ body: String, title: String, fire: Date) -> SimNotification {
         SimNotification(
             identifier: id, text: ReminderText(title: title, body: body),
-            userInfo: ["seriesID": "series|device|21:00", "plannedDate": "2026-10-15"], hasTakenAction: false,
+            userInfo: ["seriesID": "series|device|21:00", "plannedDate": "2026-10-15"], presentation: nil,
             threadIdentifier: nil, trigger: .instant(fire)
         )
     }

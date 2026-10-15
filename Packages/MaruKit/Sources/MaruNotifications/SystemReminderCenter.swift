@@ -84,22 +84,48 @@ extension UNNotificationRequest {
     /// A calendar request: it repeats, or it fires one time on its date (D036).
     /// The text is fixed here, in the language of now (spec 8.2, D029).
     convenience init(_ request: ReminderRequest, locale: Locale = .current) {
-        let content = UNMutableNotificationContent()
-        let text = request.content.text(locale: locale)
-        content.title = text.title
-        content.body = text.body
-        content.sound = .default
-        // A reminder shows during a Focus, unless the user turns off Time Sensitive alerts for Maru (D062).
-        content.interruptionLevel = .timeSensitive
-        content.userInfo = request.userInfo
-        if request.content.hasTakenAction { content.categoryIdentifier = ReminderAction.categoryIdentifier }
         self.init(
             identifier: request.identifier,
-            content: content,
+            content: UNMutableNotificationContent.reminder(
+                request.content, userInfo: request.userInfo, threadIdentifier: nil, locale: locale
+            ),
             trigger: UNCalendarNotificationTrigger(
                 dateMatching: request.trigger.dateComponents, repeats: request.trigger.repeats
             )
         )
+    }
+}
+
+extension UNMutableNotificationContent {
+    /// The one place that turns a `ReminderContent` into the content of the system: the text, the sound, the level, the
+    /// category, and the `userInfo`. The two request types use it (D090).
+    static func reminder(
+        _ reminder: ReminderContent, userInfo: [String: String], threadIdentifier: String?, locale: Locale
+    ) -> UNMutableNotificationContent {
+        let content = UNMutableNotificationContent()
+        let text = reminder.text(locale: locale)
+        content.title = text.title
+        content.body = text.body
+        content.sound = .default
+        content.interruptionLevel = reminder.presentation.level.system
+        content.categoryIdentifier = reminder.presentation.category.rawValue
+        content.userInfo = userInfo
+        if let threadIdentifier { content.threadIdentifier = threadIdentifier }
+        return content
+    }
+}
+
+extension ReminderLevel {
+    /// A reminder shows during a Focus, unless the user turns off Time Sensitive alerts for Maru (D062).
+    var system: UNNotificationInterruptionLevel {
+        switch self {
+        case .timeSensitive: .timeSensitive
+        case .active: .active
+        }
+    }
+
+    init(_ level: UNNotificationInterruptionLevel) {
+        self = level == .timeSensitive ? .timeSensitive : .active
     }
 }
 
@@ -109,8 +135,10 @@ extension PendingReminder {
             identifier: request.identifier,
             userInfo: request.content.userInfo as? [String: String] ?? [:],
             text: ReminderText(title: request.content.title, body: request.content.body),
-            hasTakenAction: request.content.categoryIdentifier == ReminderAction.categoryIdentifier,
-            isTimeSensitive: request.content.interruptionLevel == .timeSensitive,
+            // A category that this build does not register is not a presentation that the engines can keep.
+            presentation: ReminderCategory(rawValue: request.content.categoryIdentifier).map {
+                ReminderPresentation(category: $0, level: ReminderLevel(request.content.interruptionLevel))
+            },
             deliveredAt: deliveredAt
         )
     }

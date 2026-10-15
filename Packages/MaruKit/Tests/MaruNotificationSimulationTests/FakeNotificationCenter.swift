@@ -55,7 +55,9 @@ struct SimNotification: Sendable {
     let identifier: String
     let text: ReminderText
     let userInfo: [String: String]
-    let hasTakenAction: Bool
+    /// The category and the level that the system holds. `nil` is a category that this build does not register, as a request of an
+    /// earlier build has (D090). The level is kept, so the oracle can check it.
+    let presentation: ReminderPresentation?
     let threadIdentifier: String?
     let trigger: SimTrigger
 }
@@ -135,7 +137,7 @@ actor FakeNotificationCenter: FollowUpCenter {
         try store(
             SimNotification(
                 identifier: request.identifier, text: text(for: request.content), userInfo: request.userInfo,
-                hasTakenAction: request.content.hasTakenAction, threadIdentifier: nil, trigger: trigger
+                presentation: request.content.presentation, threadIdentifier: nil, trigger: trigger
             )
         )
     }
@@ -146,7 +148,7 @@ actor FakeNotificationCenter: FollowUpCenter {
         try store(
             SimNotification(
                 identifier: request.identifier, text: text(for: request.content), userInfo: request.userInfo,
-                hasTakenAction: request.content.hasTakenAction, threadIdentifier: request.threadIdentifier,
+                presentation: request.content.presentation, threadIdentifier: request.threadIdentifier,
                 trigger: .instant(fire)
             )
         )
@@ -185,7 +187,7 @@ actor FakeNotificationCenter: FollowUpCenter {
     func rewriteIdentifiers(_ transform: (String) -> String) {
         func rewrite(_ n: SimNotification) -> SimNotification {
             SimNotification(
-                identifier: transform(n.identifier), text: n.text, userInfo: n.userInfo, hasTakenAction: n.hasTakenAction,
+                identifier: transform(n.identifier), text: n.text, userInfo: n.userInfo, presentation: n.presentation,
                 threadIdentifier: n.threadIdentifier, trigger: n.trigger
             )
         }
@@ -307,7 +309,7 @@ actor FakeNotificationCenter: FollowUpCenter {
     private func pendingReminder(_ notification: SimNotification, deliveredAt: Date?) -> PendingReminder {
         PendingReminder(
             identifier: notification.identifier, userInfo: notification.userInfo, text: notification.text,
-            hasTakenAction: notification.hasTakenAction, isTimeSensitive: true, deliveredAt: deliveredAt
+            presentation: notification.presentation, deliveredAt: deliveredAt
         )
     }
 

@@ -144,13 +144,16 @@ extension LocalStore {
             // A failed flush is no success, also when another sync call works.
             guard Self.flush(walFile, sync: sync) else { throw StorageError.unavailable }
             return result
-        } catch let failure as RecordFailure {
-            throw failure
-        } catch StorageError.replaced {
-            throw .replaced
         } catch {
-            throw .storage(StorageError(error))
+            throw Self.recordFailure(error)
         }
+    }
+
+    /// The failure of a record transaction, from any error that the transaction or the flush threw.
+    static func recordFailure(_ error: any Error) -> RecordFailure {
+        if let failure = error as? RecordFailure { return failure }
+        if let storage = error as? StorageError, storage == .replaced { return .replaced }
+        return .storage(StorageError(error))
     }
 
     /// Adds an event to the checked history of its occurrence, and writes the event and the projection.

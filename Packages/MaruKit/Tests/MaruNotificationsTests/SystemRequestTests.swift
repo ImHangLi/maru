@@ -31,8 +31,16 @@ struct SystemRequestTests {
         #expect(system.content.title == "Time to take")
         #expect(system.content.body == "Metformin")
         #expect(system.content.subtitle.isEmpty)
-        // One item at the time, so the request has the category of the "Taken" action (D034).
-        #expect(system.content.categoryIdentifier == ReminderAction.categoryIdentifier)
+        // One item at the time, so the request has the category of the "Taken" action (D034), and the time-sensitive level (D062).
+        #expect(system.content.categoryIdentifier == ReminderCategory.single.rawValue)
+        #expect(system.content.interruptionLevel == .timeSensitive)
+        // Every category that a request can have has its own actions in the one registry (D090).
+        #expect(ReminderCategory.allCases.map { ReminderAction.category($0, locale: locale).actions.map(\.identifier) } == [
+            ["reminder.taken", "reminder.skip", "reminder.snooze"],
+            ["reminder.taken", "reminder.skip", "reminder.snooze"],
+            ["reminder.snooze"],
+        ])
+        #expect(ReminderAction.category(.group, locale: locale).actions.map(\.title) == ["Take All", "Skip All", "Remind in 10 min"])
         // With the names off, the text names no item.
         let neutral = ReminderContent(kind: .due, names: nil).text(locale: locale)
         #expect(neutral == ReminderText(title: "Time to take", body: "Open Maru to see your plan."))
@@ -55,7 +63,7 @@ struct SystemRequestTests {
                     identifier: request.identifier,
                     userInfo: request.userInfo,
                     text: request.content.text(locale: locale),
-                    hasTakenAction: true
+                    presentation: ReminderPresentation(category: .single)
                 )
         )
     }

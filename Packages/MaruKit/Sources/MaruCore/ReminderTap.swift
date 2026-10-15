@@ -211,52 +211,102 @@ public enum ReminderActionTarget: Hashable, Sendable {
     case none
 }
 
+/// The doses that an action of a delivered reminder stands for, before the stored state is checked (spec 8.3, D034, D090).
+public struct ReminderActionDoses: Hashable, Sendable {
+    /// How many doses the reminder names. The action counts the doses that fail a check against this number.
+    public let named: Int
+    /// The doses that the plan of now still has with the schedule version of the request. Each still needs the checks of the stored occurrence.
+    public let doses: [PlannedOccurrence]
+
+    public init(named: Int, doses: [PlannedOccurrence]) {
+        self.named = named
+        self.doses = doses
+    }
+}
+
 extension ReminderTapResolver {
-    /// The one dose that the "Taken" action of a delivered reminder stands for, or `nil` (spec 8.3, D034).
+    /// The doses that "Taken", "Skip", "Take All", and "Skip All" of a delivered reminder stand for (spec 8.3, D034, D090).
     ///
-    /// A series reminder must resolve with no doubt, by the rules of `resolve`: on time, today, the plan of now,
-    /// and no clock change. Its revision names the slots and the schedule versions of its members, so a reminder
-    /// from before a plan change does not resolve. A dated request follows the same rules, with the date that it carries (D036).
-    /// A follow-up has no revision. It carries its plan date and the ID of its one item. Its date must be today,
-    /// or the day before until `FollowUpPlan.latestTime`. The device zone must be certain for a series that
-    /// follows the device, and the dose must be of that item.
-    /// A follow-up with no item ID gives `nil`.
-    /// The reminder must then have exactly one item. The caller checks the stored occurrence, its schedule
-    /// version for a follow-up, and its record.
-    public func takenTarget(of reminder: DeliveredReminder, items: [Item], schedules: [Schedule]) -> PlannedOccurrence? {
-        let candidates: [PlannedOccurrence]
-        if reminder.userInfo[FollowUpRequest.plannedDateKey] != nil {
-            candidates = followUpCandidates(reminder, items: items, schedules: schedules)
-        } else if case let .resolved(found) = resolve(reminder, items: items, schedules: schedules) {
-            candidates = found
-        } else {
-            return nil
+    /// A series reminder must resolve with no doubt, by the rules of `resolve`: on time, today, the plan of now, and no clock change.
+    /// Its revision names the slots and the schedule versions of its members, so a reminder from before a plan change does not
+    /// resolve. All doses of its time and date are then the doses that it names. A dated request follows the same rules, with the date
+    /// that it carries (D036).
+    ///
+    /// A follow-up or a snooze has no revision. It carries its plan date, and one of two identities:
+    /// - The ID of its one item and of its schedule version (D034). The doses are those of that item: exactly one.
+    /// - The list of its doses (`FollowUpRequest.membersKey`, D090). A dose stays only when the plan of now still has its slot with
+    ///   the schedule version of the list. A dose that does not stay is a dose that fails, and the other doses stay.
+    /// The date of a follow-up must be today, or the day before until `FollowUpPlan.latestTime`. The device zone must be certain for a
+    /// series that follows the device. A request with no identity gives no dose.
+    public func actionDoses(of reminder: DeliveredReminder, items: [Item], schedules: [Schedule]) -> ReminderActionDoses {
+        guard reminder.userInfo[FollowUpRequest.plannedDateKey] != nil else {
+            guard case let .resolved(found) = resolve(reminder, items: items, schedules: schedules) else {
+                return ReminderActionDoses(named: 0, doses: [])
+            }
+            return ReminderActionDoses(named: found.count, doses: found)
         }
-        return candidates.count == 1 ? candidates[0] : nil
+        guard let context = followUpContext(reminder, items: items, schedules: schedules) else {
+            return ReminderActionDoses(named: reminder.userInfo[FollowUpRequest.membersKey]?.split(separator: ",").count ?? 1, doses: [])
+        }
+        if let text = reminder.userInfo[FollowUpRequest.membersKey] {
+            let entries = text.split(separator: ",").map { $0.split(separator: "=").compactMap { UUID(uuidString: String($0)) } }
+            let members = entries.compactMap { parts -> (slot: ScheduleSlotID, version: ScheduleVersionID)? in
+                parts.count == 2 ? (ScheduleSlotID(parts[0]), ScheduleVersionID(parts[1])) : nil
+            }
+            guard members.count == entries.count else { return ReminderActionDoses(named: entries.count, doses: []) }
+            let doses = context.candidates.filter { candidate in
+                members.contains { $0.slot == candidate.slotID && $0.version == candidate.scheduleVersionID }
+            }
+            return ReminderActionDoses(named: members.count, doses: doses)
+        }
+        // A dose of another item at this time means that the plan changed. Then the action records nothing.
+        let itemID = reminder.userInfo[FollowUpRequest.itemIDKey]
+        let ownSlots = Set(context.reminding.filter { $0.itemID.rawValue.uuidString == itemID }.flatMap(\.slots).map(\.id))
+        let own = itemID != nil && context.candidates.allSatisfy { ownSlots.contains($0.slotID) }
+        return ReminderActionDoses(named: 1, doses: own && context.candidates.count == 1 ? context.candidates : [])
     }
 
-    /// The doses that the plan of now has at the time and on the date of a follow-up, when the action can
-    /// still record a dose of that date (`FollowUpPlan.takesDose`).
-    /// Only the schedules of the item that the follow-up was made for count.
-    private func followUpCandidates(_ reminder: DeliveredReminder, items: [Item], schedules: [Schedule]) -> [PlannedOccurrence] {
+    /// The one-time request of a "Remind in 10 min" action: the group of the reminder and the time at which it comes again (D090).
+    /// `nil` when the reminder does not name a dose of today that the plan has, or when the new time is not before `latestTime` of
+    /// the day after the dose: the follow-ups of that dose have stopped.
+    public func snoozeEntry(of reminder: DeliveredReminder, items: [Item], schedules: [Schedule]) -> SnoozeEntry? {
+        guard let seriesID = reminder.userInfo[ReminderRequest.seriesIDKey] else { return nil }
+        let date: LocalDate
+        let zone: NamedTimeZone
+        if reminder.userInfo[FollowUpRequest.plannedDateKey] != nil {
+            guard let context = followUpContext(reminder, items: items, schedules: schedules) else { return nil }
+            (date, zone) = (context.date, context.zone)
+        } else {
+            guard case let .resolved(found) = resolve(reminder, items: items, schedules: schedules), let first = found.first else {
+                return nil
+            }
+            (date, zone) = (first.plannedDate, first.timeZone)
+        }
+        let fireAt = now.addingTimeInterval(Double(SnoozeEntry.minutes) * 60)
+        guard fireAt < FollowUpPlan.latestInstant(of: date, in: zone) else { return nil }
+        return SnoozeEntry(seriesID: seriesID, plannedDate: date.dayText, fireAt: fireAt)
+    }
+
+    /// What a follow-up or a snooze names, when the action can still record a dose of its date (`FollowUpPlan.takesDose`):
+    /// the doses that the plan of now has at its time and on its date, and the schedules that remind.
+    private func followUpContext(
+        _ reminder: DeliveredReminder, items: [Item], schedules: [Schedule]
+    ) -> (date: LocalDate, zone: NamedTimeZone, candidates: [PlannedOccurrence], reminding: [Schedule])? {
         let dateParts = (reminder.userInfo[FollowUpRequest.plannedDateKey] ?? "").split(separator: "-").compactMap { Int($0) }
         guard let seriesID = reminder.userInfo[ReminderRequest.seriesIDKey],
               let series = SeriesKey(seriesID: seriesID, deviceTimeZone: deviceTimeZone),
-              let itemID = reminder.userInfo[FollowUpRequest.itemIDKey],
               dateParts.count == 3,
               let date = try? LocalDate(year: dateParts[0], month: dateParts[1], day: dateParts[2])
-        else { return [] }
+        else { return nil }
         let zone = series.timeZone ?? deviceTimeZone
         let zoneIsKnown = series.timeZone != nil
             || observedTimeZone.map { $0.timeZone == deviceTimeZone && $0.since < reminder.deliveredAt } == true
-        guard zoneIsKnown, FollowUpPlan.takesDose(on: date, at: now, in: zone) else { return [] }
+        guard zoneIsKnown, FollowUpPlan.takesDose(on: date, at: now, in: zone) else { return nil }
         let activeItems = Set(items.filter { !$0.isArchived }.map(\.id))
         // A follow-up comes only for a schedule that reminds.
         let reminding = schedules.filter { activeItems.contains($0.itemID) && $0.isEnabled && $0.endDate == nil }
         let candidates = series.candidates(on: date, schedules: reminding, zone: zone, current: true, rule: nil)
-        // A dose of another item at this time means that the plan changed. Then the action records nothing.
-        let ownSlots = Set(reminding.filter { $0.itemID.rawValue.uuidString == itemID }.flatMap(\.slots).map(\.id))
-        return candidates.allSatisfy { ownSlots.contains($0.slotID) } ? candidates : []
+        return (date, zone, candidates, reminding)
     }
 }
 

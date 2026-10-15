@@ -21,7 +21,7 @@ import Testing
 
         let plan = try await store.reminderPlan(at: now, deviceTimeZone: Fixtures.shanghai, privacy: .showNames)
         #expect(plan.needs[good.schedule.id] != nil)
-        _ = try await store.followUpPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none)
+        _ = try await store.followUpPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none, snoozes: [])
     }
 
     @Test func aBadScheduleIsSkippedOnlyByTheReminderPlan() async throws {
@@ -79,7 +79,7 @@ import Testing
         )
         _ = LocalStore.takeSkippedRules()
         let now = Fixtures.instant("2026-03-01T01:00:00Z")
-        let plan = try await store.followUpPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none)
+        let plan = try await store.followUpPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none, snoozes: [])
         #expect(plan.hasUnreadable)
         let alarms = try await store.alarmPlan(privacy: .showNames, at: now, deviceTimeZone: Fixtures.shanghai, alarms: .none)
         #expect(alarms.hasUnreadable)

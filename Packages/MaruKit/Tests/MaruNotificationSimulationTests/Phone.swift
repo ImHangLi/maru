@@ -6,6 +6,8 @@
 // What runs for real:
 //   ReminderPlan, ReminderEngine, FollowUpPlan, FollowUpEngine, AlarmPlan, AlarmEngine, and a LocalStore on a
 //   real SQLite file in a temporary directory. The run order is the one of `AppStore.reconcileReminders`.
+//   The action buttons of a notification run the real use cases (`LocalStore.recordOpenDoses`, `LocalStore.snoozeEntry`,
+//   and the snooze store of the follow-up engine) through `Phone.perform` (D090).
 //
 // What is simulated (`FakeNotificationCenter`, `FakeAlarmCenter`, `SimDevice`):
 //   the pending and the delivered sets, calendar triggers that repeat, dated triggers, one-time triggers, delivery
@@ -19,6 +21,8 @@
 //
 // The invariant (D084, D086): every pending request and every delivered Maru notification names exactly the open
 // doses that Today shows for its occurrence, and every open dose with a time has a reminder before its time.
+// Since D090 the oracle also checks the category and the level of every pending request, and that a snooze of the user
+// has one request while its group has an open dose, and that the follow-ups of its group wait.
 //
 // The maintainer asked for this harness explicitly, so it goes beyond the usual test limit of D016.
 // The gaps between the fake and real iOS are in `docs/research/2026-10-15-notification-correctness.md`.
@@ -150,8 +154,10 @@ struct ProcessSource: ReminderPlanSource, FollowUpSource, AlarmSource {
         try await store.reminderPlan(at: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarms: alarms)
     }
 
-    func followUpPlan(privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover) async throws -> FollowUpPlan {
-        try await store.followUpPlan(privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms)
+    func followUpPlan(
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover, snoozes: [SnoozeEntry]
+    ) async throws -> FollowUpPlan {
+        try await store.followUpPlan(privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms, snoozes: snoozes)
     }
 
     func confirmFollowUpChanges(at time: Date) async throws {
@@ -227,7 +233,7 @@ final class SimProcess: @unchecked Sendable {
             alarms: coverNow, clock: { device.now }, generations: phone.counter, migration: phone.seriesMigration
         )
         followUps = FollowUpEngine(
-            source: source, center: center, privacy: phone.privacy,
+            source: source, center: center, privacy: phone.privacy, snoozes: phone.snoozes,
             alarms: coverNow, clock: { device.now }, generations: phone.counter, migration: phone.followUpMigration
         )
         alarms = AlarmEngine(
@@ -271,6 +277,8 @@ final class Phone: @unchecked Sendable {
     let alarmIndex = MemoryAlarmIndex()
     let store: LocalStore
     let privacy = SimPrivacy()
+    /// The snoozes of the user. They live in the defaults of the device, so a stop of the app keeps them (D090).
+    let snoozes = MemorySnoozeStore()
     let counter = SimCounter()
     let seriesMigration = SimMigration()
     let followUpMigration = SimMigration()
@@ -390,6 +398,8 @@ final class Phone: @unchecked Sendable {
     /// The outcome of the last run, and the error if it threw. A run that throws is a failure of the app (D086).
     private(set) var lastOutcome: (reminders: ReminderOutcome, followUps: FollowUpOutcome?)?
     private(set) var lastError: (any Error)?
+    /// The device zone that a completed run saw, and since when: the value of `DefaultsTimeZoneRecord`. A reminder action reads it (spec 8.3).
+    private(set) var observedZone: ObservedTimeZone?
 
     private func run(_ process: SimProcess, check: Bool = true) async {
         lastError = nil
@@ -397,6 +407,7 @@ final class Phone: @unchecked Sendable {
         asksForPermissionInNextRun = false
         do {
             lastOutcome = try await process.reconcile(at: device.now, zone: device.zone, mayAskForPermission: mayAsk)
+            if observedZone?.timeZone != device.zone { observedZone = ObservedTimeZone(timeZone: device.zone, since: device.now) }
         } catch {
             lastOutcome = nil
             lastError = error
@@ -437,6 +448,7 @@ final class Phone: @unchecked Sendable {
 
     /// The run after a save, a record, a skip, or an undo. It uses the kill or the interleaved action of the scenario.
     private func runAfterChange() async {
+        truth.pruneSnoozes(at: device.now, deviceZone: device.zone)
         guard let process, process.life.alive else { return await launch() }
         guard nextRunKillsAtCall != nil || !nextRunInterleave.isEmpty else { return await run(process) }
         let racing = !nextRunInterleave.isEmpty
@@ -561,6 +573,23 @@ final class Phone: @unchecked Sendable {
         models[name] = model
         let index = truth.index(of: name)
         truth.items[index].slots.append(SimSlot(id: slot.id, times: [(from, time)]))
+        await runAfterChange()
+    }
+
+    /// A new schedule version with another dose text, from today. The times and the names stay, so a delivered notification stays true,
+    /// and the version of its doses is not the version of the plan any more (D089).
+    func changeDose(_ name: String, to text: String) async throws {
+        await open()
+        var model = models[name]!
+        let latest = model.schedule.versions.last!
+        try model.schedule.appendVersion(
+            ScheduleVersion(
+                scheduleID: model.schedule.id, effectiveFrom: zoneToday(of: name), weeklyRule: latest.weeklyRule,
+                dayCycle: latest.dayCycle, slotTimes: latest.slotTimes, dose: Dose(text), timeZonePolicy: latest.timeZonePolicy
+            )
+        )
+        try await store.save(model.item, schedule: model.schedule)
+        models[name] = model
         await runAfterChange()
     }
 
@@ -721,40 +750,101 @@ final class Phone: @unchecked Sendable {
     }
 
     /// A record that commits while a run is in progress. It starts no run of its own.
-    func recordWithoutRun(_ name: String) async throws {
-        try await write(name, slot: 0, .taken, date: nil)
+    /// The app is not running its reminders yet, so a delivered notification can still name a dose that has a record.
+    func recordWithoutRun(_ name: String, _ action: IntakeAction = .taken) async throws {
+        try await write(name, slot: 0, action, date: nil)
+    }
+
+    /// The state of one dose in the database. With `nil`, the date is today in the zone of the item.
+    func status(of name: String, slot: Int = 0, date: LocalDate? = nil) async throws -> OccurrenceStatus {
+        let item = truth.items[truth.index(of: name)]
+        let zone: NamedTimeZone = if case let .fixed(zone) = item.zone { zone } else { device.zone }
+        let occurrence = try #require(try await store.occurrence(slotID: item.slots[slot].id, on: date ?? today(in: zone)))
+        return try await store.status(of: occurrence.id)
     }
 
     func undo(_ name: String, slot: Int = 0, date: LocalDate? = nil) async throws {
         try await record(name, slot: slot, .undo, date: date)
     }
 
-    /// The "Taken" button on a delivered notification. The system removes that notification, and the app records and runs.
-    func takenFromNotification(_ identifier: String) async throws {
-        let delivered = await center.shown[identifier]!
-        let item: SimItem
-        let date: LocalDate
-        if let id = delivered.notification.userInfo[FollowUpRequest.itemIDKey] {
-            item = truth.items.first { $0.id.rawValue.uuidString == id }!
-            date = self.date(delivered.notification.userInfo[FollowUpRequest.plannedDateKey]!)
-        } else {
-            // A first reminder with the action names exactly one item. Its date is the date of the delivery.
-            item = truth.items.first { delivered.notification.text.body == $0.name }!
-            let zone = item.zone == .device ? delivered.deviceZone : { if case let .fixed(zone) = item.zone { zone } else { delivered.deviceZone } }()
-            date = LocalDate(delivered.date, in: zone)
-        }
-        await center.dismiss(identifier)
-        await open()
-        let time = Self.wallClockOfIdentifier(identifier)
-        let slot = item.slots.firstIndex { $0.time(on: date) == time } ?? 0
-        try await write(item.name, slot: slot, .taken, date: date)
-        await runAfterChange()
+    /// What the user chooses on a delivered notification (spec 8.3, D034, D090).
+    enum Action {
+        case taken
+        case skip
+        case snooze
     }
 
-    private static func wallClockOfIdentifier(_ identifier: String) -> WallClockTime? {
-        let parts = identifier.split(separator: "|").map(String.init)
-        let text = identifier.hasPrefix("followup|") ? parts[3] : parts[2]
-        return wallClock(text)
+    /// An action button of a delivered notification. The system removes the notification, the app starts in the background if it is
+    /// not running, the real use case of the app runs on the real database, and the app runs the reminders and waits for them (D083).
+    ///
+    /// `Truth` changes by what the action is meant to do, and the stored state is then checked against it. The result is what the
+    /// use case reports, so a scenario can check the count of recorded doses. A snooze returns `nil`, and a record that found no dose
+    /// returns a result with no dose.
+    @discardableResult
+    func perform(_ action: Action, on identifier: String) async throws -> ReminderActionResult? {
+        let delivered = try #require(await center.shown[identifier], "no delivered notification \(identifier)")
+        let weekday: Weekday?
+        if case let .calendar(components, _) = delivered.notification.trigger {
+            weekday = components.weekday.flatMap(Weekday.init(calendarWeekday:))
+        } else {
+            weekday = nil
+        }
+        let reminder = DeliveredReminder(deliveredAt: delivered.date, userInfo: delivered.notification.userInfo, triggerWeekday: weekday)
+        await center.dismiss(identifier)
+        await open()
+        let now = device.now
+        switch action {
+        case .taken, .skip:
+            let result = try await store.recordOpenDoses(
+                for: reminder, action: action == .taken ? .taken : .skipped, at: now, deviceTimeZone: device.zone,
+                observedTimeZone: observedZone
+            )
+            for dose in result.doses {
+                if case .recorded = dose.outcome { truth.closed.insert(ClosedKey(slot: dose.key.slotID, date: dose.key.plannedDate)) }
+            }
+            await expectStoredMatchesTruth("after the action on \(identifier)")
+            // The call waits for the reminder run only after a record, as the app does.
+            if !result.recorded.isEmpty { await runAfterChange() }
+            return result
+        case .snooze:
+            guard let entry = try await store.snoozeEntry(
+                for: reminder, at: now, deviceTimeZone: device.zone, observedTimeZone: observedZone
+            ) else { return nil }
+            snoozes.add(entry)
+            // The group of the notification, read from the notification and not from the entry.
+            let parts = Oracle.parts(of: identifier)
+            let date = Self.parseDate(delivered.notification.userInfo["plannedDate"]) ?? parts.date
+                ?? LocalDate(delivered.date, in: device.zone)
+            truth.snoozes.append(SimSnooze(date: date, time: parts.time, fireAt: entry.fireAt))
+            await runAfterChange()
+            return nil
+        }
+    }
+
+    static func parseDate(_ text: String?) -> LocalDate? {
+        guard let parts = text?.split(separator: "-").compactMap({ Int($0) }), parts.count == 3 else { return nil }
+        return try? LocalDate(year: parts[0], month: parts[1], day: parts[2])
+    }
+
+    /// Every stored occurrence of the items around today has the state that `Truth` says: closed if and only if the user closed it.
+    func expectStoredMatchesTruth(_ label: String, sourceLocation: SourceLocation = #_sourceLocation) async {
+        for item in truth.items {
+            for slot in item.slots {
+                for offset in -1...1 {
+                    let zone: NamedTimeZone = if case let .fixed(zone) = item.zone { zone } else { device.zone }
+                    let date = today(in: zone).adding(days: offset)
+                    guard let occurrence = try? await store.occurrence(slotID: slot.id, on: date),
+                          let status = try? await store.status(of: occurrence.id)
+                    else { continue }
+                    let closed = truth.closed.contains(ClosedKey(slot: slot.id, date: date))
+                    #expect(
+                        (status != .unrecorded) == closed,
+                        "\(label): \(item.name) on \(date) is \(status) in the database, and the user closed it: \(closed)",
+                        sourceLocation: sourceLocation
+                    )
+                }
+            }
+        }
     }
 
     private func write(_ name: String, slot: Int, _ action: IntakeAction, date: LocalDate?) async throws {

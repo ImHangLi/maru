@@ -89,7 +89,7 @@ struct ReminderPlanTests {
         #expect(plan.needs[alternate.id] == .requests(Set(plan.requests.map(\.identifier))))
         // Each request stands for one item (D034).
         #expect(plan.requests.map { $0.content.names ?? [] } == Array(repeating: ["Iron"], count: 7))
-        #expect(plan.requests.map(\.content.hasTakenAction) == Array(repeating: true, count: 7))
+        #expect(plan.requests.map(\.content.category) == Array(repeating: .single, count: 7))
         let first = plan.requests[0]
         #expect(!first.trigger.repeats)
         var morning = DateComponents()
@@ -194,7 +194,7 @@ struct ReminderPlanTests {
         let partial = plan(both, closed: closed(both[0])).requests
         #expect(Array(partial.map(\.identifier).prefix(6)) == (2...7).map { "series|Asia/Shanghai|09:00|\($0)" })
         #expect(partial.dropFirst(6).map { $0.content.names ?? [] } as [[String]] == [["Zinc"], ["Iron", "Zinc"]])
-        #expect(partial[6].content.hasTakenAction && partial[6].trigger.date == Fixtures.date(2026, 3, 2))
+        #expect(partial[6].content.category == .single && partial[7].content.category == .group && partial[6].trigger.date == Fixtures.date(2026, 3, 2))
         #expect(partial[6].userInfo[ReminderRequest.openSlotsKey] == both[1].slots[0].id.rawValue.uuidString)
 
         // Both are recorded: Monday has no request until next Monday.
@@ -221,9 +221,9 @@ struct ReminderPlanTests {
 
         // The text names the item (D029). The identifier and the `userInfo` hold nothing of it.
         // The request stands for one item, so it has the "Taken" action (D034).
-        #expect(request.content == ReminderContent(kind: .due, names: [item.name], hasTakenAction: true))
+        #expect(request.content == ReminderContent(kind: .due, names: [item.name], category: .single))
         let neutral = try #require(compile(items: [item], schedules: [schedule], privacy: .hideNames).requests.first)
-        #expect(neutral.content == ReminderContent(kind: .due, names: nil, hasTakenAction: true))
+        #expect(neutral.content == ReminderContent(kind: .due, names: nil, category: .single))
         #expect(neutral.identifier == request.identifier && neutral.userInfo == request.userInfo)
         #expect(
             request.userInfo == [

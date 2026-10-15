@@ -11,6 +11,9 @@ struct DoseGroups {
         let order: Int
         let itemID: ItemID
         let name: String?
+        /// The dose itself: its slot and the schedule version that it has. A group action records exactly these (D090).
+        let slotID: ScheduleSlotID
+        let versionID: ScheduleVersionID
     }
 
     /// The instant of the slot time of each group that has an open dose.
@@ -58,7 +61,10 @@ struct DoseGroups {
             guard !closed.contains(key) else { return }
             slotInstants[group] = instant
             open[group, default: []].append(
-                OpenItem(order: order[schedule.id] ?? 0, itemID: schedule.itemID, name: itemOfID[schedule.itemID]?.name)
+                OpenItem(
+                    order: order[schedule.id] ?? 0, itemID: schedule.itemID, name: itemOfID[schedule.itemID]?.name,
+                    slotID: key.slotID, versionID: versionID
+                )
             )
         }
         // The occurrence window (yesterday to tomorrow) uses the stored occurrences, as the Today screen does.
@@ -91,6 +97,14 @@ struct DoseGroups {
             .sorted { ($0.element.order, $0.offset) < ($1.element.order, $1.offset) }
             .map(\.element)
             .filter { seen.insert($0.itemID).inserted }
+    }
+
+    /// The open doses of `items` in a group, as the text of `FollowUpRequest.membersKey`: `<slot ID>=<schedule version ID>`
+    /// entries in a fixed order. An item with two slots at the time has two entries. A group action records exactly these doses (D090).
+    func membersText(of group: FollowUpGroup, items: Set<ItemID>) -> String {
+        (open[group] ?? []).filter { items.contains($0.itemID) }
+            .map { "\($0.slotID.rawValue.uuidString)=\($0.versionID.rawValue.uuidString)" }
+            .sorted().joined(separator: ",")
     }
 
     /// The one item and its one schedule version, for a group that gets the "Taken" action.
