@@ -1596,3 +1596,6 @@ The harness (maintainer request, so it goes beyond the test limit of D016):
 - The scenarios and the gaps between the simulator and real iOS are in `docs/research/2026-10-15-notification-correctness.md`.
 
 Not verified: the app build on this Mac (CI builds it), the alert in the six languages on a display, and the behavior on a real iPhone. A check on the iPhone: install the build, open the app, and read the log of the category `reminders` in Console after a record and an archive.
+## D087 · 2026-10-15 · Today rows are 4 points lower
+
+Maintainer decision on 2026-10-15. The rows of Today had too much space above and below the text. Each row is now about 4 points lower: the row content takes 2 points of the list inset at the top and at the bottom. The text sizes, the icon, the record circle, and the 44-point touch areas do not change. The maintainer checks the height on the iPhone.
