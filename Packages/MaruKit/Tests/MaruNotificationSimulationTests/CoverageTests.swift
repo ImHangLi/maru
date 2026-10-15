@@ -94,4 +94,36 @@ struct CoverageTests {
         #expect(waiting == [["Zinc B"]], "the old alarm still repeats: \(waiting)")
         #expect(p.alarmIndex.quiet().isEmpty)
     }
+
+    /// D089: rename A, B, A while the alarm of A rings. After "Stop" the alarm of A is wanted again. It must not be cancelled
+    /// with no replacement.
+    @Test func aWantedAlarmInTheQuietSetIsNotCancelled() async throws {
+        let p = try await phone()
+        try await p.addItem("Zinc", at: ["09:00"], alarm: true)
+        await p.alarmCenter.startRinging()
+        p.checks.alarms = false
+        try await p.rename("Zinc", to: "Zinc B")
+        try await p.rename("Zinc B", to: "Zinc")
+        await p.alarmCenter.stopRinging()
+        await p.foreground()
+        let waiting = await p.alarmCenter.alarms.values.map(\.names)
+        #expect(waiting == [["Zinc"]], "the dose has no alarm or two: \(waiting)")
+        #expect(p.alarmIndex.quiet().isEmpty)
+    }
+
+    /// D089: alarms from a build with no index, and one unreadable schedule. The first run cancels every alarm with no entry and
+    /// schedules the alarms of the plan again with entries.
+    @Test func theFirstRunMakesTheAlarmIndexComplete() async throws {
+        let p = try await phone()
+        p.autoCheck = false
+        try await p.addItem("Zinc", at: ["09:00"], alarm: true)
+        try await p.addItem("Iron", at: ["21:00"], alarm: true)
+        p.alarmIndex.reset()
+        try await p.corruptSchedule("Iron")
+        await p.foreground()
+        let alarms = await p.alarmCenter.alarms
+        #expect(alarms.values.map(\.names) == [["Zinc"]], "legacy alarms are left: \(alarms.values.map(\.names))")
+        #expect(alarms.keys.allSatisfy { p.alarmIndex.schedules(of: $0) != nil }, "an alarm has no index entry")
+        #expect(p.alarmIndex.isComplete)
+    }
 }

@@ -357,6 +357,10 @@ public protocol AlarmIndex: Sendable {
     /// ring no more (D089). The set survives the stop of the process.
     func quiet() -> Set<UUID>
     func setQuiet(_ ids: Set<UUID>)
+    /// `true` after the first complete run of the engine with this index. Before it, an alarm with no entry comes from a build
+    /// with no index. The first run cancels it and schedules the alarms of the plan again, so the index is complete after (D089).
+    var isComplete: Bool { get }
+    func markComplete()
 }
 
 /// An index in memory. A test uses it, and an engine with no durable index.
@@ -373,6 +377,12 @@ public final class MemoryAlarmIndex: AlarmIndex, @unchecked Sendable {
     private var quietIDs: Set<UUID> = []
     public func quiet() -> Set<UUID> { lock.withLock { quietIDs } }
     public func setQuiet(_ ids: Set<UUID>) { lock.withLock { quietIDs = ids } }
+    private var complete = false
+    public var isComplete: Bool { lock.withLock { complete } }
+    public func markComplete() { lock.withLock { complete = true } }
+
+    /// The state of a phone with alarms from a build with no index. A test uses it.
+    func reset() { lock.withLock { entries = [:]; quietIDs = []; complete = false } }
 }
 
 /// The alarm system. The rules of the engine use only this protocol, so they run without AlarmKit (D079).
@@ -584,7 +594,10 @@ public struct AlarmEngine: Sendable {
         var obsolete: [UUID] = []
         for id in waiting.sorted(by: { $0.alarmGeneration > $1.alarmGeneration }) {
             let content = id.alarmContent
-            if wantedContent.contains(content), actual[content] == nil { actual[content] = id } else { obsolete.append(id) }
+            // Until the index is complete, an alarm with no entry is from a build with no index. It goes, and the plan schedules
+            // its alarm again with an entry (D089).
+            let known = index.isComplete || index.schedules(of: id) != nil
+            if known, wantedContent.contains(content), actual[content] == nil { actual[content] = id } else { obsolete.append(id) }
         }
         wanted.set(Set(actual.values))
         /// Any cancel error makes the whole run fail open: the caller then has an empty cover (D079).
@@ -598,22 +611,30 @@ public struct AlarmEngine: Sendable {
                 return false
             }
         }
-        // With an unreadable schedule, an obsolete alarm of that schedule stays, because the plan does not know it. An alarm with
-        // no index entry stays too, as the build before the index made it. Every other obsolete alarm goes (D089).
+        // With an unreadable schedule, an obsolete alarm of that schedule stays, because the plan does not know it. Every other
+        // obsolete alarm goes, also one with no index entry: the first run made the index complete (D089).
         index.keep(only: waiting.union(active))
         func isKept(_ id: UUID) -> Bool {
-            guard plan.hasUnreadable else { return false }
-            guard let schedules = index.schedules(of: id) else { return true }
+            guard plan.hasUnreadable, let schedules = index.schedules(of: id) else { return false }
             return !schedules.isDisjoint(with: plan.unreadableSchedules)
         }
         // An obsolete alarm that rings now stays until it is quiet. Its id waits in a durable set. An alarm in the set that
         // waits again (a repeating alarm after "Stop") goes now, also when an unreadable schedule keeps the others (D089).
         let obsoleteActive = active.filter { !wantedContent.contains($0.alarmContent) && !isKept($0) }
-        let quiet = index.quiet().union(obsoleteActive).intersection(waiting.union(active))
+        // An id that the plan wants again (A, then B, then A while it rings) is not obsolete any more (D089).
+        let quiet = index.quiet().filter { !wantedContent.contains($0.alarmContent) }.union(obsoleteActive)
+            .intersection(waiting.union(active))
         let returned = quiet.intersection(waiting)
         index.setQuiet(quiet.subtracting(returned))
         let toCancel = Array(Set(obsolete.filter { !isKept($0) }).union(returned))
-        if !toCancel.isEmpty, await cancel(toCancel) { index.forget(toCancel) }
+        if !toCancel.isEmpty, await cancel(toCancel) {
+            index.forget(toCancel)
+            // A wanted alarm that was cancelled is scheduled again in this run.
+            for (content, id) in actual where toCancel.contains(id) {
+                actual[content] = nil
+                wanted.remove(id)
+            }
+        }
         // A dose that the limit cut and that is due soon has no alarm. Its item gets the normal reminder (D089).
         var failed = plan.cutItems
         /// The alarms that the system holds after this run, by content. A ringing alarm is not in `waiting` and stays.
@@ -659,6 +680,7 @@ public struct AlarmEngine: Sendable {
             }
         }
         if cancelFailed { throw AlarmRunError.cancelFailed }
+        index.markComplete()
         return failed
     }
 }

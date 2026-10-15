@@ -38,6 +38,10 @@ public struct DefaultsAlarmIndex: AlarmIndex {
     }
 
     private static let quietKey = "alarms.cancelWhenQuiet"
+    private static let completeKey = "alarms.indexComplete"
+
+    public var isComplete: Bool { defaults.bool(forKey: Self.completeKey) }
+    public func markComplete() { defaults.set(true, forKey: Self.completeKey) }
 
     public func quiet() -> Set<UUID> {
         Self.lock.withLock { Set((defaults.stringArray(forKey: Self.quietKey) ?? []).compactMap { UUID(uuidString: $0) }) }
