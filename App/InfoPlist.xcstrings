@@ -78,7 +78,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru 使用相机读取标签上的名称，并为项目拍照。扫描标签不会存储照片。"
+            "value" : "Maru 用相机读取标签上的名称，也可以给药品拍照。扫描标签不会保存照片。"
           }
         }
       }
