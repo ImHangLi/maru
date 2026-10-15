@@ -45,6 +45,8 @@ Maru was developed in a private repository before it became public. Issue number
 
 - Build 5 feedback is in code (D085), on the branch `leon/settings-copy-layout`. Settings has a section "For All Items" with "Alarm", "Remind Again", and "Every" for every item that has a time, with a "Varies" state, and a new item starts with the last choice. The add and edit screen has a short first view (name and type, plan, reminders) and one row "More Options" for amount, look, and note. The copy of Settings and of the add and edit screen is plainer, in six languages. Nobody built the app or saw the screens on this Mac. CI builds the app. It needs a check on a real iPhone: the page "More Options" (pickers, photo, candidates, VoiceOver, the largest text sizes), the "Varies" state, a change for all items and the reminders after it, the alarm permission from Settings, and a read of the new text by a native speaker for ja, ko, es, and de.
 
+- The store text of version 1.1 is a draft in `metadata/version/1.1.0/`, with new subtitles in `metadata/app-info/`. Nobody pushed it to App Store Connect. The alarm lines stay only after the iPhone check. `docs/release-plan.md`, section 7, has the decisions and the open checks.
+
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the item photo (D056), the History graph and rows, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.
