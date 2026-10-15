@@ -80,9 +80,7 @@ extension LocalStore {
     /// in the zone of the device at that time.
     public func asNeeded(on date: LocalDate) async throws(StorageError) -> AsNeededDay {
         try await read { db in
-            let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-            let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-                .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+            let (items, schedules) = try Self.itemsAndSchedules(db)
             let occurrences = try Row.fetchAll(
                 db,
                 sql: """

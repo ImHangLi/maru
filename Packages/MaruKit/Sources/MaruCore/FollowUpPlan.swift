@@ -150,6 +150,9 @@ public struct FollowUpPlan: Hashable, Sendable {
     /// An item with a follow-up setting has a change that the engine did not confirm yet (`Date.distantFuture`).
     /// Old follow-ups can still come, so such an item gets none until the engine confirms their removal (D039, D079).
     public let hasUnconfirmedChange: Bool
+    /// A schedule did not load (D088). The plan does not know its follow-ups, so the engine removes no follow-up and no
+    /// delivered notification.
+    public let hasUnreadable: Bool
 
     /// One open item of a dose group that a series reminder names (D084).
     private struct SeriesDose: Hashable, Sendable {
@@ -292,6 +295,7 @@ public struct FollowUpPlan: Hashable, Sendable {
             if !future.isEmpty { wanted.append(future) }
         }
         open = contents
+        hasUnreadable = !reminders.unreadable.isEmpty
         hasUnconfirmedChange = items.contains { $0.followUp != nil && $0.followUpChanged == .distantFuture }
         requests = Self.share(
             wanted, room: ReminderPlan.systemLimit - Self.reserve - reminders.requests.count, from: now

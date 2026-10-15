@@ -13,8 +13,8 @@ extension LocalStore: FollowUpSource {
         at now: Date,
         deviceTimeZone: NamedTimeZone,
         alarms: AlarmCover
-    ) async throws(StorageError) -> FollowUpPlan {
-        try await read { db in
+    ) async throws -> FollowUpPlan {
+        try await readPlan { db in
             let inputs = try Self.doseInputs(db, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarms: alarms)
             return FollowUpPlan(
                 reminders: inputs.reminders,
@@ -50,9 +50,7 @@ extension LocalStore: FollowUpSource {
     static func doseInputs(
         _ db: Database, now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover
     ) throws -> DoseInputs {
-        let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-        let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-            .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+        let (items, schedules, unreadable) = try Self.planInputs(db)
         let dates = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone).candidateDates
         // The query of `generateOccurrences`, with the state of each occurrence. Records exist only for these dates.
         let rows = try Row.fetchAll(
@@ -69,10 +67,12 @@ extension LocalStore: FollowUpSource {
         )
         var stored: [StoredOccurrence] = []
         var closed: Set<OccurrenceKey> = []
-        for row in rows {
-            let occurrence = try Self.decodeOccurrence(row)
-            stored.append(StoredOccurrence(occurrence: occurrence, hasEvents: try row.decode(forColumn: "hasEvents")))
-            if try row.decode(forColumn: "isClosed") as Bool { closed.insert(occurrence.key) }
+        try Self.named(.occurrenceRow) {
+            for row in rows {
+                let occurrence = try Self.decodeOccurrence(row)
+                stored.append(StoredOccurrence(occurrence: occurrence, hasEvents: try row.decode(forColumn: "hasEvents")))
+                if try row.decode(forColumn: "isClosed") as Bool { closed.insert(occurrence.key) }
+            }
         }
         return DoseInputs(
             items: items,
@@ -81,7 +81,7 @@ extension LocalStore: FollowUpSource {
             closed: closed,
             reminders: ReminderPlan(
                 items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy,
-                closed: closed, alarms: alarms
+                closed: closed, alarms: alarms, unreadable: unreadable
             )
         )
     }
@@ -91,8 +91,8 @@ extension LocalStore: AlarmSource {
     /// The alarms that the stored plan and records ask for (D079). `AlarmPlan` has the rules.
     public func alarmPlan(
         privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
-    ) async throws(StorageError) -> AlarmPlan {
-        try await read { db in
+    ) async throws -> AlarmPlan {
+        try await readPlan { db in
             let inputs = try Self.doseInputs(db, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarms: alarms)
             return AlarmPlan(
                 reminders: inputs.reminders,

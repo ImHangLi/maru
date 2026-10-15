@@ -43,9 +43,7 @@ extension LocalStore {
     ) async throws(StorageError) -> GenerationRun {
         try await write(generation: dataGeneration) { db in
             let generation = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
-            let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(Self.decodeItem)
-            let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-                .compactMap { try Self.fetchSchedule(db, id: ScheduleID(text: $0)) }
+            let (items, schedules) = try Self.itemsAndSchedules(db)
             let dates = generation.candidateDates
             // The join starts at the slots, so each slot reads only its rows of these dates through the key index.
             let stored = try Row.fetchAll(

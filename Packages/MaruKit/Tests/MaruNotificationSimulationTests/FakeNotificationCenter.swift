@@ -93,6 +93,8 @@ actor FakeNotificationCenter: FollowUpCenter {
     var dropsRemovals = false
     /// The system takes this many next adds with no error and does not keep them.
     var dropsNextAdds = 0
+    /// The system refuses every add whose identifier has this text, as it refuses a request that it cannot schedule (D088).
+    var rejectsIdentifiersContaining: String?
     /// Every add that the app made, in order.
     private(set) var addLog: [String] = []
     private(set) var removeLog: [String] = []
@@ -105,6 +107,7 @@ actor FakeNotificationCenter: FollowUpCenter {
     var hasOpenRemovals: Bool { !openRemovals.isEmpty || removalLatency > 0 }
     func setDropsRemovals(_ drops: Bool) { dropsRemovals = drops }
     func setDropsNextAdds(_ count: Int) { dropsNextAdds = count }
+    func setRejects(_ text: String?) { rejectsIdentifiersContaining = text }
 
     // MARK: ReminderCenter
 
@@ -240,12 +243,45 @@ actor FakeNotificationCenter: FollowUpCenter {
     private func store(_ notification: SimNotification) throws {
         addLog.append(notification.identifier)
         guard device.authorization == .authorized else { throw SimError.notAllowed }
+        try validate(notification.trigger)
+        if let text = rejectsIdentifiersContaining, notification.identifier.contains(text) { throw SimError.invalidTrigger("rejected") }
         guard dropsNextAdds == 0 else {
             dropsNextAdds -= 1
             return
         }
         pending[notification.identifier] = notification
         enforceLimit()
+    }
+
+    /// The checks that iOS makes at an add, as far as they are documented or known. Apple documents the 60-second minimum
+    /// for a repeating interval trigger. It does not document an error for a calendar or interval trigger that cannot
+    /// fire, so rejecting it is an assumption that makes the fake strict (D088).
+    private func validate(_ trigger: SimTrigger) throws {
+        switch trigger {
+        case let .instant(date):
+            // The app gives a non-repeating interval of `max(1, fire - now)`, so a repeating interval never occurs here.
+            guard date > device.now else { throw SimError.invalidTrigger("interval trigger in the past") }
+        case let .calendar(components, repeats):
+            let ranges: [(Int?, ClosedRange<Int>, String)] = [
+                (components.hour, 0...23, "hour"), (components.minute, 0...59, "minute"),
+                (components.month, 1...12, "month"), (components.day, 1...31, "day"), (components.weekday, 1...7, "weekday"),
+            ]
+            for (value, range, name) in ranges {
+                if let value, !range.contains(value) { throw SimError.invalidTrigger("invalid \(name) \(value)") }
+            }
+            var calendar = Calendar(identifier: .gregorian)
+            calendar.timeZone = components.timeZone ?? device.zone.systemZone
+            if components.year != nil, components.month != nil, components.day != nil {
+                var dateOnly = components
+                dateOnly.hour = nil
+                dateOnly.minute = nil
+                dateOnly.weekday = nil
+                if !dateOnly.isValidDate(in: calendar) { throw SimError.invalidTrigger("invalid date") }
+            }
+            if !repeats, Self.nextFire(of: trigger, after: device.now, deviceZone: device.zone) == nil {
+                throw SimError.invalidTrigger("calendar trigger without a next date")
+            }
+        }
     }
 
     /// Over the limit, the system keeps the requests that fire first and drops the others with no error.
@@ -320,7 +356,10 @@ actor FakeNotificationCenter: FollowUpCenter {
     }
 }
 
-enum SimError: Error { case notAllowed }
+enum SimError: Error {
+    case notAllowed
+    case invalidTrigger(String)
+}
 
 // MARK: - The alarm system
 

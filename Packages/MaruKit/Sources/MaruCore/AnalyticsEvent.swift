@@ -70,6 +70,8 @@ public struct AnalyticsEvent: Sendable, Equatable {
         "core_error": [
             "operation": .choice(Operation.allCases.map(\.rawValue)),
             "code": .choice(ErrorCode.allCases.map(\.rawValue)),
+            // The rule that a stored row broke, as a fixed word. It is set only for `invalid_data` and `row_skipped` (D088).
+            "rule": .choice(StoredDataRule.allCases.map(\.rawValue)),
         ],
         "notification_permission": [
             "state": .choice(Permission.allCases.map(\.rawValue)),
@@ -225,6 +227,10 @@ public extension AnalyticsEvent {
         case notSet = "not_set"
         /// The system did not confirm a removal.
         case notConfirmed = "not_confirmed"
+        /// The run of the reminder engine stopped, because a stored row did not load (D088).
+        case invalidData = "invalid_data"
+        /// A stored row did not load and the app skipped it. Every other item kept its reminders (D088).
+        case rowSkipped = "row_skipped"
     }
 
     enum Permission: String, CaseIterable, Sendable {
@@ -301,8 +307,10 @@ public extension AnalyticsEvent {
         return AnalyticsEvent(unchecked: "daily_usage_summary", properties)
     }
 
-    static func coreError(_ operation: Operation, _ code: ErrorCode) -> AnalyticsEvent {
-        AnalyticsEvent(unchecked: "core_error", ["operation": .text(operation.rawValue), "code": .text(code.rawValue)])
+    static func coreError(_ operation: Operation, _ code: ErrorCode, rule: StoredDataRule? = nil) -> AnalyticsEvent {
+        var properties: [String: Value] = ["operation": .text(operation.rawValue), "code": .text(code.rawValue)]
+        if let rule { properties["rule"] = .text(rule.rawValue) }
+        return AnalyticsEvent(unchecked: "core_error", properties)
     }
 
     /// The permission that the app read differs from the one that it sent last. `previous` is `nil` for the first read.

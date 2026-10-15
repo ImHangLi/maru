@@ -247,6 +247,10 @@ extension LocalStore {
     }
 
     static func decodeItem(_ row: Row) throws -> Item {
+        try named(.itemRow) { try decodeItemRow(row) }
+    }
+
+    private static func decodeItemRow(_ row: Row) throws -> Item {
         let preset: String? = try row.decode(forColumn: "intakeNotePreset")
         let text: String? = try row.decode(forColumn: "intakeNoteText")
         let image: String? = try row.decode(forColumn: "imageReference")
@@ -258,16 +262,16 @@ extension LocalStore {
         case (nil, nil): followUp = nil
         case let (count?, minutes?):
             guard let count = FollowUpCount(rawValue: count), let interval = FollowUpInterval(rawValue: minutes) else {
-                throw StorageError.invalidData
+                throw DecodeRule(rule: .itemFollowUp)
             }
             followUp = FollowUpSetting(count: count, interval: interval)
-        default: throw StorageError.invalidData
+        default: throw DecodeRule(rule: .itemFollowUp)
         }
         let note: IntakeNote? = switch (preset, text) {
         case (nil, nil): nil
-        case let (preset?, nil): .preset(try IntakeNote.Preset(text: preset))
-        case let (nil, text?): try Self.domain { try IntakeNote.custom(text) }
-        case (.some, .some): throw StorageError.invalidData
+        case let (preset?, nil): .preset(try Self.named(.itemNote) { try IntakeNote.Preset(text: preset) })
+        case let (nil, text?): try Self.named(.itemNote) { try IntakeNote.custom(text) }
+        case (.some, .some): throw DecodeRule(rule: .itemNote)
         }
         return try Self.domain {
             try Item(
@@ -286,16 +290,8 @@ extension LocalStore {
         }
     }
 
-    /// Builds a domain value from stored data. A domain rule that rejects the data means `invalidData`.
-    static func domain<T>(_ build: () throws -> T) throws -> T {
-        do {
-            return try build()
-        } catch let error as StorageError {
-            throw error
-        } catch let error as DatabaseError {
-            throw error
-        } catch {
-            throw StorageError.invalidData
-        }
+    /// Builds a domain value from stored data. A domain rule that rejects the data means `invalidData`, with its rule (D088).
+    static func domain<T>(_ rule: StoredDataRule = .other, _ build: () throws -> T) throws -> T {
+        try named(rule, build)
     }
 }

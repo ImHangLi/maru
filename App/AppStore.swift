@@ -20,6 +20,8 @@ actor AppStore {
     private static let directory = AppGroup.databaseDirectory ?? AppGroup.earlierDatabaseDirectory
 
     private var opened: LocalStore?
+    /// Reports a run problem as a fixed code and a fixed rule word (D088). It holds no health data.
+    private var runProblem: (@Sendable (AnalyticsEvent.ErrorCode, StoredDataRule?) -> Void)?
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
     private var alarms: AlarmEngine?
@@ -49,6 +51,10 @@ actor AppStore {
         updates = Task { _ = await clear.value }
     }
     #endif
+
+    func setRunProblemHandler(_ handler: @escaping @Sendable (AnalyticsEvent.ErrorCode, StoredDataRule?) -> Void) {
+        runProblem = handler
+    }
 
     /// The open store. The first call opens the database, and a call after a failed open tries again.
     ///
@@ -166,16 +172,25 @@ actor AppStore {
                     at: now, deviceTimeZone: deviceTimeZone, mayAskForPermission: mayAskForPermission
                 )
             } catch {
-                Self.log.error("Reminder run failed: \(String(describing: error), privacy: .public)")
+                // The rule is a fixed word of the row that did not load, for the next device check (D088). It comes with the error.
+                let rule = (error as? PlanReadError)?.rule
+                Self.log.error(
+                    "Reminder run failed: \(String(describing: (error as? PlanReadError)?.storage ?? error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
+                )
+                if rule != nil || (error as? StorageError) == .invalidData { self.runProblem?(.invalidData, rule) }
                 throw error
             }
             let followUps: FollowUpOutcome?
             do {
                 followUps = try await self.followUpEngine().refresh(at: now, deviceTimeZone: deviceTimeZone)
             } catch {
-                Self.log.error("Follow-up refresh failed: \(String(describing: error), privacy: .public)")
+                let rule = (error as? PlanReadError)?.rule
+                Self.log.error(
+                    "Follow-up refresh failed: \(String(describing: (error as? PlanReadError)?.storage ?? error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
+                )
                 followUps = nil
             }
+            for rule in LocalStore.takeSkippedRules() { self.runProblem?(.rowSkipped, rule) }
             let notSet = outcome.schedules.values.filter { if case .notSet = $0 { true } else { false } }.count
             Self.log.info(
                 "Reminder run: \(outcome.schedules.count) schedules, \(notSet) not set, removal pending \(outcome.removalPending), follow-ups \(followUps?.scheduled ?? -1) set and \(followUps?.notScheduled ?? -1) not"

@@ -1599,3 +1599,46 @@ Not verified: the app build on this Mac (CI builds it), the alert in the six lan
 ## D087 · 2026-10-15 · Today rows are 4 points lower
 
 Maintainer decision on 2026-10-15. The rows of Today had too much space above and below the text. Each row is now about 4 points lower: the row content takes 2 points of the list inset at the top and at the bottom. The text sizes, the icon, the record circle, and the 44-point touch areas do not change. The maintainer checks the height on the iPhone.
+
+## D088 · 2026-10-16 · A dose of an as-needed item stopped every reminder run (the midnight theory was wrong)
+
+Agent decision, after the third report from the maintainer's iPhone (TestFlight build 7, version 1.1.0). The alert "Reminder Not Set" came again after a save at 23:53 (Sydney). The maintainer had added a time at 00:00 to Vitamin B Complex. Build 6 had shown the same alert after a save of 23:00 for Coenzyme Q10.
+
+Evidence:
+
+- The live log of the iPhone (build 7, 23:57) says `Reminder run failed: invalidData`, right after `Got 2 pending notification`. So iOS refused no request. The run stopped before it changed anything, because the read of the plan threw. The iPhone held only 2 requests of Maru.
+- The first theory was a request at or near midnight that iOS refuses. The simulator now validates triggers like iOS and has 90 scenarios at 23:50, 23:53, and 00:05 (`MidnightTests`). They all pass on the code of build 7. The theory is rejected.
+- `LocalStore.reminderPlan` reads the closed occurrences with a query that decodes `occurrence.slotID` as a required value. An as-needed dose has no slot (D021). Its taken record has a state row, so the query returned it, and the decode threw `invalidData`. One taken as-needed dose in the window of the plan made every run fail. The query of the history already had `slotID IS NOT NULL`. This one did not.
+- Reproduced on the code of build 7 by two tests: a store test with one taken as-needed dose (`FaultIsolationTests`), and `UpgradeTests`. `UpgradeTests` opens a database that version 1.0 build 4 left, with an as-needed item and its doses, and runs the whole queue. Both failed with `invalidData` before the fix and pass after it.
+- The same cause explains the earlier reports. A stale notification, a missing reminder, and "Reminder Not Set" all follow from a run that fails before it replaces anything. D086 found real faults in the ledger, and its fix stays. But it could not show this fault, because no scenario had an as-needed dose.
+- Not proved on the device: that the maintainer's database has an as-needed dose in the window. Ibuprofen-type items are as needed in the maintainer's list, so this is likely. The device check below shows it.
+
+The fix:
+
+1. The query of `reminderPlan` skips occurrences with no slot (`LocalStore+Reminders.swift`).
+2. Fault isolation for the reminder run only. `LocalStore.planInputs` loads each item and each schedule for the reminder plans (the series reminders, the follow-ups, and the alarms). An item or a schedule that does not load is skipped and logged. The plan reports each such schedule, and each schedule of a skipped item, as not set (`ReminderProblem.unreadable`, `ReminderPlan.unreadable`). While one exists, the engines remove no request, no delivered notification, and no waiting alarm, because the plan does not know what the schedule wants. The other items keep and change their reminders. Today, History, My Items, the widget, the occurrence generation, and every write keep the strict load: a row that does not load shows the storage problem and hides nothing (spec 7.3). No item changes its kind because its schedule did not load. A first version of this change isolated every read. A review found that it would hide an item with its records and would make an item with a broken schedule look as needed, so it was narrowed.
+3. Named rules. `StoredDataRule` (in `MaruCore`) has fixed words such as `version_order`, `item_follow_up`, and `occurrence_row`. A decode failure carries one. The reminder reads throw `PlanReadError` with the storage error and the rule, so the rule comes with the error and not from a global value. The log says `A stored row did not load and the reminder run skipped it. Rule: <word>`, one line for each rule in each process. A failed run logs `Reminder run failed: invalidData. Rule: <word>`. No log line holds a name, a dose, a time, or an ID.
+4. One request that iOS refuses does not stop the others. The engine already added each request on its own and read the result. `SystemReminderCenter` now logs the error domain and code of a refused add. `oneRefusedRequestDoesNotStopTheOthers` shows that the other schedules stay and only the refused one is "not set".
+5. Analytics. `core_error` gets the codes `invalid_data` (a stored row stopped the run) and `row_skipped`, and an optional `rule` with a fixed word. A skipped row gives one `row_skipped` event for each rule in each process. `PRIVACY.md` and spec section 11 say so. The privacy label does not change: the codes are "Other Diagnostic Data" as before.
+
+Prevention (the maintainer asked that this never happens again):
+
+- Upgrade fixtures. `Fixtures/v5-build4-1.0.sqlite` is a database that version 1.0 build 4 left (built with the code of commit `28c4d70`, see `make-v5-build4-1.0.swift.txt`): seven items, 4 daily times with edits on one day and across midnight, an item with weekdays, an item of every other day, a fixed zone, doses with trailing spaces, records for a week, an archive, and as-needed doses. `Fixtures/v6-build7-1.1.sqlite` is the same database after the first open of build 5 (the global setting copied to the items, not confirmed) and the bulk switches of build 6. `UpgradeTests` opens each file, runs the whole reminder queue with and without a legacy setting, moves the clock over midnight, and runs again. Every future migration adds its own fixture (`docs/process.md`, "Release checks").
+- Random edits. `RandomEditTests` runs 40 seeded sequences of 30 user steps at random clock times: add an item with 1 to 4 times (23:xx and 00:xx too), add and change times, archive, restore, rename, bulk "Remind Again" and alarm, records, undo, as-needed items and doses. After each step the run must end with no error and no "not set".
+- `DiagnoseDatabaseTests` finds the broken row in a copy of a device database (`MARU_DIAGNOSE_DB=<file>`). It prints rules and dates only.
+- Release checks in `docs/process.md`: no fix of a reminder or of stored data is done until the live log of the iPhone shows runs that end with no error.
+
+What failed in our process:
+
+- We fixed what the first theory named and did not read the failure. Build 6 showed "Reminder Not Set". We found a real fault (the ledger), proved it, and shipped. We had no log of the failure from the device. So we could not see that the run threw before it changed anything. The log came only after the third report.
+- The simulator tested the logic with data that the tests made. All its items had a schedule. Real databases hold items of every kind, from three versions of the app. A check against only generated data cannot find a fault in how stored data is read. The fixtures and the random edits close this.
+- A read that fails for one row failed for all rows. The design had no limit to the damage of one bad row. Now the reminder run has one. The screens keep the strict rule, because hiding stored data is worse than showing the storage problem.
+- The alert text did not tell a failed run from a refused request. The log now names the rule, and the statistics tell us before the user does.
+
+What the fake still cannot model:
+
+- Whether iOS gives an error for a calendar or interval trigger that cannot fire. The fake rejects it to be strict. Apple documents the 60-second minimum for a repeating interval trigger and does not document the other case.
+- The exact `interruptionLevel` and `userInfo` that `getPendingNotificationRequests` returns, real timing of removals, Focus, and AlarmKit (as in `docs/research/2026-10-15-notification-correctness.md`).
+- Data that no fixture has. A database that a person made by a path that no test knows still needs the log and the statistics.
+
+Not verified: the app build on this Mac (CI builds it; the change to `AppStore` and `AppModel` is only compiled there) and the behavior on the iPhone. Device check: install the build, open it, save an item with a time at 00:00, record a dose, take an as-needed dose, and read the live log (`uvx pymobiledevice3 syslog live --udid <UDID>`). The lines must be `Reminder run: ...` and none must say `failed` or `did not load`.

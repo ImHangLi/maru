@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-10-15.
+Updated: 2026-10-16.
 
 Maru was developed in a private repository before it became public. Issue numbers, pull request numbers, and commit IDs in `docs/decisions.md` and `docs/research/` refer to that private history. This repository starts from one clean commit.
 
@@ -48,6 +48,8 @@ Maru was developed in a private repository before it became public. Issue number
 - The store text of version 1.1 is a draft in `metadata/version/1.1.0/`, with new subtitles in `metadata/app-info/`. Nobody pushed it to App Store Connect. The alarm lines stay only after the iPhone check. `docs/release-plan.md`, section 7, has the decisions and the open checks.
 
 - Notifications are checked against a simulator (D086, branch `leon/notification-truth`). Cause of the stale notifications and of "Reminder Not Set" on build 6: a removal that the app wrote in its ledger and the system never did blocked its request for good. The fix gives each request a fresh identifier (no ledger, no race), removes delivered notifications whose dose Today no longer shows, limits each AlarmKit call to 3 seconds, logs each failed run (`os.Logger`, category `reminders`), and the failure alerts have plain text and a "Send Feedback" button. Not proved: why the notification of 09:00 stayed. It needs a check on the iPhone: install the build, record a dose before its time, archive an item, and read the log in Console.
+
+- The reminder run stopped on a taken as-needed dose (D088): the plan read a slot that such a dose does not have, so every run of build 7 failed with `invalidData` and set nothing. The fix, the fault isolation of bad rows, the named rules in the log and in `core_error`, the upgrade fixtures, and the random edit test are in the branch `leon/midnight-reminders`. It needs the device check of `docs/process.md`, "Release checks", with the live log, before it counts as done.
 
 ## Next
 

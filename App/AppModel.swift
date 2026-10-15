@@ -88,6 +88,12 @@ final class AppModel {
     private init() {
         store = AppStore()
         launch = Signposts.signposter.beginInterval("Launch")
+        // A run problem goes to the usage statistics as a fixed code and a fixed rule word (D088).
+        Task { [store] in
+            await store.setRunProblemHandler { code, rule in
+                Task { @MainActor in AppModel.shared.analytics.capture(.coreError(.schedule, code, rule: rule)) }
+            }
+        }
         // A file of the share sheet stays when the app stops before the sheet closes (spec 10).
         Task.detached(priority: .background) { [store] in store.removeExports() }
         #if DEBUG

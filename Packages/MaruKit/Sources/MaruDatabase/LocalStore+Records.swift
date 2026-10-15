@@ -121,9 +121,7 @@ extension LocalStore {
     /// time zone at the time of the plan, so a request from before midnight records nothing after it (D071).
     /// The check and the clock of the plan run in the record transaction.
     static func requireCurrentPlan(_ occurrence: Occurrence, _ plan: OccurrenceGeneration, _ db: Database) throws {
-        let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)
-        let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-            .compactMap { try fetchSchedule(db, id: ScheduleID(text: $0)) }
+        let (items, schedules) = try Self.itemsAndSchedules(db)
         let planned = plan.outcome(items: items, schedules: schedules, stored: []).occurrences
         guard occurrence.plannedDate == LocalDate(plan.now, in: occurrence.timeZone),
               planned.contains(where: {

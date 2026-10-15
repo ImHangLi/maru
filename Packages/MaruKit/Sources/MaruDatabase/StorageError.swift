@@ -45,6 +45,8 @@ public enum StorageError: Error, Equatable, Sendable {
             default:
                 self = .failed(sqliteCode: error.resultCode.rawValue)
             }
+        case is DecodeRule:
+            self = .invalidData
         case is RowDecodingError:
             self = .invalidData
         case is CancellationError:

@@ -1,6 +1,7 @@
 import Foundation
 import MaruCore
 import UserNotifications
+import os
 
 /// The notification center of the system as a `ReminderCenter`.
 ///
@@ -37,10 +38,24 @@ public struct SystemReminderCenter: ReminderCenter {
 
     public func add(_ request: ReminderRequest) async throws {
         let request = UNNotificationRequest(request)
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
-            UNUserNotificationCenter.current().add(request) { error in
-                continuation.resume(with: error.map(Result.failure) ?? .success(()))
+        try await Self.submit(request)
+    }
+
+    /// The system refused the request. The engine goes on with the others and reports this schedule as not set (D088).
+    /// The log has the error domain and code and nothing else: no identifier, name, dose, or time (spec 10).
+    static let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "Maru", category: "reminders")
+
+    static func submit(_ request: UNNotificationRequest) async throws {
+        do {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                UNUserNotificationCenter.current().add(request) { error in
+                    continuation.resume(with: error.map(Result.failure) ?? .success(()))
+                }
             }
+        } catch {
+            let error = error as NSError
+            log.error("The system refused a request. Error: \(error.domain, privacy: .public) \(error.code, privacy: .public)")
+            throw error
         }
     }
 

@@ -71,9 +71,7 @@ extension LocalStore {
             )
             defer { try? queue.close() }
             let result = try queue.read { db -> WidgetRead in
-                let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)
-                let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
-                    .compactMap { try fetchSchedule(db, id: ScheduleID(text: $0)) }
+                let (items, schedules) = try Self.itemsAndSchedules(db)
                 let generation = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
                 let dates = generation.candidateDates
                 let stored = try Row.fetchAll(
