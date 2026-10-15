@@ -178,6 +178,11 @@ struct ProcessAlarmCenter: AlarmCenter {
         return await base.active()
     }
 
+    func snapshot() async throws -> AlarmSnapshot {
+        _ = await life.gate()
+        return await base.snapshot()
+    }
+
     func schedule(_ request: AlarmRequest) async throws {
         guard await life.gate() else { return }
         try await base.schedule(request)
@@ -230,7 +235,8 @@ final class SimProcess: @unchecked Sendable {
             center: TimedAlarmCenter(base: ProcessAlarmCenter(base: phone.alarmCenter, life: life), wanted: wanted, limit: .milliseconds(200)), privacy: phone.privacy,
             alarmsRing: { device.alarmsAllowed },
             wanted: wanted,
-            generations: phone.counter
+            generations: phone.counter,
+            index: phone.alarmIndex
         )
     }
 
@@ -261,6 +267,8 @@ final class Phone: @unchecked Sendable {
     let device: SimDevice
     let center: FakeNotificationCenter
     let alarmCenter = FakeAlarmCenter()
+    /// The durable index of the alarms. It survives the stop of the app process.
+    let alarmIndex = MemoryAlarmIndex()
     let store: LocalStore
     let privacy = SimPrivacy()
     let counter = SimCounter()

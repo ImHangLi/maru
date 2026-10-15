@@ -386,16 +386,29 @@ actor FakeAlarmCenter: AlarmCenter {
 
     /// The alarms that ring now. They are not waiting.
     private(set) var ringing: Set<UUID> = []
+    private var restingRequests: [UUID: AlarmRequest] = [:]
 
     /// A repeating alarm starts to ring: it leaves the waiting set and stays registered.
     func startRinging() {
         for (id, request) in alarms where request.repeating != nil {
             ringing.insert(id)
+            restingRequests[id] = request
             alarms[id] = nil
         }
     }
 
     func active() async -> Set<UUID> { ringing }
+
+    func snapshot() async -> AlarmSnapshot {
+        await hangIfAsked()
+        return AlarmSnapshot(waiting: Set(alarms.keys), active: ringing)
+    }
+
+    /// The user taps "Stop": a repeating alarm waits for its next ring again.
+    func stopRinging() {
+        for id in ringing { alarms[id] = restingRequests[id] }
+        ringing = []
+    }
 
     func waiting() async -> Set<UUID> {
         await hangIfAsked()

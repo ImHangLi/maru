@@ -45,10 +45,15 @@ public struct AlarmRequest: Hashable, Sendable {
     public let taken: [String: String]?
     /// `nil` for an alarm of one date.
     public let repeating: Repeat?
+    /// The schedules of the items. The engine keeps them in the `AlarmIndex`, so a run with an unreadable schedule knows which
+    /// obsolete alarm it must keep (D089). They are not part of the identifier.
+    public let scheduleIDs: Set<ScheduleID>
 
     public init(
-        id: UUID, fireDate: Date, itemIDs: [ItemID], names: [String]?, taken: [String: String]?, repeating: Repeat? = nil
+        id: UUID, fireDate: Date, itemIDs: [ItemID], names: [String]?, taken: [String: String]?, repeating: Repeat? = nil,
+        scheduleIDs: Set<ScheduleID> = []
     ) {
+        self.scheduleIDs = scheduleIDs
         self.id = id
         self.fireDate = fireDate
         self.itemIDs = itemIDs
@@ -142,6 +147,8 @@ public struct AlarmPlan: Hashable, Sendable {
     public let requests: [AlarmRequest]
     /// A schedule did not load (D088). The engine cancels no waiting alarm, because the plan does not know its alarms.
     public let hasUnreadable: Bool
+    /// The schedules that did not load. A waiting alarm of such a schedule stays (D089).
+    public let unreadableSchedules: Set<ScheduleID>
     /// The items with a dose within `minimumDays` that has no alarm, because the limit cut it (D089).
     /// The engine reports them as failed, so they get the normal reminder.
     public let cutItems: Set<ItemID>
@@ -195,6 +202,7 @@ public struct AlarmPlan: Hashable, Sendable {
         privacy: ReminderPrivacy = .showNames
     ) {
         hasUnreadable = !reminders.unreadable.isEmpty
+        unreadableSchedules = reminders.unreadable
         let ringing = Set(schedules.filter { reminders.needs[$0.id] == .alarm }.map(\.itemID))
         guard !ringing.isEmpty else {
             requests = []
@@ -276,7 +284,8 @@ public struct AlarmPlan: Hashable, Sendable {
                 AlarmRequest(
                     id: Self.identifier(of: text), fireDate: value.first, itemIDs: signature.items,
                     names: signature.names.isEmpty ? nil : signature.names, taken: taken,
-                    repeating: AlarmRequest.Repeat(time: key.time, weekdays: value.weekdays)
+                    repeating: AlarmRequest.Repeat(time: key.time, weekdays: value.weekdays),
+                    scheduleIDs: Set(signature.items.compactMap { scheduleOfItem[$0]?.id })
                 )
             )
         }
@@ -302,7 +311,8 @@ public struct AlarmPlan: Hashable, Sendable {
             dated.append(
                 AlarmRequest(
                     id: Self.identifier(of: key), fireDate: candidate.instant, itemIDs: candidate.items,
-                    names: candidate.names.isEmpty ? nil : candidate.names, taken: taken
+                    names: candidate.names.isEmpty ? nil : candidate.names, taken: taken,
+                    scheduleIDs: Set(candidate.items.compactMap { scheduleOfItem[$0]?.id })
                 )
             )
         }
@@ -334,6 +344,37 @@ public struct AlarmPlan: Hashable, Sendable {
     }
 }
 
+/// Which schedules each alarm of the system stands for, by the exact alarm identifier (D089). AlarmKit gives the app no
+/// field to read back, so the engine keeps this index. A run with an unreadable schedule keeps only the obsolete alarms of
+/// that schedule, and cancels the others.
+public protocol AlarmIndex: Sendable {
+    func schedules(of id: UUID) -> Set<ScheduleID>?
+    func record(_ id: UUID, schedules: Set<ScheduleID>)
+    /// Forgets every alarm that is not in `ids`.
+    func keep(only ids: Set<UUID>)
+    func forget(_ ids: [UUID])
+    /// Obsolete alarms that ring now. The engine never stops a ringing alarm. It cancels these at the first run in which they
+    /// ring no more (D089). The set survives the stop of the process.
+    func quiet() -> Set<UUID>
+    func setQuiet(_ ids: Set<UUID>)
+}
+
+/// An index in memory. A test uses it, and an engine with no durable index.
+public final class MemoryAlarmIndex: AlarmIndex, @unchecked Sendable {
+    private let lock = NSLock()
+    private var entries: [UUID: Set<ScheduleID>] = [:]
+
+    public init() {}
+
+    public func schedules(of id: UUID) -> Set<ScheduleID>? { lock.withLock { entries[id] } }
+    public func record(_ id: UUID, schedules: Set<ScheduleID>) { lock.withLock { entries[id] = schedules } }
+    public func keep(only ids: Set<UUID>) { lock.withLock { entries = entries.filter { ids.contains($0.key) } } }
+    public func forget(_ ids: [UUID]) { lock.withLock { ids.forEach { entries[$0] = nil } } }
+    private var quietIDs: Set<UUID> = []
+    public func quiet() -> Set<UUID> { lock.withLock { quietIDs } }
+    public func setQuiet(_ ids: Set<UUID>) { lock.withLock { quietIDs = ids } }
+}
+
 /// The alarm system. The rules of the engine use only this protocol, so they run without AlarmKit (D079).
 public protocol AlarmCenter: Sendable {
     /// The identifiers of the alarms that wait for their time. An alarm that rings now is not in the set,
@@ -343,6 +384,9 @@ public protocol AlarmCenter: Sendable {
     /// The identifiers of the alarms that ring or count down now. A repeating alarm in this set is still registered, and it
     /// goes back to waiting after "Stop". The run must not register a second one (D089).
     func active() async throws -> Set<UUID>
+    /// The waiting and the active alarms from one read. A "Stop" between two reads could hide a repeating alarm from both,
+    /// so the engine uses this call (D089). The default makes two reads. A real center reads once.
+    func snapshot() async throws -> AlarmSnapshot
     /// Schedules the alarm. The system holds it until its time.
     func schedule(_ request: AlarmRequest) async throws
     /// Cancels the alarms with these identifiers.
@@ -350,8 +394,22 @@ public protocol AlarmCenter: Sendable {
     func cancel(_ ids: [UUID]) async throws
 }
 
+/// The alarms of the system at one moment (D089).
+public struct AlarmSnapshot: Sendable, Equatable {
+    public let waiting: Set<UUID>
+    public let active: Set<UUID>
+
+    public init(waiting: Set<UUID>, active: Set<UUID>) {
+        self.waiting = waiting
+        self.active = active
+    }
+}
+
 extension AlarmCenter {
     public func active() async throws -> Set<UUID> { [] }
+    public func snapshot() async throws -> AlarmSnapshot {
+        AlarmSnapshot(waiting: try await waiting(), active: try await active())
+    }
 }
 
 /// Where the engine reads the alarms that the saved plan and the records ask for.
@@ -394,6 +452,10 @@ public struct TimedAlarmCenter: AlarmCenter {
 
     public func active() async throws -> Set<UUID> {
         try await timed("active") { try await base.active() }
+    }
+
+    public func snapshot() async throws -> AlarmSnapshot {
+        try await timed("snapshot") { try await base.snapshot() }
     }
 
     public func schedule(_ request: AlarmRequest) async throws {
@@ -472,6 +534,7 @@ public struct AlarmEngine: Sendable {
     private let alarmsRing: @Sendable () -> Bool
     private let wanted: WantedAlarms
     private let generations: any GenerationCounter
+    private let index: any AlarmIndex
 
     /// - Parameter wanted: The box that the engine fills with the exact ids that the current plan wants. A `TimedAlarmCenter`
     ///   reads it, so a schedule that returns after its time out is cancelled when the plan does not want it any more.
@@ -481,8 +544,10 @@ public struct AlarmEngine: Sendable {
         privacy: any ReminderPrivacyStore,
         alarmsRing: @escaping @Sendable () -> Bool,
         wanted: WantedAlarms = WantedAlarms(),
-        generations: any GenerationCounter = MemoryGenerationCounter.shared
+        generations: any GenerationCounter = MemoryGenerationCounter.shared,
+        index: any AlarmIndex = MemoryAlarmIndex()
     ) {
+        self.index = index
         self.generations = generations
         self.source = source
         self.center = center
@@ -508,9 +573,11 @@ public struct AlarmEngine: Sendable {
         // also when the next call of this run does not answer.
         let wantedContent = Set(plan.requests.map(\.id))
         wanted.begin(keeping: wantedContent)
-        let waiting = try await center.waiting()
-        // A repeating alarm that rings now is not waiting, and it is not missing (D089).
-        let activeContent = Set(try await center.active().map(\.alarmContent))
+        // One read gives both sets. A repeating alarm that rings now is not waiting, and it is not missing (D089).
+        let snapshot = try await center.snapshot()
+        let waiting = snapshot.waiting
+        let active = snapshot.active
+        let activeContent = Set(active.map(\.alarmContent))
         /// The alarms of the system by content. An alarm that the plan does not want goes. Of one content only the alarm with
         /// the highest generation stays.
         var actual: [UUID: UUID] = [:]
@@ -531,7 +598,22 @@ public struct AlarmEngine: Sendable {
                 return false
             }
         }
-        if !obsolete.isEmpty, !plan.hasUnreadable { _ = await cancel(obsolete) }
+        // With an unreadable schedule, an obsolete alarm of that schedule stays, because the plan does not know it. An alarm with
+        // no index entry stays too, as the build before the index made it. Every other obsolete alarm goes (D089).
+        index.keep(only: waiting.union(active))
+        func isKept(_ id: UUID) -> Bool {
+            guard plan.hasUnreadable else { return false }
+            guard let schedules = index.schedules(of: id) else { return true }
+            return !schedules.isDisjoint(with: plan.unreadableSchedules)
+        }
+        // An obsolete alarm that rings now stays until it is quiet. Its id waits in a durable set. An alarm in the set that
+        // waits again (a repeating alarm after "Stop") goes now, also when an unreadable schedule keeps the others (D089).
+        let obsoleteActive = active.filter { !wantedContent.contains($0.alarmContent) && !isKept($0) }
+        let quiet = index.quiet().union(obsoleteActive).intersection(waiting.union(active))
+        let returned = quiet.intersection(waiting)
+        index.setQuiet(quiet.subtracting(returned))
+        let toCancel = Array(Set(obsolete.filter { !isKept($0) }).union(returned))
+        if !toCancel.isEmpty, await cancel(toCancel) { index.forget(toCancel) }
         // A dose that the limit cut and that is due soon has no alarm. Its item gets the normal reminder (D089).
         var failed = plan.cutItems
         /// The alarms that the system holds after this run, by content. A ringing alarm is not in `waiting` and stays.
@@ -544,12 +626,14 @@ public struct AlarmEngine: Sendable {
             // A fresh identifier for each alarm that the app gives the system (D086).
             let registered = AlarmRequest(
                 id: request.id.withGeneration(generations.next()), fireDate: request.fireDate, itemIDs: request.itemIDs,
-                names: request.names, taken: request.taken, repeating: request.repeating
+                names: request.names, taken: request.taken, repeating: request.repeating,
+                scheduleIDs: request.scheduleIDs
             )
             // The id is wanted while the call runs. A call that returns after its limit is checked with it.
             wanted.insert(registered.id)
             do {
                 try await center.schedule(registered)
+                index.record(registered.id, schedules: request.scheduleIDs)
                 held.insert(request.id)
                 actual[request.id] = registered.id
             } catch {
@@ -565,7 +649,10 @@ public struct AlarmEngine: Sendable {
             changed = false
             for request in plan.requests where held.contains(request.id) && !failed.isDisjoint(with: request.itemIDs) {
                 // A cancel that failed leaves the alarm held. The run throws at the end, so no banner is dropped.
-                if let id = actual[request.id], await cancel([id]) { held.remove(request.id) }
+                if let id = actual[request.id], await cancel([id]) {
+                    held.remove(request.id)
+                    index.forget([id])
+                }
                 let before = failed.count
                 failed.formUnion(request.itemIDs)
                 changed = changed || failed.count != before

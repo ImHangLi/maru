@@ -135,7 +135,8 @@ actor AppStore {
             privacy: DefaultsReminderPrivacy(),
             alarmsRing: { AlarmSupport.isAuthorized },
             wanted: wantedAlarms,
-            generations: generations
+            generations: generations,
+            index: DefaultsAlarmIndex(defaults: AppGroup.defaults)
         )
         self.alarms = alarms
         return alarms

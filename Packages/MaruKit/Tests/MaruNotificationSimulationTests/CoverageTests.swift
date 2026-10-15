@@ -76,4 +76,22 @@ struct CoverageTests {
         let waiting = await p.alarmCenter.alarms.count
         #expect(waiting == 0, "a second repeating alarm was registered while the first rings")
     }
+
+    /// D089: an edit while the repeating alarm rings gives a new alarm. The ringing one is not stopped, its id waits in the
+    /// durable set, and it is cancelled at the first run after "Stop". Both must not repeat.
+    @Test func anObsoleteRingingAlarmIsCancelledAfterStop() async throws {
+        let p = try await phone()
+        try await p.addItem("Zinc", at: ["09:00"], alarm: true)
+        await p.alarmCenter.startRinging()
+        p.checks.alarms = false
+        try await p.rename("Zinc", to: "Zinc B")
+        let ringing = await p.alarmCenter.ringing
+        #expect(ringing.count == 1, "a run stopped the ringing alarm")
+        #expect(p.alarmIndex.quiet() == ringing, "the ringing alarm is not in the set that waits for quiet")
+        await p.alarmCenter.stopRinging()
+        await p.foreground()
+        let waiting = await p.alarmCenter.alarms.values.map(\.names)
+        #expect(waiting == [["Zinc B"]], "the old alarm still repeats: \(waiting)")
+        #expect(p.alarmIndex.quiet().isEmpty)
+    }
 }

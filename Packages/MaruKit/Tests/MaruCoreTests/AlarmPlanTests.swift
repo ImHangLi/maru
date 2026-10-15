@@ -129,6 +129,33 @@ struct AlarmPlanTests {
         #expect(cancelled == [request.id])
     }
 
+    /// A "Stop" between two reads can hide a repeating alarm from both. The engine reads one snapshot (D089).
+    @Test func theEngineReadsOneSnapshotOfTheAlarms() async throws {
+        actor Racing: AlarmCenter, AlarmSource {
+            let plan: AlarmPlan
+            var scheduled = 0
+            init(plan: AlarmPlan) { self.plan = plan }
+            // The two separate reads both miss the alarm. Only the snapshot has it.
+            func waiting() async -> Set<UUID> { [] }
+            func active() async -> Set<UUID> { [] }
+            func snapshot() async -> AlarmSnapshot { AlarmSnapshot(waiting: [], active: [plan.requests[0].id.withGeneration(1)]) }
+            func schedule(_ request: AlarmRequest) async throws { scheduled += 1 }
+            func cancel(_ ids: [UUID]) async throws {}
+            func alarmPlan(privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover) async throws -> AlarmPlan { plan }
+        }
+        struct Names: ReminderPrivacyStore {
+            func load() -> ReminderPrivacy { .showNames }
+            func save(_ privacy: ReminderPrivacy) {}
+        }
+        let zinc = Fixtures.item(name: "Zinc", alarm: true)
+        let schedule = Fixtures.schedule(itemID: zinc.id, times: [Fixtures.time(8)], timeZonePolicy: .followsDevice)
+        let center = Racing(plan: plan(items: [zinc], schedules: [schedule]).alarms)
+        _ = try await AlarmEngine(source: center, center: center, privacy: Names(), alarmsRing: { true })
+            .refresh(at: now, deviceTimeZone: Fixtures.shanghai)
+        let scheduled = await center.scheduled
+        #expect(scheduled == 0)
+    }
+
     /// N3 (D089): the limit cut doses that are due soon, and the item did not know. Now it gets its banner back.
     @Test func aDoseThatTheLimitCutGivesItsItemTheBannerBack() throws {
         let zinc = Fixtures.item(name: "Zinc", alarm: true)

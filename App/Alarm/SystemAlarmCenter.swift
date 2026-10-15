@@ -41,6 +41,14 @@ struct SystemAlarmCenter: AlarmCenter {
         return Set(alarms.filter { $0.state == .scheduled }.map(\.id))
     }
 
+    func snapshot() async throws -> AlarmSnapshot {
+        let alarms = try AlarmManager.shared.alarms
+        return AlarmSnapshot(
+            waiting: Set(alarms.filter { $0.state == .scheduled }.map(\.id)),
+            active: Set(alarms.filter { $0.state == .alerting }.map(\.id))
+        )
+    }
+
     func active() async throws -> Set<UUID> {
         let alarms = try AlarmManager.shared.alarms
         return Set(alarms.filter { $0.state == .alerting }.map(\.id))
@@ -82,7 +90,7 @@ struct SystemAlarmCenter: AlarmCenter {
             configuration: .alarm(
                 schedule: schedule,
                 attributes: attributes,
-                stopIntent: nil,
+                stopIntent: RunAfterAlarmIntent(),
                 secondaryIntent: intent,
                 sound: .default
             )
@@ -173,5 +181,23 @@ struct OpenFromAlarmIntent: LiveActivityIntent {
 
     func perform() async throws -> some IntentResult {
         .result()
+    }
+}
+
+/// The "Stop" button of an alarm. The app runs the reminders a moment later, so a repeating alarm that an edit made obsolete
+/// is cancelled soon after it stops ringing (D089).
+struct RunAfterAlarmIntent: LiveActivityIntent {
+    static let title: LocalizedStringResource = "Update Reminders"
+    static var isDiscoverable: Bool { false }
+
+    init() {}
+
+    @MainActor
+    func perform() async throws -> some IntentResult {
+        try? await Task.sleep(for: .seconds(1))
+        if let deviceTimeZone = NamedTimeZone(device: .current, at: .now) {
+            await AppModel.shared.waitForReminders(deviceTimeZone: deviceTimeZone)
+        }
+        return .result()
     }
 }
