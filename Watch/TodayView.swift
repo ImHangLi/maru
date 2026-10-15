@@ -125,7 +125,7 @@ private struct DoseRow: View {
         case .taken: String(localized: "Taken at \(time)")
         case .skipped: String(localized: "Skipped")
         }
-        return [dose.amount, state].compactMap { $0 }.joined(separator: String(localized: ", "))
+        return [dose.amount?.trimmingCharacters(in: .whitespacesAndNewlines), state].compactMap { $0 }.joined(separator: String(localized: ", "))
     }
 }
 

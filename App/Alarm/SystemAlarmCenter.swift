@@ -56,7 +56,10 @@ struct SystemAlarmCenter: AlarmCenter {
 
     func schedule(_ request: AlarmRequest) async throws {
         let text = SystemReminderCenter().text(for: ReminderContent(kind: .due, names: request.names))
-        let title = request.names == nil ? text.title : "\(text.title) · \(text.body)"
+        let title = request.names == nil ? text.title : String(
+            localized: "\(text.title): \(text.body)",
+            comment: "The title of an alarm that names its items. The first placeholder is the reminder title, the second is the item names. Example: Time to take: Zinc and Vitamin D."
+        )
         let secondary: AlarmButton
         let intent: any LiveActivityIntent
         if let taken = request.taken {

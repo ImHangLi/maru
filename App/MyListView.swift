@@ -31,9 +31,7 @@ struct MyListView: View {
                                 ItemGrid(entries: ordered(snapshot.list, by: times), columns: typeSize.isAccessibilitySize ? 1 : 2)
                             }
                             if !snapshot.archived.isEmpty {
-                                NavigationLink {
-                                    ArchivedListView()
-                                } label: {
+                                NavigationLink(value: ArchivedListView.Route()) {
                                     HStack {
                                         Text("Archived")
                                             .foregroundStyle(Color.primary)
@@ -54,6 +52,7 @@ struct MyListView: View {
                         .motion(.layout, value: layout(snapshot))
                     }
                     .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
+                    .navigationDestination(for: ArchivedListView.Route.self) { _ in ArchivedListView() }
                     .overlay {
                         if snapshot.list.isEmpty && snapshot.archived.isEmpty {
                             ContentUnavailableView {

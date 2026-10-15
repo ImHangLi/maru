@@ -82,7 +82,7 @@ struct AsNeededCard: Equatable, Sendable {
         }
         // "Last dose" follows every record, undo, and time change at once (D091). A taken dose of the shown day
         // gives the newest time. With none left, the value of an earlier day stays, and a value of the shown day
-        // goes until the next read gives the stored one.
+        // goes until the read that the model starts after an undo or a skip gives the stored one.
         if let newest = rows[row].doses.compactMap({ $0.record.status == .taken ? $0.time : nil }).max() {
             rows[row].lastTaken = newest
         } else if let last = rows[row].lastTaken, LocalDate(last, in: occurrence.timeZone) >= occurrence.plannedDate {

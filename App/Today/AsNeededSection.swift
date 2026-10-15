@@ -106,7 +106,7 @@ private struct AsNeededItemRow: View {
     /// The amount that a new dose gets, and when the user last took a dose, also on an earlier day (D091).
     private var detail: String? {
         var parts: [String] = []
-        if row.canRecord, let amount = row.amount { parts.append(amount.text) }
+        if row.canRecord, let amount = row.amount { parts.append(amount.text.trimmingCharacters(in: .whitespacesAndNewlines)) }
         if let last = row.lastTaken { parts.append(String(localized: "Last dose \(lastDoseText(last))")) }
         return parts.isEmpty ? nil : parts.formatted(.list(type: .and, width: .narrow))
     }
