@@ -71,10 +71,6 @@ struct AsNeededCard: Equatable, Sendable {
     /// like in the next read.
     mutating func apply(_ record: OccurrenceRecord, of occurrence: AsNeededOccurrence) {
         guard let row = rows.firstIndex(where: { $0.itemID == occurrence.itemID }) else { return }
-        // The line "Last dose" follows a committed taken dose at once. The next read gives the stored value (D091).
-        if let taken = record.currentEvent, taken.action == .taken, taken.occurredAt > rows[row].lastTaken ?? .distantPast {
-            rows[row].lastTaken = taken.occurredAt
-        }
         if let dose = rows[row].doses.firstIndex(where: { $0.id == occurrence.id }) {
             if record.status == .unrecorded {
                 rows[row].doses.remove(at: dose)
@@ -83,6 +79,14 @@ struct AsNeededCard: Equatable, Sendable {
             }
         } else if record.status != .unrecorded {
             rows[row].doses.append(Dose(occurrence: occurrence, record: record))
+        }
+        // "Last dose" follows every record, undo, and time change at once (D091). A taken dose of the shown day
+        // gives the newest time. With none left, the value of an earlier day stays, and a value of the shown day
+        // goes until the next read gives the stored one.
+        if let newest = rows[row].doses.compactMap({ $0.record.status == .taken ? $0.time : nil }).max() {
+            rows[row].lastTaken = newest
+        } else if let last = rows[row].lastTaken, LocalDate(last, in: occurrence.timeZone) >= occurrence.plannedDate {
+            rows[row].lastTaken = nil
         }
     }
 }

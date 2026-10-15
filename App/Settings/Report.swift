@@ -70,16 +70,20 @@ enum Report {
         for item in items {
             guard let summary = read.summaries[item.id] else { continue }
             document.add(.heading, item.name)
-            if summary.planned == 0 {
-                document.add(.body, String(localized: "Taken: \(summary.asNeededTaken)"))
-            } else {
-                document.add(.body, [
+            var counts: [String] = []
+            if summary.planned > 0 {
+                counts = [
                     String(localized: "Planned: \(summary.planned)"),
                     String(localized: "Taken: \(summary.taken)"),
                     String(localized: "Skipped: \(summary.skipped)"),
                     String(localized: "No record: \(summary.noRecord)"),
-                ].joined(separator: " · "))
+                ]
             }
+            // Doses with no plan have their own count, so a dose never drops out.
+            if summary.asNeededTaken > 0 {
+                counts.append(String(localized: "As needed: \(summary.asNeededTaken)"))
+            }
+            document.add(.body, counts.joined(separator: " · "))
         }
         document.add(
             .note,

@@ -1869,6 +1869,41 @@
         }
       }
     },
+    "As needed: %lld" : {
+      "comment" : "Item detail and summary: the doses taken as needed in the period. They have no plan. Example: As needed: 3.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei Bedarf: %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si es necesario: %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "必要なとき %lld回"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "필요할 때 %lld회"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按需服用 %lld 次"
+          }
+        }
+      }
+    },
     "Back Up" : {
       "comment" : "Settings: the button that makes a backup file and opens the share sheet.",
       "localizations" : {

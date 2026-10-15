@@ -80,4 +80,31 @@ struct TrackerTests {
         #expect(summary[asNeededItem.id]?.asNeededTaken == 1)
         #expect(summary[asNeededItem.id]?.planned == 0)
     }
+
+    /// An item with as-needed doses and later a plan keeps both counts, so no dose drops out of a summary.
+    @Test func anItemWithAsNeededAndPlannedDosesCountsBoth() throws {
+        let item = Fixtures.item()
+        let schedule = Fixtures.schedule(itemID: item.id, times: [Fixtures.time(8)])
+        let day = Fixtures.date(2026, 3, 5)
+        let occurrence = Occurrence(
+            slotID: schedule.slots[0].id, plannedDate: day, plannedTime: Fixtures.time(8), timeZone: Fixtures.shanghai,
+            scheduleVersionID: ScheduleVersionID()
+        )
+        var planned = OccurrenceRecord(occurrenceID: occurrence.id)
+        try planned.record(Fixtures.event(for: occurrence, .taken))
+        var asNeeded: [HistoryAsNeededDose] = []
+        for hour in [9, 13, 18] {
+            let dose = AsNeededOccurrence(id: OccurrenceID(), itemID: item.id, plannedDate: day, plannedTime: Fixtures.time(hour), timeZone: Fixtures.shanghai)
+            var record = OccurrenceRecord(occurrenceID: dose.id)
+            try record.record(IntakeEvent(occurrenceID: dose.id, action: .taken, occurredAt: .now, recordedAt: .now, source: .app))
+            asNeeded.append(HistoryAsNeededDose(occurrence: dose, record: record))
+        }
+        let days = [HistoryDay(
+            date: day, doses: [HistoryDose(occurrence: occurrence, isStored: true, itemID: item.id, record: planned)], asNeeded: asNeeded
+        )]
+
+        let summary = try #require(History.summary(days: days, today: Fixtures.date(2026, 3, 7), now: .now)[item.id])
+
+        #expect((summary.planned, summary.taken, summary.asNeededTaken) == (1, 1, 3))
+    }
 }

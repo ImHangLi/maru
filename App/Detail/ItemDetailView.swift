@@ -379,8 +379,9 @@ private struct MonthSection: View {
         guard let month else { return [String(localized: "No records in the last 30 days.")] }
         let skipped = String(localized: "Skipped: \(month.skipped)", comment: "Item detail: the planned doses skipped in the last 30 days. Example: Skipped: 1.")
         let noRecord = String(localized: "No record: \(month.noRecord)", comment: "Item detail: the planned doses with no record in the last 30 days. Example: No record: 1.")
+        let asNeeded = String(localized: "As needed: \(month.asNeededTaken)", comment: "Item detail and summary: the doses taken as needed in the period. They have no plan. Example: As needed: 3.")
         if month.planned == 0 { return [String(localized: "Taken: \(month.asNeededTaken)")] }
         let taken = String(localized: "Taken: \(month.taken) of \(month.planned)", comment: "Item detail: the planned doses taken of the planned doses in the last 30 days. Example: Taken: 26 of 30.")
-        return [taken, skipped, noRecord]
+        return month.asNeededTaken > 0 ? [taken, skipped, noRecord, asNeeded] : [taken, skipped, noRecord]
     }
 }
