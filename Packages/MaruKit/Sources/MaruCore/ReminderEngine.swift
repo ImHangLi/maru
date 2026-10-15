@@ -56,6 +56,13 @@ public protocol ReminderCenter: Sendable {
 public protocol RemovalLedger: Sendable {
     func load() -> Set<String>
     func save(_ identifiers: Set<String>)
+    /// When the ledger first held the identifier. `Date.distantPast` for an entry of a build that wrote no time,
+    /// and `nil` when the ledger keeps no time. With `nil`, the engine never takes a removal for lost (D086).
+    func since(_ identifier: String) -> Date?
+}
+
+extension RemovalLedger {
+    public func since(_ identifier: String) -> Date? { nil }
 }
 
 /// Where the engine reads the saved plan.
@@ -167,6 +174,9 @@ public actor ReminderEngine {
     /// The wait between two of these reads. The system removes a request a short time after the call,
     /// so ten reads in about half a second are enough, and a save does not wait long for its outcome.
     public static let removalWait = Duration.milliseconds(50)
+    /// A removal that the system did not do in this time is lost, not slow (D086). The system takes a request out in
+    /// milliseconds, so a removal that stays open for five seconds never reached it.
+    public static let lostRemovalAfter: TimeInterval = 5
 
     private let source: any ReminderPlanSource
     private let center: any ReminderCenter
@@ -403,6 +413,23 @@ public actor ReminderEngine {
         await center.remove(identifiers: new)
     }
 
+    /// Identifiers whose removal this process sent again, so each one is sent again at most one time per process.
+    private var resent: Set<String> = []
+
+    /// A removal that the ledger holds for longer than `ReminderEngine.lostRemovalAfter`, and that the system did not do,
+    /// is lost: the process stopped between the ledger write and the call, or an older build left it (D086). The engine sends
+    /// it again. A removal that is younger can still be in flight, and the engine waits for it, because a second call
+    /// next to a later add could delete the new request. The identifier stays blocked until the system confirms it.
+    private func resendLostRemovals() async {
+        let now = clock()
+        let lost = unremoved.subtracting(resent).filter { identifier in
+            ledger.since(identifier).map { now.timeIntervalSince($0) > ReminderEngine.lostRemovalAfter } ?? false
+        }
+        guard !lost.isEmpty else { return }
+        resent.formUnion(lost)
+        await center.remove(identifiers: lost.sorted())
+    }
+
     /// Reads the pending requests until the system holds none that the engine removed, at most
     /// `removalChecks` times. The identifiers that the last read still has stay in `unremoved`.
     private func pendingAfterRemoval() async -> [PendingReminder] {
@@ -413,6 +440,7 @@ public actor ReminderEngine {
             let before = unremoved
             unremoved.formIntersection(pending.map(\.identifier))
             if unremoved != before { ledger.save(unremoved) }
+            await resendLostRemovals()
             if unremoved.isEmpty || checks == Self.removalChecks { return pending }
             try? await Task.sleep(for: Self.removalWait)
         }

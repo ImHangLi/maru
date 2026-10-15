@@ -47,6 +47,8 @@ Maru was developed in a private repository before it became public. Issue number
 
 - The store text of version 1.1 is a draft in `metadata/version/1.1.0/`, with new subtitles in `metadata/app-info/`. Nobody pushed it to App Store Connect. The alarm lines stay only after the iPhone check. `docs/release-plan.md`, section 7, has the decisions and the open checks.
 
+- Notifications are checked against a simulator (D086, branch `leon/notification-truth`). Cause of the stale notifications and of "Reminder Not Set" on build 6: a removal that the app wrote in its ledger and the system never did blocked its request for good. The fix sends a lost removal again after 5 seconds, removes delivered notifications of older days, logs each failed run (`os.Logger`, category `reminders`), and the failure alerts have plain text and a "Send Feedback" button. Not proved: why the notification of 09:00 stayed. It needs a check on the iPhone: install the build, record a dose before its time, archive an item, and read the log in Console.
+
 ## Next
 
 1. Check on the maintainer's iPhone, in one session: the item photo (D056), the History graph and rows, the Today row times, the scan card with two real bottles, smart completion, the follow-ups and "Until Recorded" with the "Taken" action after midnight (D034, D039), and the export, backup, and restore (D040). Each pull request has its steps.

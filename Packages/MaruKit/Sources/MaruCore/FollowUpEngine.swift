@@ -71,6 +71,8 @@ public actor FollowUpEngine {
     private let privacy: any ReminderPrivacyStore
     /// Which items an alarm covers now, read at each run (D079).
     private let alarms: @Sendable () -> AlarmCover
+    /// The clock at the time of the call. A run reads it where it must know whether a request time passed.
+    private let clock: @Sendable () -> Date
     private var lastRun: Task<Void, Never>?
     /// Follow-up identifiers that the engine removed and that the system still held at the last read.
     /// The ledger has a copy. The rule is the one of `ReminderEngine`: an identifier is not added again
@@ -83,13 +85,15 @@ public actor FollowUpEngine {
         center: any FollowUpCenter,
         ledger: any RemovalLedger,
         privacy: any ReminderPrivacyStore,
-        alarms: @escaping @Sendable () -> AlarmCover = { .none }
+        alarms: @escaping @Sendable () -> AlarmCover = { .none },
+        clock: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.source = source
         self.center = center
         self.ledger = ledger
         self.privacy = privacy
         self.alarms = alarms
+        self.clock = clock
         unremoved = ledger.load()
     }
 
@@ -119,7 +123,7 @@ public actor FollowUpEngine {
         if plan.hasUnconfirmedChange {
             await remove(Array(Self.followUps(await pendingAfterRemoval()).keys))
             if Self.followUps(await pendingAfterRemoval()).isEmpty {
-                let confirmed = Date()
+                let confirmed = clock()
                 try await source.confirmFollowUpChanges(at: confirmed)
                 now = max(now, confirmed)
                 plan = try await source.followUpPlan(
@@ -177,7 +181,7 @@ public actor FollowUpEngine {
             let live = await pendingAfterRemoval()
             let held = Set(live.map(\.identifier))
             var room = max(0, Self.limit - live.count)
-            let time = Date()
+            let time = clock()
             for request in old
             where authorization == .authorized && !unremoved.contains(request.identifier)
                 && !held.contains(request.identifier) && request.fireDate > time && room > 0 {
@@ -190,6 +194,8 @@ public actor FollowUpEngine {
         // only the doses that Today shows. The text of a first reminder is compared with the open items of its date.
         let delivered = await center.delivered().filter { shown in
             if shown.identifier.hasPrefix(FollowUpRequest.identifierPrefix) {
+                if let day = shown.userInfo[FollowUpRequest.plannedDateKey].flatMap(LocalDate.init(dayText:)),
+                   !plan.isShownByToday(day) { return true }
                 return shown.text != plan.open[shown.identifier].map(center.text(for:))
             }
             guard shown.identifier.hasPrefix(ReminderSeries.identifierPrefix) else { return false }
@@ -244,6 +250,23 @@ public actor FollowUpEngine {
         await center.remove(identifiers: new)
     }
 
+    /// Identifiers whose removal this process sent again, so each one is sent again at most one time per process.
+    private var resent: Set<String> = []
+
+    /// A removal that the ledger holds for longer than `ReminderEngine.lostRemovalAfter`, and that the system did not do,
+    /// is lost: the process stopped between the ledger write and the call, or an older build left it (D086). The engine sends
+    /// it again. A removal that is younger can still be in flight, and the engine waits for it, because a second call
+    /// next to a later add could delete the new request. The identifier stays blocked until the system confirms it.
+    private func resendLostRemovals() async {
+        let now = clock()
+        let lost = unremoved.subtracting(resent).filter { identifier in
+            ledger.since(identifier).map { now.timeIntervalSince($0) > ReminderEngine.lostRemovalAfter } ?? false
+        }
+        guard !lost.isEmpty else { return }
+        resent.formUnion(lost)
+        await center.remove(identifiers: lost.sorted())
+    }
+
     /// Reads the pending requests until the system holds none that the engine removed, at most
     /// `ReminderEngine.removalChecks` times.
     private func pendingAfterRemoval() async -> [PendingReminder] {
@@ -254,6 +277,7 @@ public actor FollowUpEngine {
             let before = unremoved
             unremoved.formIntersection(pending.map(\.identifier))
             if unremoved != before { ledger.save(unremoved) }
+            await resendLostRemovals()
             if unremoved.isEmpty || checks == ReminderEngine.removalChecks { return pending }
             try? await Task.sleep(for: ReminderEngine.removalWait)
         }

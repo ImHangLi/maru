@@ -26,11 +26,27 @@ public struct DefaultsRemovalLedger: RemovalLedger {
         Set(UserDefaults.standard.stringArray(forKey: key) ?? [])
     }
 
+    /// The time at which each identifier entered the ledger, under a second key. An entry of an older build has no time.
+    private var sinceKey: String { key + ".since" }
+
     public func save(_ identifiers: Set<String>) {
+        let defaults = UserDefaults.standard
         if identifiers.isEmpty {
-            UserDefaults.standard.removeObject(forKey: key)
-        } else {
-            UserDefaults.standard.set(identifiers.sorted(), forKey: key)
+            defaults.removeObject(forKey: key)
+            defaults.removeObject(forKey: sinceKey)
+            return
         }
+        let known = defaults.dictionary(forKey: sinceKey) as? [String: Date] ?? [:]
+        let now = Date()
+        // A new identifier gets the time of now. An identifier that stays keeps its first time.
+        let times = Dictionary(uniqueKeysWithValues: identifiers.map { ($0, known[$0] ?? now) })
+        defaults.set(times, forKey: sinceKey)
+        defaults.set(identifiers.sorted(), forKey: key)
+    }
+
+    public func since(_ identifier: String) -> Date? {
+        guard load().contains(identifier) else { return nil }
+        let known = UserDefaults.standard.dictionary(forKey: sinceKey) as? [String: Date]
+        return known?[identifier] ?? .distantPast
     }
 }

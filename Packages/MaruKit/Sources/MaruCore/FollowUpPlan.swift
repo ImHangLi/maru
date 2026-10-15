@@ -328,6 +328,7 @@ public struct FollowUpPlan: Hashable, Sendable {
                 }
             } ?? last
         }
+        guard isShownByToday(date) else { return nil }
         var seen = Set<ItemID>()
         // A named zone that equals the device zone can join the series of the device (D047). The items are in the order
         // of the schedules, as in the text of the series request, so the same set of items gives the same text.
@@ -337,6 +338,12 @@ public struct FollowUpPlan: Hashable, Sendable {
         }.sorted { $0.order < $1.order }.filter { seen.insert($0.itemID).inserted }.map(\.name)
         guard !names.isEmpty else { return nil }
         return ReminderContent(kind: .due, names: showsNames ? names : nil)
+    }
+
+    /// A notification of an older day names no dose that Today shows, so it must go (D086). Today and yesterday stay:
+    /// the "Taken" action of a follow-up can still record yesterday's dose until `latestTime`.
+    public func isShownByToday(_ plannedDate: LocalDate) -> Bool {
+        plannedDate >= LocalDate(now, in: deviceTimeZone).adding(days: -1)
     }
 
     /// The instant at which the follow-ups of a dose on `date` stop at the latest: `latestTime` of the next day.
