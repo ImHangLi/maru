@@ -65,4 +65,15 @@ struct CoverageTests {
         #expect(delivered == 13)
         p.expectCorrectDeliveries()
     }
+
+    /// D089: a repeating alarm that rings now is not waiting. The run must not register a second one, or both repeat after "Stop".
+    @Test func aRingingRepeatingAlarmIsNotRegisteredAgain() async throws {
+        let p = try await phone()
+        try await p.addItem("Zinc", at: ["09:00"], alarm: true)
+        await p.alarmCenter.startRinging()
+        p.checks.alarms = false
+        await p.foreground()
+        let waiting = await p.alarmCenter.alarms.count
+        #expect(waiting == 0, "a second repeating alarm was registered while the first rings")
+    }
 }

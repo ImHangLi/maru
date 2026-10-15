@@ -269,7 +269,8 @@ public struct AlarmPlan: Hashable, Sendable {
             }
             let text = (
                 ["repeat", signature.seriesID, value.weekdays.sorted().map { String($0.rawValue) }.joined()]
-                    + signature.items.map { $0.rawValue.uuidString } + signature.names + [taken == nil ? "open" : "taken"]
+                    + signature.items.map { $0.rawValue.uuidString } + signature.names
+                    + [taken == nil ? "open" : "taken", value.single?.versionID.rawValue.uuidString ?? ""]
             ).joined(separator: "\n")
             repeating.append(
                 AlarmRequest(
@@ -296,7 +297,8 @@ public struct AlarmPlan: Hashable, Sendable {
                 ]
             }
             let key = ([candidate.group.identifier] + candidate.items.map { $0.rawValue.uuidString } + candidate.names
-                + [taken == nil ? "open" : "taken"]).joined(separator: "\n")
+                + [taken == nil ? "open" : "taken", candidate.single?.versionID.rawValue.uuidString ?? ""])
+                .joined(separator: "\n")
             dated.append(
                 AlarmRequest(
                     id: Self.identifier(of: key), fireDate: candidate.instant, itemIDs: candidate.items,
@@ -338,11 +340,18 @@ public protocol AlarmCenter: Sendable {
     /// so a run never stops a ringing alarm.
     /// Throws when the system cannot list the alarms, also when it does not answer in time (D086).
     func waiting() async throws -> Set<UUID>
+    /// The identifiers of the alarms that ring or count down now. A repeating alarm in this set is still registered, and it
+    /// goes back to waiting after "Stop". The run must not register a second one (D089).
+    func active() async throws -> Set<UUID>
     /// Schedules the alarm. The system holds it until its time.
     func schedule(_ request: AlarmRequest) async throws
     /// Cancels the alarms with these identifiers.
     /// Throws when the system could not cancel an alarm. It still tries each one.
     func cancel(_ ids: [UUID]) async throws
+}
+
+extension AlarmCenter {
+    public func active() async throws -> Set<UUID> { [] }
 }
 
 /// Where the engine reads the alarms that the saved plan and the records ask for.
@@ -383,12 +392,17 @@ public struct TimedAlarmCenter: AlarmCenter {
         try await timed("waiting") { try await base.waiting() }
     }
 
+    public func active() async throws -> Set<UUID> {
+        try await timed("active") { try await base.active() }
+    }
+
     public func schedule(_ request: AlarmRequest) async throws {
         let wanted = wanted
         let base = base
         // A schedule that returns after the limit can register an alarm for a dose that has a record by now. It checks the
         // latest plan, and it cancels an alarm that the plan does not want (D086).
-        try await timed("schedule", late: { _ in
+        // When the limit wins, the id stops being wanted in the same step, before the caller or the late call goes on (D089).
+        try await timed("schedule", onTimeout: { wanted.remove(request.id) }, late: { _ in
             if !wanted.isWanted(request.id) { try? await base.cancel([request.id]) }
         }) { try await base.schedule(request) }
     }
@@ -398,7 +412,8 @@ public struct TimedAlarmCenter: AlarmCenter {
     }
 
     private func timed<T: Sendable>(
-        _ name: String, late: (@Sendable (T) async -> Void)? = nil, _ call: @escaping @Sendable () async throws -> T
+        _ name: String, onTimeout: (@Sendable () -> Void)? = nil, late: (@Sendable (T) async -> Void)? = nil,
+        _ call: @escaping @Sendable () async throws -> T
     ) async throws -> T {
         let gate = Gate<T>()
         let limit = limit
@@ -414,7 +429,7 @@ public struct TimedAlarmCenter: AlarmCenter {
             }
             Task {
                 try? await Task.sleep(for: limit)
-                if gate.finish(.failure(AlarmRunError.timedOut)) { didTimeOut(name) }
+                if gate.finish(.failure(AlarmRunError.timedOut), whileLocked: onTimeout) { didTimeOut(name) }
             }
         }
     }
@@ -429,9 +444,11 @@ public struct TimedAlarmCenter: AlarmCenter {
         }
 
         @discardableResult
-        func finish(_ result: Result<T, any Error>) -> Bool {
+        func finish(_ result: Result<T, any Error>, whileLocked action: (@Sendable () -> Void)? = nil) -> Bool {
             let taken = lock.withLock { () -> CheckedContinuation<T, any Error>? in
                 defer { continuation = nil }
+                // The action runs in the same step that takes the continuation, so a late result never sees the old state.
+                if continuation != nil { action?() }
                 return continuation
             }
             guard let taken else { return false }
@@ -492,6 +509,8 @@ public struct AlarmEngine: Sendable {
         let wantedContent = Set(plan.requests.map(\.id))
         wanted.begin(keeping: wantedContent)
         let waiting = try await center.waiting()
+        // A repeating alarm that rings now is not waiting, and it is not missing (D089).
+        let activeContent = Set(try await center.active().map(\.alarmContent))
         /// The alarms of the system by content. An alarm that the plan does not want goes. Of one content only the alarm with
         /// the highest generation stays.
         var actual: [UUID: UUID] = [:]
@@ -518,6 +537,10 @@ public struct AlarmEngine: Sendable {
         /// The alarms that the system holds after this run, by content. A ringing alarm is not in `waiting` and stays.
         var held = Set(actual.keys)
         for request in plan.requests where actual[request.id] == nil {
+            if request.repeating != nil, activeContent.contains(request.id) {
+                held.insert(request.id)
+                continue
+            }
             // A fresh identifier for each alarm that the app gives the system (D086).
             let registered = AlarmRequest(
                 id: request.id.withGeneration(generations.next()), fireDate: request.fireDate, itemIDs: request.itemIDs,

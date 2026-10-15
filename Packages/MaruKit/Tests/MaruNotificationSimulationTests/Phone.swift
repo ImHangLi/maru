@@ -173,6 +173,11 @@ struct ProcessAlarmCenter: AlarmCenter {
         return await base.waiting()
     }
 
+    func active() async throws -> Set<UUID> {
+        _ = await life.gate()
+        return await base.active()
+    }
+
     func schedule(_ request: AlarmRequest) async throws {
         guard await life.gate() else { return }
         try await base.schedule(request)

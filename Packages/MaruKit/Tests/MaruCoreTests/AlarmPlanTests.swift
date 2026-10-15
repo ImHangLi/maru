@@ -91,6 +91,44 @@ struct AlarmPlanTests {
         #expect(AlarmRequest.plannedDate(ofSeries: "series|Asia/Shanghai|08:00", at: now, deviceTimeZone: Fixtures.shanghai) == nil)
     }
 
+    /// An edit of the amount changes the schedule version. The "Taken" button carries the version, so the alarm must be new (D089).
+    @Test func anAlarmHasANewIdentityWhenTheScheduleVersionChanges() throws {
+        let zinc = Fixtures.item(name: "Zinc", alarm: true)
+        let first = Fixtures.schedule(itemID: zinc.id, times: [Fixtures.time(8)], timeZonePolicy: .followsDevice)
+        var edited = first
+        let latest = try #require(first.versions.last)
+        try edited.appendVersion(
+            ScheduleVersion(
+                scheduleID: first.id, effectiveFrom: Fixtures.date(2026, 3, 1), weeklyRule: latest.weeklyRule,
+                slotTimes: latest.slotTimes, dose: Dose("2 capsules"), timeZonePolicy: .followsDevice
+            )
+        )
+        let before = plan(items: [zinc], schedules: [first]).alarms.requests
+        let after = plan(items: [zinc], schedules: [edited]).alarms.requests
+        #expect(before.map(\.id) != after.map(\.id))
+    }
+
+    /// The limit wins: the id stops being wanted in the same step, so a late answer is cancelled (D089).
+    @Test func aScheduleThatAnswersJustAfterTheLimitIsCancelled() async throws {
+        actor Slow: AlarmCenter {
+            var cancelled: [UUID] = []
+            func waiting() async -> Set<UUID> { [] }
+            func schedule(_ request: AlarmRequest) async throws { try await Task.sleep(for: .milliseconds(120)) }
+            func cancel(_ ids: [UUID]) async throws { cancelled += ids }
+        }
+        let slow = Slow()
+        let wanted = WantedAlarms()
+        let center = TimedAlarmCenter(base: slow, wanted: wanted, limit: .milliseconds(40))
+        let request = AlarmRequest(id: UUID(), fireDate: now, itemIDs: [], names: nil, taken: nil)
+        wanted.insert(request.id)
+        await #expect(throws: AlarmRunError.self) { try await center.schedule(request) }
+        // The caller does nothing. The limit alone made the id unwanted.
+        #expect(!wanted.isWanted(request.id))
+        try await Task.sleep(for: .milliseconds(300))
+        let cancelled = await slow.cancelled
+        #expect(cancelled == [request.id])
+    }
+
     /// N3 (D089): the limit cut doses that are due soon, and the item did not know. Now it gets its banner back.
     @Test func aDoseThatTheLimitCutGivesItsItemTheBannerBack() throws {
         let zinc = Fixtures.item(name: "Zinc", alarm: true)

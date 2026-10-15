@@ -1670,3 +1670,11 @@ Limits (stated, not hidden):
 Not verified: everything that runs only on a device or in CI. The app code (`SystemAlarmCenter`, `TakeFromAlarmIntent`, `ItemDetailView`, `AppModel`, `ActionNotice`) has no compile or run on this Mac (rule: no `xcodebuild`). The use of `Alarm.Schedule.relative(.init(time:repeats: .weekly(...)))` follows the AlarmKit documentation and was not run. Device checks, with the live log of `docs/process.md`: save an item with the alarm on at a first install (the permission prompt comes); a daily alarm still rings after 10 days with no open of Maru; record before the alarm time (no ring that day, ring on the next day); "Stop" on a repeating alarm and a ring on the next day; "Taken" on the alarm of one item; the detail text of a plan every other day.
 
 Tests added: `CoverageTests` (5), `aLateAlarmThatTheRunGaveUpOnIsCancelledBesideItsBanner`, `anAlarmItemAtTheFirstSaveAsksForTheNotificationPermission`, `takenActionAfterUndoAndAPlanEditRecordsNothing`, `aBadOccurrenceRowDoesNotStopTheReminderPlans`, `anInterruptedRestoreDoesNotLeaveTheEpochOdd`, and 3 unit tests of the plans. The harness got repeating alarms (`FakeAlarmCenter`, `Oracle`) and a permission prompt on the first save (`Phone.addItem`). The unit tests of `ReminderPlan` that state the minimum reach pass `longerReach: false`. The upgrade fixtures and `RandomEditTests` pass.
+
+D089 follow-up after the Codex review of PR #83:
+
+- The identity of an alarm now includes the schedule version that its "Taken" payload carries. An edit of the amount gives a new alarm, so the button passes the check of N1.
+- `AlarmCenter.active()` lists alarms that ring or count down (`SystemAlarmCenter`: state `.alerting`). The engine does not register a second repeating alarm while the first rings.
+- `TimedAlarmCenter` makes the id unwanted inside the lock that takes the continuation, when the limit wins. A late answer sees that state at once.
+- `FaultIsolationTests` is serialized, because the skipped-rule log is global to the process.
+- Not changed: with an unreadable schedule, the engine still keeps all obsolete alarms. The plan cannot map an alarm id to a schedule. Not verified on a device: `.alerting` is the only state that counts as active.

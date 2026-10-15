@@ -41,6 +41,11 @@ struct SystemAlarmCenter: AlarmCenter {
         return Set(alarms.filter { $0.state == .scheduled }.map(\.id))
     }
 
+    func active() async throws -> Set<UUID> {
+        let alarms = try AlarmManager.shared.alarms
+        return Set(alarms.filter { $0.state == .alerting }.map(\.id))
+    }
+
     func schedule(_ request: AlarmRequest) async throws {
         let text = SystemReminderCenter().text(for: ReminderContent(kind: .due, names: request.names))
         let title = request.names == nil ? text.title : "\(text.title) · \(text.body)"

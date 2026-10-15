@@ -4,7 +4,7 @@ import Testing
 @testable import MaruDatabase
 
 /// D088: one stored row that breaks a rule does not stop the others. Today, the history, and the reminders read the rest.
-@Suite struct FaultIsolationTests {
+@Suite(.serialized) struct FaultIsolationTests {
     /// The root cause of the reports from the iPhone (D088): a taken as-needed dose has an occurrence with no slot and a
     /// state row. The reminder plan read the slot of every closed occurrence as a required value, so one such dose in the
     /// window of the plan made every reminder run fail with `invalidData`.
