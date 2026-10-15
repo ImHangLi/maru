@@ -142,11 +142,13 @@ struct PersistenceTests {
         let new = try Item(category: .supplement, name: "Vitamin D3 2000 IU", form: .softgel, color: .pink)
         let (schedule, _, _) = Fixtures.twiceDailySchedule(itemID: new.id)
 
-        try await store.replace(seed.item.id, with: new, schedule: schedule)
-        try await store.replace(seed.item.id, with: new, schedule: schedule)
+        let archivedAt = Fixtures.instant("2026-03-05T02:00:00Z")
+        try await store.replace(seed.item.id, with: new, schedule: schedule, at: archivedAt)
+        try await store.replace(seed.item.id, with: new, schedule: schedule, at: archivedAt)
 
         var archived = seed.item
         archived.isArchived = true
+        archived.archivedAt = archivedAt
         #expect(try await store.items() == [archived, new])
         #expect(try await store.schedules(of: seed.item.id) == [seed.schedule])
         #expect(try await store.schedules(of: new.id) == [schedule])

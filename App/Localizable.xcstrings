@@ -1169,6 +1169,41 @@
         }
       }
     },
+    "A summary has the number of doses that you took, skipped, and did not record. It stays on this iPhone until you share it." : {
+      "comment" : "Summary sheet: the footer under the period. It says what the summary holds and that it stays on the iPhone.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Zusammenfassung zählt, wie viele Dosen du eingenommen, übersprungen und nicht erfasst hast. Sie bleibt auf diesem iPhone, bis du sie teilst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El resumen cuenta las dosis que tomaste, omitiste y no registraste. Se queda en este iPhone hasta que lo compartas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サマリーには、服用した回数、スキップした回数、記録しなかった回数が入ります。共有するまでこのiPhoneの外には出ません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요약에는 복용한 횟수, 건너뛴 횟수, 기록하지 않은 횟수가 담겨요. 공유하기 전까지 이 iPhone에만 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "汇总包含你已服用、跳过和没记录的次数。分享之前，它只留在这台 iPhone 上。"
+          }
+        }
+      }
+    },
     "A tip is optional and unlocks nothing." : {
       "comment" : "Settings: the footer of the tips in the normal state.",
       "localizations" : {
@@ -1344,41 +1379,6 @@
         }
       }
     },
-    "Add a time to save the amount." : {
-      "comment" : "Edit screen: the footer of the amount when the item has an amount and no time. The amount belongs to the reminder plan.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Füge eine Zeit hinzu, um die Menge zu speichern."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añade una hora para guardar la cantidad."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時刻を追加すると、用量を保存できます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "용량을 저장하려면 시간을 추가해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "加个时间才能保存用量。"
-          }
-        }
-      }
-    },
     "Adds a reminder time at %@." : {
       "comment" : "Edit screen: the VoiceOver hint of a time candidate of the smart completion, for example Evening. The placeholder is the time, for example 8:00 PM.",
       "localizations" : {
@@ -1515,6 +1515,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "计划的 %2$lld 天中，有 %1$lld 天全部服用"
+          }
+        }
+      }
+    },
+    "All Records" : {
+      "comment" : "Item detail: the row that opens the full log of the item, also for an archived item and for old days.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Aufzeichnungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los registros"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべての記録"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 기록"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "全部记录"
           }
         }
       }
@@ -2740,6 +2775,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "数据"
+          }
+        }
+      }
+    },
+    "Dates use the time zone of this iPhone. No record means that nothing was recorded for a dose." : {
+      "comment" : "Summary PDF: the note at the end. It names the time zone and says what No record means. Never use the word missed.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Daten folgen der Zeitzone dieses iPhones. „Ohne Eintrag“ heißt, dass für eine Dosis nichts erfasst wurde."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las fechas usan la zona horaria de este iPhone. «Sin registro» significa que no se registró nada para una dosis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日付はこのiPhoneのタイムゾーンに従います。「記録なし」は、その服用に何も記録されていないという意味です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "날짜는 이 iPhone의 시간대를 따라요. ‘기록 없음’은 해당 복용에 기록된 내용이 없다는 뜻이에요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日期按这台 iPhone 的时区计算。“没记录”表示这次服用没有留下记录。"
           }
         }
       }
@@ -4405,6 +4475,41 @@
         }
       }
     },
+    "Items" : {
+      "comment" : "Summary sheet: the title of the list of items that the user can leave out of the summary.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einträge"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Elementos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "药品"
+          }
+        }
+      }
+    },
     "Keep Editing" : {
       "comment" : "Edit screen: the text “Keep Editing”.",
       "localizations" : {
@@ -4436,6 +4541,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "继续编辑"
+          }
+        }
+      }
+    },
+    "Last 30 Days" : {
+      "comment" : "Item detail: the title of the section with the counts of 30 days. Summary sheet: a choice of the period.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte 30 Tage"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Últimos 30 días"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "過去30日間"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최근 30일"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近 30 天"
           }
         }
       }
@@ -4475,6 +4615,76 @@
         }
       }
     },
+    "Last 90 Days" : {
+      "comment" : "Summary sheet: a choice of the period.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte 90 Tage"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Últimos 90 días"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "過去90日間"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최근 90일"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近 90 天"
+          }
+        }
+      }
+    },
+    "Last dose %@" : {
+      "comment" : "Today, As Needed: the second line of an item. The placeholder is a time or a day and a time. Example: Last dose 9:12 PM.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Dosis: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última dosis: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回 %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 복용 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次服用 %@"
+          }
+        }
+      }
+    },
     "Licenses" : {
       "comment" : "Settings: the row and the page with the license text of third-party code.",
       "localizations" : {
@@ -4506,6 +4716,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开源许可"
+          }
+        }
+      }
+    },
+    "Maru can remind you again up to 2 times, 30 minutes apart, if you don’t record a dose." : {
+      "comment" : "Alert after the first save of an item with a time: the one-line offer. It names the number of reminders and the time between them.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru kann dich bis zu zweimal im Abstand von 30 Minuten erneut erinnern, wenn du keine Dosis erfasst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru puede recordártelo hasta 2 veces más, con 30 minutos de diferencia, si no registras una dosis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用を記録しないときは、30分おきに最大2回、もう一度お知らせできます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용을 기록하지 않으면 30분 간격으로 최대 2번 다시 알려드릴 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "如果你没记录这次服用，Maru 可以每隔 30 分钟再提醒你，最多 2 次。"
           }
         }
       }
@@ -5144,6 +5389,216 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每次打开时，Maru 会设置接下来 7 个服用日的提醒。"
+          }
+        }
+      }
+    },
+    "Medication List" : {
+      "comment" : "The title of the PDF with the items of the user and their plans.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medikamentenliste"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lista de medicación"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用リスト"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 목록"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "药品清单"
+          }
+        }
+      }
+    },
+    "No records in the last 30 days." : {
+      "comment" : "Item detail: the line of the 30-day section when the item had no planned dose and no taken as-needed dose.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Einträge in den letzten 30 Tagen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin registros en los últimos 30 días."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "過去30日間の記録はありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "최근 30일간 기록이 없어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近 30 天没有记录。"
+          }
+        }
+      }
+    },
+    "Period" : {
+      "comment" : "Summary sheet: the label of the menu of the period.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitraum"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Periodo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "期間"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기간"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时间范围"
+          }
+        }
+      }
+    },
+    "Planned %@" : {
+      "comment" : "History: the planned time of a dose under its action. Example: Planned 8:00 AM.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geplant %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previsto %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予定 %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예정 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "计划 %@"
+          }
+        }
+      }
+    },
+    "Planned: %lld" : {
+      "comment" : "Summary PDF: the planned doses of an item in the period. Example: Planned: 28.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Geplant: %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Planificadas: %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "予定 %lld回"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "예정 %lld회"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "计划 %lld 次"
+          }
+        }
+      }
+    },
+    "Remind Again?" : {
+      "comment" : "Alert after the first save of an item with a time: the title of the one-time offer of Remind Again.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut erinnern?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Recordar de nuevo?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再通知しますか？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다시 알릴까요?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要再次提醒吗？"
           }
         }
       }
@@ -8123,6 +8578,41 @@
         }
       }
     },
+    "Replaced" : {
+      "comment" : "History: the mark on an action that a later action of the same dose replaced.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ersetzt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reemplazado"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "置き換え済み"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "대체됨"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已被替换"
+          }
+        }
+      }
+    },
     "Restore" : {
       "comment" : "Item detail: the button that brings an archived item back to Today and My Items.",
       "localizations" : {
@@ -8438,6 +8928,76 @@
         }
       }
     },
+    "Share" : {
+      "comment" : "Summary sheet: the button that makes the PDF and opens the share sheet.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Teilen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "공유"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享"
+          }
+        }
+      }
+    },
+    "Share Medication List" : {
+      "comment" : "Settings, Your Data: the button that makes a PDF with the name, form, amount, times, and note of each item and opens the share sheet.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medikamentenliste teilen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir lista de medicación"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用リストを共有"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 목록 공유"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享药品清单"
+          }
+        }
+      }
+    },
     "Share Statistics" : {
       "comment" : "Usage statistics notice in the EU, the UK, and Switzerland: the button that turns the statistics on.",
       "localizations" : {
@@ -8469,6 +9029,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享使用数据"
+          }
+        }
+      }
+    },
+    "Share Summary…" : {
+      "comment" : "Settings, Your Data: the button that opens the choice of a summary for a doctor.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung teilen…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir resumen…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サマリーを共有…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요약 공유…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享汇总…"
           }
         }
       }
@@ -8609,6 +9204,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提醒里显示药名"
+          }
+        }
+      }
+    },
+    "Shows its records" : {
+      "comment" : "Archived list: the VoiceOver hint of the name of an item. It opens the item with its records.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt die Aufzeichnungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra sus registros"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録を表示します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록을 보여줘요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示它的记录"
           }
         }
       }
@@ -8994,6 +9624,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "建议来自常见标签，以你手上的为准。"
+          }
+        }
+      }
+    },
+    "Summary" : {
+      "comment" : "The title of the sheet and of the PDF that counts the doses of each item over a period.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resumen"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サマリー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요약"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "汇总"
           }
         }
       }
@@ -9414,6 +10079,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已服用 %lld 次"
+          }
+        }
+      }
+    },
+    "Taken: %lld of %lld" : {
+      "comment" : "Item detail: the planned doses taken of the planned doses in the last 30 days. Example: Taken: 26 of 30.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingenommen: %1$lld von %2$lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomadas: %1$lld de %2$lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用 %1$lld/%2$lld回"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 %1$lld/%2$lld회"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已服用 %1$lld / %2$lld 次"
           }
         }
       }
@@ -10484,6 +11184,41 @@
         }
       }
     },
+    "Turn On" : {
+      "comment" : "Alert after the first save of an item with a time: the button that turns Remind Again on for the item.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einschalten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オンにする"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "켜기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开"
+          }
+        }
+      }
+    },
     "Turn On Reminders" : {
       "comment" : "Item detail: the menu button that starts the reminders again.",
       "localizations" : {
@@ -11371,6 +12106,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "昨天"
+          }
+        }
+      }
+    },
+    "Yesterday, %@" : {
+      "comment" : "Today, As Needed: the day and the time of the last dose when it was yesterday. Example: Yesterday, 9:12 PM.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestern, %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayer, %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昨日 %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "어제 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昨天 %@"
           }
         }
       }

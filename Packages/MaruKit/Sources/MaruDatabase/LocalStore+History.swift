@@ -18,6 +18,14 @@ public struct HistoryPage: Sendable {
     public let items: [Item]
     /// A day before the oldest day of the page can have a dose.
     public let hasEarlier: Bool
+    /// The amount of each schedule version, as the user wrote it. A row of the history shows it (D091).
+    public let amounts: [ScheduleVersionID: Dose]
+}
+
+/// The counts of each item over a range of days, and the items that name them (D091).
+public struct HistorySummaryRead: Sendable {
+    public let items: [Item]
+    public let summaries: [ItemID: ItemSummary]
 }
 
 extension LocalStore {
@@ -87,8 +95,26 @@ extension LocalStore {
                 dates, items: items, schedules: schedules, stored: stored, asNeeded: asNeeded, deviceTimeZone: deviceTimeZone
             ),
             items: items,
-            hasEarlier: earliest.map { $0 < oldest } ?? false
+            hasEarlier: earliest.map { $0 < oldest } ?? false,
+            amounts: Dictionary(
+                schedules.flatMap(\.versions).compactMap { version in version.dose.map { (version.id, $0) } },
+                uniquingKeysWith: { first, _ in first }
+            )
         )
+    }
+
+    /// The counts of each item for the last `days` days up to and with `today`, from the one reader of the history
+    /// (D091, R5). `History.summary` has the rules, so a count agrees with the timeline and the week strip.
+    public func summary(
+        days: Int,
+        through today: LocalDate,
+        at now: Date,
+        deviceTimeZone: NamedTimeZone
+    ) async throws(StorageError) -> HistorySummaryRead {
+        try await read { db in
+            let page = try Self.historyPage(db, before: today.adding(days: 1), days: days, deviceTimeZone: deviceTimeZone)
+            return HistorySummaryRead(items: page.items, summaries: History.summary(days: page.days, today: today, now: now))
+        }
     }
 
     /// The counts of the days from `oldest` to `today` for the graph (D041). `History.counts` has the rules,
@@ -99,6 +125,7 @@ extension LocalStore {
     public func historyCounts(
         from oldest: LocalDate,
         through today: LocalDate,
+        at now: Date = Date(),
         deviceTimeZone: NamedTimeZone
     ) async throws(StorageError) -> HistoryCounts {
         try await read { db in
@@ -132,7 +159,9 @@ extension LocalStore {
             let dates = (0...today.days(since: from)).map { from.adding(days: $0) }
             return HistoryCounts(
                 firstDay: firstDay,
-                days: History.counts(dates, items: items, schedules: schedules, stored: stored, deviceTimeZone: deviceTimeZone)
+                days: History.counts(
+                    dates, items: items, schedules: schedules, stored: stored, today: today, now: now, deviceTimeZone: deviceTimeZone
+                )
             )
         }
     }

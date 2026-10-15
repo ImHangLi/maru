@@ -113,6 +113,28 @@ struct HistoryTests {
         ])
     }
 
+    /// D091: an archived item keeps its past doses with no record in the history and in the graph, up to the day
+    /// before its archive. The archive time survives a save and a load.
+    @Test func archivedItemKeepsItsNoRecordDays() async throws {
+        let directory = TestDirectory()
+        let store = try LocalStore(directory: directory.url)
+        let seed = try await store.seed()
+        var item = try #require(try await store.item(id: seed.schedule.itemID))
+        item.isArchived = true
+        item.archivedAt = Fixtures.instant("2026-03-03T02:00:00Z")
+        try await store.save(item)
+        #expect(try await store.item(id: item.id)?.archivedAt == item.archivedAt)
+
+        let page = try await store.history(before: Fixtures.date(2026, 3, 5), days: 4, deviceTimeZone: Fixtures.shanghai)
+        let counts = try await store.historyCounts(
+            from: Fixtures.date(2026, 3, 1), through: Fixtures.date(2026, 3, 4), deviceTimeZone: Fixtures.shanghai
+        )
+
+        #expect(page.days.map(\.date).sorted() == [Fixtures.date(2026, 3, 1), Fixtures.date(2026, 3, 2)])
+        #expect(page.days.allSatisfy { $0.doses.allSatisfy { $0.record.status == .unrecorded } })
+        #expect(Set(counts.days.keys) == [Fixtures.date(2026, 3, 1), Fixtures.date(2026, 3, 2)])
+    }
+
     /// Spec 7.3: an old record with a missing projection row stays reachable. Its page reports `invalidData`.
     @Test func oldRecordWithABrokenProjectionIsReportedNotHidden() async throws {
         let directory = TestDirectory()

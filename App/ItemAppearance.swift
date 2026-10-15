@@ -6,6 +6,18 @@ extension ItemColor {
     /// The black or white label on a fill in the app tint (D025).
     var labelOnTint: Color { tint.labelOnFill }
 
+    /// The same words as `title`, as text for a line that joins several parts (D091).
+    var localizedName: String {
+        switch self {
+        case .capsule: String(localized: "Capsule")
+        case .tablet: String(localized: "Tablet")
+        case .softgel: String(localized: "Softgel")
+        case .powder: String(localized: "Powder")
+        case .drop: String(localized: "Drops")
+        case .unknown: String(localized: "Not sure")
+        }
+    }
+
     var title: LocalizedStringKey {
         switch self {
         case .pink: "Pink"
@@ -57,6 +69,18 @@ extension ItemForm {
         let name = self == .unknown ? "form-jar" : "form-\(rawValue)"
         let icon = UIImage(named: name) ?? UIImage()
         return Image(uiImage: icon.withTintColor(UIColor(color), renderingMode: .alwaysOriginal))
+    }
+
+    /// The same words as `title`, as text for a line that joins several parts (D091).
+    var localizedName: String {
+        switch self {
+        case .capsule: String(localized: "Capsule")
+        case .tablet: String(localized: "Tablet")
+        case .softgel: String(localized: "Softgel")
+        case .powder: String(localized: "Powder")
+        case .drop: String(localized: "Drops")
+        case .unknown: String(localized: "Not sure")
+        }
     }
 
     var title: LocalizedStringKey {

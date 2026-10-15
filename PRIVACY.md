@@ -76,9 +76,11 @@ An alarm (iOS 26 and later, when you turn on "Alarm" for an item) also runs on y
 
 ## Export and backup files
 
-Settings has "Export Records", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first two.
+Settings has "Export Records", "Share Medication List", "Share Summary…", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first four.
 
 - The record export is a CSV file. It has your item names, your amounts, and your records.
+- The medication list is a PDF file. It has the name, form, amount, times, and note of each active item, as you typed them.
+- The summary is a PDF file. It has the name of each item that you choose, and how many planned doses you took, skipped, and did not record in the period that you choose. Maru counts it on your device.
 - The backup is a full copy of the database and of two settings: the app color and the names in reminders. The database holds the "Remind Again" and alarm choices of each item. The backup does not include the item photos.
 - The files are not encrypted. Anyone with a file can read it.
 - Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.

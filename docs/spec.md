@@ -135,6 +135,8 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 
 按日期看已服、跳过、未记录。实际服用时间和记录时间分开。用户知道过去实际吃过时可补记某一次；不知道时保持未记录。没有批量填满过去以恢复连续性的功能。
 
+> Amendment (2026-10-16, D091): A past dose with no record can be marked "Skipped" in place. An archived item keeps its planned doses with no record in History, in the graph, and in the export, up to the day before its archive. A row shows the planned time, the amount, and a mark on a replaced action. The item detail has counts of 30 days (taken, skipped, no record) and the full log of the item, also for an archived item. A graph, a strip, and a summary count a planned dose of today only when its time came.
+
 页面顶部是一张方格图（D041）：每天一格，每列一周；颜色按当天计划剂量中已服的比例分三级，跳过不算已服，按需项目不计。没有标题、计数或连续天数。跨度随使用增长：13 周、26 周、52 周；满一年后显示最近 52 周，更早的日子仍在下方的时间线里。点按或拖动选中一天，时间线滚到那一天。
 
 ### P06 设置与反馈
@@ -255,6 +257,8 @@ UI 只调用领域操作，不直接散落写库、StoreKit 或 PostHog。数据
 | Preferences | 语言、显示、提醒隐私、分析同意；与健康资料分离 |
 | LocalDailyUsage | 仅同意后的粗粒度功能使用标记，不存药名/每剂时间 |
 | FeedbackDraft | 用户主动输入和选择的附件；不自动拷贝健康数据库 |
+
+> Amendment (2026-10-16, D091): Item also holds the archive time and the usual amount of an as-needed item. An as-needed occurrence holds the amount that the user recorded with it. A scheduled occurrence has no amount of its own: its schedule version holds it (migration `v7`).
 
 ### 7.2 记录事务
 

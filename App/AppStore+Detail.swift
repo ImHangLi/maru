@@ -18,10 +18,12 @@ struct ItemDetail: Equatable, Sendable {
     let nextDose: NextDose?
     /// The strip of the last 7 days (D054). `nil` when the item had no planned dose and no taken as-needed dose.
     let week: HistoryItemWeek?
+    /// The counts of the last 30 days (D091). `nil` when the item had no planned dose and no taken as-needed dose.
+    let month: ItemSummary?
 }
 
 extension AppStore {
-    /// The item, its schedule, and its week strip. `nil` when the store has no such item.
+    /// The item, its schedule, its week strip, and its counts of 30 days. `nil` when the store has no such item.
     func detail(of itemID: ItemID, at now: Date, deviceTimeZone: NamedTimeZone?) async throws(StorageError) -> ItemDetail? {
         let store = try open()
         guard let item = try await store.item(id: itemID) else { return nil }
@@ -29,12 +31,13 @@ extension AppStore {
         // The same days and the same rule as the rows of History, so the strip cannot disagree with them (D054).
         let zone = deviceTimeZone ?? .utc
         let today = LocalDate(now, in: zone)
-        let page = try await store.history(before: today.adding(days: 1), days: 7, deviceTimeZone: zone)
+        let page = try await store.history(before: today.adding(days: 1), days: 30, deviceTimeZone: zone)
         let week = History.week(days: page.days, today: today, now: now).first { $0.itemID == itemID }
+        let month = History.summary(days: page.days, today: today, now: now)[itemID]
         let nextDose = schedule.flatMap { schedule in
             deviceTimeZone.flatMap { Self.nextDose(of: schedule, at: now, deviceTimeZone: $0) }
         }
-        return ItemDetail(item: item, schedule: schedule, nextDose: nextDose, week: week)
+        return ItemDetail(item: item, schedule: schedule, nextDose: nextDose, week: week, month: month)
     }
 
     /// The first date from today on which a plan that counts days has a time that is still to come.
@@ -79,9 +82,27 @@ extension AppStore {
         guard var item = try await store.item(id: itemID) else { return nil }
         if item.isArchived != isArchived {
             item.isArchived = isArchived
+            // The time of the archive bounds the doses with no record that History keeps for the item (D091).
+            item.archivedAt = isArchived ? Date() : nil
             try await store.save(item, generation: generation)
         }
         return (item, try await store.schedules(of: itemID).first)
+    }
+
+    /// Turns "Remind Again" on for one item (D091). It returns the schedule of the item, if any, or `nil` when the store
+    /// has no such item. `generation` is the generation of the data that the model read (D040).
+    func setFollowUp(
+        _ setting: FollowUpSetting,
+        for itemID: ItemID,
+        at now: Date,
+        generation: Int
+    ) async throws(StorageError) -> Schedule? {
+        let store = try open()
+        guard var item = try await store.item(id: itemID) else { return nil }
+        item.followUp = setting
+        item.followUpChanged = now
+        try await store.save(item, generation: generation)
+        return try await store.schedules(of: itemID).first
     }
 
     /// Deletes the item with its schedules and its records, in one transaction (D033). It returns the IDs of

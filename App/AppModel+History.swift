@@ -32,6 +32,8 @@ struct HistoryState {
     /// `nil` until the first read of the page ends.
     var days: [HistoryDay]?
     var looks: [ItemID: TodaySnapshot.ItemLook] = [:]
+    /// The amount of each schedule version, for the rows (D091).
+    var amounts: [ScheduleVersionID: Dose] = [:]
     var hasEarlier = false
     var dayCount = daysPerPage
     /// The day count of the read that the page shows. The scroll to the end adds a page only after this read.
@@ -67,6 +69,18 @@ extension AppModel {
         history.isOpen = true
         loadHistory()
         loadHistoryGraph()
+    }
+
+    /// The full log of one item opens from the item detail while the History page is closed. It needs the days of the
+    /// history, so it reads the first page for its own use (D091).
+    func openItemLog() {
+        guard !history.isOpen, history.days == nil else { return }
+        loadHistory()
+    }
+
+    /// The full log closes. The days go, unless the History page needs them.
+    func closeItemLog() {
+        if !history.isOpen { resetHistory() }
     }
 
     /// Closes the page and forgets its days. The unconfirmed events stay in `today`.
@@ -108,7 +122,7 @@ extension AppModel {
         let read = history.graphReadCount
         Task {
             let oldest = HistoryGraph.oldestStart(today: today, firstWeekday: firstWeekday)
-            let counts = try? await store.open().historyCounts(from: oldest, through: today, deviceTimeZone: deviceTimeZone)
+            let counts = try? await store.open().historyCounts(from: oldest, through: today, at: now, deviceTimeZone: deviceTimeZone)
             guard history.graphReadCount == read else { return }
             if let counts {
                 history.graph = counts.firstDay.map { HistoryGraph(today: today, firstDay: $0, firstWeekday: firstWeekday) }
@@ -171,6 +185,7 @@ extension AppModel {
                 itemID: $0.id, name: $0.name, form: $0.form, color: $0.color, imageReference: $0.imageReference
             ))
         })
+        history.amounts = page.amounts
         history.hasEarlier = page.hasEarlier
         history.today = today
         history.loadFailure = nil

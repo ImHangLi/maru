@@ -16,6 +16,9 @@ public struct AsNeededDay: Hashable, Sendable {
     /// An undone dose is not in the list. An item can be in the list and not in `items`, for example after
     /// the user added a schedule to it later on the same day.
     public let records: [AsNeededRecord]
+    /// When the user last took a dose of each item, also on an earlier day (D091). The time is the intake time that
+    /// counts now. An item with no taken dose has no entry. An undone dose does not count.
+    public let lastTaken: [ItemID: Date]
 }
 
 extension LocalStore {
@@ -51,13 +54,13 @@ extension LocalStore {
         return try await commitRecord(generation: generation, sync: sync) { db in
             try db.execute(
                 sql: """
-                    INSERT INTO occurrence (id, itemID, plannedDate, plannedTime, timeZone)
-                    VALUES (?, ?, ?, ?, ?)
+                    INSERT INTO occurrence (id, itemID, plannedDate, plannedTime, timeZone, dose)
+                    VALUES (?, ?, ?, ?, ?, ?)
                     ON CONFLICT DO NOTHING
                     """,
                 arguments: [
                     occurrence.id.text, occurrence.itemID.text, try occurrence.plannedDate.text,
-                    occurrence.plannedTime.text, occurrence.timeZone.identifier,
+                    occurrence.plannedTime.text, occurrence.timeZone.identifier, occurrence.dose?.text,
                 ]
             )
             guard try Self.fetchAsNeededOccurrence(db, id: occurrence.id) == occurrence else {
@@ -97,9 +100,26 @@ extension LocalStore {
                     AsNeededRecord(occurrence: occurrence, record: try Self.fetchCheckedRecord(db, occurrenceID: occurrence.id))
                 }
                 .filter { $0.record.status != .unrecorded }
+            // The projection names the current event of each dose. The card of the day checks its own doses above.
+            var lastTaken: [ItemID: Date] = [:]
+            for row in try Row.fetchAll(
+                db,
+                sql: """
+                    SELECT occurrence.itemID AS itemID, MAX(intakeEvent.occurredAt) AS occurredAt
+                    FROM occurrence
+                        JOIN occurrenceState ON occurrenceState.occurrenceID = occurrence.id AND occurrenceState.status = 'taken'
+                        JOIN intakeEvent ON intakeEvent.id = occurrenceState.eventID
+                    WHERE occurrence.itemID IS NOT NULL
+                    GROUP BY occurrence.itemID
+                    """
+            ) {
+                let seconds: Double = try row.decode(forColumn: "occurredAt")
+                lastTaken[try ItemID(text: row.decode(forColumn: "itemID"))] = Date(storedSeconds: seconds)
+            }
             return AsNeededDay(
                 items: items.filter { $0.isAsNeeded(on: date, schedules: schedules) },
-                records: records
+                records: records,
+                lastTaken: lastTaken
             )
         }
     }
@@ -113,12 +133,18 @@ extension LocalStore {
     }
 
     static func decodeAsNeededOccurrence(_ row: Row) throws -> AsNeededOccurrence {
-        AsNeededOccurrence(
+        // `Dose` rejects blank text, so a stored amount is never blank.
+        let dose = try (row.decode(forColumn: "dose") as String?).map { text in
+            guard let dose = Dose(text) else { throw DecodeRule(rule: .occurrenceRow) }
+            return dose
+        }
+        return AsNeededOccurrence(
             id: try OccurrenceID(text: row.decode(forColumn: "id")),
             itemID: try ItemID(text: row.decode(forColumn: "itemID")),
             plannedDate: try LocalDate(text: row.decode(forColumn: "plannedDate")),
             plannedTime: try WallClockTime(text: row.decode(forColumn: "plannedTime")),
-            timeZone: try NamedTimeZone(text: row.decode(forColumn: "timeZone"))
+            timeZone: try NamedTimeZone(text: row.decode(forColumn: "timeZone")),
+            dose: dose
         )
     }
 }

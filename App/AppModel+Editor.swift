@@ -172,6 +172,17 @@ extension AppModel {
             status = ReminderStatus(state)
         }
         report(status, of: reported.id, removes: removed != nil)
+        offerRemindAgain(for: item, session: session, hasTime: schedule != nil)
+    }
+
+    /// The first save of an item with a time offers "Remind Again" one time, as a plain question. It turns on nothing by
+    /// itself, and it never comes back after it showed or when the user chose it already (D091, spec 2.1).
+    private func offerRemindAgain(for item: Item, session: EditorSession, hasTime: Bool) {
+        let key = "reminders.remindAgainOffered"
+        let defaults = UserDefaults.standard
+        guard hasTime, session.isNew, session.replaced == nil, item.followUp == nil, !defaults.bool(forKey: key) else { return }
+        defaults.set(true, forKey: key)
+        remindAgainOffer = item.id
     }
 
     /// The first tap on the "Alarm" switch asks the system for the alarm permission (D079). `true` when alarms can ring.

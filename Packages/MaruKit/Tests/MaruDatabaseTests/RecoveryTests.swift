@@ -55,13 +55,13 @@ struct RecoveryTests {
 
     @Test func migratorNeverErasesTheDatabase() {
         #expect(!Schema.migrator.eraseDatabaseOnSchemaChange)
-        #expect(Schema.migrator.migrations == ["v1", "v2", "v3", "v4", "v5", "v6"])
+        #expect(Schema.migrator.migrations == ["v1", "v2", "v3", "v4", "v5", "v6", "v7"])
     }
 
     @Test func failedMigrationReturnsATypedErrorAndKeepsTheData() async throws {
         let (seed, taken) = try await storeARecord()
         // The migration changes and deletes data, and then fails.
-        let broken = migrator(adding: "v7") { db in
+        let broken = migrator(adding: "v8") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
             try db.execute(sql: "DELETE FROM occurrenceState")
             try db.execute(sql: "UPDATE item SET name = 'changed'")
@@ -80,7 +80,7 @@ struct RecoveryTests {
         let (applied, hasExtraTable) = try await store.writer.read { db in
             (try Schema.migrator.appliedMigrations(db), try db.tableExists("extra"))
         }
-        #expect(applied == ["v1", "v2", "v3", "v4", "v5", "v6"])
+        #expect(applied == ["v1", "v2", "v3", "v4", "v5", "v6", "v7"])
         #expect(!hasExtraTable)
     }
 
@@ -358,7 +358,7 @@ struct RecoveryTests {
     }
 
     @Test func databaseFromANewerAppIsReportedAndLeftInPlace() async throws {
-        let newer = migrator(adding: "v7") { db in
+        let newer = migrator(adding: "v8") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
         }
         let seed: Seed

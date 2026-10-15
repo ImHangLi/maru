@@ -22,6 +22,10 @@ struct AsNeededCard: Equatable, Sendable {
         /// added a time to it. Its row shows the doses and no record button.
         let canRecord: Bool
         var doses: [Dose]
+        /// The usual amount of the item. A new dose copies it (D091). `nil` when the item has none.
+        var amount: MaruCore.Dose?
+        /// When the user last took a dose of the item, also on an earlier day (D091). `nil` when there is none.
+        var lastTaken: Date?
 
         var id: ItemID { itemID }
     }
@@ -43,14 +47,22 @@ struct AsNeededCard: Equatable, Sendable {
             ))
         })
         rows = day.items.compactMap { item in
-            looks[item.id].map { Row(itemID: item.id, look: $0, canRecord: true, doses: []) }
+            looks[item.id].map {
+                Row(
+                    itemID: item.id, look: $0, canRecord: true, doses: [],
+                    amount: item.asNeededDose, lastTaken: day.lastTaken[item.id]
+                )
+            }
         }
         for record in day.records {
             let dose = Dose(occurrence: record.occurrence, record: record.record)
             if let index = rows.firstIndex(where: { $0.itemID == record.occurrence.itemID }) {
                 rows[index].doses.append(dose)
             } else if let look = looks[record.occurrence.itemID] {
-                rows.append(Row(itemID: record.occurrence.itemID, look: look, canRecord: false, doses: [dose]))
+                rows.append(Row(
+                    itemID: record.occurrence.itemID, look: look, canRecord: false, doses: [dose],
+                    lastTaken: day.lastTaken[record.occurrence.itemID]
+                ))
             }
         }
     }
@@ -59,6 +71,10 @@ struct AsNeededCard: Equatable, Sendable {
     /// like in the next read.
     mutating func apply(_ record: OccurrenceRecord, of occurrence: AsNeededOccurrence) {
         guard let row = rows.firstIndex(where: { $0.itemID == occurrence.itemID }) else { return }
+        // The line "Last dose" follows a committed taken dose at once. The next read gives the stored value (D091).
+        if let taken = record.currentEvent, taken.action == .taken, taken.occurredAt > rows[row].lastTaken ?? .distantPast {
+            rows[row].lastTaken = taken.occurredAt
+        }
         if let dose = rows[row].doses.firstIndex(where: { $0.id == occurrence.id }) {
             if record.status == .unrecorded {
                 rows[row].doses.remove(at: dose)

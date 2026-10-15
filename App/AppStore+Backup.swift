@@ -16,6 +16,28 @@ extension AppStore {
         return file
     }
 
+    /// The active items with their plans, for the medication list (D091).
+    func medicationListData() async throws -> [(item: Item, schedule: Schedule?)] {
+        let store = try open()
+        var rows: [(item: Item, schedule: Schedule?)] = []
+        for item in try await store.items() where !item.isArchived {
+            rows.append((item, try await store.schedules(of: item.id).first))
+        }
+        return rows
+    }
+
+    /// The counts of each item over the last `days` days, for the summary (D091).
+    func summaryData(days: Int, at now: Date, deviceTimeZone: NamedTimeZone) async throws -> HistorySummaryRead {
+        try await open().summary(days: days, through: LocalDate(now, in: deviceTimeZone), at: now, deviceTimeZone: deviceTimeZone)
+    }
+
+    /// Writes a PDF report and returns the file. Like the other files it waits for the share sheet, and it holds health data.
+    func writeReport(_ pdf: Data, named name: String, at now: Date) throws -> URL {
+        let file = try Self.newExportFile(named: "\(name) \(Self.dayText(now)).pdf")
+        try pdf.write(to: file, options: [.atomic, .completeFileProtection])
+        return file
+    }
+
     /// Writes a backup of the whole database with the settings of the app, and returns the file.
     func backUp(at now: Date, settings: [String: String]) async throws -> URL {
         let store = try open()

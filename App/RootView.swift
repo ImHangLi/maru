@@ -14,6 +14,9 @@ struct RootView: View {
     @State private var showsEnd = false
     /// The one-time opt-in question about usage statistics in an opt-in region (spec 11.3, D051, D078).
     @State private var showsStatisticsNotice = false
+    /// The one-time offer of "Remind Again" after the first save with a time (D091). The item is a copy, so the alert keeps it.
+    @State private var shownOffer: ItemID?
+    @State private var showsOffer = false
 
     var body: some View {
         @Bindable var model = model
@@ -101,6 +104,21 @@ struct RootView: View {
         } message: {
             Text("Maru couldn’t save this change. Try again.")
         }
+        // The offer of "Remind Again" waits for the edit screen and for the alerts before it. It changes nothing by itself.
+        .onChange(of: offerIsDue, initial: true) { _, isDue in
+            guard isDue, let itemID = model.remindAgainOffer else { return }
+            shownOffer = itemID
+            showsOffer = true
+            model.remindAgainOffer = nil
+        }
+        .alert("Remind Again?", isPresented: $showsOffer) {
+            Button("Turn On") {
+                if let shownOffer { model.turnOnRemindAgain(for: shownOffer) }
+            }
+            Button("Not Now", role: .cancel) {}
+        } message: {
+            Text("Maru can remind you again up to 2 times, 30 minutes apart, if you don’t record a dose.")
+        }
         // The opt-in question waits for the edit screen and for the alerts before it.
         .onChange(of: noticeIsDue, initial: true) { _, isDue in
             guard isDue else { return }
@@ -126,8 +144,13 @@ struct RootView: View {
         editorIsUp || showsAlert || showsStatisticsNotice ? nil : model.reminderAlerts.first
     }
 
+    private var offerIsDue: Bool {
+        model.remindAgainOffer != nil && !model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd
+            && !showsStatisticsNotice && !showsOffer && model.reminderAlerts.isEmpty && !model.settings.isPresented
+    }
+
     private var noticeIsDue: Bool {
-        model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice
+        model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
             && model.reminderAlerts.isEmpty && !model.settings.isPresented
     }
 

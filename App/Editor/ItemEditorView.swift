@@ -466,11 +466,6 @@ struct ItemEditorView: View {
             }
         } header: {
             Text("Amount")
-        } footer: {
-            // The amount belongs to the reminder plan, so an item with no time saves no amount.
-            if draft.times.isEmpty, Dose(draft.amount) != nil {
-                Text("Add a time to save the amount.")
-            }
         }
     }
 
