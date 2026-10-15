@@ -173,6 +173,29 @@ The notes are in App Store Connect. They state: what Maru does, no account, the 
 - A later build replaces build 4 on the version with `asc versions attach-build`.
 - Not done on purpose: no Beta App Review and no public link. No external TestFlight step is planned.
 
+### Store text of version 1.1
+
+The files are in `metadata/version/1.1.0/` for the eight store languages. They are drafts. Nobody pushed them to App Store Connect. The plan is `2026-10-15-store-page-personas-and-trust.md` in the maintainer's research folder, and the first feedback is in `pitch-feedback-2026-10-15.md` in the maintainer's notes.
+
+Maintainer decisions of 2026-10-15:
+
+- **Privacy: keep the usage statistics.** The text never says "connects to nothing" or "no data leaves". It says that items and records stay on the iPhone or iPad, that Maru needs no account, and that what the user takes is never sent anywhere. The optional usage counts stay in the text, and they never include what the user takes. The text uses plain words. It does not lead with "server", "local-first", or "open source".
+- **Subtitle.** English: "Supplement & Medicine Tracker". The other languages keep the same meaning in 30 characters or fewer. The name stays as in 1.0.0.
+- **"Free" must be clear.** The promotional text and the first lines of the description start with "100% free" in the local words, and they say "no subscription, no ads, no paywall". The name, the subtitle, and the keywords have no price word (guideline 2.3.7).
+- **No setup.** The first lines say that there is no sign-up and nothing to set up first.
+- **Features in the text.** Dark mode, and alarms for each item (iOS 26 or later).
+- **Persons in proportion.** Vitamins, supplements, and medicine lead. One short paragraph, "Not just for you", says that a user can track a pet or a parent on the user's own phone. The paragraph says that Maru has no profiles and no sharing.
+- **Removed from 1.0.0.** The line "It is not an alarm", the lines "Open source", and the tip answer. The zh-Hans text uses 药品 and 保健品 like the app. All languages use the button names of `App/Localizable.xcstrings`.
+- **No medical claim.** The text has no "never miss a dose" and no competitor name.
+
+Checks before the text goes to App Store Connect:
+
+- Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, and "What's New".
+- The text says "no paywall", and it does not say "no in-app purchases", because optional tips can come later. Version 1.1 has no in-app purchase. Add the tip answer back to the description when the first tip ships (see Tips).
+- The keyword field holds at most 100 bytes in en, es, and de. The zh-Hans, ja, and ko fields hold at most 100 characters, as in 1.0.0, and they are more than 100 bytes. Apple states the limit as 100 bytes. App Store Connect accepted the 1.0.0 values. Check the CJK fields when you push them.
+- A native speaker has not read the text for zh-Hans, ja, ko, es, and de.
+- The site privacy pages and the FAQ still show the text of 1.0. A maintainer changes them with the release.
+
 ### What is open before the submission
 
 `asc validate --strict` on version 1.0.0 reports no error. Its three warnings are the tips that are not in the submission.
