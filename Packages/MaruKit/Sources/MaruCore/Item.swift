@@ -80,6 +80,12 @@ public struct Item: Hashable, Sendable {
     public var followUpChanged: Date?
     /// The dose time rings as an alarm (D079). Off is the default.
     public var alarm: Bool
+    /// The instant of the archive (D091). `nil` for an item that is not archived, and for an item archived before the
+    /// app kept it. History plans the doses with no record of an archived item only up to the day of its archive.
+    public var archivedAt: Date?
+    /// The usual amount of an item that is as needed (D091). A dose that the user records copies it. `nil` means no
+    /// amount. An item with a time has its amount in its schedule.
+    public var asNeededDose: Dose?
 
     public init(
         id: ItemID = ItemID(),
@@ -92,7 +98,9 @@ public struct Item: Hashable, Sendable {
         imageReference: String? = nil,
         followUp: FollowUpSetting? = nil,
         followUpChanged: Date? = nil,
-        alarm: Bool = false
+        alarm: Bool = false,
+        archivedAt: Date? = nil,
+        asNeededDose: Dose? = nil
     ) throws {
         self.id = id
         self.category = category
@@ -105,6 +113,8 @@ public struct Item: Hashable, Sendable {
         self.followUp = followUp
         self.followUpChanged = followUpChanged
         self.alarm = alarm
+        self.archivedAt = archivedAt
+        self.asNeededDose = asNeededDose
     }
 
     public mutating func rename(_ name: String) throws {

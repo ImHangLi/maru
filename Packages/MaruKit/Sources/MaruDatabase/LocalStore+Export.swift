@@ -61,7 +61,7 @@ extension LocalStore {
                                 plannedTime: nil,
                                 itemName: item.name,
                                 category: item.category,
-                                dose: nil,
+                                dose: dose.occurrence.dose,
                                 status: dose.record.status,
                                 takenAt: Self.takenAt(dose.record),
                                 timeZone: dose.occurrence.timeZone

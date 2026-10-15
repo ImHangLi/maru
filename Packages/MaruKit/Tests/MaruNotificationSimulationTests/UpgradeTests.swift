@@ -1,6 +1,7 @@
 import Foundation
 import Testing
 @testable import MaruCore
+@testable import MaruDatabase
 
 /// D088: the update path. Each file in `Fixtures` is a database that a shipped version of the app left after real use.
 /// The current code opens it (the store migrates it), copies the global "Remind Again" setting of version 1.0 to the
@@ -26,5 +27,27 @@ struct UpgradeTests {
             #expect(p.lastError == nil, "the run threw \(String(describing: p.lastError))")
             #expect(await p.center.pending.count > 0)
         }
+    }
+
+    /// D091 (migration v7): an old database has no archive time and no as-needed amount. Every item loads, and an as-needed dose
+    /// that the new code records keeps its amount in the history and in the export.
+    @Test(arguments: fixtures) func theTrackerColumnsLoadAndAnAsNeededDoseKeepsItsAmount(_ name: String) async throws {
+        let p = try await Phone.make(start: "2026-10-16 09:00", fixture: Self.url(name))
+        let items = try await p.store.items()
+        #expect(!items.isEmpty && items.allSatisfy { $0.archivedAt == nil && $0.asNeededDose == nil })
+        let zone = try NamedTimeZone(identifier: "Asia/Shanghai")
+        let now = Date()
+        let dose = AsNeededOccurrence(itemID: items[0].id, at: now, in: zone, dose: Dose("400 mg"))
+        let taken = IntakeEvent(occurrenceID: dose.id, action: .taken, occurredAt: now, recordedAt: now, source: .app)
+        try await p.store.recordAsNeeded(taken, occurrence: dose)
+
+        let today = LocalDate(now, in: zone)
+        let page = try await p.store.history(before: today.adding(days: 1), days: 1, deviceTimeZone: zone)
+        let doses = try #require(page.days.first).asNeeded
+        // A dose that the old version recorded has no amount. The new one has its amount.
+        #expect(doses.last?.occurrence.dose == Dose("400 mg") && doses.dropLast().allSatisfy { $0.occurrence.dose == nil })
+        let lines = try await p.store.exportedDoses(through: today, deviceTimeZone: zone)
+        #expect(lines.contains { $0.plannedTime == nil && $0.dose == Dose("400 mg") })
+        #expect(try await p.store.asNeeded(on: today).lastTaken[items[0].id] != nil)
     }
 }

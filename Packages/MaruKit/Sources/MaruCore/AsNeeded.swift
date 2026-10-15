@@ -13,29 +13,37 @@ public struct AsNeededOccurrence: Hashable, Sendable {
     /// The clock time of the record instant in `timeZone`, to the minute. The intake event keeps the exact instant.
     public let plannedTime: WallClockTime
     public let timeZone: NamedTimeZone
+    /// The amount of this dose as the user wrote it, copied from the item when the dose was recorded (D091).
+    /// `nil` means no amount.
+    public let dose: Dose?
 
     public init(
         id: OccurrenceID,
         itemID: ItemID,
         plannedDate: LocalDate,
         plannedTime: WallClockTime,
-        timeZone: NamedTimeZone
+        timeZone: NamedTimeZone,
+        dose: Dose? = nil
     ) {
         self.id = id
         self.itemID = itemID
         self.plannedDate = plannedDate
         self.plannedTime = plannedTime
         self.timeZone = timeZone
+        self.dose = dose
     }
 
     /// The occurrence of a dose that the user records at `instant`, in the time zone of the device.
-    public init(id: OccurrenceID = OccurrenceID(), itemID: ItemID, at instant: Date, in timeZone: NamedTimeZone) {
+    public init(
+        id: OccurrenceID = OccurrenceID(), itemID: ItemID, at instant: Date, in timeZone: NamedTimeZone, dose: Dose? = nil
+    ) {
         self.init(
             id: id,
             itemID: itemID,
             plannedDate: LocalDate(instant, in: timeZone),
             plannedTime: WallClockTime(instant, in: timeZone),
-            timeZone: timeZone
+            timeZone: timeZone,
+            dose: dose
         )
     }
 }

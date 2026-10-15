@@ -166,6 +166,9 @@ struct ItemDraft: Codable, Equatable {
             times = version.slotTimes.map { Time(id: $0.slotID.rawValue, hour: $0.time.hour, minute: $0.time.minute) }
             weekdays = version.weeklyRule.weekdays
             cycle = version.dayCycle.map(Cycle.init)
+        } else {
+            // An item with no time keeps its usual amount on the item. Each dose that the user records copies it (D091).
+            amount = item.asNeededDose?.text ?? ""
         }
     }
 
@@ -286,6 +289,8 @@ extension ItemDraft {
         if item.followUp != chosen { item.followUpChanged = now }
         item.followUp = chosen
         item.alarm = !times.isEmpty && alarm == true
+        // An item with a time has its amount in the plan. An item with no time keeps it for its as-needed doses (D091).
+        item.asNeededDose = times.isEmpty ? Dose(amount) : nil
 
         guard !times.isEmpty else { return (item, existingSchedule) }
         guard let deviceTimeZone else { throw DraftBuildError.noTimeZone }

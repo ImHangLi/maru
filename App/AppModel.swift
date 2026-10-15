@@ -45,6 +45,9 @@ final class AppModel {
     var endRequest: ItemEndRequest?
     /// A confirmed archive or delete failed. The store is unchanged.
     var endFailed = false
+    /// The item whose first save with a time asks, once, whether "Remind Again" should be on (D091). It waits for the
+    /// edit screen and the alerts before it. `AppModel+Detail.swift` has its operation.
+    var remindAgainOffer: ItemID?
 
     /// Only the operations of the model use the store. A view calls an operation (spec 6).
     let store: AppStore
