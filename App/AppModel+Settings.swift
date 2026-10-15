@@ -1,5 +1,6 @@
 import Foundation
 import MaruCore
+import MaruDatabase
 import MaruNotifications
 
 /// The keys of the display settings in `UserDefaults.standard`. The views read them with `@AppStorage`.
