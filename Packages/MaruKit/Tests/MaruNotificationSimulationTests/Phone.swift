@@ -183,7 +183,7 @@ struct ProcessSource: ReminderPlanSource, FollowUpSource, AlarmSource {
 struct ProcessAlarmCenter: AlarmCenter {
     let base: FakeAlarmCenter
     let life: Life
-    func waiting() async -> Set<UUID> {
+    func waiting() async throws -> Set<UUID> {
         _ = await life.gate()
         return await base.waiting()
     }
@@ -235,7 +235,8 @@ final class SimProcess: @unchecked Sendable {
             alarms: coverNow, clock: { device.now }
         )
         alarms = AlarmEngine(
-            source: source, center: ProcessAlarmCenter(base: phone.alarmCenter, life: life), privacy: phone.privacy,
+            source: source,
+            center: TimedAlarmCenter(base: ProcessAlarmCenter(base: phone.alarmCenter, life: life), limit: .milliseconds(200)), privacy: phone.privacy,
             alarmsRing: { device.alarmsAllowed }
         )
     }

@@ -115,7 +115,9 @@ actor AppStore {
         if let alarms { return alarms }
         let alarms = AlarmEngine(
             source: try open(),
-            center: SystemAlarmCenter(),
+            center: TimedAlarmCenter(base: SystemAlarmCenter()) { call in
+                Self.log.error("AlarmKit call timed out: \(call, privacy: .public)")
+            },
             privacy: DefaultsReminderPrivacy(),
             alarmsRing: { AlarmSupport.isAuthorized }
         )

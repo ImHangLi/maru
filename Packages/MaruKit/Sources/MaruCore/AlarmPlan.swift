@@ -127,7 +127,8 @@ public struct AlarmPlan: Hashable, Sendable {
 public protocol AlarmCenter: Sendable {
     /// The identifiers of the alarms that wait for their time. An alarm that rings now is not in the set,
     /// so a run never stops a ringing alarm.
-    func waiting() async -> Set<UUID>
+    /// Throws when the system cannot list the alarms, also when it does not answer in time (D086).
+    func waiting() async throws -> Set<UUID>
     /// Schedules the alarm. The system holds it until its time.
     func schedule(_ request: AlarmRequest) async throws
     /// Cancels the alarms with these identifiers.
@@ -143,8 +144,74 @@ public protocol AlarmSource: Sendable {
     ) async throws -> AlarmPlan
 }
 
-/// A cancel of an alarm failed in a run.
-public enum AlarmRunError: Error { case cancelFailed }
+/// A cancel of an alarm failed in a run, or the alarm system did not answer in time.
+public enum AlarmRunError: Error { case cancelFailed, timedOut }
+
+/// An alarm center that gives each call a time limit (D086). A call of AlarmKit that never returns would block the one
+/// queue of the notification runs, and no reminder would change again. A call that passes the limit throws
+/// `AlarmRunError.timedOut`. The engine then fails open: the cover is empty for the run, and every item with an alarm
+/// gets its notification (D079). The call that did not return stays in the background, and its result is ignored.
+public struct TimedAlarmCenter: AlarmCenter {
+    private let base: any AlarmCenter
+    private let limit: Duration
+    private let didTimeOut: @Sendable (String) -> Void
+
+    /// - Parameter didTimeOut: Called with the name of the call. It is for a log. It must not hold item data.
+    public init(base: any AlarmCenter, limit: Duration = .seconds(3), didTimeOut: @escaping @Sendable (String) -> Void = { _ in }) {
+        self.base = base
+        self.limit = limit
+        self.didTimeOut = didTimeOut
+    }
+
+    public func waiting() async throws -> Set<UUID> {
+        try await timed("waiting") { try await base.waiting() }
+    }
+
+    public func schedule(_ request: AlarmRequest) async throws {
+        try await timed("schedule") { try await base.schedule(request) }
+    }
+
+    public func cancel(_ ids: [UUID]) async throws {
+        try await timed("cancel") { try await base.cancel(ids) }
+    }
+
+    private func timed<T: Sendable>(_ name: String, _ call: @escaping @Sendable () async throws -> T) async throws -> T {
+        let gate = Gate<T>()
+        let limit = limit
+        let didTimeOut = didTimeOut
+        return try await withCheckedThrowingContinuation { continuation in
+            gate.install(continuation)
+            Task {
+                do { gate.finish(.success(try await call())) } catch { gate.finish(.failure(error)) }
+            }
+            Task {
+                try? await Task.sleep(for: limit)
+                if gate.finish(.failure(AlarmRunError.timedOut)) { didTimeOut(name) }
+            }
+        }
+    }
+
+    /// Gives the continuation exactly one result: the call or the limit, whichever comes first.
+    private final class Gate<T: Sendable>: @unchecked Sendable {
+        private let lock = NSLock()
+        private var continuation: CheckedContinuation<T, any Error>?
+
+        func install(_ continuation: CheckedContinuation<T, any Error>) {
+            lock.withLock { self.continuation = continuation }
+        }
+
+        @discardableResult
+        func finish(_ result: Result<T, any Error>) -> Bool {
+            let taken = lock.withLock { () -> CheckedContinuation<T, any Error>? in
+                defer { continuation = nil }
+                return continuation
+            }
+            guard let taken else { return false }
+            taken.resume(with: result)
+            return true
+        }
+    }
+}
 
 /// Keeps the alarms of the next seven days in the system (D079).
 ///
@@ -184,7 +251,7 @@ public struct AlarmEngine: Sendable {
         let plan = try await source.alarmPlan(
             privacy: privacy.load(), at: now, deviceTimeZone: deviceTimeZone, alarms: AlarmCover(rings: alarmsRing())
         )
-        let waiting = await center.waiting()
+        let waiting = try await center.waiting()
         let wanted = Set(plan.requests.map(\.id))
         let obsolete = waiting.subtracting(wanted)
         /// Any cancel error makes the whole run fail open: the caller then has an empty cover (D079).

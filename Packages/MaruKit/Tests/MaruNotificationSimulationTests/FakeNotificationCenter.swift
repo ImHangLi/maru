@@ -310,18 +310,30 @@ actor FakeAlarmCenter: AlarmCenter {
     /// The system refuses to schedule an alarm.
     var schedulingFails = false
     var cancelFails = false
+    /// A call never returns, as a hang inside AlarmKit would.
+    var hangs = false
 
     func setSchedulingFails(_ value: Bool) { schedulingFails = value }
     func setCancelFails(_ value: Bool) { cancelFails = value }
+    func setHangs(_ value: Bool) { hangs = value }
 
-    func waiting() -> Set<UUID> { Set(alarms.keys) }
+    private func hangIfAsked() async {
+        while hangs { try? await Task.sleep(for: .seconds(1)) }
+    }
 
-    func schedule(_ request: AlarmRequest) throws {
+    func waiting() async -> Set<UUID> {
+        await hangIfAsked()
+        return Set(alarms.keys)
+    }
+
+    func schedule(_ request: AlarmRequest) async throws {
+        await hangIfAsked()
         guard !schedulingFails else { throw SimError.notAllowed }
         alarms[request.id] = request
     }
 
-    func cancel(_ ids: [UUID]) throws {
+    func cancel(_ ids: [UUID]) async throws {
+        await hangIfAsked()
         guard !cancelFails else { throw SimError.notAllowed }
         ids.forEach { alarms[$0] = nil }
     }

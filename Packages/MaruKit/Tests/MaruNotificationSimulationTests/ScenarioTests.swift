@@ -196,6 +196,27 @@ struct ScenarioTests {
         await p.expectCorrect("the system refuses the alarm: notification stays")
     }
 
+    @Test func aHangingAlarmSystemDoesNotBlockTheRunsOrTheBanners() async throws {
+        let p = try await phone()
+        try await p.addItem("Zinc", at: ["09:00"], alarm: true)
+        try await p.addItem("Iron", at: ["09:00"])
+        await p.expectCorrect("alarm item next to a notification item")
+        // AlarmKit stops answering. Every run must end, and the item with the alarm gets its notification (D079, D086).
+        await p.alarmCenter.setHangs(true)
+        p.checks.alarmsFail = true
+        // The waiting alarms cannot be cancelled while it hangs, so an alarm and a banner can coexist (D079). Only the banner is checked.
+        p.checks.alarms = false
+        try await p.record("Iron")
+        try await p.undo("Iron")
+        try await p.rename("Zinc", to: "Zinc Citrate")
+        await p.expectCorrect("runs end while the alarm system hangs")
+        await p.alarmCenter.setHangs(false)
+        p.checks.alarmsFail = false
+        p.checks.alarms = true
+        await p.foreground()
+        await p.expectCorrect("the alarm system answers again")
+    }
+
     // MARK: Settings and the world
 
     @Test func hiddenNamesAndShownNames() async throws {
