@@ -46,10 +46,13 @@ private actor Phone: ReminderPlanSource, FollowUpSource, FollowUpCenter, Reminde
         ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, closed: closed)
     }
 
-    func followUpPlan(privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover) -> FollowUpPlan {
+    func followUpPlan(
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover, snoozes: [SnoozeEntry]
+    ) -> FollowUpPlan {
         FollowUpPlan(
             reminders: reminderPlan(at: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarms: alarms),
-            items: items, schedules: schedules, stored: [], closed: closed, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy
+            items: items, schedules: schedules, stored: [], closed: closed, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy,
+            snoozes: snoozes
         )
     }
 

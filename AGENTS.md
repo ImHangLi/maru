@@ -2,7 +2,7 @@
 
 Maru is a local-first iPhone and iPad app for daily supplements and simple medication schedules that the user confirms. It reminds on time, shows what to take now, and keeps a trustworthy record.
 
-`docs/spec.md` is the source of truth for scope, data model, and acceptance. Read only the sections that your task needs. Section numbers and acceptance IDs (`T01`–`T52`) are stable references.
+`docs/spec.md` is the source of truth for scope, data model, and acceptance. Read only the sections that your task needs. Section numbers and acceptance IDs (`T01`–`T55`) are stable references.
 
 ## Working mode
 

@@ -11,6 +11,10 @@ import Foundation
 ///    or yesterday. Anything else must be gone.
 /// 3. Every open dose with a time in the horizon has a pending request that fires at its time and names it.
 /// 4. The alarms wait for exactly the open doses of the items that an alarm covers.
+/// 5. Every pending request has a category that its doses allow, and the time-sensitive level (D090). A request with a group action
+///    names two or more open items and shows the names.
+/// 6. A snooze of the user stands as one pending request while its group has an open dose, and it pauses the follow-ups of the group
+///    until its time (D090).
 struct Oracle {
     struct Checks {
         /// Check that every open dose has a reminder in the next `coverageHours`.
@@ -64,7 +68,10 @@ struct Oracle {
     }
 
     private func text(_ kind: ReminderContent.Kind, _ names: [String]) -> ReminderText {
-        phone.center.text(for: ReminderContent(kind: kind, names: showsNames ? names : nil))
+        // A reminder with group actions names every item, so its text has no "and N more" (D090).
+        phone.center.text(for: ReminderContent(
+            kind: kind, names: showsNames ? names : nil, category: showsNames && names.count >= 2 ? .group : .snooze
+        ))
     }
 
     // MARK: Independent calendar rules
@@ -97,8 +104,10 @@ struct Oracle {
             && now < oneAMAfter(date, in: zone)
     }
 
+    private func baseID(_ identifier: String) -> String { Self.base(of: identifier) }
+
     /// The identifier without its generation (`|g<digits>` at the end).
-    private func baseID(_ identifier: String) -> String {
+    static func base(of identifier: String) -> String {
         // `|g<12 digits>r<4 hex>` at the end.
         guard let range = identifier.range(of: "|g", options: .backwards) else { return identifier }
         let tail = identifier[range.upperBound...].split(separator: "r", omittingEmptySubsequences: false)
@@ -124,13 +133,23 @@ struct Oracle {
         let zone: String
         let date: LocalDate
         let time: WallClockTime
-        let minutes: Int
+        /// The delay after the dose time. `nil` for the request of a snooze.
+        let minutes: Int?
     }
 
     private func followUp(_ identifier: String) -> FollowUpID? {
         let parts = baseID(identifier).split(separator: "|", omittingEmptySubsequences: false).map(String.init)
         guard parts.count == 5, parts[0] == "followup", let date = Self.parseDate(parts[2]) else { return nil }
-        return FollowUpID(zone: parts[1], date: date, time: Phone.wallClock(parts[3]), minutes: Int(parts[4].dropFirst())!)
+        return FollowUpID(
+            zone: parts[1], date: date, time: Phone.wallClock(parts[3]), minutes: parts[4] == "snooze" ? nil : Int(parts[4].dropFirst())!
+        )
+    }
+
+    /// The plan date (when the identifier has one) and the time of day of a series request or of a follow-up.
+    static func parts(of identifier: String) -> (date: LocalDate?, time: WallClockTime) {
+        let parts = Oracle.base(of: identifier).split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+        if parts[0] == "followup" { return (parseDate(parts[2]), Phone.wallClock(parts[3])) }
+        return (parseDate(parts[3]), Phone.wallClock(parts[2]))
     }
 
     private static func parseDate(_ text: String) -> LocalDate? {
@@ -169,6 +188,58 @@ struct Oracle {
         return names(doses)
     }
 
+    // MARK: Snoozes and categories (D090)
+
+    /// The snooze of the user for the dose group of `date` and `time`, while its time is still to come.
+    private func liveSnooze(date: LocalDate, time: WallClockTime, now: Date) -> SimSnooze? {
+        truth.snoozes.first { $0.date == date && $0.time == time && $0.fireAt > now }
+    }
+
+    /// The open doses of the group of `date` and `time`: every item that reminds, in any zone rule (as `followUpNames` reads them).
+    private func openGroupDoses(date: LocalDate, time: WallClockTime) -> [SimDose] {
+        truth.openDoses(on: date, at: time, deviceZone: device.zone)
+    }
+
+    /// I8 and I9: the category of a request that names `count` open items, and its level. A request names a group action only when
+    /// it names two or more items and shows the names, because only then can the user see what the action records.
+    /// A follow-up of a group of one item can have the actions of one item, and a follow-up that names one item of a larger group
+    /// has only the snooze.
+    private func presentationViolation(_ presentation: ReminderPresentation?, named count: Int, isFirstReminder: Bool) -> String? {
+        guard let presentation else { return "has a category that this build does not register" }
+        guard presentation.level == .timeSensitive else { return "has the level \(presentation.level), not time sensitive" }
+        let allowed: Set<ReminderCategory>
+        switch (count >= 2, showsNames) {
+        case (true, true): allowed = [.group]
+        case (true, false): allowed = [.snooze]
+        case (false, _): allowed = isFirstReminder && showsNames ? [.single] : [.single, .snooze]
+        }
+        return allowed.contains(presentation.category)
+            ? nil : "has the category \(presentation.category) for \(count) named doses, names shown: \(showsNames)"
+    }
+
+    /// A pending request of a snooze of the user (I10).
+    private func snoozeViolations(_ notification: SimNotification, _ id: FollowUpID, label: String, now: Date) -> [String] {
+        guard let snooze = truth.snoozes.first(where: { $0.date == id.date && $0.time == id.time }) else {
+            return ["\(label) is a snooze that the user did not ask for"]
+        }
+        var found: [String] = []
+        if case let .instant(fire) = notification.trigger, fire != max(snooze.fireAt, now.addingTimeInterval(1)) {
+            found.append("\(label) fires at \(Self.format(fire, device.zone)), and the snooze is for \(Self.format(snooze.fireAt, device.zone))")
+        }
+        let doses = openGroupDoses(date: id.date, time: id.time)
+        if doses.isEmpty {
+            found.append("\(label) is a snooze with no open dose in its group")
+        } else {
+            if notification.text != text(.due, names(doses)) {
+                found.append("\(label) names the wrong doses. They are: \(names(doses))")
+            }
+            if let wrong = presentationViolation(notification.presentation, named: names(doses).count, isFirstReminder: false) {
+                found.append("\(label) \(wrong)")
+            }
+        }
+        return found
+    }
+
     // MARK: The violations
 
     func violations() async -> [String] {
@@ -193,23 +264,44 @@ struct Oracle {
                         found.append("\(label) fires, and no open dose is due then")
                     } else if !candidates.contains(notification.text) {
                         found.append("\(label) names the wrong doses. Open doses then: \(names(all))")
-                    } else if notification.hasTakenAction, names(candidates[0] == notification.text ? all : ruled).count != 1 {
-                        found.append("\(label) has the Taken action for more than one dose")
+                    } else if let wrong = presentationViolation(
+                        notification.presentation, named: names(candidates[0] == notification.text ? all : ruled).count, isFirstReminder: true
+                    ) {
+                        found.append("\(label) \(wrong)")
                     }
                 }
             } else if let id = followUp(notification.identifier) {
-                let expected = followUpNames(date: id.date, time: id.time, minutes: id.minutes)
                 let label = "pending \(notification.identifier) (\"\(notification.text.body)\")"
+                guard let minutes = id.minutes else {
+                    found += snoozeViolations(notification, id, label: label, now: now)
+                    continue
+                }
+                let expected = followUpNames(date: id.date, time: id.time, minutes: minutes)
                 if expected.isEmpty {
                     found.append("\(label) has no dose that needs a follow-up")
                 } else if notification.text != text(.again, expected) {
                     found.append("\(label) names the wrong doses. They are: \(expected)")
-                } else if notification.hasTakenAction, expected.count != 1 {
-                    found.append("\(label) has the Taken action for more than one dose")
+                } else if let wrong = presentationViolation(notification.presentation, named: expected.count, isFirstReminder: false) {
+                    found.append("\(label) \(wrong)")
+                }
+                // A snooze pauses the follow-ups of its group until its time (D090).
+                if case let .instant(fire) = notification.trigger,
+                   let snooze = liveSnooze(date: id.date, time: id.time, now: now), fire <= snooze.fireAt {
+                    found.append("\(label) fires at \(Self.format(fire, zone)), before the snooze of the user ends at \(Self.format(snooze.fireAt, zone))")
                 }
             } else if !notification.identifier.hasPrefix("other|") {
                 // A request that another part of the app owns is not checked and not touched.
                 found.append("pending request with an unknown identifier \(notification.identifier)")
+            }
+        }
+
+        // A snooze of the user has its request while its group has an open dose (I10).
+        if device.authorization == .authorized {
+            for snooze in truth.snoozes where snooze.fireAt > now && !openGroupDoses(date: snooze.date, time: snooze.time).isEmpty {
+                let has = pending.values.contains {
+                    followUp($0.identifier).map { $0.minutes == nil && $0.date == snooze.date && $0.time == snooze.time } ?? false
+                }
+                if !has { found.append("no snooze request for \(snooze.date.dayText) \(snooze.time) at \(Self.format(snooze.fireAt, zone))") }
             }
         }
 
@@ -254,7 +346,16 @@ struct Oracle {
         if let id = followUp(notification.identifier) {
             let followUpZone = (try? NamedTimeZone(identifier: id.zone.replacingOccurrences(of: "device@", with: ""))) ?? zone
             if !isVisible(id.date, at: at, in: followUpZone) { return ["\(label) is of a day that Today no longer shows and must be gone"] }
-            let expected = followUpNames(date: id.date, time: id.time, minutes: id.minutes)
+            if id.minutes == nil {
+                // A delivered snooze names every open dose of its group (D090).
+                let expected = names(openGroupDoses(date: id.date, time: id.time))
+                if expected.isEmpty { return ["\(label) is a snooze with no open dose in its group"] }
+                if notification.text != text(.due, expected) {
+                    return ["\(label) names \"\(notification.text.body)\", but the doses are \(expected)"]
+                }
+                return []
+            }
+            let expected = followUpNames(date: id.date, time: id.time, minutes: id.minutes!)
             if expected.isEmpty { return ["\(label) has no dose that needs a follow-up"] }
             if notification.text != text(.again, expected) {
                 return ["\(label) names \"\(notification.text.body)\", but the doses are \(expected)"]
@@ -306,6 +407,7 @@ struct Oracle {
                     let minutes = number * setting.interval.rawValue
                     let fire = dose.instant.addingTimeInterval(Double(minutes) * 60)
                     guard fire > now, fire <= horizon else { continue }
+                    if let snooze = liveSnooze(date: dose.date, time: dose.time, now: now), fire <= snooze.fireAt { continue }
                     guard followUpNames(date: dose.date, time: dose.time, minutes: minutes).contains(item.name) else { continue }
                     let group = dose.rule == .device ? "device@" + named.identifier : named.identifier
                     let id = "followup|\(group)|\(String(format: "%04d-%02d-%02d", dose.date.year, dose.date.month, dose.date.day))|\(String(format: "%02d:%02d", dose.time.hour, dose.time.minute))|+\(minutes)"

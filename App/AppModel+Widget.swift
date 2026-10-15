@@ -61,15 +61,8 @@ extension AppModel {
                 }
             case let .open(occurrence, record):
                 var event = PendingEvent(
-                    event: IntakeEvent(
-                        occurrenceID: occurrence.id,
-                        action: .taken,
-                        occurredAt: now,
-                        recordedAt: now,
-                        source: .app,
-                        // The event revises the last event that the store read, so a second tap writes nothing (T18).
-                        supersedes: record.events.last?.id
-                    ),
+                    // The event revises the last event that the store read, so a second tap writes nothing (T18).
+                    event: record.nextEvent(.taken, at: now, source: .app),
                     scheduleVersionID: occurrence.scheduleVersionID
                 )
                 event.requiresCurrentPlan = true

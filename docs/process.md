@@ -29,7 +29,7 @@ A pull request alone cannot make these decisions. A maintainer makes them and re
 
 ## Work units
 
-- One GitHub issue is one unit of work. It cites spec sections and acceptance IDs (`T01`–`T52`). It fits in one pull request.
+- One GitHub issue is one unit of work. It cites spec sections and acceptance IDs (`T01`–`T55`). It fits in one pull request.
 - Group issues in GitHub milestones that match `docs/roadmap.md`.
 - Use one branch for each issue.
 

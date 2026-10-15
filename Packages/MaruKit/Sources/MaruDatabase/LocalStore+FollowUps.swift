@@ -12,7 +12,8 @@ extension LocalStore: FollowUpSource {
         privacy: ReminderPrivacy,
         at now: Date,
         deviceTimeZone: NamedTimeZone,
-        alarms: AlarmCover
+        alarms: AlarmCover,
+        snoozes: [SnoozeEntry]
     ) async throws -> FollowUpPlan {
         try await readPlan { db in
             let inputs = try Self.doseInputs(db, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy, alarms: alarms)
@@ -24,7 +25,8 @@ extension LocalStore: FollowUpSource {
                 closed: inputs.closed,
                 now: now,
                 deviceTimeZone: deviceTimeZone,
-                privacy: privacy
+                privacy: privacy,
+                snoozes: snoozes
             )
         }
     }

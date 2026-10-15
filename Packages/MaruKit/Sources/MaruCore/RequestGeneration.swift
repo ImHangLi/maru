@@ -143,11 +143,11 @@ struct GenerationCenter: FollowUpCenter {
         return newest.map { key, request in
             if migrating, key.hasPrefix(ownPrefix), RequestGeneration.isLegacy(request.identifier) {
                 // A request of build 6: the engine must replace it with a request that has a generation.
-                return PendingReminder(identifier: key, userInfo: [:], text: nil, hasTakenAction: false, isTimeSensitive: false)
+                return PendingReminder(identifier: key, userInfo: [:], text: nil, presentation: nil)
             }
             return PendingReminder(
-                identifier: key, userInfo: request.userInfo, text: request.text, hasTakenAction: request.hasTakenAction,
-                isTimeSensitive: request.isTimeSensitive, deliveredAt: request.deliveredAt
+                identifier: key, userInfo: request.userInfo, text: request.text, presentation: request.presentation,
+                deliveredAt: request.deliveredAt
             )
         }
     }

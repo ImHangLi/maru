@@ -13,10 +13,12 @@ public protocol FollowUpCenter: ReminderCenter {
 /// Where the engine reads the follow-ups that the saved plan and the records ask for.
 /// Each item carries its own setting (D079).
 public protocol FollowUpSource: Sendable {
-    /// - Parameter alarms: Which items an alarm covers now, so the series reminders leave them out.
-    ///   Their follow-ups still come (D079).
+    /// - Parameters:
+    ///   - alarms: Which items an alarm covers now, so the series reminders leave them out.
+    ///     Their follow-ups still come (D079).
+    ///   - snoozes: The "Remind in 10 min" requests of the user. The plan turns each into a request (D090).
     func followUpPlan(
-        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover, snoozes: [SnoozeEntry]
     ) async throws -> FollowUpPlan
 
     /// Writes `time` as the change time of every item whose change is not confirmed (`Date.distantFuture`).
@@ -68,6 +70,8 @@ public actor FollowUpEngine {
     private let source: any FollowUpSource
     private let center: GenerationCenter
     private let privacy: any ReminderPrivacyStore
+    /// The snoozes of the user. The plan owns them: each run reads them and removes the ones that no longer stand (D090).
+    private let snoozes: any SnoozeStore
     /// Which items an alarm covers now, read at each run (D079).
     private let alarms: @Sendable () -> AlarmCover
     /// The clock at the time of the call. A run reads it where it must know whether a request time passed.
@@ -81,6 +85,7 @@ public actor FollowUpEngine {
         source: any FollowUpSource,
         center: any FollowUpCenter,
         privacy: any ReminderPrivacyStore,
+        snoozes: any SnoozeStore = MemorySnoozeStore(),
         alarms: @escaping @Sendable () -> AlarmCover = { .none },
         clock: @escaping @Sendable () -> Date = { Date() },
         generations: any GenerationCounter = MemoryGenerationCounter.shared,
@@ -91,6 +96,7 @@ public actor FollowUpEngine {
             center, counter: generations, migration: migration, ownPrefix: FollowUpRequest.identifierPrefix
         )
         self.privacy = privacy
+        self.snoozes = snoozes
         self.alarms = alarms
         self.clock = clock
     }
@@ -119,8 +125,9 @@ public actor FollowUpEngine {
     private func perform(at now: Date, deviceTimeZone: NamedTimeZone) async throws -> FollowUpOutcome {
         let privacy = privacy.load()
         var now = now
+        let entries = snoozes.load()
         var plan = try await source.followUpPlan(
-            privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms()
+            privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms(), snoozes: entries
         )
         // After the update, a change of the old setting can be open. An old follow-up can come until the system
         // confirms its removal, so the plan sets none for such an item. The engine removes every follow-up first.
@@ -132,7 +139,7 @@ public actor FollowUpEngine {
                 try await source.confirmFollowUpChanges(at: confirmed)
                 now = max(now, confirmed)
                 plan = try await source.followUpPlan(
-                    privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms()
+                    privacy: privacy, at: now, deviceTimeZone: deviceTimeZone, alarms: alarms(), snoozes: entries
                 )
             }
         }
@@ -174,7 +181,9 @@ public actor FollowUpEngine {
             let held = Self.followUps(await pendingAfterRemoval())
             return wanted.filter { request in
                 guard let old = held[request.identifier] else { return false }
-                return old.userInfo != request.userInfo || old.text != center.text(for: request.content)
+                return !old.isCurrent(
+                    userInfo: request.userInfo, text: center.text(for: request.content), presentation: request.content.presentation
+                )
             }
         }
         var old = await stale()
@@ -209,6 +218,11 @@ public actor FollowUpEngine {
             return shown.text != content.map(center.text(for:))
         }.map(\.identifier)
         if !delivered.isEmpty, !plan.hasUnreadable { await center.removeDelivered(identifiers: delivered) }
+        // A snooze whose group has no open dose, or whose follow-ups have stopped, goes. So a record or a skip removes the snooze,
+        // and the store needs no clean-up of its own (D090). A schedule that did not load has unknown doses, so none goes then.
+        if !plan.hasUnreadable {
+            snoozes.remove(entries.filter { !plan.standingSnoozes.contains($0) })
+        }
         let held = Self.followUps(await pendingAfterRemoval())
         let scheduled = authorization == .authorized
             ? plan.requests.filter { isCurrent(held[$0.identifier], $0) }.count
@@ -237,13 +251,13 @@ public actor FollowUpEngine {
         )
     }
 
-    /// A pending follow-up is current when it has the `userInfo`, the text, and the action of the request, and the
-    /// time-sensitive level (D029, D034, D062).
+    /// A pending follow-up is current when it has the `userInfo`, the text, and the presentation of the request (D029, D034, D062, D090).
     /// The fire instant is in `userInfo`. The text changes with a record, a rename, the setting, or the language.
     private func isCurrent(_ held: PendingReminder?, _ request: FollowUpRequest) -> Bool {
         guard let held else { return false }
-        return held.userInfo == request.userInfo && held.text == center.text(for: request.content)
-            && held.hasTakenAction == request.content.hasTakenAction && held.isTimeSensitive
+        return held.isCurrent(
+            userInfo: request.userInfo, text: center.text(for: request.content), presentation: request.content.presentation
+        )
     }
 
     /// The same rule as `ReminderEngine`: a removal is safe to repeat, because a later request has another identifier (D086).

@@ -20,7 +20,8 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
     /// The text of each pending request.
     private(set) var texts: [String: ReminderText] = [:]
     /// The pending requests with the "Taken" action.
-    var actions: Set<String> = []
+    /// The category that the system holds for each request. A request that is not here has no known category (D090).
+    var categories: [String: ReminderCategory] = [:]
     private var openRemovals: [(identifiers: [String], readsLeft: Int)] = []
     private(set) var prompts = 0
     private(set) var added: [String] = []
@@ -66,7 +67,10 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
     func pendingRequests() -> [PendingReminder] {
         steps.append("read")
         let read = pending.map {
-            PendingReminder(identifier: $0.key, userInfo: $0.value, text: texts[$0.key], hasTakenAction: actions.contains($0.key))
+            PendingReminder(
+                identifier: $0.key, userInfo: $0.value, text: texts[$0.key],
+                presentation: categories[$0.key].map { ReminderPresentation(category: $0) }
+            )
         }
         openRemovals = openRemovals.map { ($0.identifiers, $0.readsLeft - 1) }
         openRemovals.filter { $0.readsLeft == 0 }.flatMap(\.identifiers).forEach { pending[$0] = nil }
@@ -79,8 +83,7 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
         if !dropsRequests {
             pending[RequestGeneration.base(of: request.identifier)] = request.userInfo
             texts[RequestGeneration.base(of: request.identifier)] = text(for: request.content)
-            actions.remove(RequestGeneration.base(of: request.identifier))
-            if request.content.hasTakenAction { actions.insert(RequestGeneration.base(of: request.identifier)) }
+            categories[RequestGeneration.base(of: request.identifier)] = request.content.category
         }
         peak = max(peak, pending.count)
     }
@@ -178,19 +181,19 @@ struct ReminderEngineTests {
         #expect(await phone.added.count == before + 1)
     }
 
-    @Test func requestWithoutTheTakenActionIsReplacedAndTakesNoNewRoom() async throws {
+    @Test func requestWithoutAKnownCategoryIsReplacedAndTakesNoNewRoom() async throws {
         await phone.save(times: [8])
         _ = try await reconcile()
         let before = await phone.added.count
-        #expect(await phone.actions == ["series|Asia/Shanghai|08:00|daily"])
+        #expect(await phone.categories == ["series|Asia/Shanghai|08:00|daily": .single])
 
-        // A request from before the action has the same identifier, `userInfo`, and text, and no category (D034).
-        await phone.update { $0.actions = [] }
+        // A request from before the action has the same identifier, `userInfo`, and text, and no known category (D034, D090).
+        await phone.update { $0.categories = [:] }
         let outcome = try await reconcile()
 
         #expect(outcome.schedules.values.allSatisfy { $0 == .scheduled })
         #expect(await phone.added.dropFirst(before) == ["series|Asia/Shanghai|08:00|daily"])
-        #expect(await phone.actions == ["series|Asia/Shanghai|08:00|daily"])
+        #expect(await phone.categories == ["series|Asia/Shanghai|08:00|daily": .single])
         #expect(await phone.pending.count == 1)
         // The request is current now, so the next run adds nothing.
         _ = try await reconcile()

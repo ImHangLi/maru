@@ -24,19 +24,12 @@ extension UNNotificationRequest {
     /// A one-time interval request to the exact fire instant, measured from now (the time of the refresh).
     /// The text is fixed here, in the language of now (spec 8.2, D029).
     convenience init(_ request: FollowUpRequest, locale: Locale = .current) {
-        let content = UNMutableNotificationContent()
-        let text = request.content.text(locale: locale)
-        content.title = text.title
-        content.body = text.body
-        content.sound = .default
-        content.interruptionLevel = .timeSensitive
-        content.userInfo = request.userInfo
-        // The follow-ups of one slot time show as one group in Notification Center (D039).
-        content.threadIdentifier = request.threadIdentifier
-        if request.content.hasTakenAction { content.categoryIdentifier = ReminderAction.categoryIdentifier }
         self.init(
             identifier: request.identifier,
-            content: content,
+            // The follow-ups of one slot time show as one group in Notification Center (D039).
+            content: UNMutableNotificationContent.reminder(
+                request.content, userInfo: request.userInfo, threadIdentifier: request.threadIdentifier, locale: locale
+            ),
             // The interval must be positive. The plan has only future instants, so this changes a few milliseconds at most.
             trigger: UNTimeIntervalNotificationTrigger(timeInterval: max(1, request.fireDate.timeIntervalSinceNow), repeats: false)
         )

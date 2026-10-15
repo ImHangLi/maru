@@ -57,19 +57,9 @@ struct RecordTransactionTests {
         let reminder = DeliveredReminder(
             deliveredAt: Fixtures.instant("2026-03-01T00:00:00Z"), userInfo: request.userInfo, triggerWeekday: nil
         )
-        func target(at now: String) async throws -> ReminderActionTarget {
-            try await store.actionTarget(
-                of: reminder, at: Fixtures.instant(now), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
-            )
-        }
-        func taken(_ record: OccurrenceRecord) -> IntakeEvent {
-            IntakeEvent(
-                occurrenceID: record.occurrenceID,
-                action: .taken,
-                occurredAt: Fixtures.instant("2026-03-01T00:10:00Z"),
-                recordedAt: Fixtures.instant("2026-03-01T00:10:00Z"),
-                source: .notificationAction,
-                supersedes: record.events.last?.id
+        func act(_ reminder: DeliveredReminder, at now: String) async throws -> ReminderActionResult {
+            try await store.recordOpenDoses(
+                for: reminder, action: .taken, at: Fixtures.instant(now), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
             )
         }
 
@@ -77,37 +67,79 @@ struct RecordTransactionTests {
         var followUp = [
             ReminderRequest.seriesIDKey: plan.series[0].id,
             FollowUpRequest.plannedDateKey: "2026-03-01",
-            FollowUpRequest.itemIDKey: seed.item.id.rawValue.uuidString,
+            FollowUpRequest.itemIDKey: ItemID().rawValue.uuidString,
             FollowUpRequest.scheduleVersionIDKey: seed.versionID.rawValue.uuidString,
         ]
-        func followUpTarget() async throws -> ReminderActionTarget {
-            try await store.actionTarget(
-                of: DeliveredReminder(deliveredAt: Fixtures.instant("2026-03-01T00:30:00Z"), userInfo: followUp, triggerWeekday: nil),
-                at: Fixtures.instant("2026-03-01T00:31:00Z"), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
-            )
+        func followUpReminder() -> DeliveredReminder {
+            DeliveredReminder(deliveredAt: Fixtures.instant("2026-03-01T00:30:00Z"), userInfo: followUp, triggerWeekday: nil)
         }
-        #expect(try await followUpTarget() == .open(seed.occurrence, OccurrenceRecord(occurrenceID: seed.occurrence.id)))
-        followUp[FollowUpRequest.itemIDKey] = ItemID().rawValue.uuidString
-        #expect(try await followUpTarget() == .none)
+        let wrongItem = try await act(followUpReminder(), at: "2026-03-01T00:31:00Z")
+        #expect(wrongItem.doses.isEmpty && wrongItem.recorded.isEmpty)
+        #expect(try await store.count("intakeEvent") == 0)
 
-        guard case let .open(occurrence, record) = try await target(at: "2026-03-01T00:10:00Z") else {
-            Issue.record("A reminder of today for one open item must give its dose")
-            return
-        }
+        let result = try await act(reminder, at: "2026-03-01T00:10:00Z")
         // The dose is the morning dose of 1 March, not the evening dose and not a dose of another day.
-        #expect(occurrence == seed.occurrence)
-        let event = taken(record)
-        try await store.record(event, scheduleVersionID: occurrence.scheduleVersionID)
+        let recorded = try #require(result.recorded.first)
+        #expect(result.recorded.count == 1 && result.notRecordedCount == 0 && result.isFlushed)
+        #expect(recorded.record.occurrenceID == seed.occurrence.id)
+        #expect(recorded.event.source == .notificationAction && recorded.event.action == .taken)
 
-        // The action comes a second time: the read finds no open dose, and a second event is rejected.
-        #expect(try await target(at: "2026-03-01T00:11:00Z") == .alreadyTaken)
+        // The action comes a second time: the dose has its record, and nothing is written.
+        let again = try await act(reminder, at: "2026-03-01T00:11:00Z")
+        #expect(again.recorded.isEmpty && again.unchangedCount == 1)
+        // A follow-up of the right item finds the same closed dose.
+        followUp[FollowUpRequest.itemIDKey] = seed.item.id.rawValue.uuidString
+        let fromFollowUp = try await act(followUpReminder(), at: "2026-03-01T00:32:00Z")
+        #expect(fromFollowUp.recorded.isEmpty && fromFollowUp.unchangedCount == 1)
+        // A second event from a read before the first one is rejected (T18).
         await #expect(throws: RecordFailure.rejected(.alreadyRecorded)) {
-            try await store.record(taken(record), scheduleVersionID: occurrence.scheduleVersionID)
+            try await store.record(Fixtures.event(for: seed.occurrence, .taken), scheduleVersionID: seed.versionID)
         }
         // On the next day the reminder is of another day, so the action records nothing (T15).
-        #expect(try await target(at: "2026-03-02T00:10:00Z") == .none)
+        let nextDay = try await act(reminder, at: "2026-03-02T00:10:00Z")
+        #expect(nextDay.doses.isEmpty && nextDay.recorded.isEmpty)
         #expect(try await store.count("intakeEvent") == 1)
-        try await store.expectConsistent(seed.occurrence, events: [event], status: .taken)
+        try await store.expectConsistent(seed.occurrence, events: [recorded.event], status: .taken)
+    }
+
+    /// "Take All" (D090): one transaction records every named dose that is open. A dose that has a record stays as it is, and a skip is
+    /// never replaced (D034).
+    @Test func takeAllRecordsTheOpenDosesAndKeepsATakenAndASkippedDose() async throws {
+        let store = try LocalStore(directory: directory.url)
+        var items: [Item] = []
+        var schedules: [Schedule] = []
+        for name in ["Iron", "Zinc", "Copper"] {
+            let item = try Item(category: .supplement, name: name, form: .capsule, color: .pink)
+            try await store.save(item)
+            let (schedule, _, _) = Fixtures.twiceDailySchedule(itemID: item.id)
+            try await store.save(schedule)
+            items.append(item)
+            schedules.append(schedule)
+        }
+        let before = Fixtures.instant("2026-03-01T00:00:00Z")
+        try await store.generateOccurrences(at: before, deviceTimeZone: Fixtures.shanghai)
+        var morning: [Occurrence] = []
+        for schedule in schedules {
+            morning.append(try #require(try await store.occurrence(slotID: schedule.slots[0].id, on: Fixtures.date(2026, 3, 1))))
+        }
+        // Iron is taken in the app, and Zinc is skipped. Copper is open.
+        try await store.record(Fixtures.event(for: morning[0], .taken), scheduleVersionID: morning[0].scheduleVersionID)
+        try await store.record(Fixtures.event(for: morning[1], .skipped), scheduleVersionID: morning[1].scheduleVersionID)
+        let plan = ReminderPlan(items: items, schedules: schedules, now: before, deviceTimeZone: Fixtures.shanghai)
+        let request = try #require(plan.requests.first { $0.trigger.time == Fixtures.time(8) })
+        #expect(request.content.category == .group)
+        let reminder = DeliveredReminder(deliveredAt: before, userInfo: request.userInfo, triggerWeekday: nil)
+
+        let result = try await store.recordOpenDoses(
+            for: reminder, action: .taken, at: Fixtures.instant("2026-03-01T00:10:00Z"),
+            deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
+        )
+
+        #expect(result.named == 3 && result.recorded.count == 1 && result.unchangedCount == 2 && result.notRecordedCount == 0)
+        #expect(try await store.status(of: morning[0].id) == .taken)
+        #expect(try await store.status(of: morning[1].id) == .skipped)
+        #expect(try await store.status(of: morning[2].id) == .taken)
+        #expect(try await store.count("intakeEvent") == 3)
     }
 
     /// N1 (D089): after an undo and a plan edit on the same day, the stored occurrence keeps the old schedule version.
@@ -147,11 +179,13 @@ struct RecordTransactionTests {
             triggerWeekday: nil
         )
         for reminder in [series, followUp] {
-            let target = try await store.actionTarget(
-                of: reminder, at: Fixtures.instant("2026-03-01T00:20:00Z"), deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
+            let result = try await store.recordOpenDoses(
+                for: reminder, action: .taken, at: Fixtures.instant("2026-03-01T00:20:00Z"),
+                deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
             )
-            #expect(target == .none)
+            #expect(result.recorded.isEmpty)
         }
+        #expect(try await store.count("intakeEvent") == 2)
     }
 
     @Test func sameEventIDWithOtherContentIsRejected() async throws {

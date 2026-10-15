@@ -99,17 +99,22 @@ public struct FollowUpRequest: Hashable, Sendable {
     /// The ID of the schedule version of the one dose of a request with the "Taken" action.
     /// The action records only a dose with this version (D034).
     public static let scheduleVersionIDKey = "scheduleVersionID"
+    /// The doses of a request with a group action: `<slot ID>=<schedule version ID>` entries, separated by commas (D090).
+    /// The action records exactly these doses, each one only while it is still in the plan of now. It holds no name (spec 10).
+    public static let membersKey = "members"
 
     public let identifier: String
     /// The identifier of the group. The system shows the follow-ups of one slot time as one group (D039).
     public let threadIdentifier: String
     /// The items of the group that are open when the request is set, and that the request still reminds for (D029).
     /// Each record refreshes the follow-ups, so a recorded item leaves the text, and a closed group loses its requests.
-    /// The request has the "Taken" action when the group has exactly one item, open or not (D034).
+    /// The request has the "Taken" and "Skip" actions when the group has exactly one item, open or not (D034). It has the group
+    /// actions when it names two or more items and the names are shown (D090).
     public let content: ReminderContent
     /// The series ID, the plan date, and the fire instant. The series ID and the plan date give a tap
     /// the candidate occurrences (spec 8.3). A request with the "Taken" action also has the ID of its item
-    /// and of its schedule version, and no name. They stay in the notification system and are never logged (spec 10).
+    /// and of its schedule version, and a request with the group actions has its doses (`membersKey`). Neither has a name.
+    /// They stay in the notification system and are never logged (spec 10).
     public let userInfo: [String: String]
     /// The exact fire instant. The system gets the interval from the time of the add to this instant,
     /// because calendar components cannot name one instant of a local time that a clock change repeats.
@@ -153,6 +158,9 @@ public struct FollowUpPlan: Hashable, Sendable {
     /// A schedule did not load (D088). The plan does not know its follow-ups, so the engine removes no follow-up and no
     /// delivered notification.
     public let hasUnreadable: Bool
+    /// The entries of the input that still stand: their group has an open dose, and the follow-ups of the group have not stopped.
+    /// The engine removes every other entry from the store (D090).
+    public let standingSnoozes: [SnoozeEntry]
 
     /// One open item of a dose group that a series reminder names (D084).
     private struct SeriesDose: Hashable, Sendable {
@@ -183,6 +191,8 @@ public struct FollowUpPlan: Hashable, Sendable {
     ///   - now: The clock of the run.
     ///   - deviceTimeZone: The time zone of the device, for the schedule versions that follow it.
     ///   - privacy: Whether the text names the open items (D029).
+    ///   - snoozes: The "Remind in 10 min" requests of the user (D090). A snooze of a group with an open dose gives one request at its
+    ///     time, and it pauses the follow-ups of the group until then.
     public init(
         reminders: ReminderPlan,
         items: [Item],
@@ -191,7 +201,8 @@ public struct FollowUpPlan: Hashable, Sendable {
         closed: Set<OccurrenceKey>,
         now: Date,
         deviceTimeZone: NamedTimeZone,
-        privacy: ReminderPrivacy = .showNames
+        privacy: ReminderPrivacy = .showNames,
+        snoozes: [SnoozeEntry] = []
     ) {
         let reminding = schedules.filter {
             switch reminders.needs[$0.id] {
@@ -225,23 +236,70 @@ public struct FollowUpPlan: Hashable, Sendable {
         var contents: [String: ReminderContent] = [:]
         /// The requests of each group that are still to come, in the order of their instants.
         var wanted: [[FollowUpRequest]] = []
+        var snoozeRequests: [FollowUpRequest] = []
+        var standing: [SnoozeEntry] = []
         for (group, slotInstant) in groups.slotInstants {
             let latest = Self.latestInstant(of: group.plannedDate, in: group.timeZone)
+            let single = groups.single(of: group)
+            /// The content and the `userInfo` of a request of this group that names `named`. The group has an open dose,
+            /// because `slotInstants` has only such groups.
+            func request(
+                _ kind: ReminderContent.Kind, _ named: [(itemID: ItemID, name: String)], fireDate: Date
+            ) -> (content: ReminderContent, userInfo: [String: String]) {
+                // `nil` when the user hides the names.
+                let shownNames = privacy == .showNames ? named.map(\.name) : []
+                let category = ReminderCategory.choose(named: named.count, showsNames: privacy == .showNames, singleItem: single != nil)
+                var userInfo = [
+                    ReminderRequest.seriesIDKey: group.seriesID,
+                    FollowUpRequest.plannedDateKey: group.dateText,
+                    FollowUpRequest.fireTimeKey: fireDate.formatted(.iso8601),
+                ]
+                if let single {
+                    // The action records only the dose that the request was made for, also after a plan change (D034).
+                    userInfo[FollowUpRequest.itemIDKey] = single.itemID.rawValue.uuidString
+                    userInfo[FollowUpRequest.scheduleVersionIDKey] = single.versionID.rawValue.uuidString
+                } else if category == .group {
+                    // The group actions record exactly the open doses that the text names (D090).
+                    userInfo[FollowUpRequest.membersKey] = groups.membersText(of: group, items: Set(named.map(\.itemID)))
+                }
+                return (ReminderContent(kind: kind, names: shownNames.isEmpty ? nil : shownNames, category: category), userInfo)
+            }
+            // A snooze stands while its group has an open dose and the follow-ups of the group have not stopped (D090). Its request
+            // names every open item of the group, also an item with no "Remind Again". After its time, the entry still stands, so
+            // the delivered notification of the snooze stays while its text is true.
+            let snoozed = now < latest ? snoozes.filter { group.isSnoozed(by: $0, deviceTimeZone: deviceTimeZone) } : []
+            standing += snoozed
+            let live = snoozed.filter { $0.fireAt > now }.max { $0.fireAt < $1.fireAt }
+            if !snoozed.isEmpty {
+                let named = groups.orderedOpenItems(of: group).compactMap { open in open.name.map { (itemID: open.itemID, name: $0) } }
+                if !named.isEmpty {
+                    let fireAt = live?.fireAt ?? snoozed.map(\.fireAt).max()!
+                    let (content, userInfo) = request(.due, named, fireDate: fireAt)
+                    contents[group.snoozeIdentifier] = content
+                    if let live, live.fireAt <= end {
+                        snoozeRequests.append(
+                            FollowUpRequest(
+                                identifier: group.snoozeIdentifier, threadIdentifier: group.identifier,
+                                content: content, userInfo: userInfo, fireDate: live.fireAt
+                            )
+                        )
+                    }
+                }
+            }
             // The open items with follow-ups, in the order of the schedules, each once, with the instant at which
             // their follow-ups stop: `latestTime` of the next day, or the next slot time of the item, the first of the two.
             let reminded = groups.orderedOpenItems(of: group).compactMap { open -> (
-                name: String, setting: FollowUpSetting, changed: Date?, stop: Date
+                itemID: ItemID, name: String, setting: FollowUpSetting, changed: Date?, stop: Date
             )? in
                 guard let item = itemOfID[open.itemID], let setting = item.followUp else { return nil }
                 let next = groups.doses[open.itemID]!.filter { $0 > slotInstant }.min()
-                return (item.name, setting, item.followUpChanged, min(latest, next ?? latest))
+                return (open.itemID, item.name, setting, item.followUpChanged, min(latest, next ?? latest))
             }
             guard !reminded.isEmpty else { continue }
-            let single = groups.single(of: group)
-            /// The names of the items that each instant reminds for. `shown` has every instant that an item reaches,
+            /// The items that each instant reminds for. `shown` has every instant that an item reaches,
             /// and `due` only the instants that still get a request.
-            var shown: [Date: [String]] = [:]
-            var due: [Date: [String]] = [:]
+            var shown: [Date: [(itemID: ItemID, name: String)]] = [:]
+            var due: [Date: [(itemID: ItemID, name: String)]] = [:]
             for item in reminded {
                 let step = Double(item.setting.interval.rawValue * 60)
                 // A dose before the last change can have follow-ups of earlier settings. Each interval is a multiple of
@@ -258,48 +316,39 @@ public struct FollowUpPlan: Hashable, Sendable {
                     // The instants only grow, so a later follow-up has no time left too.
                     guard item.stop > fireDate else { break }
                     // A delivered follow-up of an earlier setting can have this instant. It stays while its text is true.
-                    shown[fireDate, default: []].append(item.name)
+                    shown[fireDate, default: []].append((item.itemID, item.name))
                     guard counted < left, fireDate > item.changed ?? .distantPast else { continue }
                     counted += 1
                     guard fireDate > now, fireDate <= end else { continue }
-                    due[fireDate, default: []].append(item.name)
+                    // A snooze pauses the follow-ups of its group until its time (D090). They still count toward the limit.
+                    if let live, fireDate <= live.fireAt { continue }
+                    due[fireDate, default: []].append((item.itemID, item.name))
                 }
             }
-            func content(_ names: [String]) -> ReminderContent {
-                // `nil` when the user hides the names.
-                let shownNames = privacy == .showNames ? names : []
-                return ReminderContent(kind: .again, names: shownNames.isEmpty ? nil : shownNames, hasTakenAction: single != nil)
-            }
-            for (fireDate, names) in shown {
-                contents[group.identifier(at: fireDate, from: slotInstant)] = content(names)
+            for (fireDate, named) in shown {
+                contents[group.identifier(at: fireDate, from: slotInstant)] = request(.again, named, fireDate: fireDate).content
             }
             var future: [FollowUpRequest] = []
             for fireDate in due.keys.sorted() {
-                var userInfo = [
-                    ReminderRequest.seriesIDKey: group.seriesID,
-                    FollowUpRequest.plannedDateKey: group.dateText,
-                    FollowUpRequest.fireTimeKey: fireDate.formatted(.iso8601),
-                ]
-                // The action records only the dose that the request was made for, also after a plan change (D034).
-                if let single {
-                    userInfo[FollowUpRequest.itemIDKey] = single.itemID.rawValue.uuidString
-                    userInfo[FollowUpRequest.scheduleVersionIDKey] = single.versionID.rawValue.uuidString
-                }
+                let (content, userInfo) = request(.again, due[fireDate]!, fireDate: fireDate)
                 future.append(
                     FollowUpRequest(
                         identifier: group.identifier(at: fireDate, from: slotInstant), threadIdentifier: group.identifier,
-                        content: content(due[fireDate]!), userInfo: userInfo, fireDate: fireDate
+                        content: content, userInfo: userInfo, fireDate: fireDate
                     )
                 )
             }
             if !future.isEmpty { wanted.append(future) }
         }
         open = contents
+        standingSnoozes = standing
         hasUnreadable = !reminders.unreadable.isEmpty
         hasUnconfirmedChange = items.contains { $0.followUp != nil && $0.followUpChanged == .distantFuture }
-        requests = Self.share(
-            wanted, room: ReminderPlan.systemLimit - Self.reserve - reminders.requests.count, from: now
-        )
+        // A snooze is a request of the user, so it comes before the follow-ups in the room (D090).
+        let room = max(0, ReminderPlan.systemLimit - Self.reserve - reminders.requests.count)
+        let kept = Array(snoozeRequests.sorted { $0.fireDate < $1.fireDate }.prefix(room))
+        requests = (kept + Self.share(wanted, room: room - kept.count, from: now))
+            .sorted { ($0.fireDate, $0.identifier) < ($1.fireDate, $1.identifier) }
     }
 
     /// What a delivered series notification may say now: the items of its time and date that are active and have

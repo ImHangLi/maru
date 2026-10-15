@@ -155,6 +155,8 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 - 默认每个已确认时点一条提示，不无限追问。后续提示默认关闭，在每个项目的添加/编辑页单独设置，设置页也可一次改全部有时间的项目（D039、D079、D085）：次数（1、2、3、5 次或“直到记录”）和间隔（5、10、15、30 分钟或 1 小时）；各项目互不影响，同一时点、同一刻到点的后续提示合并为一条，只列出仍要提醒的项目；不同时点恰好同刻到点的后续提示不合并。“直到记录”也有上限：系统最多保留 64 条待发请求，App 不在后台运行，所以每个项目每个时点最多 12 条；中途修改设置也不超过 12 条，已发出的照算。后续提示在同一项目的下一个时点之前、且最晚到次日 01:00 之前发出，所以深夜的时点也有后续提示；设置中写明这个数字和时间，不宣称无限提醒。
 - 闹钟默认关闭，每个项目单独开启，设置页也可一次改全部有时间的项目（D085）；新项目从用户在设置页最后选的值开始，这是提醒方式，不是剂量或时间（§2.1 不变）（iOS 26 及以上，AlarmKit，D079；低版本不显示开关）：该项目的服药时点像系统闹钟一样响铃，静音和专注模式下也响。首次打开开关时请求闹钟权限；被拒绝则开关退回关闭，并说明和提供“打开设置”。已记录的剂量不响；开启闹钟的项目在该时点不再发普通通知，后续提示仍是通知；没有闹钟权限、低于 iOS 26，或系统未能排入闹钟时，仍发普通通知，不会漏提醒。闹钟只有一个项目时带“已服用”按钮，仍按 D034 校验身份，提交本地事务后才算已记录（§7.2）；多于一个项目时该按钮只打开 App。
 
+> Amendment (2026-10-16, D090): "Remind in 10 min" is a button of every reminder (spec 8.3). It makes one new reminder for the group (one time of day on one date), ten minutes later, naming every dose of the group that is still open. It stands in the App Group defaults and not in the database, because a snooze is not an intake state (spec 7.2). Until its time, the "Remind Again" follow-ups of that group wait, and later ones continue. A record or a skip of the last open dose ends it. It takes room in the limit of 64 before the follow-ups. After 01:00 on the day after the dose, it is not set. The alarm has no snooze button: its one secondary button stays "Taken" (one item) or "Open Maru" (several items).
+
 > Amendment (2026-10-16, D089): The alarm of an item that follows the device and has no day cycle is a repeating alarm of AlarmKit (one time of day on some weekdays), so it never runs out when the app does not open. A dose with a record before its time, a dose of a fixed zone, and a dose of a plan with a day cycle have one alarm for each date, for 28 days. At most 64 alarms are held, the repeating ones first. A dose that is due within 7 days and has no alarm because of this limit gives its item the normal reminder. The "Taken" button of a repeating alarm records today's dose when the dose time has come, with the checks of D034, and otherwise records nothing.
 - 同一时点可以合并提示，但不为合并移动用户的安排，也不表示药品被证明可同服。
 - 记录完成后不跳到下一个页面、不播放必须等待的动画，不让列表突然重排导致误点。
@@ -329,7 +331,7 @@ A delete of one item with its records, which the user asks for and confirms, is 
 
 前台收到提示时可根据当前数据库抑制重复展示；后台不拥有同样的任意执行保证。记录后删掉当前已交付通知，不能假装同时完成了对未来重复内容的动态修改。
 
-### 8.3 精确定位与旧通知
+### 8.3 精确定位与旧通知（组动作、跳过、10 分钟后提醒：D090）
 
 一次性通知可携带 occurrenceID。重复通知的 userInfo 是 seriesID + scheduleRevision，不能预写一个固定“今天的 occurrenceID”永远复用。
 
@@ -346,6 +348,8 @@ A delete of one item with its records, which the user asks for and confirms, is 
 > Amendment (2026-10-11, D034): A reminder or a follow-up for exactly one item has a "Taken" action. The system asks for an unlock first, then Maru records in the background. The action records only when the rules of this section give exactly one open dose of today. In every other case it records nothing, a notification says "Not recorded", and Maru opens Today when the user opens it (D081). A reminder for two or more items has no action.
 
 > Amendment (2026-10-11, D039): A follow-up of a dose of the day before has the "Taken" action until 01:00, and the action records that dose. The follow-up carries its plan date and its item, so Maru does not guess the date. After 01:00 the action records nothing, and a tap opens Today. Today still shows only the doses of today (D019).
+
+> Amendment (2026-10-16, D090): The rule "A reminder for two or more items has no action" of D034 and "组通知不提供盲记全组" above change. A reminder that names two or more items has "Take All" and "Skip All" only when "Show Names in Reminders" is on, because only then can the user see what the action records. It records every named dose that is still open. Each dose has the checks of D034 and D089 on its own: the plan of now still has its slot with its schedule version, its date is today in its own zone (for a follow-up also the day before until 01:00), and the stored dose is open. A dose that has a record stays, and a skip is never replaced. A dose that fails a check is not recorded, and the notice says how many were recorded. A first reminder records all of its doses or none: its revision covers the whole group. A reminder for one item has "Taken" and "Skip". Every reminder has "Remind in 10 min", which writes no record (spec 4, 7.2). With the names hidden, a reminder for several items has only "Remind in 10 min". A success is silent. D090 has the rules, the rare cases, and the tests T53 to T55.
 
 > Amendment (2026-10-14, D081): A tap on a reminder never shows a confirmation sheet. The tap always opens Today and records nothing. If some doses of the reminder are of today, Today scrolls to their rows. A dose of an earlier day is recorded from History. The "Taken" action is unchanged.
 
@@ -602,6 +606,9 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T50 | 宣传与实际构建 | 不声称库存、无限可靠、临床效果或没有实际实现的能力 |
 | T51 | 隔天一次 | 起始日及其后每隔一个日历日应服；夏令时、时区变化、漏服或跳过不改变节奏；非应服日今天和历史都不出现该项目；通知不在非应服日写出该项目；详情写明提醒只排到接下来 7 个应服日 |
 | T52 | 每隔几天与周期 | 天数和起始日由用户选定，App 不预选，未选定不能保存；自起始日起服 N 天、停 M 天循环（每 N 天一次是服 1 天、停 N−1 天）；夏令时、时区变化、漏服或跳过不改变节奏；停用日今天和历史都不出现该项目，通知不写出该项目；详情写明提醒只排到接下来 7 个应服日；数据库迁移后隔天一次的安排保持原节奏，旧备份可以恢复 |
+| T53 | 通知“全部已服用”（D090） | 只在点名两个及以上项目且显示名称的提醒上出现；记录所有被点名且仍未记录的剂量，每个剂量各自按 D034/D089 校验（方案版本、今天、仍未记录）；已有记录的保持不变，跳过不被覆盖；校验失败的不记录，通知写明记录了几个；隐藏名称时没有组动作；成功时静默 |
+| T54 | 通知“跳过”（D090） | 单项和组提醒都有；组提醒的跳过与“全部已服用”同样只在显示名称时出现；只记录未记录的剂量，不覆盖已服用或已跳过；超时或划掉通知不记录任何内容 |
+| T55 | “10 分钟后提醒”（D090） | 每组一个；该组的“再次提醒”到它的时间之前不发，之后的照常；记录或跳过该组最后一个未记录剂量后不再提醒；占用 64 条上限，先于后续提示；次日 01:00 之后不设置，并告知；不写任何记录 |
 
 ## 16. 交付与验收证据
 

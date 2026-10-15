@@ -20,17 +20,17 @@ struct MaruApp: App {
         #if DEBUG
         tapDelegate = ReminderTapDelegate(
             open: { [weak model] in model?.openReminder($0) },
-            take: { [weak model] in await model?.takeReminder($0) },
+            act: { [weak model] in await model?.performReminderAction($0, on: $1) },
             showToday: { [weak model] in model?.selectedTab = .today }
         )
         #else
         tapDelegate = ReminderTapDelegate(
             open: { [weak model] in model?.openReminder($0) },
-            take: { [weak model] in await model?.takeReminder($0) }
+            act: { [weak model] in await model?.performReminderAction($0, on: $1) }
         )
         #endif
         UNUserNotificationCenter.current().delegate = tapDelegate
-        // The "Taken" action of a reminder for one item (D034). The call does not wait for the system.
+        // The actions of a reminder (D034, D090). The call does not wait for the system.
         ReminderAction.register()
         // A tap on a gray capsule of the "Record Dose" widget runs in this process (D048).
         TakeDoseHook.install { try await AppModel.shared.takeFromWidget($0) }

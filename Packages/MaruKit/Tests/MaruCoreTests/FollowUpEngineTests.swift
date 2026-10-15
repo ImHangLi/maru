@@ -10,7 +10,7 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, ReminderPrivacyStor
     var closed: Set<OccurrenceKey> = []
     var pending: [String: [String: String]] = [:]
     var texts: [String: ReminderText] = [:]
-    private var actions: Set<String> = []
+    private var categories: [String: ReminderCategory] = [:]
     var shown: [String: ReminderText] = [:]
 
     func save(
@@ -42,7 +42,7 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, ReminderPrivacyStor
     }
 
     func followUpPlan(
-        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover
+        privacy: ReminderPrivacy, at now: Date, deviceTimeZone: NamedTimeZone, alarms: AlarmCover, snoozes: [SnoozeEntry]
     ) -> FollowUpPlan {
         FollowUpPlan(
             reminders: ReminderPlan(items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy),
@@ -52,7 +52,8 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, ReminderPrivacyStor
             closed: closed,
             now: now,
             deviceTimeZone: deviceTimeZone,
-            privacy: privacy
+            privacy: privacy,
+            snoozes: snoozes
         )
     }
 
@@ -62,15 +63,17 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, ReminderPrivacyStor
     func requestAuthorization() -> ReminderAuthorization { .authorized }
     func pendingRequests() -> [PendingReminder] {
         pending.map {
-            PendingReminder(identifier: $0.key, userInfo: $0.value, text: texts[$0.key], hasTakenAction: actions.contains($0.key))
+            PendingReminder(
+                identifier: $0.key, userInfo: $0.value, text: texts[$0.key],
+                presentation: categories[$0.key].map { ReminderPresentation(category: $0) }
+            )
         }
     }
     func add(_ request: ReminderRequest) {}
     func add(_ request: FollowUpRequest) {
         pending[RequestGeneration.base(of: request.identifier)] = request.userInfo
         texts[RequestGeneration.base(of: request.identifier)] = text(for: request.content)
-        actions.remove(RequestGeneration.base(of: request.identifier))
-        if request.content.hasTakenAction { actions.insert(RequestGeneration.base(of: request.identifier)) }
+        categories[RequestGeneration.base(of: request.identifier)] = request.content.category
     }
     func remove(identifiers: [String]) {
         identifiers.forEach { pending[$0] = nil }

@@ -154,7 +154,7 @@ struct ScenarioTests {
         try await p.addItem("Zinc", at: ["09:00"], followUp: again)
         await p.advance(to: "2026-10-15 09:16")
         let id = try #require(await p.center.shown.keys.first { $0.hasPrefix("followup|") })
-        try await p.takenFromNotification(id)
+        try await p.perform(.taken, on: id)
         await p.expectCorrect("after the action")
         #expect(await p.center.shown.isEmpty)
     }
@@ -164,7 +164,7 @@ struct ScenarioTests {
         try await p.addItem("Zinc", at: ["09:00"])
         await p.advance(to: "2026-10-15 09:01")
         let id = try #require(await p.center.shown.keys.first)
-        try await p.takenFromNotification(id)
+        try await p.perform(.taken, on: id)
         await p.expectCorrect("after the action")
     }
 
@@ -292,7 +292,7 @@ struct ScenarioTests {
         let p = try await phone("2026-10-15 11:00")
         try await p.addItem("Zinc", at: ["12:00"])
         await p.advance(to: "2026-10-15 12:01")
-        try await p.takenFromNotification(try #require(await p.center.shown.keys.first))
+        try await p.perform(.taken, on: try #require(await p.center.shown.keys.first))
         #expect(await p.center.shown.isEmpty)
         await p.expectCorrect("Taken action")
     }
@@ -381,7 +381,7 @@ struct ScenarioTests {
             let second = SimNotification(
                 identifier: id.replacingOccurrences(of: #"g\d{12}"#, with: newer ? "g999999999999" : "g000000000001", options: .regularExpression),
                 text: newer ? ReminderText(title: "Time to take", body: "Iron") : held.text, userInfo: held.userInfo,
-                hasTakenAction: held.hasTakenAction, threadIdentifier: nil, trigger: held.trigger
+                presentation: held.presentation, threadIdentifier: nil, trigger: held.trigger
             )
             await p.center.inject(second)
             p.terminate()
@@ -399,7 +399,7 @@ struct ScenarioTests {
         let filler = 64 - (await p.center.pending.count)
         for number in 0..<filler {
             await p.center.inject(SimNotification(
-                identifier: "other|\(number)", text: ReminderText(title: "x", body: "y"), userInfo: [:], hasTakenAction: false,
+                identifier: "other|\(number)", text: ReminderText(title: "x", body: "y"), userInfo: [:], presentation: nil,
                 threadIdentifier: nil, trigger: .instant(p.instant("2026-12-01 09:00").addingTimeInterval(Double(number)))
             ))
         }

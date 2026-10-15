@@ -2,38 +2,82 @@ import Foundation
 import MaruCore
 import UserNotifications
 
-/// The "Taken" action of a reminder that stands for exactly one item (spec 8.3, D034).
+/// The one registry of the notification categories of Maru, and their actions (spec 8.3, D034, D090).
+///
+/// `setNotificationCategories` replaces the whole set, so this is the only place that calls it, with every category.
 public enum ReminderAction {
-    /// The category of a request with the action. A request for two or more items has no category.
-    public static let categoryIdentifier = "reminder.single"
-    /// The `actionIdentifier` of the response when the user chooses "Taken".
-    public static let takenIdentifier = "reminder.taken"
-
-    /// Registers the category. Call it at each launch, before the system can deliver a response.
+    /// Registers every category. Call it at each launch, before the system can deliver a response.
     ///
-    /// On the iPhone the action needs an unlock, so a person who holds a locked iPhone cannot write a record.
+    /// On the iPhone a record action needs an unlock, so a person who holds a locked iPhone cannot write a record.
     /// On a Watch that the user wears, the action runs with the iPhone locked, and the database is readable
-    /// after the first unlock (D066).
-    /// It has no foreground option, so the system starts Maru in the background for the record.
+    /// after the first unlock (D066). "Remind in 10 min" writes no record, so it needs no unlock.
+    /// No action has a foreground option, so the system starts Maru in the background for it.
     public static func register(locale: Locale = .current) {
-        let taken = UNNotificationAction(
-            identifier: takenIdentifier,
-            title: String(
-                localized: "Taken",
-                bundle: .module,
-                locale: locale,
-                comment: "The action of a reminder for one item. It records the item as taken."
-            ),
-            options: [.authenticationRequired]
+        var categories = Set(ReminderCategory.allCases.map { category($0, locale: locale) })
+        // A notification of version 1.1 that the system already delivered still has the category `reminder.single`.
+        // Keep it with its one action, so that "Taken" stays on it. No new request has it (D090).
+        categories.insert(UNNotificationCategory(
+            identifier: legacySingleIdentifier,
+            actions: [action(.taken, in: .single, locale: locale)],
+            intentIdentifiers: [],
+            options: []
+        ))
+        UNUserNotificationCenter.current().setNotificationCategories(categories)
+    }
+
+    /// The only category of version 1.1.
+    static let legacySingleIdentifier = "reminder.single"
+
+
+    static func category(_ category: ReminderCategory, locale: Locale) -> UNNotificationCategory {
+        UNNotificationCategory(
+            identifier: category.rawValue,
+            actions: category.actions.map { action($0, in: category, locale: locale) },
+            intentIdentifiers: [],
+            options: []
         )
-        let category = UNNotificationCategory(
-            identifier: categoryIdentifier, actions: [taken], intentIdentifiers: [], options: []
+    }
+
+    static func action(_ kind: ReminderActionKind, in category: ReminderCategory, locale: Locale) -> UNNotificationAction {
+        let isGroup = category == .group
+        let title: String
+        switch kind {
+        case .taken:
+            title = isGroup
+                ? String(
+                    localized: "Take All", bundle: .module, locale: locale,
+                    comment: "The action of a reminder for several items. It records every open item that the reminder names as taken."
+                )
+                : String(
+                    localized: "Taken", bundle: .module, locale: locale,
+                    comment: "The action of a reminder for one item. It records the item as taken."
+                )
+        case .skip:
+            title = isGroup
+                ? String(
+                    localized: "Skip All", bundle: .module, locale: locale,
+                    comment: "The action of a reminder for several items. It records every open item that the reminder names as skipped."
+                )
+                : String(
+                    localized: "Skip", bundle: .module, locale: locale,
+                    comment: "The action of a reminder for one item. It records the item as skipped."
+                )
+        case .snooze:
+            title = String(
+                localized: "Remind in 10 min", bundle: .module, locale: locale,
+                comment: "The action of a reminder. It makes the reminder come again in ten minutes. It records nothing."
+            )
+        }
+        return UNNotificationAction(
+            identifier: kind.rawValue,
+            title: title,
+            // A record writes health data, so it needs an unlock. A snooze does not.
+            options: kind == .snooze ? [] : [.authenticationRequired]
         )
-        UNUserNotificationCenter.current().setNotificationCategories([category])
     }
 }
 
-/// A notification that tells the user that the "Taken" action recorded nothing (D034).
+/// A notification that tells the user that the action of a reminder recorded nothing, or not everything (D034, D090).
 ///
 /// The system runs the action in the background and removes the reminder. Maru can not come to the front
 /// by itself, so without this notification the user would see no result. It names no item (spec 10).
@@ -42,23 +86,44 @@ public enum ReminderAction {
 public enum ActionNotice {
     public static let identifier = "action|notRecorded"
 
-    /// Why the action recorded nothing (D089). The body says it in one line.
-    public enum Reason: Sendable {
-        /// The reminder does not match exactly one open dose of today: another day, an older plan, a dose with a record,
+    /// Why the action recorded nothing, or not everything (D089, D090). The body says it in one line.
+    public enum Reason: Sendable, Equatable {
+        /// The reminder does not match an open dose of today: another day, an older plan, a dose with a record,
         /// or a late delivery.
         case noMatch
         /// The database did not read or did not commit.
         case notSaved
+        /// A group action recorded some of the doses that the reminder names, and the others failed the checks of their own.
+        case partial(recorded: Int, of: Int)
+        /// "Remind in 10 min" found no group of today that it can remind again.
+        case snoozeFailed
     }
 
     public static func send(_ reason: Reason, locale: Locale = .current) async {
         let content = UNMutableNotificationContent()
-        content.title = String(
-            localized: "Not recorded",
-            bundle: .module,
-            locale: locale,
-            comment: "The title of the notification after the Taken action of a reminder recorded nothing."
-        )
+        content.title = switch reason {
+        case .partial:
+            String(
+                localized: "Partly recorded",
+                bundle: .module,
+                locale: locale,
+                comment: "The title of the notification after the Take All or Skip All action of a reminder recorded some doses and not all."
+            )
+        case .snoozeFailed:
+            String(
+                localized: "Reminder not set",
+                bundle: .module,
+                locale: locale,
+                comment: "The title of the notification after the Remind in 10 min action of a reminder could not set a new reminder."
+            )
+        case .noMatch, .notSaved:
+            String(
+                localized: "Not recorded",
+                bundle: .module,
+                locale: locale,
+                comment: "The title of the notification after the Taken action of a reminder recorded nothing."
+            )
+        }
         switch reason {
         case .noMatch:
             content.body = String(
@@ -66,6 +131,20 @@ public enum ActionNotice {
                 bundle: .module,
                 locale: locale,
                 comment: "The body of the notification after the Taken action of a reminder recorded nothing, because the reminder does not match exactly one open dose of today."
+            )
+        case let .partial(recorded, total):
+            content.body = String(
+                localized: "\(recorded) of \(total) recorded. Open Maru to check the rest.",
+                bundle: .module,
+                locale: locale,
+                comment: "The body of the notification after the Take All or Skip All action of a reminder recorded some doses and not all. The first placeholder is the number of doses recorded, the second is the number that the reminder names."
+            )
+        case .snoozeFailed:
+            content.body = String(
+                localized: "This reminder no longer matches a dose of today. Open Maru to see your plan.",
+                bundle: .module,
+                locale: locale,
+                comment: "The body of the notification after the Remind in 10 min action of a reminder could not set a new reminder, because the reminder does not match a dose of today or the time for reminders of that dose is over."
             )
         case .notSaved:
             content.body = String(

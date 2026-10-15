@@ -197,6 +197,21 @@ A string that names the iPhone has a second form for the iPad, with the same wor
 | 34 | History | Correction of a time | Time changed to %@ | 변경된 시간: %@ |
 | 35 | Footer | Item detail: every-other-day plan | Maru sets the reminders of the next 7 dose days each time you open it. | Maru를 열 때마다 다음 7번의 복용일에 맞춰 미리 알림을 설정해요. |
 
+## Reminder actions (D090)
+
+The eight strings below are new in `Packages/MaruKit/Sources/MaruNotifications/Resources/Localizable.xcstrings`. They are the buttons of a reminder and two notices. No native speaker read them. The reviewer checks the same three things as above, and that the buttons fit on one line of a lock screen notification.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Take All | 全部已服用 | すべて服用済み | Todo tomado | Alle eingenommen | 모두 복용함 |
+| Skip | 跳过 | スキップ | Omitir | Überspringen | 건너뛰기 |
+| Skip All | 全部跳过 | すべてスキップ | Omitir todo | Alle überspringen | 모두 건너뛰기 |
+| Remind in 10 min | 10分钟后提醒 | 10分後に再通知 | Recordar en 10 min | In 10 Min. erinnern | 10분 후 다시 알림 |
+| Partly recorded | 部分已记录 | 一部のみ記録 | Registrado en parte | Teilweise erfasst | 일부만 기록됨 |
+| %lld of %lld recorded. Open Maru to check the rest. | 已记录 %lld/%lld 项。打开 Maru 看看其余的。 | %lld/%lld件を記録しました。残りはMaruを開いて確認してください。 | %lld de %lld registradas. Abre Maru para revisar el resto. | %lld von %lld erfasst. Öffne Maru, um den Rest zu prüfen. | %lld/%lld개를 기록했습니다. Maru를 열어 나머지를 확인해 주세요. |
+| Reminder not set | 没能设置提醒 | リマインダーを設定できませんでした | Recordatorio no programado | Erinnerung nicht gesetzt | 알림을 설정하지 못했습니다 |
+| This reminder no longer matches a dose of today. Open Maru to see your plan. | 这条提醒已不对应今天的任何一次服用。打开 Maru 查看你的计划。 | このリマインダーは、今日の記録と一致しなくなりました。Maruを開いて予定を確認してください。 | Este recordatorio ya no corresponde a una toma de hoy. Abre Maru para ver tu plan. | Diese Erinnerung passt nicht mehr zu einer Einnahme von heute. Öffne Maru, um deinen Plan zu sehen. | 이 알림은 더 이상 오늘의 복용과 맞지 않습니다. Maru를 열어 계획을 확인해 주세요. |
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.

@@ -29,6 +29,9 @@ actor AppStore {
     private let wantedAlarms = WantedAlarms()
     /// The durable counter of the generations of requests and alarms. It lives in the App Group (D086).
     private let generations = DefaultsGenerationCounter(defaults: AppGroup.defaults)
+    /// The "Remind in 10 min" requests of the user. The follow-up plan owns them (D090). They live in the App Group defaults,
+    /// so they need no database.
+    private let snoozes = DefaultsSnoozeStore(defaults: AppGroup.defaults)
     /// Which items an alarm covers in the run that is going on (D079). Each run sets it again, so no run uses the cover of an earlier run.
     private let cover = OSAllocatedUnfairLock(initialState: AlarmCover.none)
     /// The input of the notification engines: which items an alarm covers in the run that is going on.
@@ -115,12 +118,18 @@ actor AppStore {
             source: try open(),
             center: SystemReminderCenter(),
             privacy: DefaultsReminderPrivacy(),
+            snoozes: snoozes,
             alarms: coverNow,
             generations: generations,
             migration: DefaultsLegacyMigration(name: "followUp")
         )
         self.followUps = followUps
         return followUps
+    }
+
+    /// Stores a "Remind in 10 min" request. The next run of the follow-up engine turns it into a reminder (D090).
+    func addSnooze(_ entry: SnoozeEntry) {
+        snoozes.add(entry)
     }
 
     /// The alarm engine of the process. It is `nil` before iOS 26, where AlarmKit does not exist (D079).
@@ -276,7 +285,7 @@ actor AppStore {
     }
 
     /// The open store for a record transaction. An open failure becomes `RecordFailure.storage`.
-    private func openForRecord() throws(RecordFailure) -> LocalStore {
+    func openForRecord() throws(RecordFailure) -> LocalStore {
         do throws(StorageError) {
             return try open()
         } catch {
