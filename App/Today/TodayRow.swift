@@ -60,6 +60,8 @@ struct TodayRow: View {
                 showsTimeEditor: $showsTimeEditor
             )
         }
+        // The row is 4 points lower than the list default, at the maintainer's request (D087). The touch areas keep 44 points.
+        .padding(.vertical, -2)
         // The first action of each edge runs with a full swipe. Undo needs a tap on its button.
         .swipeActions(edge: .leading) {
             switch look {
