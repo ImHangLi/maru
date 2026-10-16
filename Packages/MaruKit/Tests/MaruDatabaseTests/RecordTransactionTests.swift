@@ -142,9 +142,9 @@ struct RecordTransactionTests {
         #expect(try await store.count("intakeEvent") == 3)
     }
 
-    /// N1 (D089): after an undo and a plan edit on the same day, the stored occurrence keeps the old schedule version.
-    /// The action of a reminder of the new plan must not record into it, for a series reminder and for a follow-up.
-    @Test func takenActionAfterUndoAndAPlanEditRecordsNothing() async throws {
+    /// N1 (D089, D095): after an undo and a plan edit on the same day, an action records only into the dose of the plan of now.
+    /// A follow-up that carries the old schedule version records nothing.
+    @Test func takenActionAfterUndoAndAPlanEditRecordsOnlyTheNewPlan() async throws {
         let store = try LocalStore(directory: directory.url)
         let seed = try await store.seed()
         let taken = Fixtures.event(for: seed.occurrence, .taken)
@@ -178,14 +178,16 @@ struct RecordTransactionTests {
             ],
             triggerWeekday: nil
         )
-        for reminder in [series, followUp] {
+        // The undo left no record, so the open dose follows the new plan (D095). The follow-up of the old plan records
+        // nothing, and the reminder of the new plan records the dose once.
+        for (reminder, count) in [(followUp, 0), (series, 1)] {
             let result = try await store.recordOpenDoses(
                 for: reminder, action: .taken, at: Fixtures.instant("2026-03-01T00:20:00Z"),
                 deviceTimeZone: Fixtures.shanghai, observedTimeZone: nil
             )
-            #expect(result.recorded.isEmpty)
+            #expect(result.recorded.count == count)
         }
-        #expect(try await store.count("intakeEvent") == 2)
+        #expect(try await store.count("intakeEvent") == 3)
     }
 
     @Test func sameEventIDWithOtherContentIsRejected() async throws {

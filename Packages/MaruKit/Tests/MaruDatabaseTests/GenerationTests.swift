@@ -176,7 +176,7 @@ struct GenerationTests {
         #expect(try await store.count("intakeEvent") == 0)
     }
 
-    @Test func occurrenceWithAnUndoneRecordKeepsItsPlan() async throws {
+    @Test func occurrenceWithAnUndoneRecordFollowsThePlan() async throws {
         var (store, _, schedule, morning, _) = try await prepare()
         let before = try #require(try await generate(store, at: early).first { $0.slotID == morning && $0.plannedDate == today })
         let taken = Fixtures.event(for: before, .taken)
@@ -188,9 +188,10 @@ struct GenerationTests {
         try await store.save(schedule)
         let occurrences = try await generate(store, at: noon)
 
-        // The history of the occurrence names the plan that the user saw, so the plan stays.
-        #expect(occurrences.filter { $0.slotID == morning && $0.plannedDate == today } == [before])
-        try await store.expectConsistent(before, events: [taken, undo], status: .unrecorded)
+        // An undo leaves no record, so the open dose moves to the new time and keeps its ID (D095).
+        let after = try #require(occurrences.first { $0.slotID == morning && $0.plannedDate == today })
+        #expect(after.id == before.id && after.plannedTime == Fixtures.time(9, 30))
+        try await store.expectConsistent(after, events: [taken, undo], status: .unrecorded)
         #expect(try await store.count("occurrence") == 6)
     }
 

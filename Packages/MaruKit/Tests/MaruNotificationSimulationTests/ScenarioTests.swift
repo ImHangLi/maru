@@ -61,6 +61,24 @@ struct ScenarioTests {
         await p.expectCorrect("an early record of the day after tomorrow is outside the window, so no check of it")
     }
 
+    /// The maintainer's iPhone, 2026-10-16: a record, an undo, and then a time edit gave no alarm at the new time (D095).
+    @Test func aTimeEditAfterAnUndoRingsAtTheNewTimeToday() async throws {
+        let p = try await phone("2026-10-15 12:00")
+        try await p.addItem("Zinc", at: ["12:20"], alarm: true)
+        await p.advance(to: "2026-10-15 12:25")
+        try await p.record("Zinc")
+        try await p.changeTime("Zinc", to: "12:30")
+        await p.advance(to: "2026-10-15 12:31")
+        try await p.record("Zinc")
+        try await p.undo("Zinc")
+        try await p.changeTime("Zinc", to: "12:35")
+        await p.expectCorrect("undo, then a time edit")
+        let before = await p.alarmCenter.rang.count
+        await p.advance(to: "2026-10-15 12:36")
+        p.expectCorrectDeliveries()
+        #expect(await p.alarmCenter.rang.count == before + 1, "no alarm at the new time of an open dose")
+    }
+
     // MARK: Edits
 
     @Test func renameTimeEditAddTimeArchiveRestoreDeleteAndPause() async throws {

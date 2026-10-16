@@ -28,8 +28,8 @@ private actor FollowUpPhone: FollowUpSource, FollowUpCenter, ReminderPrivacyStor
         schedules = schedules.map { $0.id == schedule.id ? schedule : $0 }
     }
 
-    func store(_ occurrence: Occurrence, hasEvents: Bool) {
-        stored.append(StoredOccurrence(occurrence: occurrence, hasEvents: hasEvents))
+    func store(_ occurrence: Occurrence, isRecorded: Bool) {
+        stored.append(StoredOccurrence(occurrence: occurrence, isRecorded: isRecorded))
     }
 
     func record(_ key: OccurrenceKey) {
@@ -151,7 +151,7 @@ struct FollowUpEngineTests {
                 timeZone: Fixtures.shanghai,
                 scheduleVersionID: schedule.versions[0].id
             ),
-            hasEvents: true
+            isRecorded: true
         )
         // Then the slot moves to 09:00 from today. D019 keeps the stored occurrence at 08:00.
         try schedule.changeTime(of: schedule.slots[0].id, to: Fixtures.time(9), effectiveFrom: today)
@@ -181,7 +181,7 @@ struct FollowUpEngineTests {
                 timeZone: Fixtures.newYork,
                 scheduleVersionID: undone.versions[0].id
             ),
-            hasEvents: true
+            isRecorded: true
         )
 
         // 07:40 in Chicago, 08:40 in New York. The New York follow-up passed, and the Chicago one comes at 08:30.

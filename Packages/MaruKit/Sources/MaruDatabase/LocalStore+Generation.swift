@@ -11,7 +11,7 @@ extension LocalStore {
     /// A stored occurrence with no intake event and a date that is not in the past, in its stored time zone
     /// and in the time zone of the plan, follows the plan of now:
     /// the run updates its planned time, its time zone, and its schedule version, and keeps its ID.
-    /// This is the one write that changes a stored occurrence. An occurrence with an intake event never changes (spec 7.2).
+    /// This is the one write that changes a stored occurrence. An occurrence with a record never changes (spec 7.2, D095).
     /// `save(_:)` still rejects a change to a stored occurrence.
     /// The run deletes nothing.
     ///
@@ -50,14 +50,14 @@ extension LocalStore {
                 db,
                 sql: """
                     SELECT occurrence.*,
-                        EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id) AS hasEvents
+                        EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id) AS isRecorded
                     FROM scheduleSlot CROSS JOIN occurrence
                         ON occurrence.slotID = scheduleSlot.id AND occurrence.plannedDate BETWEEN ? AND ?
                     ORDER BY occurrence.rowid
                     """,
                 arguments: [try dates[0].text, try dates[dates.count - 1].text]
             ).map { row in
-                StoredOccurrence(occurrence: try Self.decodeOccurrence(row), hasEvents: try row.decode(forColumn: "hasEvents"))
+                StoredOccurrence(occurrence: try Self.decodeOccurrence(row), isRecorded: try row.decode(forColumn: "isRecorded"))
             }
             let outcome = generation.outcome(items: items, schedules: schedules, stored: stored)
             for occurrence in outcome.created {
@@ -77,14 +77,14 @@ extension LocalStore {
     }
 
     /// Gives a stored occurrence another planned time, time zone, and schedule version. The ID and the key stay.
-    /// An occurrence with an intake event does not change: the write is `StorageError.conflict`.
+    /// An occurrence with a taken or skipped record does not change: the write is `StorageError.conflict`.
     /// The domain already leaves such an occurrence out, so this condition is a second guard (spec 7.2).
     static func replan(_ occurrence: Occurrence, _ db: Database) throws {
         try db.execute(
             sql: """
                 UPDATE occurrence SET plannedTime = ?, timeZone = ?, scheduleVersionID = ?
                 WHERE id = ? AND slotID = ? AND plannedDate = ?
-                    AND NOT EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
+                    AND NOT EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id)
                 """,
             arguments: [
                 occurrence.plannedTime.text, occurrence.timeZone.identifier, occurrence.scheduleVersionID.text,

@@ -122,7 +122,7 @@ Owner decision.
 - No other change from the last style pass: no bold type and no larger icons.
 - My List uses the same cards as Today, with the group title inside its card. The system list put the group label on a different left edge from the page title, and the owner reported that as a misalignment.
 
-## D019 · 2026-10-11 · Occurrence window and time zone policy
+## D019 · 2026-10-11 · Occurrence window and time zone policy (the freeze after an undo replaced by D095)
 
 Agent decisions from issue #3 (PR #16), after two review rounds by a different model.
 
@@ -1643,7 +1643,7 @@ What the fake still cannot model:
 
 Not verified: the app build on this Mac (CI builds it; the change to `AppStore` and `AppModel` is only compiled there) and the behavior on the iPhone. Device check: install the build, open it, save an item with a time at 00:00, record a dose, take an as-needed dose, and read the live log (`uvx pymobiledevice3 syslog live --udid <UDID>`). The lines must be `Reminder run: ...` and none must say `failed` or `did not load`.
 
-## D089 · 2026-10-16 · Phase A of the reminder plan: nine findings of the Codex cross-check, fixed or narrowed
+## D089 · 2026-10-16 · Phase A of the reminder plan: nine findings of the Codex cross-check, fixed or narrowed (the old version of an undone dose in N1 changed by D095)
 
 Agent decision, branch `leon/phase-a-correctness`. It follows the audit and the cross-check of 2026-10-16 (`~/Documents/Research/maru/2026-10-16-reminder-and-tracker-audit-claude.md`, section F, and the findings N1 to N9). Each finding was read in the code first. Each has a test. I saw the test fail before the fix for N1, N5, N7, N9, N4, and the day-cycle plan (for the last two, with the longer reach switched off). For N2, N3, and N8 I did not run the test against `main`: the failure follows from the code. It changes spec 4 (alarm), 8.1, and 8.3 by amendment. It narrows part of D047 and D079 (the reach of dated requests and of alarms).
 
@@ -1778,3 +1778,19 @@ On the maintainer's iPhone, the alarm rang, "Stop" worked, and the check button 
 
 On the maintainer's Lock Screen, the rectangular "Today" widget showed a large title line, a plain line, a small "Today" under them (the label of the bar), and the bar. It looked unlike the system widgets next to it. It now follows the layout of the system widgets such as Batteries: a symbol and the bold first line ("Evening 9:00 PM"), one plain line ("2 left"), and a bar with no label. The widget still shows no names (D048).
 
+## D095 · 2026-10-16 · An undone dose follows a time edit of the same day
+
+Agent decision, after a bug on the maintainer's iPhone (TestFlight 1.1.0 build 10). It replaces the clause "an undo also counts" of D019. Spec 7.2 is unchanged: it forbids a second dose only when the dose has a record.
+
+The bug: a daily item with the alarm on. The user recorded today's dose, undid it, and changed the time to a later minute of today. No alarm and no notification came at the new time. After the undo, the stored occurrence still had an intake event, so D019 kept it at its old time. The alarm plan builds today's alarm from the stored occurrence, so the alarm was at the old time, which was over. An alarm item has no banner (D079), so nothing came. An item with no alarm got its notification from the weekly request of the new time, but Today showed the old time, and the "Taken" action recorded nothing (D089, N1).
+
+The rule: a stored occurrence of today or later follows the plan while it has no current taken or skipped record (a row in `occurrenceState`). An undo deletes that row, so the dose moves to the new time and keeps its ID. A dose with a record never changes. The store guard of `replan` uses the same condition.
+
+Effects:
+
+- Today, the alarm, the notification, the follow-ups, and the "Taken" action all use the new time and the new schedule version of an undone dose.
+- The History timeline shows the undone action under the dose at its new time and amount. An undone action is not a record, so no record changes.
+
+Test: `aTimeEditAfterAnUndoRingsAtTheNewTimeToday` failed before the fix. Two tests of the old rule now state the new rule: `occurrenceWithAnUndoneRecordFollowsThePlan` and `takenActionAfterUndoAndAPlanEditRecordsOnlyTheNewPlan`.
+
+Not verified: the alarm on a real iPhone. Device check: alarm on, record, undo, change the time to two minutes later; the alarm rings at the new time, and Today shows the new time.

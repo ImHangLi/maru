@@ -52,14 +52,14 @@ public struct PlannedOccurrence: Hashable, Sendable {
     }
 }
 
-/// An occurrence from the store, and whether its history has an intake event of any kind.
+/// An occurrence from the store, and whether it has a current taken or skipped record. An undone record does not count (D095).
 public struct StoredOccurrence: Hashable, Sendable {
     public let occurrence: Occurrence
-    public let hasEvents: Bool
+    public let isRecorded: Bool
 
-    public init(occurrence: Occurrence, hasEvents: Bool) {
+    public init(occurrence: Occurrence, isRecorded: Bool) {
         self.occurrence = occurrence
-        self.hasEvents = hasEvents
+        self.isRecorded = isRecorded
     }
 }
 
@@ -136,13 +136,13 @@ public struct OccurrenceGeneration: Sendable {
     /// a second occurrence on one date (T17).
     ///
     /// - A plan with no stored occurrence gives a new occurrence.
-    /// - A stored occurrence follows the plan while it has no intake event and its date is not in the past.
-    ///   It keeps its ID. So an edit in the middle of a day moves a dose that is not recorded.
-    /// - A stored occurrence with an intake event, or with a date before today, never changes (spec 7.2).
+    /// - A stored occurrence follows the plan while it has no record and its date is not in the past.
+    ///   It keeps its ID. So an edit in the middle of a day moves a dose that is not recorded, also after an undo (D095).
+    /// - A stored occurrence with a record, or with a date before today, never changes (spec 7.2).
     ///   A date is before today when it is in the past in the stored time zone or in the time zone of the plan,
     ///   so a change of the zone does not move an occurrence of a day that is over.
-    /// - A stored occurrence with an intake event stays in the result when the plan no longer has it.
-    ///   One with no event is left out, and it stays in the store.
+    /// - A stored occurrence with a record stays in the result when the plan no longer has it.
+    ///   One with no record is left out, and it stays in the store.
     /// - The schedules of an archived item plan nothing (spec 8.5).
     ///
     /// - Parameter stored: The stored occurrences on `candidateDates`.
@@ -160,14 +160,14 @@ public struct OccurrenceGeneration: Sendable {
                 continue
             }
             let isPast = [existing.occurrence.timeZone, plan.timeZone].contains { plan.plannedDate < LocalDate(now, in: $0) }
-            let occurrence = existing.hasEvents || isPast ? existing.occurrence : plan.occurrence(id: existing.occurrence.id)
+            let occurrence = existing.isRecorded || isPast ? existing.occurrence : plan.occurrence(id: existing.occurrence.id)
             if occurrence != existing.occurrence {
                 outcome.replanned.append(occurrence)
             }
             outcome.occurrences.append(occurrence)
         }
         outcome.occurrences += stored.map(\.occurrence).filter { occurrence in
-            unplanned[occurrence.key]?.hasEvents == true
+            unplanned[occurrence.key]?.isRecorded == true
                 && OccurrenceWindow(at: now, in: occurrence.timeZone).contains(occurrence.plannedDate)
         }
         // Occurrences with the same instant keep the order of the plan.

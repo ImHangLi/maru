@@ -68,8 +68,7 @@ struct DoseGroups {
             )
         }
         // The occurrence window (yesterday to tomorrow) uses the stored occurrences, as the Today screen does.
-        // A stored occurrence with an intake event keeps its time after a schedule edit (D019), so its reminders
-        // stay at that time.
+        // A stored occurrence with a record keeps its time after a schedule edit (D019, D095). An open one follows the plan.
         let window = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
             .outcome(items: items, schedules: reminding, stored: stored)
             .occurrences
