@@ -65,4 +65,4 @@ Report a security problem as [SECURITY.md](SECURITY.md) describes.
 
 ## License
 
-[MIT](LICENSE)
+Copyright 2026 Hang Li. All rights reserved.
