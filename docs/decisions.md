@@ -1770,3 +1770,7 @@ The maintainer saw empty future months (November to January) on the graph and as
 
 Reason: an empty future reads as missing data, and a new user saw more empty months than days. The right edge is now always today, the place where the eye looks for the newest record.
 
+## D093 · 2026-10-16 · An alarm button stops the alarm
+
+On the maintainer's iPhone, the alarm rang, "Stop" worked, and the check button did nothing visible. A secondary alarm button with the custom behavior runs its intent and leaves the alarm alerting: the app must stop it. The "Taken" intent and the "Open Maru" intent now carry the alarm ID and stop the alarm first. The "Taken" intent still records through the same checks as the "Taken" action of a notification (D034, D079).
+
