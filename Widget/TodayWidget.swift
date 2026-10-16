@@ -77,27 +77,33 @@ private struct LockScreenToday: View {
                 }
                 .gaugeStyle(.accessoryCircularCapacity)
             } else {
+                // The layout of the system Lock Screen widgets, such as Batteries: a symbol and a bold first line,
+                // one plain line, and a bar with no label (D094).
                 VStack(alignment: .leading, spacing: 2) {
-                    if total == 0 {
-                        Text("Nothing Planned Today").font(.headline)
-                    } else if let slot {
-                        HStack(spacing: 4) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "pills.fill").widgetAccentable()
+                        if total == 0 {
+                            Text("Nothing Planned Today")
+                        } else if let slot {
                             Text(slot.part.title)
                             Text(slot.time.formatted(.rowTime(in: day.timeZone)))
+                        } else {
+                            Text("All done")
                         }
-                        .font(.headline)
+                    }
+                    .font(.headline)
+                    if let slot {
                         Text("\(slot.openCount) left")
-                    } else {
-                        Text("All done").font(.headline)
-                        if let next = day.nextTime {
-                            Text("Next \(next.formatted(.rowTime(in: day.timeZone)))")
-                        }
+                    } else if total > 0, let next = day.nextTime {
+                        Text("Next \(next.formatted(.rowTime(in: day.timeZone)))")
                     }
                     if total > 0 {
-                        Gauge(value: Double(day.takenCount), in: 0...Double(total)) { Text("Today") }
+                        Gauge(value: Double(day.takenCount), in: 0...Double(total)) { EmptyView() }
                             .gaugeStyle(.accessoryLinearCapacity)
+                            .labelsHidden()
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             }
