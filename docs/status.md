@@ -9,6 +9,7 @@ Maru was developed in an older private repository. Issue numbers, pull request n
 - The app and the package build. CI builds and tests the package, builds the app for the iOS Simulator, and builds the Watch app for the watchOS Simulator.
 - Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, optional follow-up reminders, and as-needed items.
 - The app has six languages (D059): English, zh-Hans, ja, es, de, and ko. The translation is not reviewed by a native speaker yet (`docs/localization-review.md`). Nobody saw it on a display.
+- Settings has a "Language" row (D097). It shows the current app language and opens the iOS Settings page of Maru, where iOS sets the language. Nobody saw it on a display.
 - The design rules are in `docs/design.md`. Native SwiftUI components only (D026).
 - Maru does not integrate with Apple Health in V1 (D022).
 - An "every other day" schedule is in code (D036). Its reminders are dated requests for the next 7 due dates, and they need a check on a real iPhone.

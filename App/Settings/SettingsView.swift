@@ -8,6 +8,7 @@ struct SettingsView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.openURL) private var openURL
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     @State private var showsNames = true
     @State private var sharesStatistics = false
@@ -39,6 +40,15 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.menu)
                     .tint(Color.primary)
+                    // iOS sets the app language on the Settings page of Maru (D097).
+                    Button {
+                        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+                    } label: {
+                        LabeledContent("Language") {
+                            Text(verbatim: Self.languageName)
+                        }
+                    }
+                    .rowText()
                 }
                 if model.analyticsIsAvailable {
                     Section {
@@ -91,6 +101,13 @@ struct SettingsView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { model.readNotificationPermission() }
         }
+    }
+
+    /// The name of the language that the app uses, in that language, for example "English" or "日本語".
+    private static var languageName: String {
+        let identifier = Bundle.main.preferredLocalizations.first ?? "en"
+        let locale = Locale(identifier: identifier)
+        return locale.localizedString(forIdentifier: identifier)?.capitalized(with: locale) ?? identifier
     }
 }
 

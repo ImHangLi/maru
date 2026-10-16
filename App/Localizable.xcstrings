@@ -4621,6 +4621,41 @@
         }
       }
     },
+    "Language" : {
+      "comment" : "Settings: a row that opens the iOS Settings page of Maru, where iOS sets the app language. The current language name follows it.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprache"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Idioma"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "言語"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "언어"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "语言"
+          }
+        }
+      }
+    },
     "Last 30 Days" : {
       "comment" : "Item detail: the title of the section with the counts of 30 days. Summary sheet: a choice of the period.",
       "localizations" : {
