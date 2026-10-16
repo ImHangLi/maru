@@ -1806,4 +1806,3 @@ Effects:
 - Version 1.0.0 stays in review with its "Open source" line, so the review does not start again. The version 1.1.0 text has no such line.
 - The repository stays public for now, because private macOS CI minutes cost money. `SECURITY.md` and the GitHub social image stay.
 - `CONTRIBUTING.md` and the contact link of the issue form are removed. The README invites no contributions.
-- `LICENSE` and `SECURITY.md` are unchanged. The maintainer decides about them separately.
