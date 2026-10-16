@@ -3101,7 +3101,7 @@
       }
     },
     "Delete Item…" : {
-      "comment" : "Item detail and archived list: the button that asks to delete the item with its records.",
+      "comment" : "Item detail, archived list, and the long-press menu of a Today row and a My Items tile: the button that asks to delete the item with its records.",
       "localizations" : {
         "de" : {
           "stringUnit" : {

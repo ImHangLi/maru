@@ -323,7 +323,7 @@ Agent detail:
 - My Items reads the plans when the page shows, not at launch, so the startup path does not load the schedules (spec §9).
 - The record mark of a History row is gone: the words say the action. So no symbol changes state in History.
 
-## D033 · 2026-10-11 · Shorter record correction and archive, and delete of an item
+## D033 · 2026-10-11 · Shorter record correction and archive, and delete of an item (the places of "Delete Item…" changed by D098)
 
 Agent decision under the owner's direction: match Apple Health Medications, with simpler flows. The gap study `docs/research/2026-10-11-apple-health-gap.md` found three flows that were not simpler.
 
@@ -1814,3 +1814,12 @@ Maintainer decision. It replaces "No language row" of D023.
 - The "Display" section of Settings has a "Language" row. Its value is the name of the language that the app uses, in that language, for example "English" or "日本語". The name comes from `Bundle.main.preferredLocalizations` and `Locale`.
 - A tap opens the iOS Settings page of Maru (`UIApplication.openSettingsURLString`). iOS shows its per-app language choice there.
 - Maru has no language choice of its own. Reasons: Apple does not support a switch in the app, a switch needs a restart, and pending notifications and widgets keep the old language.
+
+## D098 · 2026-10-16 · "Delete Item…" in the long-press menus
+
+Maintainer decision. It adds places to the "Delete Item…" clause of D033.
+
+- The long-press menu of a Today row, of an as-needed row on Today, and of a My Items tile has "Delete Item…" as the last entry, after "Archive…".
+- The entry is red (destructive role) and opens the same one confirmation as the other places. The swipe rule of D033 does not apply: a context menu does not remove the row before the alert.
+- Reason: a user who wanted to delete in one step looked for it there.
+- The entry reuses the translated string. It adds no domain code and no store code.

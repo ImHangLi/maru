@@ -206,6 +206,9 @@ private struct ItemTile: View {
             Button("Archive…", systemImage: "archivebox") {
                 model.askToEnd(.archive, itemID: entry.id, name: entry.name)
             }
+            Button("Delete Item…", systemImage: "trash", role: .destructive) {
+                model.askToEnd(.delete, itemID: entry.id, name: entry.name)
+            }
         }
         .accessibilityValue(entry.remindersOff ? Text("Reminders off") : Text(verbatim: ""))
         .accessibilityHint(Text("Opens the details"))
