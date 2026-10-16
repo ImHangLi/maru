@@ -1770,6 +1770,10 @@ The maintainer saw empty future months (November to January) on the graph and as
 
 Reason: an empty future reads as missing data, and a new user saw more empty months than days. The right edge is now always today, the place where the eye looks for the newest record.
 
+## D093 · 2026-10-16 · An alarm button stops the alarm
+
+On the maintainer's iPhone, the alarm rang, "Stop" worked, and the check button did nothing visible. A secondary alarm button with the custom behavior runs its intent and leaves the alarm alerting: the app must stop it. The "Taken" intent and the "Open Maru" intent now carry the alarm ID and stop the alarm first. The "Taken" intent still records through the same checks as the "Taken" action of a notification (D034, D079).
+
 ## D094 · 2026-10-16 · The rectangular Lock Screen widget follows the system layout
 
 On the maintainer's Lock Screen, the rectangular "Today" widget showed a large title line, a plain line, a small "Today" under them (the label of the bar), and the bar. It looked unlike the system widgets next to it. It now follows the layout of the system widgets such as Batteries: a symbol and the bold first line ("Evening 9:00 PM"), one plain line ("2 left"), and a bar with no label. The widget still shows no names (D048).

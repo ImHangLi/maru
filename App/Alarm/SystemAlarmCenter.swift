@@ -65,10 +65,10 @@ struct SystemAlarmCenter: AlarmCenter {
         if let taken = request.taken {
             // One item, alone at its time: the button records the dose with the checks of the "Taken" action (D034).
             secondary = AlarmButton(text: "Taken", textColor: .white, systemImageName: "checkmark")
-            intent = TakeFromAlarmIntent(userInfo: taken)
+            intent = TakeFromAlarmIntent(userInfo: taken, alarmID: request.id)
         } else {
             secondary = AlarmButton(text: "Open Maru", textColor: .white, systemImageName: "arrow.up.forward.app")
-            intent = OpenFromAlarmIntent()
+            intent = OpenFromAlarmIntent(alarmID: request.id)
         }
         let alert = AlarmPresentation.Alert(
             title: LocalizedStringResource(stringLiteral: title),
@@ -142,10 +142,13 @@ struct TakeFromAlarmIntent: LiveActivityIntent {
     var itemID: String
     @Parameter(title: "Dose")
     var scheduleVersionID: String
+    @Parameter(title: "Alarm")
+    var alarmID: String
 
     init() {}
 
-    init(userInfo: [String: String]) {
+    init(userInfo: [String: String], alarmID: UUID) {
+        self.alarmID = alarmID.uuidString
         seriesID = userInfo[ReminderRequest.seriesIDKey] ?? ""
         plannedDate = userInfo[FollowUpRequest.plannedDateKey] ?? ""
         fireTime = userInfo[FollowUpRequest.fireTimeKey] ?? ""
@@ -155,6 +158,8 @@ struct TakeFromAlarmIntent: LiveActivityIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        // A custom button does not end the alarm by itself: without this stop, the alarm keeps ringing (D093).
+        stopAlarm(alarmID)
         // A repeating alarm holds no date. The dose is today's, when its time has come (D089).
         let resolvedDate = plannedDate.isEmpty
             ? NamedTimeZone(device: .current, at: .now).flatMap {
@@ -182,11 +187,25 @@ struct OpenFromAlarmIntent: LiveActivityIntent {
     static var isDiscoverable: Bool { false }
     static var openAppWhenRun: Bool { true }
 
+    @Parameter(title: "Alarm")
+    var alarmID: String
+
     init() {}
 
-    func perform() async throws -> some IntentResult {
-        .result()
+    init(alarmID: UUID) {
+        self.alarmID = alarmID.uuidString
     }
+
+    func perform() async throws -> some IntentResult {
+        stopAlarm(alarmID)
+        return .result()
+    }
+}
+
+/// Ends the ringing alarm of a custom button. A custom button leaves the alarm alerting until the app stops it (D093).
+private func stopAlarm(_ id: String) {
+    guard #available(iOS 26, *), let id = UUID(uuidString: id) else { return }
+    try? AlarmManager.shared.stop(id: id)
 }
 
 /// The "Stop" button of an alarm. The app runs the reminders a moment later, so a repeating alarm that an edit made obsolete
