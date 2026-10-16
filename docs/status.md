@@ -2,7 +2,7 @@
 
 Updated: 2026-10-16.
 
-Maru was developed in a private repository before it became public. Issue numbers, pull request numbers, and commit IDs in `docs/decisions.md` and `docs/research/` refer to that private history. This repository starts from one clean commit.
+Maru was developed in an older private repository. Issue numbers, pull request numbers, and commit IDs in `docs/decisions.md` and `docs/research/` refer to that older history. This repository starts from one clean commit.
 
 ## Current state
 

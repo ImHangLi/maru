@@ -45,7 +45,7 @@ On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and de
 
 ## Top bar
 
-The top bar is a dark island that hangs from the top edge, in the middle of the page, as wide as its content. It is solid, so it stays readable over a picture, and it does not change when the page scrolls. Below 420 px it is the full width. It holds the logo, the language button, the GitHub button, and the "Download" button. The tokens that start with `--bar-` in `style.css` set its colors.
+The top bar is a dark island that hangs from the top edge, in the middle of the page, as wide as its content. It is solid, so it stays readable over a picture, and it does not change when the page scrolls. Below 420 px it is the full width. It holds the logo, the language button, and the "Download" button. The tokens that start with `--bar-` in `style.css` set its colors.
 
 ## Icons
 

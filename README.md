@@ -37,7 +37,7 @@
   <b>History.</b> You see each day that you recorded.
 </p>
 
-- Free and open source. No subscription and no ads.
+- Free. No subscription and no ads.
 - No account.
 - Your records stay on your device. Usage statistics are optional: see [PRIVACY.md](PRIVACY.md).
 - Six languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
@@ -49,8 +49,6 @@ Use a Mac with Xcode 27 or later.
 
 ```sh
 brew install xcodegen
-git clone https://github.com/ImHangLi/maru.git
-cd maru
 xcodegen generate
 open Maru.xcodeproj
 ```
@@ -61,9 +59,9 @@ Run the tests of the core logic:
 swift test --package-path Packages/MaruKit
 ```
 
-## Contribute
+## Security
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before you send code. Report a security problem as [SECURITY.md](SECURITY.md) describes.
+Report a security problem as [SECURITY.md](SECURITY.md) describes.
 
 ## License
 

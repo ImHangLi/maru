@@ -1794,3 +1794,14 @@ Effects:
 Test: `aTimeEditAfterAnUndoRingsAtTheNewTimeToday` failed before the fix. Two tests of the old rule now state the new rule: `occurrenceWithAnUndoneRecordFollowsThePlan` and `takenActionAfterUndoAndAPlanEditRecordsOnlyTheNewPlan`.
 
 Not verified: the alarm on a real iPhone. Device check: alarm on, record, undo, change the time to two minutes later; the alarm rings at the new time, and Today shows the new time.
+
+## D096 · 2026-10-16 · Maru is closed source
+
+Maintainer decision. Maru is closed source. The site, the App Store text, and the repository docs make no open-source claim and do not link to the code.
+
+Effects:
+
+- The site has no GitHub button, no "Source code" link, no FAQ answer about open source, and no source link in `llms.txt`. "Free and open source" is now "Free" in each language.
+- The App Store descriptions of version 1.0.0 have no "Open source" line.
+- `CONTRIBUTING.md` and the contact link of the issue form are removed. The README invites no contributions.
+- `LICENSE` and `SECURITY.md` are unchanged. The maintainer decides about them separately.
