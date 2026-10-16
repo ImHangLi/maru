@@ -71,7 +71,7 @@
   ],
   "trust_title": "Gut zu wissen",
   "trust": [
-    "Kostenlos und Open Source",
+    "Kostenlos",
     "Ohne Konto",
     "Deine Aufzeichnungen bleiben auf deinen Geräten"
   ],
@@ -79,7 +79,6 @@
     "faq": "Fragen",
     "support": "Support",
     "privacy": "Datenschutz",
-    "source": "Quellcode",
     "language": "Sprache",
     "advice": "Maru gibt keinen medizinischen Rat."
   },
@@ -147,10 +146,6 @@
       [
         "Welche Sprachen spricht Maru?",
         "Englisch, vereinfachtes Chinesisch, Japanisch, Spanisch, Deutsch und Koreanisch."
-      ],
-      [
-        "Ist Maru Open Source?",
-        "Ja. Der Code steht unter der MIT-Lizenz auf <a href=\"{github}\">GitHub</a>."
       ]
     ]
   },
@@ -188,6 +183,5 @@
       "iPhone and iPad backups": "iPhone- und iPad-Backups",
       "Changes": "Änderungen"
     }
-  },
-  "github": "Maru auf GitHub"
+  }
 }

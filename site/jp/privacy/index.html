@@ -45,7 +45,6 @@
 <a class="brand" href="/jp/"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
 <nav class="nav-links" aria-label="メイン">
 <details class="lang-menu"><summary class="icon-btn" aria-label="言語: 日本語" data-tip="言語"><svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12C8 18 12 22 12 22C12 22 16 18 16 12C16 6 12 2 12 2C12 2 8 6 8 12Z"/><path d="M21 15H3"/><path d="M21 9H3"/></svg></summary><ul><li><a href="/privacy/" lang="en" hreflang="en">English</a></li><li><a href="/cn/privacy/" lang="zh-Hans" hreflang="zh-Hans">简体中文</a></li><li><a href="/jp/privacy/" lang="ja" hreflang="ja" aria-current="page">日本語<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 14L8.5 17.5L19 6.5"/></svg></a></li><li><a href="/es/privacy/" lang="es" hreflang="es">Español</a></li><li><a href="/de/privacy/" lang="de" hreflang="de">Deutsch</a></li><li><a href="/kr/privacy/" lang="ko" hreflang="ko">한국어</a></li></ul></details>
-<a class="icon-btn" href="https://github.com/ImHangLi/maru" aria-label="GitHubのMaru" data-tip="GitHub"><svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 20.5675C6.57143 21.7248 3.71429 20.5675 2 17"/><path d="M10 22V18.7579C10 18.1596 10.1839 17.6396 10.4804 17.1699C10.6838 16.8476 10.5445 16.3904 10.1771 16.2894C7.13394 15.4528 5 14.1077 5 9.64606C5 8.48611 5.38005 7.39556 6.04811 6.4464C6.21437 6.21018 6.29749 6.09208 6.31748 5.9851C6.33746 5.87813 6.30272 5.73852 6.23322 5.45932C5.95038 4.32292 5.96871 3.11619 6.39322 2.02823C6.39322 2.02823 7.27042 1.74242 9.26698 2.98969C9.72282 3.27447 9.95075 3.41686 10.1515 3.44871C10.3522 3.48056 10.6206 3.41384 11.1573 3.28041C11.8913 3.09795 12.6476 3 13.5 3C14.3524 3 15.1087 3.09795 15.8427 3.28041C16.3794 3.41384 16.6478 3.48056 16.8485 3.44871C17.0493 3.41686 17.2772 3.27447 17.733 2.98969C19.7296 1.74242 20.6068 2.02823 20.6068 2.02823C21.0313 3.11619 21.0496 4.32292 20.7668 5.45932C20.6973 5.73852 20.6625 5.87813 20.6825 5.9851C20.7025 6.09207 20.7856 6.21019 20.9519 6.4464C21.6199 7.39556 22 8.48611 22 9.64606C22 14.1077 19.8661 15.4528 16.8229 16.2894C16.4555 16.3904 16.3162 16.8476 16.5196 17.1699C16.8161 17.6396 17 18.1596 17 18.7579V22"/></svg></a>
 </nav>
 </div></header>
 <main id="main" class="prose">
@@ -91,6 +90,8 @@
 <ul>
 <li><code>has_reminder</code>: yes if the plan has a reminder time. Not the kind of plan, the days, the times, or how many times.
 </li>
+<li><code>has_alarm</code>, <code>has_follow_up</code>: yes if you turned on the alarm, or "Remind Again", for the item. Not the number of reminders or the time between them.
+</li>
 <li><code>has_amount</code>, <code>has_note</code>, <code>has_photo</code>: yes or no. Not the amount, the note, or the photo.
 </li>
 <li><code>name_source</code>, for a new item: <code>typed</code>, <code>suggestion</code>, or <code>scan</code>. Not the name.
@@ -106,11 +107,11 @@
 </li>
 <li><code>daily_usage_summary</code>: one summary for each day that you used the app. Maru sends it the next time that you open the app on a later day, never from the background. It has <code>day_index</code>, the day number since the statistics started, and yes-or-no flags for that day: <code>used_record</code> (recorded a dose), <code>used_history</code> (opened History), <code>used_notification</code> (opened the app from a reminder or used a reminder action), <code>used_widget</code> (used a widget), <code>used_reminder_action</code> (recorded from the "Taken" action of a reminder), <code>used_skip</code>, <code>used_undo</code>, <code>used_correction</code> (changed an earlier record), <code>used_my_items</code>, <code>used_item_detail</code>, and <code>used_settings</code>. It also has <code>app_opens</code>, how often the app came to the front that day, as <code>0</code>, <code>1</code>, <code>2_3</code>, <code>4_6</code>, or <code>7_plus</code>, <code>active_items</code>, the number of your active items, as <code>0</code>, <code>1</code>, <code>2_3</code>, <code>4_6</code>, or <code>7_plus</code>, and <code>has_widget</code>, yes if a Maru widget is on your Home Screen. It has no time and no count of doses.
 </li>
-<li><code>core_error</code>: <code>operation</code>, the operation that failed: <code>save</code>, <code>read</code>, <code>schedule</code> (setting a reminder), or <code>scan</code> (the label scanner). <code>code</code>, one of eight fixed codes: <code>locked</code>, <code>corrupt</code>, <code>newer_schema</code>, <code>migration_failed</code>, <code>failed</code>, <code>too_many</code>, <code>not_set</code>, or <code>not_confirmed</code>.
+<li><code>core_error</code>: <code>operation</code>, the operation that failed: <code>save</code>, <code>read</code>, <code>schedule</code> (setting a reminder), or <code>scan</code> (the label scanner). <code>code</code>, one of ten fixed codes: <code>locked</code>, <code>corrupt</code>, <code>newer_schema</code>, <code>migration_failed</code>, <code>failed</code>, <code>too_many</code>, <code>not_set</code>, <code>not_confirmed</code>, <code>invalid_data</code> (a stored record did not load, so the reminder run stopped), or <code>row_skipped</code> (a stored record did not load, and Maru skipped it). With the last two, <code>rule</code> names the rule that the record broke, as one fixed word, for example <code>version_order</code>. It never holds a name, a dose, a time, or an ID.
 </li>
 <li><code>notification_permission</code>: <code>state</code>, the notification permission: <code>not_asked</code>, <code>allowed</code>, <code>denied</code>, or <code>quiet</code>. <code>previous</code>, the permission that Maru sent before, or <code>unknown</code>. Maru sends it once when the statistics start, with <code>previous</code> = <code>unknown</code>, and after that only when the permission changes.
 </li>
-<li><code>setting_changed</code>: a new value of one setting: <code>remind_again</code> (<code>off</code>, <code>1</code>, <code>2</code>, <code>3</code>, <code>5</code>, or <code>until_recorded</code>) with <code>remind_again_minutes</code> (<code>5</code>, <code>10</code>, <code>15</code>, <code>30</code>, or <code>60</code>), <code>show_names</code> (yes or no), or <code>app_color</code> (one of the eight color names).
+<li><code>setting_changed</code>: a new value of one setting: <code>show_names</code> (yes or no), <code>app_color</code> (one of the eight color names), <code>all_alarm</code> (yes or no, the "Alarm" switch for all items), <code>all_remind_again</code> (<code>off</code>, <code>1</code>, <code>2</code>, <code>3</code>, <code>5</code>, or <code>until_recorded</code>), or <code>all_remind_again_minutes</code> (<code>5</code>, <code>10</code>, <code>15</code>, <code>30</code>, or <code>60</code>).
 </li>
 <li><code>data_action</code>: <code>action</code>, one of <code>export</code>, <code>backup</code>, or <code>restore</code>, and <code>result</code>, one of <code>done</code>, <code>failed</code>, <code>cancelled</code>, <code>invalid_file</code>, <code>newer_file</code>, or <code>not_confirmed</code>. Not the file or its content.
 </li>
@@ -149,12 +150,17 @@
 <p>Settings has a "Send Feedback" button. It opens a web form of Tally (tally.so) in the system browser. Nothing happens before you tap it, and Maru sends no data of the app to the form. What you write there, and your email address if you give one, goes to Tally and to the maintainer. Tally's privacy policy applies to that page, and the page can use its own cookies. Please leave health details out of a message.</p>
 <h2 lang="ja">通知</h2>
 <p>Reminders are local notifications. iOS schedules and shows them on your device, and they do not go through a server. To hide reminder text on the Lock Screen, turn off previews in the iOS notification settings.</p>
+<p>An alarm (iOS 26 and later, when you turn on "Alarm" for an item) also runs on your device, through Apple's AlarmKit, and does not go through a server. It shows the item names on the Lock Screen, unless you turn off "Show Names in Reminders" in Settings.</p>
 <h2 lang="ja">書き出しとバックアップのファイル</h2>
-<p>Settings has "Export Records", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first two.</p>
+<p>Settings has "Export Records", "Share Medication List", "Share Summary…", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first four.</p>
 <ul>
 <li>The record export is a CSV file. It has your item names, your amounts, and your records.
 </li>
-<li>The backup is a full copy of the database and of three settings: the app color, the names in reminders, and "Remind Again". It does not include the item photos.
+<li>The medication list is a PDF file. It has the name, form, amount, times, and note of each active item, as you typed them.
+</li>
+<li>The summary is a PDF file. It has the name of each item that you choose, and how many planned doses you took, skipped, and did not record in the period that you choose. Maru counts it on your device.
+</li>
+<li>The backup is a full copy of the database and of two settings: the app color and the names in reminders. The database holds the "Remind Again" and alarm choices of each item. The backup does not include the item photos.
 </li>
 <li>The files are not encrypted. Anyone with a file can read it.
 </li>
@@ -174,7 +180,7 @@
 </main>
 <footer class="site-footer">
 <div class="footer-inner">
-<ul class="footer-links"><li><a href="/jp/faq/">よくある質問</a></li><li><a href="/jp/support/">サポート</a></li><li><a href="/jp/privacy/">プライバシー</a></li><li><a href="https://github.com/ImHangLi/maru">ソースコード</a></li></ul>
+<ul class="footer-links"><li><a href="/jp/faq/">よくある質問</a></li><li><a href="/jp/support/">サポート</a></li><li><a href="/jp/privacy/">プライバシー</a></li></ul>
 <nav class="langs" aria-label="言語"><ul><li><a href="/privacy/" lang="en" hreflang="en" data-suggest="Read in English" data-close="Close">English</a></li><li><a href="/cn/privacy/" lang="zh-Hans" hreflang="zh-Hans" data-suggest="查看简体中文版" data-close="关闭">简体中文</a></li><li><a href="/jp/privacy/" lang="ja" hreflang="ja" data-suggest="日本語で見る" data-close="閉じる" aria-current="page">日本語</a></li><li><a href="/es/privacy/" lang="es" hreflang="es" data-suggest="Ver en español" data-close="Cerrar">Español</a></li><li><a href="/de/privacy/" lang="de" hreflang="de" data-suggest="Auf Deutsch lesen" data-close="Schließen">Deutsch</a></li><li><a href="/kr/privacy/" lang="ko" hreflang="ko" data-suggest="한국어로 보기" data-close="닫기">한국어</a></li></ul></nav>
 <p>Maruは医療上のアドバイスを行いません。</p>
 </div>

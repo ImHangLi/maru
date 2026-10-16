@@ -71,7 +71,7 @@
   ],
   "trust_title": "Bueno saberlo",
   "trust": [
-    "Gratis y de código abierto",
+    "Gratis",
     "Sin cuenta",
     "Tus registros se quedan en tus dispositivos"
   ],
@@ -79,7 +79,6 @@
     "faq": "Preguntas",
     "support": "Soporte",
     "privacy": "Privacidad",
-    "source": "Código fuente",
     "language": "Idioma",
     "advice": "Maru no da consejos médicos."
   },
@@ -147,10 +146,6 @@
       [
         "¿En qué idiomas está Maru?",
         "En inglés, chino simplificado, japonés, español, alemán y coreano."
-      ],
-      [
-        "¿Maru es de código abierto?",
-        "Sí. El código está en <a href=\"{github}\">GitHub</a> con la licencia MIT."
       ]
     ]
   },
@@ -188,6 +183,5 @@
       "iPhone and iPad backups": "Copias de seguridad del iPhone y el iPad",
       "Changes": "Cambios"
     }
-  },
-  "github": "Maru en GitHub"
+  }
 }

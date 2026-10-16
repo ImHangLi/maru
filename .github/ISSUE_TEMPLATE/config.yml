@@ -1,5 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Security issue
-    url: https://github.com/ImHangLi/maru/security/advisories/new
-    about: Report it privately. See SECURITY.md.

@@ -531,8 +531,6 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 }
 .nots { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; }
 .nots li { text-wrap: balance; background: var(--surface); border-radius: var(--radius-full); padding: var(--space-3) var(--space-5); font-weight: var(--fw-medium); box-shadow: var(--shadow-card); text-align: center; }
-.nots a { display: inline-flex; align-items: center; gap: var(--space-2); color: inherit; text-decoration: none; transition: transform var(--dur-fast) var(--ease-smooth), opacity var(--dur-fast) var(--ease-smooth); }
-.nots a:active { transform: scale(var(--press)); }
 .closer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-5); margin: 0; font-size: var(--fs-sm); font-weight: var(--fw-semibold); }
 .closer-links a { display: inline-block; transition: transform var(--dur-fast) var(--ease-smooth), opacity var(--dur-fast) var(--ease-smooth); }
 .closer-links a:active { transform: scale(var(--press)); }
@@ -609,7 +607,7 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
 /* Reduced motion: no movement, no blur, and each state shows at once. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .nots a:active, .closer-links a:active, .site-footer a:active { transform: none; }
+  .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .closer-links a:active, .site-footer a:active { transform: none; }
   .icon-btn[data-tip]::after { filter: none; transform: translate(-50%, 0); }
   /* A screen of the hero phone still fades in and out, with no movement. */
   .device-push, .device-sheet { transform: none; opacity: 0; }

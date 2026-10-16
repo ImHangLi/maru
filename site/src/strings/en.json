@@ -71,7 +71,7 @@
   ],
   "trust_title": "Good to know",
   "trust": [
-    "Free and open source",
+    "Free",
     "No account",
     "Your records stay on your devices"
   ],
@@ -79,7 +79,6 @@
     "faq": "FAQ",
     "support": "Support",
     "privacy": "Privacy",
-    "source": "Source code",
     "language": "Language",
     "advice": "Maru gives no medical advice."
   },
@@ -147,10 +146,6 @@
       [
         "Which languages does Maru speak?",
         "English, Simplified Chinese, Japanese, Spanish, German, and Korean."
-      ],
-      [
-        "Is Maru open source?",
-        "Yes. The code is on <a href=\"{github}\">GitHub</a> under the MIT license."
       ]
     ]
   },
@@ -177,6 +172,5 @@
     ],
     "binding": "",
     "headings": {}
-  },
-  "github": "Maru on GitHub"
+  }
 }

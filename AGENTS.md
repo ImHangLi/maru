@@ -15,8 +15,6 @@ When you work for the maintainer (called "the owner" in older records):
 - A test on the maintainer's iPhone needs the maintainer. Notification behavior needs a real device (spec §8, §14 A).
 - Run each issue in a subagent with its own Git worktree (D008).
 
-When you work for another contributor, follow `CONTRIBUTING.md`, and do not make a maintainer decision.
-
 ## Project layout
 
 - `project.yml`: the XcodeGen definition of the app. `Maru.xcodeproj` is generated and ignored by Git. Change `project.yml`, then run `xcodegen generate`. Do not edit the `.xcodeproj` by hand.

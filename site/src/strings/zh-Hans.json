@@ -71,7 +71,7 @@
   ],
   "trust_title": "你可以放心",
   "trust": [
-    "免费、开源",
+    "免费",
     "无需注册",
     "记录只留在你自己的设备上"
   ],
@@ -79,7 +79,6 @@
     "faq": "常见问题",
     "support": "支持",
     "privacy": "隐私",
-    "source": "源代码",
     "language": "语言",
     "advice": "Maru 不提供医疗建议。"
   },
@@ -147,10 +146,6 @@
       [
         "Maru 支持哪些语言？",
         "英语、简体中文、日语、西班牙语、德语和韩语。"
-      ],
-      [
-        "Maru 是开源的吗？",
-        "是的。代码以 MIT 许可证公开在 <a href=\"{github}\">GitHub</a> 上。"
       ]
     ]
   },
@@ -188,6 +183,5 @@
       "iPhone and iPad backups": "iPhone 与 iPad 备份",
       "Changes": "变更"
     }
-  },
-  "github": "GitHub 上的 Maru"
+  }
 }
