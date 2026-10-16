@@ -88,14 +88,14 @@ extension LocalStore {
                     db,
                     sql: """
                         SELECT occurrence.*,
-                            EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id) AS hasEvents
+                            EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id) AS isRecorded
                         FROM scheduleSlot CROSS JOIN occurrence
                             ON occurrence.slotID = scheduleSlot.id AND occurrence.plannedDate BETWEEN ? AND ?
                         ORDER BY occurrence.rowid
                         """,
                     arguments: [try dates[0].text, try dates[dates.count - 1].text]
                 ).map { row in
-                    StoredOccurrence(occurrence: try decodeOccurrence(row), hasEvents: try row.decode(forColumn: "hasEvents"))
+                    StoredOccurrence(occurrence: try decodeOccurrence(row), isRecorded: try row.decode(forColumn: "isRecorded"))
                 }
                 let outcome = generation.outcome(items: items, schedules: schedules, stored: stored)
                 let storedIDs = Set(stored.map(\.occurrence.id))

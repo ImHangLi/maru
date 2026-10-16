@@ -16,14 +16,14 @@ private struct Shelf {
         let generation = OccurrenceGeneration(now: Fixtures.instant(now), deviceTimeZone: device)
         let outcome = generation.outcome(items: [item], schedules: [schedule], stored: Array(stored.values))
         for occurrence in outcome.created + outcome.replanned {
-            stored[occurrence.key] = StoredOccurrence(occurrence: occurrence, hasEvents: false)
+            stored[occurrence.key] = StoredOccurrence(occurrence: occurrence, isRecorded: false)
         }
         return outcome
     }
 
-    /// The occurrence now has an intake event.
+    /// The occurrence now has a record.
     mutating func record(_ occurrence: Occurrence) {
-        stored[occurrence.key] = StoredOccurrence(occurrence: occurrence, hasEvents: true)
+        stored[occurrence.key] = StoredOccurrence(occurrence: occurrence, isRecorded: true)
     }
 }
 

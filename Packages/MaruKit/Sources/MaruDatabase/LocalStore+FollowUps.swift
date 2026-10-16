@@ -59,8 +59,7 @@ extension LocalStore: FollowUpSource {
             db,
             sql: """
                 SELECT occurrence.*,
-                    EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id) AS hasEvents,
-                    EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id) AS isClosed
+                    EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id) AS isRecorded
                 FROM scheduleSlot CROSS JOIN occurrence
                     ON occurrence.slotID = scheduleSlot.id AND occurrence.plannedDate BETWEEN ? AND ?
                 ORDER BY occurrence.rowid
@@ -75,8 +74,9 @@ extension LocalStore: FollowUpSource {
             do {
                 try Self.named(.occurrenceRow) {
                     let occurrence = try Self.decodeOccurrence(row)
-                    stored.append(StoredOccurrence(occurrence: occurrence, hasEvents: try row.decode(forColumn: "hasEvents")))
-                    if try row.decode(forColumn: "isClosed") as Bool { closed.insert(occurrence.key) }
+                    let isRecorded: Bool = try row.decode(forColumn: "isRecorded")
+                    stored.append(StoredOccurrence(occurrence: occurrence, isRecorded: isRecorded))
+                    if isRecorded { closed.insert(occurrence.key) }
                 }
             } catch let error as DecodeRule {
                 DecodeFaults.skipped(error.rule)
