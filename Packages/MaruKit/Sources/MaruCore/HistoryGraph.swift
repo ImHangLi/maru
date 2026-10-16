@@ -3,8 +3,9 @@ import Foundation
 /// The calendar of the graph on the history page (D041). One column is one week, and one row is one weekday,
 /// from the first weekday of the user. Time runs from left to right.
 ///
-/// The graph grows with use: 13 weeks from the first day, 26 weeks when 13 are full, then 52 weeks. After
-/// 52 weeks it shows the last 52 weeks, and it moves one column each week. Older days stay in the timeline.
+/// The graph grows with use: 13 weeks, 26 weeks when 13 are full, then 52 weeks. The last column is always
+/// the week of today, so the graph shows no future weeks (D092). Days before the first day have no record.
+/// After 52 weeks it moves one column each week. Older days stay in the timeline.
 public struct HistoryGraph: Hashable, Sendable {
     /// The scale steps in weeks. The graph takes the next step on the first day of a week that does not fit.
     public static let steps = [13, 26, 52]
@@ -26,7 +27,7 @@ public struct HistoryGraph: Hashable, Sendable {
         let used = thisWeek.days(since: firstWeek) / 7 + 1
         let weeks = Self.steps.first { used <= $0 } ?? Self.steps[Self.steps.count - 1]
         self.weeks = weeks
-        self.start = used <= weeks ? firstWeek : thisWeek.adding(days: -7 * (weeks - 1))
+        self.start = thisWeek.adding(days: -7 * (weeks - 1))
         self.today = today
         self.firstDay = firstDay
     }

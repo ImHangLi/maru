@@ -137,7 +137,7 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 
 > Amendment (2026-10-16, D091): A past dose with no record can be marked "Skipped" in place. An archived item keeps its planned doses with no record in History, in the graph, and in the export, up to the day before its archive. A row shows the planned time, the amount, and a mark on a replaced action. The item detail has counts of 30 days (taken, skipped, no record) and the full log of the item, also for an archived item. A graph, a strip, and a summary count a planned dose of today only when its time came.
 
-页面顶部是一张方格图（D041）：每天一格，每列一周；颜色按当天计划剂量中已服的比例分三级，跳过不算已服，按需项目不计。没有标题、计数或连续天数。跨度随使用增长：13 周、26 周、52 周；满一年后显示最近 52 周，更早的日子仍在下方的时间线里。点按或拖动选中一天，时间线滚到那一天。
+页面顶部是一张方格图（D041）：每天一格，每列一周；颜色按当天计划剂量中已服的比例分三级，跳过不算已服，按需项目不计。没有标题、计数或连续天数。跨度随使用增长：13 周、26 周、52 周；最右一列总是本周，不显示未来的周（D092）；满一年后显示最近 52 周，更早的日子仍在下方的时间线里。点按或拖动选中一天，时间线滚到那一天。
 
 ### P06 设置与反馈
 
