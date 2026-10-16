@@ -96,6 +96,9 @@ private struct AsNeededItemRow: View {
             Button("Archive…", systemImage: "archivebox") {
                 model.askToEnd(.archive, itemID: row.itemID, name: row.look.name)
             }
+            Button("Delete Item…", systemImage: "trash", role: .destructive) {
+                model.askToEnd(.delete, itemID: row.itemID, name: row.look.name)
+            }
         }
     }
 

@@ -100,6 +100,9 @@ struct TodayRow: View {
             Button("Archive…", systemImage: "archivebox") {
                 model.askToEnd(.archive, itemID: entry.look.itemID, name: entry.look.name)
             }
+            Button("Delete Item…", systemImage: "trash", role: .destructive) {
+                model.askToEnd(.delete, itemID: entry.look.itemID, name: entry.look.name)
+            }
         }
     }
 
