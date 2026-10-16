@@ -624,7 +624,7 @@ Not done, and why:
 
 Tests (D016): four new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A record and an archive with the generation from before a restore are refused and change nothing. A name with a comma, a quotation mark, and a line break stays one CSV field, and a text that starts like a formula gets an apostrophe.
 
-## D041 · 2026-10-11 · History graph (scroll of the timeline to a day replaced by D054)
+## D041 · 2026-10-11 · History graph (scroll of the timeline to a day replaced by D054, start of the graph replaced by D092)
 
 Owner decision, with agent detail. It brings the passive history heatmap of D006 forward from milestone B. It changes spec 3 P05.
 
@@ -1763,4 +1763,10 @@ Cost and limits:
 Tests: `TrackerTests` (3), `HistoryTests.archivedItemKeepsItsNoRecordDays`, `UpgradeTests.theTrackerColumnsLoadAndAnAsNeededDoseKeepsItsAmount`. The tests that expected the old migration list or used `v7` as a newer migration use `v7` and `v8`. The `replace` test checks the archive time.
 
 Not verified: the app code (SwiftUI views, the PDF writer `Report.pdf`, the summary sheet, the Lock Screen widget). Nobody built the app on this Mac, and CI builds it. Device checks: take an as-needed dose with an amount and look at the second line on Today, History, and the export; take one on a later day and read "Yesterday, ..."; skip a past "No record" dose from History (swipe and long press); archive an item with a plan, wait a day, and see its "No record" days before the archive in History and in the graph; open an archived item from the archived list and scroll "All Records" to its first day; two items with the same name in History; "Share Medication List" and "Share Summary…" (the PDF layout in English and one more language, the share sheet, an item switched off, no "Missed"); the Lock Screen widget in light, dark, and a Focus; the offer after a first save (also with the permission prompt of a first install, and after "Not Now").
+
+## D092 · 2026-10-16 · The History graph ends at this week
+
+The maintainer saw empty future months (November to January) on the graph and asked for the best choice. The graph now ends at the week of today, like a contribution graph, and grows to the left: 13, 26, then 52 weeks, as before. Days before the first day stay empty.
+
+Reason: an empty future reads as missing data, and a new user saw more empty months than days. The right edge is now always today, the place where the eye looks for the newest record.
 
