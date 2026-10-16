@@ -173,7 +173,7 @@ Not added: Critical Alerts (Apple grants this entitlement only on request, and s
 
 Agent decision, after the study in `docs/research/2026-10-11-healthkit-medications-api.md`. An app can only read the medications that the user allows and their dose events. It cannot write a dose, and it cannot read schedule times. So Maru cannot be a faster front end for Health. Option 2 of D021 is closed. An optional read-only name import stays a later candidate. It needs a device test of the entitlement first.
 
-## D023 · 2026-10-11 · Settings sheet and preference storage (display settings removed by D026 and D032, foreground rule replaced by D027, no-names rule replaced by D029, feedback row added by D037) (test notification removed by D076)
+## D023 · 2026-10-11 · Settings sheet and preference storage (display settings removed by D026 and D032, foreground rule replaced by D027, no-names rule replaced by D029, feedback row added by D037) (test notification removed by D076) (language row added by D097)
 
 Agent decisions from issue #11.
 
@@ -1806,3 +1806,11 @@ Effects:
 - Version 1.0.0 stays in review with its "Open source" line, so the review does not start again. The version 1.1.0 text has no such line.
 - The repository stays public for now, because private macOS CI minutes cost money. `SECURITY.md` and the GitHub social image stay.
 - `CONTRIBUTING.md` and the contact link of the issue form are removed. The README invites no contributions.
+
+## D097 · 2026-10-16 · A Language row opens the iOS Settings page of Maru
+
+Maintainer decision. It replaces "No language row" of D023.
+
+- The "Display" section of Settings has a "Language" row. Its value is the name of the language that the app uses, in that language, for example "English" or "日本語". The name comes from `Bundle.main.preferredLocalizations` and `Locale`.
+- A tap opens the iOS Settings page of Maru (`UIApplication.openSettingsURLString`). iOS shows its per-app language choice there.
+- Maru has no language choice of its own. Reasons: Apple does not support a switch in the app, a switch needs a restart, and pending notifications and widgets keep the old language.
