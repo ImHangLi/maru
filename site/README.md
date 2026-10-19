@@ -155,6 +155,8 @@ The command needs Google Chrome on macOS. It draws each card as an HTML page wit
 
 The site is a Cloudflare Worker with static assets. `wrangler.toml` is in `site/`, and `.assetsignore` keeps the sources out of the upload.
 
+`BingSiteAuth.xml` verifies the site in Bing Webmaster Tools. Keep it in the upload.
+
 ```sh
 python3 site/build.py
 cd site && npx wrangler deploy
@@ -163,7 +165,7 @@ cd site && npx wrangler deploy
 After a deploy, check these addresses. Each must answer 200, or the redirect that the list names.
 
 ```sh
-for p in / /faq/ /privacy/ /support/ /cn/ /jp/ /kr/ /es/ /de/ /sitemap.xml /robots.txt /llms.txt; do curl -s -o /dev/null -w "%{http_code} $p\n" https://maru.day$p; done
+for p in / /faq/ /privacy/ /support/ /cn/ /jp/ /kr/ /es/ /de/ /sitemap.xml /robots.txt /llms.txt /BingSiteAuth.xml; do curl -s -o /dev/null -w "%{http_code} $p\n" https://maru.day$p; done
 curl -sI https://maru.day/privacy.html | head -3      # 301 to /privacy/
 curl -sI https://maru.day/zh-hans/ | head -3          # 301 to /cn/
 curl -s -o /dev/null -w "%{http_code}\n" https://maru.day/no-such-page   # 404
