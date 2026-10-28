@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, and D109 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, D109, and D112 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -58,6 +58,9 @@ The paywall is one sheet with system fonts and SF Symbols in the tint (D107).
 - The buy button and "Continue Free" are large prominent buttons of the same width. The buy button has the tint. "Continue Free" has a gray fill and the text color.
 - The first-value offer shows a static picture of a Lock Screen above the paywall: the clock, and a dark platter with the form icon, "Next Dose", the name, and the amount and the time. The background is a gradient from the item color to black. The line "Preview of your Lock Screen" is under it.
 - The card of Today is a list section at the bottom of the page, under every dose: a symbol, a bold title, one sentence, the borderless button "See Maru Pro", and an "×" button. It has no badge and no color fill.
+- A Pro feature shows its choices to every user, with no lock symbol and no badge. A free user's choice opens the paywall, and the footer of the page says so in one line (D112).
+- "App Icon" is a grid of the six icons at 62 points, with the corner of the Home Screen, a thin edge, and the name under each. The current icon has a ring of 2.5 points in the tint, as the chosen plan of the paywall. The row in Settings shows the current icon at 29 points (D112).
+- "Reminder Sound" is a list: "Default" and six sounds. The sound in use has a check mark in the tint. Each of the six has a play button (`play.circle`) at the end of the row (D112).
 
 ## Today
 
@@ -167,9 +170,9 @@ One confirmation for each, and no second dialog before it (D033).
 
 The sheet behind the gear button. A "Done" button at the top right closes it. The sections, in order:
 
-- "Reminders": the row "Notifications" with its state ("On", "Quiet", "Off", "Not Asked Yet"), the row "Open Settings" when the state is "Off" or "Quiet", and the switch "Show Names in Reminders" (D029, D085). Settings has no test notification (D076). The footer explains a state that needs words.
+- "Reminders": the row "Notifications" with its state ("On", "Quiet", "Off", "Not Asked Yet"), the row "Open Settings" when the state is "Off" or "Quiet", the switch "Show Names in Reminders" (D029, D085), and the row "Reminder Sound" (D112). Settings has no test notification (D076). The footer explains a state that needs words.
 - "For All Items" (D085): the switch "Alarm" (from iOS 26), the menu "Remind Again", and the menu "Every". A row shows the value that every active item with a time has. When the items differ, it says "Varies", and "Alarm" is then a menu with "Varies", "On", and "Off". A choice sets every one of those items. "Every" shows only while an item has "Remind Again" on. The only footer is the limit line of "Until I Record It".
-- "Display": "App Color", "Color Header", "Appearance", and "Language". "Appearance" has "System", "Light", and "Dark", and the default is "System" (D105).
+- "Display": "App Color", "App Icon" (D112), "Color Header", "Appearance", and "Language". "Appearance" has "System", "Light", and "Dark", and the default is "System" (D105).
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
 - "Your Data", then "Send Feedback" (D037). Settings has no "Support Maru" section (D099).
 - "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift. Its footer is "Made with care by the Maru team." (D101).

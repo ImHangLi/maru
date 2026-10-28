@@ -2005,6 +2005,41 @@
         }
       }
     },
+    "App Icon" : {
+      "comment" : "Settings: the row and the page that choose the app icon on the Home Screen (Maru Pro).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App-Symbol"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Icono de la app"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appのアイコン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앱 아이콘"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App 图标"
+          }
+        }
+      }
+    },
     "Appearance" : {
       "comment" : "Settings: a menu that sets the app look: the system look, always light, or always dark.",
       "localizations" : {
@@ -2386,6 +2421,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "蓝色"
+          }
+        }
+      }
+    },
+    "Breeze" : {
+      "comment" : "Settings, Reminder Sound: the name of a soft sound of three slow rising notes.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brise"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brisa"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "そよ風"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "산들바람"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "微风"
           }
         }
       }
@@ -3650,6 +3720,41 @@
         }
       }
     },
+    "Default" : {
+      "comment" : "Settings: the first choice of App Icon and of Reminder Sound: the standard icon or the standard sound of the system.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Standard"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Predeterminado"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルト"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기본"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "默认"
+          }
+        }
+      }
+    },
     "Delete %@?" : {
       "comment" : "The title of the delete confirmation. The placeholder is the item name.",
       "localizations" : {
@@ -3786,6 +3891,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "详细信息"
+          }
+        }
+      }
+    },
+    "Dewdrop" : {
+      "comment" : "Settings, Reminder Sound: the name of a soft sound like two drops of water.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tautropfen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rocío"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "しずく"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이슬"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "露珠"
           }
         }
       }
@@ -5451,6 +5591,41 @@
         }
       }
     },
+    "Lantern" : {
+      "comment" : "Settings, Reminder Sound: the name of a soft bell sound with two notes.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laterne"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farol"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ランタン"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "등불"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "灯笼"
+          }
+        }
+      }
+    },
     "Last 30 Days" : {
       "comment" : "Item detail: the title of the section with the counts of 30 days. Summary sheet: a choice of the period.",
       "localizations" : {
@@ -5867,6 +6042,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "浅色"
+          }
+        }
+      }
+    },
+    "Listen to each sound for free. Maru Pro lets you choose one." : {
+      "comment" : "Settings, Reminder Sound: the footer for a user without Maru Pro.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst dir jeden Ton kostenlos anhören. Mit Maru Pro kannst du einen wählen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puedes escuchar todos los sonidos gratis. Con Maru Pro puedes elegir uno."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どの音も無料で試聴できます。Maru Proで選べます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 소리를 무료로 들어 볼 수 있어요. Maru Pro로 하나를 고를 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个声音都可以免费试听，用 Maru Pro 就能选用。"
+          }
+        }
+      }
+    },
+    "Look at every icon for free. Maru Pro lets you choose one." : {
+      "comment" : "Settings, App Icon: the footer for a user without Maru Pro.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du kannst dir jedes Symbol kostenlos ansehen. Mit Maru Pro kannst du eines wählen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puedes ver todos los iconos gratis. Con Maru Pro puedes elegir uno."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "どのアイコンも無料で見られます。Maru Proで選べます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모든 아이콘을 무료로 볼 수 있어요. Maru Pro로 하나를 고를 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个图标都可以免费查看，用 Maru Pro 就能选用。"
           }
         }
       }
@@ -6902,6 +7147,41 @@
         }
       }
     },
+    "Mono" : {
+      "comment" : "Settings, App Icon: the name of the icon with a gray capsule and no color.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mono"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mono"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "モノクロ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "모노"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "单色"
+          }
+        }
+      }
+    },
     "More app icons and reminder sounds." : {
       "comment" : "Paywall of Maru Pro: the text of the third benefit.",
       "localizations" : {
@@ -7003,6 +7283,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "接下来：%1$@，计划时间 %2$@。"
+          }
+        }
+      }
+    },
+    "Night" : {
+      "comment" : "Settings, App Icon: the name of the icon with the pink capsule on a dark background.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nacht"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noche"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ナイト"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나이트"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "夜色"
           }
         }
       }
@@ -7217,6 +7532,41 @@
         }
       }
     },
+    "Pebble" : {
+      "comment" : "Settings, Reminder Sound: the name of a soft sound of two small wooden knocks.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kiesel"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guijarro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "小石"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "조약돌"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "卵石"
+          }
+        }
+      }
+    },
     "per year" : {
       "comment" : "Paywall of Maru Pro: under the price of the yearly plan.",
       "localizations" : {
@@ -7287,6 +7637,41 @@
         }
       }
     },
+    "Petal" : {
+      "comment" : "Settings, Reminder Sound: the name of a soft sound of two mallet notes.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blütenblatt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pétalo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "花びら"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "꽃잎"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "花瓣"
+          }
+        }
+      }
+    },
     "Planned %@" : {
       "comment" : "History: the planned time of a dose under its action. Example: Planned 8:00 AM.",
       "localizations" : {
@@ -7353,6 +7738,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "计划 %lld 次"
+          }
+        }
+      }
+    },
+    "Play %@" : {
+      "comment" : "Settings, Reminder Sound: the VoiceOver label of the button that plays a sound once. The placeholder is the name of the sound, for example “Dewdrop”.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ abspielen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reproducir %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「%@」を再生"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 재생"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "播放“%@”"
           }
         }
       }
@@ -7668,6 +8088,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "要再次提醒吗？"
+          }
+        }
+      }
+    },
+    "Reminder Sound" : {
+      "comment" : "Settings: the row and the page that choose the sound of the reminders (Maru Pro).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerungston"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonido de recordatorio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リマインダーの音"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "미리 알림 소리"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提醒声音"
           }
         }
       }
@@ -8583,7 +9038,7 @@
       }
     },
     "Not Changed" : {
-      "comment" : "Alert title when a change of an item did not save: a restore from the archive, a reminder switch, an archive, or a delete.",
+      "comment" : "Alert title when a change of an item did not save: a restore from the archive, a reminder switch, an archive, or a delete. Also when the system did not change the app icon.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -12090,6 +12545,41 @@
         }
       }
     },
+    "Sunrise" : {
+      "comment" : "Settings, Reminder Sound: the name of a soft sound of a harp chord played upward.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sonnenaufgang"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amanecer"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日の出"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "해돋이"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日出"
+          }
+        }
+      }
+    },
     "Supplement" : {
       "comment" : "Edit screen: the text “Supplement”.",
       "localizations" : {
@@ -12716,6 +13206,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用条款"
+          }
+        }
+      }
+    },
+    "The icon didn’t change. Please try again." : {
+      "comment" : "Settings, App Icon: the message of the alert “Not Changed” when the system did not change the app icon.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Symbol wurde nicht geändert. Bitte versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El icono no cambió. Inténtalo de nuevo, por favor."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイコンは変更されませんでした。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아이콘이 바뀌지 않았어요. 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图标没有更改，请再试一次。"
           }
         }
       }

@@ -2136,3 +2136,44 @@ Rejected:
 No store change, no schema change, and no new test (D016).
 
 Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
+
+## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds
+
+Maintainer decision on 2026-10-28, with agent detail. It adds two Pro features of D107. It does not change a reminder rule. Only the sound of a request changes.
+
+App icons:
+
+- Six icons: "Default" (the primary pink icon), "Blue", "Purple", "Green", "Night", and "Mono". "Blue", "Purple", and "Green" use the app colors of D025, with the darker light-mode green of the tint. "Night" is the pink capsule on #121212 in every mode. "Mono" is a graphite capsule on white, and a light gray capsule on #121212 in dark mode.
+- Each alternate icon has a light look, a dark look, and the tinted look of the primary icon. "Night" has no separate dark look. iOS 17 shows only the light look.
+- `docs/brand/make_icons.py` draws them from vector geometry that it fits to the shipped `AppIcon.png`. It writes `App/AppIcons.xcassets`: the five alternate icon sets and a preview of each of the six icons. A second run gives the same files. The primary icon does not change. `project.yml` names the alternate icons (`ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES`). The Watch app does not get the new catalog.
+- Settings, section "Display": the row "App Icon" after "App Color", with the current icon. It opens a page with a grid of the six icons, the name under each, and a ring in the tint on the current icon. The grid is a custom control, because SwiftUI has no native icon picker.
+- Every user sees every icon. This is the free preview. A Pro user's tap changes the icon with `UIApplication.setAlternateIconName`, and iOS shows its own alert. A free user's tap on an icon other than "Default" opens `presentPaywall(reason: .icons)`, and the icon does not change. "Default" is free.
+- When Pro ends, Maru keeps the icon and does not change it. iOS shows an alert for each change, so a change that the user did not ask for would surprise. Further changes need Pro again. Only "Default" stays free.
+- The system keeps the choice, so Maru stores nothing. A reinstall shows the primary icon. When the system refuses a change, the alert "Not Changed" says "The icon didn’t change. Please try again."
+
+Reminder sounds:
+
+- Six sounds: "Dewdrop", "Petal", "Breeze", "Pebble", "Sunrise", and "Lantern". Each is a soft chime, pluck, or bell of 1.0 to 3.0 seconds, with no alarm sound. No name is the name of an Apple tone.
+- `docs/brand/make_sounds.py` synthesizes them from sine waves with numpy, and `afconvert` writes them to `App/Sounds/maru-<name>.caf`: 16-bit linear PCM, 44.1 kHz, mono, with a peak of about -3 dBFS. A second run gives the same files. Together they are about 1.1 MB.
+- Settings, section "Reminders": the row "Reminder Sound" after "Show Names in Reminders", with the sound in use. It opens a page with "Default" and the six sounds, a check mark on the sound in use, and a play button on each of the six. The preview is free. It plays once, also with the ring switch on silent, and it mixes with other audio.
+- A Pro user's choice plays the sound once and replaces the pending reminders in one run, as a change of "Show Names in Reminders" does. A free user's choice of a sound other than "Default" opens `presentPaywall(reason: .sounds)`, and nothing changes. "Default" is free.
+- The choice is in `UserDefaults.standard` under `reminders.sound` (D014). The backup does not carry it.
+- The sound in use is the choice while Pro is active, and the default sound of the system when it is not. It reads the cached plan of D107 (`pro.plan` and `pro.expires`), so a reminder run off the main actor can read it. Each run reads it again. So at the first run after Pro ends, every request gets the default sound. The choice stays, so it comes back when Pro comes back.
+- `SystemReminderCenter` gives each request `UNNotificationSound(named:)` and writes the file name in the `userInfo` under `maru.sound`. The system does not tell the sound of a pending request, so the request keeps it there. A pending request with another sound is not current, so the run adds it again. A request with the default sound has no key, so the requests of earlier builds stay. The key leaves the `userInfo` before the engines compare it. The plan, the identifiers, the triggers, the text, the category, and the level do not change.
+- The first reminders, the follow-ups, and "Remind in 10 min" use the sound. The notice after a reminder action (D034) keeps the default sound.
+- Alarms (D079) keep the default sound of AlarmKit. AlarmKit can take a named sound, but these sounds are 1 to 3 seconds long, and an alarm rings until "Stop". Nobody checked on a device how AlarmKit repeats a short file. A later decision can add an alarm sound after that check.
+
+Analytics: `paywall_shown` gets the sources `icons` and `sounds` (spec 11.5). No event tells which icon or sound the user chose. `PRIVACY.md` lists the two sources. A change of the privacy policy is a maintainer decision (`docs/process.md`).
+
+Licenses: Maru made every icon and sound with the two scripts. They use no third-party image, sound, or sample. `docs/third-party-licenses.md` says so.
+
+No store change, no schema change, and no new test (D016). The change adds no record rule.
+
+Not verified: no build of the app on this Mac (CI builds it). Nobody heard the sounds on a device or saw the two pages. Device checks:
+
+1. Each icon on the Home Screen, in light, dark, and tinted mode (iOS 18 and later), on an iPhone and an iPad, with the alert of iOS. Spotlight and the Settings app show the same icon.
+2. A free user: a tap on an icon or a sound other than "Default" opens the paywall, and nothing changes. A tap on a play button plays the sound.
+3. A Pro user: a new sound, then a reminder, a follow-up, and "Remind in 10 min" each play it, also on a locked iPhone and in a Focus.
+4. A refund in the StoreKit transaction manager: the icon stays, a tap on another icon opens the paywall, and "Default" still works. After the next open, reminders have the default sound.
+5. Each sound at full ringer volume, in silent mode, and with music: no sound is harsh, loud, or clipped.
+6. The grid in the six languages and at the largest text sizes, and VoiceOver on a tile and on a play button.

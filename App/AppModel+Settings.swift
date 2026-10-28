@@ -2,6 +2,7 @@ import Foundation
 import MaruCore
 import MaruDatabase
 import MaruNotifications
+import UIKit
 
 /// The keys of the display settings in `UserDefaults.standard`. The views read them with `@AppStorage`.
 ///
@@ -27,11 +28,16 @@ struct SettingsState {
     var newItemReminders = NewItemReminders.load()
     /// The system refused alarms at the tap on the "Alarm" switch (D085).
     var alarmsAreOff = false
+    /// The choice of "Reminder Sound", also after Maru Pro ended (D112).
+    var chosenSound = ReminderSound.chosen
+    /// The icon on the Home Screen. Settings reads it when it opens (D112).
+    var appIcon = AppIcon.pink
 }
 
 extension AppModel {
     func openSettings() {
         settings.isPresented = true
+        settings.appIcon = .current
         analytics.markUsed(.settings)
         readNotificationPermission()
         loadReminderOptions()
@@ -145,6 +151,48 @@ extension AppModel {
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
         Task { await runReminders(at: now, deviceTimeZone: deviceTimeZone) }
+    }
+
+    /// The sound that the reminders use: the choice while Maru Pro is active, else the default sound (`nil`, D112).
+    var reminderSound: ReminderSound? {
+        pro.isPro ? settings.chosenSound : nil
+    }
+
+    /// "Reminder Sound" (D112). A free user who chooses a sound other than "Default" gets the paywall, and nothing
+    /// changes. A new sound replaces every pending reminder and follow-up, as a change of the names does. A run that
+    /// fails reports like a save, and the next launch or return runs again. Alarms keep the sound of the system.
+    func chooseReminderSound(_ sound: ReminderSound?) {
+        guard sound == nil || pro.isPro else {
+            presentPaywall(reason: .sounds)
+            return
+        }
+        let before = reminderSound
+        UserDefaults.standard.set(sound?.rawValue, forKey: ReminderSound.key)
+        settings.chosenSound = sound
+        let now = Date()
+        guard reminderSound != before, let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
+        Task { await runReminders(at: now, deviceTimeZone: deviceTimeZone) }
+    }
+
+    /// "App Icon" (D112). A free user who chooses an icon other than the default gets the paywall, and the icon does not
+    /// change. The default icon is free, so a user whose Pro ended can go back to it. When Pro ends, Maru keeps the
+    /// icon and does not change it.
+    ///
+    /// - Returns: `false` when the system refused the change. `true` for a change and for the icon of now.
+    func chooseAppIcon(_ icon: AppIcon) async -> Bool {
+        guard icon != settings.appIcon else { return true }
+        guard icon == .pink || pro.isPro else {
+            presentPaywall(reason: .icons)
+            return true
+        }
+        do {
+            // The system shows its own alert that the icon changed.
+            try await UIApplication.shared.setAlternateIconName(icon.alternateName)
+        } catch {
+            return false
+        }
+        settings.appIcon = icon
+        return true
     }
 
     /// One run of the reminder engines for a change that touches many items. It reports like a save does.

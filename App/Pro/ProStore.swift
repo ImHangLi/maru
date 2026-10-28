@@ -49,9 +49,9 @@ final class ProStore {
     /// The last known plan, in `UserDefaults.standard` beside the display settings (D014). A Pro feature reads it at
     /// launch, so it does not flicker while StoreKit answers. StoreKit corrects it at each launch, each update, and each
     /// return to the front.
-    private static let planKey = "pro.plan"
+    private nonisolated static let planKey = "pro.plan"
     /// The end of access of the yearly plan, with a billing grace period. A cached yearly plan after it is free.
-    private static let expiresKey = "pro.expires"
+    private nonisolated static let expiresKey = "pro.expires"
 
     /// `nil` is free.
     private(set) var plan: ProPlan?
@@ -70,16 +70,19 @@ final class ProStore {
     @ObservationIgnored private var expiryCheck: Task<Void, Never>?
 
     private init() {
+        let plan = Self.cachedPlan()
+        self.plan = plan
+        expiresAt = plan == .yearly ? UserDefaults.standard.object(forKey: Self.expiresKey) as? Date : nil
+    }
+
+    /// The last known plan, for code off the main actor, such as the reminder sound of a run (D112). The cache never
+    /// grants a yearly plan after its end of access.
+    nonisolated static func cachedPlan(at now: Date = Date()) -> ProPlan? {
         let defaults = UserDefaults.standard
-        let plan = defaults.string(forKey: Self.planKey).flatMap(ProPlan.init(rawValue:))
-        let expiresAt = defaults.object(forKey: Self.expiresKey) as? Date
-        // The cache never grants a yearly plan after its end of access.
-        if plan == .yearly, (expiresAt ?? .distantPast) <= Date() {
-            self.plan = nil
-        } else {
-            self.plan = plan
-            self.expiresAt = plan == .yearly ? expiresAt : nil
-        }
+        let plan = defaults.string(forKey: planKey).flatMap(ProPlan.init(rawValue:))
+        let expiresAt = defaults.object(forKey: expiresKey) as? Date
+        if plan == .yearly, (expiresAt ?? .distantPast) <= now { return nil }
+        return plan
     }
 
     /// `false` when Screen Time or a device profile blocks purchases. Maru then offers nothing by itself.
