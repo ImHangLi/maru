@@ -17,6 +17,6 @@ Maru Pro adds five alternate icons: "Blue", "Purple", "Green", "Night", and "Mon
 - The script fits the geometry and the pink gradient to `AppIcon.png`. A new color gets its gradient from the same rule: the top is the color with 17 percent white, and the bottom is a little darker and more saturated.
 - Each alternate icon uses the tinted image of the primary icon.
 
-## Reminder sounds (D112)
+## Reminder sounds (D112, replaced by D120)
 
-The six reminder sounds of Maru Pro come from `make_sounds.py`. Run `uv run docs/brand/make_sounds.py`. It synthesizes each sound from sine waves and writes `App/Sounds`. A sound is soft and short, from 1 to 3 seconds, and never an alarm.
+The eight reminder sounds of Maru Pro are CC0 files from other authors. No script makes them. `docs/third-party-licenses.md` lists the source, author, license, and edits of each sound.

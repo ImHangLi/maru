@@ -304,7 +304,7 @@ The strings below are new in `App/Localizable.xcstrings`: the paywall, the card 
 
 ## App icons and reminder sounds (D112)
 
-The strings below are new in `App/Localizable.xcstrings`: the rows "App Icon" and "Reminder Sound" in Settings, their pages, and the names of the icons and the sounds. "Blue", "Purple", "Green", and "Not Changed" use the existing translations. No native speaker read them. The reviewer checks that each sound name is a short, calm word, that "Default" matches the word of the iOS Sounds settings in that language, and that the voice is warm and calm with no pressure (D101).
+The strings below are new in `App/Localizable.xcstrings`: the rows "App Icon" and "Reminder Sound" in Settings, their pages, and the names of the icons and the sounds. D120 replaced the six sound names with eight new names (the last eight rows of the table). "Blue", "Purple", "Green", and "Not Changed" use the existing translations. No native speaker read them. The reviewer checks that each sound name is a short, calm word, that "Default" matches the word of the iOS Sounds settings in that language, and that the voice is warm and calm with no pressure (D101).
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
@@ -317,12 +317,14 @@ The strings below are new in `App/Localizable.xcstrings`: the rows "App Icon" an
 | Reminder Sound | 提醒声音 | リマインダーの音 | Sonido de recordatorio | Erinnerungston | 미리 알림 소리 |
 | Listen to each sound for free. Maru Pro lets you choose one. | 每个声音都可以免费试听，用 Maru Pro 就能选用。 | どの音も無料で試聴できます。Maru Proで選べます。 | Puedes escuchar todos los sonidos gratis. Con Maru Pro puedes elegir uno. | Du kannst dir jeden Ton kostenlos anhören. Mit Maru Pro kannst du einen wählen. | 모든 소리를 무료로 들어 볼 수 있어요. Maru Pro로 하나를 고를 수 있어요. |
 | Play %@ | 播放“%@” | 「%@」を再生 | Reproducir %@ | %@ abspielen | %@ 재생 |
-| Dewdrop | 露珠 | しずく | Rocío | Tautropfen | 이슬 |
-| Petal | 花瓣 | 花びら | Pétalo | Blütenblatt | 꽃잎 |
-| Breeze | 微风 | そよ風 | Brisa | Brise | 산들바람 |
-| Pebble | 卵石 | 小石 | Guijarro | Kiesel | 조약돌 |
-| Sunrise | 日出 | 日の出 | Amanecer | Sonnenaufgang | 해돋이 |
-| Lantern | 灯笼 | ランタン | Farol | Laterne | 등불 |
+| Rising Chime | 上升风铃 | 上昇するチャイム | Campanillas | Aufsteigendes Glockenspiel | 상승하는 차임 |
+| Marimba | 马林巴 | マリンバ | Marimba | Marimba | 마림바 |
+| Soft Bell | 柔和钟声 | やわらかなベル | Campana suave | Sanfte Glocke | 부드러운 종소리 |
+| Glass | 玻璃 | グラス | Cristal | Glas | 유리 |
+| Chime Bars | 音条风铃 | チャイムバー | Barras de campanas | Klangstäbe | 차임 바 |
+| Hand Bell | 手摇铃 | ハンドベル | Campanilla | Handglocke | 핸드벨 |
+| Music Box | 八音盒 | オルゴール | Caja de música | Spieluhr | 오르골 |
+| Synth Bell | 合成铃声 | シンセベル | Campana sintética | Synthie-Glocke | 신스 벨 |
 
 ## App color of Maru Pro (D114)
 

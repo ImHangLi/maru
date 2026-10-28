@@ -2075,6 +2075,181 @@
         }
       }
     },
+    "Chime Bars" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, a natural ring of metal chime bars.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klangstäbe"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Barras de campanas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャイムバー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "차임 바"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "音条风铃"
+          }
+        }
+      }
+    },
+    "Glass" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, a small, high glass ring.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Glas"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cristal"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "グラス"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "유리"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玻璃"
+          }
+        }
+      }
+    },
+    "Hand Bell" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, a small handheld metal bell.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Handglocke"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campanilla"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ハンドベル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "핸드벨"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手摇铃"
+          }
+        }
+      }
+    },
+    "Marimba" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, two soft wooden marimba notes.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marimba"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Marimba"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "マリンバ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마림바"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "马林巴"
+          }
+        }
+      }
+    },
+    "Music Box" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, one note of a music box.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spieluhr"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Caja de música"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オルゴール"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오르골"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "八音盒"
+          }
+        }
+      }
+    },
     "Record from your wrist" : {
       "comment" : "Paywall of Maru Pro: the title of the benefit row with the symbol of an Apple Watch. Keep it to one short line.",
       "localizations" : {
@@ -2421,41 +2596,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "蓝色"
-          }
-        }
-      }
-    },
-    "Breeze" : {
-      "comment" : "Settings, Reminder Sound: the name of a soft sound of three slow rising notes.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brise"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Brisa"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "そよ風"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "산들바람"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "微风"
           }
         }
       }
@@ -3856,41 +3996,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "详细信息"
-          }
-        }
-      }
-    },
-    "Dewdrop" : {
-      "comment" : "Settings, Reminder Sound: the name of a soft sound like two drops of water.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tautropfen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rocío"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "しずく"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "이슬"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "露珠"
           }
         }
       }
@@ -5552,41 +5657,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "语言"
-          }
-        }
-      }
-    },
-    "Lantern" : {
-      "comment" : "Settings, Reminder Sound: the name of a soft bell sound with two notes.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Laterne"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Farol"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ランタン"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "등불"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "灯笼"
           }
         }
       }
@@ -7497,41 +7567,6 @@
         }
       }
     },
-    "Pebble" : {
-      "comment" : "Settings, Reminder Sound: the name of a soft sound of two small wooden knocks.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kiesel"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guijarro"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "小石"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "조약돌"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "卵石"
-          }
-        }
-      }
-    },
     "Period" : {
       "comment" : "Summary sheet: the label of the menu of the period.",
       "localizations" : {
@@ -7563,41 +7598,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "时间范围"
-          }
-        }
-      }
-    },
-    "Petal" : {
-      "comment" : "Settings, Reminder Sound: the name of a soft sound of two mallet notes.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blütenblatt"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pétalo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "花びら"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "꽃잎"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "花瓣"
           }
         }
       }
@@ -7708,7 +7708,7 @@
       }
     },
     "Play %@" : {
-      "comment" : "Settings, Reminder Sound: the VoiceOver label of the button that plays a sound once. The placeholder is the name of the sound, for example “Dewdrop”.",
+      "comment" : "Settings, Reminder Sound: the VoiceOver label of the button that plays a sound once. The placeholder is the name of the sound, for example “Rising Chime”.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7808,6 +7808,111 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "准备好了就开始吧"
+          }
+        }
+      }
+    },
+    "Rising Chime" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, a quick rising run of small chimes.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufsteigendes Glockenspiel"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campanillas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上昇するチャイム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "상승하는 차임"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上升风铃"
+          }
+        }
+      }
+    },
+    "Soft Bell" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, one clear bell tone with a long, smooth decay.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sanfte Glocke"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campana suave"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "やわらかなベル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "부드러운 종소리"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "柔和钟声"
+          }
+        }
+      }
+    },
+    "Synth Bell" : {
+      "comment" : "Settings, Reminder Sound: the name of a sound, a short, neutral synthesized bell.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synthie-Glocke"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Campana sintética"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "シンセベル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "신스 벨"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合成铃声"
           }
         }
       }
@@ -12506,41 +12611,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "汇总"
-          }
-        }
-      }
-    },
-    "Sunrise" : {
-      "comment" : "Settings, Reminder Sound: the name of a soft sound of a harp chord played upward.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sonnenaufgang"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Amanecer"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "日の出"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "해돋이"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "日出"
           }
         }
       }

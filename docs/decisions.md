@@ -2211,7 +2211,7 @@ Not verified: no build of the app on this Mac (CI builds it), and nobody saw the
 5. A refund in the StoreKit transaction manager: the activity ends and the switch goes off.
 6. An activity across midnight ("Open Maru to update.", no name, no button), and an activity after 8 hours with no open of Maru.
 
-## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds
+## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds (the sounds are replaced by D120)
 
 Maintainer decision on 2026-10-28, with agent detail. It adds two Pro features of D107. It does not change a reminder rule. Only the sound of a request changes.
 
@@ -2227,7 +2227,7 @@ App icons:
 
 Reminder sounds:
 
-- Six sounds: "Dewdrop", "Petal", "Breeze", "Pebble", "Sunrise", and "Lantern". Each is a soft chime, pluck, or bell of 1.0 to 3.0 seconds, with no alarm sound. No name is the name of an Apple tone.
+- (Replaced by D120.) Six sounds: "Dewdrop", "Petal", "Breeze", "Pebble", "Sunrise", and "Lantern". Each is a soft chime, pluck, or bell of 1.0 to 3.0 seconds, with no alarm sound. No name is the name of an Apple tone.
 - `docs/brand/make_sounds.py` synthesizes them from sine waves with numpy, and `afconvert` writes them to `App/Sounds/maru-<name>.caf`: 16-bit linear PCM, 44.1 kHz, mono, with a peak of about -3 dBFS. A second run gives the same files. Together they are about 1.1 MB.
 - Settings, section "Reminders": the row "Reminder Sound" after "Show Names in Reminders", with the sound in use. It opens a page with "Default" and the six sounds, a check mark on the sound in use, and a play button on each of the six. The preview is free. It plays once, also with the ring switch on silent, and it mixes with other audio.
 - A Pro user's choice plays the sound once and replaces the pending reminders in one run, as a change of "Show Names in Reminders" does. A free user's choice of a sound other than "Default" opens `presentPaywall(reason: .sounds)`, and nothing changes. "Default" is free.
@@ -2241,7 +2241,7 @@ Reminder sounds:
 
 Analytics: `paywall_shown` gets the sources `icons` and `sounds` (spec 11.5). No event tells which icon or sound the user chose. `PRIVACY.md` lists the two sources. A change of the privacy policy is a maintainer decision (`docs/process.md`).
 
-Licenses: Maru made every icon and sound with the two scripts. They use no third-party image, sound, or sample. `docs/third-party-licenses.md` says so.
+Licenses: Maru made every icon with `make_icons.py`. It uses no third-party image. (The sounds are replaced by D120.)
 
 No store change and no schema change. The change adds no record rule. One test (D016): `ReminderEngineTests.newSoundNeverRemovesACorrectReminder` shows that a failed add for a new sound keeps the reminder, and that a later run gives it the new sound.
 
@@ -2504,3 +2504,18 @@ Fit: the first screen at the default text size on an iPhone 17 Pro and an iPhone
 Evidence: captures (light and dark on an iPhone 17 Pro, zh-Hans on both phones, light, German, and Spanish on an iPhone 17e, and the Settings section) and `compare.png` (D118 next to D119) are in `~/Documents/Research/maru/paywall-redesign/final-v2/`. A copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
 
 Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the plain `xmark` button before iOS 26, an accessibility text size after this change, the iPhone SE size, ja and ko line fit, and the contrast of the gray lines with a tool. The two privacy links differ: the paywall opens `https://maru.day/privacy/` and Settings opens `https://maru.day/privacy.html`. The maintainer must check that both open the page.
+
+## D120 · 2026-10-29 · Reminder sounds: eight CC0 sounds (replaces the sound part of D112)
+
+The maintainer listened to eight candidate sounds on 2026-10-29 and liked them. The sounds replace the six sounds that Maru generated in D112. The icon part of D112 does not change.
+
+- Eight sounds, in this order after "Default": "Rising Chime", "Marimba", "Soft Bell", "Glass", "Chime Bars", "Hand Bell", "Music Box", and "Synth Bell". The names are localized in en, zh-Hans, ja, es, de, and ko. The Chinese names are 上升风铃, 马林巴, 柔和钟声, 玻璃, 音条风铃, 手摇铃, 八音盒, and 合成铃声.
+- Each sound is a CC0 1.0 file from another author: seven from Freesound and one from Kenney. `docs/third-party-licenses.md` lists the author, source URL, license, and edits of each. CC0 needs no credit, so the app shows no notice.
+- Each file is `App/Sounds/maru-<name>.caf`: 16-bit linear PCM, 44.1 kHz, about -16 LUFS (Chime Bars is about 3 dB quieter), 0.67 to 2.23 seconds long. This is far below the 30 seconds that iOS allows for a notification sound, and CAF with linear PCM is a supported format. Together the files are about 1.6 MB. Six of them are stereo.
+- All eight sources are lossy: seven are public Freesound previews (Ogg Vorbis, about 160 kbps), and one is an Ogg Vorbis file of Kenney. The edit to 16-bit PCM does not add loss. A later build can use the original Freesound files after a login. This is acceptable for a short reminder sound.
+- The stored value of a sound is its file name without `maru-` and `.caf`, for example `rising-chime`. The Marimba sound has the value `marimba-hello`, because its file keeps the name of the source.
+- A stored choice of a removed sound ("dewdrop", "petal", "breeze", "pebble", "sunrise", or "lantern") has no match in `ReminderSound`, so `ReminderSound.chosen` returns no choice. It means "Default". Nothing crashes, and no migration step runs. The old value stays unread in `UserDefaults`, and the next choice overwrites it. A pending request that still names a removed file has a wrong sound, so the next reminder run replaces it (`hasCurrentSound`, D112). Until then the system plays its default sound, because the file is not in the bundle.
+- The Pro gating, the free preview, the settings page, the reminder run, the alarms, and the analytics of D112 do not change.
+- `docs/brand/make_sounds.py` and the six generated files are removed. `make_icons.py` stays. The six old names leave `App/Localizable.xcstrings`.
+
+Not verified: nobody heard the sounds on a device. Nobody checked on a device that each file plays as a notification sound, at full ringer volume, in silent mode, on a locked iPhone, or in a Focus. The device checks 3 and 5 of D112 apply to the new sounds.
