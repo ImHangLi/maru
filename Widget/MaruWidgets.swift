@@ -7,5 +7,6 @@ struct MaruWidgets: WidgetBundle {
         TodayWidget()
         TakeNowWidget()
         LastDoseWidget()
+        NextDoseWidget()
     }
 }

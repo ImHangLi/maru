@@ -362,6 +362,17 @@ The "Last Dose" widget, in `Widget/Localizable.xcstrings`.
 | Yesterday, %@ | 昨天 %@ | 昨日 %@ | Ayer, %@ | Gestern, %@ | 어제 %@ |
 | Dose recorded | 已记录服用 | 服用を記録済み | Dosis registrada | Dosis erfasst | 복용 기록됨 |
 
+## Next Dose widget (D113)
+
+The strings below are new, in `Widget/Localizable.xcstrings`. They are drafts. No native speaker read them. The reviewer checks that the voice is warm and calm (D101), and that "In %@" reads well with the relative time of the system, for example "2 hr, 5 min". "%lld doses", "%lld more", and "Not recorded yet" have the text of the Live Activity (D110).
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Next Dose | 下一次服用 | 次の服用 | Próxima dosis | Nächste Dosis | 다음 복용 |
+| See your next dose and the time left. | 查看下一次服用和剩余时间。 | 次の服用と残り時間を表示します。 | Mira tu próxima dosis y el tiempo que falta. | Zeigt deine nächste Dosis und die verbleibende Zeit. | 다음 복용과 남은 시간을 보여줘요. |
+| In %@ | %@后 | あと%@ | En %@ | In %@ | %@ 후 |
+| All done for today | 今天都完成了 | 今日の分はすべて完了 | Todo listo por hoy | Für heute alles erledigt | 오늘은 모두 마쳤어요 |
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.
