@@ -786,41 +786,6 @@
         }
       }
     },
-    "Not recorded yet" : {
-      "comment" : "Live Activity: the state after the planned time when the dose has no record. Calm, no judgment (D101, D110).",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Noch nicht erfasst"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aún sin registrar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "まだ記録していません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아직 기록 안 함"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "还没记录"
-          }
-        }
-      }
-    },
     "Nothing Planned Today" : {
       "comment" : "Widget: shown when no dose is planned today.",
       "localizations" : {

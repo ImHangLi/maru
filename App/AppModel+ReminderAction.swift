@@ -58,8 +58,13 @@ extension AppModel {
                 )
                 return finishWithNotice(.notSaved, reminder)
             }
-            // The commit starts the reminder update, as a record on Today does. Wait for the update.
-            if !recorded.isEmpty { await waitForReminders(deviceTimeZone: deviceTimeZone) }
+            // The commit starts the reminder update, as a record on Today does. Wait for the update and the Live Activity.
+            // With no new record, the activity reads again, because it can show a dose that another path recorded (D110).
+            if recorded.isEmpty {
+                await updateNextDoseNow()
+            } else {
+                await waitForReminders(deviceTimeZone: deviceTimeZone)
+            }
             if result.notRecordedCount > 0 {
                 finishWithNotice(
                     recorded.isEmpty ? .noMatch : .partial(recorded: recorded.count, of: result.named), reminder
