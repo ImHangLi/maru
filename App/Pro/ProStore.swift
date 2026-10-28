@@ -60,7 +60,12 @@ final class ProStore {
     /// The plan of a purchase that runs. The paywall disables its buttons while it runs.
     private(set) var buying: ProPlan?
 
-    var isPro: Bool { plan != nil }
+    var isPro: Bool {
+        #if DEBUG
+        if DebugLaunch.forcesPro { return true }
+        #endif
+        return plan != nil
+    }
 
     @ObservationIgnored private var products: [ProPlan: Product] = [:]
     @ObservationIgnored private var listener: Task<Void, Never>?

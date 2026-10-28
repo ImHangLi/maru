@@ -11,6 +11,18 @@ struct TodayView: View {
     private static let noticeID = "notice"
 
     var body: some View {
+        // The Watch app is a Pro feature (D111). The last state that the iPhone sent decides, also for an old list.
+        if let day = model.day, !day.isPro {
+            LockedView(tint: day.tint.tint)
+                .onChange(of: scenePhase, initial: true) { _, phase in
+                    if phase == .active { model.refresh() }
+                }
+        } else {
+            list
+        }
+    }
+
+    private var list: some View {
         NavigationStack {
             ScrollViewReader { proxy in
                 List {

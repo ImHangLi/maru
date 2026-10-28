@@ -71,6 +71,41 @@
         }
       }
     },
+    "Maru Pro" : {
+      "comment" : "Watch: the title of the screen that a free user sees. Maru Pro is the paid tier of the iPhone app. Keep the name.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        }
+      }
+    },
     "Morning" : {
       "comment" : "Watch: the title of the group of doses with a planned time before 11:00.",
       "localizations" : {
@@ -351,6 +386,111 @@
         }
       }
     },
+    "Open on iPhone" : {
+      "comment" : "Watch: button. It asks the iPhone app to show Maru Pro the next time that Maru is open on the iPhone.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf dem iPhone öffnen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abrir en el iPhone"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhoneで開く"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone에서 열기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 iPhone 上打开"
+          }
+        }
+      }
+    },
+    "See and record today’s doses on your wrist." : {
+      "comment" : "Watch: what the Watch app does, on the screen that a free user sees. Same text as the paywall of the iPhone app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sieh und erfasse die Dosen von heute am Handgelenk."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ve y registra las dosis de hoy en tu muñeca."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日の服用を手首で確認・記録できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘의 복용을 손목에서 확인하고 기록해요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在手腕上查看并记录今天的服用。"
+          }
+        }
+      }
+    },
+    "Sent. Open Maru on your iPhone to see Maru Pro." : {
+      "comment" : "Watch: shown after the iPhone got the request of the button \"Open on iPhone\".",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesendet. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enviado. Abre Maru en tu iPhone para ver Maru Pro."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "送信しました。iPhoneでMaruを開くとMaru Proが表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "보냈어요. iPhone에서 Maru를 열면 Maru Pro를 볼 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已发送。在 iPhone 上打开 Maru 就能看到 Maru Pro。"
+          }
+        }
+      }
+    },
     "Skip" : {
       "comment" : "Watch: the swipe action of an open dose. It records the dose as skipped.",
       "localizations" : {
@@ -596,6 +736,41 @@
         }
       }
     },
+    "Unlock with Maru Pro on your iPhone." : {
+      "comment" : "Watch: tells a free user that the Watch app needs Maru Pro, which they buy in the iPhone app. The Watch sells nothing.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schalte sie mit Maru Pro auf deinem iPhone frei."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Desbloquéala con Maru Pro en tu iPhone."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhoneのMaru Proで使えるようになります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone에서 Maru Pro로 잠금 해제하세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 iPhone 上开通 Maru Pro 即可使用。"
+          }
+        }
+      }
+    },
     "Updated %@" : {
       "comment" : "Watch: the last line of the list. %@ is the time at which the iPhone sent the list, for example 8:07 AM.",
       "localizations" : {
@@ -697,6 +872,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "连不上 iPhone，没有记录任何内容。"
+          }
+        }
+      }
+    },
+    "Your iPhone is not reachable. Open Maru on your iPhone to see Maru Pro." : {
+      "comment" : "Watch: shown when the request of the button \"Open on iPhone\" did not reach the iPhone.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein iPhone ist nicht erreichbar. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede conectar con tu iPhone. Abre Maru en tu iPhone para ver Maru Pro."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhoneに接続できません。iPhoneでMaruを開いてMaru Proをご覧ください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "iPhone에 연결할 수 없어요. iPhone에서 Maru를 열어 Maru Pro를 확인해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "连不上 iPhone。在 iPhone 上打开 Maru 来查看 Maru Pro。"
           }
         }
       }

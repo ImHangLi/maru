@@ -18,7 +18,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 ## 2. Identity
 
 - Freeze the bundle IDs `com.imhangli.maru` and `com.imhangli.maru.widgets` before the first upload (D005).
-- The Watch app has the bundle ID `com.imhangli.maru.watchkitapp` (D071). Version 1.0 ships without it (D074): the app target does not depend on `MaruWatch`, so an archive has no Watch app. A build with the Watch app needs Watch screenshots and a sentence in the privacy policy.
+- The Watch app has the bundle ID `com.imhangli.maru.watchkitapp` (D071). Version 1.0 shipped without it (D074). It is a Pro feature, and the app embeds it again (D111), so an archive has the Watch app. Register the App ID on the paid team with the first archive. The steps are in "Apple Watch app (D111)" in section 7.
 - Register the App Group on the paid team. Done: the paid team is the free team, so the group ID stays (D062).
 - Set the version to 1.0.0. Done (D062).
 - Add the time-sensitive notification entitlement (D034). Done in code (D062). The device build waits for the Apple ID in Xcode.
@@ -161,6 +161,17 @@ The code has the purchase, the paywall, and the entitlement. The maintainer does
 - [ ] Change the store text of 1.2: it must say what needs a purchase (guideline 2.3.2), and "no paywall" must go.
 - [ ] Test in TestFlight with a Sandbox account: buy yearly, buy lifetime, restore, an offer code, and Ask to Buy.
 - [ ] Do not submit before the Pro features are in the build. A purchase with no content is a rejection risk (guideline 3.1.1).
+
+### Apple Watch app (D111)
+
+The app embeds the Watch app, and the Watch app is a Pro feature. The maintainer does these steps.
+
+- [ ] Check on a real iPhone and Watch: the list of D071, the locked iPhone of D066, the locked screen of a free user, "Open on iPhone", and the end of Pro.
+- [ ] Archive with automatic signing. Xcode registers `com.imhangli.maru.watchkitapp` on the paid team. Check that the archive has `Maru.app/Watch/MaruWatch.app`.
+- [ ] Add Apple Watch screenshots to the version in App Store Connect. A version with a Watch app needs them.
+- [ ] Review notes: the Watch app is part of Maru Pro. A free user sees a screen that names Maru Pro and has no purchase. Give App Review the steps to buy Pro with a sandbox account and to see the list on the Watch.
+- [ ] The store text of the release: name the Apple Watch app as a Pro feature (guideline 2.3.2).
+- [ ] On the day of the release: add `"watch"` to `DEVICES` in `site/build.py`, change the FAQ answer about Apple Watch and `site/llms.txt`, build the site, and deploy it. The privacy pages already have the section "Apple Watch".
 
 ### Notes for App Review
 

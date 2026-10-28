@@ -1,6 +1,6 @@
 # Privacy
 
-Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. This file describes the app in this repository as it is today.
+Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. With Maru Pro, the list of today also goes to your own Apple Watch (see "Apple Watch"). This file describes the app in this repository as it is today.
 
 ## What Maru stores
 
@@ -58,6 +58,15 @@ Maru Pro is an optional purchase through the App Store: a yearly subscription or
 - Maru keeps the name of the active plan in its settings on your device, so Pro features do not flicker at launch.
 - A purchase, a restore, and an offer code never read or change your items or records. A restore of purchases does not restore your health data. For that, use the Maru backup file.
 - The first offer of Maru Pro can show a picture of a Lock Screen with your next dose. Maru draws it on your device. Nothing of it leaves the device.
+
+## Apple Watch
+
+The Apple Watch app is part of Maru Pro. It shows the doses of today, and it records a dose through your iPhone.
+
+- With Maru Pro, your iPhone sends the list of today to your own paired Apple Watch: the names, the amounts, the times, and the record states. Apple's WatchConnectivity sends the list directly between your two devices. Maru has no server in between.
+- Without Maru Pro, your iPhone sends only whether Maru Pro is active, the app color, and the end of the day. It sends none of your item data.
+- Nothing goes to the Watch until the Maru Watch app is installed.
+- The Watch app has no database. Each record that you make on the Watch is saved on your iPhone. The Watch app sends no usage statistics and writes no log.
 
 ## Camera
 

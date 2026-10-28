@@ -69,6 +69,8 @@ struct MaruApp: App {
                     WidgetCenter.shared.reloadAllTimelines()
                     model.sendWatchDay()
                 }
+                // The Watch app is a Pro feature. A purchase, a restore, or the end of a plan reaches the Watch (D111).
+                .onChange(of: model.pro.isPro) { _, _ in model.sendWatchDay() }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

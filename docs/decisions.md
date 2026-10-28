@@ -1155,7 +1155,7 @@ Tests (D016): four new tests. The rhythm and the pause across a clock change, th
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
-## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074)
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074) (a Pro feature: D111)
 
 Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
 
@@ -1308,7 +1308,7 @@ Maintainer decision on the concept, with agent detail. The maintainer approved a
 - The PNGs are in `App/Debug/SamplePhotos/`. The Release configuration of the app target sets `EXCLUDED_SOURCE_FILE_NAMES` to `sample-photo-*.png`, so a release build does not copy them. A CI step reads the Release build settings and fails when the setting is missing.
 - Image sources: Unsplash photos by Supliful under the Unsplash License, with invented labels. The brand names had no hit in the US trademark register. A TMview check is still open before a public use of the images.
 
-## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test
+## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test (replaced by D111)
 
 Maintainer decision, with agent detail. The goal is a fast first release. It replaces the "embedded in the app" part of D071 for version 1.0.
 
@@ -2279,3 +2279,32 @@ Not verified: no build of the app on this Mac (CI builds it). Nobody saw the men
 2. A free user chooses blue, then buys in the paywall: the whole app turns blue.
 3. A refund in the transaction manager: the color stays. Another color opens the paywall. Pink still works.
 4. The footer in the six languages and at the largest text sizes.
+
+## D111 · 2026-10-28 · The Apple Watch app is a Pro feature, and the app embeds it again (replaces D074)
+
+Maintainer decision of 2026-10-28, with agent detail. The Apple Watch app is a Maru Pro feature (D107), and it ships in the first public release. It replaces D074. The rules of D071 and D066 for the list and the record stay.
+
+Build:
+
+- `project.yml`: the `Maru` target depends on `MaruWatch` again. XcodeGen puts the Watch app in the phase "Embed Watch Content", so an archive of the app has `Maru.app/Watch/MaruWatch.app`.
+- CI builds the Watch app as part of the app build, and it checks that the project embeds the Watch app. The separate Watch step of D074 is gone. The `MaruWatch` scheme stays for a run of the Watch app alone.
+- The Watch app keeps the bundle ID `com.imhangli.maru.watchkitapp` and `WKCompanionAppBundleIdentifier` = `com.imhangli.maru`. It needs no App Group and no entitlement: it has no database, and WatchConnectivity needs no capability.
+- The Watch app has no privacy manifest. It uses no API that needs a reason, has no third-party code, and collects no data. `App/PrivacyInfo.xcprivacy` does not change.
+
+The gate:
+
+- `WatchDay` has a new field `isPro`, from `ProStore.isPro` on the iPhone. The iPhone sends it in the same application context and in each reply, after each read, each commit, each change of the tint, and each change of Maru Pro.
+- A free user's list has no dose. So no name, amount, or time leaves the iPhone for a free user. Only the Pro state, the tint, and the times of the list go.
+- The Watch shows the locked screen when the last list says free, also for a list of an earlier day: "Maru Pro", "See and record today's doses on your wrist.", "Unlock with Maru Pro on your iPhone.", and the button "Open on iPhone". The Watch sells nothing and has no purchase.
+- "Open on iPhone" sends the request `WatchRequest.showPro`. The iPhone keeps it in `UserDefaults.standard` (`pro.watchAsked`), because the request can start Maru in the background. The root view shows the paywall the next time that Maru is in front, after the onboarding, the edit screen, and the alerts, once for each request. The source of `paywall_shown` is `feature`. This is the one paywall that can show when Maru comes to the front, because the user asked for it. When the iPhone is not reachable, the Watch says so, and the user opens Maru on the iPhone.
+- When Pro ends (a refund, the end of the yearly plan, or a revoked family share), the next list says free, and the Watch shows the locked screen again.
+- The iPhone checks Pro again for each record request (`recordFromWatch`). A free user's request records nothing, also from a Watch that still shows an old Pro list. All the checks of D071 still apply to a Pro request.
+- The reminders on the Watch are not part of the gate. They are the iPhone notifications that watchOS mirrors, with the "Taken" action of D034, and they stay free.
+
+Debug: `-MaruDebugPro YES` makes `ProStore.isPro` true in a debug build, for a check of the Watch app in a simulator. A release build does not have the code.
+
+`PRIVACY.md` has a section "Apple Watch" again, and the privacy pages of the site are built again. The site build needed headings for "Maru Pro" (D107) and "Apple Watch" in each language. The privacy pages are not deployed. The FAQ, `site/llms.txt`, and `DEVICES` in `site/build.py` still say that Maru has no Watch app, because that is true for the version in the App Store. Change them on the day of the release with the Watch app.
+
+Check in the paired simulators (iPhone 17 Pro with iOS 27.0, Apple Watch Series 12 with watchOS 27.0), with the maintainer's permission of 2026-10-28: the report is in the maintainer's research folder, `maru/watch-check/`.
+
+Not verified: nobody ran the Watch app on a real Watch. The checks of D071 and D066 for a real iPhone and Watch stay open. App Store Connect needs Apple Watch screenshots before a submission with the Watch app, and App Review needs a way to see the Watch app with Pro (a sandbox purchase).

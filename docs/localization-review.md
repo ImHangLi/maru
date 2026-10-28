@@ -313,6 +313,19 @@ The strings below are new or changed. They are drafts. No native speaker read th
 | Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free. | Maru Pro 提供这项功能，还有 Apple Watch App 和更多颜色、图标与提醒音。其他一切都继续免费。 | Maru Proでは、この機能のほか、Apple Watchアプリや追加のカラー、アイコン、サウンドが使えます。それ以外はすべて無料のままです。 | Maru Pro añade esto, una app para Apple Watch y más colores, iconos y sonidos. Todo lo demás sigue siendo gratis. | Maru Pro bietet das, eine Apple Watch-App und mehr Farben, Symbole und Töne. Alles andere bleibt kostenlos. | Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 색상과 아이콘, 소리가 있어요. 나머지는 모두 계속 무료예요. |
 | This is a preview. With Maru Pro, the whole app uses this color. | 这是预览。有了 Maru Pro，整个 App 都会用这个颜色。 | これはプレビューです。Maru Proなら、App全体がこのカラーになります。 | Es una vista previa. Con Maru Pro, toda la app usa este color. | Das ist eine Vorschau. Mit Maru Pro nutzt die ganze App diese Farbe. | 미리 보기예요. Maru Pro가 있으면 앱 전체에 이 색상이 적용돼요. |
 
+## Watch app of Maru Pro (D111)
+
+The strings below are new. They are drafts. No native speaker read them. The reviewer checks them in `Watch/Localizable.xcstrings`. They show on the locked screen of the Watch app for a free user.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Maru Pro | Maru Pro | Maru Pro | Maru Pro | Maru Pro | Maru Pro |
+| See and record today’s doses on your wrist. | 在手腕上查看并记录今天的服用。 | 今日の服用を手首で確認・記録できます。 | Ve y registra las dosis de hoy en tu muñeca. | Sieh und erfasse die Dosen von heute am Handgelenk. | 오늘의 복용을 손목에서 확인하고 기록해요. |
+| Unlock with Maru Pro on your iPhone. | 在 iPhone 上开通 Maru Pro 即可使用。 | iPhoneのMaru Proで使えるようになります。 | Desbloquéala con Maru Pro en tu iPhone. | Schalte sie mit Maru Pro auf deinem iPhone frei. | iPhone에서 Maru Pro로 잠금 해제하세요. |
+| Open on iPhone | 在 iPhone 上打开 | iPhoneで開く | Abrir en el iPhone | Auf dem iPhone öffnen | iPhone에서 열기 |
+| Sent. Open Maru on your iPhone to see Maru Pro. | 已发送。在 iPhone 上打开 Maru 就能看到 Maru Pro。 | 送信しました。iPhoneでMaruを開くとMaru Proが表示されます。 | Enviado. Abre Maru en tu iPhone para ver Maru Pro. | Gesendet. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen. | 보냈어요. iPhone에서 Maru를 열면 Maru Pro를 볼 수 있어요. |
+| Your iPhone is not reachable. Open Maru on your iPhone to see Maru Pro. | 连不上 iPhone。在 iPhone 上打开 Maru 来查看 Maru Pro。 | iPhoneに接続できません。iPhoneでMaruを開いてMaru Proをご覧ください。 | No se puede conectar con tu iPhone. Abre Maru en tu iPhone para ver Maru Pro. | Dein iPhone ist nicht erreichbar. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen. | iPhone에 연결할 수 없어요. iPhone에서 Maru를 열어 Maru Pro를 확인해 주세요. |
+
 ## Last Dose widget and Siri (D108)
 
 The strings below are new. They are drafts. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101).

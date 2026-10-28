@@ -52,8 +52,8 @@ jobs:
       - run: swift test --package-path Packages/MaruKit
 
   app:
-    # Build the app for the iOS Simulator, and the Watch app for the watchOS Simulator. The app does not embed
-    # the Watch app until 1.1 (D074), so the Watch app has its own step. macOS runners are free for public repositories.
+    # Build the app for the iOS Simulator. The app embeds the Watch app (D111), so the build also compiles the Watch
+    # app for the watchOS Simulator. macOS runners are free for public repositories.
     # The app needs Xcode 27. The macos-26 image has only Xcode 26, so use the Xcode 27 image (public preview).
     needs: changes
     if: needs.changes.outputs.app == 'true'
@@ -74,12 +74,8 @@ jobs:
           -clonedSourcePackagesDirPath .build/SourcePackages
           ARCHS=arm64 ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO
           CODE_SIGNING_ALLOWED=NO build
-      - run: >-
-          xcodebuild -project Maru.xcodeproj -scheme MaruWatch
-          -destination 'generic/platform=watchOS Simulator'
-          -clonedSourcePackagesDirPath .build/SourcePackages
-          ARCHS=arm64 ONLY_ACTIVE_ARCH=YES COMPILER_INDEX_STORE_ENABLE=NO
-          CODE_SIGNING_ALLOWED=NO build
+      # An archive of the app must have the Watch app (D111).
+      - run: grep -q 'MaruWatch.app in Embed Watch Content' Maru.xcodeproj/project.pbxproj
       # The debug sample photos must stay out of a release build (D073).
       - run: >-
           xcodebuild -project Maru.xcodeproj -target Maru -configuration Release -showBuildSettings

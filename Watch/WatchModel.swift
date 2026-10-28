@@ -24,8 +24,18 @@ final class WatchModel {
         case locked
     }
 
+    /// The answer to "Open on iPhone" on the locked screen (D111).
+    enum ProRequest: Equatable {
+        case sending
+        /// The iPhone has the request. It shows the paywall the next time that Maru is in front.
+        case sent
+        /// The request did not reach the iPhone.
+        case notSent
+    }
+
     /// The last list that the iPhone sent. The system keeps it between launches.
     private(set) var day: WatchDay?
+    private(set) var proRequest: ProRequest?
     private(set) var notice: Notice?
     /// The doses with a request that runs. A second request for one of them does nothing.
     private(set) var inFlight: Set<OccurrenceID> = []
@@ -48,6 +58,19 @@ final class WatchModel {
     /// Asks the iPhone for the list of now. With no reply, the last list stays.
     func refresh() {
         link.refresh()
+    }
+
+    /// Asks the iPhone to show Maru Pro. The Watch sells nothing (D111).
+    func showProOnPhone() {
+        guard proRequest != .sending else { return }
+        proRequest = .sending
+        Task {
+            if case .reply = await link.send(.showPro) {
+                proRequest = .sent
+            } else {
+                proRequest = .notSent
+            }
+        }
     }
 
     func record(_ dose: WatchDay.Dose, as action: IntakeAction) {
@@ -84,6 +107,9 @@ final class WatchModel {
     /// An application context can come after a newer reply. The newest list stays.
     private func show(_ day: WatchDay) {
         guard day.sentAt >= self.day?.sentAt ?? .distantPast else { return }
+        // The locked screen replaces the list, so a notice about a dose does not stay for a later Pro list.
+        if !day.isPro { notice = nil }
+        if day.isPro != self.day?.isPro { proRequest = nil }
         self.day = day
     }
 }
