@@ -2016,7 +2016,7 @@ Sources:
 
 Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
 
-## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115)
+## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115, paywall changed by D118)
 
 Maintainer decisions of 2026-10-28, with agent detail. They follow the two paywall studies of 2026-10-28 in the maintainer's research folder. They define the "Pro" tier of D099.
 
@@ -2352,7 +2352,7 @@ Check: nobody ran the Watch app in paired simulators or on a real Watch for this
 
 Not verified: nobody ran the Watch app on a real Watch. The checks of D071 and D066 for a real iPhone and Watch stay open. App Store Connect needs Apple Watch screenshots before a submission with the Watch app, and App Review needs a way to see the Watch app with Pro (a sandbox purchase).
 
-## D115 · 2026-10-28 · A plain Apple look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107)
+## D115 · 2026-10-28 · A plain Apple look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107; the paywall part is replaced by D118)
 
 Maintainer request on 2026-10-28, in two rounds. First, the paywall looked plain. A serif, a glow, and a preview card followed, and the maintainer rejected them: the paywall was "very ugly", it must be simpler and more direct, a reader of another language must understand it at once, it may use only the app font, and everything must look like Apple. This decision changes the look only. The StoreKit code, the entitlement rules, the offers, and every price rule of D107 stay as they are. The paywall still has no countdown, no trial switch, no discount, no urgency text, and a "Continue Free" button with the size and shape of the buy button.
 
@@ -2377,7 +2377,7 @@ Evidence: simulator captures of the Today card, the paywall in light, dark, and 
 
 Not verified: no check on a real iPhone, on an iPad, with VoiceOver, or with Reduce Motion. The purchase with the StoreKit configuration (the thank-you, then the close), a restore, a pending purchase, and the long German and Spanish lines are open. The smallest iPhone that iOS 17 supports (iPhone SE, 667 points high) was not available as a simulator, so the first-screen rule is proven only down to 844 points. On a 667-point screen the two small link rows are under the first screen, and the buy button is above them.
 
-## D116 · 2026-10-28 · Paywall style B: a gradient picture, one headline, and a button that names the plan (an option next to D115, lower half redesigned by D117)
+## D116 · 2026-10-28 · Paywall style B: a gradient picture, one headline, and a button that names the plan (an option next to D115, lower half redesigned by D117, replaced by D118)
 
 Maintainer feedback on the plain paywall of D115, on 2026-10-28: it is too plain and boring, a user would not want to buy it, and it has no focal point. The maintainer asked for a look at the ChatGPT and Claude upgrade pages, and for a very abstract, modern gradient picture as the look of the paywall, and maybe of other places. The earlier rules stay: very simple and direct, understandable at first look by a reader of another language, the system font only, and an Apple look. This decision adds a second paywall ("style B") so the maintainer can compare the two on a display and keep one. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107.
 
@@ -2399,7 +2399,7 @@ Evidence: simulator captures and a recording are in `~/Documents/Research/maru/p
 
 Not verified: no check on a real iPhone, on an iPad, with VoiceOver, or with Reduce Motion. The purchase, a restore, a pending purchase, and the long German and Spanish lines are open. The smallest iPhone that iOS 17 supports (iPhone SE, 667 points high) is not a simulator here, so the first-screen rule is proven only down to 844 points.
 
-## D117 · 2026-10-28 · Paywall style B, second round: two calm looks for the lower half, B1 "Immersive" and B2 "Clean sheet" (replaces the tiles and plan cards of D116)
+## D117 · 2026-10-28 · Paywall style B, second round: two calm looks for the lower half, B1 "Immersive" and B2 "Clean sheet" (replaces the tiles and plan cards of D116, replaced by D118)
 
 Maintainer feedback on style B, on 2026-10-28: the picture and the headline "Your next dose, at a glance." are good. Everything under the picture is "very, very ugly": some icons and fonts look generated, and the layout is messy. A second message: the join of the picture and the content is abrupt, and the page must flow as one piece. This decision replaces the lower half with two looks, so the maintainer can choose one. It changes no StoreKit code, no entitlement rule, no price rule, no string, and no trigger of D107.
 
@@ -2426,3 +2426,30 @@ Fit: at the default text size, the first screen with no scroll shows the headlin
 Evidence: simulator captures (light, dark, zh-Hans on an iPhone 17 Pro, light and "Extra Large" on an iPhone 17e) and `compare.png` (old B, B1, B2, light and dark) are in `~/Documents/Research/maru/paywall-redesign/style-b2/`. As in D116, a copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
 
 Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, and the long German and Spanish lines. The smallest iPhone that iOS 17 supports (667 points high) is not a simulator here. The white "Continue Free" and link rows were not checked for contrast with a tool. The text on the fade of B2 is black on a pink tint for the first benefit row in light mode, and it is readable in the captures only.
+
+## D118 · 2026-10-28 · The final Maru Pro paywall: a calm page and a pinned purchase area (replaces the paywall of D115 and style B of D116 and D117)
+
+Maintainer decision on 2026-10-28: keep style B2 "Clean sheet" of D117, then make it as clean as the paywall of Doz (a pill reminder app), with an Apple look. Keep the gradient picture and the headline "Your next dose, at a glance." This decision removes the plain paywall of D115, the style B option of D116, and the look B1 "Immersive" of D117, with their code, strings, and the debug switch. It changes no StoreKit code, no entitlement rule, no price rule, no trigger of D107, and not the thank-you. The Today card and the Settings row did not change.
+
+What I took from Doz, and why:
+- A soft tinted page. The tint of the app washes the whole background, very faint (14 percent in light mode, 20 percent in dark mode, fading to 3 percent at the foot). The picture fades into it, so the page is one piece.
+- Benefit rows with a thin symbol in the tint, a semibold title, and one gray line. The lines are new: "See your next dose without opening Maru.", "Record a dose from your wrist.", and "Pick your app color, icon, and reminder sound."
+- A pinned purchase area at the foot of the sheet, on the system bar material, so the page scrolls under it. It holds two plan tiles, the line "Share with your family" (symbol `person.2`, Family Sharing is on), the terms of the selected plan, one capsule button, and one line with a check mark under the button: "Cancel anytime" for the yearly plan, "One payment" for the lifetime plan. The terms line stays beside the button (App Review 3.1.2).
+- Plan tiles side by side: the name, the price as the largest text, and a small line ("7 days free", "One time"). The selected tile has an outline in the tint. A per-month price is not shown, because it adds a second price that the user must compare.
+- "Restore Purchases", "Redeem Code", "Terms of Use", and "Privacy Policy" end the scrolling page, after the note "Maru is made by one independent developer. Thank you for your support."
+
+What I did not take: laurel wreaths, a countdown, a struck-through price, "SAVE" badges, user reviews (Maru has none), a large app icon (the picture is the focal point), and centered body text. The text column is left aligned with one 20 point margin.
+
+Other rules:
+- The type is SF Pro with text styles. The one accent is the app tint (symbols, the selected outline, the button).
+- The supporting line under the headline and "Continue Free" are gone. The close button at the top right ends the paywall, and the benefit lines now say what Pro adds. The page says "Reminders stay free" nowhere, because the free app is the app that the user already has.
+- At an accessibility text size, the purchase area scrolls with the page, so it never covers the screen. The tiles stack.
+- Terms lines are the ones of D115 ("Renews until you cancel."). The lines of D116 with "Renews automatically. Cancel anytime." are removed, because the new line under the button says "Cancel anytime".
+- Removed strings: "Try It Free", "Continue Free", "No subscription", "per year", "one time", the supporting line of D116, and the two terms lines of D116.
+- Debug launch arguments `-MaruPaywallStyleB1` and `-MaruPaywallStyleB2` are gone. A debug build shows the paywall as a release build does.
+
+Fit: on an iPhone 17 Pro and an iPhone 17e at the default text size, the first screen shows the headline, the three benefits, both prices, the terms line, the button, and the reassurance line.
+
+Evidence: captures (light, dark, zh-Hans, scrolled, an iPhone 17e, and "Accessibility Extra Large") and `compare.png` (Doz, B2, final) are in `~/Documents/Research/maru/paywall-redesign/final/`. A copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
+
+Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the long German and Spanish lines, the iPhone SE size, and the contrast of the gray lines on the wash with a tool.

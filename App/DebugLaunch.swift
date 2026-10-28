@@ -28,15 +28,6 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruDebugPro")
     }
 
-    /// `-MaruPaywallStyleB1 YES` or `-MaruPaywallStyleB2 YES`: show the second paywall (style B, D116, D117) in its immersive
-    /// or its clean look instead of the plain one of D115, so the looks can be captured. A release build always shows the
-    /// plain one until the maintainer picks a style.
-    static var paywallLook: PaywallStyleB.Look? {
-        if UserDefaults.standard.bool(forKey: "MaruPaywallStyleB1") { return .immersive }
-        if UserDefaults.standard.bool(forKey: "MaruPaywallStyleB2") { return .clean }
-        return nil
-    }
-
     /// `-MaruTap 8:00` or `-MaruTap 8:00+120`: after the first read, act as a tap on the reminder of that time of today,
     /// delivered on time or that many minutes late. The simulator cannot set the delivery date of a notification.
     static var tap: (time: WallClockTime, delay: Int)? {

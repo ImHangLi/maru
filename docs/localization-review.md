@@ -475,3 +475,18 @@ Five new strings for the second paywall. No native speaker read them. The review
 | Free for %lld days, then %@ per year. Renews automatically. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。自动续订，可随时取消。 | %1$lld日間無料、その後は年額%2$@。自動更新で、いつでもキャンセルできます。 | Gratis durante %1$lld días, luego %2$@ al año. Se renueva automáticamente. Cancela cuando quieras. | %1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
 | %@ per year. Renews automatically. Cancel anytime. | 每年 %@。自动续订，可随时取消。 | 年額%@。自動更新で、いつでもキャンセルできます。 | %@ al año. Se renueva automáticamente. Cancela cuando quieras. | %@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | 연 %@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
 | Start Free Trial | 开始免费试用 | 無料トライアルを開始 | Empezar prueba gratis | Gratis testen starten | 무료 체험 시작 |
+
+## Final paywall (D118)
+
+Eight new strings. "Try It Free", "Continue Free", "No subscription", "per year", "one time", the supporting line of D116, and the two terms lines of D116 left the catalog. The terms lines of D115 are in use again. No native speaker read them. The reviewer checks that each benefit line fits one or two lines at a large text size, that "Cancel anytime" and "One payment" are true short claims in the language, and that the note about the independent developer sounds warm and plain.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| See your next dose without opening Maru. | 无需打开 Maru，就能看到下一次服药。 | Maruを開かなくても、次の服用がわかります。 | Mira tu próxima dosis sin abrir Maru. | Sieh deine nächste Dosis, ohne Maru zu öffnen. | Maru를 열지 않아도 다음 복용을 볼 수 있어요. |
+| Record a dose from your wrist. | 在手腕上就能记录服药。 | 手首から服用を記録できます。 | Registra una dosis desde tu muñeca. | Erfasse eine Einnahme am Handgelenk. | 손목에서 바로 복용을 기록해요. |
+| Pick your app color, icon, and reminder sound. | 选择应用颜色、图标和提醒声音。 | アプリのカラー、アイコン、通知音を選べます。 | Elige el color, el icono y el sonido de los recordatorios. | Wähle App-Farbe, Symbol und Erinnerungston. | 앱 색상, 아이콘, 알림 소리를 골라요. |
+| One time | 一次买断 | 1回のみ | Pago único | Einmalig | 한 번만 |
+| Cancel anytime | 可随时取消 | いつでもキャンセル可能 | Cancela cuando quieras | Jederzeit kündbar | 언제든 취소 가능 |
+| One payment | 一次付款 | 1回のお支払い | Un solo pago | Einmalige Zahlung | 한 번만 결제 |
+| Share with your family | 与家人共享 | ご家族と共有 | Compártelo con tu familia | Mit der Familie teilen | 가족과 공유 |
+| Maru is made by one independent developer. Thank you for your support. | Maru 由一位独立开发者制作。感谢你的支持。 | Maruは一人の個人開発者が作っています。応援ありがとうございます。 | Maru la crea un solo desarrollador independiente. Gracias por tu apoyo. | Maru wird von einem einzelnen unabhängigen Entwickler gemacht. Danke für deine Unterstützung. | Maru는 한 명의 독립 개발자가 만들어요. 응원해 주셔서 고마워요. |
