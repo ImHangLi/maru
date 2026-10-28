@@ -83,9 +83,8 @@ struct FourthTimeTests {
     }
 }
 
-/// The cause on the iPhone (D086): a removal that the app wrote in its ledger and the system never did. The ledger is in
-/// `UserDefaults`, so it survives the stop of the app and the update to a new build. Before D086 nothing sent the removal
-/// again and nothing replaced the request, so the old content stayed and "Reminder Not Set" showed at each save.
+/// Before D086, a persisted removal ledger blocked request repair after an interrupted removal.
+/// Fresh request identifiers and generations now let later runs repair the system state.
 @Suite("A removal that the system never did")
 struct StuckRemovalTests {
     @Test func aStoppedRunDoesNotLeaveAnOldRequestForGood() async throws {
@@ -99,8 +98,7 @@ struct StuckRemovalTests {
         try await p.addItem("Vitamin B Complex", at: ["09:00"])
         try await p.addItem("Magnesium Glycinate", at: ["21:00"])
         try await p.addItem("Fish Oil", at: ["21:00"])
-        // A day before: the user records Magnesium before 21:00. The run that follows stops after it wrote the removal
-        // of the daily request in the ledger and before the system got the call.
+        // The user records Magnesium before 21:00. Its reminder run stops at the selected external call.
         await p.advance(to: "2026-10-14 18:00")
         p.nextRunKillsAtCall = call
         try await p.record("Magnesium Glycinate")
