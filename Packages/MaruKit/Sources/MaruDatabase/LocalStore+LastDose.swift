@@ -11,6 +11,13 @@ public struct LastDose: Equatable, Sendable {
     /// The amount as the user typed it: the amount of the dose for an as-needed item, else the amount of the
     /// schedule version of the dose. `nil` when there is none.
     public let amount: Dose?
+
+    public init(itemID: ItemID, name: String, takenAt: Date, amount: Dose?) {
+        self.itemID = itemID
+        self.name = name
+        self.takenAt = takenAt
+        self.amount = amount
+    }
 }
 
 extension LocalStore {

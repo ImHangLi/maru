@@ -61,9 +61,11 @@ struct LastDoseProvider: AppIntentTimelineProvider {
     /// One entry for now, and one at each change of the time text, so "2 hr. ago" moves with no reload.
     private static func entries(at now: Date) -> [LastDoseEntry] {
         let tint = AppGroup.appColor
-        guard let directory = AppGroup.databaseDirectory,
-              let dose = try? LocalStore.readLastDoseForWidget(in: directory)
-        else { return [LastDoseEntry(date: now, content: .unavailable, tint: tint)] }
+        let unavailable = [LastDoseEntry(date: now, content: .unavailable, tint: tint)]
+        guard let directory = AppGroup.databaseDirectory else { return unavailable }
+        // `try?` would flatten "no dose" into a failure, so the read keeps the two apart.
+        let dose: LastDose?
+        do { dose = try LocalStore.readLastDoseForWidget(in: directory) } catch { return unavailable }
         let dates = [now] + (dose.map { LastDoseTime.changes(after: now, takenAt: $0.takenAt) } ?? [])
         return dates.map { LastDoseEntry(date: $0, content: .dose(dose), tint: tint) }
     }

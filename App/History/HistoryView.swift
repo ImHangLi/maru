@@ -105,6 +105,17 @@ private struct HistoryList: View {
     var body: some View {
         let weeks = model.historyWeeks()
         List {
+            // The graph is the first section, so it scrolls away with the page (D109).
+            if let graph = model.history.graph {
+                Section {
+                    HistoryGraphView(graph: graph, counts: model.history.graphCounts, selection: $selection) {
+                        presentedDay = selection
+                    }
+                    // The graph draws its own card, so the cell adds no background and no padding.
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                }
+            }
             UnsavedSection()
             if !weeks.isEmpty || model.history.graph != nil {
                 Section {
@@ -135,16 +146,6 @@ private struct HistoryList: View {
         .listStyle(.insetGrouped)
         // A row that comes or goes moves the list (D030).
         .motion(.layout, value: weeks.map(\.itemID))
-        .safeAreaInset(edge: .top, spacing: 0) {
-            if let graph = model.history.graph {
-                HistoryGraphView(graph: graph, counts: model.history.graphCounts, selection: $selection) {
-                    presentedDay = selection
-                }
-                .padding(.horizontal, Tile.margin)
-                .padding(.vertical, 8)
-                .background(Color(.systemGroupedBackground))
-            }
-        }
         // A day of the graph opens its log. The selection clears when the log closes.
         .navigationDestination(item: $presentedDay) { HistoryLogView(scope: .day($0)) }
         .onChange(of: presentedDay) { _, day in
