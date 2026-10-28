@@ -20,6 +20,28 @@ extension ItemColor {
     }
 }
 
+/// The look of the app in Settings (D105). The widgets always follow the system.
+enum AppAppearance: String, CaseIterable {
+    case system, light, dark
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    /// `nil` follows the system.
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+}
+
 extension Color {
     /// A filled circle in this color for a system menu. A menu draws a template image in one color,
     /// so this image keeps its own color.

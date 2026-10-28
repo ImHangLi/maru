@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, and D104 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, and D105 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -21,6 +21,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - Item colors: pink, orange, yellow, green, mint, blue, purple, brown. Use the system colors with the same names, and a system-like brown. Each color has a light value and a dark value. The item color appears only on the form icon. It is never the only signal of a state (spec §5.3).
 - A new item gets the first color in that order that no active item uses. If all are in use, it gets pink.
 - Errors and destructive actions use the system red.
+- The menu "Appearance" in Settings sets the app to the system look, always light, or always dark (D105). Every page and sheet follows it. The widgets always follow the system.
 
 ## Surface
 
@@ -159,7 +160,7 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 
 - "Reminders": the row "Notifications" with its state ("On", "Quiet", "Off", "Not Asked Yet"), the row "Open Settings" when the state is "Off" or "Quiet", and the switch "Show Names in Reminders" (D029, D085). Settings has no test notification (D076). The footer explains a state that needs words.
 - "For All Items" (D085): the switch "Alarm" (from iOS 26), the menu "Remind Again", and the menu "Every". A row shows the value that every active item with a time has. When the items differ, it says "Varies", and "Alarm" is then a menu with "Varies", "On", and "Off". A choice sets every one of those items. "Every" shows only while an item has "Remind Again" on. The only footer is the limit line of "Until I Record It".
-- "Display": "App Color".
+- "Display": "App Color", "Color Header", "Appearance", and "Language". "Appearance" has "System", "Light", and "Dark", and the default is "System" (D105).
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
 - "Your Data", then "Send Feedback" (D037). Settings has no "Support Maru" section (D099).
 - "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift. Its footer is "Made with care by the Maru team." (D101).

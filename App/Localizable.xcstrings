@@ -1735,6 +1735,41 @@
         }
       }
     },
+    "Appearance" : {
+      "comment" : "Settings: a menu that sets the app look: the system look, always light, or always dark.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Darstellung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apariencia"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外観モード"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "화면 모드"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外观"
+          }
+        }
+      }
+    },
     "Archive" : {
       "comment" : "The destructive button of the archive confirmation.",
       "localizations" : {
@@ -2921,6 +2956,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "恢复失败。你的数据没有变化。"
+          }
+        }
+      }
+    },
+    "Dark" : {
+      "comment" : "Settings, menu \"Appearance\": the app is always in the dark look.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dunkel"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oscuro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダーク"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다크"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "深色"
           }
         }
       }
@@ -5037,6 +5107,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开源许可"
+          }
+        }
+      }
+    },
+    "Light" : {
+      "comment" : "Settings, menu \"Appearance\": the app is always in the light look.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hell"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ライト"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "라이트"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "浅色"
           }
         }
       }
@@ -10198,6 +10303,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "轻扫或长按以更改。"
+          }
+        }
+      }
+    },
+    "System" : {
+      "comment" : "Settings, menu \"Appearance\": the app follows the light or dark look of the device.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sistema"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システム"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "시스템"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跟随系统"
           }
         }
       }

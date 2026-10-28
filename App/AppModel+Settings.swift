@@ -12,6 +12,8 @@ enum DisplaySetting {
     static let appColor = "display.appColor"
     /// The wash of the app tint behind the title of Today and My Items (D100). No value means on (D104).
     static let headerWash = "display.headerWash"
+    /// The light or dark look of the app, as the raw value of an `AppAppearance` (D105). No value means the system look.
+    static let appearance = "display.appearance"
 }
 
 /// The state of the settings sheet that is not in `UserDefaults`.
