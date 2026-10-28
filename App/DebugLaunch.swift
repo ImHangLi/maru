@@ -22,6 +22,12 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruFirstRun")
     }
 
+    /// `-MaruDebugPro YES`: act as if Maru Pro is active, with no purchase. For the check of the Watch app in a
+    /// simulator (D111). Without it, the purchase of the StoreKit configuration decides.
+    static var forcesPro: Bool {
+        UserDefaults.standard.bool(forKey: "MaruDebugPro")
+    }
+
     /// `-MaruTap 8:00` or `-MaruTap 8:00+120`: after the first read, act as a tap on the reminder of that time of today,
     /// delivered on time or that many minutes late. The simulator cannot set the delivery date of a notification.
     static var tap: (time: WallClockTime, delay: Int)? {

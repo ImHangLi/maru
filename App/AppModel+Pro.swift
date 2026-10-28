@@ -40,12 +40,16 @@ struct ProState {
     var cardCheck: Task<Void, Never>?
     /// "×" on the card of Today.
     var cardDismissed = UserDefaults.standard.bool(forKey: ProOffers.cardDismissedKey)
+    /// A free user tapped "Open on iPhone" on the Watch (D111). The request can start Maru in the background, so it waits
+    /// in `UserDefaults.standard` until Maru is in front.
+    var watchAsked = UserDefaults.standard.bool(forKey: ProOffers.watchAskedKey)
 }
 
 /// The keys and the limits of the two offers that Maru shows by itself (D107).
 enum ProOffers {
     static let firstValueShownKey = "pro.firstValueShown"
     static let cardDismissedKey = "pro.cardDismissed"
+    static let watchAskedKey = "pro.watchAsked"
     /// The days on which the card of Today showed, at most `cardDayLimit`.
     static let cardDaysKey = "pro.cardDays"
     static let cardDayLimit = 3
@@ -90,6 +94,25 @@ extension AppModel {
         let result = await pro.restore()
         if let result { analytics.capture(.purchaseResult(result, plan: pro.plan?.analytics)) }
         return result
+    }
+
+    // MARK: Watch
+
+    /// The locked screen of the Watch app asked for Maru Pro (D111). The root view shows the paywall the next time that
+    /// Maru is in front, after the onboarding, the edit screen, and the alerts.
+    func watchAskedForPro() {
+        // A paywall that is open already answers the request, so its close does not open a second one.
+        guard !pro.isPro, proState.paywall == nil else { return }
+        proState.watchAsked = true
+        UserDefaults.standard.set(true, forKey: ProOffers.watchAskedKey)
+    }
+
+    /// The root view shows the paywall that the Watch asked for. It shows one time for each request.
+    func showWatchOffer() {
+        guard proState.watchAsked else { return }
+        proState.watchAsked = false
+        UserDefaults.standard.removeObject(forKey: ProOffers.watchAskedKey)
+        presentPaywall(reason: .feature)
     }
 
     // MARK: First-value offer

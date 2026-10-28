@@ -21,6 +21,8 @@ extension WatchMessage {
 }
 
 /// The doses of today, as the iPhone sends them to the Watch. It has no as-needed item.
+///
+/// The Watch app is a Pro feature (D111). A list for a free user has no dose, so no health data leaves the iPhone.
 public struct WatchDay: WatchMessage, Equatable {
     public struct Dose: Codable, Equatable, Identifiable, Sendable {
         public let id: OccurrenceID
@@ -70,13 +72,16 @@ public struct WatchDay: WatchMessage, Equatable {
     public let expiresAt: Date
     /// The app tint (D025). It is no health data.
     public let tint: ItemColor
+    /// Maru Pro is active on the iPhone (D107). When it is `false`, the Watch shows the locked screen, and `slots` is empty.
+    public let isPro: Bool
     public let slots: [Slot]
 
-    public init(sentAt: Date, expiresAt: Date, tint: ItemColor, slots: [Slot]) {
+    public init(sentAt: Date, expiresAt: Date, tint: ItemColor, isPro: Bool, slots: [Slot]) {
         self.sentAt = sentAt
         self.expiresAt = expiresAt
         self.tint = tint
-        self.slots = slots
+        self.isPro = isPro
+        self.slots = isPro ? slots : []
     }
 
     /// `false` for a list of an earlier day. The Watch must not show it as today (spec 9).
@@ -97,6 +102,9 @@ public enum WatchRequest: WatchMessage, Equatable {
         OccurrenceID, scheduleVersionID: ScheduleVersionID, action: IntakeAction,
         revision: IntakeEventID?, intent: IntakeEventID
     )
+    /// A free user tapped "Show on iPhone" on the locked screen (D111). The iPhone shows the paywall the next time
+    /// that Maru is in front. The Watch sells nothing.
+    case showPro
 }
 
 /// What a record request of the Watch does to the stored record.
