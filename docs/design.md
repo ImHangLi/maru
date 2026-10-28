@@ -63,7 +63,7 @@ The paywall is a normal system sheet with the system font and SF Symbols in the 
 - The row "Maru Pro" in Settings has the app icon in use at 40 points, a headline title, and one line. The card of Today is a list section at the bottom of the page, under every dose: a symbol in the tint, a headline title, one sentence, the borderless button "See Maru Pro", and an "×" button. It has no badge and no color fill.
 - A Pro feature shows its choices to every user, with no lock symbol and no badge. A free user's choice opens the paywall, and the footer of the page says so in one line (D112).
 - "App Icon" is a grid of the six icons at 62 points, with the corner of the Home Screen, a thin edge, and the name under each. The current icon has a ring of 2.5 points in the tint. The row in Settings shows the current icon at 29 points (D112).
-- "Reminder Sound" is a list: "Default" and six sounds. The sound in use has a check mark in the tint. Each of the six has a play button (`play.circle`) at the end of the row (D112).
+- "Reminder Sound" is a list: "Default" and eight sounds (D120). The sound in use has a check mark in the tint. Each of the eight has a play button (`play.circle`) at the end of the row (D112).
 
 ## Today
 

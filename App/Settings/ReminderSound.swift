@@ -1,10 +1,17 @@
 import AVFoundation
 import SwiftUI
 
-/// The reminder sounds of Maru Pro (D112). `docs/brand/make_sounds.py` makes the files in `App/Sounds`.
-/// No value is the default sound of the system.
+/// The reminder sounds of Maru Pro (D112, replaced by D120). The files in `App/Sounds` are CC0 sounds from other
+/// authors (`docs/third-party-licenses.md`). No value is the default sound of the system.
 enum ReminderSound: String, CaseIterable, Identifiable {
-    case dewdrop, petal, breeze, pebble, sunrise, lantern
+    case risingChime = "rising-chime"
+    case marimba = "marimba-hello"
+    case softBell = "soft-bell"
+    case glass = "glass-ting"
+    case chimeBars = "chime-bars"
+    case handBell = "hand-bell"
+    case musicBox = "music-box"
+    case synthBell = "synth-bell"
 
     /// The choice in `UserDefaults.standard`, beside the display settings (D014). The backup does not carry it.
     static let key = "reminders.sound"
@@ -16,16 +23,19 @@ enum ReminderSound: String, CaseIterable, Identifiable {
 
     var title: LocalizedStringResource {
         switch self {
-        case .dewdrop: "Dewdrop"
-        case .petal: "Petal"
-        case .breeze: "Breeze"
-        case .pebble: "Pebble"
-        case .sunrise: "Sunrise"
-        case .lantern: "Lantern"
+        case .risingChime: "Rising Chime"
+        case .marimba: "Marimba"
+        case .softBell: "Soft Bell"
+        case .glass: "Glass"
+        case .chimeBars: "Chime Bars"
+        case .handBell: "Hand Bell"
+        case .musicBox: "Music Box"
+        case .synthBell: "Synth Bell"
         }
     }
 
-    /// The user's choice. It stays when Maru Pro ends, so it comes back with Pro.
+    /// The user's choice. It stays when Maru Pro ends, so it comes back with Pro. A stored name that no sound has
+    /// (a sound that an earlier build had, D112) reads as no choice, so it means the default sound (D120).
     static var chosen: ReminderSound? {
         UserDefaults.standard.string(forKey: key).flatMap(ReminderSound.init(rawValue:))
     }
