@@ -81,8 +81,10 @@ struct ItemEntityQuery: EntityStringQuery {
 }
 
 /// "What do I take next": the next open doses of today, spoken and in a snippet. It records nothing.
+/// A locked iPhone asks for an unlock first, so a person who holds it can not hear the names.
 struct NextDoseIntent: AppIntent {
     static let title: LocalizedStringResource = "Next Dose"
+    static let authenticationPolicy = IntentAuthenticationPolicy.requiresAuthentication
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
@@ -108,8 +110,10 @@ struct NextDoseIntent: AppIntent {
 }
 
 /// "Did I take my …": the newest taken record of one item, with its time. It records nothing.
+/// A locked iPhone asks for an unlock first, as for "Next Dose".
 struct LastDoseIntent: AppIntent {
     static let title: LocalizedStringResource = "Last Dose of an Item"
+    static let authenticationPolicy = IntentAuthenticationPolicy.requiresAuthentication
 
     @Parameter(title: "Item", requestValueDialog: "Which item?")
     var item: ItemEntity
