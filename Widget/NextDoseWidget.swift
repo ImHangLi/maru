@@ -190,7 +190,7 @@ private struct NextDoseWidgetView: View {
                     Text("In \(Text(next.plannedAt, style: .relative))", comment: "Next Dose widget: the time left until the dose. Example: In 2 hr, 5 min (D113).")
                 } else {
                     // No judgment: never "late" or "missed" (D101).
-                    Text("Not recorded yet", comment: "Next Dose widget and Live Activity: the state after the planned time when the dose has no record. Calm, no judgment (D101, D110, D113).")
+                    Text("Not recorded yet", comment: "Next Dose widget: the state after the planned time when the dose has no record. Calm, no judgment (D101, D113).")
                 }
                 Text(doses(next))
             } else {

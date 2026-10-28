@@ -7,6 +7,8 @@ struct MaruWidgets: WidgetBundle {
         TodayWidget()
         TakeNowWidget()
         LastDoseWidget()
+        // The Live Activity of Maru Pro (D110). The app starts it.
+        NextDoseLiveActivity()
         NextDoseWidget()
     }
 }
