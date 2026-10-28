@@ -1974,3 +1974,43 @@ Maintainer decision.
 - The setting has no preview and no own page.
 
 Not verified: no build of the app on this Mac, and nobody saw the menu on a display. CI builds the app.
+
+## D106 · 2026-10-28 · Maru runs on iPhone Duo with its current layout
+
+Maintainer request: support iPhone Duo simply, with no special layout. Agent decision on the details.
+
+What iPhone Duo is (Apple sources below):
+
+- iPhone Duo is the first foldable iPhone, on sale from 2026-10-23. It has a compact outer display and a large inner display with the same aspect ratio. A hinge lets it be closed, fully open, or partially folded like a book.
+- It is an iPhone. An app for the iPhone runs on it, and needs no new device family and no new Info.plist key. "Your app may react to different size class boundaries, but it is still an iPhone app."
+- Size classes: the outer display is like other iPhones (compact width, regular height in portrait). The inner display is regular width and regular height.
+- Orientation: the outer display honors the supported orientations. The inner display does not, and the app scales there, also in Split View.
+- The system shows navigation bars, toolbars, and tab bars vertically on the side in some poses: always on the outer display, and in landscape on the inner display. System bars do this with no app code.
+- SDK: an app built with the iOS 26 SDK or earlier shows in the middle of the inner display with empty space around it. An app built with the iOS 27 SDK resizes. An app built with the iOS 27.1 SDK is "optimized for iPhone Duo" and fills the display.
+- The App Store badge "Made for iPhone Duo" shows when the store page has iPhone Duo screenshots. From April 2027, every submission needs iPhone Duo screenshots.
+- Apple asks apps to resize: no `UIScreen.main`, no layout by `userInterfaceIdiom` or interface orientation, no fixed iPhone sizes. Arrangement views, reserved regions (the fold), the hinge angle, and a second screen are optional APIs for custom layouts.
+
+What Maru does:
+
+- Nothing in the app code changes. A search of `App/`, `Widget/`, `Shared/`, and `Watch/` found no `UIScreen`, no layout by idiom, orientation, or size class, and no fixed width of a page. The layout of D072 fills the width of the window, so the inner display gets the iPhone layout at a larger width, as an iPad does.
+- `userInterfaceIdiom` sets only the device field of analytics (D077). iPhone Duo reports `.phone`, so it counts as an iPhone. The scanner view follows its host with an autoresizing mask. The onboarding text has a maximum width of 560 points, which is a limit and not a fixed size.
+- The iPhone stays portrait only. The inner display ignores this, and Apple permits it. Landscape on the outer display is optional, so Maru does not add it.
+- My Items keeps two columns of tiles. The HIG prefers an even number of columns, so the fold falls between them.
+- No arrangement view, no reserved-region code, no hinge code, and no second-screen scene.
+- The toolbars use `ToolbarItem` with semantic placements. "Settings", "History", and "Add Item" have a title and a symbol, so they can go vertical. "Edit" of the item detail and "Skip" of the onboarding are text only. The system keeps a text-only item out of a vertical bar.
+- CI builds with Xcode 27.1 and the iOS 27.1 SDK (runner image `xcode-27-arm64`). The Mac of the maintainer has Xcode 27.1, so the next archive is optimized. Version 1.0.0 build 4 is older, and nobody checked its SDK.
+- `project.yml` and `docs/design.md` say that the inner display ignores the portrait lock.
+
+Maintainer decision still open: iPhone Duo screenshots for the store. They give the badge now, and they are required from April 2027.
+
+Sources:
+
+- Apple Developer, "Preparing your app for iPhone Duo": https://developer.apple.com/documentation/technologyoverviews/preparing-your-app-for-iphone-duo
+- Apple HIG, "Designing for iPhone Duo" (2026-09-09): https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo
+- Apple Developer, "Three steps to make your app shine on iPhone Duo": https://developer.apple.com/iphone-duo/prepare/
+- Tech Talk "Prepare your app for iPhone Duo" (size classes, orientation, `UIRequiresFullScreen`): https://developer.apple.com/videos/play/tech-talks/111461/
+- Apple Developer News, "Prepare and submit your apps for iPhone Duo" (Xcode 27.1, badge, April 2027): https://developer.apple.com/news/?id=kkphp5qo
+- Apple Newsroom, "Developers bring incredible new app experiences to iPhone Duo": https://www.apple.com/uk/newsroom/2026/10/developers-bring-incredible-new-app-experiences-to-iphone-duo/
+- SwiftUI `ReservedRegion`: https://developer.apple.com/documentation/swiftui/reservedregion
+
+Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.

@@ -72,6 +72,7 @@ targets:
         INFOPLIST_KEY_NSCameraUsageDescription: Maru uses the camera to read the name on a label and to take a photo of an item. A label scan saves no photo.
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         # The iPhone is portrait only. Config/Maru-Info.plist has the four orientations of the iPad (D072).
+        # The inner display of iPhone Duo ignores this lock and resizes the app (D106).
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         # Maru uses only the encryption of iOS, so the upload needs no export compliance document.
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO

@@ -194,6 +194,10 @@ The iPad uses the layout of the iPhone at a larger width (D072). It has the same
 - Settings, the add and edit screen, the scanner, and the time sheets are system sheets. A dialog of choices shows as a popover from its button.
 - The iPad has the four orientations. The iPhone is portrait only. Split View and Slide Over show the same pages at their width.
 
+## iPhone Duo
+
+iPhone Duo uses the layout of the iPhone (D106). The outer display shows it as on other iPhones. The inner display shows it at a larger width, as an iPad does, in each orientation, because the inner display ignores the portrait lock. The system bars go to the side in some poses. Maru has no layout of its own for the fold.
+
 ## Watch
 
 One screen, "Today", with system list rows on the black background of watchOS (D071).
