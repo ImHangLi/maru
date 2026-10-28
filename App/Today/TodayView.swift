@@ -14,7 +14,15 @@ struct TodayView: View {
                 if case let .loaded(snapshot) = model.content {
                     if let today = snapshot.today {
                         TodayContent(today: today, hasItems: !snapshot.list.isEmpty)
-                            .onAppear { model.todayContentDidAppear() }
+                            .onAppear {
+                                model.todayContentDidAppear()
+                                #if DEBUG
+                                if DebugFamily.wantsSettings && !DebugLaunch.didOpenFamily {
+                                    DebugLaunch.didOpenFamily = true
+                                    model.openSettings()
+                                }
+                                #endif
+                            }
                     } else {
                         ContentUnavailableView {
                             Label("Maru Can’t Use Your Time Zone", systemImage: "globe")
@@ -30,7 +38,12 @@ struct TodayView: View {
             .modifier(DebugDataBanner())
             .modifier(DebugNoticeAlert())
             #endif
+            #if DEBUG
+            // The Family prototype: the title names the member that Today shows.
+            .modifier(DebugFamilyTitle())
+            #else
             .navigationTitle("Today")
+            #endif
             .toolbar {
                 SettingsButton()
                 // History has its own button in the bar (spec 3 P01, D026).
@@ -38,6 +51,9 @@ struct TodayView: View {
                     Button("History", systemImage: "calendar") { model.openHistory() }
                 }
                 AddItemButton()
+                #if DEBUG
+                DebugFamilyMenu()
+                #endif
             }
             .navigationDestination(isPresented: $model.history.isOpen) { HistoryView() }
             .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
@@ -56,7 +72,8 @@ private struct TodayContent: View {
     let hasItems: Bool
 
     var body: some View {
-        let asNeededRows = model.shownRows(of: today.asNeeded)
+        let asNeededRows = shownAsNeededRows
+        let groups = shownGroups
         ScrollViewReader { scroller in
             List {
                 // Before iOS 26 the bar has no subtitle, so the line under the title is the first header.
@@ -65,7 +82,7 @@ private struct TodayContent: View {
                 }
                 UnsavedSection()
                 NotificationsOffSection()
-                ForEach(today.groups) { group in
+                ForEach(groups) { group in
                     SlotSection(group: group, timeZone: timeZone)
                         .id(group.part)
                 }
@@ -82,7 +99,7 @@ private struct TodayContent: View {
             .headerWash()
             // The empty text is in the middle of the page (D026).
             .overlay {
-                if today.groups.isEmpty && asNeededRows.isEmpty {
+                if groups.isEmpty && asNeededRows.isEmpty {
                     if hasItems {
                         ContentUnavailableView("Nothing to take today. Enjoy it.", systemImage: "checkmark.circle")
                     } else {
@@ -95,7 +112,7 @@ private struct TodayContent: View {
                 }
             }
             // A row or a section that comes or goes moves the list, and the empty text fades (D030).
-            .motion(.layout, value: layout(asNeededRows))
+            .motion(.layout, value: layout(groups, asNeededRows))
             // A tapped reminder scrolls to its section (spec 8.3).
             .onChange(of: model.today.focus, initial: true) { _, focus in
                 guard let focus, let part = today.groups.first(where: {
@@ -125,15 +142,36 @@ private struct TodayContent: View {
         }
     }
 
+    /// The parts of the day with the rows of the shown member. The Family prototype filters them in a debug build.
+    private var shownGroups: [TodaySnapshot.Group] {
+        #if DEBUG
+        today.groups.compactMap { group in
+            var group = group
+            group.entries = group.entries.filter { DebugFamily.shared.shows($0.look.name) }
+            return group.entries.isEmpty ? nil : group
+        }
+        #else
+        today.groups
+        #endif
+    }
+
+    private var shownAsNeededRows: [AsNeededCard.Row] {
+        #if DEBUG
+        model.shownRows(of: today.asNeeded).filter { DebugFamily.shared.shows($0.look.name) }
+        #else
+        model.shownRows(of: today.asNeeded)
+        #endif
+    }
+
     private var timeZone: TimeZone {
         TimeZone(identifier: today.timeZone.identifier) ?? .current
     }
 
     /// What gives the list its layout: the sections, the rows, and the lines of each row. A record is not
     /// in it, because a recorded row keeps its place (spec 4).
-    private func layout(_ asNeededRows: [AsNeededCard.Row]) -> [AnyHashable] {
+    private func layout(_ groups: [TodaySnapshot.Group], _ asNeededRows: [AsNeededCard.Row]) -> [AnyHashable] {
         var layout: [AnyHashable] = [model.unsavedCount > 0, model.settings.permission == .denied, model.showsProCard(today)]
-        for group in today.groups {
+        for group in groups {
             layout.append(group.part)
             for entry in group.entries {
                 layout.append(entry.id)

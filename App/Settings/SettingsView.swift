@@ -22,6 +22,9 @@ struct SettingsView: View {
             Form {
                 // At the top, so a user who looks for it finds it (D107).
                 ProSection()
+                #if DEBUG
+                DebugFamilySection()
+                #endif
                 ReminderSection(showsNames: Binding(
                     get: { showsNames },
                     set: {

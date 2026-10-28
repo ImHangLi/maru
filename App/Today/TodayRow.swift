@@ -53,6 +53,9 @@ struct TodayRow: View {
             // The record circle is the end of the row, so the row has no chevron.
             .navigationLinkIndicatorVisibility(.hidden)
             .accessibilityHint(Text("Opens the details"))
+            #if DEBUG
+            DebugRowOwner(name: entry.look.name)
+            #endif
             RecordButton(
                 entry: entry,
                 timeZone: timeZone,

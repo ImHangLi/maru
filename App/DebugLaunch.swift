@@ -39,6 +39,8 @@ enum DebugLaunch {
     }
 
     @MainActor static var didTap = false
+    /// Settings opened for `-MaruFamilyOpen`.
+    @MainActor static var didOpenFamily = false
     /// Today showed the reminder result of a debug reset.
     @MainActor static var didReportReset = false
 
@@ -133,7 +135,10 @@ extension AppStore {
     ]
 
     private static var samples: [Sample] {
-        samplesByLanguage[Bundle.main.preferredLocalizations.first ?? "en"] ?? samplesByLanguage["en"]!
+        let samples = samplesByLanguage[Bundle.main.preferredLocalizations.first ?? "en"] ?? samplesByLanguage["en"]!
+        // The Family prototype adds a medication of Mochi, the sample cat (`DebugFamily`).
+        guard UserDefaults.standard.bool(forKey: "MaruFamily") else { return samples }
+        return samples + [("Methimazole", .medication, .tablet, "½ tablet", [(8, 0), (20, 0)], nil)]
     }
 
     /// Stores a sample photo as the edit screen stores a cut-out: a PNG of at most `ItemPhotos.maxPixel` pixels,
