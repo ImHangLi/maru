@@ -370,7 +370,11 @@ private struct PaywallHost: ViewModifier {
             get: { isActive ? model.proState.paywall : nil },
             set: { if $0 == nil, isActive { model.paywallDidClose() } }
         )) { _ in
+            #if DEBUG
+            if DebugLaunch.wantsPaywallStyleB { PaywallStyleB() } else { PaywallView() }
+            #else
             PaywallView()
+            #endif
         }
     }
 }

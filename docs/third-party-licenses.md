@@ -53,3 +53,9 @@ SOFTWARE.
 - Use: the alternate app icons and their previews in `App/AppIcons.xcassets`, and the reminder sounds in `App/Sounds` (D112).
 - Source: Maru made them. `docs/brand/make_icons.py` draws the icons from vector geometry. `docs/brand/make_sounds.py` synthesizes the sounds from sine waves. They use no third-party image, sound, sample, or font.
 - License: the same terms as the rest of this repository (`README.md`, "License"). The scripts use numpy and Pillow on the Mac only. The app does not contain them, so it shows no notice for them.
+
+## Paywall picture (generated, not third-party)
+
+- Use: `ProHero` in `App/Assets.xcassets`, the picture of the second paywall (D116).
+- Source: the image generation of Codex (OpenAI) made it from a text prompt that asks for an abstract gradient in the palette of the app color. It copies no third-party image, font, or logo. The prompt and the other candidates are in the maintainer's research folder, not in this repository.
+- License: the same terms as the rest of this repository (`README.md`, "License"). The app shows no notice for it.

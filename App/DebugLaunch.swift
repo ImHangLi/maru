@@ -28,6 +28,12 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruDebugPro")
     }
 
+    /// `-MaruPaywallStyleB YES`: show the second paywall (style B, D116) instead of the plain one of D115, so both can be
+    /// captured. A release build always shows the plain one until the maintainer picks a style.
+    static var wantsPaywallStyleB: Bool {
+        UserDefaults.standard.bool(forKey: "MaruPaywallStyleB")
+    }
+
     /// `-MaruTap 8:00` or `-MaruTap 8:00+120`: after the first read, act as a tap on the reminder of that time of today,
     /// delivered on time or that many minutes late. The simulator cannot set the delivery date of a notification.
     static var tap: (time: WallClockTime, delay: Int)? {

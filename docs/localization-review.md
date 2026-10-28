@@ -461,3 +461,15 @@ Seven new strings, and three from the first D115 round. No native speaker read t
 | Welcome to Maru Pro | 欢迎使用 Maru Pro | Maru Proへようこそ | Te damos la bienvenida a Maru Pro | Willkommen bei Maru Pro | Maru Pro에 오신 것을 환영해요 |
 | Thank you. Your extras are ready. | 谢谢你。新增功能已就绪。 | ありがとうございます。追加機能をお使いいただけます。 | Gracias. Tus extras ya están listos. | Danke. Deine Extras sind bereit. | 고마워요. 추가 기능을 지금 쓸 수 있어요. |
 | Lock Screen, Apple Watch, and more | 锁定屏幕、Apple Watch 等 | ロック画面、Apple Watchなど | Pantalla bloqueada, Apple Watch y más | Sperrbildschirm, Apple Watch und mehr | 잠금 화면, Apple Watch 등 |
+
+## Paywall style B (D116)
+
+Five new strings for the second paywall. No native speaker read them. The reviewer checks that the headline and the supporting line fit two to four lines at a large text size, that the terms lines keep the order "days, price", and that each terms line states the price, the period, that the plan renews, and that the user can cancel (App Review 3.1.2). The headline names the result "a glance at the next dose", and the supporting line says that the reminders stay free.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Your next dose, at a glance. | 下一次服药，一目了然。 | 次の服用が、ひと目でわかる。 | Tu próxima dosis, de un vistazo. | Deine nächste Dosis auf einen Blick. | 다음 복용을 한눈에. |
+| Add Lock Screen, Apple Watch, and your own look. Reminders stay free. | 添加锁定屏幕、Apple Watch 和专属外观。提醒仍然免费。 | ロック画面、Apple Watch、あなた好みの見た目を追加。リマインダーは引き続き無料です。 | Añade pantalla bloqueada, Apple Watch y tu propio estilo. Los recordatorios siguen siendo gratis. | Mit Sperrbildschirm, Apple Watch und eigenem Look. Erinnerungen bleiben kostenlos. | 잠금 화면, Apple Watch, 나만의 스타일을 더해요. 알림은 계속 무료예요. |
+| Free for %lld days, then %@ per year. Renews automatically. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。自动续订，可随时取消。 | %1$lld日間無料、その後は年額%2$@。自動更新で、いつでもキャンセルできます。 | Gratis durante %1$lld días, luego %2$@ al año. Se renueva automáticamente. Cancela cuando quieras. | %1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
+| %@ per year. Renews automatically. Cancel anytime. | 每年 %@。自动续订，可随时取消。 | 年額%@。自動更新で、いつでもキャンセルできます。 | %@ al año. Se renueva automáticamente. Cancela cuando quieras. | %@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | 연 %@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
+| Start Free Trial | 开始免费试用 | 無料トライアルを開始 | Empezar prueba gratis | Gratis testen starten | 무료 체험 시작 |

@@ -106,6 +106,41 @@
         }
       }
     },
+    "%@ per year. Renews automatically. Cancel anytime." : {
+      "comment" : "Paywall style B of Maru Pro: the terms line above the buy button for the yearly plan with no free trial. Example: $9.99 per year. Renews automatically. Cancel anytime.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ al año. Se renueva automáticamente. Cancela cuando quieras."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年額%@。自動更新で、いつでもキャンセルできます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연 %@. 자동으로 갱신되며 언제든 취소할 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每年 %@。自动续订，可随时取消。"
+          }
+        }
+      }
+    },
     "%@ per year. Renews until you cancel." : {
       "comment" : "Paywall of Maru Pro: the terms line under the plans for the yearly plan with no free trial. The price of one year first. Example: $9.99 per year. Renews until you cancel.",
       "localizations" : {
@@ -1651,6 +1686,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加时间"
+          }
+        }
+      }
+    },
+    "Add Lock Screen, Apple Watch, and your own look. Reminders stay free." : {
+      "comment" : "Paywall style B of Maru Pro: the supporting line under the headline. It names what Pro adds, and says that the reminders stay free.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Sperrbildschirm, Apple Watch und eigenem Look. Erinnerungen bleiben kostenlos."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade pantalla bloqueada, Apple Watch y tu propio estilo. Los recordatorios siguen siendo gratis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面、Apple Watch、あなた好みの見た目を追加。リマインダーは引き続き無料です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 화면, Apple Watch, 나만의 스타일을 더해요. 알림은 계속 무료예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加锁定屏幕、Apple Watch 和专属外观。提醒仍然免费。"
           }
         }
       }
@@ -4871,6 +4941,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "剂型"
+          }
+        }
+      }
+    },
+    "Free for %lld days, then %@ per year. Renews automatically. Cancel anytime." : {
+      "comment" : "Paywall style B of Maru Pro: the terms line above the buy button for the yearly plan with a free trial. First the number of trial days, then the price of one year. Example: Free for 7 days, then $9.99 per year. Renews automatically. Cancel anytime.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratis durante %1$lld días, luego %2$@ al año. Se renueva automáticamente. Cancela cuando quieras."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld日間無料、その後は年額%2$@。自動更新で、いつでもキャンセルできます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld일 무료, 이후 연 %2$@. 자동으로 갱신되며 언제든 취소할 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费 %1$lld 天，之后每年 %2$@。自动续订，可随时取消。"
           }
         }
       }
@@ -12117,6 +12222,41 @@
         }
       }
     },
+    "Start Free Trial" : {
+      "comment" : "Paywall style B of Maru Pro: the buy button of the yearly plan when it has a free trial. It starts the trial.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratis testen starten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezar prueba gratis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料トライアルを開始"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무료 체험 시작"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开始免费试用"
+          }
+        }
+      }
+    },
     "Start Over" : {
       "comment" : "Edit screen: the text “Start Over”.",
       "localizations" : {
@@ -16167,6 +16307,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上一次记录：昨天 %@ 已服用。"
+          }
+        }
+      }
+    },
+    "Your next dose, at a glance." : {
+      "comment" : "Paywall style B of Maru Pro: the headline over the picture. It names the result, a glance at the next dose on the Lock Screen and the Watch.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine nächste Dosis auf einen Blick."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu próxima dosis, de un vistazo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の服用が、ひと目でわかる。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 복용을 한눈에."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一次服药，一目了然。"
           }
         }
       }
