@@ -2348,7 +2348,7 @@ Debug: `-MaruDebugPro YES` makes `ProStore.isPro` true in a debug build, for a c
 
 `PRIVACY.md` has a section "Apple Watch" again, and the privacy pages of the site are built again. The site build needed headings for "Maru Pro" (D107) and "Apple Watch" in each language. The privacy pages are not deployed. The FAQ, `site/llms.txt`, and `DEVICES` in `site/build.py` still say that Maru has no Watch app, because that is true for the version in the App Store. Change them on the day of the release with the Watch app.
 
-Check: nobody ran the Watch app in paired simulators or on a real Watch for this change. CI builds the embedded Watch app.
+Check: after the merge, on 2026-10-29, the merged code ran in paired simulators (iPhone 17 Pro with iOS 27.0, Apple Watch Series 12 with watchOS 27.0), with the maintainer's permission of 2026-10-28. These passed: the locked screen of a free user, "Open on iPhone" (the iPhone in front showed the paywall), the Pro list, "Taken", "Undo", and "Skip" from the Watch with the record on the iPhone, and the locked screen again after Pro ended. The locked iPhone was not tested, because the simulator cannot lock a device. Pro came from `-MaruDebugPro YES`, not from a purchase. The screenshots, a video, and the report are in the maintainer's research folder, `maru/watch-check/`. CI builds the embedded Watch app.
 
 Not verified: nobody ran the Watch app on a real Watch. The checks of D071 and D066 for a real iPhone and Watch stay open. App Store Connect needs Apple Watch screenshots before a submission with the Watch app, and App Review needs a way to see the Watch app with Pro (a sandbox purchase).
 
