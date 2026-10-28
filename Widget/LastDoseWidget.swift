@@ -5,7 +5,8 @@ import SwiftUI
 import WidgetKit
 
 /// "Last Dose": the newest taken dose across the active items, with its name, amount, and time (D108).
-/// It shows the name, as "Record Dose" does. A tap opens the detail of the item.
+/// With "Show Names in Reminders" off, it shows "Dose recorded" and the time, and no name or amount (D029).
+/// A tap opens the detail of the item.
 struct LastDoseWidget: Widget {
     static let kind = "com.imhangli.maru.lastDose"
 
@@ -30,6 +31,8 @@ struct LastDoseEntry: TimelineEntry {
     let date: Date
     let content: Content
     let tint: ItemColor
+    /// "Show Names in Reminders" in the App Group (D029).
+    let showsNames: Bool
 }
 
 /// Reads the newest taken dose from the database in the App Group. It only reads (D048, D108).
@@ -39,7 +42,7 @@ struct LastDoseProvider: AppIntentTimelineProvider {
         let sample = LastDose(
             itemID: ItemID(), name: "Vitamin D", takenAt: Date().addingTimeInterval(-2 * 60 * 60), amount: Dose("1 capsule")
         )
-        return LastDoseEntry(date: Date(), content: .dose(sample), tint: AppGroup.appColor)
+        return LastDoseEntry(date: Date(), content: .dose(sample), tint: AppGroup.appColor, showsNames: true)
     }
 
     func snapshot(for configuration: NoConfiguration, in context: Context) async -> LastDoseEntry {
@@ -61,13 +64,14 @@ struct LastDoseProvider: AppIntentTimelineProvider {
     /// One entry for now, and one at each change of the time text, so "2 hr. ago" moves with no reload.
     private static func entries(at now: Date) -> [LastDoseEntry] {
         let tint = AppGroup.appColor
-        let unavailable = [LastDoseEntry(date: now, content: .unavailable, tint: tint)]
+        let showsNames = AppGroup.showsNames
+        let unavailable = [LastDoseEntry(date: now, content: .unavailable, tint: tint, showsNames: showsNames)]
         guard let directory = AppGroup.databaseDirectory else { return unavailable }
         // `try?` would flatten "no dose" into a failure, so the read keeps the two apart.
         let dose: LastDose?
         do { dose = try LocalStore.readLastDoseForWidget(in: directory) } catch { return unavailable }
         let dates = [now] + (dose.map { LastDoseTime.changes(after: now, takenAt: $0.takenAt) } ?? [])
-        return dates.map { LastDoseEntry(date: $0, content: .dose(dose), tint: tint) }
+        return dates.map { LastDoseEntry(date: $0, content: .dose(dose), tint: tint, showsNames: showsNames) }
     }
 }
 
@@ -135,7 +139,7 @@ private struct LastDoseWidgetView: View {
                 switch family {
                 case .accessoryInline:
                     Label {
-                        Text("\(dose.name), \(LastDoseTime.text(dose.takenAt, at: entry.date))")
+                        Text("\(title(dose)), \(LastDoseTime.text(dose.takenAt, at: entry.date))")
                     } icon: {
                         Image(systemName: "pills.fill")
                     }
@@ -184,15 +188,25 @@ private struct LastDoseWidgetView: View {
         }
     }
 
+    /// The item name, or "Dose recorded" when the names are off.
+    private func title(_ dose: LastDose) -> String {
+        entry.showsNames ? dose.name : String(localized: "Dose recorded", comment: "Last Dose widget: the text in place of the item name when \"Show Names in Reminders\" is off (D029, D108).")
+    }
+
+    /// The amount, only with names on. An amount can tell what the item is.
+    private func amount(_ dose: LastDose) -> Dose? {
+        entry.showsNames ? dose.amount : nil
+    }
+
     private func small(_ dose: LastDose) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             header
             Spacer(minLength: 4)
-            Text(dose.name)
+            Text(title(dose))
                 .font(.headline)
                 .lineLimit(3)
                 .minimumScaleFactor(0.7)
-            if let amount = dose.amount {
+            if let amount = amount(dose) {
                 Text(amount.text).font(.subheadline).foregroundStyle(.secondary).lineLimit(1)
             }
             Text(LastDoseTime.text(dose.takenAt, at: entry.date))
@@ -210,11 +224,11 @@ private struct LastDoseWidgetView: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(spacing: 4) {
                 Image(systemName: "pills.fill").widgetAccentable()
-                Text(dose.name)
+                Text(title(dose))
             }
             .font(.headline)
             Text(LastDoseTime.text(dose.takenAt, at: entry.date))
-            if let amount = dose.amount {
+            if let amount = amount(dose) {
                 Text(amount.text)
             }
         }

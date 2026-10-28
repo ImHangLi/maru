@@ -755,6 +755,101 @@
         }
       }
     },
+    "%lld doses" : {
+      "comment" : "Siri: the number of doses in place of the names when \"Show Names in Reminders\" is off (D108).",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Dosis"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Dosen"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dose"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld doses"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dosis"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dosis"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld件"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld개 항목"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld 项"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     ", " : {
       "comment" : "The separator between the parts of a detail line. Example: 2 capsules, 8:00 AM.",
       "localizations" : {
@@ -5757,6 +5852,41 @@
         }
       }
     },
+    "Maru couldn’t confirm the save. Open Maru to check your records." : {
+      "comment" : "Siri, \"Record my doses\": the answer when the record did not confirm. The dose can be stored, so the text does not say that nothing was recorded (spec 7.2, D014, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru konnte das Speichern nicht bestätigen. Öffne Maru, um deine Aufzeichnungen zu prüfen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru no pudo confirmar que se guardó. Abre Maru para revisar tus registros."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruは保存を確認できませんでした。Maruを開いて記録を確認してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru가 저장을 확인하지 못했어요. Maru를 열어 기록을 확인해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 没能确认是否已保存。请打开 Maru 查看你的记录。"
+          }
+        }
+      }
+    },
     "Maru couldn’t read the history." : {
       "comment" : "History: the footer of the error section when the days did not read, other than a locked iPhone.",
       "localizations" : {
@@ -5963,6 +6093,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 里还没有%@的服用记录。"
+          }
+        }
+      }
+    },
+    "Maru has no taken record for this item yet." : {
+      "comment" : "Siri, \"Did I take my …\": the answer when the item has no taken record and \"Show Names in Reminders\" is off. It names no item. No judgment (D101, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für diesen Eintrag gibt es in Maru noch keine Aufzeichnung einer Einnahme."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru aún no tiene ningún registro de toma de este elemento."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruにはこの項目の服用記録がまだありません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru에 아직 이 항목의 복용 기록이 없어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 里还没有这个药品的服用记录。"
           }
         }
       }
@@ -6243,41 +6408,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天没有要服用的，享受这一天吧。"
-          }
-        }
-      }
-    },
-    "Nothing was recorded. Open Maru to record your doses." : {
-      "comment" : "Siri, \"Record my doses\": the answer when the record did not commit. Nothing shows as recorded (spec 7.2, D108).",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Es wurde nichts erfasst. Öffne Maru, um deine Dosen zu erfassen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se registró nada. Abre Maru para registrar tus dosis."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "何も記録されていません。Maruを開いて記録してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아무것도 기록되지 않았어요. Maru를 열어 기록해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有记录任何内容。请打开 Maru 记录。"
           }
         }
       }
@@ -13972,6 +14102,111 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@的上一次记录：昨天 %2$@ 已服用。"
+          }
+        }
+      }
+    },
+    "Your last record: taken on %@ at %@." : {
+      "comment" : "Siri, \"Did I take my …\": the answer when the newest taken record is older than yesterday and \"Show Names in Reminders\" is off. The placeholders are a date and a time. It names no item (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine letzte Aufzeichnung: am %1$@ um %2$@ eingenommen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu último registro: tomado el %1$@ a las %2$@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の記録：%1$@ %2$@に服用済み。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 기록: %1$@ %2$@ 복용함."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一次记录：%1$@ %2$@ 已服用。"
+          }
+        }
+      }
+    },
+    "Your last record: taken today at %@." : {
+      "comment" : "Siri, \"Did I take my …\": the answer when the newest taken record is of today and \"Show Names in Reminders\" is off. The placeholder is a time. It names no item (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine letzte Aufzeichnung: heute um %@ eingenommen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu último registro: tomado hoy a las %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の記録：今日%@に服用済み。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 기록: 오늘 %@ 복용함."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一次记录：今天 %@ 已服用。"
+          }
+        }
+      }
+    },
+    "Your last record: taken yesterday at %@." : {
+      "comment" : "Siri, \"Did I take my …\": the answer when the newest taken record is of yesterday and \"Show Names in Reminders\" is off. The placeholder is a time. It names no item (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine letzte Aufzeichnung: gestern um %@ eingenommen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu último registro: tomado ayer a las %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の記録：昨日%@に服用済み。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 기록: 어제 %@ 복용함."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一次记录：昨天 %@ 已服用。"
           }
         }
       }

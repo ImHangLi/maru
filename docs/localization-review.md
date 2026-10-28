@@ -276,7 +276,7 @@ Siri phrases, in `App/AppShortcuts.xcstrings`. A phrase must sound like a natura
 | What's next in ${applicationName} | ${applicationName}接下来是什么 | ${applicationName}で次は何 | Qué sigue en ${applicationName} | Was steht als Nächstes an in ${applicationName} | ${applicationName}에서 다음은 뭐야 |
 | When did I last take ${item} in ${applicationName} | ${applicationName}里我上次什么时候吃的${item} | ${applicationName}で${item}を最後に飲んだのはいつ | Cuándo tomé ${item} por última vez en ${applicationName} | Wann habe ich zuletzt ${item} in ${applicationName} genommen | ${applicationName}에서 ${item} 마지막으로 언제 먹었어 |
 
-Siri answers and Shortcuts titles, in `App/Localizable.xcstrings`. The text that names the iPhone also has an iPad form.
+Siri answers and Shortcuts titles, in `App/Localizable.xcstrings`. The text that names the iPhone also has an iPad form. With "Show Names in Reminders" off, "%lld doses" takes the place of the names in "Next up", "Record as taken now", and "Recorded as taken".
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
@@ -288,8 +288,13 @@ Siri answers and Shortcuts titles, in `App/Localizable.xcstrings`. The text that
 | Nothing is due right now. You’re all set. | 现在没有需要记录的，一切都好。 | 今は記録するものはありません。大丈夫ですよ。 | Ahora no hay nada pendiente. Todo en orden. | Gerade steht nichts an. Alles in Ordnung. | 지금은 기록할 게 없어요. 다 괜찮아요. |
 | Record as taken now: %@? | 现在将%@记录为已服用？ | %@を今の時刻で服用済みとして記録しますか？ | ¿Registrar ahora como tomado: %@? | Jetzt als eingenommen erfassen: %@? | %@을(를) 지금 복용함으로 기록할까요? |
 | Recorded as taken: %@. | 已记录为已服用：%@。 | 服用済みとして記録しました：%@。 | Registrado como tomado: %@. | Als eingenommen erfasst: %@. | 복용함으로 기록했어요: %@. |
+| %lld doses (one: %lld dose) | %lld 项 | %lld件 | %lld dosis | %lld Dosen (one: %lld Dosis) | %lld개 항목 |
+| Maru has no taken record for this item yet. | Maru 里还没有这个药品的服用记录。 | Maruにはこの項目の服用記録がまだありません。 | Maru aún no tiene ningún registro de toma de este elemento. | Für diesen Eintrag gibt es in Maru noch keine Aufzeichnung einer Einnahme. | Maru에 아직 이 항목의 복용 기록이 없어요. |
+| Your last record: taken today at %@. | 上一次记录：今天 %@ 已服用。 | 最新の記録：今日%@に服用済み。 | Tu último registro: tomado hoy a las %@. | Deine letzte Aufzeichnung: heute um %@ eingenommen. | 마지막 기록: 오늘 %@ 복용함. |
+| Your last record: taken yesterday at %@. | 上一次记录：昨天 %@ 已服用。 | 最新の記録：昨日%@に服用済み。 | Tu último registro: tomado ayer a las %@. | Deine letzte Aufzeichnung: gestern um %@ eingenommen. | 마지막 기록: 어제 %@ 복용함. |
+| Your last record: taken on %@ at %@. | 上一次记录：%1$@ %2$@ 已服用。 | 最新の記録：%1$@ %2$@に服用済み。 | Tu último registro: tomado el %1$@ a las %2$@. | Deine letzte Aufzeichnung: am %1$@ um %2$@ eingenommen. | 마지막 기록: %1$@ %2$@ 복용함. |
 | Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again. | Maru 现在打不开你的记录。如果你的 iPhone 刚重启过，请先解锁，再问一次。 | Maruは今、記録を開けません。iPhoneを再起動した場合は、先にロックを解除してからもう一度お試しください。 | Maru no puede abrir tus registros ahora. Si el iPhone se reinició, desbloquéalo primero y vuelve a preguntar. | Maru kann deine Aufzeichnungen gerade nicht öffnen. Wenn dein iPhone neu gestartet wurde, entsperre es zuerst und frag dann erneut. | Maru가 지금 기록을 열 수 없어요. iPhone을 다시 시작했다면 먼저 잠금을 해제한 후 다시 물어봐 주세요. |
-| Nothing was recorded. Open Maru to record your doses. | 没有记录任何内容。请打开 Maru 记录。 | 何も記録されていません。Maruを開いて記録してください。 | No se registró nada. Abre Maru para registrar tus dosis. | Es wurde nichts erfasst. Öffne Maru, um deine Dosen zu erfassen. | 아무것도 기록되지 않았어요. Maru를 열어 기록해 주세요. |
+| Maru couldn’t confirm the save. Open Maru to check your records. | Maru 没能确认是否已保存。请打开 Maru 查看你的记录。 | Maruは保存を確認できませんでした。Maruを開いて記録を確認してください。 | Maru no pudo confirmar que se guardó. Abre Maru para revisar tus registros. | Maru konnte das Speichern nicht bestätigen. Öffne Maru, um deine Aufzeichnungen zu prüfen. | Maru가 저장을 확인하지 못했어요. Maru를 열어 기록을 확인해 주세요. |
 | Which item? | 哪个药品？ | どの項目ですか？ | ¿Qué elemento? | Welcher Eintrag? | 어떤 항목인가요? |
 | Item | 药品 | 項目 | Elemento | Eintrag | 항목 |
 | Last dose of ${item} | ${item}的上一次服用 | ${item}の前回の服用 | Última dosis de ${item} | Letzte Dosis von ${item} | ${item} 마지막 복용 |
@@ -308,6 +313,7 @@ The "Last Dose" widget, in `Widget/Localizable.xcstrings`.
 | No records yet | 还没有记录 | まだ記録はありません | Aún no hay registros | Noch keine Aufzeichnungen | 아직 기록이 없어요 |
 | Your last dose will show here. | 你最近一次服用会显示在这里。 | 最新の服用がここに表示されます。 | Tu última dosis aparecerá aquí. | Deine letzte Dosis erscheint hier. | 가장 최근 복용이 여기에 표시돼요. |
 | Yesterday, %@ | 昨天 %@ | 昨日 %@ | Ayer, %@ | Gestern, %@ | 어제 %@ |
+| Dose recorded | 已记录服用 | 服用を記録済み | Dosis registrada | Dosis erfasst | 복용 기록됨 |
 
 ## Name lists (D070)
 

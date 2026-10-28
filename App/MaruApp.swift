@@ -45,6 +45,7 @@ struct MaruApp: App {
         ReviewPrompt.noteLaunch()
         // The widgets read the tint from the App Group.
         AppGroup.appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
+        AppGroup.showsNames = model.showsNamesInReminders
     }
 
     var body: some Scene {

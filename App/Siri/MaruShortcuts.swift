@@ -5,7 +5,8 @@ import SwiftUI
 
 // Siri and Shortcuts (D108). Each intent runs in the app process, in the background, and calls an operation of the one
 // model (spec 6). The two questions only read. "Record my doses" records with the record transaction after a confirmation,
-// and it says "recorded" only after the commit (spec 7.2). Nothing goes to analytics.
+// and it says "recorded" only after the commit (spec 7.2). Nothing goes to analytics. With "Show Names in Reminders" off,
+// Siri says the number of doses in place of the names (D029, D108).
 
 /// The phrases of the three App Shortcuts. `App/AppShortcuts.xcstrings` has them in the other languages.
 struct MaruShortcuts: AppShortcutsProvider {
@@ -96,15 +97,19 @@ struct NextDoseIntent: AppIntent {
         }
         switch next {
         case let .next(doses):
-            let names = doses.doses.map(\.name).formatted(.list(type: .and))
+            let showsNames = AppModel.shared.showsNamesInReminders
+            let names = showsNames ? doses.doses.map(\.name).formatted(.list(type: .and)) : SiriText.count(doses.doses.count)
             let time = doses.time.formatted(.rowTime(in: doses.timeZone))
-            return .result(dialog: "Next up: \(names), planned for \(time).", view: NextDoseSnippet(next: doses, message: nil))
+            return .result(
+                dialog: "Next up: \(names), planned for \(time).",
+                view: NextDoseSnippet(next: doses, showsNames: showsNames, message: nil)
+            )
         case .allDone:
             let message: LocalizedStringResource = "All done for today. Nice work."
-            return .result(dialog: IntentDialog(message), view: NextDoseSnippet(next: nil, message: message))
+            return .result(dialog: IntentDialog(message), view: NextDoseSnippet(next: nil, showsNames: false, message: message))
         case .nothingPlanned:
             let message: LocalizedStringResource = "Nothing to take today. Enjoy it."
-            return .result(dialog: IntentDialog(message), view: NextDoseSnippet(next: nil, message: message))
+            return .result(dialog: IntentDialog(message), view: NextDoseSnippet(next: nil, showsNames: false, message: message))
         }
     }
 }
@@ -130,19 +135,25 @@ struct LastDoseIntent: AppIntent {
         } catch {
             throw SiriProblem.unreadable
         }
+        // The user said the name. With names off, Siri does not say it again.
+        let showsNames = AppModel.shared.showsNamesInReminders
         guard let last else {
-            return .result(dialog: "Maru has no taken record for \(item.name) yet.")
+            if showsNames { return .result(dialog: "Maru has no taken record for \(item.name) yet.") }
+            return .result(dialog: "Maru has no taken record for this item yet.")
         }
         let time = last.takenAt.formatted(date: .omitted, time: .shortened)
         let calendar = Calendar.current
         if calendar.isDateInToday(last.takenAt) {
-            return .result(dialog: "Your last record for \(last.name): taken today at \(time).")
+            if showsNames { return .result(dialog: "Your last record for \(last.name): taken today at \(time).") }
+            return .result(dialog: "Your last record: taken today at \(time).")
         }
         if calendar.isDateInYesterday(last.takenAt) {
-            return .result(dialog: "Your last record for \(last.name): taken yesterday at \(time).")
+            if showsNames { return .result(dialog: "Your last record for \(last.name): taken yesterday at \(time).") }
+            return .result(dialog: "Your last record: taken yesterday at \(time).")
         }
         let date = last.takenAt.formatted(date: .abbreviated, time: .omitted)
-        return .result(dialog: "Your last record for \(last.name): taken on \(date) at \(time).")
+        if showsNames { return .result(dialog: "Your last record for \(last.name): taken on \(date) at \(time).") }
+        return .result(dialog: "Your last record: taken on \(date) at \(time).")
     }
 }
 
@@ -164,11 +175,19 @@ struct RecordDueDosesIntent: AppIntent {
         guard !due.entries.isEmpty else {
             return .result(dialog: "Nothing is due right now. You’re all set.")
         }
-        let names = due.names.formatted(.list(type: .and))
+        let names = model.showsNamesInReminders ? due.names.formatted(.list(type: .and)) : SiriText.count(due.entries.count)
         // A "Cancel" throws, and nothing is recorded.
         try await requestConfirmation(result: .result(dialog: "Record as taken now: \(names)?"))
-        guard await model.recordFromSiri(due) else { throw SiriProblem.notRecorded }
+        guard await model.recordFromSiri(due) else { throw SiriProblem.notConfirmed }
         return .result(dialog: "Recorded as taken: \(names).")
+    }
+}
+
+/// The words that Siri says in place of the names when "Show Names in Reminders" is off (D029, D108).
+private enum SiriText {
+    /// For example "2 doses".
+    static func count(_ count: Int) -> String {
+        String(localized: "\(count) doses", comment: "Siri: the number of doses in place of the names when \"Show Names in Reminders\" is off (D108).")
     }
 }
 
@@ -177,20 +196,23 @@ enum SiriProblem: Error, CustomLocalizedStringResourceConvertible {
     /// The database did not open or a read failed. After a restart and before the first unlock, file protection is the
     /// usual cause (D066).
     case unreadable
-    /// The record transaction gave no commit. Nothing is recorded, or the event waits on Today for a retry (D014).
-    case notRecorded
+    /// The record transaction gave no commit. SQLite can commit before the flush fails, so the dose can be stored.
+    /// After a storage failure, the same event waits on Today for a retry (D014).
+    case notConfirmed
 
     var localizedStringResource: LocalizedStringResource {
         switch self {
         case .unreadable: "Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again."
-        case .notRecorded: "Nothing was recorded. Open Maru to record your doses."
+        case .notConfirmed: "Maru couldn’t confirm the save. Open Maru to check your records."
         }
     }
 }
 
 /// The snippet of "What do I take next": the part of the day, its time, and each open dose with its amount.
+/// With names off, it shows the number of doses and no name or amount.
 private struct NextDoseSnippet: View {
     let next: SiriNextDoses?
+    let showsNames: Bool
     let message: LocalizedStringResource?
 
     var body: some View {
@@ -201,13 +223,17 @@ private struct NextDoseSnippet: View {
                     Text(next.time.formatted(.rowTime(in: next.timeZone))).foregroundStyle(.secondary)
                 }
                 .font(.headline)
-                ForEach(next.doses.indices, id: \.self) { index in
-                    VStack(alignment: .leading, spacing: 0) {
-                        Text(next.doses[index].name).font(.body.weight(.semibold))
-                        if let amount = next.doses[index].amount {
-                            Text(amount).font(.subheadline).foregroundStyle(.secondary)
+                if showsNames {
+                    ForEach(next.doses.indices, id: \.self) { index in
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text(next.doses[index].name).font(.body.weight(.semibold))
+                            if let amount = next.doses[index].amount {
+                                Text(amount).font(.subheadline).foregroundStyle(.secondary)
+                            }
                         }
                     }
+                } else {
+                    Text(SiriText.count(next.doses.count)).font(.body.weight(.semibold))
                 }
             } else if let message {
                 Text(message).font(.headline)

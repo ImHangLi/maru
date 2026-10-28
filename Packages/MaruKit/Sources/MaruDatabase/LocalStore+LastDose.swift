@@ -33,33 +33,36 @@ extension LocalStore {
         try readOnly(in: directory) { db, _ in try fetchLastDose(db, of: nil) }
     }
 
-    /// The projection names the current event of each dose, as for "Last dose" of an as-needed item (D091).
+    /// Each dose with an event or a state row goes through `fetchCheckedRecord`, as the history read does. A projection
+    /// that does not match the history is `invalidData`, so the read fails and does not say "no dose" (spec 7.3, T20).
     static func fetchLastDose(_ db: Database, of itemID: ItemID?) throws -> LastDose? {
         let active = Dictionary(uniqueKeysWithValues: try itemsAndSchedules(db).items.filter { !$0.isArchived }.map { ($0.id, $0) })
-        let rows = try Row.fetchCursor(
+        let rows = try Row.fetchAll(
             db,
             sql: """
-                SELECT COALESCE(occurrence.itemID, schedule.itemID) AS itemID,
-                    intakeEvent.occurredAt AS occurredAt,
+                SELECT occurrence.id AS id,
+                    COALESCE(occurrence.itemID, schedule.itemID) AS itemID,
                     COALESCE(occurrence.dose, scheduleVersion.dose) AS dose
-                FROM occurrenceState
-                    JOIN intakeEvent ON intakeEvent.id = occurrenceState.eventID
-                    JOIN occurrence ON occurrence.id = occurrenceState.occurrenceID
+                FROM occurrence
                     LEFT JOIN scheduleSlot ON scheduleSlot.id = occurrence.slotID
                     LEFT JOIN schedule ON schedule.id = scheduleSlot.scheduleID
                     LEFT JOIN scheduleVersion ON scheduleVersion.id = occurrence.scheduleVersionID
-                WHERE occurrenceState.status = 'taken'
+                WHERE (EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
+                        OR EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id))
                     AND (? IS NULL OR COALESCE(occurrence.itemID, schedule.itemID) = ?)
-                ORDER BY intakeEvent.occurredAt DESC
                 """,
             arguments: [itemID?.text, itemID?.text]
         )
-        while let row = try rows.next() {
-            guard let item = active[try ItemID(text: row.decode(forColumn: "itemID"))] else { continue }
-            let seconds: Double = try row.decode(forColumn: "occurredAt")
+        var newest: LastDose?
+        for row in rows {
+            let record = try fetchCheckedRecord(db, occurrenceID: OccurrenceID(text: row.decode(forColumn: "id")))
+            guard let item = active[try ItemID(text: row.decode(forColumn: "itemID"))],
+                  let event = record.currentEvent, event.action == .taken,
+                  newest.map({ event.occurredAt > $0.takenAt }) ?? true
+            else { continue }
             let text: String? = try row.decode(forColumn: "dose")
-            return LastDose(itemID: item.id, name: item.name, takenAt: Date(storedSeconds: seconds), amount: text.flatMap(Dose.init))
+            newest = LastDose(itemID: item.id, name: item.name, takenAt: event.occurredAt, amount: text.flatMap(Dose.init))
         }
-        return nil
+        return newest
     }
 }

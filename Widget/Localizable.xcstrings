@@ -246,6 +246,41 @@
         }
       }
     },
+    "Dose recorded" : {
+      "comment" : "Last Dose widget: the text in place of the item name when \"Show Names in Reminders\" is off (D029, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis erfasst"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis registrada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用を記録済み"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 기록됨"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已记录服用"
+          }
+        }
+      }
+    },
     "Evening" : {
       "comment" : "Widget: the name of a slot.",
       "localizations" : {
