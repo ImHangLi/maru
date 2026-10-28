@@ -11627,37 +11627,37 @@
         }
       }
     },
-    "Shows your next dose with the time left and a button to record it." : {
+    "Shows your next dose, its time, and a button to record it." : {
       "comment" : "Settings: the footer of the switch \"Next Dose on Lock Screen\" (D110).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeigt deine nächste Dosis mit der verbleibenden Zeit und einer Taste zum Erfassen."
+            "value" : "Zeigt deine nächste Dosis, ihre Uhrzeit und eine Taste zum Erfassen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muestra tu próxima dosis con el tiempo restante y un botón para registrarla."
+            "value" : "Muestra tu próxima dosis, su hora y un botón para registrarla."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "次の服用と残り時間、記録するボタンを表示します。"
+            "value" : "次の服用とその時刻、記録するボタンを表示します。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "다음 복용과 남은 시간, 기록 버튼을 보여 줘요."
+            "value" : "다음 복용과 그 시간, 기록 버튼을 보여 줘요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "显示下次服用、剩余时间和一个记录按钮。"
+            "value" : "显示下次服用、服用时间和一个记录按钮。"
           }
         }
       }

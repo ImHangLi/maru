@@ -200,9 +200,9 @@ Two Home Screen widgets, small and medium each (D048), and "Last Dose", small (D
 
 "Next Dose on Lock Screen" is the Live Activity of Maru Pro (D110). It uses the system background of a Live Activity and system fonts.
 
-- Lock Screen: a first line with the pill symbol and the part of the day in the tint, the planned time in gray, and the time left at the trailing edge in digits of one width. After the planned time, "Not recorded yet" with a clock symbol takes the place of the time left, in the text color, from the next update. Until then, the time left shows zero.
+- Lock Screen: a first line with the pill symbol and the part of the day in the tint, the planned time in gray, and the relative time at the trailing edge in the text color: "in 12 minutes" before the planned time and "12 minutes ago" after it. The system moves it with no update. iOS 17 shows only the distance, "12 min".
 - Under it, the item names in bold, at most two lines, and a capsule button "Taken" in the tint at the trailing edge. At most three names, then the number of the other doses: "Vitamin D, Iron, Zinc, and 2 more". With "Show Names in Reminders" off, "2 doses" takes the place of the names.
-- Dynamic Island: compact, the pill symbol in the tint and the time left (after the planned time, the planned time in the tint). Minimal, the pill symbol. Expanded, the part of the day and the time at the leading edge, the time left at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
+- Dynamic Island: compact, the pill symbol and the planned time, both in the tint. Minimal, the pill symbol. Expanded, the part of the day and the time at the leading edge, the relative time at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
 - A tap outside the button opens Today at the part of the day.
 - When the record does not confirm, a line with a warning symbol takes the place of the button. When the day of the dose ended, only "Open Maru to update." shows, with no name and no button.
 
