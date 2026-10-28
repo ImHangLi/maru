@@ -262,6 +262,7 @@ extension AppModel {
         }
         if !wasComplete, let day = todaySnapshot, isComplete(day) { dayDidComplete(day.date) }
         sendWatchDay()
+        reloadWidgets()
         historyDidCommit(records)
         today.commitCount += 1
         if backfilled.isEmpty {

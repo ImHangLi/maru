@@ -2015,6 +2015,38 @@ Sources:
 
 Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
 
+## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts
+
+Maintainer decision on 2026-10-28, with agent detail. Both features are free. They are not part of Pro (D107). It follows spec 6, 7.2, 9, and 10, and it adds to D048 and D091.
+
+The "Last Dose" widget:
+
+- Families: Home Screen small, and Lock Screen `accessoryRectangular` and `accessoryInline`.
+- It shows the newest taken dose of all active items: the item name, the amount if the dose has one, and the time. Today gives the time since the dose ("2 hr. ago", "now" in the first 5 minutes). Yesterday gives "Yesterday, 6:49 PM". An earlier day gives the date and the time. The text changes at timeline entries: every 5 minutes in the first hour, then every hour, and at the next two midnights.
+- A skipped dose, an undone dose, and a dose of an archived item do not count. A time change of a taken dose moves it.
+- It follows "Show Names in Reminders" (D029). Maintainer decision on 2026-10-28, after a review: the setting applies to the widget and to Siri. With the setting on, the widget shows the name and the amount. With it off, each family shows "Dose recorded" and the time, with no name and no amount, because an amount can tell what the item is. The tap still opens the item.
+- The app copies the setting to the defaults of the App Group (`AppGroup.showsNames`) at each launch, at each change, and after a restore, then reloads the widgets. No value hides the names, so a widget that runs before the app writes the value shows no name.
+- No taken dose: "Your last dose will show here." (inline: "No records yet"). No judgment (D101).
+- A tap opens Today with the item detail on top (`maru://item/<ID>`). The detail goes back to Today when the item is gone. The empty widget opens Today.
+- Data: `LocalStore.readLastDoseForWidget` reads the App Group database read-only, in one read transaction, with the restore epoch check of D048. It shares `LocalStore.readOnly` with `readForWidget`. Each dose with an event or a state row goes through the check of the history read (`fetchCheckedRecord`). A state row that does not match the history makes the read fail (`invalidData`, spec 7.3, T20). The widget then says "Open Maru to update.", and Siri gives the read failure. It never says "no dose" for this case. A locked iPhone before the first unlock gives "Open Maru to update." (D066), and the widget tries again in 15 minutes.
+- Reload: the app now reloads every widget timeline after each commit of a record (`AppModel.reloadWidgets`), as well as after each read. Before this change, a record in the app reached the widgets only at the next read of the app.
+
+Siri and Shortcuts (App Shortcuts, `App/Siri/MaruShortcuts.swift`):
+
+- "What do I take next in Maru": the open doses of the first part of the day from the clock on that has one, else the first earlier part with one, as the small "Today" widget does (D048). Siri says the names and the planned time, and shows a snippet with the part of the day, the time, and each dose with its amount. With names off, Siri says the number of doses ("Next up: 2 doses, planned for 8:00 AM."), and the snippet shows the number with no name and no amount. With all doses recorded: "All done for today. Nice work." With no planned dose: "Nothing to take today. Enjoy it." It records nothing.
+- "Did I take my <item> in Maru": the newest taken record of the item, with the day and the time. The item is an `AppEntity` of the active items, so Siri picks it by name. Siri asks "Which item?" when the user names none. It records nothing. With names off, the answer names no item: "Your last record: taken today at 8:00 AM." The list of "Which item?" still shows the names, because the user picks an item by its name.
+- "Record my doses in Maru": the open doses of the part of the day of the clock. Siri asks "Record as taken now: …?" first. With names off, the question and the answer give the number of doses ("Record as taken now: 2 doses?"). After a confirmation, one record transaction records them with the checks of the widget and the Watch (`requiresCurrentPlan`, the event revises the read record, the data generation of D040). Siri says "Recorded as taken: …" only after the commit, and it waits for the reminder run (D047). A record with no confirmed commit says "Maru couldn’t confirm the save. Open Maru to check your records." It does not say that nothing was recorded, because SQLite can commit before `F_FULLFSYNC` fails. After a storage failure, the same event waits on Today for a retry, as in the other record paths (D014). With nothing due: "Nothing is due right now. You’re all set." A dose with an unconfirmed event is left out (D014).
+- All three intents need an unlocked iPhone (`requiresAuthentication`). For the record, this is the rule of the "Taken" action of a reminder on the iPhone (D034, D066). For the two questions, a person who holds a locked iPhone can not hear the names through Siri. With names on, the Lock Screen widget shows a name, because the user adds it and keeps the names on.
+- A read that fails, for example before the first unlock after a restart, says "Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again." The iPad form names the iPad.
+- Every intent runs in the app process and calls an operation of `AppModel` (`AppModel+Siri.swift`). No intent writes the database. No intent sends an analytics event.
+- The phrases are in `App/AppShortcuts.xcstrings` in the six languages, one translation for each English phrase. The answers are in `App/Localizable.xcstrings`. The app updates the item parameter of Siri after a read that changes an item or a name.
+
+Privacy: Maru sends nothing. The item names go to the on-device index of App Shortcuts. Siri handles the speech by the rules of Apple. `PRIVACY.md` does not mention Siri yet. A change of it is a maintainer decision (`docs/process.md`).
+
+Tests: none. The change adds no record rule. The record uses the existing transaction and its checks.
+
+Not verified: no build of the app on this Mac (CI builds it), and nobody saw the widget or used Siri. Device checks: the widget in the three families in light, dark, and tinted looks, with a long name and the largest text sizes; the time text over one hour and after midnight; a record in the app, from a reminder, and from "Record Dose", each followed by the widget; a tap on the widget; a locked iPhone after a restart. Siri: each phrase in English and one more language, a name with two words, an item name that Siri does not know, "Record my doses" with a confirmation and with "Cancel", with nothing due, on a locked iPhone, and the snippet. The phrases need a native speaker (`docs/localization-review.md`).
+
 ## D109 · 2026-10-28 · The History graph scrolls with the list (changes D041)
 
 Maintainer decision: the History graph must not stay at the top of the page. On the iPad and on the inner display of iPhone Duo, the fixed graph covers the rows under it. Agent decision on the gesture. It replaces the point of D041 that the graph stays above the list and does not scroll.

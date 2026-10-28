@@ -30,9 +30,23 @@ enum AppGroup {
         set { UserDefaults(suiteName: identifier)?.set(newValue.rawValue, forKey: appColorKey) }
     }
 
+    private static let showsNamesKey = "reminders.showsNames"
+
+    /// "Show Names in Reminders" for the "Last Dose" widget (D029, D108). The app writes it at each launch and at each
+    /// change. No value hides the names, so a widget that runs before the app writes it shows no name.
+    static var showsNames: Bool {
+        get { UserDefaults(suiteName: identifier)?.bool(forKey: showsNamesKey) ?? false }
+        set { UserDefaults(suiteName: identifier)?.set(newValue, forKey: showsNamesKey) }
+    }
+
     /// The link of a tap on a widget. Today opens at the slot (D048).
     static func todayURL(_ part: DayPart?) -> URL {
         URL(string: "maru://today" + (part.map { "/" + $0.linkName } ?? ""))!
+    }
+
+    /// The link of a tap on the "Last Dose" widget. Today opens the detail of the item (D108).
+    static func itemURL(_ id: ItemID) -> URL {
+        URL(string: "maru://item/" + id.rawValue.uuidString)!
     }
 }
 

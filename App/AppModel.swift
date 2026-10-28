@@ -88,6 +88,8 @@ final class AppModel {
     #endif
     /// The slot of a widget link that came before Today loaded. See `AppModel+Widget.swift`.
     var pendingWidgetPart: DayPart?
+    /// The item names that Siri has. See `AppModel+Siri.swift`.
+    var shortcutItemNames: [ItemID: String]?
     private var load: Task<Void, Never>?
     /// A refresh request came while a read ran. The model reads again when that read ends.
     private var needsRefresh = false
@@ -197,6 +199,7 @@ final class AppModel {
                 WidgetCenter.shared.reloadAllTimelines()
                 sendWatchDay()
                 showPendingWidgetSlot()
+                updateShortcutItems(snapshot.list)
             }
             // After the content shows, so Today never waits for the reminders (spec 8.1, 9). A Today that did not load, for
             // example for one damaged row, does not stop the run: the plans read their rows with their own checks (D088, D089).
