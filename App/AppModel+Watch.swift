@@ -33,8 +33,9 @@ extension AppModel {
         case .today, nil:
             break
         }
+        let isPro = await confirmedPro()
         let day = await readToday(generation: dataGeneration).map {
-            WatchDay($0, unsaved: Set(today.pending.keys), isPro: pro.isPro, at: Date())
+            WatchDay($0, unsaved: Set(today.pending.keys), isPro: isPro, at: Date())
         }
         return WatchReply(outcome: outcome, day: day).message ?? Data()
     }
@@ -60,7 +61,7 @@ extension AppModel {
         _ id: OccurrenceID, scheduleVersionID: ScheduleVersionID, _ action: IntakeAction,
         revision: IntakeEventID?, intent: IntakeEventID
     ) async -> WatchReply.Outcome {
-        guard pro.isPro else { return .notRecorded }
+        guard await confirmedPro() else { return .notRecorded }
         // The generation comes before the read, so a restore after this line refuses the record (D040).
         let generation = dataGeneration
         guard let day = await readToday(generation: generation),
@@ -96,6 +97,14 @@ extension AppModel {
             await waitForReminders(deviceTimeZone: deviceTimeZone)
         }
         return .recorded
+    }
+
+    /// `true` for Maru Pro. A free answer reads StoreKit again before it counts, because the system can start Maru for a
+    /// request of the Watch before the first read of StoreKit ends, for example after a renewal while Maru did not run.
+    private func confirmedPro() async -> Bool {
+        if pro.isPro { return true }
+        await pro.refreshEntitlement()
+        return pro.isPro
     }
 
     /// The rows of today from a new read of the store, with the confirmed record of each running transaction.

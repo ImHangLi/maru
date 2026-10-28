@@ -101,7 +101,8 @@ extension AppModel {
     /// The locked screen of the Watch app asked for Maru Pro (D111). The root view shows the paywall the next time that
     /// Maru is in front, after the onboarding, the edit screen, and the alerts.
     func watchAskedForPro() {
-        guard !pro.isPro else { return }
+        // A paywall that is open already answers the request, so its close does not open a second one.
+        guard !pro.isPro, proState.paywall == nil else { return }
         proState.watchAsked = true
         UserDefaults.standard.set(true, forKey: ProOffers.watchAskedKey)
     }
