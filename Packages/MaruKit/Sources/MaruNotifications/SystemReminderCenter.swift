@@ -8,7 +8,13 @@ import os
 /// It only translates. `ReminderPlan` and `ReminderEngine` in `MaruCore` have every rule.
 /// Each call reads a value type from the system objects before it returns, so no system object leaves the call.
 public struct SystemReminderCenter: ReminderCenter {
-    public init() {}
+    /// The file name of the reminder sound in the app bundle, or `nil` for the default sound of the system (D112).
+    /// Each call reads it again, so a run uses the sound of now.
+    let sound: @Sendable () -> String?
+
+    public init(sound: @escaping @Sendable () -> String? = { nil }) {
+        self.sound = sound
+    }
 
     public func authorization() async -> ReminderAuthorization {
         await withCheckedContinuation { continuation in
@@ -29,15 +35,16 @@ public struct SystemReminderCenter: ReminderCenter {
     }
 
     public func pendingRequests() async -> [PendingReminder] {
-        await withCheckedContinuation { continuation in
+        let sound = sound()
+        return await withCheckedContinuation { continuation in
             UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
-                continuation.resume(returning: requests.map { PendingReminder($0) })
+                continuation.resume(returning: requests.map { PendingReminder($0, currentSound: sound) })
             }
         }
     }
 
     public func add(_ request: ReminderRequest) async throws {
-        let request = UNNotificationRequest(request)
+        let request = UNNotificationRequest(request, sound: sound())
         try await Self.submit(request)
     }
 
@@ -83,11 +90,11 @@ extension ReminderAuthorization {
 extension UNNotificationRequest {
     /// A calendar request: it repeats, or it fires one time on its date (D036).
     /// The text is fixed here, in the language of now (spec 8.2, D029).
-    convenience init(_ request: ReminderRequest, locale: Locale = .current) {
+    convenience init(_ request: ReminderRequest, locale: Locale = .current, sound: String? = nil) {
         self.init(
             identifier: request.identifier,
             content: UNMutableNotificationContent.reminder(
-                request.content, userInfo: request.userInfo, threadIdentifier: nil, locale: locale
+                request.content, userInfo: request.userInfo, threadIdentifier: nil, locale: locale, sound: sound
             ),
             trigger: UNCalendarNotificationTrigger(
                 dateMatching: request.trigger.dateComponents, repeats: request.trigger.repeats
@@ -97,16 +104,28 @@ extension UNNotificationRequest {
 }
 
 extension UNMutableNotificationContent {
+    /// The `userInfo` key of the sound file of a request (D112). The system does not tell the sound of a pending request,
+    /// so the request keeps its name here. A request with the default sound has no such key.
+    static let soundKey = "maru.sound"
+
     /// The one place that turns a `ReminderContent` into the content of the system: the text, the sound, the level, the
     /// category, and the `userInfo`. The two request types use it (D090).
+    ///
+    /// - Parameter sound: A sound file in the app bundle, or `nil` for the default sound of the system (D112).
     static func reminder(
-        _ reminder: ReminderContent, userInfo: [String: String], threadIdentifier: String?, locale: Locale
+        _ reminder: ReminderContent, userInfo: [String: String], threadIdentifier: String?, locale: Locale, sound: String?
     ) -> UNMutableNotificationContent {
         let content = UNMutableNotificationContent()
         let text = reminder.text(locale: locale)
         content.title = text.title
         content.body = text.body
-        content.sound = .default
+        var userInfo = userInfo
+        if let sound {
+            content.sound = UNNotificationSound(named: UNNotificationSoundName(sound))
+            userInfo[soundKey] = sound
+        } else {
+            content.sound = .default
+        }
         content.interruptionLevel = reminder.presentation.level.system
         content.categoryIdentifier = reminder.presentation.category.rawValue
         content.userInfo = userInfo
@@ -130,16 +149,22 @@ extension ReminderLevel {
 }
 
 extension PendingReminder {
-    init(_ request: UNNotificationRequest, deliveredAt: Date? = nil) {
+    /// - Parameter currentSound: The sound of now. A pending request with another sound stays current, and the engines give
+    ///   it the sound of now with an add that keeps it until the system holds the new one (D112). A delivered
+    ///   notification has no check.
+    init(_ request: UNNotificationRequest, deliveredAt: Date? = nil, currentSound: String?? = .none) {
+        var userInfo = request.content.userInfo as? [String: String] ?? [:]
+        let sound = userInfo.removeValue(forKey: UNMutableNotificationContent.soundKey)
         self.init(
             identifier: request.identifier,
-            userInfo: request.content.userInfo as? [String: String] ?? [:],
+            userInfo: userInfo,
             text: ReminderText(title: request.content.title, body: request.content.body),
             // A category that this build does not register is not a presentation that the engines can keep.
             presentation: ReminderCategory(rawValue: request.content.categoryIdentifier).map {
                 ReminderPresentation(category: $0, level: ReminderLevel(request.content.interruptionLevel))
             },
-            deliveredAt: deliveredAt
+            deliveredAt: deliveredAt,
+            hasCurrentSound: currentSound.map { $0 == sound } ?? true
         )
     }
 }

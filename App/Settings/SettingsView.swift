@@ -44,6 +44,17 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.menu)
                     .tint(Color.primary)
+                    // The icons of Maru Pro, with a free look at each one (D112).
+                    if UIApplication.shared.supportsAlternateIcons {
+                        NavigationLink {
+                            AppIconView()
+                        } label: {
+                            LabeledContent("App Icon") {
+                                AppIconPreview(icon: model.settings.appIcon, size: 29)
+                                    .accessibilityLabel(Text(model.settings.appIcon.title))
+                            }
+                        }
+                    }
                     // The wash of the app color behind the title, as in Apple Health (D100).
                     Toggle("Color Header", isOn: $headerWash)
                     // The system look, or always light or dark (D105).
@@ -165,6 +176,14 @@ private struct ReminderSection: View {
                 .rowText()
             }
             Toggle("Show Names in Reminders", isOn: $showsNames)
+            // The sounds of Maru Pro, with a free preview of each one (D112).
+            NavigationLink {
+                ReminderSoundView()
+            } label: {
+                LabeledContent("Reminder Sound") {
+                    if let sound = model.reminderSound { Text(sound.title) } else { Text("Default") }
+                }
+            }
         } header: {
             Text("Reminders")
         } footer: {

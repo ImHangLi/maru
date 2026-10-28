@@ -22,6 +22,8 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
     /// The pending requests with the "Taken" action.
     /// The category that the system holds for each request. A request that is not here has no known category (D090).
     var categories: [String: ReminderCategory] = [:]
+    /// The pending requests with another sound than the sound of now (D112).
+    var oldSound: Set<String> = []
     private var openRemovals: [(identifiers: [String], readsLeft: Int)] = []
     private(set) var prompts = 0
     private(set) var added: [String] = []
@@ -69,7 +71,8 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
         let read = pending.map {
             PendingReminder(
                 identifier: $0.key, userInfo: $0.value, text: texts[$0.key],
-                presentation: categories[$0.key].map { ReminderPresentation(category: $0) }
+                presentation: categories[$0.key].map { ReminderPresentation(category: $0) },
+                hasCurrentSound: !oldSound.contains($0.key)
             )
         }
         openRemovals = openRemovals.map { ($0.identifiers, $0.readsLeft - 1) }
@@ -84,6 +87,7 @@ private actor Phone: ReminderPlanSource, ReminderCenter, ReminderPrivacyStore {
             pending[RequestGeneration.base(of: request.identifier)] = request.userInfo
             texts[RequestGeneration.base(of: request.identifier)] = text(for: request.content)
             categories[RequestGeneration.base(of: request.identifier)] = request.content.category
+            oldSound.remove(RequestGeneration.base(of: request.identifier))
         }
         peak = max(peak, pending.count)
     }
@@ -179,6 +183,30 @@ struct ReminderEngineTests {
         // The new text is current, so the next run adds nothing.
         _ = try await reconcile()
         #expect(await phone.added.count == before + 1)
+    }
+
+    @Test func newSoundNeverRemovesACorrectReminder() async throws {
+        let schedule = await phone.save(times: [8])
+        _ = try await reconcile()
+        let identifier = "series|Asia/Shanghai|08:00|daily"
+        let before = await phone.added.count
+
+        // The user chose another sound, and the system does not keep the replacement (D112).
+        await phone.update {
+            $0.oldSound = [identifier]
+            $0.dropsRequests = true
+        }
+        let failed = try await reconcile()
+        #expect(failed.schedules == [schedule.id: .scheduled])
+        #expect(await phone.pending.keys.contains(identifier))
+        #expect(await phone.oldSound == [identifier])
+
+        // A later run gives the request the new sound.
+        await phone.update { $0.dropsRequests = false }
+        _ = try await reconcile()
+        #expect(await phone.oldSound.isEmpty)
+        #expect(await phone.pending.count == 1)
+        #expect(await phone.added.count == before + 2)
     }
 
     @Test func requestWithoutAKnownCategoryIsReplacedAndTakesNoNewRoom() async throws {

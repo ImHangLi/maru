@@ -302,6 +302,28 @@ The strings below are new in `App/Localizable.xcstrings`: the paywall, the card 
 | The restore didn’t go through. Please try again. | 恢复没有完成。请再试一次。 | 復元を完了できませんでした。もう一度お試しください。 | La restauración no se completó. Inténtalo de nuevo. | Die Wiederherstellung hat nicht geklappt. Bitte versuche es erneut. | 복원이 완료되지 않았어요. 다시 시도해 주세요. |
 | Reminders, records, and your data stay free. | 提醒、记录和你的数据都继续免费。 | リマインダー、記録、データはずっと無料です。 | Los recordatorios, los registros y tus datos siguen siendo gratis. | Erinnerungen, Einträge und deine Daten bleiben kostenlos. | 미리 알림, 기록, 내 데이터는 계속 무료예요. |
 
+## App icons and reminder sounds (D112)
+
+The strings below are new in `App/Localizable.xcstrings`: the rows "App Icon" and "Reminder Sound" in Settings, their pages, and the names of the icons and the sounds. "Blue", "Purple", "Green", and "Not Changed" use the existing translations. No native speaker read them. The reviewer checks that each sound name is a short, calm word, that "Default" matches the word of the iOS Sounds settings in that language, and that the voice is warm and calm with no pressure (D101).
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| App Icon | App 图标 | Appのアイコン | Icono de la app | App-Symbol | 앱 아이콘 |
+| Default | 默认 | デフォルト | Predeterminado | Standard | 기본 |
+| Night | 夜色 | ナイト | Noche | Nacht | 나이트 |
+| Mono | 单色 | モノクロ | Mono | Mono | 모노 |
+| The icon didn’t change. Please try again. | 图标没有更改，请再试一次。 | アイコンは変更されませんでした。もう一度お試しください。 | El icono no cambió. Inténtalo de nuevo, por favor. | Das Symbol wurde nicht geändert. Bitte versuche es erneut. | 아이콘이 바뀌지 않았어요. 다시 시도해 주세요. |
+| Look at every icon for free. Maru Pro lets you choose one. | 每个图标都可以免费查看，用 Maru Pro 就能选用。 | どのアイコンも無料で見られます。Maru Proで選べます。 | Puedes ver todos los iconos gratis. Con Maru Pro puedes elegir uno. | Du kannst dir jedes Symbol kostenlos ansehen. Mit Maru Pro kannst du eines wählen. | 모든 아이콘을 무료로 볼 수 있어요. Maru Pro로 하나를 고를 수 있어요. |
+| Reminder Sound | 提醒声音 | リマインダーの音 | Sonido de recordatorio | Erinnerungston | 미리 알림 소리 |
+| Listen to each sound for free. Maru Pro lets you choose one. | 每个声音都可以免费试听，用 Maru Pro 就能选用。 | どの音も無料で試聴できます。Maru Proで選べます。 | Puedes escuchar todos los sonidos gratis. Con Maru Pro puedes elegir uno. | Du kannst dir jeden Ton kostenlos anhören. Mit Maru Pro kannst du einen wählen. | 모든 소리를 무료로 들어 볼 수 있어요. Maru Pro로 하나를 고를 수 있어요. |
+| Play %@ | 播放“%@” | 「%@」を再生 | Reproducir %@ | %@ abspielen | %@ 재생 |
+| Dewdrop | 露珠 | しずく | Rocío | Tautropfen | 이슬 |
+| Petal | 花瓣 | 花びら | Pétalo | Blütenblatt | 꽃잎 |
+| Breeze | 微风 | そよ風 | Brisa | Brise | 산들바람 |
+| Pebble | 卵石 | 小石 | Guijarro | Kiesel | 조약돌 |
+| Sunrise | 日出 | 日の出 | Amanecer | Sonnenaufgang | 해돋이 |
+| Lantern | 灯笼 | ランタン | Farol | Laterne | 등불 |
+
 ## App color of Maru Pro (D114)
 
 The strings below are new or changed. They are drafts. No native speaker read them. The reviewer checks that the voice is warm and calm with no pressure (D101), and that "App Color", "App Icon", and "Reminder Sound" use the same words as their rows in Settings.

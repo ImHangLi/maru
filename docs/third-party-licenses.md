@@ -47,3 +47,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## App icons and reminder sounds (not third-party)
+
+- Use: the alternate app icons and their previews in `App/AppIcons.xcassets`, and the reminder sounds in `App/Sounds` (D112).
+- Source: Maru made them. `docs/brand/make_icons.py` draws the icons from vector geometry. `docs/brand/make_sounds.py` synthesizes the sounds from sine waves. They use no third-party image, sound, sample, or font.
+- License: the same terms as the rest of this repository (`README.md`, "License"). The scripts use numpy and Pillow on the Mac only. The app does not contain them, so it shows no notice for them.

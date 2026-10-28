@@ -19,12 +19,16 @@ public struct PendingReminder: Hashable, Sendable {
     public let presentation: ReminderPresentation?
     /// When the system delivered the notification. `nil` for a pending request.
     public let deliveredAt: Date?
+    /// `false` when the request has another sound than the sound of now (D112). The sound is not part of `isCurrent`:
+    /// a request with the correct dose, text, category, and level still reminds, so no run removes it for its sound.
+    public let hasCurrentSound: Bool
 
     public init(
         identifier: String, userInfo: [String: String], text: ReminderText? = nil,
-        presentation: ReminderPresentation? = nil, deliveredAt: Date? = nil
+        presentation: ReminderPresentation? = nil, deliveredAt: Date? = nil, hasCurrentSound: Bool = true
     ) {
         self.deliveredAt = deliveredAt
+        self.hasCurrentSound = hasCurrentSound
         self.identifier = identifier
         self.userInfo = userInfo
         self.text = text
@@ -78,14 +82,25 @@ public struct ReminderChanges: Hashable, Sendable {
     /// The identifiers of pending series requests that the plan does not have. A request with another
     /// kind of identifier is not a series request, and it stays.
     public let remove: [String]
+    /// Wanted requests that are pending and current, with another sound than the sound of now (D112). The run gives each
+    /// the new sound with `GenerationCenter.refreshSound`, which removes the old request only after the system holds the
+    /// new one. A failed add keeps the old request, and the next run tries again.
+    public let refreshSound: [ReminderRequest]
 
     /// - Parameter text: The text of a content in the language of now, from `ReminderCenter.text(for:)`.
     public init(wanted: [ReminderRequest], pending: [PendingReminder], text: (ReminderContent) -> ReminderText) {
         let current = Dictionary(pending.map { ($0.identifier, $0) }, uniquingKeysWith: { first, _ in first })
         let identifiers = Set(wanted.map(\.identifier))
+        func isCurrent(_ held: PendingReminder, _ request: ReminderRequest) -> Bool {
+            held.isCurrent(userInfo: request.userInfo, text: text(request.content), presentation: request.content.presentation)
+        }
         add = wanted.filter { request in
             guard let held = current[request.identifier] else { return true }
-            return !held.isCurrent(userInfo: request.userInfo, text: text(request.content), presentation: request.content.presentation)
+            return !isCurrent(held, request)
+        }
+        refreshSound = wanted.filter { request in
+            guard let held = current[request.identifier] else { return false }
+            return !held.hasCurrentSound && isCurrent(held, request)
         }
         remove = pending.map(\.identifier).filter {
             $0.hasPrefix(ReminderSeries.identifierPrefix) && !identifiers.contains($0)
@@ -324,6 +339,13 @@ public actor ReminderEngine {
                 room -= 1
                 try? await center.add(request)
             }
+            pendingNow = await pendingAfterRemoval()
+        }
+        // A request with another sound reminds correctly, so the run never removes it for its sound (D112). The refresh
+        // adds the request with the sound of now, then removes the old one only after the system holds the new one.
+        let refresh = ReminderChanges(wanted: wanted, pending: pendingNow, text: center.text(for:)).refreshSound
+        if !refresh.isEmpty {
+            for request in refresh { try? await center.refreshSound(request) }
             pendingNow = await pendingAfterRemoval()
         }
         let readAt = clock()

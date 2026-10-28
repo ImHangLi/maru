@@ -203,6 +203,15 @@ public actor FollowUpEngine {
                 try? await center.add(request)
             }
         }
+        // A follow-up with another sound reminds correctly, so the run never removes it for its sound (D112). The refresh
+        // removes the old request only after the system holds the new one. A failed add keeps it until a later run.
+        if authorization == .authorized {
+            let held = Self.followUps(await pendingAfterRemoval())
+            for request in wanted {
+                guard let old = held[request.identifier], !old.hasCurrentSound, isCurrent(old, request) else { continue }
+                try? await center.refreshSound(request)
+            }
+        }
         // A delivered notification keeps the text that the app set before. So one that names a recorded, renamed,
         // archived, deleted, or paused item goes (D029, D084). This holds for a first reminder too: it must name
         // only the doses that Today shows. The text of a first reminder is compared with the open items of its date.

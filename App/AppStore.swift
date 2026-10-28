@@ -94,13 +94,16 @@ actor AppStore {
         return store
     }
 
+    /// The notification center of both engines. Each request gets the reminder sound of now (D112).
+    private static let center = SystemReminderCenter(sound: { ReminderSound.inUse()?.fileName })
+
     /// The one reminder engine of the process. Its runs do not overlap, so the app must not make a second one.
     /// Each successful run keeps the device time zone for the notification tap (spec 8.1, 8.3).
     func reminderEngine() throws(StorageError) -> ReminderEngine {
         if let engine { return engine }
         let engine = ReminderEngine(
             source: try open(),
-            center: SystemReminderCenter(),
+            center: Self.center,
             privacy: DefaultsReminderPrivacy(),
             zoneRecord: DefaultsTimeZoneRecord(),
             alarms: coverNow,
@@ -116,7 +119,7 @@ actor AppStore {
         if let followUps { return followUps }
         let followUps = FollowUpEngine(
             source: try open(),
-            center: SystemReminderCenter(),
+            center: Self.center,
             privacy: DefaultsReminderPrivacy(),
             snoozes: snoozes,
             alarms: coverNow,

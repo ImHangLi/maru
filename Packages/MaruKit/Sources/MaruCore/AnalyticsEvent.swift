@@ -268,6 +268,10 @@ public extension AnalyticsEvent {
         /// A tap on a Pro feature by a free user.
         case feature
         case settings
+        /// A free user chose an app icon other than the default (D112).
+        case icons
+        /// A free user chose a reminder sound other than the default (D112).
+        case sounds
     }
 
     /// The end of a purchase or a restore (D107).
