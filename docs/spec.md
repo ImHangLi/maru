@@ -42,7 +42,7 @@
 | 图像是辅助 | 默认小图标 + 完整文字；用户可选用自己的瓶身照片；抠图不阻塞设置或记录 |
 | 不惩罚中断 | 未记录保持未知；不欠账、不自动补记、不付费补签 |
 | 上线具备可观察性 | 开发期本地性能和错误诊断；公测/上线时具备经明确同意的最小产品分析与反馈 |
-| 商业不干扰核心 | 核心免费、无广告；支持者购买后置于设置，不阻塞本地功能 |
+| 商业不干扰核心 | The core stays free forever, with no ads and no item limit. Maru Pro sells extras only. Maru offers it by itself in two places only: once after the first save with a time, and on a card at the bottom of Today on at most 3 days. Settings always has a "Maru Pro" row. A purchase never blocks a local feature (D107) |
 | 宣传聚焦 | 提醒、混乱时清楚、回看记录；换瓶/断签恢复是基本质量，不是首屏主要卖点 |
 
 ### 明确不做
@@ -141,7 +141,7 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 
 ### P06 设置与反馈
 
-设置：提醒状态、锁屏显示、语言、显示辅助、导出/恢复、隐私/删除、帮助、反馈、支持者购买。
+设置：Maru Pro（D107：the plan, "Restore Purchases", and "Redeem Code", at the top）、提醒状态、锁屏显示、语言、显示辅助、导出/恢复、隐私/删除、帮助、反馈。
 
 反馈入口：今天的标准“更多”菜单中有“发送反馈”；设置中也有同一入口；错误状态提供“报告问题”。不使用悬浮客服球、自动弹问卷、摇一摇专用入口或反复询问“喜欢我们吗”。
 
@@ -219,7 +219,7 @@ SwiftUI 原生 NavigationStack、TabView、List/Form、Sheet、系统字体、�
 | 图片 | ImageIO + Vision + 本地缓存 | 先降采样、异步处理、不阻塞首页 |
 | 小组件 | WidgetKit + 受控 App Group 快照 | 首版只展示/打开记录页，不作为唯一实时状态或关键提醒通道 |
 | Apple Watch | WatchConnectivity，手表端无数据库 | iPhone 数据库是唯一事实来源；手表只显示 iPhone 发来的今日清单，并请求 iPhone 记录；iPhone 提交成功并回复后才显示已记录（D071） |
-| 购买 | StoreKit 2 | 单一支持者包可后置，权益与健康资料分开 |
+| 购买 | StoreKit 2 | Maru Pro (D107): a yearly subscription and a lifetime purchase. One app file imports StoreKit. The entitlement is separate from health data |
 | 性能 | os_signpost、Instruments、XCTest；可选脱敏 MetricKit | 本地先测，生产上传另受隐私策略限制 [S07][S08] |
 | 使用分析 | AnalyticsClient 接口 + PostHog 适配器 | 仅明确同意后启用，显式事件、严格字段表，无自动录屏 [S09][S10] |
 | 反馈 | URLSession → 单一 HTTPS 支持端点 | 有大小限制、限流、幂等与明确状态；不建用户账号 |
@@ -475,7 +475,8 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 | setting_changed | “再次提醒”次数与间隔枚举（设置页“所有项目”，D085）、是否开启全部项目的闹钟、是否在提醒中显示名称、App 颜色枚举 | 其他设置值；分析开关关闭后不再发送 |
 | data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
-| purchase_result | 商品枚举、结果枚举 | Apple 账号、原始交易收据、金融身份 |
+| paywall_shown | `source`: `first_value`, `day7_card`, `feature`, or `settings` (D107) | 项目名称、剂量、时间、ItemID |
+| purchase_result | `result`: `purchased`, `cancelled`, `pending`, `failed`, or `restored`. `plan`: `yearly` or `lifetime` (D107) | Apple 账号、原始交易收据、价格、金融身份 |
 
 记录动作精确时间只在本地健康库。每日使用摘要在下一次可运行时合并发送；不为上传摘要唤醒用户，不依赖后台保证送达。没有摘要不代表没有服用。分析同意日期不同于真实首次安装日期，报表不得混用。
 
@@ -486,7 +487,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 - 设置：只统计同意之后实际发生的添加流程、耗时桶及失败分类。默认在首项保存后询问分析同意，因此更早的首次设置流失不可观察；不能补传或把后续添加称作真实首项漏斗。需要首项可用性证据时，使用预先自愿同意的公测或本地观察，与商店用户分开报告。
 - 使用：按同意/有效观察的 cohort 报告日汇总中的记录、历史、通知入口等使用；不只看打开次数，不宣称真实服药依从率。
 - 质量：保存/调度错误、启动和交互性能，按版本/系统分组。
-- 商业：商店真实净收入与验证购买，退款、成本；支持者点击不当付款。
+- 商业：商店真实净收入与验证购买，退款、成本；a paywall view is not a payment (D107)。
 
 公测样本、同意采集样本和所有商店安装量分开报告。D1/D7/D30 必须写清 cohort 起点、完整窗口、是否只有提醒而无动作等限制。没有足够样本先看人数，不发虚假的显著性结论。原补货/续瓶任务指标全部删除。
 
@@ -540,7 +541,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 
 ### C. 公开 App Store 版本
 
-审核说明、隐私政策、权限文案、真实健康数据处理说明、支持入口、实际语言范围、数据删除/恢复测试、StoreKit 购买/恢复（若销售）、原创素材和已检查的品牌。
+审核说明、隐私政策、权限文案、真实健康数据处理说明、支持入口、实际语言范围、数据删除/恢复测试、StoreKit purchase, restore, and offer codes of Maru Pro (D107)、原创素材和已检查的品牌。
 
 商店截图、落地页和推广文案可下一阶段讨论；但不能把隐私与数据架构也等到宣传时才补。Apple 对医疗信息、隐私和内容权利有明确要求；质量差或 AI 编写本身不能简单等同一个统一的自动拒绝规则。[S14]
 
@@ -601,7 +602,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T45 | 非法 telemetry 字段 | Schema/适配器拒绝，不静默发送 |
 | T46 | 反馈离线/无邮件账户 | 草稿保留，在线表单可发，不假成功 |
 | T47 | 反馈重试 | 幂等，正文不入 analytics/错误日志 |
-| T48 | 购买失败/取消/退款 | 免费记录不受影响，健康资料不动 |
+| T48 | 购买失败/取消/挂起/退款 | Every free feature and record stays the same, and health data is untouched. A cancel shows no second offer (D107) |
 | T49 | 语言/日期/数字 | 实际支持范围准确，通知和错误同样本地化 |
 | T50 | 宣传与实际构建 | 不声称库存、无限可靠、临床效果或没有实际实现的能力 |
 | T51 | 隔天一次 | 起始日及其后每隔一个日历日应服；夏令时、时区变化、漏服或跳过不改变节奏；非应服日今天和历史都不出现该项目；通知不在非应服日写出该项目；详情写明提醒只排到接下来 7 个应服日 |

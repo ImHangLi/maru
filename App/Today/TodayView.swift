@@ -72,6 +72,10 @@ private struct TodayContent: View {
                 if !asNeededRows.isEmpty {
                     AsNeededSection(rows: asNeededRows, timeZone: timeZone)
                 }
+                // Last, under every dose (D107).
+                if model.showsProCard(today) {
+                    ProCardSection(date: today.date)
+                }
             }
             .listStyle(.insetGrouped)
             .headerProminence(.increased)
@@ -128,7 +132,7 @@ private struct TodayContent: View {
     /// What gives the list its layout: the sections, the rows, and the lines of each row. A record is not
     /// in it, because a recorded row keeps its place (spec 4).
     private func layout(_ asNeededRows: [AsNeededCard.Row]) -> [AnyHashable] {
-        var layout: [AnyHashable] = [model.unsavedCount > 0, model.settings.permission == .denied]
+        var layout: [AnyHashable] = [model.unsavedCount > 0, model.settings.permission == .denied, model.showsProCard(today)]
         for group in today.groups {
             layout.append(group.part)
             for entry in group.entries {

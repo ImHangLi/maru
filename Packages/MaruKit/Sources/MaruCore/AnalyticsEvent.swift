@@ -89,6 +89,12 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "result": .choice(DataResult.allCases.map(\.rawValue)),
         ],
         "feedback_entry": ["entry": .choice(["settings"])],
+        // Maru Pro (D107). The place that showed the paywall, and the end of a purchase or a restore. No item data.
+        "paywall_shown": ["source": .choice(PaywallSource.allCases.map(\.rawValue))],
+        "purchase_result": [
+            "result": .choice(PurchaseResult.allCases.map(\.rawValue)),
+            "plan": .choice(PurchasePlan.allCases.map(\.rawValue)),
+        ],
     ]
 
     public let name: String
@@ -251,6 +257,38 @@ public extension AnalyticsEvent {
         case newerFile = "newer_file"
         /// The restore committed, and the storage medium did not confirm it.
         case notConfirmed = "not_confirmed"
+    }
+
+    /// The place that showed the paywall of Maru Pro (D107).
+    enum PaywallSource: String, CaseIterable, Sendable {
+        /// The one offer after the first save of an item with a time.
+        case firstValue = "first_value"
+        /// The card at the bottom of Today.
+        case day7Card = "day7_card"
+        /// A tap on a Pro feature by a free user.
+        case feature
+        case settings
+    }
+
+    /// The end of a purchase or a restore (D107).
+    enum PurchaseResult: String, CaseIterable, Sendable {
+        case purchased, cancelled, pending, failed, restored
+    }
+
+    /// The plan of a purchase. It is not a price and not an Apple ID.
+    enum PurchasePlan: String, CaseIterable, Sendable {
+        case yearly, lifetime
+    }
+
+    static func paywallShown(_ source: PaywallSource) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "paywall_shown", ["source": .text(source.rawValue)])
+    }
+
+    /// `plan` is `nil` for a restore that found no purchase, or a failure before a plan was known.
+    static func purchaseResult(_ result: PurchaseResult, plan: PurchasePlan?) -> AnalyticsEvent {
+        var properties: [String: Value] = ["result": .text(result.rawValue)]
+        if let plan { properties["plan"] = .text(plan.rawValue) }
+        return AnalyticsEvent(unchecked: "purchase_result", properties)
     }
 
     static func setupStep(_ step: SetupStep, mode: EditorMode) -> AnalyticsEvent {

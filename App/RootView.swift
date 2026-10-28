@@ -1,12 +1,10 @@
 import MaruCore
-import StoreKit
 import SwiftUI
 
 /// The frame of the app: two tabs, or the storage problem in place of them.
 struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openURL) private var openURL
-    @Environment(\.requestReview) private var requestReview
     @Environment(\.scenePhase) private var scenePhase
     /// The edit screen is on the display, also while it closes. A reminder alert waits for its end.
     @State private var editorIsUp = false
@@ -53,6 +51,8 @@ struct RootView: View {
                     if isOpen { editorIsUp = true }
                 }
                 .sheet(isPresented: $model.settings.isPresented) { SettingsView() }
+                // Settings hosts the paywall while it is up. The edit screen never shows it (D107).
+                .paywallHost(!editorIsUp && !model.settings.isPresented)
             }
         }
         // The onboarding decides only in front, so a launch in the background for a reminder action does not use it (D104).
@@ -122,14 +122,9 @@ struct RootView: View {
         } message: {
             Text("This change didn’t save. Please try again.")
         }
-        // The system rating prompt, after the record that completes a day (D102). The wait lets the record circle fill
-        // and the haptic play first. Maru shows no screen of its own before or after it.
-        .onChange(of: model.reviewRequest) {
-            Task {
-                try? await Task.sleep(for: .seconds(1.5))
-                requestReview()
-            }
-        }
+        // The system rating prompt, after the record that completes a day (D102). `ProStore.swift` has the modifier,
+        // because only that file imports StoreKit (D107).
+        .reviewPrompt(trigger: model.reviewRequest)
         // The offer of "Remind Again" waits for the edit screen and for the alerts before it. It changes nothing by itself.
         .onChange(of: offerIsDue, initial: true) { _, isDue in
             guard isDue, let itemID = model.remindAgainOffer else { return }
@@ -144,6 +139,11 @@ struct RootView: View {
             Button("Not Now", role: .cancel) {}
         } message: {
             Text("Maru can remind you again up to 2 times, 30 minutes apart, if you don’t record a dose.")
+        }
+        // The first-value offer of Maru Pro comes last after a save: after the edit screen, the notification permission
+        // alert, the reminder alerts, "Remind Again?", and the opt-in question (D107).
+        .onChange(of: firstValueIsDue, initial: true) { _, isDue in
+            if isDue { model.showFirstValueOffer() }
         }
         // The opt-in question waits for the edit screen and for the alerts before it.
         .onChange(of: noticeIsDue, initial: true) { _, isDue in
@@ -178,6 +178,12 @@ struct RootView: View {
     private var noticeIsDue: Bool {
         model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
             && model.reminderAlerts.isEmpty && !model.settings.isPresented
+    }
+
+    private var firstValueIsDue: Bool {
+        model.proState.firstValueOffer != nil && model.onboarding == .hidden && model.remindAgainOffer == nil
+            && !model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
+            && model.reminderAlerts.isEmpty && !model.settings.isPresented && model.proState.paywall == nil
     }
 
     private var storageFailed: Bool {

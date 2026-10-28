@@ -189,6 +189,8 @@ extension AppModel {
         DraftFile.remove(key: EditorSession.editKey(of: itemID))
         DraftFile.remove(key: EditorSession.replaceKey(of: itemID))
         forgetUnconfirmed(of: itemID, versions: Set(versions))
+        // The records of the item went with it (D107).
+        proRecordsDidChange()
         for id in schedules {
             reminderStatus[id] = nil
             reminderCoverageEnds[id] = nil

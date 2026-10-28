@@ -334,6 +334,41 @@
         }
       }
     },
+    "%@/year. Cancel any time in Settings." : {
+      "comment" : "Paywall of Maru Pro: the second step of the trial timeline. %@ is the yearly price, in bold. Settings is the iOS Settings app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ pro Jahr. Jederzeit in den Einstellungen kündbar."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ al año. Cancela cuando quieras en Ajustes."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@/年。設定でいつでもキャンセルできます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연 %@. 설정에서 언제든 취소할 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@/年。随时可在“设置”中取消。"
+          }
+        }
+      }
+    },
     "%@: %@" : {
       "comment" : "The title of an alarm that names its items. The first placeholder is the reminder title, the second is the item names. Example: Time to take: Zinc and Vitamin D.",
       "localizations" : {
@@ -561,6 +596,41 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "%lld days free" : {
+      "comment" : "Paywall of Maru Pro: the free trial of the yearly plan, smaller than the price. Example: 7 days free.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Tage kostenlos"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld días gratis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld日間無料"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld일 무료"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费 %lld 天"
           }
         }
       }
@@ -1235,6 +1305,41 @@
         }
       }
     },
+    "A few extras for your routine. Everything you use now stays free." : {
+      "comment" : "Paywall of Maru Pro: the line under the title. Warm and calm, no pressure.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein paar Extras für deinen Alltag. Alles, was du jetzt nutzt, bleibt kostenlos."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unos extras para tu rutina. Todo lo que usas ahora sigue siendo gratis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "毎日をもう少し便利にする追加機能です。今お使いの機能はすべて無料のままです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일상을 조금 더 편하게 해 줄 추가 기능이에요. 지금 쓰는 기능은 모두 계속 무료예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为你的日常多加几样贴心功能。你现在用的一切都继续免费。"
+          }
+        }
+      }
+    },
     "A newer Maru made this backup. Update Maru, then try again. Nothing changed." : {
       "comment" : "Settings, Your Data: the message when the backup file comes from a newer version of the app. The data of the app did not change.",
       "localizations" : {
@@ -1371,6 +1476,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "关于"
+          }
+        }
+      }
+    },
+    "Active, Lifetime" : {
+      "comment" : "Settings, section Maru Pro: the state of the lifetime plan.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiv, dauerhaft"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activo, de por vida"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効（買い切り）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용 중, 평생"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已开启，永久"
+          }
+        }
+      }
+    },
+    "Active, Yearly" : {
+      "comment" : "Settings, section Maru Pro: the state of the yearly plan.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktiv, jährlich"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activo, anual"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有効（年額）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사용 중, 연간"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已开启，按年"
           }
         }
       }
@@ -1865,6 +2040,41 @@
         }
       }
     },
+    "Apple Watch App" : {
+      "comment" : "Paywall of Maru Pro: the title of the second benefit.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch-App"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App para Apple Watch"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watchアプリ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch 앱"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch App"
+          }
+        }
+      }
+    },
     "Archive" : {
       "comment" : "The destructive button of the archive confirmation.",
       "localizations" : {
@@ -2211,6 +2421,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "棕色"
+          }
+        }
+      }
+    },
+    "Buy Lifetime" : {
+      "comment" : "Paywall of Maru Pro: the buy button for the lifetime plan.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dauerhaft kaufen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comprar de por vida"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "買い切りで購入"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평생 이용권 구매"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "永久买断"
           }
         }
       }
@@ -2705,6 +2950,41 @@
         }
       }
     },
+    "Close" : {
+      "comment" : "Paywall of Maru Pro: the close button in the bar.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cerrar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "閉じる"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "닫기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关闭"
+          }
+        }
+      }
+    },
     "Color" : {
       "comment" : "Edit screen: the text “Color”.",
       "localizations" : {
@@ -2806,6 +3086,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "继续"
+          }
+        }
+      }
+    },
+    "Continue Free" : {
+      "comment" : "Paywall of Maru Pro: the button that closes the paywall. It has the same size as the buy button.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kostenlos weiter"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seguir gratis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無料で続ける"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "무료로 계속하기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续免费使用"
           }
         }
       }
@@ -3156,6 +3471,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "日期按这台 iPhone 的时区计算。“没记录”表示这次服用没有留下记录。"
+          }
+        }
+      }
+    },
+    "Day %lld" : {
+      "comment" : "Paywall of Maru Pro: the second step of the trial timeline: the day the yearly price starts. Example: Day 7.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag %lld"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Día %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld日目"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld일째"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第 %lld 天"
           }
         }
       }
@@ -4385,6 +4735,41 @@
         }
       }
     },
+    "Free for %lld days" : {
+      "comment" : "Paywall of Maru Pro: the first step of the trial timeline, after \"Today\". Example: Free for 7 days.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Tage kostenlos"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratis durante %lld días"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld日間無料"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld일 동안 무료"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费使用 %lld 天"
+          }
+        }
+      }
+    },
     "Free some storage, then try again. Your data is safe." : {
       "comment" : "Storage problem: the text when the disk is full.",
       "localizations" : {
@@ -4490,6 +4875,41 @@
         }
       }
     },
+    "Hide" : {
+      "comment" : "Today, the card of Maru Pro: the label of the × button for VoiceOver. It hides the card for good.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ausblenden"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocultar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "非表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "숨기기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏"
+          }
+        }
+      }
+    },
     "History" : {
       "comment" : "The title of the History page, and the button on Today that opens it. It lists what the user took, not a medical history.",
       "localizations" : {
@@ -4556,6 +4976,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "历史记录有变化"
+          }
+        }
+      }
+    },
+    "Icons and Sounds" : {
+      "comment" : "Paywall of Maru Pro: the title of the third benefit: extra app icons and reminder sounds.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Symbole und Töne"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iconos y sonidos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アイコンとサウンド"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아이콘과 소리"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "图标和提醒音"
           }
         }
       }
@@ -5346,6 +5801,41 @@
         }
       }
     },
+    "Lifetime" : {
+      "comment" : "Paywall of Maru Pro: the title of the plan with one payment.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dauerhaft"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De por vida"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "買い切り"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "평생"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "永久"
+          }
+        }
+      }
+    },
     "Light" : {
       "comment" : "Settings, menu \"Appearance\": the app is always in the light look.",
       "localizations" : {
@@ -5412,6 +5902,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 团队用心制作。"
+          }
+        }
+      }
+    },
+    "Manage Subscription" : {
+      "comment" : "Settings, section Maru Pro: opens the system sheet that changes or cancels the yearly plan.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abo verwalten"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestionar suscripción"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サブスクリプションを管理"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구독 관리"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理订阅"
           }
         }
       }
@@ -6132,6 +6657,111 @@
         }
       }
     },
+    "Maru Pro" : {
+      "comment" : "The name of the paid tier: the paywall title and the row in Settings. Keep it in English.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro"
+          }
+        }
+      }
+    },
+    "Maru Pro adds this, an Apple Watch app, and more icons and sounds. Everything else stays free." : {
+      "comment" : "Today, the card of Maru Pro: the text. No pressure.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro bietet das, eine Apple Watch-App und mehr Symbole und Töne. Alles andere bleibt kostenlos."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro añade esto, una app para Apple Watch y más iconos y sonidos. Todo lo demás sigue siendo gratis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Proでは、この機能のほか、Apple Watchアプリや追加のアイコンとサウンドが使えます。それ以外はすべて無料のままです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 아이콘과 소리가 있어요. 나머지는 모두 계속 무료예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro 提供这项功能，还有 Apple Watch App 和更多图标与提醒音。其他一切都继续免费。"
+          }
+        }
+      }
+    },
+    "Maru Pro is back. Thank you." : {
+      "comment" : "Paywall and Settings: a restore found Maru Pro.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro ist wieder da. Danke."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro ha vuelto. Gracias."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Proを復元しました。ありがとうございます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro가 복원됐어요. 고마워요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro 已恢复。谢谢你。"
+          }
+        }
+      }
+    },
     "Maru reads only the name." : {
       "comment" : "Label scan: the line under the prompt before the user taps a text. The scan reads no amount and no time.",
       "localizations" : {
@@ -6272,6 +6902,76 @@
         }
       }
     },
+    "More app icons and reminder sounds." : {
+      "comment" : "Paywall of Maru Pro: the text of the third benefit.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehr App-Symbole und Erinnerungstöne."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más iconos de la app y sonidos de recordatorio."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アプリアイコンと通知音が増えます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "더 많은 앱 아이콘과 알림 소리."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更多 App 图标和提醒声音。"
+          }
+        }
+      }
+    },
+    "Next Dose on the Lock Screen" : {
+      "comment" : "Paywall of Maru Pro: the title of the first benefit, a Live Activity with the next planned dose.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste Dosis auf dem Sperrbildschirm"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próxima dosis en la pantalla bloqueada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面に次の服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 화면에 다음 복용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁定屏幕上的下次服用"
+          }
+        }
+      }
+    },
     "Next up: %@, planned for %@." : {
       "comment" : "Siri, \"What do I take next\": the answer. The first placeholder is a list of item names, the second a planned time. Example: Next up: Vitamin D and Zinc, planned for 8:00 AM. It states the plan, not advice (D108).",
       "localizations" : {
@@ -6307,6 +7007,41 @@
         }
       }
     },
+    "No Maru Pro purchase was found for this Apple Account." : {
+      "comment" : "Paywall and Settings: a restore found no purchase. Apple Account is the Apple name of the account.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für diesen Apple Account wurde kein Kauf von Maru Pro gefunden."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró ninguna compra de Maru Pro en esta cuenta de Apple."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このApple AccountにMaru Proの購入は見つかりませんでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 Apple 계정에서 Maru Pro 구입을 찾지 못했어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这个 Apple 账户没有 Maru Pro 的购买记录。"
+          }
+        }
+      }
+    },
     "No records in the last 30 days." : {
       "comment" : "Item detail: the line of the 30-day section when the item had no planned dose and no taken as-needed dose.",
       "localizations" : {
@@ -6338,6 +7073,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近 30 天没有记录。"
+          }
+        }
+      }
+    },
+    "No subscription" : {
+      "comment" : "Paywall of Maru Pro: a note on the lifetime plan.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Abo"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin suscripción"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サブスクリプションなし"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구독 없음"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不是订阅"
           }
         }
       }
@@ -6408,6 +7178,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "今天没有要服用的，享受这一天吧。"
+          }
+        }
+      }
+    },
+    "one time" : {
+      "comment" : "Paywall of Maru Pro: under the price of the lifetime plan: one payment.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "einmalig"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "un solo pago"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1回のみ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "한 번만"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一次性"
+          }
+        }
+      }
+    },
+    "per year" : {
+      "comment" : "Paywall of Maru Pro: under the price of the yearly plan.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pro Jahr"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "al año"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1年ごと"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1년마다"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每年"
           }
         }
       }
@@ -6513,6 +7353,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "计划 %lld 次"
+          }
+        }
+      }
+    },
+    "Preview of your Lock Screen" : {
+      "comment" : "Paywall of Maru Pro: under the picture of a Lock Screen with the user's next dose. It is a picture, not a real Live Activity.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vorschau deines Sperrbildschirms"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vista previa de tu pantalla bloqueada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面のプレビュー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 화면 미리 보기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁定屏幕预览"
+          }
+        }
+      }
+    },
+    "Prices didn’t load. Check your connection and try again." : {
+      "comment" : "Paywall of Maru Pro: the App Store did not give the prices.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Preise wurden nicht geladen. Prüfe deine Verbindung und versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los precios no se cargaron. Revisa tu conexión e inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "価格を読み込めませんでした。接続を確認して、もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가격을 불러오지 못했어요. 연결을 확인한 뒤 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "价格没有加载出来。请检查网络后重试。"
           }
         }
       }
@@ -6688,6 +7598,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "已记录为已服用：%@。"
+          }
+        }
+      }
+    },
+    "Redeem Code" : {
+      "comment" : "Paywall and Settings: the button that opens the system sheet for an offer code.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Code einlösen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Canjear código"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "コードを使う"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "코드 사용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兑换代码"
           }
         }
       }
@@ -7183,7 +8128,7 @@
       }
     },
     "Next Dose" : {
-      "comment" : "Item detail: the label of the day of the next dose of a plan that counts days (every other day, every few days, or days on and days off). The value is Today, Tomorrow, a weekday, or a date.",
+      "comment" : "Item detail: the label of the day of the next dose of a plan that counts days (every other day, every few days, or days on and days off). The value is Today, Tomorrow, a weekday, or a date. Paywall of Maru Pro: the label in the picture of a Lock Screen, above the item name.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -8723,7 +9668,7 @@
       }
     },
     "Privacy Policy" : {
-      "comment" : "Settings: a link to the privacy policy web page.",
+      "comment" : "Settings: a link to the privacy policy web page. Paywall of Maru Pro: the same link.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9317,6 +10262,41 @@
         }
       }
     },
+    "Reminders, records, and your data stay free." : {
+      "comment" : "Settings, section Maru Pro: the footer for a free user.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erinnerungen, Einträge und deine Daten bleiben kostenlos."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los recordatorios, los registros y tus datos siguen siendo gratis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リマインダー、記録、データはずっと無料です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "미리 알림, 기록, 내 데이터는 계속 무료예요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提醒、记录和你的数据都继续免费。"
+          }
+        }
+      }
+    },
     "Reminds you up to %lld times, until %@." : {
       "comment" : "Footer under Remind Again when “Until I Record It” is chosen: the limit. The first placeholder is the number 12. The second is the time at which the reminders of a dose stop, for example “1:00 AM”.",
       "localizations" : {
@@ -9807,6 +10787,41 @@
         }
       }
     },
+    "Restore Purchases" : {
+      "comment" : "Paywall and Settings: the button that asks the App Store for an earlier purchase of Maru Pro. Also the title of its result alert.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käufe wiederherstellen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaurar compras"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を復元"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구입 복원"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复购买"
+          }
+        }
+      }
+    },
     "Save" : {
       "comment" : "Edit screen: the text “Save”.",
       "localizations" : {
@@ -9908,6 +10923,146 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "扫描标签"
+          }
+        }
+      }
+    },
+    "See and record today’s doses on your wrist." : {
+      "comment" : "Paywall of Maru Pro: the text of the second benefit.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sieh und erfasse die Dosen von heute am Handgelenk."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ve y registra las dosis de hoy en tu muñeca."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日の服用を手首で確認・記録できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘의 복용을 손목에서 확인하고 기록해요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在手腕上查看并记录今天的服用。"
+          }
+        }
+      }
+    },
+    "See Maru Pro" : {
+      "comment" : "Today, the card of Maru Pro: the button that opens the paywall.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro ansehen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ver Maru Pro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Proを見る"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro 보기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "了解 Maru Pro"
+          }
+        }
+      }
+    },
+    "See what’s next without opening Maru." : {
+      "comment" : "Paywall of Maru Pro: the text of the first benefit.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sieh, was als Nächstes ansteht, ohne Maru zu öffnen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira lo siguiente sin abrir Maru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruを開かなくても次の予定がわかります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru를 열지 않아도 다음 일정을 볼 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不打开 Maru，也能看到下一次安排。"
+          }
+        }
+      }
+    },
+    "See your next dose on the Lock Screen" : {
+      "comment" : "Today, the card of Maru Pro: the title.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine nächste Dosis auf dem Sperrbildschirm"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ve tu próxima dosis en la pantalla bloqueada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の服用をロック画面で確認"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 복용을 잠금 화면에서 확인하세요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在锁定屏幕上看到下次服用"
           }
         }
       }
@@ -10223,6 +11378,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享你怎么使用 App，比如今天有没有记录。Maru 绝不分享药品名称、剂量或时间。你可以随时在“设置”里改。"
+          }
+        }
+      }
+    },
+    "Shareable with Family Sharing" : {
+      "comment" : "Paywall of Maru Pro: one line. Family Sharing is the Apple feature; use its official name.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit der Familienfreigabe teilbar"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se puede compartir con En familia"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ファミリー共有で共有できます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가족 공유로 함께 쓸 수 있어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可通过“家人共享”共享"
           }
         }
       }
@@ -10791,6 +11981,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "停止"
+          }
+        }
+      }
+    },
+    "Subscribe Yearly" : {
+      "comment" : "Paywall of Maru Pro: the buy button for the yearly plan.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jährlich abonnieren"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suscripción anual"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年額で登録"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연간 구독"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按年订阅"
           }
         }
       }
@@ -11460,6 +12685,41 @@
         }
       }
     },
+    "Terms of Use" : {
+      "comment" : "Paywall of Maru Pro: a link to the standard terms of the App Store.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzungsbedingungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Términos de uso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用規約"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이용 약관"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用条款"
+          }
+        }
+      }
+    },
     "The plan has too many times for iPhone." : {
       "comment" : "Item detail: the footer of the plan when the plan has more reminder times than iPhone allows.",
       "localizations" : {
@@ -11686,6 +12946,41 @@
         }
       }
     },
+    "The purchase didn’t go through. Please try again." : {
+      "comment" : "Paywall of Maru Pro: a purchase or a restore failed.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Kauf hat nicht geklappt. Bitte versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La compra no se completó. Inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入を完了できませんでした。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구입이 완료되지 않았어요. 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "购买没有完成。请再试一次。"
+          }
+        }
+      }
+    },
     "The reminders may still be on until Maru checks again." : {
       "comment" : "Item detail: the footer when the system did not confirm that the reminders of an archived or ended item are removed.",
       "localizations" : {
@@ -11717,6 +13012,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 Maru 再次检查之前，提醒可能还开着。"
+          }
+        }
+      }
+    },
+    "The restore didn’t go through. Please try again." : {
+      "comment" : "Settings, section Maru Pro: a restore failed.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Wiederherstellung hat nicht geklappt. Bitte versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La restauración no se completó. Inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復元を完了できませんでした。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복원이 완료되지 않았어요. 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复没有完成。请再试一次。"
+          }
+        }
+      }
+    },
+    "The yearly plan renews each year until you cancel it in Settings. Cancel at least 24 hours before it renews." : {
+      "comment" : "Paywall of Maru Pro: the renewal terms under the buttons. Settings is the iOS Settings app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Jahresplan verlängert sich jedes Jahr, bis du ihn in den Einstellungen kündigst. Kündige mindestens 24 Stunden vor der Verlängerung."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El plan anual se renueva cada año hasta que lo canceles en Ajustes. Cancela al menos 24 horas antes de la renovación."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年額プランは、設定でキャンセルするまで毎年自動更新されます。更新の24時間前までにキャンセルしてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연간 플랜은 설정에서 취소할 때까지 매년 갱신돼요. 갱신 24시간 전까지 취소해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按年方案会每年自动续订，直到你在“设置”中取消。请在续订前至少 24 小时取消。"
           }
         }
       }
@@ -12177,7 +13542,7 @@
       }
     },
     "Today" : {
-      "comment" : "The title of the first tab and of its page.",
+      "comment" : "The title of the first tab and of its page. Paywall of Maru Pro: the first step of the trial timeline.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -12317,7 +13682,7 @@
       }
     },
     "Try Again" : {
-      "comment" : "Storage problem: the button that reads the data again.",
+      "comment" : "Storage problem: the button that reads the data again. Paywall of Maru Pro: the button that loads the prices again.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -13273,6 +14638,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "随餐"
+          }
+        }
+      }
+    },
+    "Yearly" : {
+      "comment" : "Paywall of Maru Pro: the title of the plan that renews each year.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jährlich"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anual"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "年額"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "연간"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按年"
           }
         }
       }
@@ -14242,6 +15642,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的备注"
+          }
+        }
+      }
+    },
+    "Your purchase is waiting for approval. Pro turns on when it’s approved." : {
+      "comment" : "Paywall of Maru Pro: a purchase waits, for example for Ask to Buy.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dein Kauf wartet auf Freigabe. Pro wird aktiv, sobald er freigegeben ist."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu compra está pendiente de aprobación. Pro se activará cuando se apruebe."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入は承認待ちです。承認されるとProが有効になります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구입이 승인을 기다리고 있어요. 승인되면 Pro가 켜져요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的购买正在等待批准。批准后 Pro 就会开启。"
           }
         }
       }

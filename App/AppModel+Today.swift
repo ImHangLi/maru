@@ -250,6 +250,7 @@ extension AppModel {
     func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
         let wasComplete = todaySnapshot.map { isComplete($0) } ?? true
         noteRecords(records)
+        proRecordsDidCommit(records)
         for record in records {
             today.pending[record.occurrenceID] = nil
         }
@@ -261,6 +262,8 @@ extension AppModel {
             content = .loaded(snapshot)
         }
         if !wasComplete, let day = todaySnapshot, isComplete(day) { dayDidComplete(day.date) }
+        // An undo can open a dose with a later time.
+        if let day = todaySnapshot { scheduleProCardCheck(for: day) }
         sendWatchDay()
         reloadWidgets()
         historyDidCommit(records)
@@ -357,5 +360,6 @@ extension AppModel {
             guard !Task.isCancelled else { return }
             self?.refresh()
         }
+        scheduleProCardCheck(for: day)
     }
 }

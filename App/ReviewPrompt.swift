@@ -12,6 +12,8 @@ enum ReviewPrompt {
     private static let firstLaunchKey = "review.firstLaunch"
     private static let completeDaysKey = "review.completeDays"
     private static let askedVersionKey = "review.askedVersion"
+    /// The time of the last ask. The Maru Pro card does not show on that day (D107).
+    private static let askedAtKey = "review.askedAt"
     private static let daysNeeded = 3
     private static let firstDays: TimeInterval = 3 * 24 * 60 * 60
 
@@ -40,6 +42,18 @@ enum ReviewPrompt {
               defaults.string(forKey: askedVersionKey) != version
         else { return false }
         defaults.set(version, forKey: askedVersionKey)
+        defaults.set(now, forKey: askedAtKey)
         return true
+    }
+
+    /// The time of the first launch that this rule knows. The Maru Pro card counts its days from it (D107).
+    static func firstLaunch(defaults: UserDefaults = .standard) -> Date? {
+        defaults.object(forKey: firstLaunchKey) as? Date
+    }
+
+    /// Maru asked for a rating on the calendar day of `now`.
+    static func askedToday(defaults: UserDefaults = .standard, now: Date = Date()) -> Bool {
+        guard let askedAt = defaults.object(forKey: askedAtKey) as? Date else { return false }
+        return Calendar.current.isDate(askedAt, inSameDayAs: now)
     }
 }

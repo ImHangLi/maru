@@ -132,15 +132,35 @@ The question is: "Is your app a regulated medical device in any country or regio
 | Data type | Purpose | Linked to the user | Tracking | What it is in the code |
 |---|---|---|---|---|
 | Identifiers: Device ID | Analytics | Yes | No | `distinct_id`, the random install ID |
-| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077) |
+| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077), and `paywall_shown` from 1.2 (D107) |
 | Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, `ios_major`, and `device` |
 | Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) and `app_language` (D077) |
 
-The label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`. Add "Purchase History" in the release that first sends `purchase_result`.
+| Purchases: Purchase History | Analytics | Yes | No | `purchase_result` (D107). Not published yet |
+
+The published label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy` of 1.1. The code of 1.2 sends `purchase_result` (D107), and `App/PrivacyInfo.xcprivacy` lists "Purchase History". Add "Purchase History" to the label in App Store Connect before the release of 1.2.
 
 ### Tips
 
 The tips were removed (D099). A paid "Pro" tier comes in version 1.2.
+
+### Maru Pro (D107)
+
+The code has the purchase, the paywall, and the entitlement. The maintainer does these steps in App Store Connect. The agent does not touch App Store Connect.
+
+- [ ] Paid Apps agreement: the state is "Active", with the bank and the tax forms. No in-app purchase can be sold before that.
+- [ ] Remove the three tip products of D053, or leave them "Removed from Sale" (D099).
+- [ ] Create the subscription group "Maru Pro", with a localized display name in the eight store languages.
+- [ ] In the group, create the auto-renewable subscription `com.imhangli.maru.pro.yearly`: duration 1 year, price about USD 9.99 with the price tiers of each storefront, a display name and a description in the eight store languages.
+- [ ] Add the introductory offer to the yearly plan: "Free", 1 week, in all storefronts.
+- [ ] Create the non-consumable `com.imhangli.maru.pro.lifetime`: price about USD 19.99, a display name and a description in the eight store languages.
+- [ ] Turn on Family Sharing for both products. It cannot be turned off later.
+- [ ] Add a review screenshot of the paywall and review notes for each product. The notes say where the paywall is (Settings, "Maru Pro") and that every free feature stays free.
+- [ ] Add both products to the version 1.2 submission. The first in-app purchase of an app must go to review with a new version.
+- [ ] Add "Purchase History" to the privacy label (see "Privacy label").
+- [ ] Change the store text of 1.2: it must say what needs a purchase (guideline 2.3.2), and "no paywall" must go.
+- [ ] Test in TestFlight with a Sandbox account: buy yearly, buy lifetime, restore, an offer code, and Ask to Buy.
+- [ ] Do not submit before the Pro features are in the build. A purchase with no content is a rejection risk (guideline 3.1.1).
 
 ### Notes for App Review
 
