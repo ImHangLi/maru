@@ -464,6 +464,8 @@ Seven new strings, and three from the first D115 round. No native speaker read t
 
 ## Paywall style B (D116)
 
+D117 redesigned the lower half and added no string. The strings below and the ones of D115 are all that the two looks show.
+
 Five new strings for the second paywall. No native speaker read them. The reviewer checks that the headline and the supporting line fit two to four lines at a large text size, that the terms lines keep the order "days, price", and that each terms line states the price, the period, that the plan renews, and that the user can cancel (App Review 3.1.2). The headline names the result "a glance at the next dose", and the supporting line says that the reminders stay free.
 
 | English | zh-Hans | ja | es | de | ko |

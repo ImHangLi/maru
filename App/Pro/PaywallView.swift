@@ -371,7 +371,7 @@ private struct PaywallHost: ViewModifier {
             set: { if $0 == nil, isActive { model.paywallDidClose() } }
         )) { _ in
             #if DEBUG
-            if DebugLaunch.wantsPaywallStyleB { PaywallStyleB() } else { PaywallView() }
+            if let look = DebugLaunch.paywallLook { PaywallStyleB(look: look) } else { PaywallView() }
             #else
             PaywallView()
             #endif

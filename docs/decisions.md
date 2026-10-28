@@ -2377,7 +2377,7 @@ Evidence: simulator captures of the Today card, the paywall in light, dark, and 
 
 Not verified: no check on a real iPhone, on an iPad, with VoiceOver, or with Reduce Motion. The purchase with the StoreKit configuration (the thank-you, then the close), a restore, a pending purchase, and the long German and Spanish lines are open. The smallest iPhone that iOS 17 supports (iPhone SE, 667 points high) was not available as a simulator, so the first-screen rule is proven only down to 844 points. On a 667-point screen the two small link rows are under the first screen, and the buy button is above them.
 
-## D116 · 2026-10-28 · Paywall style B: a gradient picture, one headline, and a button that names the plan (an option next to D115)
+## D116 · 2026-10-28 · Paywall style B: a gradient picture, one headline, and a button that names the plan (an option next to D115, lower half redesigned by D117)
 
 Maintainer feedback on the plain paywall of D115, on 2026-10-28: it is too plain and boring, a user would not want to buy it, and it has no focal point. The maintainer asked for a look at the ChatGPT and Claude upgrade pages, and for a very abstract, modern gradient picture as the look of the paywall, and maybe of other places. The earlier rules stay: very simple and direct, understandable at first look by a reader of another language, the system font only, and an Apple look. This decision adds a second paywall ("style B") so the maintainer can compare the two on a display and keep one. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107.
 
@@ -2398,3 +2398,31 @@ Research: the notes are in `~/Documents/Research/maru/paywall-redesign/reference
 Evidence: simulator captures and a recording are in `~/Documents/Research/maru/paywall-redesign/style-b/`. The simulator cannot attach `Config/Maru.storekit` when it starts from the command line, so a copy of the code in `/tmp`, not in the repository, set the two prices ($9.99 with a 7-day trial and $19.99) and opened the paywall at launch. The real StoreKit path was not run.
 
 Not verified: no check on a real iPhone, on an iPad, with VoiceOver, or with Reduce Motion. The purchase, a restore, a pending purchase, and the long German and Spanish lines are open. The smallest iPhone that iOS 17 supports (iPhone SE, 667 points high) is not a simulator here, so the first-screen rule is proven only down to 844 points.
+
+## D117 · 2026-10-28 · Paywall style B, second round: two calm looks for the lower half, B1 "Immersive" and B2 "Clean sheet" (replaces the tiles and plan cards of D116)
+
+Maintainer feedback on style B, on 2026-10-28: the picture and the headline "Your next dose, at a glance." are good. Everything under the picture is "very, very ugly": some icons and fonts look generated, and the layout is messy. A second message: the join of the picture and the content is abrupt, and the page must flow as one piece. This decision replaces the lower half with two looks, so the maintainer can choose one. It changes no StoreKit code, no entitlement rule, no price rule, no string, and no trigger of D107.
+
+Why the old lower half looked wrong: three colored icon badges on gray tiles, gray plan cards, a pink outline, a gray "Continue Free" with the weight of the buy button, and pink links gave too many container types and fills. The hero was left aligned, and the tiles and terms were centered. The type had too many sizes. The picture ended in a rounded card with a hard edge above a white page.
+
+Shared rules of both looks:
+- One margin (20 points) and one left edge for the headline, the benefits, the plan list, the terms, and the links. Buttons are full width.
+- One type scale of Apple text styles: `largeTitle.bold` (headline), `headline` (name, plan name, price, button, "Maru Pro"), `body` (supporting line, benefits, "Continue Free"), and `footnote` (notes, period, terms, links). At an accessibility size, the headline and supporting line are one step smaller, as in D116.
+- One radius (20 points, continuous) for the plan list. No gray tile, no icon badge, no outline.
+- Benefits: three rows with a monochrome SF Symbol and the labels of D115. The symbol column has one width, so the labels line up.
+- Plans: one list with two rows, a check circle (filled for the selected plan), the name and note, and the price with its period. The yearly plan is selected first. The price has the size of the name and is larger than the note (App Review 3.1.2).
+- Actions: the terms line of the selected plan, one prominent capsule button that names the plan, "Continue Free" as a quiet text button (a full-width target, `body`, primary color), and four small links in secondary gray, in two rows. The headline has a narrow measure, so it breaks as "Your next dose," and "at a glance." The break is the only change to the headline.
+- Accent: the app tint colors the symbols, the selected check, and the buy button (B2). B1 uses white for the same three. Links are never pink.
+- The close button is a dark translucent circle on the picture at the top right, in view when the page scrolls. Restore, Redeem Code, Terms, and Privacy stay. The purchase code, the notices, and the thank-you did not change.
+
+B1 "Immersive": the picture is the whole page (`HeroArt` behind the scroll view, full-bleed under the status bar). Two layers darken it toward the foot: a blurred copy of the picture (radius 32) that a gradient mask fades in from 30 to 90 percent of the height, and a black wash from 12 to 55 percent opacity. The page forces the dark color scheme, so all text is white and vibrant. The plan list is an ultra-thin material. The buy button is a white capsule with black text. On a tall screen, the headline stays at the top and the rest sits at the foot.
+
+B2 "Clean sheet": the picture is the top of the page, full-bleed from the top edge (under the status bar and the close button). It is the background of the headline block and ends in a fade into the system background (white in light mode, black in dark mode). The fade is an alpha mask on the picture: a solid rectangle, then a 120-point gradient with eight eased stops from opaque to clear (no linear ramp, so no visible start or end). The picture extends 60 points below the headline block, under the first benefits, and a dark wash (10 to 45 percent) under the headline keeps white text readable in light mode. The headline sits on the solid part and the start of the fade. The benefits start right below with no card frame. The plan list is one `secondarySystemBackground` group.
+
+Debug launch arguments (a release build shows only the plain paywall): `-MaruPaywallStyleB1 YES` and `-MaruPaywallStyleB2 YES`. They replace `-MaruPaywallStyleB YES` of D116. When the maintainer picks one look, delete the other look, `PaywallView` (D115) if style B wins, and the launch arguments.
+
+Fit: at the default text size, the first screen with no scroll shows the headline, the benefits, both prices, the terms, the buy button, "Continue Free", and the links on an iPhone 17 Pro and an iPhone 17e. At the accessibility size "Extra Large" the page scrolls, and the plan rows stack the price under the name.
+
+Evidence: simulator captures (light, dark, zh-Hans on an iPhone 17 Pro, light and "Extra Large" on an iPhone 17e) and `compare.png` (old B, B1, B2, light and dark) are in `~/Documents/Research/maru/paywall-redesign/style-b2/`. As in D116, a copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
+
+Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, and the long German and Spanish lines. The smallest iPhone that iOS 17 supports (667 points high) is not a simulator here. The white "Continue Free" and link rows were not checked for contrast with a tool. The text on the fade of B2 is black on a pink tint for the first benefit row in light mode, and it is readable in the captures only.
