@@ -1,13 +1,15 @@
 import MaruCore
 import SwiftUI
+import UIKit
 
 /// The graph at the top of the history page (D041): one square for each day, one column for each week,
 /// and one row for each weekday. The app tint in three levels shows the share of the planned doses that are
 /// taken. The graph has no title, no legend, and no count.
 ///
-/// A kept custom control (D026): SwiftUI has no heat map. One `Canvas` draws the squares and the labels, and one
-/// drag gesture selects a day. The graph stays above the list, out of its scroll, so the drag and the
-/// scroll never compete for one touch. The end of a touch opens the log of the selected day (D054).
+/// A kept custom control (D026): SwiftUI has no heat map. One `Canvas` draws the squares and the labels. A tap
+/// selects a day, and a short press starts a drag across the days. The graph is the first section of the list
+/// and scrolls with it, so a swipe that starts on the graph scrolls the page (D109). The end of a touch opens
+/// the log of the selected day (D054).
 struct HistoryGraphView: View {
     let graph: HistoryGraph
     let counts: [LocalDate: HistoryDayCount]
@@ -31,8 +33,14 @@ struct HistoryGraphView: View {
                     draw(in: &context, layout: layout)
                 }
                 .padding(-outset)
-                .contentShape(Rectangle())
-                .gesture(touch(layout, outset: outset))
+                .overlay {
+                    GraphTouch { point, isEnd in
+                        selection = day(at: point, in: layout, outset: outset)
+                        if isEnd { onCommit() }
+                    } onCancel: {
+                        selection = nil
+                    }
+                }
             }
         }
         .padding(16)
@@ -63,20 +71,8 @@ struct HistoryGraphView: View {
 
     // MARK: Touch
 
-    /// A touch selects the day under the finger, and a drag moves the selection. The nearest day counts, so
-    /// the finger does not need to hit a square. A day that is not here yet gives today. At the end of the
-    /// touch the log of that day opens.
-    private func touch(_ layout: HistoryGraphLayout, outset: CGFloat) -> some Gesture {
-        DragGesture(minimumDistance: 0)
-            .onChanged { value in
-                selection = day(at: value.location, in: layout, outset: outset)
-            }
-            .onEnded { value in
-                selection = day(at: value.location, in: layout, outset: outset)
-                onCommit()
-            }
-    }
-
+    /// The nearest day to a point of the canvas, so the finger does not need to hit a square. A day that is not
+    /// here yet gives today.
     private func day(at point: CGPoint, in layout: HistoryGraphLayout, outset: CGFloat) -> LocalDate {
         let cell = layout.nearestCell(to: CGPoint(x: point.x - outset, y: point.y - outset))
         return min(max(graph.date(column: cell.column, row: cell.row), firstShown), graph.today)
@@ -269,6 +265,55 @@ struct HistoryGraphLayout {
         let local = Int(((point.x - leading - side / 2) / pitch).rounded())
         let row = Int(((point.y - squaresTop(band: band) - side / 2) / pitch).rounded())
         return (band * columnsPerBand + min(max(local, 0), columnsPerBand - 1), min(max(row, 0), 6))
+    }
+}
+
+/// The touch of the graph (D109). A tap selects the day under the finger. A press of 0.2 seconds selects it too,
+/// and a drag after the press moves the selection. The end of either touch opens the log of the day.
+///
+/// UIKit recognizers, not SwiftUI gestures: in the list, a UIKit tap and long press share a touch with the
+/// scroll of the list in the same way on iOS 17, 18, and 26. A finger that moves before the press time scrolls
+/// the page, and the press fails. A press that starts first stops the scroll until the finger lifts.
+private struct GraphTouch: UIViewRepresentable {
+    /// A point in the canvas, and true at the end of the touch.
+    let onTouch: (CGPoint, Bool) -> Void
+    /// The system cancelled a press, for example for a call. No log opens.
+    let onCancel: () -> Void
+
+    func makeUIView(context: Context) -> UIView {
+        let view = UIView()
+        let coordinator = context.coordinator
+        view.addGestureRecognizer(UITapGestureRecognizer(target: coordinator, action: #selector(Coordinator.tap)))
+        let press = UILongPressGestureRecognizer(target: coordinator, action: #selector(Coordinator.press))
+        press.minimumPressDuration = 0.2
+        view.addGestureRecognizer(press)
+        return view
+    }
+
+    func updateUIView(_ view: UIView, context: Context) {
+        context.coordinator.touch = self
+    }
+
+    func makeCoordinator() -> Coordinator { Coordinator(touch: self) }
+
+    @MainActor
+    final class Coordinator: NSObject {
+        var touch: GraphTouch
+
+        init(touch: GraphTouch) { self.touch = touch }
+
+        @objc func tap(_ recognizer: UITapGestureRecognizer) {
+            touch.onTouch(recognizer.location(in: recognizer.view), true)
+        }
+
+        @objc func press(_ recognizer: UILongPressGestureRecognizer) {
+            let point = recognizer.location(in: recognizer.view)
+            switch recognizer.state {
+            case .began, .changed: touch.onTouch(point, false)
+            case .ended: touch.onTouch(point, true)
+            default: touch.onCancel()
+            }
+        }
     }
 }
 
