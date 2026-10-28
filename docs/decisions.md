@@ -1969,11 +1969,12 @@ Maintainer decision.
 
 - Settings, section "Display", has the menu "Appearance" after "Color Header", with "System", "Light", and "Dark". The default is "System".
 - The choice is in `UserDefaults.standard`, with the key `display.appearance`, beside the app color (D014). No value means "System".
-- The app root applies it with `preferredColorScheme`. "System" gives `nil`, so the app follows the device. Every window, sheet, alert, and the onboarding follow the choice.
+- The app sets it on each window with `overrideUserInterfaceStyle`. "System" gives `unspecified`, so the app follows the device. Every window, sheet, alert, and the onboarding follow the choice, also a sheet that is open during the change.
+- Correction after the iPhone Duo simulator check (2026-10-28): the first code used `preferredColorScheme` at the app root. A change from "Dark" to "System" kept the open Settings sheet dark, because `preferredColorScheme(nil)` did not reset an open sheet.
 - The widgets and the Watch app always follow the system. The backup file does not carry the choice, as it does not carry "Color Header".
 - The setting has no preview and no own page.
 
-Not verified: no build of the app on this Mac, and nobody saw the menu on a display. CI builds the app.
+Not verified: no build of the app on this Mac, and nobody saw the window fix on a display. CI builds the app.
 
 ## D106 · 2026-10-28 · Maru runs on iPhone Duo with its current layout
 

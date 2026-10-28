@@ -1,6 +1,7 @@
 import MaruCore
 import MaruNotifications
 import SwiftUI
+import UIKit
 import UserNotifications
 import WidgetKit
 
@@ -60,8 +61,8 @@ struct MaruApp: App {
                 .environment(model)
                 // The user picks the app color in settings. Pink is the default (D025).
                 .tint(appColor.tint)
-                // At the root, so every sheet and the onboarding follow it. `nil` is the system look (D105).
-                .preferredColorScheme(appearance.colorScheme)
+                // On the window, so every open sheet, alert, and the onboarding follow a change at once (D105).
+                .background(WindowStyle(style: appearance.style))
                 .onOpenURL { model.openWidgetLink($0) }
                 .onChange(of: appColor) { _, color in
                     AppGroup.appColor = color
@@ -78,6 +79,33 @@ struct MaruApp: App {
                 ActionNotice.clear()
             default: break
             }
+        }
+    }
+}
+
+/// Sets the light or dark look on the window of the view (D105). A sheet, an alert, and the share sheet take the look
+/// of their window. `preferredColorScheme(nil)` did not reset a sheet that was open, so the app does not use it.
+private struct WindowStyle: UIViewRepresentable {
+    let style: UIUserInterfaceStyle
+
+    func makeUIView(context: Context) -> StyleView {
+        let view = StyleView()
+        view.isUserInteractionEnabled = false
+        return view
+    }
+
+    func updateUIView(_ view: StyleView, context: Context) {
+        view.style = style
+    }
+
+    final class StyleView: UIView {
+        var style = UIUserInterfaceStyle.unspecified {
+            didSet { window?.overrideUserInterfaceStyle = style }
+        }
+
+        override func didMoveToWindow() {
+            super.didMoveToWindow()
+            window?.overrideUserInterfaceStyle = style
         }
     }
 }
