@@ -36,6 +36,8 @@ struct MaruApp: App {
         TakeDoseHook.install { try await AppModel.shared.takeFromWidget($0) }
         // The Watch app sends its requests to this process, also in the background (D071).
         WatchLink.shared.start()
+        // The rating prompt never asks in the first days after the first launch (D102).
+        ReviewPrompt.noteLaunch()
         // The widgets read the tint from the App Group.
         AppGroup.appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
         // Finishes tips that end outside a purchase call. It waits for the system, so the launch does not wait (T35).

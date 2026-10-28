@@ -56,7 +56,7 @@ struct MyListView: View {
                     .overlay {
                         if snapshot.list.isEmpty && snapshot.archived.isEmpty {
                             ContentUnavailableView {
-                                Label("No Items Yet", systemImage: "pills")
+                                Label("Let’s add the first thing you take.", systemImage: "pills")
                             } actions: {
                                 Button("Add Item") { model.openEditor(for: nil) }
                             }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// "Support Maru": three optional tips (spec 14 C). Nothing in Maru depends on a tip.
-/// The section calls `SupportStore`, and the store is the only code that talks to StoreKit.
+/// The section calls `SupportStore`, and the store is the only code that buys with StoreKit.
 struct SupportSection: View {
     private let store = SupportStore.shared
 

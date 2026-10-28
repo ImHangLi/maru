@@ -48,6 +48,8 @@ final class AppModel {
     /// The item whose first save with a time asks, once, whether "Remind Again" should be on (D091). It waits for the
     /// edit screen and the alerts before it. `AppModel+Detail.swift` has its operation.
     var remindAgainOffer: ItemID?
+    /// Counts the times that Maru asks for an App Store rating. The root view shows the system prompt (D102).
+    var reviewRequest = 0
 
     /// Only the operations of the model use the store. A view calls an operation (spec 6).
     let store: AppStore

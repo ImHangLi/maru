@@ -35,17 +35,17 @@ struct StorageProblemView: View {
     private var message: LocalizedStringKey {
         switch error {
         case .corrupt:
-            "Your data file is damaged. Maru did not change or delete it."
+            "Your data file is damaged. Maru left it exactly as it was."
         case .migrationFailed:
-            "This version of Maru can’t open your data. Maru did not change or delete it."
+            "This version of Maru can’t open your data. It’s safe, and nothing changed."
         case .newerSchema:
-            "A newer version of Maru saved your data. Maru did not change or delete it."
+            "A newer version of Maru saved your data. It’s safe, and nothing changed."
         case .diskFull:
-            "Free some storage, then try again. Maru did not change or delete your data."
+            "Free some storage, then try again. Your data is safe."
         case .unavailable:
-            "If your iPhone is locked, unlock it and try again. Maru did not change or delete your data."
+            "If your iPhone is locked, unlock it and try again. Your data is safe."
         default:
-            "Maru did not change or delete your data."
+            "Your data is safe. Nothing changed."
         }
     }
 }

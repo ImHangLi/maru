@@ -983,7 +983,7 @@ Maintainer decision on 2026-10-12, after use on the device.
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in the detail at the largest text sizes and with VoiceOver need a check on a real iPhone.
 
-## D058 · 2026-10-12 · Consistency pass across the app
+## D058 · 2026-10-12 · Consistency pass across the app (the empty-view title rule changed by D101)
 
 The maintainer asked to unify the app: the same words, colors, states, and motion for the same thing on every page. The agent made the choices below inside that request. The maintainer can overrule any of them.
 
@@ -1224,7 +1224,7 @@ The Watch keeps one plain sentence for the case that remains: "Not recorded. Unl
 `PRIVACY.md` states the new level, and it has one sentence that the list of today goes to the user's own Apple Watch. The maintainer approved both texts. `site/build.py` builds the privacy page of each language from `PRIVACY.md`, so the pages have the same text. The site publishes it when this change merges.
 
 Not verified: no device ran this. A real iPhone must confirm that the level of the existing files changes at the first launch, that a record from the Watch works with the iPhone locked, that it fails with the plain sentence after a restart, and what the widgets show on a locked display.
-## D068 · 2026-10-13 · Copy review: text states the record, not the intake
+## D068 · 2026-10-13 · Copy review: text states the record, not the intake (the empty Today title replaced by D101)
 
 Agent decision, after a copy review of all user-facing text by a different model. It changes text in the six languages, and it replaces parts of D048. The number leaves D065 to D067 for the branches that are open at the same time.
 
@@ -1823,3 +1823,58 @@ Maintainer decision. It adds places to the "Delete Item…" clause of D033.
 - The entry is red (destructive role) and opens the same one confirmation as the other places. The swipe rule of D033 does not apply: a context menu does not remove the row before the alert.
 - Reason: a user who wanted to delete in one step looked for it there.
 - The entry reuses the translated string. It adds no domain code and no store code.
+
+## D101 · 2026-10-28 · A warm voice at key moments
+
+Maintainer decision. The copy felt cold and artificial. Maru now speaks like a reliable friend at a few key moments: not a nurse and not a cheerleader. Only text changes. The layout does not change. It replaces the "nothing to take" clause of D068 and, for the warm titles, the empty-view title rule of D058.
+
+Rules:
+
+- Warm words come only at key moments: a day with every dose recorded, the first item, empty states, errors and recoveries, and one line at the bottom of Settings.
+- Buttons, settings labels, and record states stay short and exact. The text states the record, not the intake (D068).
+- No guilt, no nagging, no streak talk, and no "don't forget". A missed dose gets no judgment.
+- Few exclamation marks, no emoji, and nothing cute. No medical promise.
+- Where the app speaks as its maker, it says "the Maru team" and never names a person.
+- Each language uses its own natural tone: polite but friendly in ja and ko, and 你 in zh-Hans, as the catalog already does.
+
+Changes in `App/Localizable.xcstrings`, in six languages:
+
+| Where | Before | After |
+|---|---|---|
+| Today, items but nothing planned | Nothing Planned Today | Nothing to take today. Enjoy it. |
+| Today and My Items, no item | No Items Yet | Let’s add the first thing you take. |
+| Today, every planned dose recorded (new) | the date | All done for today. Nice work. |
+| History, empty | What you record shows here. | Your records will appear here, one day at a time. |
+| Storage problem, no known cause | Maru did not change or delete your data. | Your data is safe. Nothing changed. |
+| Storage problem, disk full | … Maru did not change or delete your data. | … Your data is safe. |
+| Storage problem, locked device | … Maru did not change or delete your data. | … Your data is safe. |
+| Storage problem, newer or older version | … Maru did not change or delete it. | … It’s safe, and nothing changed. |
+| Storage problem, damaged file | … Maru did not change or delete it. | … Maru left it exactly as it was. |
+| Alert after a record that did not save | Maru couldn’t save this. Try again. | This didn’t save. Please try again. |
+| Alert after a change that did not save | Maru couldn’t save this change. Try again. | This change didn’t save. Please try again. |
+| Settings, footer of "About" (new) | none | Made with care by the Maru team. |
+
+Details:
+
+- "All done for today. Nice work." takes the place of the date under the "Today" title (the navigation subtitle, or the first header before iOS 26). Today has no progress ring (D026), so this line is the progress area. It shows when every planned dose of today has a confirmed record, taken or skipped. As-needed doses do not count. The line shows only after the commit (spec 7.2).
+- The damaged file does not say "Your data is safe", because Maru does not know that. It says that Maru did not touch the file.
+- "No Items Yet" stays as the line of the PDF medication list with no item. A warm invitation does not fit a document.
+- Not changed: the notification text, because it lives in the package catalog `MaruNotifications`, and the widget text, because the warm lines do not fit a small widget. The site has none of the changed sentences, so `site/src/strings` does not change. The editor errors already say "Your entries are still here."
+- Every new string in zh-Hans, ja, es, de, and ko is a draft until a native speaker reads it (`docs/localization-review.md`).
+
+Not verified: no build of the app on this Mac, and nobody saw the text on a display. CI builds the app.
+
+## D102 · 2026-10-28 · The App Store rating prompt
+
+Maintainer decision.
+
+- Maru uses only the system prompt of `RequestReviewAction` (SwiftUI `@Environment(\.requestReview)`). It has no stars of its own, no "rate 5 stars" text, and no screen before the prompt.
+- The trigger is the third distinct calendar day on which every planned dose of that day has a record, taken or skipped. The prompt comes right after the record that completes such a day, 1.5 seconds later, so it does not cover the fill of the record circle.
+- Maru asks at most once per app version, and never in the first 3 days after the first launch. The system can still decide to show nothing.
+- The state of the day comes from the Today read (`TodaySnapshot`) through `AppModel.isComplete`, the same check as the line of D101.
+- A day counts also when a reminder action, a widget, or the Watch completes it. Maru asks only while the app is active, so a record in the background only counts the day.
+- The values are preferences in `UserDefaults.standard` (D014), not in the health database: the time of the first launch, at most 3 dates of complete days, and the last version that asked. They hold no item data. `App/ReviewPrompt.swift` has the rule.
+- A version before this rule did not keep the first launch, so an update starts the 3 days from the first launch of the update.
+- The prompt sends no analytics event.
+
+Not verified: no build of the app on this Mac. The system shows the prompt in a Debug build every time and never in TestFlight, so only an App Store build shows the real behavior.

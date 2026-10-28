@@ -1,10 +1,12 @@
 import MaruCore
+import StoreKit
 import SwiftUI
 
 /// The frame of the app: two tabs, or the storage problem in place of them.
 struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openURL) private var openURL
+    @Environment(\.requestReview) private var requestReview
     /// The edit screen is on the display, also while it closes. A reminder alert waits for its end.
     @State private var editorIsUp = false
     /// The reminder alert on the display. It is a copy, so a later result does not change it.
@@ -103,7 +105,15 @@ struct RootView: View {
         .alert("Not Changed", isPresented: $model.endFailed) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Maru couldn’t save this change. Try again.")
+            Text("This change didn’t save. Please try again.")
+        }
+        // The system rating prompt, after the record that completes a day (D102). The wait lets the record circle fill
+        // and the haptic play first. Maru shows no screen of its own before or after it.
+        .onChange(of: model.reviewRequest) {
+            Task {
+                try? await Task.sleep(for: .seconds(1.5))
+                requestReview()
+            }
         }
         // The offer of "Remind Again" waits for the edit screen and for the alerts before it. It changes nothing by itself.
         .onChange(of: offerIsDue, initial: true) { _, isDue in

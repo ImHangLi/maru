@@ -2,7 +2,7 @@ import Observation
 import StoreKit
 
 /// The optional tips (spec 14 C, T35, T48). A tip unlocks nothing and never touches health data.
-/// This service is the only code that imports StoreKit. It keeps no purchase state on disk:
+/// This service is the only code that buys with StoreKit. It keeps no purchase state on disk:
 /// a consumable tip has no entitlement, so there is nothing to restore.
 @MainActor
 @Observable
