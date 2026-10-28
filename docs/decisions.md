@@ -2322,3 +2322,27 @@ Not verified: no build of the app on this Mac (CI builds it). Nobody saw the men
 2. A free user chooses blue, then buys in the paywall: the whole app turns blue.
 3. A refund in the transaction manager: the color stays. Another color opens the paywall. Pink still works.
 4. The footer in the six languages and at the largest text sizes.
+
+## D115 · 2026-10-28 · A calmer look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107)
+
+Maintainer request on 2026-10-28: the paywall looked plain, and Maru Pro should feel premium, calm, and simple. This decision changes the look only. The StoreKit code, the entitlement rules, the offers, the analytics, and every price rule of D107 stay as they are. The paywall still has no countdown, no trial switch, no discount, no urgency text, and a "Continue Free" button with the size and shape of the buy button.
+
+- Type: New York, the serif of the system (`Font.proDisplay`, design `.serif`), for display text only: the title "Maru Pro", the prices, the Settings row, and the card title. Body text stays SF Pro. A text style keeps Dynamic Type. Maru embeds no font file. A Fontshare font was not added: the system serif costs no license, no size, and no launch time, and it follows the language of the user (a Latin display font has no glyph for zh-Hans, ja, or ko).
+- Color: the app tint only, at low strength. A new `ProGlow` draws two radial gradients of the tint behind the top of the paywall. They drift slowly (9 seconds, ease in and out). With Reduce Motion on, they stand still. The glow scrolls away with the hero. It has no blur and no shader, so it costs no frame time. `MeshGradient` is iOS 18 only, and Maru supports iOS 17.
+- Hero: the app icon in use (76 points, with a soft shadow), the title, and the existing sentence.
+- Benefits: one card of a system material with a hairline edge. Each row has a `ProBadge`: a white symbol on a rounded square in a gradient of the tint, as the icons of the Settings app.
+- Real previews: under the benefits, one card shows the real eight app colors, the real six icons (`AppIconPreview`), and the six real sounds as capsule buttons. A tap on a sound plays it, as the free preview of D112. No lock symbol. Each row scrolls sideways, so it never clips at a large text size.
+- Plans: two cards with a corner of 20 points. The selected card has a wash of the tint, a border of 2 points, and a filled check mark. The price is in New York and is the largest text of the card (App Review 3.1.2). At an accessibility text size, the cards stack. The selection moves with a spring, and with no motion when Reduce Motion is on.
+- Buttons: both are capsules, with the same size, font, and prominent style. The buy button has the tint, and "Continue Free" is gray.
+- Trial timeline: the same two rows in a calm card with a divider.
+- Thank-you: after a purchase, or after Pro turns on while the paywall is open, a full-sheet material shows a check seal (one bounce, none with Reduce Motion), "Welcome to Maru Pro", and "Thank you. Your extras are ready." The success haptic plays when it shows. The paywall closes after 1.6 seconds. The purchase has already finished by then, so no confirmation comes before the commit (spec 7.2). A second trigger does nothing.
+- Settings: the row "Maru Pro" has a `ProBadge`, the title in New York, and the line "Lock Screen, Apple Watch, and more". For a Pro user, the badge is a check seal and the line is "Active, Yearly" or "Active, Lifetime". "Restore Purchases" and "Redeem Code" did not change.
+- Today card: the same content with a `ProBadge`, the title in New York, and a soft wash of the tint as the row background. It still sits at the bottom of the list, never pushes a dose, and "×" hides it.
+- Lock Screen preview: a continuous corner and a soft shadow.
+- New strings: "Welcome to Maru Pro", "Thank you. Your extras are ready.", and "Lock Screen, Apple Watch, and more", in the six languages. `docs/localization-review.md` lists them. The paywall also uses the existing keys "App Color", "App Icon", and "Reminder Sound" as small headings.
+
+The paywall already shows the plans and the buttons after the first scroll, below the previews. A pinned buy bar was not added: it would put the buy button away from the price of the plan (App Review 3.1.2).
+
+Evidence: simulator screenshots and a recording (iPhone 17 Pro, iOS 27) of the old and the new paywall are in `~/Documents/Research/maru/paywall-redesign/`. The simulator cannot attach `Config/Maru.storekit` when it starts from the command line, so a copy of the code that is not in the repository gave the two offers with the prices of that file. The real StoreKit path was not run.
+
+Not verified: no check on a real iPhone. It needs: the largest text sizes (the stacked plans, the card rows), VoiceOver (the benefits read as rows, the plan cards say "selected", the sound buttons), Reduce Motion (no drift, no bounce), light and dark mode, an iPad, the six languages (long German and Spanish lines), the purchase with the StoreKit configuration (the thank-you, then the close), and a restore.

@@ -53,12 +53,12 @@ A short onboarding, once (D103, D104). It asks nothing and requests no permissio
 
 ## Maru Pro
 
-The paywall is one sheet with system fonts and SF Symbols in the tint (D107). Its three benefit rows are "Next Dose on the Lock Screen", "Apple Watch App", and "Make It Yours" (app colors, icons, and reminder sounds, D114).
+The paywall is one sheet with system fonts and SF Symbols in the tint (D107). D115 gives it a calmer look: New York (the system serif) for the title and the prices, a slow glow of the tint behind the hero (still with Reduce Motion), material cards with a hairline edge, a `ProBadge` for each benefit, the real colors, icons, and sounds in one preview card, and a short thank-you after a purchase. Its three benefit rows are "Next Dose on the Lock Screen", "Apple Watch App", and "Make It Yours" (app colors, icons, and reminder sounds, D114).
 
-- The two plans are side by side as two cards. The selected card has a border of 2.5 points in the tint. The price is the largest text of a card.
-- The buy button and "Continue Free" are large prominent buttons of the same width. The buy button has the tint. "Continue Free" has a gray fill and the text color.
+- The two plans are side by side as two cards (stacked at an accessibility text size). The selected card has a wash of the tint, a border of 2 points, and a check mark. The price is in New York and is the largest text of a card (D115).
+- The buy button and "Continue Free" are large prominent capsule buttons of the same width. The buy button has the tint. "Continue Free" has a gray fill and the text color.
 - The first-value offer shows a static picture of a Lock Screen above the paywall: the clock, and a dark platter with the form icon, "Next Dose", the name, and the amount and the time. The background is a gradient from the item color to black. The line "Preview of your Lock Screen" is under it.
-- The card of Today is a list section at the bottom of the page, under every dose: a symbol, a bold title, one sentence, the borderless button "See Maru Pro", and an "×" button. It has no badge and no color fill.
+- The card of Today is a list section at the bottom of the page, under every dose: a `ProBadge`, a title in New York, one sentence, the borderless button "See Maru Pro", and an "×" button. The row has a soft wash of the tint (D115).
 - A Pro feature shows its choices to every user, with no lock symbol and no badge. A free user's choice opens the paywall, and the footer of the page says so in one line (D112).
 - "App Icon" is a grid of the six icons at 62 points, with the corner of the Home Screen, a thin edge, and the name under each. The current icon has a ring of 2.5 points in the tint, as the chosen plan of the paywall. The row in Settings shows the current icon at 29 points (D112).
 - "Reminder Sound" is a list: "Default" and six sounds. The sound in use has a check mark in the tint. Each of the six has a play button (`play.circle`) at the end of the row (D112).

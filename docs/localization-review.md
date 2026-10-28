@@ -432,3 +432,13 @@ A first review on 2026-10-13 corrected the entries below. Every name, alias, and
 | ko | 166 | 198 | 프리워크아웃 with 운동전 부스터, 유단백가수분해물, 미역 등 복합추출물, 프랑스해안송껍질추출물, 트리메타지딘, 오메가-3-산에틸에스테르90, 감마리놀렌산 and 달맞이꽃 종자유 as two entries, 녹즙 and 킬레이트 철분 with no English twin, 흑염소 진액, the dose words 1캡슐 and 1정 |
 | es | 165 | 210 | Pre-entreno, Omega 3-6-9, Tila, Extracto de té verde, Butilbromuro de hioscina as an alias of Butilescopolamina, the dose word "cápsula blanda" for a softgel |
 | de | 167 | 215 | Greens-Pulver, Pre-Workout with the alias Pre-Workout-Booster, OPC and Traubenkernextrakt as two entries, Silizium and Kieselerde as two entries, Meerwasser-Nasenspray, Kurkuma mit Piperin |
+
+## Maru Pro look (D115)
+
+Three new strings. No native speaker read them. The reviewer checks the warm and calm voice with no pressure (D101), and that each line fits a Settings row and a sheet at a large text size.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Welcome to Maru Pro | 欢迎使用 Maru Pro | Maru Proへようこそ | Te damos la bienvenida a Maru Pro | Willkommen bei Maru Pro | Maru Pro에 오신 것을 환영해요 |
+| Thank you. Your extras are ready. | 谢谢你。新增功能已就绪。 | ありがとうございます。追加機能をお使いいただけます。 | Gracias. Tus extras ya están listos. | Danke. Deine Extras sind bereit. | 고마워요. 추가 기능을 지금 쓸 수 있어요. |
+| Lock Screen, Apple Watch, and more | 锁定屏幕、Apple Watch 等 | ロック画面、Apple Watchなど | Pantalla bloqueada, Apple Watch y más | Sperrbildschirm, Apple Watch und mehr | 잠금 화면, Apple Watch 등 |

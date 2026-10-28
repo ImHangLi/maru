@@ -6116,6 +6116,41 @@
         }
       }
     },
+    "Lock Screen, Apple Watch, and more" : {
+      "comment" : "Settings: the line under \"Maru Pro\" in the row that opens the paywall.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁定屏幕、Apple Watch 等"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面、Apple Watchなど"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla bloqueada, Apple Watch y más"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sperrbildschirm, Apple Watch und mehr"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 화면, Apple Watch 등"
+          }
+        }
+      }
+    },
     "Look at every icon for free. Maru Pro lets you choose one." : {
       "comment" : "Settings, App Icon: the footer for a user without Maru Pro.",
       "localizations" : {
@@ -13315,6 +13350,41 @@
         }
       }
     },
+    "Thank you. Your extras are ready." : {
+      "comment" : "Paywall of Maru Pro: the line under the thank-you title after a purchase.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "谢谢你。新增功能已就绪。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ありがとうございます。追加機能をお使いいただけます。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gracias. Tus extras ya están listos."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danke. Deine Extras sind bereit."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "고마워요. 추가 기능을 지금 쓸 수 있어요."
+          }
+        }
+      }
+    },
     "The icon didn’t change. Please try again." : {
       "comment" : "Settings, App Icon: the message of the alert “Not Changed” when the system did not change the app icon.",
       "localizations" : {
@@ -15233,6 +15303,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "各不相同"
+          }
+        }
+      }
+    },
+    "Welcome to Maru Pro" : {
+      "comment" : "Paywall of Maru Pro: the title of the short thank-you after a purchase.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欢迎使用 Maru Pro"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Proへようこそ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Te damos la bienvenida a Maru Pro"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen bei Maru Pro"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro에 오신 것을 환영해요"
           }
         }
       }

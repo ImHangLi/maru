@@ -15,6 +15,10 @@ struct PaywallView: View {
     @State private var notice: Notice?
     @State private var showsRedeem = false
     @State private var isRestoring = false
+    @State private var isWelcoming = false
+    @State private var bounce = false
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private enum Notice: Equatable {
         case pending, failed, restored, nothingToRestore
@@ -26,16 +30,17 @@ struct PaywallView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
+                VStack(spacing: 28) {
                     if let preview = request.preview { LockScreenPreview(dose: preview) }
                     header
                     benefits
+                    showcase
                     plans
                     if plan == .yearly, let yearly = offer(.yearly), let days = yearly.trialDays {
                         TrialTimeline(days: days, price: yearly.displayPrice)
                     }
                     Label("Shareable with Family Sharing", systemImage: "person.2")
-                        .font(.subheadline)
+                        .font(.footnote)
                         .foregroundStyle(.secondary)
                     if let notice {
                         noticeText(notice)
@@ -49,8 +54,14 @@ struct PaywallView: View {
                 .padding(.vertical, 16)
                 .frame(maxWidth: 560)
                 .frame(maxWidth: .infinity)
+                // The glow scrolls away with the hero.
+                .background(alignment: .top) { ProGlow().frame(height: 460).offset(y: -40) }
             }
-            .background(Color(.systemGroupedBackground).ignoresSafeArea())
+            .scrollBounceBehavior(.basedOnSize)
+            .background {
+                Color(.systemBackground).ignoresSafeArea()
+            }
+            .overlay { if isWelcoming { welcome } }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close", systemImage: "xmark") { dismiss() }
@@ -65,39 +76,138 @@ struct PaywallView: View {
         .redeemCodeSheet(isPresented: $showsRedeem)
         // A purchase that ends outside the paywall, for example an approved request, closes it too.
         .onChange(of: model.pro.isPro) { _, isPro in
-            if isPro { dismiss() }
+            if isPro { finish() }
         }
     }
 
     private var header: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 14) {
+            AppIconPreview(icon: model.settings.appIcon, size: 76)
+                .shadow(color: .black.opacity(0.18), radius: 14, y: 8)
+                .accessibilityHidden(true)
             Text("Maru Pro")
-                .font(.largeTitle.bold())
+                .font(.proDisplay(.largeTitle))
+                .accessibilityAddTraits(.isHeader)
             Text("A few extras for your routine. Everything you use now stays free.")
                 .font(.body)
                 .foregroundStyle(.secondary)
         }
         .multilineTextAlignment(.center)
+        .padding(.top, 8)
     }
 
     private var benefits: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 0) {
             Benefit(
                 symbol: "lock.iphone",
                 title: "Next Dose on the Lock Screen",
                 text: "See what’s next without opening Maru."
             )
+            Divider().padding(.leading, 62)
             Benefit(symbol: "applewatch", title: "Apple Watch App", text: "See and record today’s doses on your wrist.")
+            Divider().padding(.leading, 62)
             Benefit(symbol: "paintpalette", title: "Make It Yours", text: "App colors, icons, and reminder sounds.")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .proCard()
+    }
+
+    /// The colors, icons, and sounds that Pro unlocks, as the real ones. The sounds play for free, as in Settings (D112).
+    private var showcase: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            showcaseRow("App Color") {
+                HStack(spacing: 10) {
+                    ForEach(ItemColor.allCases, id: \.self) { color in
+                        Circle().fill(color.tint).frame(width: 26, height: 26)
+                            .overlay(Circle().strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5))
+                    }
+                }
+                .accessibilityHidden(true)
+            }
+            showcaseRow("App Icon") {
+                HStack(spacing: 10) {
+                    ForEach(AppIcon.allCases) { icon in AppIconPreview(icon: icon, size: 44) }
+                }
+                .accessibilityHidden(true)
+            }
+            showcaseRow("Reminder Sound") {
+                HStack(spacing: 8) {
+                    ForEach(ReminderSound.allCases) { sound in
+                        Button {
+                            SoundPreview.shared.play(sound)
+                        } label: {
+                            Label { Text(sound.title) } icon: { Image(systemName: "play.fill").imageScale(.small) }
+                                .font(.footnote.weight(.medium))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 8)
+                                .background(.thinMaterial, in: .capsule)
+                                .overlay(Capsule().strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 18)
+        .padding(.leading, 18)
+        .background(.regularMaterial, in: .rect(cornerRadius: 22, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(Color.primary.opacity(0.06)))
+    }
+
+    private func showcaseRow(_ title: LocalizedStringKey, @ViewBuilder content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .textCase(.uppercase)
+                .padding(.trailing, 18)
+            // The row runs to the edge of the card and scrolls, so it never clips at a large text size.
+            ScrollView(.horizontal, showsIndicators: false) {
+                content().padding(.trailing, 18)
+            }
+        }
+    }
+
+    /// The thank-you after a purchase. It shows for a moment, and then the paywall closes.
+    private var welcome: some View {
+        VStack(spacing: 14) {
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 64))
+                .foregroundStyle(.tint)
+                .symbolEffect(.bounce, value: bounce)
+            Text("Welcome to Maru Pro")
+                .font(.proDisplay(.title))
+            Text("Thank you. Your extras are ready.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+        }
+        .multilineTextAlignment(.center)
+        .padding(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.regularMaterial)
+        .transition(.opacity)
+        .accessibilityElement(children: .combine)
+        .sensoryFeedback(.success, trigger: isWelcoming)
+        .onAppear { if !reduceMotion { bounce = true } }
+    }
+
+    /// Closes the paywall after a purchase, with a short thank-you. A second call does nothing.
+    private func finish() {
+        guard !isWelcoming else { return }
+        withAnimation(reduceMotion ? nil : .smooth(duration: 0.4)) { isWelcoming = true }
+        Task {
+            try? await Task.sleep(for: .seconds(1.6))
+            dismiss()
+        }
     }
 
     /// Each plan that loaded has its own card, so a plan never sells without its price on the display (App Review 3.1.2).
     @ViewBuilder
     private var plans: some View {
         if !model.pro.offers.isEmpty {
-            HStack(alignment: .top, spacing: 12) {
+            let layout = typeSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
+            layout {
                 if let yearly = offer(.yearly) {
                     PlanCard(
                         title: "Yearly",
@@ -117,6 +227,8 @@ struct PaywallView: View {
                     ) { plan = .lifetime }
                 }
             }
+            .fixedSize(horizontal: false, vertical: true)
+            .animation(reduceMotion ? nil : .spring(duration: 0.35, bounce: 0.2), value: plan)
         } else if model.pro.isLoading {
             ProgressView()
                 .frame(minHeight: 120)
@@ -147,6 +259,7 @@ struct PaywallView: View {
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
             // A plan whose product and price did not load has no card, so it can not be bought.
             .disabled(offer(plan) == nil || model.pro.buying != nil || isRestoring)
             Button {
@@ -157,6 +270,7 @@ struct PaywallView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
             .tint(Color(.systemGray5))
         }
         .controlSize(.large)
@@ -202,7 +316,7 @@ struct PaywallView: View {
         notice = nil
         Task {
             switch await model.buyPro(plan) {
-            case .purchased?: dismiss()
+            case .purchased?: finish()
             case .pending?: notice = .pending
             case .failed?: notice = .failed
             // A cancel leaves the paywall as it was, with no other offer.
@@ -232,17 +346,16 @@ private struct Benefit: View {
     let text: LocalizedStringKey
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
-            Image(systemName: symbol)
-                .font(.title2)
-                .foregroundStyle(.tint)
-                .frame(width: 36)
-                .accessibilityHidden(true)
+        HStack(alignment: .center, spacing: 14) {
+            ProBadge(symbol: symbol, size: 36)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.headline)
                 Text(text).font(.subheadline).foregroundStyle(.secondary)
             }
+            Spacer(minLength: 0)
         }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 14)
         .accessibilityElement(children: .combine)
     }
 }
@@ -259,18 +372,29 @@ private struct PlanCard: View {
     var body: some View {
         Button(action: select) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.subheadline.weight(.semibold))
-                Text(verbatim: price).font(.title2.bold())
+                HStack {
+                    Text(title).font(.subheadline.weight(.semibold))
+                    Spacer(minLength: 0)
+                    Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
+                        .contentTransition(.symbolEffect(.replace))
+                }
+                Text(verbatim: price).font(.proDisplay(.title, weight: .bold))
                 Text(period).font(.subheadline).foregroundStyle(.secondary)
                 if let note { note.font(.footnote).foregroundStyle(.secondary) }
+                Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 14))
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding(16)
+            .background {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .fill(isSelected ? AnyShapeStyle(Color.accentColor.opacity(0.1)) : AnyShapeStyle(.regularMaterial))
+            }
             .overlay {
-                RoundedRectangle(cornerRadius: 14)
-                    .strokeBorder(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(Color(.separator)), lineWidth: isSelected ? 2.5 : 1)
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(Color.primary.opacity(0.08)), lineWidth: isSelected ? 2 : 1)
             }
+            .contentShape(.rect(cornerRadius: 20, style: .continuous))
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
@@ -283,8 +407,9 @@ private struct TrialTimeline: View {
     let price: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 0) {
             row(symbol: "gift", title: "Today", text: Text("Free for \(days) days"))
+            Divider().padding(.leading, 48)
             row(
                 symbol: "calendar",
                 title: "Day \(days)",
@@ -293,8 +418,7 @@ private struct TrialTimeline: View {
         }
         .font(.subheadline)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 14))
+        .proCard()
     }
 
     private func row(symbol: String, title: LocalizedStringKey, text: Text) -> some View {
@@ -305,10 +429,21 @@ private struct TrialTimeline: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).fontWeight(.semibold)
-                text
+                text.foregroundStyle(.secondary)
             }
+            Spacer(minLength: 0)
         }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 14)
         .accessibilityElement(children: .combine)
+    }
+}
+
+private extension View {
+    /// A calm card: a system material, a continuous corner, and a hairline edge.
+    func proCard() -> some View {
+        background(.regularMaterial, in: .rect(cornerRadius: 22, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 22, style: .continuous).strokeBorder(Color.primary.opacity(0.06)))
     }
 }
 
@@ -340,7 +475,7 @@ struct LockScreenPreview: View {
                     Spacer(minLength: 0)
                 }
                 .padding(14)
-                .background(.regularMaterial, in: .rect(cornerRadius: 22))
+                .background(.regularMaterial, in: .rect(cornerRadius: 22, style: .continuous))
                 .environment(\.colorScheme, .dark)
             }
             .padding(.horizontal, 16)
@@ -348,8 +483,9 @@ struct LockScreenPreview: View {
             .frame(maxWidth: .infinity)
             .background(
                 LinearGradient(colors: [dose.color.color.opacity(0.9), .black], startPoint: .top, endPoint: .bottom),
-                in: .rect(cornerRadius: 28)
+                in: .rect(cornerRadius: 28, style: .continuous)
             )
+            .shadow(color: .black.opacity(0.2), radius: 18, y: 10)
             Text("Preview of your Lock Screen")
                 .font(.footnote)
                 .foregroundStyle(.secondary)

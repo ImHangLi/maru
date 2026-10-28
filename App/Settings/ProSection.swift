@@ -12,9 +12,16 @@ struct ProSection: View {
     var body: some View {
         Section {
             if let plan = model.pro.plan {
-                LabeledContent("Maru Pro") {
-                    Text(plan == .yearly ? "Active, Yearly" : "Active, Lifetime")
+                HStack(spacing: 12) {
+                    ProBadge(symbol: "checkmark.seal.fill")
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Maru Pro").font(.proDisplay(.headline))
+                        Text(plan == .yearly ? "Active, Yearly" : "Active, Lifetime")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                .accessibilityElement(children: .combine)
                 if plan == .yearly {
                     Button("Manage Subscription") { showsManage = true }
                         .rowText()
@@ -24,7 +31,15 @@ struct ProSection: View {
                 Button {
                     model.presentPaywall(reason: .settings)
                 } label: {
-                    LabeledContent("Maru Pro") {
+                    HStack(spacing: 12) {
+                        ProBadge(symbol: "sparkles")
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Maru Pro").font(.proDisplay(.headline))
+                            Text("Lock Screen, Apple Watch, and more")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer(minLength: 0)
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.tertiary)
