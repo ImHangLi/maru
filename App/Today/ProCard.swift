@@ -13,6 +13,7 @@ struct ProCardSection: View {
                 Image(systemName: "lock.iphone")
                     .font(.title2)
                     .foregroundStyle(.tint)
+                    .frame(width: 32)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 6) {
                     Text("See your next dose on the Lock Screen")

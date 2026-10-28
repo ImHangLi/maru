@@ -1,125 +1,244 @@
-import MaruCore
 import SwiftUI
 
-/// The paywall of Maru Pro (D107): one screen with the benefits, the two plans side by side, the trial timeline, and a
-/// "Continue Free" button with the same weight as the buy button. No countdown, no trial switch, and no discount.
+/// The paywall of Maru Pro (D107, D119). It is a system sheet with a system close button in the navigation bar. A gradient
+/// picture and one headline sit at the top and scroll away. The picture fades out before the benefits start, so all
+/// other text sits on the plain background. Under the picture come three benefits, each with a symbol, a title, and one
+/// line. The purchase area stays at the foot of the sheet while the page scrolls: two plan tiles, the terms of the
+/// selected subscription (the lifetime plan has none), one capsule button, and one line with the two legal links (App Review 3.1.2). "Restore Purchases" and
+/// "Redeem Code" are in Settings (D119).
 ///
-/// It is a custom view, because `SubscriptionStoreView` shows one subscription group and cannot sell the lifetime
-/// plan beside it. The prices come from StoreKit through `ProStore`. The view never reads or writes health data.
+/// The page has one left margin, system fonts with text styles, one accent (the app tint), and the plain system
+/// background. At an accessibility text size, the purchase area scrolls with the page, so it never covers the screen.
+///
+/// It is a custom view, because `SubscriptionStoreView` cannot sell the lifetime plan beside the yearly plan (D115). It
+/// uses the StoreKit calls of `ProStore` and changes no price rule, trial rule, or entitlement rule (D107). The picture is
+/// `ProHero` in the asset catalog. Codex made it, and `docs/third-party-licenses.md` records it. It drifts slowly, and it
+/// stands still with Reduce Motion.
 struct PaywallView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
-    let request: PaywallRequest
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @ScaledMetric(relativeTo: .largeTitle) private var headlineWidth = 270
     @State private var plan = ProPlan.yearly
     @State private var notice: Notice?
-    @State private var showsRedeem = false
-    @State private var isRestoring = false
+    @State private var isWelcoming = false
+    @State private var bounce = false
 
     private enum Notice: Equatable {
-        case pending, failed, restored, nothingToRestore
+        case pending, failed
     }
 
     static let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
     static let privacyURL = URL(string: "https://maru.day/privacy/")
 
+    /// The one left and right margin of the page.
+    private let margin: CGFloat = 20
+    /// The height of the fade above the purchase area.
+    private static let purchaseFade: CGFloat = 28
+    /// The height of the fade under the picture.
+    private static let heroFade: CGFloat = 96
+    private var pinsPurchase: Bool { !typeSize.isAccessibilitySize }
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    if let preview = request.preview { LockScreenPreview(dose: preview) }
-                    header
-                    benefits
-                    plans
-                    if plan == .yearly, let yearly = offer(.yearly), let days = yearly.trialDays {
-                        TrialTimeline(days: days, price: yearly.displayPrice)
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 0) {
+                        header
+                        column { benefits }
+                            .padding(.top, 16)
+                            .padding(.bottom, pinsPurchase ? 16 + Self.purchaseFade : 16)
+                        if pinsPurchase == false { column { purchase }.padding(.bottom, 24) }
                     }
-                    Label("Shareable with Family Sharing", systemImage: "person.2")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    if let notice {
-                        noticeText(notice)
-                            .font(.subheadline)
-                            .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity, alignment: .topLeading)
+                }
+                .scrollBounceBehavior(.basedOnSize)
+                .ignoresSafeArea(edges: .top)
+                // The page fades out above the purchase area, so it scrolls away softly and no text line shows a cut.
+                .mask {
+                    VStack(spacing: 0) {
+                        Rectangle()
+                        if pinsPurchase {
+                            LinearGradient(stops: Self.fadeStops, startPoint: .top, endPoint: .bottom)
+                                .frame(height: Self.purchaseFade)
+                        }
                     }
-                    buttons
-                    footer
+                    .ignoresSafeArea(edges: .top)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .frame(maxWidth: 560)
-                .frame(maxWidth: .infinity)
-            }
-            .background(Color(.systemGroupedBackground).ignoresSafeArea())
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark") { dismiss() }
+                if pinsPurchase {
+                    column { purchase }
+                        .padding(.top, 8)
+                        .padding(.bottom, 8)
                 }
             }
+            .background(Color(.systemBackground).ignoresSafeArea())
+            .toolbar { ToolbarItem(placement: .topBarTrailing) { closeButton } }
+            // The picture runs under the navigation bar, so the bar has no background of its own.
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .navigationBarTitleDisplayMode(.inline)
         }
+        .overlay { if isWelcoming { welcome } }
         .task { await model.loadProOffers() }
-        // When only the other plan loaded, select it, so the buy button sells the plan whose card shows.
+        // When only the other plan loaded, select it, so the buy button sells the plan whose tile shows.
         .onChange(of: model.pro.offers) { _, offers in
             if offers[plan] == nil, let loaded = ProPlan.allCases.first(where: { offers[$0] != nil }) { plan = loaded }
         }
-        .redeemCodeSheet(isPresented: $showsRedeem)
         // A purchase that ends outside the paywall, for example an approved request, closes it too.
         .onChange(of: model.pro.isPro) { _, isPro in
-            if isPro { dismiss() }
+            if isPro { finish() }
         }
+    }
+
+    /// A column with the page margin and a readable maximum width, left aligned.
+    private func column<Content: View>(@ViewBuilder _ content: () -> Content) -> some View {
+        content()
+            .padding(.horizontal, margin)
+            .frame(maxWidth: 600, alignment: .leading)
+            .frame(maxWidth: .infinity)
+    }
+
+    // MARK: Picture and headline
+
+    /// The name and the headline, in white. The picture does not change with the mode.
+    private var headline: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Maru Pro")
+                .font(.headline)
+                .opacity(0.85)
+            Text("Your next dose, at a glance.")
+                // At an accessibility text size the picture would fill the whole screen, so the lines are one step smaller.
+                .font(typeSize.isAccessibilitySize ? .title2.bold() : .largeTitle.bold())
+                // A narrow measure breaks the line in two balanced parts: "Your next dose," and "at a glance."
+                .frame(maxWidth: typeSize.isAccessibilitySize ? .infinity : headlineWidth, alignment: .leading)
+                .accessibilityAddTraits(.isHeader)
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.leading)
     }
 
     private var header: some View {
-        VStack(spacing: 8) {
-            Text("Maru Pro")
-                .font(.largeTitle.bold())
-            Text("A few extras for your routine. Everything you use now stays free.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-        }
-        .multilineTextAlignment(.center)
+        column { headline }
+            // The top padding keeps the text clear of the close button at a large text size.
+            .padding(.top, 60)
+            // The empty block under the headline holds the fade, so the fade ends before the first benefit.
+            .padding(.bottom, 12 + Self.heroFade)
+            // The picture runs from the top edge, under the status bar and the close button. It ends in a long, eased fade
+            // into the plain background, so no black text sits on the picture or on the fade.
+            .background(alignment: .top) {
+                ZStack {
+                    HeroArt(isStill: reduceMotion)
+                    LinearGradient(
+                        colors: [.black.opacity(0.1), .black.opacity(0.45)], startPoint: .top, endPoint: .bottom
+                    )
+                }
+                .mask {
+                    VStack(spacing: 0) {
+                        Rectangle()
+                        LinearGradient(stops: Self.fadeStops, startPoint: .top, endPoint: .bottom)
+                            .frame(height: Self.heroFade)
+                    }
+                }
+                .accessibilityHidden(true)
+            }
     }
 
+    /// An eased fade from opaque to clear, with no visible start or end (smootherstep).
+    private static let fadeStops: [Gradient.Stop] = (0...12).map { step in
+        let t = Double(step) / 12
+        let eased = t * t * t * (t * (t * 6 - 15) + 10)
+        return .init(color: .black.opacity(1 - eased), location: t)
+    }
+
+    /// The system close button. On iOS 26 it is the system glass "X".
+    @ViewBuilder
+    private var closeButton: some View {
+        if #available(iOS 26, *) {
+            Button(role: .close) { dismiss() }
+                // The app tint would color the glass button. The system close button is neutral.
+                .tint(.white)
+        } else {
+            Button { dismiss() } label: { Image(systemName: "xmark") }
+                .accessibilityLabel("Close")
+        }
+    }
+
+    // MARK: Benefits
+
+    /// Three rows, each a thin symbol in the tint, a semibold title, and one gray line.
     private var benefits: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Benefit(
-                symbol: "lock.iphone",
-                title: "Next Dose on the Lock Screen",
-                text: "See what’s next without opening Maru."
+        VStack(alignment: .leading, spacing: 20) {
+            BenefitRow(
+                symbol: "lock.iphone", title: "Right on your Lock Screen",
+                detail: "See dose and time without opening Maru."
             )
-            Benefit(symbol: "applewatch", title: "Apple Watch App", text: "See and record today’s doses on your wrist.")
-            Benefit(symbol: "paintpalette", title: "Make It Yours", text: "App colors, icons, and reminder sounds.")
+            BenefitRow(
+                symbol: "applewatch", title: "Record from your wrist",
+                detail: "Tap Taken on Apple Watch. Needs iPhone."
+            )
+            BenefitRow(
+                symbol: "paintpalette", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."
+            )
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// Each plan that loaded has its own card, so a plan never sells without its price on the display (App Review 3.1.2).
+    // MARK: Purchase area
+
+    /// Plans, the terms, the button, and the legal links. It stays at the foot of the sheet.
+    private var purchase: some View {
+        VStack(spacing: 12) {
+            plans
+            Group {
+                if let notice {
+                    noticeText(notice).font(.footnote)
+                } else if let terms {
+                    terms.font(.footnote).foregroundStyle(.secondary).minimumScaleFactor(0.9)
+                } else if plan == .lifetime {
+                    // The lifetime tile says "Pay once. It’s yours.", so no terms line repeats it. One blank line keeps
+                    // the button where it is.
+                    Text(verbatim: " ").font(.footnote).accessibilityHidden(true)
+                }
+            }
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
+            buyButton
+            legalLinks
+        }
+    }
+
+    /// Two tiles side by side. Each plan that loaded has its own tile, so a plan never sells without its price on the
+    /// display (App Review 3.1.2).
     @ViewBuilder
     private var plans: some View {
         if !model.pro.offers.isEmpty {
-            HStack(alignment: .top, spacing: 12) {
+            let layout = typeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
+            layout {
                 if let yearly = offer(.yearly) {
-                    PlanCard(
+                    PlanTile(
                         title: "Yearly",
                         price: yearly.displayPrice,
-                        period: "per year",
-                        note: yearly.trialDays.map { Text("\($0) days free") },
+                        tag: yearly.trialDays.map { Text("\($0) days free") },
+                        note: yearly.monthlyPrice.map { Text("≈ \($0)/month") },
                         isSelected: plan == .yearly
                     ) { plan = .yearly }
                 }
                 if let lifetime = offer(.lifetime) {
-                    PlanCard(
+                    PlanTile(
                         title: "Lifetime",
                         price: lifetime.displayPrice,
-                        period: "one time",
-                        note: Text("No subscription"),
+                        tag: nil,
+                        note: Text("Pay once. It’s yours."),
                         isSelected: plan == .lifetime
                     ) { plan = .lifetime }
                 }
             }
+            .fixedSize(horizontal: false, vertical: true)
+            // The free trial tag sits half over the top edge of its tile.
+            .padding(.top, offer(.yearly)?.trialDays == nil ? 0 : 10)
         } else if model.pro.isLoading {
             ProgressView()
-                .frame(minHeight: 120)
+                .frame(maxWidth: .infinity, minHeight: 80)
         } else {
             VStack(spacing: 12) {
                 Text("Prices didn’t load. Check your connection and try again.")
@@ -127,61 +246,70 @@ struct PaywallView: View {
                     .multilineTextAlignment(.center)
                 Button("Try Again") { Task { await model.loadProOffers() } }
             }
-            .frame(minHeight: 120)
+            .frame(maxWidth: .infinity, minHeight: 80)
         }
     }
 
-    /// The buy button and "Continue Free" have the same size, shape, fill, and font, so neither looks like the only way on.
-    private var buttons: some View {
-        VStack(spacing: 12) {
-            Button {
-                buy()
-            } label: {
-                Group {
-                    if model.pro.buying != nil {
-                        ProgressView()
-                    } else {
-                        Text(plan == .yearly ? "Subscribe Yearly" : "Buy Lifetime")
-                    }
+    /// The terms of the selected subscription, directly above the button, with its price and its period (App Review
+    /// 3.1.2). The lifetime plan is no subscription, and its tile already says "Pay once. It’s yours.".
+    private var terms: Text? {
+        guard let selected = offer(plan) else { return nil }
+        let price = selected.displayPrice
+        return switch plan {
+        case .yearly:
+            if let days = selected.trialDays {
+                Text("Free for \(days) days, then \(price) per year. Cancel anytime.")
+            } else {
+                Text("\(price) per year. Cancel anytime.")
+            }
+        case .lifetime:
+            nil
+        }
+    }
+
+    private var buyButton: some View {
+        Button {
+            buy()
+        } label: {
+            Group {
+                if model.pro.buying != nil {
+                    ProgressView()
+                } else {
+                    buyTitle
                 }
-                .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
-            // A plan whose product and price did not load has no card, so it can not be bought.
-            .disabled(offer(plan) == nil || model.pro.buying != nil || isRestoring)
-            Button {
-                dismiss()
-            } label: {
-                Text("Continue Free")
-                    .foregroundStyle(Color.primary)
-                    .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(Color(.systemGray5))
+            .font(.headline)
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
         }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.capsule)
         .controlSize(.large)
-        .font(.headline)
+        // A plan whose product and price did not load has no tile, so it can not be bought.
+        .disabled(offer(plan) == nil || model.pro.buying != nil)
     }
 
-    private var footer: some View {
-        VStack(spacing: 12) {
-            if plan == .yearly {
-                Text("The yearly plan renews each year until you cancel it in Settings. Cancel at least 24 hours before it renews.")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-            HStack(spacing: 20) {
-                Button("Restore Purchases") { restore() }
-                    .disabled(isRestoring || model.pro.buying != nil)
-                Button("Redeem Code") { showsRedeem = true }
-            }
-            HStack(spacing: 20) {
-                if let url = Self.termsURL { Link("Terms of Use", destination: url) }
-                if let url = Self.privacyURL { Link("Privacy Policy", destination: url) }
-            }
+    private var buyTitle: Text {
+        switch plan {
+        case .yearly: offer(.yearly)?.trialDays == nil ? Text("Subscribe Yearly") : Text("Start Free Trial")
+        case .lifetime: Text("Buy Lifetime")
         }
-        .font(.footnote)
+    }
+
+    // MARK: Legal links
+
+    /// Terms of Use and Privacy Policy, quiet, on one line at the foot (App Review 3.1.2).
+    private var legalLinks: some View {
+        HStack(spacing: 6) {
+            if let url = Self.termsURL { Link("Terms of Use", destination: url) }
+            Text(verbatim: "·").accessibilityHidden(true)
+            if let url = Self.privacyURL { Link("Privacy Policy", destination: url) }
+        }
+        .font(.caption2)
+        .foregroundStyle(.secondary)
+        .tint(.secondary)
+        .lineLimit(1)
+        .minimumScaleFactor(0.9)
     }
 
     @ViewBuilder
@@ -189,8 +317,41 @@ struct PaywallView: View {
         switch notice {
         case .pending: Text("Your purchase is waiting for approval. Pro turns on when it’s approved.")
         case .failed: Text("The purchase didn’t go through. Please try again.")
-        case .restored: Text("Maru Pro is back. Thank you.")
-        case .nothingToRestore: Text("No Maru Pro purchase was found for this Apple Account.")
+        }
+    }
+
+    // MARK: Thank-you and actions
+
+    /// The thank-you after a purchase. It shows for a moment, and then the paywall closes.
+    private var welcome: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 64))
+                .foregroundStyle(.tint)
+                .symbolEffect(.bounce, value: bounce)
+            Text("Welcome to Maru Pro")
+                .font(.title.bold())
+            Text("Thank you. Your extras are ready.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+        }
+        .multilineTextAlignment(.center)
+        .padding(32)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
+        .transition(.opacity)
+        .accessibilityElement(children: .combine)
+        .sensoryFeedback(.success, trigger: isWelcoming)
+        .onAppear { if !reduceMotion { bounce = true } }
+    }
+
+    /// Closes the paywall after a purchase, with a short thank-you. A second call does nothing.
+    private func finish() {
+        guard !isWelcoming else { return }
+        withAnimation(reduceMotion ? nil : .smooth(duration: 0.4)) { isWelcoming = true }
+        Task {
+            try? await Task.sleep(for: .seconds(1.6))
+            dismiss()
         }
     }
 
@@ -202,7 +363,7 @@ struct PaywallView: View {
         notice = nil
         Task {
             switch await model.buyPro(plan) {
-            case .purchased?: dismiss()
+            case .purchased?: finish()
             case .pending?: notice = .pending
             case .failed?: notice = .failed
             // A cancel leaves the paywall as it was, with no other offer.
@@ -210,151 +371,128 @@ struct PaywallView: View {
             }
         }
     }
+}
 
-    private func restore() {
-        notice = nil
-        isRestoring = true
-        Task {
-            switch await model.restorePro() {
-            case .restored?: notice = .restored
-            case nil: notice = .nothingToRestore
-            case .failed?: notice = .failed
-            case .cancelled?, .purchased?, .pending?: break
-            }
-            isRestoring = false
+/// The gradient picture. It drifts slowly and stops with Reduce Motion.
+private struct HeroArt: View {
+    let isStill: Bool
+    var blur: CGFloat = 0
+    @State private var drifts = false
+
+    var body: some View {
+        GeometryReader { proxy in
+            Image("ProHero")
+                .resizable()
+                .scaledToFill()
+                .frame(width: proxy.size.width, height: proxy.size.height)
+                .scaleEffect(1.15)
+                .offset(x: drifts ? -12 : 12, y: drifts ? 8 : -8)
+                .blur(radius: blur)
+                .clipped()
+        }
+        .onAppear { updateDrift() }
+        .onChange(of: isStill) { _, _ in updateDrift() }
+    }
+
+    private func updateDrift() {
+        if isStill {
+            withAnimation(.easeOut(duration: 0.2)) { drifts = false }
+        } else {
+            withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true)) { drifts = true }
         }
     }
 }
 
-private struct Benefit: View {
+/// One paid feature: a thin symbol in the tint, a semibold title, and one line in gray. The symbols share one column.
+private struct BenefitRow: View {
     let symbol: String
     let title: LocalizedStringKey
-    let text: LocalizedStringKey
+    let detail: LocalizedStringKey
+    @ScaledMetric(relativeTo: .title3) private var symbolWidth = 32
 
     var body: some View {
-        HStack(alignment: .top, spacing: 14) {
+        HStack(alignment: .center, spacing: 12) {
             Image(systemName: symbol)
-                .font(.title2)
+                .font(.title3.weight(.light))
                 .foregroundStyle(.tint)
-                .frame(width: 36)
+                .frame(width: symbolWidth, alignment: .leading)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.headline)
-                Text(text).font(.subheadline).foregroundStyle(.secondary)
+                Text(detail).font(.subheadline).foregroundStyle(.secondary)
             }
+            .fixedSize(horizontal: false, vertical: true)
         }
         .accessibilityElement(children: .combine)
     }
 }
 
-/// One plan. The price is the largest text of the card, larger than the trial words (App Review 3.1.2).
-private struct PlanCard: View {
+/// One plan as a tile: the name, the price as the largest text (App Review 3.1.2), and one small line. The free trial of
+/// the yearly plan is a tag on the top edge, smaller than the price. Both tiles have the same fill and text colors. The
+/// selected tile has a thin ring in the tint outside it.
+private struct PlanTile: View {
     let title: LocalizedStringKey
     let price: String
-    let period: LocalizedStringKey
+    let tag: Text?
     let note: Text?
     let isSelected: Bool
     let select: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    private static let cornerRadius: CGFloat = 16
+    /// The selection ring: a thin line, drawn outside the tile with a small gap, like a system selection ring.
+    private static let ringWidth: CGFloat = 1.5
+    private static let ringGap: CGFloat = 3
 
     var body: some View {
         Button(action: select) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title).font(.subheadline.weight(.semibold))
                 Text(verbatim: price).font(.title2.bold())
-                Text(period).font(.subheadline).foregroundStyle(.secondary)
-                if let note { note.font(.footnote).foregroundStyle(.secondary) }
+                // A tile with no note keeps the height of its neighbor.
+                (note ?? Text(verbatim: " "))
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(14)
-            .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 14))
+            .foregroundStyle(.primary)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+            .multilineTextAlignment(.leading)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .background {
+                Color(.secondarySystemBackground)
+                    .clipShape(.rect(cornerRadius: Self.cornerRadius, style: .continuous))
+            }
+            // The ring lies outside the tile, so it never changes the size of the tile or moves the layout.
             .overlay {
-                RoundedRectangle(cornerRadius: 14)
-                    .strokeBorder(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(Color(.separator)), lineWidth: isSelected ? 2.5 : 1)
+                let outset = Self.ringGap + Self.ringWidth
+                RoundedRectangle(cornerRadius: Self.cornerRadius + outset, style: .continuous)
+                    .strokeBorder(.tint, lineWidth: Self.ringWidth)
+                    .padding(-outset)
+                    .opacity(isSelected ? 1 : 0)
             }
+            .overlay(alignment: .top) {
+                if let tag {
+                    tag
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
+                        .background(.tint, in: .capsule)
+                        // A ring in the page color separates the tag from the tile.
+                        .overlay(Capsule().strokeBorder(Color(.systemBackground), lineWidth: 2))
+                        .offset(y: -12)
+                }
+            }
+            .contentShape(.rect)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: isSelected)
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
-    }
-}
-
-/// What the trial does, day by day. The billed amount is bold and as large as the trial words.
-private struct TrialTimeline: View {
-    let days: Int
-    let price: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            row(symbol: "gift", title: "Today", text: Text("Free for \(days) days"))
-            row(
-                symbol: "calendar",
-                title: "Day \(days)",
-                text: Text("\(Text(verbatim: price).bold())/year. Cancel any time in Settings.")
-            )
-        }
-        .font(.subheadline)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .background(Color(.secondarySystemGroupedBackground), in: .rect(cornerRadius: 14))
-    }
-
-    private func row(symbol: String, title: LocalizedStringKey, text: Text) -> some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
-            Image(systemName: symbol)
-                .foregroundStyle(.tint)
-                .frame(width: 24)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).fontWeight(.semibold)
-                text
-            }
-        }
-        .accessibilityElement(children: .combine)
-    }
-}
-
-/// A static picture of a Lock Screen with the user's next dose, as the Live Activity of Maru Pro will show it. It is
-/// not a real activity, and it starts nothing (D107).
-struct LockScreenPreview: View {
-    let dose: NextDosePreview
-
-    var body: some View {
-        VStack(spacing: 8) {
-            VStack(spacing: 14) {
-                Text(Date(), format: .dateTime.hour().minute())
-                    .font(.system(size: 52, weight: .semibold, design: .rounded))
-                    .foregroundStyle(.white)
-                HStack(spacing: 12) {
-                    FormIcon(form: dose.form, color: dose.color, photo: dose.imageReference)
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Next Dose")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
-                        Text(verbatim: dose.name)
-                            .font(.headline)
-                            .lineLimit(1)
-                        Text(verbatim: ([dose.amount].compactMap(\.self) + [dose.time]).detailLine)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                    }
-                    Spacer(minLength: 0)
-                }
-                .padding(14)
-                .background(.regularMaterial, in: .rect(cornerRadius: 22))
-                .environment(\.colorScheme, .dark)
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 20)
-            .frame(maxWidth: .infinity)
-            .background(
-                LinearGradient(colors: [dose.color.color.opacity(0.9), .black], startPoint: .top, endPoint: .bottom),
-                in: .rect(cornerRadius: 28)
-            )
-            Text("Preview of your Lock Screen")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -374,8 +512,8 @@ private struct PaywallHost: ViewModifier {
         content.sheet(item: Binding(
             get: { isActive ? model.proState.paywall : nil },
             set: { if $0 == nil, isActive { model.paywallDidClose() } }
-        )) { request in
-            PaywallView(request: request)
+        )) { _ in
+            PaywallView()
         }
     }
 }

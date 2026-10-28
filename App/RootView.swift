@@ -185,7 +185,7 @@ struct RootView: View {
     }
 
     private var firstValueIsDue: Bool {
-        model.proState.firstValueOffer != nil && model.onboarding == .hidden && model.remindAgainOffer == nil
+        model.proState.firstValueOffer && model.onboarding == .hidden && model.remindAgainOffer == nil
             && !model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
             && model.reminderAlerts.isEmpty && !model.settings.isPresented && model.proState.paywall == nil
     }

@@ -445,3 +445,75 @@ A first review on 2026-10-13 corrected the entries below. Every name, alias, and
 | ko | 166 | 198 | 프리워크아웃 with 운동전 부스터, 유단백가수분해물, 미역 등 복합추출물, 프랑스해안송껍질추출물, 트리메타지딘, 오메가-3-산에틸에스테르90, 감마리놀렌산 and 달맞이꽃 종자유 as two entries, 녹즙 and 킬레이트 철분 with no English twin, 흑염소 진액, the dose words 1캡슐 and 1정 |
 | es | 165 | 210 | Pre-entreno, Omega 3-6-9, Tila, Extracto de té verde, Butilbromuro de hioscina as an alias of Butilescopolamina, the dose word "cápsula blanda" for a softgel |
 | de | 167 | 215 | Greens-Pulver, Pre-Workout with the alias Pre-Workout-Booster, OPC and Traubenkernextrakt as two entries, Silizium and Kieselerde as two entries, Meerwasser-Nasenspray, Kurkuma mit Piperin |
+
+## Maru Pro look (D115)
+
+Seven new strings, and three from the first D115 round. No native speaker read them. The reviewer checks that the labels have at most four words or the same length as English, that the terms lines keep the order "days, price" (the number of days first, then the price), and that each line fits at a large text size. "Apple Watch" stays in English in every language. Each terms line states the price, the period, and that the plan renews until the user cancels, as App Review 3.1.2 needs.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Try It Free | 免费试用 | 無料で試す | Probar gratis | Gratis testen | 무료로 시작하기 |
+| Free for %lld days, then %@ per year. Renews until you cancel. | 免费 %1$lld 天，之后每年 %2$@。取消前会自动续订。 | %1$lld日間無料、その後は年額%2$@。キャンセルするまで自動更新されます。 | Gratis durante %1$lld días, luego %2$@ al año. Se renueva hasta que lo canceles. | %1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich, bis du kündigst. | %1$lld일 무료, 이후 연 %2$@. 취소할 때까지 갱신돼요. |
+| %@ per year. Renews until you cancel. | 每年 %@。取消前会自动续订。 | 年額%@。キャンセルするまで自動更新されます。 | %@ al año. Se renueva hasta que lo canceles. | %@ pro Jahr. Verlängert sich, bis du kündigst. | 연 %@. 취소할 때까지 갱신돼요. |
+| One payment. It does not renew. | 一次付款，不会续订。 | 1回のお支払いです。更新はありません。 | Un solo pago. No se renueva. | Einmalige Zahlung. Keine Verlängerung. | 한 번만 결제해요. 갱신되지 않아요. |
+| Welcome to Maru Pro | 欢迎使用 Maru Pro | Maru Proへようこそ | Te damos la bienvenida a Maru Pro | Willkommen bei Maru Pro | Maru Pro에 오신 것을 환영해요 |
+| Thank you. Your extras are ready. | 谢谢你。新增功能已就绪。 | ありがとうございます。追加機能をお使いいただけます。 | Gracias. Tus extras ya están listos. | Danke. Deine Extras sind bereit. | 고마워요. 추가 기능을 지금 쓸 수 있어요. |
+| Lock Screen, Apple Watch, and more | 锁定屏幕、Apple Watch 等 | ロック画面、Apple Watchなど | Pantalla bloqueada, Apple Watch y más | Sperrbildschirm, Apple Watch und mehr | 잠금 화면, Apple Watch 등 |
+
+## Paywall style B (D116)
+
+D117 redesigned the lower half and added no string. The strings below and the ones of D115 are all that the two looks show.
+
+Five new strings for the second paywall. No native speaker read them. The reviewer checks that the headline and the supporting line fit two to four lines at a large text size, that the terms lines keep the order "days, price", and that each terms line states the price, the period, that the plan renews, and that the user can cancel (App Review 3.1.2). The headline names the result "a glance at the next dose", and the supporting line says that the reminders stay free.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Your next dose, at a glance. | 下一次服药，一目了然。 | 次の服用が、ひと目でわかる。 | Tu próxima dosis, de un vistazo. | Deine nächste Dosis auf einen Blick. | 다음 복용을 한눈에. |
+| Add Lock Screen, Apple Watch, and your own look. Reminders stay free. | 添加锁定屏幕、Apple Watch 和专属外观。提醒仍然免费。 | ロック画面、Apple Watch、あなた好みの見た目を追加。リマインダーは引き続き無料です。 | Añade pantalla bloqueada, Apple Watch y tu propio estilo. Los recordatorios siguen siendo gratis. | Mit Sperrbildschirm, Apple Watch und eigenem Look. Erinnerungen bleiben kostenlos. | 잠금 화면, Apple Watch, 나만의 스타일을 더해요. 알림은 계속 무료예요. |
+| Free for %lld days, then %@ per year. Renews automatically. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。自动续订，可随时取消。 | %1$lld日間無料、その後は年額%2$@。自動更新で、いつでもキャンセルできます。 | Gratis durante %1$lld días, luego %2$@ al año. Se renueva automáticamente. Cancela cuando quieras. | %1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
+| %@ per year. Renews automatically. Cancel anytime. | 每年 %@。自动续订，可随时取消。 | 年額%@。自動更新で、いつでもキャンセルできます。 | %@ al año. Se renueva automáticamente. Cancela cuando quieras. | %@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | 연 %@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
+| Start Free Trial | 开始免费试用 | 無料トライアルを開始 | Empezar prueba gratis | Gratis testen starten | 무료 체험 시작 |
+
+## Final paywall (D118, changed by D119)
+
+Eight new strings. "Try It Free", "Continue Free", "No subscription", "per year", "one time", the supporting line of D116, and the two terms lines of D116 left the catalog. The terms lines of D115 are in use again. No native speaker read them. The reviewer checks that each benefit line fits one or two lines at a large text size, that "Cancel anytime" and "One payment" are true short claims in the language, and that the note about the independent developer sounds warm and plain.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Pick your app color, icon, and reminder sound. | 选择应用颜色、图标和提醒声音。 | アプリのカラー、アイコン、通知音を選べます。 | Elige el color, el icono y el sonido de los recordatorios. | Wähle App-Farbe, Symbol und Erinnerungston. | 앱 색상, 아이콘, 알림 소리를 골라요. |
+| One time | 一次买断 | 1回のみ | Pago único | Einmalig | 한 번만 |
+| Cancel anytime | 可随时取消 | いつでもキャンセル可能 | Cancela cuando quieras | Jederzeit kündbar | 언제든 취소 가능 |
+| One payment | 一次付款 | 1回のお支払い | Un solo pago | Einmalige Zahlung | 한 번만 결제 |
+| Share with your family | 与家人共享 | ご家族と共有 | Compártelo con tu familia | Mit der Familie teilen | 가족과 공유 |
+| Maru is made by one independent developer. Thank you for your support. | Maru 由一位独立开发者制作。感谢你的支持。 | Maruは一人の個人開発者が作っています。応援ありがとうございます。 | Maru la crea un solo desarrollador independiente. Gracias por tu apoyo. | Maru wird von einem einzelnen unabhängigen Entwickler gemacht. Danke für deine Unterstützung. | Maru는 한 명의 독립 개발자가 만들어요. 응원해 주셔서 고마워요. |
+
+## Paywall, third round (D119)
+
+Four strings changed, and four left the catalog: "Maru is made by one independent developer. Thank you for your support.", "Share with your family", "Cancel anytime", and "One payment". The three terms lines changed to end with "Cancel anytime." or "Yours to keep.", and the third benefit line is shorter. The German first benefit line is shorter too. No native speaker read them. The reviewer checks that each line fits one line on an iPhone 17e (checked in en, zh-Hans, de, and es, not in ja and ko), and that each terms line states the price, the period, and the cancel right (App Review 3.1.2).
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Free for %lld days, then %@ per year. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。可随时取消。 | %1$lld日間無料、その後は年額%2$@。いつでもキャンセル可能。 | %1$lld días gratis, luego %2$@ al año. Cancela cuando quieras. | %1$lld Tage gratis, dann %2$@ pro Jahr. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 언제든 취소 가능. |
+| %@ per year. Cancel anytime. | 每年 %@。可随时取消。 | 年額%@。いつでもキャンセル可能。 | %@ al año. Cancela cuando quieras. | %@ pro Jahr. Jederzeit kündbar. | 연 %@. 언제든 취소 가능. |
+
+## Paywall plan tiles (D119, fourth round)
+
+Two strings left the catalog ("One time" and "One payment. Yours to keep."). Two strings are new. The lifetime plan has no terms line any more, because its tile says "Pay once. It’s yours." (seventh round of D119). "%lld days free" is now the tag on the top edge of the yearly tile. No native speaker read them. The reviewer checks that each line fits one line in a tile of about 137 points (checked on an iPhone 17e in all six languages), that "Pay once. It’s yours." is a true short claim, and that the monthly line reads as the yearly price divided by 12.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Pay once. It’s yours. | 买一次，永久归你 | 1回払いで、あなたのもの | Un pago. Es tuyo. | Einmal zahlen. Deins. | 한 번 결제로 내 것 |
+| ≈ %@/month | 约 %@/月 | 月あたり約%@ | ≈ %@/mes | ≈ %@/Monat | 월 약 %@ |
+
+## Paywall benefit copy (D119, sixth round)
+
+Six strings replace six strings: "Dose on Lock Screen", "See your next dose without opening Maru.", "Apple Watch", "Record a dose from your wrist.", "Colors, Icons, Sounds", and "Choose your app color, icon, and sound." left the catalog. The English text went through two Codex reviews with five simulated personas (`~/Documents/Research/maru/paywall-redesign/copy-review/`). The translations are natural, not literal. No native speaker read them. The reviewer checks that each line fits one line on an iPhone 17e (checked in all six languages) and that the iPhone need in the second row reads as a plain fact. "Taken" in the second row uses the translation of the button "Taken".
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Right on your Lock Screen | 就在锁定屏幕上 | ロック画面にそのまま表示 | En tu pantalla bloqueada | Direkt auf dem Sperrbildschirm | 잠금 화면에 바로 표시 |
+| See dose and time without opening Maru. | 不用打开 Maru，就能看到下次服药时间。 | Maruを開かずに、服用と時刻がわかります。 | Ve la dosis y la hora sin abrir Maru. | Dosis und Zeit sehen, ohne Maru zu öffnen. | Maru를 열지 않아도 복용 시간을 볼 수 있어요. |
+| Record from your wrist | 在手腕上记录服药 | 手首から服用を記録 | Registra desde la muñeca | Am Handgelenk erfassen | 손목에서 바로 기록 |
+| Tap Taken on Apple Watch. Needs iPhone. | 手表上点“已服用”，需连接 iPhone。 | 「服用済み」をタップ。iPhoneが必要です。 | Toca Tomado en el reloj. Necesita iPhone. | Tippe auf Eingenommen. iPhone nötig. | Apple Watch에서 ‘복용함’ 탭. iPhone 필요. |
+| Make Maru yours | 打造你的 Maru | 自分らしいMaruに | Haz Maru tuya | Dein Maru, dein Stil | 나만의 Maru로 |
+| App colors, icons, and reminder sounds. | 应用颜色、图标和提醒声音。 | アプリのカラー、アイコン、リマインダーの音。 | Colores, iconos y sonidos de recordatorio. | App-Farben, Symbole und Erinnerungstöne. | 앱 색상, 아이콘, 미리 알림 소리. |
