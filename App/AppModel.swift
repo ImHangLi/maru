@@ -50,6 +50,14 @@ final class AppModel {
     var remindAgainOffer: ItemID?
     /// Counts the times that Maru asks for an App Store rating. The root view shows the system prompt (D102).
     var reviewRequest = 0
+    /// The first-run onboarding (D103, D104). `AppModel+Onboarding.swift` has the rule.
+    var onboarding = OnboardingState.initial
+    /// A reminder tap or a widget link opened the app in this process. The onboarding does not show in it (D104).
+    var opensForAction = false
+    /// The window is in front. The onboarding waits for it, so a launch in the background does not decide (D104).
+    var windowIsActive = false
+    /// The onboarding decision waits a short time for a late widget link (D104).
+    var onboardingDecisionPending = false
 
     /// Only the operations of the model use the store. A view calls an operation (spec 6).
     let store: AppStore
@@ -181,6 +189,7 @@ final class AppModel {
         if isCurrent {
             self.content = content
             todayDidShow()
+            updateOnboarding()
             if case let .loaded(snapshot) = content {
                 analytics.noteActiveItems(snapshot.list.count)
                 // The widgets show what is stored, so they read again after each read of the app (D048).

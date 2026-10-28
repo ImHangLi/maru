@@ -7,6 +7,7 @@ struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openURL) private var openURL
     @Environment(\.requestReview) private var requestReview
+    @Environment(\.scenePhase) private var scenePhase
     /// The edit screen is on the display, also while it closes. A reminder alert waits for its end.
     @State private var editorIsUp = false
     /// The reminder alert on the display. It is a copy, so a later result does not change it.
@@ -20,17 +21,22 @@ struct RootView: View {
     /// The one-time offer of "Remind Again" after the first save with a time (D091). The item is a copy, so the alert keeps it.
     @State private var shownOffer: ItemID?
     @State private var showsOffer = false
-    /// The first-run onboarding (D103). The flag is set at the first read of the store, also when it has items.
-    @AppStorage(Onboarding.seenKey) private var onboardingSeen = false
-    @State private var showsOnboarding = false
-    /// The user chose "Add Item" on the last page. The edit screen opens after the onboarding sheet closes.
-    @State private var addsAfterOnboarding = false
 
     var body: some View {
         @Bindable var model = model
         Group {
             if case let .failed(error) = model.content {
                 StorageProblemView(error: error)
+            } else if model.onboarding == .undecided {
+                // The first read decides. Today does not show for a frame before the onboarding (D104).
+                Color.clear
+            } else if model.onboarding == .shows {
+                // The page of the window, not a sheet: Today is not under it, and a rotation or Split View keeps it (D104).
+                OnboardingView { addsItem in
+                    model.endOnboarding()
+                    // The edit screen opens on the tabs.
+                    if addsItem { model.openEditor(for: nil) }
+                }
             } else {
                 TabView(selection: $model.selectedTab) {
                     TodayView()
@@ -47,21 +53,11 @@ struct RootView: View {
                     if isOpen { editorIsUp = true }
                 }
                 .sheet(isPresented: $model.settings.isPresented) { SettingsView() }
-                // A swipe down closes it as "Skip" does.
-                .sheet(isPresented: $showsOnboarding, onDismiss: onboardingDidClose) {
-                    OnboardingView { addsItem in
-                        addsAfterOnboarding = addsItem
-                        showsOnboarding = false
-                    }
-                }
-                .environment(\.tipsMayShow, tipsMayShow)
             }
         }
-        // Only a store with no item, archived or not, shows the onboarding. An update with items never sees it (D103).
-        .onChange(of: model.content, initial: true) { _, content in
-            guard !onboardingSeen, case let .loaded(snapshot) = content else { return }
-            onboardingSeen = true
-            if snapshot.list.isEmpty && snapshot.archived.isEmpty { showsOnboarding = true }
+        // The onboarding decides only in front, so a launch in the background for a reminder action does not use it (D104).
+        .onChange(of: scenePhase == .active, initial: true) { _, isActive in
+            model.windowDidChange(isActive: isActive)
         }
         // The storage problem page removes the tabs and their sheet, so `onDismiss` can not run.
         // Without the sheet, the edit screen is not on the display.
@@ -167,19 +163,6 @@ struct RootView: View {
             showsAlert = true
             model.reminderAlertDidShow(alert.id)
         }
-    }
-
-    private func onboardingDidClose() {
-        guard addsAfterOnboarding else { return }
-        addsAfterOnboarding = false
-        model.openEditor(for: nil)
-    }
-
-    /// A tip popover waits until no sheet, alert, or question is on the display or waits for it (D103).
-    private var tipsMayShow: Bool {
-        !showsOnboarding && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
-            && !model.analyticsNotice && model.remindAgainOffer == nil && model.reminderAlerts.isEmpty
-            && !model.settings.isPresented && !model.endFailed && model.today.lockedTap == nil
     }
 
     /// The oldest result that waits, when the display is free for its alert.

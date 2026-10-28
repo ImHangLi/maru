@@ -1835,7 +1835,7 @@ Maintainer decision. It replaces D053.
 - The spec text about a supporter purchase (§1, P06, §6, §11.5, §14 C, and T48) stays until the decision about "Pro".
 - This change does not touch App Store Connect. The three tip products and the 1.0.0 review notes about the tips are still there. The maintainer removes them before the submission of 1.1.0.
 
-## D100 · 2026-10-28 · "Color Header" brings back the header wash as an option (changes D024)
+## D100 · 2026-10-28 · "Color Header" brings back the header wash as an option (changes D024) (on by default by D104)
 
 Maintainer decision. The header wash of D021 returns as a switch. D024 removed it as the only look, and the plain look stays the default.
 
@@ -1901,7 +1901,7 @@ Maintainer decision.
 
 Not verified: no build of the app on this Mac. The system shows the prompt in a Debug build every time and never in TestFlight, so only an App Store build shows the real behavior.
 
-## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips
+## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips (tips removed, timing and "Skip" changed by D104)
 
 Maintainer decision for version 1.1, with agent detail. The copy uses the voice of D101.
 
@@ -1929,3 +1929,36 @@ Debug: `-MaruFirstRun YES` clears the flag and the TipKit store at launch, for a
 The new strings in zh-Hans, ja, es, de, and ko are a draft until a native speaker reads them (`docs/localization-review.md`). "Skip", "Add Item", and "Record a Dose" reuse their translations, with a wider translator comment.
 
 Not verified: no build of the app on this Mac, and nobody saw the pages or the tips on a display. CI builds the app.
+
+## D104 · 2026-10-28 · No first-use tips, "Color Header" on by default, and exact onboarding timing (changes D100 and D103)
+
+Maintainer decision after a test of TestFlight build 13.
+
+First-use tips:
+
+- The two TipKit tips of D103 are removed: `RecordTip`, `ItemMenuTip`, `FirstUseTips`, the TipKit start at launch, the `tipsMayShow` environment value, and their strings in six languages. The maintainer found them ugly. The app has no first-use tip.
+- The tips kept their state in a TipKit store in the app container. A TestFlight install keeps that file, and it holds no item data. Nothing reads it now.
+
+"Color Header" (changes D100):
+
+- The switch is on by default. A missing value of `display.headerWash` means on.
+- A user who turned the switch off has the value `false`, so the header stays plain for that user.
+
+Onboarding (changes D103). Each rule below is true in code:
+
+- It shows on the first launch of a new install, before Today, when the store has no item, active or archived, and `onboarding.seen` is not set.
+- It never shows again after "Add Item", "Later", or "Skip". The flag is set then, so a relaunch or a delete of all items does not bring it back.
+- An update from an older build with items never shows it. Each read that finds an item sets the flag with no page.
+- A restore sets the flag with no page, also when the backup has no item.
+- The decision waits for the first read. Before it, the window shows the plain background and not Today. The onboarding fills the window in place of the tabs, so Today does not show under it or for a frame before it. A user with the flag set gets Today at once, and the launch waits for nothing new (spec 9).
+- It decides only when the window is in front. A launch in the background, for a reminder action or the widget, does not decide.
+- A reminder tap or a widget link in the process hides it and leaves the flag unset. The next normal launch with no item shows it. The app has no Shortcut that opens it with no item: the alarm button "Open Maru" needs an item with an alarm.
+- With no item, the decision waits 400 ms after the window comes in front, behind the empty page, so a late widget link on a cold launch comes first. The "Record Dose" intent also hides it, because it can continue in front.
+- It is a page of the window, not a sheet. On iPad, in Split View, and after a rotation it stays, with the same page.
+- It asks for no permission. The notification permission comes only with the reminder run of the first save that has a reminder time (spec 2.2, D089 N5).
+- Page 3 has "Add Item" and "Later" only. "Skip" is on pages 1 and 2. A swipe down does not close it, because it is not a sheet.
+- "Add Item" shows the tabs and opens the add screen on them.
+
+`AppModel+Onboarding.swift` has the rule. It stays in the app target and has no test (D016).
+
+Not verified: no build of the app on this Mac, and nobody saw the pages on a display. CI builds the app.

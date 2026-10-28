@@ -4937,7 +4937,7 @@
       }
     },
     "Later" : {
-      "comment" : "Onboarding, page 3: the button that closes the onboarding with no new item.",
+      "comment" : "Onboarding, page 3: the button that closes the onboarding with no new item. Page 3 has no “Skip”.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -5710,41 +5710,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "药品清单"
-          }
-        }
-      }
-    },
-    "More for Each Item" : {
-      "comment" : "Tip on the first tile of My Items: the title. The line under it names the actions of a long press.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mehr für jeden Eintrag"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más opciones para cada elemento"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "項目ごとの操作"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "항목별 더 보기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每个药品的更多操作"
           }
         }
       }
@@ -8200,7 +8165,7 @@
       }
     },
     "Record a Dose" : {
-      "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts. Also the title of the tip on the record circle of the first Today row.",
+      "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9670,7 +9635,7 @@
       }
     },
     "Skip" : {
-      "comment" : "Today: a row action that records the dose as skipped. Onboarding: the button at the top that closes the onboarding.",
+      "comment" : "Today: a row action that records the dose as skipped. Onboarding, pages 1 and 2: the button at the top that closes the onboarding.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -10657,41 +10622,6 @@
         }
       }
     },
-    "Tap the circle when you take it. Tap it again to change or undo the record." : {
-      "comment" : "Tip on the record circle of the first Today row, under the title \"Record a Dose\".",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tippe auf den Kreis, wenn du es nimmst. Tippe erneut, um den Eintrag zu ändern oder zurückzunehmen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toca el círculo cuando lo tomes. Tócalo otra vez para cambiar o deshacer el registro."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "飲んだら丸をタップ。もう一度タップすると、記録を変更・取り消しできます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "복용하면 동그라미를 탭하세요. 다시 탭하면 기록을 바꾸거나 취소할 수 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服用后点一下圆圈。再点一次可以修改或撤销记录。"
-          }
-        }
-      }
-    },
     "Tap the name on the label" : {
       "comment" : "Label scan: the prompt on the card before the user taps a text.",
       "localizations" : {
@@ -11544,41 +11474,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "明天"
-          }
-        }
-      }
-    },
-    "Touch and hold an item to edit, archive, or delete it." : {
-      "comment" : "Tip on the first tile of My Items: the line under the title \"More for Each Item\".",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Halte einen Eintrag gedrückt, um ihn zu bearbeiten, zu archivieren oder zu löschen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mantén pulsado un elemento para editarlo, archivarlo o eliminarlo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "項目を長押しすると、編集・アーカイブ・削除ができます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "항목을 길게 누르면 편집, 보관, 삭제할 수 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "按住一个药品，即可编辑、归档或删除。"
           }
         }
       }

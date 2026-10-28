@@ -148,6 +148,8 @@ extension AppModel {
             forgetReplacedData(generation: result.generation)
             transfer.isRestoring = false
             BackupSettings.apply(staged.settings)
+            // A restored store never shows the onboarding, also when the backup had no item or all items go later (D104).
+            endOnboarding()
             analytics.capture(.dataAction(.restore, result.isFlushed ? .done : .notConfirmed))
             if result.isFlushed {
                 // Today shows the restored data. No message says so (D028).

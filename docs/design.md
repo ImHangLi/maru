@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, and D103 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, and D104 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -25,7 +25,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 ## Surface
 
 - Every page is a system grouped list or form. The custom cards are the tile of My Items and the graph of History (D026, D032, D041).
-- Today and My Items use the plain grouped background by default (D024). The switch "Color Header" in Settings adds a header wash to both (D100): the app tint behind the large title, mixed to a relative luminance of 0.54 in light mode and 0.09 in dark mode, fading to the page background over 280 points with the curve of Apple Health. It scrolls away with the content on iOS 18 and later. The cards stay opaque on top of it.
+- Today and My Items show a header wash by default (D100, D104). The switch "Color Header" in Settings turns it off, and the pages then use the plain grouped background (D024). The wash is the app tint behind the large title, mixed to a relative luminance of 0.54 in light mode and 0.09 in dark mode, fading to the page background over 280 points with the curve of Apple Health. It scrolls away with the content on iOS 18 and later. The cards stay opaque on top of it.
 - Every page is the gray grouped background with white cards, as in Apple Health and Settings. This includes a page that loads or shows an error (D028).
 - An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058). The empty Today and My Items pages have a warm title in sentence case with a period instead (D101).
 - A small sheet has the detents medium and large: a time wheel, a short list of choices, and the share sheet. The edit screen and the settings are full sheets. The modifier `smallSheet()` holds the rule (D058).
@@ -43,12 +43,11 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## First run
 
-A short onboarding and two tips, once each (D103). They ask nothing and request no permission.
+A short onboarding, once (D103, D104). It asks nothing and requests no permission. The app has no first-use tips.
 
-- The onboarding is a system sheet with three pages in a paged `TabView`, at the first read of a store with no item. Each page has an SF Symbol of 64 points in the tint, a title in bold title style, and one sentence in the secondary color, in the middle. The symbol hides at the three largest text sizes, and the page scrolls.
-- "Skip" is at the top right of every page. Under the pages: "Continue" on pages 1 and 2, and "Add Item" and "Later" on page 3. "Continue" and "Add Item" are large prominent buttons in the tint. "Later" is a borderless button. The page dots have the system background, so they show in light mode.
-- "Add Item" closes the sheet, then opens the add screen. A swipe down closes the sheet as "Skip" does.
-- The tips are TipKit popovers with the system look: the record circle of the first Today row, and the first tile of My Items. A tip waits while a sheet or an alert is up. No tip is an inline card on a page (D028).
+- The onboarding fills the window in place of the tabs, with three pages in a paged `TabView`. It is not a sheet, so Today is not under it, and a rotation or Split View keeps it. Before the first read decides, the window shows the plain system background, not Today. Each page has an SF Symbol of 64 points in the tint, a title in bold title style, and one sentence in the secondary color, in the middle. The symbol hides at the three largest text sizes, and the page scrolls.
+- "Skip" is at the top right of pages 1 and 2. Under the pages: "Continue" on pages 1 and 2, and "Add Item" and "Later" on page 3. Page 3 has no "Skip". "Continue" and "Add Item" are large prominent buttons in the tint. "Later" is a borderless button. The page dots have the system background, so they show in light mode.
+- "Add Item" shows the tabs and opens the add screen on them.
 
 ## Today
 

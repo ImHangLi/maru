@@ -14,6 +14,7 @@ extension AppModel {
     /// When some doses of the reminder are of today, Today scrolls to their rows.
     func openReminder(_ reminder: DeliveredReminder) {
         analytics.markUsed(.notification)
+        onboardingYieldsToAction()
         selectedTab = .today
         today.lockedTap = nil
         Task { await resolve(reminder) }

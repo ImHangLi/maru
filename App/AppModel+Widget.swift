@@ -8,6 +8,7 @@ extension AppModel {
     func openWidgetLink(_ url: URL) {
         guard url.scheme == "maru", url.host() == "today" else { return }
         analytics.markUsed(.widget)
+        onboardingYieldsToAction()
         selectedTab = .today
         resetHistory()
         pendingWidgetPart = url.pathComponents.dropFirst().first.flatMap(DayPart.init(linkName:))
@@ -36,6 +37,8 @@ extension AppModel {
     /// shows a success, and asks the system to open Maru (spec 7.2).
     func takeFromWidget(_ intent: TakeDoseIntent) async throws {
         analytics.markUsed(.widget)
+        // The intent can continue in front and open Today, so the onboarding waits for the next launch (D104).
+        onboardingYieldsToAction()
         // The generation comes before the first await. A restore that ends after this line changes the generation
         // of the store, so the record is refused (D040). A restore that ended before it changed the epoch.
         let generation = dataGeneration

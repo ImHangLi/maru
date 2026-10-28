@@ -1,10 +1,10 @@
 import SwiftUI
 
-/// The short first-run onboarding (D103): three pages, shown once, only when the store has no item.
+/// The short first-run onboarding (D103, D104): three pages, shown once, only when the store has no item.
 /// It asks nothing and requests no permission. The notification permission comes with the first save
-/// that has a reminder time (spec 2.2).
+/// that has a reminder time (spec 2.2). `AppModel+Onboarding.swift` decides when it shows.
 enum Onboarding {
-    /// `true` after the first read of the store, also when the store had items and the pages did not show.
+    /// `true` after the onboarding ends, after a read of a store with items, and after a restore.
     /// It is a preference in `UserDefaults.standard`, as the app color (D023), not in the health database.
     static let seenKey = "onboarding.seen"
 }
@@ -49,8 +49,11 @@ struct OnboardingView: View {
                     .padding(.bottom, Tile.margin)
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Skip") { finish(false) }
+                // The last page has "Later" for the same action (D104).
+                if page != .start {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Skip") { finish(false) }
+                    }
                 }
             }
         }
