@@ -128,7 +128,7 @@ final class ProStore {
 
     /// The expiration date of a yearly transaction, or the end of its billing grace period when StoreKit reports one.
     /// The grace period applies only after the expiration date, so the status is read only then.
-    private static func endOfAccess(_ transaction: Transaction, at now: Date) async -> Date? {
+    private static func endOfAccess(_ transaction: StoreKit.Transaction, at now: Date) async -> Date? {
         guard let expiration = transaction.expirationDate else { return nil }
         guard expiration <= now, let group = transaction.subscriptionGroupID,
               let statuses = try? await Product.SubscriptionInfo.status(for: group) else { return expiration }
