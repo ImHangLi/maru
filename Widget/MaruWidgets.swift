@@ -6,5 +6,6 @@ struct MaruWidgets: WidgetBundle {
     var body: some Widget {
         TodayWidget()
         TakeNowWidget()
+        LastDoseWidget()
     }
 }

@@ -1,6 +1,41 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@, %@" : {
+      "comment" : "Last Dose widget, Lock Screen one-line form: the item name and the time. Example: Vitamin D, 2 hr. ago (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@、%2$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，%2$@"
+          }
+        }
+      }
+    },
     "%lld left" : {
       "comment" : "Small Today widget: the number of open doses of the slot. Example: 2 left.",
       "localizations" : {
@@ -246,6 +281,41 @@
         }
       }
     },
+    "Last Dose" : {
+      "comment" : "Last Dose widget: the name in the widget gallery and the title of the small widget (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Dosis"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回の服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 복용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一次服用"
+          }
+        }
+      }
+    },
     "Maru" : {
       "comment" : "Widget: the title of the empty widget configuration.",
       "localizations" : {
@@ -347,6 +417,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下次 %@"
+          }
+        }
+      }
+    },
+    "No records yet" : {
+      "comment" : "Last Dose widget, Lock Screen one-line form: shown when no item has a taken record. No judgment (D101, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Aufzeichnungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay registros"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ記録はありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 기록이 없어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有记录"
           }
         }
       }
@@ -631,6 +736,41 @@
         }
       }
     },
+    "See your newest taken dose and its time." : {
+      "comment" : "Last Dose widget: the description in the widget gallery (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt deine letzte eingenommene Dosis und ihre Uhrzeit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira tu dosis tomada más reciente y su hora."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の服用とその時刻を表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가장 최근 복용과 그 시간을 보여줘요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看最近一次服用及其时间。"
+          }
+        }
+      }
+    },
     "Skipped" : {
       "comment" : "Widget: VoiceOver label of the gray capsule of a skipped dose.",
       "localizations" : {
@@ -837,6 +977,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "数据"
+          }
+        }
+      }
+    },
+    "Yesterday, %@" : {
+      "comment" : "Last Dose widget: the day and the time of the newest taken dose when it was yesterday. Example: Yesterday, 6:49 PM (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestern, %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayer, %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昨日 %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "어제 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昨天 %@"
+          }
+        }
+      }
+    },
+    "Your last dose will show here." : {
+      "comment" : "Last Dose widget: shown when no item has a taken record. Warm, no judgment (D101, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine letzte Dosis erscheint hier."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu última dosis aparecerá aquí."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の服用がここに表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가장 최근 복용이 여기에 표시돼요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你最近一次服用会显示在这里。"
           }
         }
       }

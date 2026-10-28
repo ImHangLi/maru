@@ -34,6 +34,11 @@ enum AppGroup {
     static func todayURL(_ part: DayPart?) -> URL {
         URL(string: "maru://today" + (part.map { "/" + $0.linkName } ?? ""))!
     }
+
+    /// The link of a tap on the "Last Dose" widget. Today opens the detail of the item (D108).
+    static func itemURL(_ id: ItemID) -> URL {
+        URL(string: "maru://item/" + id.rawValue.uuidString)!
+    }
 }
 
 extension DayPart {

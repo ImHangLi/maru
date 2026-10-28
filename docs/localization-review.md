@@ -258,6 +258,57 @@ The four strings below are new in `App/Localizable.xcstrings`: the menu "Appeara
 | Light | 浅色 | ライト | Claro | Hell | 라이트 |
 | Dark | 深色 | ダーク | Oscuro | Dunkel | 다크 |
 
+## Last Dose widget and Siri (D108)
+
+The strings below are new. They are drafts. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101).
+
+Siri phrases, in `App/AppShortcuts.xcstrings`. A phrase must sound like a natural spoken request. `${applicationName}` is "Maru", and `${item}` is an item name. The reviewer says each phrase to Siri on a device.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Check my last dose in ${applicationName} | ${applicationName}里查看上一次服用 | ${applicationName}で前回の服用を確認 | Consulta mi última dosis en ${applicationName} | Zeig meine letzte Dosis in ${applicationName} | ${applicationName}에서 마지막 복용 확인 |
+| Did I take my ${item} in ${applicationName} | ${applicationName}里我吃${item}了吗 | ${applicationName}で${item}を飲んだ | Tomé ${item} en ${applicationName} | Habe ich ${item} in ${applicationName} genommen | ${applicationName}에서 ${item} 먹었어 |
+| Last dose of ${item} in ${applicationName} | ${applicationName}里${item}的上一次服用 | ${applicationName}で${item}の前回の服用 | Última dosis de ${item} en ${applicationName} | Letzte Dosis von ${item} in ${applicationName} | ${applicationName}에서 ${item} 마지막 복용 |
+| Log my doses in ${applicationName} | 用${applicationName}记下服用 | ${applicationName}で今の分を記録 | Anota mis dosis en ${applicationName} | Trag meine Dosen in ${applicationName} ein | ${applicationName}에 복용 남겨 줘 |
+| Next dose in ${applicationName} | ${applicationName}下次服用 | ${applicationName}で次の服用 | Próxima dosis en ${applicationName} | Nächste Dosis in ${applicationName} | ${applicationName}에서 다음 복용 |
+| Record my doses in ${applicationName} | 在${applicationName}里记录服用 | ${applicationName}で服用を記録 | Registra mis dosis en ${applicationName} | Erfasse meine Dosen in ${applicationName} | ${applicationName}에서 복용 기록해 줘 |
+| What do I take next in ${applicationName} | ${applicationName}里下一次吃什么 | ${applicationName}で次に飲むものは | Qué tomo ahora en ${applicationName} | Was nehme ich als Nächstes in ${applicationName} | ${applicationName}에서 다음에 뭐 먹어 |
+| What's next in ${applicationName} | ${applicationName}接下来是什么 | ${applicationName}で次は何 | Qué sigue en ${applicationName} | Was steht als Nächstes an in ${applicationName} | ${applicationName}에서 다음은 뭐야 |
+| When did I last take ${item} in ${applicationName} | ${applicationName}里我上次什么时候吃的${item} | ${applicationName}で${item}を最後に飲んだのはいつ | Cuándo tomé ${item} por última vez en ${applicationName} | Wann habe ich zuletzt ${item} in ${applicationName} genommen | ${applicationName}에서 ${item} 마지막으로 언제 먹었어 |
+
+Siri answers and Shortcuts titles, in `App/Localizable.xcstrings`. The text that names the iPhone also has an iPad form.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Next up: %@, planned for %@. | 接下来：%1$@，计划时间 %2$@。 | 次は%1$@です。予定は%2$@です。 | Lo siguiente: %1$@, hora prevista %2$@. | Als Nächstes: %1$@, geplant um %2$@. | 다음 차례: %1$@, 예정 시간 %2$@. |
+| Maru has no taken record for %@ yet. | Maru 里还没有%@的服用记录。 | Maruには%@の服用記録がまだありません。 | Maru aún no tiene ningún registro de toma de %@. | Für %@ gibt es in Maru noch keine Aufzeichnung einer Einnahme. | Maru에 아직 %@ 복용 기록이 없어요. |
+| Your last record for %@: taken today at %@. | %1$@的上一次记录：今天 %2$@ 已服用。 | %1$@の最新の記録：今日%2$@に服用済み。 | Tu último registro de %1$@: tomado hoy a las %2$@. | Deine letzte Aufzeichnung für %1$@: heute um %2$@ eingenommen. | %1$@ 마지막 기록: 오늘 %2$@ 복용함. |
+| Your last record for %@: taken yesterday at %@. | %1$@的上一次记录：昨天 %2$@ 已服用。 | %1$@の最新の記録：昨日%2$@に服用済み。 | Tu último registro de %1$@: tomado ayer a las %2$@. | Deine letzte Aufzeichnung für %1$@: gestern um %2$@ eingenommen. | %1$@ 마지막 기록: 어제 %2$@ 복용함. |
+| Your last record for %@: taken on %@ at %@. | %1$@的上一次记录：%2$@ %3$@ 已服用。 | %1$@の最新の記録：%2$@ %3$@に服用済み。 | Tu último registro de %1$@: tomado el %2$@ a las %3$@. | Deine letzte Aufzeichnung für %1$@: am %2$@ um %3$@ eingenommen. | %1$@ 마지막 기록: %2$@ %3$@ 복용함. |
+| Nothing is due right now. You’re all set. | 现在没有需要记录的，一切都好。 | 今は記録するものはありません。大丈夫ですよ。 | Ahora no hay nada pendiente. Todo en orden. | Gerade steht nichts an. Alles in Ordnung. | 지금은 기록할 게 없어요. 다 괜찮아요. |
+| Record as taken now: %@? | 现在将%@记录为已服用？ | %@を今の時刻で服用済みとして記録しますか？ | ¿Registrar ahora como tomado: %@? | Jetzt als eingenommen erfassen: %@? | %@을(를) 지금 복용함으로 기록할까요? |
+| Recorded as taken: %@. | 已记录为已服用：%@。 | 服用済みとして記録しました：%@。 | Registrado como tomado: %@. | Als eingenommen erfasst: %@. | 복용함으로 기록했어요: %@. |
+| Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again. | Maru 现在打不开你的记录。如果你的 iPhone 刚重启过，请先解锁，再问一次。 | Maruは今、記録を開けません。iPhoneを再起動した場合は、先にロックを解除してからもう一度お試しください。 | Maru no puede abrir tus registros ahora. Si el iPhone se reinició, desbloquéalo primero y vuelve a preguntar. | Maru kann deine Aufzeichnungen gerade nicht öffnen. Wenn dein iPhone neu gestartet wurde, entsperre es zuerst und frag dann erneut. | Maru가 지금 기록을 열 수 없어요. iPhone을 다시 시작했다면 먼저 잠금을 해제한 후 다시 물어봐 주세요. |
+| Nothing was recorded. Open Maru to record your doses. | 没有记录任何内容。请打开 Maru 记录。 | 何も記録されていません。Maruを開いて記録してください。 | No se registró nada. Abre Maru para registrar tus dosis. | Es wurde nichts erfasst. Öffne Maru, um deine Dosen zu erfassen. | 아무것도 기록되지 않았어요. Maru를 열어 기록해 주세요. |
+| Which item? | 哪个药品？ | どの項目ですか？ | ¿Qué elemento? | Welcher Eintrag? | 어떤 항목인가요? |
+| Item | 药品 | 項目 | Elemento | Eintrag | 항목 |
+| Last dose of ${item} | ${item}的上一次服用 | ${item}の前回の服用 | Última dosis de ${item} | Letzte Dosis von ${item} | ${item} 마지막 복용 |
+| Last Dose of an Item | 某个药品的上一次服用 | 項目の前回の服用 | Última dosis de un elemento | Letzte Dosis eines Eintrags | 항목의 마지막 복용 |
+| Record Due Doses | 记录当前的服用 | 今の分を記録 | Registrar dosis pendientes | Fällige Dosen erfassen | 지금 복용분 기록 |
+| Last Dose | 上一次服用 | 前回の服用 | Última dosis | Letzte Dosis | 마지막 복용 |
+| Record Doses | 记录服用 | 服用を記録 | Registrar dosis | Dosen erfassen | 복용 기록 |
+
+The "Last Dose" widget, in `Widget/Localizable.xcstrings`.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Last Dose | 上一次服用 | 前回の服用 | Última dosis | Letzte Dosis | 마지막 복용 |
+| See your newest taken dose and its time. | 查看最近一次服用及其时间。 | 最新の服用とその時刻を表示します。 | Mira tu dosis tomada más reciente y su hora. | Zeigt deine letzte eingenommene Dosis und ihre Uhrzeit. | 가장 최근 복용과 그 시간을 보여줘요. |
+| %@, %@ | %1$@，%2$@ | %1$@、%2$@ | %1$@, %2$@ | %1$@, %2$@ | %1$@, %2$@ |
+| No records yet | 还没有记录 | まだ記録はありません | Aún no hay registros | Noch keine Aufzeichnungen | 아직 기록이 없어요 |
+| Your last dose will show here. | 你最近一次服用会显示在这里。 | 最新の服用がここに表示されます。 | Tu última dosis aparecerá aquí. | Deine letzte Dosis erscheint hier. | 가장 최근 복용이 여기에 표시돼요. |
+| Yesterday, %@ | 昨天 %@ | 昨日 %@ | Ayer, %@ | Gestern, %@ | 어제 %@ |
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.

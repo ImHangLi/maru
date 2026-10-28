@@ -176,14 +176,19 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 
 ## Widgets
 
-Two Home Screen widgets, small and medium each (D048). "Today" also has a Lock Screen form (D091): a circular gauge of the doses taken, and a rectangular form with the next part of the day, the number of open doses, and a gauge. It shows no names. They use the capsule of the app icon, tilted by 45 degrees, and no list rows.
+Two Home Screen widgets, small and medium each (D048), and "Last Dose", small (D108). "Today" also has a Lock Screen form (D091): a circular gauge of the doses taken, and a rectangular form with the next part of the day, the number of open doses, and a gauge. It shows no names. They use the capsule of the app icon, tilted by 45 degrees, and no list rows.
 
 - One capsule is one dose. Taken: filled with the app tint (D025) as a gradient. Open and skipped: light gray (`systemGray5`) with a thin edge (`systemGray3`). VoiceOver says "Taken", "Not recorded", or "Skipped" (D068), so the color is never the only signal.
 - The background is the system background: white in light mode, black in dark mode. Text uses the system font and the system colors.
 - "Today" has no names and no buttons. Small: the slot word in the tint, then the time in gray. Under it a large "2 left", and the capsules of the slot at the bottom right. When every dose is done: "All done" in the tint and "Next 8:00" in gray, "7 of 7", filled capsules. Medium: "Today" and, at the top right on its line, a progress bar (D076), then a column for each slot with its title, its time, and its capsules. The bar is a rounded track of 96 by 8 points in the system fill, with a fill in the tint for the share of the doses that are taken. It has no border, no segments, and no text. VoiceOver reads it as "Today, 4 of 7 taken". The columns end at the bottom edge, so the space over "Today" equals the space under the capsules. The slot of the clock has the title in the tint. A tap opens Today at the slot.
 - "Record Dose" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
+- "Last Dose" shows the newest taken dose of all items (D108). Small: "Last Dose" in the tint with a filled capsule, then the name, the amount in gray, and the time in gray: "2 hr. ago" today, "Yesterday, 6:49 PM", or the date and the time. Lock Screen, rectangular: the symbol and the name in bold, then the time and the amount. Lock Screen, one line: the name and the time. With no taken dose: "Your last dose will show here." A tap opens the item detail over Today.
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
 - The words "Today", "Morning", "Noon", and "Evening" match the app. The header of the small "Today" widget has no "·": the color separates the two parts (D068).
+
+## Siri and Shortcuts
+
+Three App Shortcuts (D108): "Next Dose", "Last Dose", and "Record Doses". Siri speaks short answers in the voice of the app (D101). It states the record, not the intake (D068). "Next Dose" also shows a snippet: the part of the day in the tint and its time in gray, then each open dose with its amount in gray. "Record Doses" asks before it records, and it says what it recorded only after the commit.
 
 ## iPad
 
