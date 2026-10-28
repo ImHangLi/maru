@@ -2253,3 +2253,40 @@ Not verified: no build of the app on this Mac (CI builds it). Nobody heard the s
 4. A refund in the StoreKit transaction manager: the icon stays, a tap on another icon opens the paywall, and "Default" still works. When Maru reads the refund, the pending reminders get the default sound with no other step. A restore brings the chosen sound back.
 5. Each sound at full ringer volume, in silent mode, and with music: no sound is harsh, loud, or clipped.
 6. The grid in the six languages and at the largest text sizes, and VoiceOver on a tile and on a play button.
+
+## D113 · 2026-10-28 · A free "Next Dose" Lock Screen widget
+
+Maintainer decision on 2026-10-28, with agent detail. The widget is free. It is not part of Pro (D107), and it shows no price, no offer, and no mention of Pro. It follows spec 6, 7.2, 9, and 10, and it adds to D048, D094, and D108. It is not the Live Activity "Next Dose on Lock Screen" of Maru Pro (D110). The user adds the widget once and does not have to open Maru to keep it current.
+
+What it shows:
+
+- Families: Lock Screen `accessoryRectangular`, `accessoryCircular`, and `accessoryInline`.
+- The next open dose of today: every open dose at one planned time. A dose stays until it has a record or the time of the next open dose comes. Before the first open dose, it is the first one.
+- Rectangular, in the layout of D094: the pill symbol, the part of the day, and the planned time in bold. Then the time left ("In 2 hr, 5 min", a relative date that the system counts), or "Not recorded yet" after the planned time. Never "late" or "missed" (D101). Then the names. The Live Activity of D110 removed "Not recorded yet", because nothing draws it again at the planned time. The widget has an entry at each planned time, so the text changes on time.
+- Circular: a ring of the doses of today that are taken, with the planned time in it. The time has no AM or PM, so it fits. VoiceOver reads the full time and "2 of 5 taken".
+- One line: the planned time and the names.
+- Names: at most three, then the number of the other doses ("Vitamin D, Iron, Zinc, and 2 more"), as in D110. With "Show Names in Reminders" off (D029, D108), "2 doses" takes the place of the names.
+- When every planned dose of today has a record: "All done for today", with a check mark, until midnight. The ring is then full, or it shows the share of the taken doses when a dose has a skip. With no planned dose today: "Nothing Planned Today".
+- Before the first unlock after a restart, or when the read fails: "Open Maru to update." (D066, D108). The widget reads again in 15 minutes.
+- A tap opens Today at the part of the day of the dose (D048).
+
+How it updates itself:
+
+- The widget reads the database in the App Group read-only, in one read transaction, with `LocalStore.readForWidget`, as the "Today" widget does. It plans the doses of today in memory and stores nothing (D048).
+- The timeline has one entry for now, one at each open dose time of today, and one at midnight with the first dose of tomorrow. So it moves to the next dose and to the next day with no reload. The system reads again at midnight.
+- `TodaySnapshot.expiresAt` can come before midnight: 12 hours after the read, or at a midnight in the zone of a plan with a fixed zone. The timeline then plans the same read again from that time.
+- The app already reloads every widget after each commit of a record (D108), so a recorded dose leaves the widget at once. A record from a reminder action, the "Record Dose" widget, Siri, or the Watch goes through the same reload.
+
+Privacy: the names show on the Lock Screen only when the user adds the widget and keeps "Show Names in Reminders" on, as with "Last Dose" (D108). Maru sends nothing.
+
+Copy: "%lld doses" and "%lld more" are the strings of the Live Activity (D110), with the same text. The new strings are drafts in five languages (`docs/localization-review.md`).
+
+Tests: none (D016). The widget only reads, and no record rule changes.
+
+Not verified: no build of the app on this Mac (CI builds it), and nobody saw the widget. Device checks:
+
+1. Each family in the gallery and on the Lock Screen, also in StandBy, with a long name, two and five items at one time, the names off, and the largest text sizes.
+2. The move to the next dose at its time with no open of Maru, the "Not recorded yet" state, and the time left.
+3. A record in the app, from a reminder, from the "Record Dose" widget, and from Siri: the dose leaves the widget.
+4. "All done for today" after the last record, and the first dose of tomorrow after midnight, with no open of Maru.
+5. A restart with no unlock ("Open Maru to update."), and a tap on each family.
