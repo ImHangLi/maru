@@ -185,7 +185,7 @@ Agent decisions from issue #11.
 - No "show item names on the lock screen" option. Spec 8.2 makes neutral text the baseline and does not require the option. Names would need new content for each series and each follow-up. The sheet states in one line that reminders show only a time.
 - No language row: the first release has only English (D017). No help or feedback row: feedback sending is milestone B.
 
-## D024 · 2026-10-11 · No header wash, app-specific empty text (empty text and tab bar point replaced by D026)
+## D024 · 2026-10-11 · No header wash, app-specific empty text (empty text and tab bar point replaced by D026) (wash returns as an option by D100)
 
 Owner decisions after the first install on a device.
 
@@ -1834,3 +1834,15 @@ Maintainer decision. It replaces D053.
 - The analytics allowlist has no `purchase_result` event. Add the event in the change that first sends it.
 - The spec text about a supporter purchase (§1, P06, §6, §11.5, §14 C, and T48) stays until the decision about "Pro".
 - This change does not touch App Store Connect. The three tip products and the 1.0.0 review notes about the tips are still there. The maintainer removes them before the submission of 1.1.0.
+
+## D100 · 2026-10-28 · "Color Header" brings back the header wash as an option (changes D024)
+
+Maintainer decision. The header wash of D021 returns as a switch. D024 removed it as the only look, and the plain look stays the default.
+
+- Settings has a switch "Color Header" in the "Display" section, under "App Color". It is off by default, so the look does not change for anyone. The value is in `UserDefaults` under `display.headerWash`, read with `@AppStorage`, as the app color (D023). A backup does not carry it.
+- When it is on, Today and My Items show the same wash behind the large title. History, the item detail, and the sheets do not. The two tab pages are the main pages, and one wash on both keeps them the same.
+- The wash keeps the measured curve of D021: ten stops over 280 points from the top edge of the screen, solid color above it for the pull-down, and opaque cards on top of it. On iOS 18 and later it moves with the content and scrolls away, as in Apple Health. On iOS 17 SwiftUI cannot read the scroll distance, so the wash stays in place behind the content.
+- The color comes from the app tint (D025), not a fixed pink. In light mode the tint is mixed with white to the relative luminance 0.54. In dark mode it is mixed with black to 0.09. These are the luminances of the top colors of Apple Health. So each app color gives a wash of the same strength, and the title text keeps more than 7:1 contrast. A mix with white in place of the old hue scale keeps green, mint, and yellow soft.
+- No change for Reduce Transparency or Increase Contrast. The wash is opaque and has no blur, and the title contrast is above 7:1 in both modes.
+- No color picker for the wash and no setting for each page.
+

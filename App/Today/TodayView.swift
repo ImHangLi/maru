@@ -77,6 +77,7 @@ private struct TodayContent: View {
             }
             .listStyle(.insetGrouped)
             .headerProminence(.increased)
+            .headerWash()
             // The empty text is in the middle of the page (D026).
             .overlay {
                 if today.groups.isEmpty && asNeededRows.isEmpty {
