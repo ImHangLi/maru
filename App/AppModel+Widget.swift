@@ -8,6 +8,7 @@ extension AppModel {
     func openWidgetLink(_ url: URL) {
         guard url.scheme == "maru", url.host() == "today" else { return }
         analytics.markUsed(.widget)
+        onboardingYieldsToAction()
         selectedTab = .today
         resetHistory()
         pendingWidgetPart = url.pathComponents.dropFirst().first.flatMap(DayPart.init(linkName:))

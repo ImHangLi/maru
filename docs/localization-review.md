@@ -232,9 +232,9 @@ The strings below are new or changed in `App/Localizable.xcstrings`. They are dr
 | This change didn’t save. Please try again. | 这次更改没保存成功，请再试一次。 | この変更はうまく保存できませんでした。もう一度お試しください。 | Este cambio no se guardó. Inténtalo de nuevo, por favor. | Diese Änderung wurde nicht gespeichert. Bitte versuche es erneut. | 이 변경 사항이 저장되지 않았어요. 다시 시도해 주세요. |
 | Made with care by the Maru team. | Maru 团队用心制作。 | Maruチームが心を込めてつくりました。 | Hecho con cariño por el equipo de Maru. | Mit Sorgfalt gemacht vom Maru-Team. | Maru 팀이 정성을 담아 만들었어요. |
 
-## Onboarding and tips (D103)
+## Onboarding (D103, D104)
 
-The eleven strings below are new in `App/Localizable.xcstrings`: the three onboarding pages, their buttons, and two tips. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101). "Stays on Your iPhone" also has an iPad form.
+The eight strings below are new in `App/Localizable.xcstrings`: the three onboarding pages and their buttons. D104 removed the two tips and their strings. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101). "Stays on Your iPhone" also has an iPad form.
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
@@ -246,9 +246,6 @@ The eleven strings below are new in `App/Localizable.xcstrings`: the three onboa
 | Add a supplement or medication. You choose the time, and Maru reminds you. | 添加一种保健品或药物。时间由你来定，Maru 按时提醒你。 | サプリメントや薬を追加しましょう。時間はあなたが決めて、Maruがお知らせします。 | Añade un suplemento o un medicamento. Tú eliges la hora, y Maru te avisa. | Füge ein Supplement oder Medikament hinzu. Du wählst die Zeit, und Maru erinnert dich. | 영양제나 의약품을 추가해 보세요. 시간은 직접 정하고, 알림은 Maru가 드려요. |
 | Continue | 继续 | 続ける | Continuar | Weiter | 계속 |
 | Later | 以后再说 | あとで | Más tarde | Später | 나중에 |
-| Tap the circle when you take it. Tap it again to change or undo the record. | 服用后点一下圆圈。再点一次可以修改或撤销记录。 | 飲んだら丸をタップ。もう一度タップすると、記録を変更・取り消しできます。 | Toca el círculo cuando lo tomes. Tócalo otra vez para cambiar o deshacer el registro. | Tippe auf den Kreis, wenn du es nimmst. Tippe erneut, um den Eintrag zu ändern oder zurückzunehmen. | 복용하면 동그라미를 탭하세요. 다시 탭하면 기록을 바꾸거나 취소할 수 있어요. |
-| More for Each Item | 每个药品的更多操作 | 項目ごとの操作 | Más opciones para cada elemento | Mehr für jeden Eintrag | 항목별 더 보기 |
-| Touch and hold an item to edit, archive, or delete it. | 按住一个药品，即可编辑、归档或删除。 | 項目を長押しすると、編集・アーカイブ・削除ができます。 | Mantén pulsado un elemento para editarlo, archivarlo o eliminarlo. | Halte einen Eintrag gedrückt, um ihn zu bearbeiten, zu archivieren oder zu löschen. | 항목을 길게 누르면 편집, 보관, 삭제할 수 있어요. |
 
 ## Name lists (D070)
 

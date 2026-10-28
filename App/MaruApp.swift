@@ -12,6 +12,10 @@ struct MaruApp: App {
     private let tapDelegate: ReminderTapDelegate
 
     init() {
+        #if DEBUG
+        // Before the model reads the flag.
+        if DebugLaunch.wantsFirstRun { UserDefaults.standard.removeObject(forKey: Onboarding.seenKey) }
+        #endif
         let model = AppModel.shared
         // Start the launch path here, so the database opens while the system builds the first view.
         model.refresh()
@@ -40,9 +44,6 @@ struct MaruApp: App {
         ReviewPrompt.noteLaunch()
         // The widgets read the tint from the App Group.
         AppGroup.appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
-        #if DEBUG
-        if DebugLaunch.wantsFirstRun { UserDefaults.standard.removeObject(forKey: Onboarding.seenKey) }
-        #endif
     }
 
     var body: some Scene {
@@ -52,8 +53,6 @@ struct MaruApp: App {
                 // The user picks the app color in settings. Pink is the default (D025).
                 .tint(appColor.tint)
                 .onOpenURL { model.openWidgetLink($0) }
-                // After the first frame, so the launch path does not wait for TipKit (spec 9, D103).
-                .task { FirstUseTips.configure() }
                 .onChange(of: appColor) { _, color in
                     AppGroup.appColor = color
                     WidgetCenter.shared.reloadAllTimelines()

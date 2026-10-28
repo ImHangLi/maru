@@ -11,7 +11,7 @@ extension View {
 }
 
 private struct HeaderWashModifier: ViewModifier {
-    @AppStorage(DisplaySetting.headerWash) private var isOn = false
+    @AppStorage(DisplaySetting.headerWash) private var isOn = true
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     /// How far the content scrolled up from its rest place. It stops at the end of the wash, so a longer scroll changes nothing.
     @State private var scrolled: CGFloat = 0

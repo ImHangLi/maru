@@ -10,7 +10,7 @@ struct SettingsView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
-    @AppStorage(DisplaySetting.headerWash) private var headerWash = false
+    @AppStorage(DisplaySetting.headerWash) private var headerWash = true
     @State private var showsNames = true
     @State private var sharesStatistics = false
 

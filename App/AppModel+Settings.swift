@@ -10,7 +10,7 @@ import MaruNotifications
 enum DisplaySetting {
     /// The app tint, as the raw value of an `ItemColor` (D025).
     static let appColor = "display.appColor"
-    /// The wash of the app tint behind the title of Today and My Items (D100). No value means off.
+    /// The wash of the app tint behind the title of Today and My Items (D100). No value means on (D104).
     static let headerWash = "display.headerWash"
 }
 

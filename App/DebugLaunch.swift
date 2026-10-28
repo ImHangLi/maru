@@ -16,8 +16,8 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruSampleRecords")
     }
 
-    /// `-MaruFirstRun YES`: show the onboarding and the first-use tips again, as after a new install (D103).
-    /// For a check of both on a device or a simulator that already showed them. The onboarding still needs a store with no item.
+    /// `-MaruFirstRun YES`: show the onboarding again, as after a new install (D103).
+    /// For a check on a device or a simulator that already showed it. The onboarding still needs a store with no item.
     static var wantsFirstRun: Bool {
         UserDefaults.standard.bool(forKey: "MaruFirstRun")
     }
