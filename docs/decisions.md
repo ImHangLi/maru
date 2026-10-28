@@ -1953,6 +1953,7 @@ Onboarding (changes D103). Each rule below is true in code:
 - The decision waits for the first read. Before it, the window shows the plain background and not Today. The onboarding fills the window in place of the tabs, so Today does not show under it or for a frame before it. A user with the flag set gets Today at once, and the launch waits for nothing new (spec 9).
 - It decides only when the window is in front. A launch in the background, for a reminder action or the widget, does not decide.
 - A reminder tap or a widget link in the process hides it and leaves the flag unset. The next normal launch with no item shows it. The app has no Shortcut that opens it with no item: the alarm button "Open Maru" needs an item with an alarm.
+- With no item, the decision waits 400 ms after the window comes in front, behind the empty page, so a late widget link on a cold launch comes first. The "Record Dose" intent also hides it, because it can continue in front.
 - It is a page of the window, not a sheet. On iPad, in Split View, and after a rotation it stays, with the same page.
 - It asks for no permission. The notification permission comes only with the reminder run of the first save that has a reminder time (spec 2.2, D089 N5).
 - Page 3 has "Add Item" and "Later" only. "Skip" is on pages 1 and 2. A swipe down does not close it, because it is not a sheet.

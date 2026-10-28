@@ -27,7 +27,18 @@ extension AppModel {
         // In the background, the decision waits for the next open in front.
         guard onboarding == .undecided, windowIsActive else { return }
         // A reminder tap or a widget link opens Today. The onboarding waits for the next launch with no item.
-        onboarding = opensForAction ? .hidden : .shows
+        guard !opensForAction else { onboarding = .hidden; return }
+        // On a cold launch, a widget link can arrive just after the window is active. A short wait lets it come
+        // first, so the onboarding never shows and then hides. Only a store with no item waits, behind the empty page.
+        guard !onboardingDecisionPending else { return }
+        onboardingDecisionPending = true
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(400))
+            onboardingDecisionPending = false
+            guard onboarding == .undecided, windowIsActive, case let .loaded(snapshot) = content,
+                  snapshot.list.isEmpty && snapshot.archived.isEmpty else { return }
+            onboarding = opensForAction ? .hidden : .shows
+        }
     }
 
     /// The root view calls this with the phase of its window, also at the first frame.

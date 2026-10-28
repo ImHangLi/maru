@@ -56,6 +56,8 @@ final class AppModel {
     var opensForAction = false
     /// The window is in front. The onboarding waits for it, so a launch in the background does not decide (D104).
     var windowIsActive = false
+    /// The onboarding decision waits a short time for a late widget link (D104).
+    var onboardingDecisionPending = false
 
     /// Only the operations of the model use the store. A view calls an operation (spec 6).
     let store: AppStore
