@@ -2136,3 +2136,60 @@ Rejected:
 No store change, no schema change, and no new test (D016).
 
 Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
+
+## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro
+
+Maintainer decision on 2026-10-28, with agent detail. It is the first Pro feature of D107. It follows spec 6, 7.2, 8, 9, and 10, and it uses the record checks of D034, D048, and D089.
+
+The switch:
+
+- Settings has a switch "Next Dose on Lock Screen" in its own section after "Reminders". The iPad has no Live Activities, so it has no row.
+- A free user who turns it on gets the paywall, and the switch stays off. A Pro user who turns it on starts the activity.
+- The switch is in `UserDefaults.standard` under `liveActivity.nextDose`, beside the display settings. It holds no item data, and the backup does not carry it.
+- When Live Activities are off for Maru in the Settings app, the footer says so and tells the user where to turn them on. The app then starts no activity.
+
+What the activity shows:
+
+- The next dose: the earliest open planned time of today, with every open dose of that time. A dose with an event that the store did not confirm is left out, because it goes again only from Today (D014).
+- The part of the day in the tint, the planned time, and the time left (`Text(timerInterval:)`). After the planned time it says "Not recorded yet" with a clock symbol. It never says "late" or "missed" (D101).
+- The item names, when "Show Names in Reminders" is on (D029). When the setting is off, it shows "2 doses" with no name. A change of the setting updates the activity.
+- A "Taken" button, and a tap elsewhere opens Today at the part of the day.
+- The Dynamic Island: the pill symbol and the time left in the compact form (the planned time after it), the pill symbol in the minimal form, and the full content in the expanded form.
+
+The "Taken" button:
+
+- A `LiveActivityIntent`. The system runs it in the app process, also in the background. It needs an unlocked iPhone, as the "Taken" action of a reminder on the iPhone (D034).
+- It holds the IDs of the doses, their schedule versions, and the restore epoch. It holds no name and no amount.
+- It records with the checks of the "Record Dose" widget (D048) for each dose: the same restore epoch, the same occurrence and schedule version, today, and open. The record transaction checks the active item and the plan of now (`requiresCurrentPlan`, D089). Each event revises the record that the call read, so a second tap writes nothing (T18). A dose with a record already needs no event.
+- The activity changes only after the commit and the reminder run (spec 7.2, D047). Then it shows the next dose, or it ends when every planned dose of today has a record.
+- When a check fails, it records nothing and shows the doses of now. When the commit does not confirm, the activity says "Couldn’t confirm the save. Open Maru to check.", and Today keeps the events for a retry (D014).
+
+The lifecycle. Maru has no server, so no push starts, updates, or ends the activity. Only the app process changes it.
+
+- The app starts an activity only while it is in front, because iOS lets only an app in front start one. It never starts one during the onboarding (D103).
+- The app updates the activity after each read of Today that shows: at launch, at each return to the front, and after each save, time edit, archive, delete, and restore. It also updates the activity after each record, and after each reminder run in the background: the "Taken" button, the actions of a reminder and of an alarm, the "Record Dose" widget, and Siri. A background run waits for the update before it returns, because the system can suspend the process.
+- The stale date of the activity is the planned time, so the system draws "Not recorded yet" at that time with no app code. A dose that is already past at the update has the end of the day as its stale date. After it, the activity says "Open Maru to update." and has no button, so no button records a dose of another day.
+- The app ends the activity when every planned dose of today has a record, when the switch goes off, and when Maru Pro ends. The activity of the next day starts at the next open of Maru.
+- An open dose stays on the activity until it has a record or the day ends. Doz moves its card to the next dose a set time after the planned time (the device walkthrough of 2026-10-28 in the maintainer's research folder). Maru cannot do that with no server and no app code at that time.
+- The system ends an activity 8 hours after its start. It can stay on the Lock Screen for 4 more hours with its last content, 12 hours in total. So each open of Maru starts a new activity when the current one is older than 1 hour. The activity then lasts until 8 hours after the last open of Maru. When Maru does not open for 8 hours, the system ends it, and the next open starts it again.
+- The calls to ActivityKit run one after the other, so an older update never comes after a newer one. An update with the same content does nothing.
+
+Maru Pro:
+
+- The switch reads `AppModel.pro.isPro`. A free user who taps it gets `presentPaywall(reason: .feature)`. The maintainer's message named a reason `.liveActivity`. D107 defines `feature` as the source of every Pro feature, and `PRIVACY.md` lists only the four sources of D107. A new source needs a change of the privacy text, which is a maintainer decision.
+- After each read of StoreKit and each purchase, a loss of Pro (an expiry or a refund) ends the activity and turns the switch off. The cached plan at launch does not turn it off, because a renewal can come after the cached end of access (D107).
+
+Privacy: the activity is on the device. With the names on, a person who sees the Lock Screen sees the names, as with a reminder that shows names. No analytics event is new, and no event has item data.
+
+Files: `Shared/NextDoseActivity.swift` (the attributes and the intent), `App/AppModel+LiveActivity.swift` (the rules and the calls to ActivityKit), `Widget/NextDoseLiveActivity.swift` (the views), and `INFOPLIST_KEY_NSSupportsLiveActivities` in `project.yml`.
+
+Tests: none (D016). The record uses the existing transaction and its checks.
+
+Not verified: no build of the app on this Mac (CI builds it), and nobody saw the activity. It needs a real iPhone (spec 14 A). Device checks:
+
+1. The switch as a free user (the paywall, the switch stays off) and as a Pro user. The footer with Live Activities off in the Settings app.
+2. The Lock Screen and the Dynamic Island before the planned time (the time left), after it ("Not recorded yet"), and with the names off. Light and dark, a long name, two items at one time, and the largest text sizes.
+3. "Taken" on a locked iPhone (the unlock comes first), the move to the next dose, and the end after the last dose. A second fast tap.
+4. A record on Today, from a reminder, from an alarm, from the "Record Dose" widget, and from Siri, each followed by the activity. A time edit, an archive, a delete, and a restore.
+5. A refund in the StoreKit transaction manager: the activity ends and the switch goes off.
+6. An activity across midnight, and an activity after 8 hours with no open of Maru.

@@ -34,6 +34,7 @@ extension AppModel {
         settings.isPresented = true
         analytics.markUsed(.settings)
         readNotificationPermission()
+        readLiveActivityPermission()
         loadReminderOptions()
     }
 
@@ -141,6 +142,8 @@ extension AppModel {
         // The "Last Dose" widget follows the setting (D108).
         AppGroup.showsNames = showsNames
         reloadWidgets()
+        // The Live Activity too (D110).
+        updateNextDose()
         analytics.capture(.showNamesChanged(showsNames))
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }

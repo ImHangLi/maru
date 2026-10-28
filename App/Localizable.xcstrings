@@ -5871,6 +5871,41 @@
         }
       }
     },
+    "Live Activities are off for Maru. Turn them on in the Settings app, under Maru." : {
+      "comment" : "Settings: the footer of the switch \"Next Dose on Lock Screen\" when Live Activities are off for Maru in the iOS Settings app. Use the system name of Live Activities (D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Live-Aktivitäten sind für Maru deaktiviert. Aktiviere sie in der App „Einstellungen“ unter „Maru“."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las actividades en vivo están desactivadas para Maru. Actívalas en la app Ajustes, en Maru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruのライブアクティビティがオフになっています。設定アプリの「Maru」でオンにしてください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru의 실시간 현황이 꺼져 있어요. 설정 앱의 Maru에서 켜 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 的实时活动已关闭。请在“设置”App 的 Maru 中打开。"
+          }
+        }
+      }
+    },
     "Made with care by the Maru team." : {
       "comment" : "Settings: the footer at the bottom of the About section. The only line where the app speaks as its maker. Say “the Maru team”, never a person (D101).",
       "localizations" : {
@@ -6933,6 +6968,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更多 App 图标和提醒声音。"
+          }
+        }
+      }
+    },
+    "Next Dose on Lock Screen" : {
+      "comment" : "Settings, Reminders: the switch of the Live Activity of Maru Pro. For a free user it opens the paywall (D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste Dosis auf dem Sperrbildschirm"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próxima dosis en la pantalla bloqueada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面に次の服用を表示"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 화면에 다음 복용 표시"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在锁定屏幕显示下次服用"
           }
         }
       }
@@ -11553,6 +11623,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "显示更改方式。"
+          }
+        }
+      }
+    },
+    "Shows your next dose with the time left and a button to record it." : {
+      "comment" : "Settings: the footer of the switch \"Next Dose on Lock Screen\" (D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt deine nächste Dosis mit der verbleibenden Zeit und einer Taste zum Erfassen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra tu próxima dosis con el tiempo restante y un botón para registrarla."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の服用と残り時間、記録するボタンを表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 복용과 남은 시간, 기록 버튼을 보여 줘요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示下次服用、剩余时间和一个记录按钮。"
           }
         }
       }

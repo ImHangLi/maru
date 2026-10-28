@@ -266,6 +266,7 @@ extension AppModel {
         if let day = todaySnapshot { scheduleProCardCheck(for: day) }
         sendWatchDay()
         reloadWidgets()
+        updateNextDose()
         historyDidCommit(records)
         today.commitCount += 1
         if backfilled.isEmpty {

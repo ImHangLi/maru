@@ -97,9 +97,11 @@ extension AppModel {
         )
     }
 
-    /// The system can suspend the process after a background record returns, so the caller waits for the reminders.
+    /// The system can suspend the process after a background record returns, so the caller waits for the reminders and
+    /// for the Live Activity (D110).
     func waitForReminders(deviceTimeZone: NamedTimeZone) async {
         _ = try? await store.reconcileReminders(at: Date(), deviceTimeZone: deviceTimeZone)
+        await updateNextDoseNow()
     }
 }
 

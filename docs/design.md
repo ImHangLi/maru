@@ -195,6 +195,16 @@ Two Home Screen widgets, small and medium each (D048), and "Last Dose", small (D
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
 - The words "Today", "Morning", "Noon", and "Evening" match the app. The header of the small "Today" widget has no "·": the color separates the two parts (D068).
 
+## Live Activity
+
+"Next Dose on Lock Screen" is the Live Activity of Maru Pro (D110). It uses the system background of a Live Activity and system fonts.
+
+- Lock Screen: a first line with the pill symbol and the part of the day in the tint, the planned time in gray, and the time left at the trailing edge in digits of one width. After the planned time, "Not recorded yet" with a clock symbol takes the place of the time left, in the text color.
+- Under it, the item names in bold, at most two lines, and a capsule button "Taken" in the tint at the trailing edge. With "Show Names in Reminders" off, "2 doses" takes the place of the names.
+- Dynamic Island: compact, the pill symbol in the tint and the time left (after the planned time, the planned time in the tint). Minimal, the pill symbol. Expanded, the part of the day and the time at the leading edge, the time left at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
+- A tap outside the button opens Today at the part of the day.
+- When the record does not confirm, a line with a warning symbol takes the place of the button. When the day of the dose ended, only "Open Maru to update." shows.
+
 ## Siri and Shortcuts
 
 Three App Shortcuts (D108): "Next Dose", "Last Dose", and "Record Doses". Siri speaks short answers in the voice of the app (D101). It states the record, not the intake (D068). "Next Dose" also shows a snippet: the part of the day in the tint and its time in gray, then each open dose with its amount in gray. With "Show Names in Reminders" off, the snippet shows the number of doses and Siri says the number, not the names. "Record Doses" asks before it records, and it says what it recorded only after the commit.
