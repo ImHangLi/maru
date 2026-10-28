@@ -89,10 +89,6 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "result": .choice(DataResult.allCases.map(\.rawValue)),
         ],
         "feedback_entry": ["entry": .choice(["settings"])],
-        "purchase_result": [
-            "product": .choice(["supporter"]),
-            "result": .choice(["purchased", "cancelled", "pending", "failed"]),
-        ],
     ]
 
     public let name: String

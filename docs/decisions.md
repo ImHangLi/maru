@@ -185,7 +185,7 @@ Agent decisions from issue #11.
 - No "show item names on the lock screen" option. Spec 8.2 makes neutral text the baseline and does not require the option. Names would need new content for each series and each follow-up. The sheet states in one line that reminders show only a time.
 - No language row: the first release has only English (D017). No help or feedback row: feedback sending is milestone B.
 
-## D024 · 2026-10-11 · No header wash, app-specific empty text (empty text and tab bar point replaced by D026) (wash returns as an option by D099)
+## D024 · 2026-10-11 · No header wash, app-specific empty text (empty text and tab bar point replaced by D026) (wash returns as an option by D100)
 
 Owner decisions after the first install on a device.
 
@@ -865,7 +865,7 @@ Maintainer decisions for the App Store release. The plan is in `docs/release-pla
 - Analytics: on by default, with a one-time notice and a switch in Settings. In the EU, the EEA, the UK, and Switzerland, the user opts in first (GDPR and the ePrivacy rules). This changes spec §11.3. All other rules of spec §11 stay: no names, doses, intake times, or item IDs leave the device.
 - Marketing: a landing page on an own domain. The maintainer buys the domain.
 
-## D053 · 2026-10-12 · Optional supporter tips with StoreKit 2
+## D053 · 2026-10-12 · Optional supporter tips with StoreKit 2 (replaced by D099)
 
 The maintainer asked for an optional supporter purchase. Spec 14 C, spec 9, T35, and T48 apply. The agent made these decisions.
 
@@ -1824,7 +1824,18 @@ Maintainer decision. It adds places to the "Delete Item…" clause of D033.
 - Reason: a user who wanted to delete in one step looked for it there.
 - The entry reuses the translated string. It adds no domain code and no store code.
 
-## D099 · 2026-10-28 · "Color Header" brings back the header wash as an option (changes D024)
+## D099 · 2026-10-28 · No supporter tips. A paid "Pro" tier comes in 1.2
+
+Maintainer decision. It replaces D053.
+
+- The app has no supporter tips. Version 1.1.0 ships with no in-app purchase.
+- A paid "Pro" tier comes in version 1.2 and takes the place of the tips. A later decision defines it.
+- Removed: `SupportStore`, the "Support Maru" section of Settings, the `Transaction.updates` task at launch, the five strings of the section in all languages, `Config/Maru.storekit` and its reference in the `Maru` scheme, and `metadata/in-app-purchases/tips.json`.
+- The analytics allowlist has no `purchase_result` event. Add the event in the change that first sends it.
+- The spec text about a supporter purchase (§1, P06, §6, §11.5, §14 C, and T48) stays until the decision about "Pro".
+- This change does not touch App Store Connect. The three tip products and the 1.0.0 review notes about the tips are still there. The maintainer removes them before the submission of 1.1.0.
+
+## D100 · 2026-10-28 · "Color Header" brings back the header wash as an option (changes D024)
 
 Maintainer decision. The header wash of D021 returns as a switch. D024 removed it as the only look, and the plain look stays the default.
 

@@ -3,7 +3,7 @@ import SwiftUI
 import UIKit
 
 extension View {
-    /// The header wash of a main tab page, when "Color Header" is on in Settings (D099).
+    /// The header wash of a main tab page, when "Color Header" is on in Settings (D100).
     /// Put it on the list or the scroll view of the page. Off, it changes nothing.
     func headerWash() -> some View {
         modifier(HeaderWashModifier())
@@ -48,7 +48,7 @@ private struct ScrollDistance: ViewModifier {
     }
 }
 
-/// A wash of the app tint behind the large title, after the Summary screen of Apple Health (D021, D099, docs/design.md).
+/// A wash of the app tint behind the large title, after the Summary screen of Apple Health (D021, D100, docs/design.md).
 ///
 /// Measured on iOS 27: one color across the full width, strongest at the top edge of the screen,
 /// gone after 280 pt. It moves with the content, so it scrolls away. Solid color above it

@@ -41,7 +41,7 @@ struct SettingsView: View {
                     }
                     .pickerStyle(.menu)
                     .tint(Color.primary)
-                    // The wash of the app color behind the title, as in Apple Health (D099).
+                    // The wash of the app color behind the title, as in Apple Health (D100).
                     Toggle("Color Header", isOn: $headerWash)
                     // iOS sets the app language on the Settings page of Maru (D097).
                     Button {
@@ -68,7 +68,6 @@ struct SettingsView: View {
                 }
                 DataSection()
                 FeedbackSection()
-                SupportSection()
                 AboutSection()
                 #if DEBUG
                 DebugSection()
@@ -81,8 +80,6 @@ struct SettingsView: View {
             .modifier(DebugDataBanner())
             #endif
             .navigationTitle("Settings")
-            // The tip section shows only after its products load, so the load starts here.
-            .task { await SupportStore.shared.loadProducts() }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 // A restore replaces the data while it runs. The sheet stays until it ends (D040).

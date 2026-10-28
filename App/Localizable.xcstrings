@@ -1245,41 +1245,6 @@
         }
       }
     },
-    "A tip is optional and unlocks nothing." : {
-      "comment" : "Settings: the footer of the tips in the normal state.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ein Trinkgeld ist freiwillig und schaltet nichts frei."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Una propina es opcional y no desbloquea nada."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "チップは任意です。何かが解除されることはありません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "후원은 선택 사항이며 아무것도 잠금 해제하지 않아요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "赞赏完全自愿，不会解锁任何内容。"
-          }
-        }
-      }
-    },
     "About" : {
       "comment" : "Settings: the title of the section with the privacy policy, the support page, and the licenses.",
       "localizations" : {
@@ -9879,41 +9844,6 @@
         }
       }
     },
-    "Support Maru" : {
-      "comment" : "Settings: the title of the section with three optional tips. A tip unlocks nothing.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru unterstützen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apoyar a Maru"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruを応援"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 후원"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "支持 Maru"
-          }
-        }
-      }
-    },
     "Swipe or touch and hold to change it." : {
       "comment" : "VoiceOver hint of a row of the History log. It tells how to open the corrections.",
       "localizations" : {
@@ -10404,41 +10334,6 @@
         }
       }
     },
-    "Thank you for your support." : {
-      "comment" : "Settings: the footer of the tips after a successful tip.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Danke für deine Unterstützung."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Gracias por tu apoyo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ご支援ありがとうございます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "후원해 주셔서 감사해요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "感谢你的支持。"
-          }
-        }
-      }
-    },
     "The plan has too many times for iPhone." : {
       "comment" : "Item detail: the footer of the plan when the plan has more reminder times than iPhone allows.",
       "localizations" : {
@@ -10696,41 +10591,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 Maru 再次检查之前，提醒可能还开着。"
-          }
-        }
-      }
-    },
-    "The tip did not go through." : {
-      "comment" : "Settings: the footer of the tips after a failed purchase.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Das Trinkgeld ist nicht durchgegangen."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La propina no se completó."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "チップを送れませんでした。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "후원이 완료되지 않았어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "赞赏没成功。"
           }
         }
       }
@@ -12906,41 +12766,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的备注"
-          }
-        }
-      }
-    },
-    "Your tip waits for approval." : {
-      "comment" : "Settings: the footer of the tips when the purchase waits for approval, for example Ask to Buy.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dein Trinkgeld wartet auf Genehmigung."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tu propina está pendiente de aprobación."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "チップは承認待ちです。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "후원이 승인을 기다리고 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你的赞赏正在等待批准。"
           }
         }
       }

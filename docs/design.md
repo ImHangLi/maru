@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, and D099 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, and D100 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -25,7 +25,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 ## Surface
 
 - Every page is a system grouped list or form. The custom cards are the tile of My Items and the graph of History (D026, D032, D041).
-- Today and My Items use the plain grouped background by default (D024). The switch "Color Header" in Settings adds a header wash to both (D099): the app tint behind the large title, mixed to a relative luminance of 0.54 in light mode and 0.09 in dark mode, fading to the page background over 280 points with the curve of Apple Health. It scrolls away with the content on iOS 18 and later. The cards stay opaque on top of it.
+- Today and My Items use the plain grouped background by default (D024). The switch "Color Header" in Settings adds a header wash to both (D100): the app tint behind the large title, mixed to a relative luminance of 0.54 in light mode and 0.09 in dark mode, fading to the page background over 280 points with the curve of Apple Health. It scrolls away with the content on iOS 18 and later. The cards stay opaque on top of it.
 - Every page is the gray grouped background with white cards, as in Apple Health and Settings. This includes a page that loads or shows an error (D028).
 - An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058).
 - A small sheet has the detents medium and large: a time wheel, a short list of choices, and the share sheet. The edit screen and the settings are full sheets. The modifier `smallSheet()` holds the rule (D058).
@@ -152,7 +152,7 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 - "For All Items" (D085): the switch "Alarm" (from iOS 26), the menu "Remind Again", and the menu "Every". A row shows the value that every active item with a time has. When the items differ, it says "Varies", and "Alarm" is then a menu with "Varies", "On", and "Off". A choice sets every one of those items. "Every" shows only while an item has "Remind Again" on. The only footer is the limit line of "Until I Record It".
 - "Display": "App Color".
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
-- "Your Data", then "Send Feedback" (D037), then "Support Maru": three optional tips of a consumable purchase. A tip unlocks nothing (D053).
+- "Your Data", then "Send Feedback" (D037). Settings has no "Support Maru" section (D099).
 - "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift.
 - Each item also has its own "Alarm" and "Remind Again" on the add and edit screen (D079, D085). The menu "Remind Again" has "Off", "1 Time", "2 Times", "3 Times", "5 Times", and "Until I Record It". The menu "Every" has "5 min", "10 min", "15 min", "30 min", and "1 hr". Settings and the edit screen use the same words, from one place in the code.
 - "Until I Record It" has a limit, and the footer under the menus states the number and the last time in one short line: "Reminds you up to 12 times, until 1:00 AM." The time uses the time format of the device.
