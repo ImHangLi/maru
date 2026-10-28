@@ -32,10 +32,10 @@ enum AppAppearance: String, CaseIterable {
         }
     }
 
-    /// `nil` follows the system.
-    var colorScheme: ColorScheme? {
+    /// `unspecified` follows the system.
+    var style: UIUserInterfaceStyle {
         switch self {
-        case .system: nil
+        case .system: .unspecified
         case .light: .light
         case .dark: .dark
         }

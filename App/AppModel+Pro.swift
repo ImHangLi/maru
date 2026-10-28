@@ -164,7 +164,8 @@ extension AppModel {
         }
     }
 
-    private static func plannedInstant(_ entry: TodaySnapshot.Entry) -> Date {
+    /// The planned time of a dose of Today, as an instant. The Live Activity uses it too (D110).
+    static func plannedInstant(_ entry: TodaySnapshot.Entry) -> Date {
         entry.occurrence.timeZone.resolve(entry.occurrence.plannedTime, on: entry.occurrence.plannedDate).earliestInstant
     }
 

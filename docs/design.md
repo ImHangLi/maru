@@ -30,6 +30,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - Every page is the gray grouped background with white cards, as in Apple Health and Settings. This includes a page that loads or shows an error (D028).
 - An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058). The empty Today and My Items pages have a warm title in sentence case with a period instead (D101).
 - A small sheet has the detents medium and large: a time wheel, a short list of choices, and the share sheet. The edit screen and the settings are full sheets. The modifier `smallSheet()` holds the rule (D058).
+- The top bar of a sheet uses the system minimization of iOS 27. On the outer display of iPhone Duo, a scroll in the edit sheet or in Settings hid "Cancel", "Save", and "Done" until a scroll back (simulator check, 2026-10-28). Maru sets no bar modifier, so this is system behavior. Apple says that navigation bars "minimize in certain conditions defined by the system" ([WWDC26 session 278](https://developer.apple.com/videos/play/wwdc2026/278/)). `ToolbarMinimizationBehavior.automatic` documents only a search field as a cause ([Apple documentation](https://developer.apple.com/documentation/swiftui/toolbarminimizationbehavior)). If a system app on the outer display keeps its bar, set `toolbarMinimizationBehavior(.never, for: .navigationBar)` on the two sheets, on iOS 27 only.
 - The card margin and the card padding are 16 points (`Tile.margin`). The second line of a list row sits 2 points under the name (D058).
 
 ## Feedback
@@ -197,6 +198,16 @@ Two Home Screen widgets, small and medium each (D048), and "Last Dose", small (D
 - "Last Dose" shows the newest taken dose of all items (D108). Small: "Last Dose" in the tint with a filled capsule, then the name, the amount in gray, and the time in gray: "2 hr. ago" today, "Yesterday, 6:49 PM", or the date and the time. Lock Screen, rectangular: the symbol and the name in bold, then the time and the amount. Lock Screen, one line: the name and the time. With "Show Names in Reminders" off, "Dose recorded" takes the place of the name, and no family shows the amount (D029). With no taken dose: "Your last dose will show here." A tap opens the item detail over Today.
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
 - The words "Today", "Morning", "Noon", and "Evening" match the app. The header of the small "Today" widget has no "·": the color separates the two parts (D068).
+
+## Live Activity
+
+"Next Dose on Lock Screen" is the Live Activity of Maru Pro (D110). It uses the system background of a Live Activity and system fonts.
+
+- Lock Screen: a first line with the pill symbol and the part of the day in the tint, the planned time in gray, and the time left at the trailing edge in digits of one width. After the planned time, "Not recorded yet" with a clock symbol takes the place of the time left, in the text color, from the next update. Until then, the time left shows zero.
+- Under it, the item names in bold, at most two lines, and a capsule button "Taken" in the tint at the trailing edge. At most three names, then the number of the other doses: "Vitamin D, Iron, Zinc, and 2 more". With "Show Names in Reminders" off, "2 doses" takes the place of the names.
+- Dynamic Island: compact, the pill symbol in the tint and the time left (after the planned time, the planned time in the tint). Minimal, the pill symbol. Expanded, the part of the day and the time at the leading edge, the time left at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
+- A tap outside the button opens Today at the part of the day.
+- When the record does not confirm, a line with a warning symbol takes the place of the button. When the day of the dose ended, only "Open Maru to update." shows, with no name and no button.
 
 ## Siri and Shortcuts
 

@@ -74,6 +74,8 @@ targets:
         # The label scan (D038) and the item photo (D056) of the edit screen. The system asks at the first tap.
         INFOPLIST_KEY_NSCameraUsageDescription: Maru uses the camera to read the name on a label and to take a photo of an item. A label scan saves no photo.
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        # "Next Dose on Lock Screen", the Live Activity of Maru Pro (D110). The widget extension draws it. No push updates it.
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
         # The iPhone is portrait only. Config/Maru-Info.plist has the four orientations of the iPad (D072).
         # The inner display of iPhone Duo ignores this lock and resizes the app (D106).
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait

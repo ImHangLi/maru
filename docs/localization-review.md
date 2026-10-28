@@ -384,6 +384,22 @@ The "Last Dose" widget, in `Widget/Localizable.xcstrings`.
 | Yesterday, %@ | 昨天 %@ | 昨日 %@ | Ayer, %@ | Gestern, %@ | 어제 %@ |
 | Dose recorded | 已记录服用 | 服用を記録済み | Dosis registrada | Dosis erfasst | 복용 기록됨 |
 
+## Live Activity (D110)
+
+The strings below are new. They are drafts. No native speaker read them. Check that the Settings text uses the system name of Live Activities in each language.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Next Dose on Lock Screen | 在锁定屏幕显示下次服用 | ロック画面に次の服用を表示 | Próxima dosis en la pantalla bloqueada | Nächste Dosis auf dem Sperrbildschirm | 잠금 화면에 다음 복용 표시 |
+| Shows your next dose with the time left and a button to record it. | 显示下次服用、剩余时间和一个记录按钮。 | 次の服用と残り時間、記録するボタンを表示します。 | Muestra tu próxima dosis con el tiempo restante y un botón para registrarla. | Zeigt deine nächste Dosis mit der verbleibenden Zeit und einer Taste zum Erfassen. | 다음 복용과 남은 시간, 기록 버튼을 보여 줘요. |
+| Live Activities are off for Maru. Turn them on in the Settings app, under Maru. | Maru 的实时活动已关闭。请在“设置”App 的 Maru 中打开。 | Maruのライブアクティビティがオフになっています。設定アプリの「Maru」でオンにしてください。 | Las actividades en vivo están desactivadas para Maru. Actívalas en la app Ajustes, en Maru. | Live-Aktivitäten sind für Maru deaktiviert. Aktiviere sie in der App „Einstellungen“ unter „Maru“. | Maru의 실시간 현황이 꺼져 있어요. 설정 앱의 Maru에서 켜 주세요. |
+| Not recorded yet | 还没记录 | まだ記録していません | Aún sin registrar | Noch nicht erfasst | 아직 기록 안 함 |
+| Couldn’t confirm the save. Open Maru to check. | 没能确认是否已保存。请打开 Maru 查看。 | 保存を確認できませんでした。Maruを開いて確認してください。 | No se pudo confirmar que se guardó. Abre Maru para revisarlo. | Speichern nicht bestätigt. Öffne Maru zum Prüfen. | 저장을 확인하지 못했어요. Maru를 열어 확인해 주세요. |
+| Records these doses as taken | 把这些服用记为已服用 | これらの服用を服用済みとして記録します | Registra estas dosis como tomadas | Erfasst diese Dosen als eingenommen | 이 복용들을 복용함으로 기록해요 |
+| %lld more (the end of the list "Vitamin D, Iron, Zinc, and 2 more") | 另外 %lld 项 | ほか%lld件 | %lld más | %lld weitere | 그 외 %lld개 |
+
+The button "Taken", "%lld doses", and "Open Maru to update." reuse the text of the widgets and of Siri.
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.

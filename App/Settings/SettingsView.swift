@@ -27,6 +27,7 @@ struct SettingsView: View {
                         model.setShowsNamesInReminders($0)
                     }
                 ))
+                NextDoseSection()
                 AllItemsSection()
                 Section("Display") {
                     // A system menu of the eight colors (D025, D026).
@@ -184,6 +185,29 @@ private struct ReminderSection: View {
         case .quiet: "Reminders come with no sound or banner."
         case .denied: "You can still record without reminders."
         case .notAsked: "Maru asks when you save an item with a time."
+        }
+    }
+}
+
+/// "Next Dose on Lock Screen", a Live Activity of Maru Pro (D110). For a free user, the switch opens the paywall and
+/// stays off. The iPad has no Live Activities, so it has no row.
+private struct NextDoseSection: View {
+    @Environment(AppModel.self) private var model
+
+    var body: some View {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            Section {
+                Toggle("Next Dose on Lock Screen", isOn: Binding(
+                    get: { model.liveActivity.isOn },
+                    set: { model.setNextDoseOnLockScreen($0) }
+                ))
+            } footer: {
+                if model.liveActivity.systemAllows {
+                    Text("Shows your next dose with the time left and a button to record it.")
+                } else {
+                    Text("Live Activities are off for Maru. Turn them on in the Settings app, under Maru.")
+                }
+            }
         }
     }
 }
