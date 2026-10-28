@@ -161,6 +161,14 @@ extension AppModel {
         pro.isPro ? settings.chosenSound : nil
     }
 
+    /// The pending reminders keep the sound of the run that added them. A refund, an expiry, a restore, or a purchase
+    /// changes the sound in use, so one run follows each change of Pro (D112). StoreKit calls this only after it answers,
+    /// so the launch does not wait for it (T35).
+    func proDidChange() {
+        guard settings.chosenSound != nil else { return }
+        refreshReminders()
+    }
+
     /// "Reminder Sound" (D112). A free user who chooses a sound other than "Default" gets the paywall, and nothing
     /// changes. A new sound replaces every pending reminder and follow-up, as a change of the names does. A run that
     /// fails reports like a save, and the next launch or return runs again. Alarms keep the sound of the system.

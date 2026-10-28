@@ -31,8 +31,8 @@ enum ReminderSound: String, CaseIterable, Identifiable {
     }
 
     /// The sound that a reminder run gives the requests: the choice while Maru Pro is active, else the default sound.
-    /// It reads the cached plan, so it runs off the main actor. Each run reads it again, so the reminders go back to the
-    /// default sound at the first run after Pro ends.
+    /// It reads the cached plan, so it runs off the main actor. Each run reads it again, and each change of Pro starts a
+    /// run (`AppModel.proDidChange`), so the reminders follow a refund, an expiry, or a restore.
     static func inUse(at now: Date = Date()) -> ReminderSound? {
         ProStore.cachedPlan(at: now) == nil ? nil : chosen
     }

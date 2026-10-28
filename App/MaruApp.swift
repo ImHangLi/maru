@@ -46,6 +46,8 @@ struct MaruApp: App {
         TakeNextDoseHook.install { await AppModel.shared.takeNextDose($0) }
         // A loss of Pro ends the Live Activity and turns its switch off (D110).
         ProStore.shared.entitlementDidLoad = { AppModel.shared.proEntitlementDidLoad() }
+        // A change of Pro changes the sound of the reminders (D112).
+        ProStore.shared.entitlementDidChange = { AppModel.shared.proDidChange() }
         // Reads Maru Pro and listens for its transactions. It waits for the system, so the launch does not wait (T35, D107).
         ProStore.shared.start()
         // The rating prompt never asks in the first days after the first launch (D102).

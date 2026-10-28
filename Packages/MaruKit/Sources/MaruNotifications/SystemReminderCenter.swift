@@ -149,21 +149,22 @@ extension ReminderLevel {
 }
 
 extension PendingReminder {
-    /// - Parameter currentSound: The sound of now. A pending request with another sound gets no presentation, so it is
-    ///   not current, and the run adds it again with the sound of now (D112). A delivered notification has no check.
+    /// - Parameter currentSound: The sound of now. A pending request with another sound stays current, and the engines give
+    ///   it the sound of now with an add that keeps it until the system holds the new one (D112). A delivered
+    ///   notification has no check.
     init(_ request: UNNotificationRequest, deliveredAt: Date? = nil, currentSound: String?? = .none) {
         var userInfo = request.content.userInfo as? [String: String] ?? [:]
         let sound = userInfo.removeValue(forKey: UNMutableNotificationContent.soundKey)
-        let soundIsCurrent = currentSound.map { $0 == sound } ?? true
         self.init(
             identifier: request.identifier,
             userInfo: userInfo,
             text: ReminderText(title: request.content.title, body: request.content.body),
             // A category that this build does not register is not a presentation that the engines can keep.
-            presentation: ReminderCategory(rawValue: request.content.categoryIdentifier).flatMap { category in
-                soundIsCurrent ? ReminderPresentation(category: category, level: ReminderLevel(request.content.interruptionLevel)) : nil
+            presentation: ReminderCategory(rawValue: request.content.categoryIdentifier).map {
+                ReminderPresentation(category: $0, level: ReminderLevel(request.content.interruptionLevel))
             },
-            deliveredAt: deliveredAt
+            deliveredAt: deliveredAt,
+            hasCurrentSound: currentSound.map { $0 == sound } ?? true
         )
     }
 }

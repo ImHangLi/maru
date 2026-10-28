@@ -147,7 +147,7 @@ struct GenerationCenter: FollowUpCenter {
             }
             return PendingReminder(
                 identifier: key, userInfo: request.userInfo, text: request.text, presentation: request.presentation,
-                deliveredAt: request.deliveredAt
+                deliveredAt: request.deliveredAt, hasCurrentSound: request.hasCurrentSound
             )
         }
     }
@@ -162,21 +162,44 @@ struct GenerationCenter: FollowUpCenter {
     }
 
     func add(_ request: ReminderRequest) async throws {
+        try await add(request, mayRemoveFirst: true)
+    }
+
+    func add(_ request: FollowUpRequest) async throws {
+        try await add(request, mayRemoveFirst: true)
+    }
+
+    /// Gives a current request the sound of now (D112). It is the add of a replacement, but at the system limit it removes
+    /// nothing first: it throws `Full`, and the old request with its old sound stays until a later run.
+    func refreshSound(_ request: ReminderRequest) async throws {
+        try await add(request, mayRemoveFirst: false)
+    }
+
+    /// The same as `refreshSound(_:)` for a follow-up.
+    func refreshSound(_ request: FollowUpRequest) async throws {
+        try await add(request, mayRemoveFirst: false)
+    }
+
+    private func add(_ request: ReminderRequest, mayRemoveFirst: Bool) async throws {
         let fresh = ReminderRequest(
             identifier: RequestGeneration.fresh(request.identifier, counter: counter), trigger: request.trigger,
             content: request.content, userInfo: request.userInfo, fireDate: request.fireDate
         )
-        try await replace(base: request.identifier, with: fresh.identifier) { try await base.add(fresh) }
+        try await replace(base: request.identifier, with: fresh.identifier, mayRemoveFirst: mayRemoveFirst) {
+            try await base.add(fresh)
+        }
     }
 
-    func add(_ request: FollowUpRequest) async throws {
+    private func add(_ request: FollowUpRequest, mayRemoveFirst: Bool) async throws {
         guard let followUps else { return }
         let fresh = FollowUpRequest(
             identifier: RequestGeneration.fresh(request.identifier, counter: counter),
             threadIdentifier: request.threadIdentifier, content: request.content, userInfo: request.userInfo,
             fireDate: request.fireDate
         )
-        try await replace(base: request.identifier, with: fresh.identifier) { try await followUps.add(fresh) }
+        try await replace(base: request.identifier, with: fresh.identifier, mayRemoveFirst: mayRemoveFirst) {
+            try await followUps.add(fresh)
+        }
     }
 
     func remove(identifiers: [String]) async {
@@ -188,12 +211,15 @@ struct GenerationCenter: FollowUpCenter {
     func delivered() async -> [PendingReminder] { await followUps?.delivered() ?? [] }
     func removeDelivered(identifiers: [String]) async { await followUps?.removeDelivered(identifiers: identifiers) }
 
-    private func replace(base key: String, with fresh: String, add: () async throws -> Void) async throws {
+    /// - Parameter mayRemoveFirst: `false` for a request that is correct now, so that a failed add can never remove it.
+    private func replace(
+        base key: String, with fresh: String, mayRemoveFirst: Bool, add: () async throws -> Void
+    ) async throws {
         var raw = await base.pendingRequests().map(\.identifier)
         let before = raw.filter { RequestGeneration.base(of: $0) == key }
         // The system limit counts every physical request. At the limit, the older request of this base goes first.
         if raw.count + 1 > Self.limit {
-            guard !before.isEmpty else { throw Full() }
+            guard mayRemoveFirst, !before.isEmpty else { throw Full() }
             await base.remove(identifiers: before)
             var checks = 0
             repeat {

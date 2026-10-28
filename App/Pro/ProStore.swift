@@ -71,6 +71,9 @@ final class ProStore {
     /// Runs after each read of StoreKit and each purchase, not after a read of the cache. A loss of Pro ends the Live
     /// Activity (D110).
     @ObservationIgnored var entitlementDidLoad: (@MainActor () -> Void)?
+    /// Runs when `isPro` changes after a read of StoreKit or a purchase: a refund, an expiry, a restore, or a new plan.
+    /// The reminders follow it, because their sound depends on Pro (D112).
+    @ObservationIgnored var entitlementDidChange: (@MainActor () -> Void)?
 
     private init() {
         let plan = Self.cachedPlan()
@@ -208,6 +211,7 @@ final class ProStore {
 
     /// `expires` is the end of access of the yearly plan. The lifetime plan never expires.
     private func set(_ plan: ProPlan?, expires: Date?) {
+        let wasPro = isPro
         let expires = plan == .yearly ? expires : nil
         if plan != self.plan {
             self.plan = plan
@@ -217,6 +221,7 @@ final class ProStore {
         UserDefaults.standard.set(expires, forKey: Self.expiresKey)
         scheduleExpiryCheck()
         entitlementDidLoad?()
+        if isPro != wasPro { entitlementDidChange?() }
     }
 
     private func scheduleExpiryCheck() {
