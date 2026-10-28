@@ -13,7 +13,7 @@ Maru asks iOS to encrypt the database file. After a restart of your device, noth
 
 ## What Maru does not do
 
-- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and a request to the App Store for product information when you open Settings. That request carries only product identifiers and none of your item data. Apple's App Store privacy policy applies to it.
+- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the App Store requests of Maru Pro (see "Maru Pro"). Those requests carry none of your item data.
 - It contains no advertising or crash-reporting code.
 - It does not read your contacts, your location, or the advertising identifier.
 - It does not read from or write to Apple Health.
@@ -41,11 +41,23 @@ Some versions of Maru can send usage statistics to PostHog. A version that canno
   - `setting_changed`: a new value of one setting: `show_names` (yes or no), `app_color` (one of the eight color names), `all_alarm` (yes or no, the "Alarm" switch for all items), `all_remind_again` (`off`, `1`, `2`, `3`, `5`, or `until_recorded`), or `all_remind_again_minutes` (`5`, `10`, `15`, `30`, or `60`).
   - `data_action`: `action`, one of `export`, `backup`, or `restore`, and `result`, one of `done`, `failed`, `cancelled`, `invalid_file`, `newer_file`, or `not_confirmed`. Not the file or its content.
   - `feedback_entry`: `entry` = `settings`, when you tap "Send Feedback".
+  - `paywall_shown`: `source`, the place that showed the Maru Pro screen: `first_value` (after your first item with a time), `day7_card` (the card on Today), `feature` (a Pro feature), or `settings`.
+  - `purchase_result`: `result`, one of `purchased`, `cancelled`, `pending`, `failed`, or `restored`, and `plan`, `yearly` or `lifetime`. Not the price, the Apple Account, or the receipt. Apple's privacy label lists this as purchase history.
 - What Maru never sends: item names, doses, amounts, intake times, reminder times, item IDs, notes, photos, or the text of a message. It sends no event at the moment of a record, no time of a single dose, and no count of doses.
 - Each event also has these fields: `app_version`, `ios_major` (the major version of iOS), `distinct_id` (a random install ID), `app_language` (`en`, `zh-Hans`, `ja`, `ko`, `es`, `de`, or `other`), `device` (`iphone`, `ipad`, or `other`), `region` (the region setting of your device as a two-letter code such as AU, when it has one), and `$process_person_profile` and `$geoip_disable`, which ask PostHog for no profile and no location. Each event also has the time when the app made it, to the millisecond. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 - No session recording, no screen capture, and no automatic capture of taps or screens.
 - If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage data, also a daily summary that waits. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
 - Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
+
+## Maru Pro
+
+Maru Pro is an optional purchase through the App Store: a yearly subscription or a lifetime purchase. Everything else in Maru stays free.
+
+- Apple handles the payment, the Apple Account, and the receipt. Maru does not see your payment details. Apple's privacy policy applies to them.
+- Maru asks the App Store, through StoreKit on your device, which plan is active, at each launch and when a purchase changes. It loads the prices when the Maru Pro screen shows. These requests carry the product identifiers of Maru Pro and none of your item data.
+- Maru keeps the name of the active plan in its settings on your device, so Pro features do not flicker at launch.
+- A purchase, a restore, and an offer code never read or change your items or records. A restore of purchases does not restore your health data. For that, use the Maru backup file.
+- The first offer of Maru Pro can show a picture of a Lock Screen with your next dose. Maru draws it on your device. Nothing of it leaves the device.
 
 ## Camera
 

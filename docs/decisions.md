@@ -2014,3 +2014,67 @@ Sources:
 - SwiftUI `ReservedRegion`: https://developer.apple.com/documentation/swiftui/reservedregion
 
 Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
+
+## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48)
+
+Maintainer decisions of 2026-10-28, with agent detail. They follow the two paywall studies of 2026-10-28 in the maintainer's research folder. They define the "Pro" tier of D099.
+
+Free forever:
+
+- Reminders, records, history, undo, widgets, export, backup, and unlimited items. Maru never limits items.
+
+Pro:
+
+- A Lock Screen Live Activity for the next dose, the Apple Watch app, extra app icons, and extra reminder sounds.
+- Those features come in later changes. This change builds the purchase, the entitlement `isPro`, the paywall, and its entries. A later Pro feature reads `AppModel.pro.isPro`, and a tap by a free user calls `AppModel.presentPaywall(reason: .feature)`.
+
+Products (prices in App Store Connect, not in code):
+
+- `com.imhangli.maru.pro.yearly`: an auto-renewable subscription in the group "Maru Pro", about USD 9.99 per year, with a free trial of 7 days as the introductory offer.
+- `com.imhangli.maru.pro.lifetime`: a non-consumable, about USD 19.99.
+- Family Sharing is on for both. Apple does not let a developer turn it off again. No monthly plan.
+- `Config/Maru.storekit` has both products for local tests. The Run action of the `Maru` scheme uses it (`project.yml`).
+
+Entitlement:
+
+- Pro is active when `Transaction.currentEntitlements` has a verified transaction for one of the two products with no revocation date. This includes a purchase of a family member. A lifetime purchase wins over the yearly plan.
+- The app starts a listener of `Transaction.updates` and one read of the entitlements at launch, in tasks that wait for the system. The launch waits for neither (spec 9, T35). Each transaction is finished.
+- The last known plan is in `UserDefaults.standard` under `pro.plan`, beside the display settings (D014). A Pro feature reads it at launch, so it does not flicker. StoreKit corrects it at each launch and each update. The backup does not carry it.
+- `App/Pro/ProStore.swift` is the only file that imports StoreKit. The rating prompt of D102 moved there as a view modifier, so `RootView` does not import StoreKit. `MaruCore` and `MaruDatabase` never import it. A purchase never reads or writes health data.
+- No free feature reads the entitlement. So a failed, cancelled, pending, refunded, or expired purchase changes no free feature (T48).
+
+Paywall (`App/Pro/PaywallView.swift`, one SwiftUI view):
+
+- A custom view. `SubscriptionStoreView` shows one subscription group and cannot sell the non-consumable beside it.
+- Top to bottom: the Lock Screen preview (only for the first-value offer), the title "Maru Pro", a line that the current features stay free, three benefit rows, the two plans side by side with `displayPrice`, the trial timeline, "Shareable with Family Sharing", the buy button, "Continue Free", the renewal terms, "Restore Purchases", "Redeem Code" (`offerCodeRedemption`), "Terms of Use" (Apple's standard EULA), and "Privacy Policy" (https://maru.day/privacy/). A close button is in the bar.
+- The yearly plan is selected first. The trial timeline shows only when StoreKit says that the user can still get the trial: "Today: Free for 7 days" and "Day 7: <price>/year. Cancel any time in Settings." The number of days comes from the offer of the product.
+- The price is the largest text of a plan card, larger than the trial words. In the timeline the price is bold, at the size of the trial words (App Review 3.1.2).
+- "Continue Free" has the size, the shape, the fill, and the font of the buy button, in a gray fill.
+- No countdown, no trial switch, no struck price, no discount, and no offer after a cancel.
+- A cancel leaves the paywall as it was. A pending purchase says that it waits for approval. A failure says that it did not go through. A purchase closes the paywall.
+
+Triggers. Maru never shows a paywall at app open, after a record, after a cancelled purchase, or as a notification.
+
+1. First-value offer, once per install. The first save of a new item with an active time plan sets it. It waits until the save's reminder run ends, so the notification permission alert of that save closed first. Then it waits for the edit screen, the reminder alerts, "Remind Again?" (D091), and the opt-in question (D078). It shows a static SwiftUI picture of a Lock Screen with the user's next dose (the name, the amount, and the next time of the plan), and the paywall under it. It is not a real Live Activity. Never during the onboarding. Never in a process that a reminder or a widget opened. Then the flag stays unset, and the next such save offers it. The flag `pro.firstValueShown` is set when it shows. A save of an item with no time does not offer it, because the preview needs a time.
+2. The card of Today. An inline section at the bottom of Today, under every dose, never modal. It shows when all of these are true: Maru is not Pro, the device can make payments, at least 7 days passed since the first launch (`review.firstLaunch` of D102), at least 5 doses have a record (taken or skipped, one read of the store), the rating prompt did not ask on this calendar day, no planned dose of Today is due with no record, and the card showed on fewer than 3 days or already on this day. Each day that it appears counts once (`pro.cardDays`). "×" hides it for good (`pro.cardDismissed`). "See Maru Pro" opens the paywall.
+3. Contextual: `AppModel.presentPaywall(reason:)` for the later Pro features. It shows nothing when Maru is Pro or a paywall is up.
+4. Settings: a section at the top. A free user sees the row "Maru Pro", which opens the paywall. A Pro user sees "Active, Yearly" or "Active, Lifetime", and "Manage Subscription" for the yearly plan. "Restore Purchases" and "Redeem Code" are always there. The root view hosts the paywall, and Settings hosts it while Settings is up.
+
+The flags of the offers are in `UserDefaults.standard`, as the onboarding flag (D103). They hold no item data.
+
+Analytics (spec 11, D052). Both events need the same consent as every other event. Neither has item data.
+
+- `paywall_shown`: `source` is one of `first_value`, `day7_card`, `feature`, or `settings`.
+- `purchase_result`: `result` is one of `purchased`, `cancelled`, `pending`, `failed`, or `restored`, and `plan` is `yearly` or `lifetime`. A restore that finds no purchase sends nothing. A failed restore has no plan.
+- The privacy label needs "Purchase History" (analytics, linked, no tracking) before a build that sends `purchase_result` is released. `App/PrivacyInfo.xcprivacy` lists it now.
+
+Data: `LocalStore.hasRecords(atLeast:)` counts the current records for the card. It reads no name, time, or item.
+
+Spec changes: §1 (commerce row), P06, §6 (purchase row), §11.5 (two events), §11.6, §14 C, and T48.
+
+Risks:
+
+- This change sells Pro features that the app does not have yet. Do not release a build with the paywall before the Pro features are in it. App Review rejects a purchase with no content (3.1.1).
+- The store text of 1.1 says "no paywall". Guideline 2.3.2 asks the store text to say what needs a purchase. Change the text of 1.2 before its submission.
+
+Not verified: no build of the app on this Mac, and nobody bought a plan. CI builds the app. The checks with the StoreKit configuration are in `docs/status.md`. App Store Connect has no product yet. `docs/release-plan.md` has the maintainer's steps.

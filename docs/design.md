@@ -50,6 +50,15 @@ A short onboarding, once (D103, D104). It asks nothing and requests no permissio
 - "Skip" is at the top right of pages 1 and 2. Under the pages: "Continue" on pages 1 and 2, and "Add Item" and "Later" on page 3. Page 3 has no "Skip". "Continue" and "Add Item" are large prominent buttons in the tint. "Later" is a borderless button. The page dots have the system background, so they show in light mode.
 - "Add Item" shows the tabs and opens the add screen on them.
 
+## Maru Pro
+
+The paywall is one sheet with system fonts and SF Symbols in the tint (D107).
+
+- The two plans are side by side as two cards. The selected card has a border of 2.5 points in the tint. The price is the largest text of a card.
+- The buy button and "Continue Free" are large prominent buttons of the same width. The buy button has the tint. "Continue Free" has a gray fill and the text color.
+- The first-value offer shows a static picture of a Lock Screen above the paywall: the clock, and a dark platter with the form icon, "Next Dose", the name, and the amount and the time. The background is a gradient from the item color to black. The line "Preview of your Lock Screen" is under it.
+- The card of Today is a list section at the bottom of the page, under every dose: a symbol, a bold title, one sentence, the borderless button "See Maru Pro", and an "×" button. It has no badge and no color fill.
+
 ## Today
 
 - The large title "Today" with the date under it. No ring (D026). The date line is the progress area of D101.

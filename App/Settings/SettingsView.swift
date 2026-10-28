@@ -18,6 +18,8 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
+                // At the top, so a user who looks for it finds it (D107).
+                ProSection()
                 ReminderSection(showsNames: Binding(
                     get: { showsNames },
                     set: {
@@ -97,6 +99,8 @@ struct SettingsView: View {
                 }
             }
         }
+        // A paywall from a row of Settings shows over this sheet (D107).
+        .paywallHost(true)
         .interactiveDismissDisabled(model.transfer.isRestoring)
         // The sheet sets the tint again, so every control in it changes at once with a new app color.
         .tint(appColor.tint)

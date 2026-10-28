@@ -36,6 +36,9 @@ struct AnalyticsTests {
             .allRemindAgainIntervalChanged(.minutes60),
             .dataAction(.restore, .newerFile),
             .feedbackOpened,
+            .paywallShown(.day7Card),
+            .purchaseResult(.purchased, plan: .lifetime),
+            .purchaseResult(.restored, plan: nil),
         ]
         for event in built {
             #expect(try AnalyticsEvent(name: event.name, properties: event.properties) == event)

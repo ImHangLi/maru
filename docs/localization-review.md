@@ -258,6 +258,53 @@ The four strings below are new in `App/Localizable.xcstrings`: the menu "Appeara
 | Light | 浅色 | ライト | Claro | Hell | 라이트 |
 | Dark | 深色 | ダーク | Oscuro | Dunkel | 다크 |
 
+## Maru Pro (D107)
+
+The strings below are new in `App/Localizable.xcstrings`: the paywall, the card of Today, and the section of Settings. "Maru Pro" stays in English in every language. No native speaker read them. The reviewer checks the same three things as above, that the voice is warm and calm with no pressure (D101), that "Family Sharing", "Apple Account", and "Settings" use the Apple words of that language, and that the price text "%@/year" reads well with a local price.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Close | 关闭 | 閉じる | Cerrar | Schließen | 닫기 |
+| Shareable with Family Sharing | 可通过“家人共享”共享 | ファミリー共有で共有できます | Se puede compartir con En familia | Mit der Familienfreigabe teilbar | 가족 공유로 함께 쓸 수 있어요 |
+| A few extras for your routine. Everything you use now stays free. | 为你的日常多加几样贴心功能。你现在用的一切都继续免费。 | 毎日をもう少し便利にする追加機能です。今お使いの機能はすべて無料のままです。 | Unos extras para tu rutina. Todo lo que usas ahora sigue siendo gratis. | Ein paar Extras für deinen Alltag. Alles, was du jetzt nutzt, bleibt kostenlos. | 일상을 조금 더 편하게 해 줄 추가 기능이에요. 지금 쓰는 기능은 모두 계속 무료예요. |
+| Next Dose on the Lock Screen | 锁定屏幕上的下次服用 | ロック画面に次の服用 | Próxima dosis en la pantalla bloqueada | Nächste Dosis auf dem Sperrbildschirm | 잠금 화면에 다음 복용 |
+| See what’s next without opening Maru. | 不打开 Maru，也能看到下一次安排。 | Maruを開かなくても次の予定がわかります。 | Mira lo siguiente sin abrir Maru. | Sieh, was als Nächstes ansteht, ohne Maru zu öffnen. | Maru를 열지 않아도 다음 일정을 볼 수 있어요. |
+| Apple Watch App | Apple Watch App | Apple Watchアプリ | App para Apple Watch | Apple Watch-App | Apple Watch 앱 |
+| See and record today’s doses on your wrist. | 在手腕上查看并记录今天的服用。 | 今日の服用を手首で確認・記録できます。 | Ve y registra las dosis de hoy en tu muñeca. | Sieh und erfasse die Dosen von heute am Handgelenk. | 오늘의 복용을 손목에서 확인하고 기록해요. |
+| Icons and Sounds | 图标和提醒音 | アイコンとサウンド | Iconos y sonidos | Symbole und Töne | 아이콘과 소리 |
+| More app icons and reminder sounds. | 更多 App 图标和提醒声音。 | アプリアイコンと通知音が増えます。 | Más iconos de la app y sonidos de recordatorio. | Mehr App-Symbole und Erinnerungstöne. | 더 많은 앱 아이콘과 알림 소리. |
+| Yearly | 按年 | 年額 | Anual | Jährlich | 연간 |
+| per year | 每年 | 1年ごと | al año | pro Jahr | 1년마다 |
+| %lld days free | 免费 %lld 天 | %lld日間無料 | %lld días gratis | %lld Tage kostenlos | %lld일 무료 |
+| Lifetime | 永久 | 買い切り | De por vida | Dauerhaft | 평생 |
+| one time | 一次性 | 1回のみ | un solo pago | einmalig | 한 번만 |
+| No subscription | 不是订阅 | サブスクリプションなし | Sin suscripción | Kein Abo | 구독 없음 |
+| Prices didn’t load. Check your connection and try again. | 价格没有加载出来。请检查网络后重试。 | 価格を読み込めませんでした。接続を確認して、もう一度お試しください。 | Los precios no se cargaron. Revisa tu conexión e inténtalo de nuevo. | Die Preise wurden nicht geladen. Prüfe deine Verbindung und versuche es erneut. | 가격을 불러오지 못했어요. 연결을 확인한 뒤 다시 시도해 주세요. |
+| Subscribe Yearly | 按年订阅 | 年額で登録 | Suscripción anual | Jährlich abonnieren | 연간 구독 |
+| Buy Lifetime | 永久买断 | 買い切りで購入 | Comprar de por vida | Dauerhaft kaufen | 평생 이용권 구매 |
+| Continue Free | 继续免费使用 | 無料で続ける | Seguir gratis | Kostenlos weiter | 무료로 계속하기 |
+| The yearly plan renews each year until you cancel it in Settings. Cancel at least 24 hours before it renews. | 按年方案会每年自动续订，直到你在“设置”中取消。请在续订前至少 24 小时取消。 | 年額プランは、設定でキャンセルするまで毎年自動更新されます。更新の24時間前までにキャンセルしてください。 | El plan anual se renueva cada año hasta que lo canceles en Ajustes. Cancela al menos 24 horas antes de la renovación. | Der Jahresplan verlängert sich jedes Jahr, bis du ihn in den Einstellungen kündigst. Kündige mindestens 24 Stunden vor der Verlängerung. | 연간 플랜은 설정에서 취소할 때까지 매년 갱신돼요. 갱신 24시간 전까지 취소해 주세요. |
+| Restore Purchases | 恢复购买 | 購入を復元 | Restaurar compras | Käufe wiederherstellen | 구입 복원 |
+| Redeem Code | 兑换代码 | コードを使う | Canjear código | Code einlösen | 코드 사용 |
+| Terms of Use | 使用条款 | 利用規約 | Términos de uso | Nutzungsbedingungen | 이용 약관 |
+| Your purchase is waiting for approval. Pro turns on when it’s approved. | 你的购买正在等待批准。批准后 Pro 就会开启。 | 購入は承認待ちです。承認されるとProが有効になります。 | Tu compra está pendiente de aprobación. Pro se activará cuando se apruebe. | Dein Kauf wartet auf Freigabe. Pro wird aktiv, sobald er freigegeben ist. | 구입이 승인을 기다리고 있어요. 승인되면 Pro가 켜져요. |
+| The purchase didn’t go through. Please try again. | 购买没有完成。请再试一次。 | 購入を完了できませんでした。もう一度お試しください。 | La compra no se completó. Inténtalo de nuevo. | Der Kauf hat nicht geklappt. Bitte versuche es erneut. | 구입이 완료되지 않았어요. 다시 시도해 주세요. |
+| Maru Pro is back. Thank you. | Maru Pro 已恢复。谢谢你。 | Maru Proを復元しました。ありがとうございます。 | Maru Pro ha vuelto. Gracias. | Maru Pro ist wieder da. Danke. | Maru Pro가 복원됐어요. 고마워요. |
+| No Maru Pro purchase was found for this Apple Account. | 这个 Apple 账户没有 Maru Pro 的购买记录。 | このApple AccountにMaru Proの購入は見つかりませんでした。 | No se encontró ninguna compra de Maru Pro en esta cuenta de Apple. | Für diesen Apple Account wurde kein Kauf von Maru Pro gefunden. | 이 Apple 계정에서 Maru Pro 구입을 찾지 못했어요. |
+| Free for %lld days | 免费使用 %lld 天 | %lld日間無料 | Gratis durante %lld días | %lld Tage kostenlos | %lld일 동안 무료 |
+| Day %lld | 第 %lld 天 | %lld日目 | Día %lld | Tag %lld | %lld일째 |
+| %@/year. Cancel any time in Settings. | %@/年。随时可在“设置”中取消。 | %@/年。設定でいつでもキャンセルできます。 | %@ al año. Cancela cuando quieras en Ajustes. | %@ pro Jahr. Jederzeit in den Einstellungen kündbar. | 연 %@. 설정에서 언제든 취소할 수 있어요. |
+| Preview of your Lock Screen | 锁定屏幕预览 | ロック画面のプレビュー | Vista previa de tu pantalla bloqueada | Vorschau deines Sperrbildschirms | 잠금 화면 미리 보기 |
+| See your next dose on the Lock Screen | 在锁定屏幕上看到下次服用 | 次の服用をロック画面で確認 | Ve tu próxima dosis en la pantalla bloqueada | Deine nächste Dosis auf dem Sperrbildschirm | 다음 복용을 잠금 화면에서 확인하세요 |
+| Maru Pro adds this, an Apple Watch app, and more icons and sounds. Everything else stays free. | Maru Pro 提供这项功能，还有 Apple Watch App 和更多图标与提醒音。其他一切都继续免费。 | Maru Proでは、この機能のほか、Apple Watchアプリや追加のアイコンとサウンドが使えます。それ以外はすべて無料のままです。 | Maru Pro añade esto, una app para Apple Watch y más iconos y sonidos. Todo lo demás sigue siendo gratis. | Maru Pro bietet das, eine Apple Watch-App und mehr Symbole und Töne. Alles andere bleibt kostenlos. | Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 아이콘과 소리가 있어요. 나머지는 모두 계속 무료예요. |
+| See Maru Pro | 了解 Maru Pro | Maru Proを見る | Ver Maru Pro | Maru Pro ansehen | Maru Pro 보기 |
+| Hide | 隐藏 | 非表示 | Ocultar | Ausblenden | 숨기기 |
+| Active, Yearly | 已开启，按年 | 有効（年額） | Activo, anual | Aktiv, jährlich | 사용 중, 연간 |
+| Active, Lifetime | 已开启，永久 | 有効（買い切り） | Activo, de por vida | Aktiv, dauerhaft | 사용 중, 평생 |
+| Manage Subscription | 管理订阅 | サブスクリプションを管理 | Gestionar suscripción | Abo verwalten | 구독 관리 |
+| The restore didn’t go through. Please try again. | 恢复没有完成。请再试一次。 | 復元を完了できませんでした。もう一度お試しください。 | La restauración no se completó. Inténtalo de nuevo. | Die Wiederherstellung hat nicht geklappt. Bitte versuche es erneut. | 복원이 완료되지 않았어요. 다시 시도해 주세요. |
+| Reminders, records, and your data stay free. | 提醒、记录和你的数据都继续免费。 | リマインダー、記録、データはずっと無料です。 | Los recordatorios, los registros y tus datos siguen siendo gratis. | Erinnerungen, Einträge und deine Daten bleiben kostenlos. | 미리 알림, 기록, 내 데이터는 계속 무료예요. |
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.

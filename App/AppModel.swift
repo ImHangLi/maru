@@ -48,6 +48,8 @@ final class AppModel {
     /// The item whose first save with a time asks, once, whether "Remind Again" should be on (D091). It waits for the
     /// edit screen and the alerts before it. `AppModel+Detail.swift` has its operation.
     var remindAgainOffer: ItemID?
+    /// The paywall and the two offers of Maru Pro (D107). `AppModel+Pro.swift` has the rules.
+    var proState = ProState()
     /// Counts the times that Maru asks for an App Store rating. The root view shows the system prompt (D102).
     var reviewRequest = 0
     /// The first-run onboarding (D103, D104). `AppModel+Onboarding.swift` has the rule.
@@ -197,6 +199,8 @@ final class AppModel {
                 WidgetCenter.shared.reloadAllTimelines()
                 sendWatchDay()
                 showPendingWidgetSlot()
+                // The card of Today needs a count of records. It is read once, and only when the card can show (D107).
+                readProCardRecords()
             }
             // After the content shows, so Today never waits for the reminders (spec 8.1, 9). A Today that did not load, for
             // example for one damaged row, does not stop the run: the plans read their rows with their own checks (D088, D089).
