@@ -6,7 +6,7 @@ import SwiftUI
 /// reassurance line. "Restore Purchases", "Redeem Code", "Terms of Use", and "Privacy Policy" end the page.
 ///
 /// The page is one calm piece: the tint of the app, very faint, washes the whole background, so the picture fades into
-/// it. It has one left margin, system fonts with text styles, one accent (the app tint), and a system material under the
+/// it. It has one left margin, system fonts with text styles, one accent (the app tint), and the same wash under the
 /// purchase area. At an accessibility text size, the purchase area scrolls with the page, so it never covers the screen.
 ///
 /// It is a custom view, because `SubscriptionStoreView` cannot sell the lifetime plan beside the yearly plan (D115). It
@@ -36,33 +36,45 @@ struct PaywallView: View {
 
     /// The one left and right margin of the page.
     private let margin: CGFloat = 20
+    /// The height of the fade above the purchase area.
+    private static let purchaseFade: CGFloat = 28
     private var pinsPurchase: Bool { !typeSize.isAccessibilitySize }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                header
-                column {
-                    VStack(alignment: .leading, spacing: 28) {
-                        benefits
-                        if !pinsPurchase { purchase }
-                        footer
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    header
+                    column {
+                        VStack(alignment: .leading, spacing: 28) {
+                            benefits
+                            if !pinsPurchase { purchase }
+                            footer
+                        }
+                    }
+                    .padding(.top, 4)
+                    .padding(.bottom, pinsPurchase ? 24 + Self.purchaseFade : 24)
+                }
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+            }
+            .scrollBounceBehavior(.basedOnSize)
+            .ignoresSafeArea(edges: .top)
+            // The page fades out above the purchase area, so it scrolls away softly and no text line shows a cut.
+            .mask {
+                VStack(spacing: 0) {
+                    Rectangle()
+                    if pinsPurchase {
+                        LinearGradient(stops: Self.fadeStops, startPoint: .top, endPoint: .bottom)
+                            .frame(height: Self.purchaseFade)
                     }
                 }
-                .padding(.top, 4)
-                .padding(.bottom, 24)
+                .ignoresSafeArea(edges: .top)
             }
-            .frame(maxWidth: .infinity, alignment: .topLeading)
-        }
-        .scrollBounceBehavior(.basedOnSize)
-        .ignoresSafeArea(edges: .top)
-        // The purchase area is part of the sheet, not of the page, so the page scrolls under it.
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+            // The purchase area has no background of its own. It shares the wash of the page.
             if pinsPurchase {
                 column { purchase }
-                    .padding(.top, 12)
+                    .padding(.top, 8)
                     .padding(.bottom, 8)
-                    .background(.bar)
             }
         }
         .background { wash.ignoresSafeArea() }
