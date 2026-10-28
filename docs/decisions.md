@@ -2427,7 +2427,7 @@ Evidence: simulator captures (light, dark, zh-Hans on an iPhone 17 Pro, light an
 
 Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, and the long German and Spanish lines. The smallest iPhone that iOS 17 supports (667 points high) is not a simulator here. The white "Continue Free" and link rows were not checked for contrast with a tool. The text on the fade of B2 is black on a pink tint for the first benefit row in light mode, and it is readable in the captures only.
 
-## D118 · 2026-10-28 · The final Maru Pro paywall: a calm page and a pinned purchase area (replaces the paywall of D115 and style B of D116 and D117)
+## D118 · 2026-10-28 · The final Maru Pro paywall: a calm page and a pinned purchase area (replaces the paywall of D115 and style B of D116 and D117, replaced by D119)
 
 Maintainer decision on 2026-10-28: keep style B2 "Clean sheet" of D117, then make it as clean as the paywall of Doz (a pill reminder app), with an Apple look. Keep the gradient picture and the headline "Your next dose, at a glance." This decision removes the plain paywall of D115, the style B option of D116, and the look B1 "Immersive" of D117, with their code, strings, and the debug switch. It changes no StoreKit code, no entitlement rule, no price rule, no trigger of D107, and not the thank-you. The Today card and the Settings row did not change.
 
@@ -2453,3 +2453,23 @@ Fit: on an iPhone 17 Pro and an iPhone 17e at the default text size, the first s
 Evidence: captures (light, dark, zh-Hans, scrolled, an iPhone 17e, and "Accessibility Extra Large") and `compare.png` (Doz, B2, final) are in `~/Documents/Research/maru/paywall-redesign/final/`. A copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
 
 Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the long German and Spanish lines, the iPhone SE size, and the contrast of the gray lines on the wash with a tool.
+
+## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118)
+
+Maintainer feedback on 2026-10-28 about the paywall of D118. This decision replaces the paywall of D118. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107. The thank-you and the first-value offer are as before.
+
+What changed, and why:
+- System parts. The paywall is a normal system sheet with a `NavigationStack`. The close button is in the navigation bar, at the top right. On iOS 26 and later it is `Button(role: .close)`, the system glass "X". Before iOS 26 (the deployment target is 17.0), it is a plain `xmark` button. The custom circle is gone. The bar has no background, so the picture runs under it.
+- Less text. These are gone: "Maru is made by one independent developer. Thank you for your support.", "Share with your family" (the maintainer did not understand it there), the line with a check mark under the button ("Cancel anytime", "One payment"), "Restore Purchases", and "Redeem Code". Their strings are removed from the catalog. Family Sharing stays on in the products. The paywall only does not mention it.
+- Restore and Redeem are in Settings only. The "Maru Pro" section of Settings already has "Restore Purchases" and "Redeem Code" with the same logic, so the paywall calls neither. App Review 3.1.1 needs a Restore control somewhere in the app, and Settings has it.
+- Terms and Privacy stay on the paywall, because App Review 3.1.2 needs working links to both in the purchase flow. They are two small gray links on one line at the very bottom of the purchase area, in `caption2`, with a dot between them. Settings has "Privacy Policy" in "About". It has no "Terms of Use", and this decision does not add one.
+- One terms line, directly above the button, for the selected plan: "Free for 7 days, then $9.99 per year. Cancel anytime.", "$9.99 per year. Cancel anytime." (no trial), or "One payment. Yours to keep." (lifetime). Each states the price and the period. It may shrink to 90 percent. Nothing else shrinks.
+- One line each. The third benefit line is now "Choose your app color, icon, and sound." and the German line of the first benefit is "Dosis sehen, ohne Maru zu öffnen.". Each benefit title, each benefit line, the terms line, and each button label fit on one line at the default text size on an iPhone 17e and an iPhone 17 Pro in English, zh-Hans, German, and Spanish.
+- Black text on white. The benefits start under the end of the picture fade, on the plain background. No dark text sits on the picture or on the fade.
+- No wash. The page background is the plain system background, white in light mode and the system dark color in dark mode. The tint wash is gone. The fade of the picture is longer (96 points under the headline) and eased (smootherstep), and it ends before the first benefit. The page also fades into the plain background above the purchase area.
+
+Fit: the first screen at the default text size on an iPhone 17 Pro and an iPhone 17e shows the headline, the three benefits, both prices, the terms line, the button, and the two links.
+
+Evidence: captures (light and dark on an iPhone 17 Pro, zh-Hans on both phones, light, German, and Spanish on an iPhone 17e, and the Settings section) and `compare.png` (D118 next to D119) are in `~/Documents/Research/maru/paywall-redesign/final-v2/`. A copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
+
+Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the plain `xmark` button before iOS 26, an accessibility text size after this change, the iPhone SE size, ja and ko line fit, and the contrast of the gray lines with a tool. The two privacy links differ: the paywall opens `https://maru.day/privacy/` and Settings opens `https://maru.day/privacy.html`. The maintainer must check that both open the page.

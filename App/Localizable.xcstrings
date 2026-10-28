@@ -106,37 +106,37 @@
         }
       }
     },
-    "%@ per year. Renews until you cancel." : {
-      "comment" : "Paywall of Maru Pro: the terms line under the plans for the yearly plan with no free trial. The price of one year first. Example: $9.99 per year. Renews until you cancel.",
+    "%@ per year. Cancel anytime." : {
+      "comment" : "Paywall of Maru Pro: the terms line under the plans for the yearly plan with no free trial. The price of one year. Example: $9.99 per year. Cancel anytime.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ pro Jahr. Verlängert sich, bis du kündigst."
+            "value" : "%@ pro Jahr. Jederzeit kündbar."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ al año. Se renueva hasta que lo canceles."
+            "value" : "%@ al año. Cancela cuando quieras."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "年額%@。キャンセルするまで自動更新されます。"
+            "value" : "年額%@。いつでもキャンセル可能。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "연 %@. 취소할 때까지 갱신돼요."
+            "value" : "연 %@. 언제든 취소 가능."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "每年 %@。取消前会自动续订。"
+            "value" : "每年 %@。可随时取消。"
           }
         }
       }
@@ -2565,41 +2565,6 @@
         }
       }
     },
-    "Cancel anytime" : {
-      "comment" : "Paywall of Maru Pro: the line with a check mark under the buy button of the yearly plan.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Jederzeit kündbar"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancela cuando quieras"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "いつでもキャンセル可能"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "언제든 취소 가능"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "可随时取消"
-          }
-        }
-      }
-    },
     "Can’t Show History" : {
       "comment" : "History: the title when the days did not read from the store.",
       "localizations" : {
@@ -4875,37 +4840,37 @@
         }
       }
     },
-    "Free for %lld days, then %@ per year. Renews until you cancel." : {
-      "comment" : "Paywall of Maru Pro: the terms line under the plans for the yearly plan with a free trial. First the number of trial days, then the price of one year. Example: Free for 7 days, then $9.99 per year. Renews until you cancel.",
+    "Free for %lld days, then %@ per year. Cancel anytime." : {
+      "comment" : "Paywall of Maru Pro: the terms line under the plans for the yearly plan with a free trial. First the number of trial days, then the price of one year. Example: Free for 7 days, then $9.99 per year. Cancel anytime.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich, bis du kündigst."
+            "value" : "%1$lld Tage gratis, dann %2$@ pro Jahr. Jederzeit kündbar."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gratis durante %1$lld días, luego %2$@ al año. Se renueva hasta que lo canceles."
+            "value" : "%1$lld días gratis, luego %2$@ al año. Cancela cuando quieras."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld日間無料、その後は年額%2$@。キャンセルするまで自動更新されます。"
+            "value" : "%1$lld日間無料、その後は年額%2$@。いつでもキャンセル可能。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$lld일 무료, 이후 연 %2$@. 취소할 때까지 갱신돼요."
+            "value" : "%1$lld일 무료, 이후 연 %2$@. 언제든 취소 가능."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "免费 %1$lld 天，之后每年 %2$@。取消前会自动续订。"
+            "value" : "免费 %1$lld 天，之后每年 %2$@。可随时取消。"
           }
         }
       }
@@ -6937,41 +6902,6 @@
         }
       }
     },
-    "Maru is made by one independent developer. Thank you for your support." : {
-      "comment" : "Paywall of Maru Pro: a short note at the end of the page.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru wird von einem einzelnen unabhängigen Entwickler gemacht. Danke für deine Unterstützung."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru la crea un solo desarrollador independiente. Gracias por tu apoyo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruは一人の個人開発者が作っています。応援ありがとうございます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru는 한 명의 독립 개발자가 만들어요. 응원해 주셔서 고마워요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 由一位独立开发者制作。感谢你的支持。"
-          }
-        }
-      }
-    },
     "Maru Pro" : {
       "comment" : "The name of the paid tier: the paywall title and the row in Settings. Keep it in English.",
       "localizations" : {
@@ -7497,72 +7427,37 @@
         }
       }
     },
-    "One payment" : {
-      "comment" : "Paywall of Maru Pro: the line with a check mark under the buy button of the lifetime plan.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalige Zahlung"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un solo pago"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1回のお支払い"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "한 번만 결제"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一次付款"
-          }
-        }
-      }
-    },
-    "One payment. It does not renew." : {
+    "One payment. Yours to keep." : {
       "comment" : "Paywall of Maru Pro: the terms line under the plans for the lifetime plan.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einmalige Zahlung. Keine Verlängerung."
+            "value" : "Einmalige Zahlung. Gehört dir für immer."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un solo pago. No se renueva."
+            "value" : "Un solo pago. Es tuyo para siempre."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1回のお支払いです。更新はありません。"
+            "value" : "1回のお支払いで、ずっと使えます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "한 번만 결제해요. 갱신되지 않아요."
+            "value" : "한 번만 결제하면 계속 쓸 수 있어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一次付款，不会续订。"
+            "value" : "一次付款，永久拥有。"
           }
         }
       }
@@ -7707,37 +7602,37 @@
         }
       }
     },
-    "Pick your app color, icon, and reminder sound." : {
+    "Choose your app color, icon, and sound." : {
       "comment" : "Paywall of Maru Pro: one line under the benefit 'Colors, Icons, Sounds'.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle App-Farbe, Symbol und Erinnerungston."
+            "value" : "Wähle App-Farbe, Symbol und Ton."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige el color, el icono y el sonido de los recordatorios."
+            "value" : "Elige color, icono y sonido de la app."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アプリのカラー、アイコン、通知音を選べます。"
+            "value" : "アプリのカラー、アイコン、音を選べます。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "앱 색상, 아이콘, 알림 소리를 골라요."
+            "value" : "앱 색상, 아이콘, 소리를 골라요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择应用颜色、图标和提醒声音。"
+            "value" : "选择应用颜色、图标和声音。"
           }
         }
       }
@@ -11528,7 +11423,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sieh deine nächste Dosis, ohne Maru zu öffnen."
+            "value" : "Dosis sehen, ohne Maru zu öffnen."
           }
         },
         "es" : {
@@ -11868,41 +11763,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享你怎么使用 App，比如今天有没有记录。Maru 绝不分享药品名称、剂量或时间。你可以随时在“设置”里改。"
-          }
-        }
-      }
-    },
-    "Share with your family" : {
-      "comment" : "Paywall of Maru Pro: a line with a two-person symbol above the buy button. Family Sharing is on for both plans.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mit der Familie teilen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compártelo con tu familia"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ご家族と共有"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "가족과 공유"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "与家人共享"
           }
         }
       }

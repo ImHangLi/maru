@@ -476,7 +476,7 @@ Five new strings for the second paywall. No native speaker read them. The review
 | %@ per year. Renews automatically. Cancel anytime. | 每年 %@。自动续订，可随时取消。 | 年額%@。自動更新で、いつでもキャンセルできます。 | %@ al año. Se renueva automáticamente. Cancela cuando quieras. | %@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | 연 %@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
 | Start Free Trial | 开始免费试用 | 無料トライアルを開始 | Empezar prueba gratis | Gratis testen starten | 무료 체험 시작 |
 
-## Final paywall (D118)
+## Final paywall (D118, changed by D119)
 
 Eight new strings. "Try It Free", "Continue Free", "No subscription", "per year", "one time", the supporting line of D116, and the two terms lines of D116 left the catalog. The terms lines of D115 are in use again. No native speaker read them. The reviewer checks that each benefit line fits one or two lines at a large text size, that "Cancel anytime" and "One payment" are true short claims in the language, and that the note about the independent developer sounds warm and plain.
 
@@ -490,3 +490,15 @@ Eight new strings. "Try It Free", "Continue Free", "No subscription", "per year"
 | One payment | 一次付款 | 1回のお支払い | Un solo pago | Einmalige Zahlung | 한 번만 결제 |
 | Share with your family | 与家人共享 | ご家族と共有 | Compártelo con tu familia | Mit der Familie teilen | 가족과 공유 |
 | Maru is made by one independent developer. Thank you for your support. | Maru 由一位独立开发者制作。感谢你的支持。 | Maruは一人の個人開発者が作っています。応援ありがとうございます。 | Maru la crea un solo desarrollador independiente. Gracias por tu apoyo. | Maru wird von einem einzelnen unabhängigen Entwickler gemacht. Danke für deine Unterstützung. | Maru는 한 명의 독립 개발자가 만들어요. 응원해 주셔서 고마워요. |
+
+## Paywall, third round (D119)
+
+Four strings changed, and four left the catalog: "Maru is made by one independent developer. Thank you for your support.", "Share with your family", "Cancel anytime", and "One payment". The three terms lines changed to end with "Cancel anytime." or "Yours to keep.", and the third benefit line is shorter. The German first benefit line is shorter too. No native speaker read them. The reviewer checks that each line fits one line on an iPhone 17e (checked in en, zh-Hans, de, and es, not in ja and ko), and that each terms line states the price, the period, and the cancel right (App Review 3.1.2).
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Choose your app color, icon, and sound. | 选择应用颜色、图标和声音。 | アプリのカラー、アイコン、音を選べます。 | Elige color, icono y sonido de la app. | Wähle App-Farbe, Symbol und Ton. | 앱 색상, 아이콘, 소리를 골라요. |
+| See your next dose without opening Maru. (de only) | | | | Dosis sehen, ohne Maru zu öffnen. | |
+| Free for %lld days, then %@ per year. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。可随时取消。 | %1$lld日間無料、その後は年額%2$@。いつでもキャンセル可能。 | %1$lld días gratis, luego %2$@ al año. Cancela cuando quieras. | %1$lld Tage gratis, dann %2$@ pro Jahr. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 언제든 취소 가능. |
+| %@ per year. Cancel anytime. | 每年 %@。可随时取消。 | 年額%@。いつでもキャンセル可能。 | %@ al año. Cancela cuando quieras. | %@ pro Jahr. Jederzeit kündbar. | 연 %@. 언제든 취소 가능. |
+| One payment. Yours to keep. | 一次付款，永久拥有。 | 1回のお支払いで、ずっと使えます。 | Un solo pago. Es tuyo para siempre. | Einmalige Zahlung. Gehört dir für immer. | 한 번만 결제하면 계속 쓸 수 있어요. |
