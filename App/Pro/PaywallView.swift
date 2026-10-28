@@ -1,19 +1,7 @@
 import SwiftUI
 
-/// The paywall of Maru Pro (D107, D119). It is a system sheet with a system close button in the navigation bar. A gradient
-/// picture and one headline sit at the top and scroll away. The picture fades out before the benefits start, so all
-/// other text sits on the plain background. Under the picture come three benefits, each with a symbol, a title, and one
-/// line. The purchase area stays at the foot of the sheet while the page scrolls: two plan tiles, the terms of the
-/// selected subscription (the lifetime plan has none), one capsule button, and one line with the two legal links (App Review 3.1.2). "Restore Purchases" and
-/// "Redeem Code" are in Settings (D119).
-///
-/// The page has one left margin, system fonts with text styles, one accent (the app tint), and the plain system
-/// background. At an accessibility text size, the purchase area scrolls with the page, so it never covers the screen.
-///
-/// It is a custom view, because `SubscriptionStoreView` cannot sell the lifetime plan beside the yearly plan (D115). It
-/// uses the StoreKit calls of `ProStore` and changes no price rule, trial rule, or entitlement rule (D107). The picture is
-/// `ProHero` in the asset catalog. Codex made it, and `docs/third-party-licenses.md` records it. It drifts slowly, and it
-/// stands still with Reduce Motion.
+/// The Maru Pro paywall uses `ProStore` for purchases (D107, D119).
+/// This custom view offers yearly and lifetime plans together, which `SubscriptionStoreView` cannot do (D115).
 struct PaywallView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -38,6 +26,7 @@ struct PaywallView: View {
     private static let purchaseFade: CGFloat = 28
     /// The height of the fade under the picture.
     private static let heroFade: CGFloat = 96
+    /// The purchase area scrolls at accessibility text sizes, so it cannot cover the screen.
     private var pinsPurchase: Bool { !typeSize.isAccessibilitySize }
 
     var body: some View {
@@ -376,7 +365,6 @@ struct PaywallView: View {
 /// The gradient picture. It drifts slowly and stops with Reduce Motion.
 private struct HeroArt: View {
     let isStill: Bool
-    var blur: CGFloat = 0
     @State private var drifts = false
 
     var body: some View {
@@ -387,7 +375,6 @@ private struct HeroArt: View {
                 .frame(width: proxy.size.width, height: proxy.size.height)
                 .scaleEffect(1.15)
                 .offset(x: drifts ? -12 : 12, y: drifts ? 8 : -8)
-                .blur(radius: blur)
                 .clipped()
         }
         .onAppear { updateDrift() }

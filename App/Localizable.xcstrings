@@ -11954,41 +11954,6 @@
         }
       }
     },
-    "Show" : {
-      "comment" : "Reminder choice sheet: the action on a candidate of today. It shows that dose on Today. The verb, not a theater show.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anzeigen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "보기"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示"
-          }
-        }
-      }
-    },
     "Show Names in Reminders" : {
       "comment" : "Settings: a switch that adds the item names to reminders.",
       "localizations" : {
