@@ -209,7 +209,7 @@ final class Locked<Value: Sendable>: @unchecked Sendable {
     func set(_ value: Value) { lock.withLock { self.value = value } }
 }
 
-/// The app process: the three engines and the queue of `AppStore`. A new process reads the ledgers again.
+/// The app process uses the three engines and the `AppStore` queue with persistent request generations.
 final class SimProcess: @unchecked Sendable {
     let life: Life
     let reminders: ReminderEngine
@@ -366,7 +366,7 @@ final class Phone: @unchecked Sendable {
 
     // MARK: The process
 
-    /// The app starts: a new process, with the ledgers from disk, and the run of a launch.
+    /// A new process uses persistent request generations and runs the launch queue.
     func launch() async {
         let life = Life(killAtCall: nextRunKillsAtCall, interleave: nextRunInterleave)
         nextRunKillsAtCall = nil
