@@ -51,6 +51,7 @@ struct MyListView: View {
                         // A tile or a row that comes or goes moves the page (D030). The first tiles show with no entrance.
                         .motion(.layout, value: layout(snapshot))
                     }
+                    .headerWash()
                     .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
                     .navigationDestination(for: ArchivedListView.Route.self) { _ in ArchivedListView() }
                     .overlay {

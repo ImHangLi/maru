@@ -22,7 +22,7 @@ Evidence: `docs/research/2026-10-market-scan.md`.
 |---|---|---|
 | A. Self-use | Manual add, open-ended reminders, Today, record, history, undo and correct, change time, turn off | The owner uses it daily on a real iPhone for one week. Spec §14 A checks pass |
 | B. TestFlight | Optional photo, widget, six languages (D051), accessibility, analytics (D051), feedback | External testers use it. Spec §14 B checks pass |
-| C. App Store | Review notes, privacy policy, privacy labels, support, store page, supporter purchase, landing page (D051) | The app is approved and published |
+| C. App Store | Review notes, privacy policy, privacy labels, support, store page, landing page (D051). The supporter purchase was removed (D099) | The app is approved and published |
 
 Additions from research (D006):
 
@@ -40,6 +40,6 @@ Additions from research (D006):
 | Read-only import of medication names from Apple Health (D022) | Users ask to bring their list from Health |
 | Optional end-to-end encrypted sync | Users with several devices ask for it |
 | More languages: zh-Hant, ja, de, fr, es | Each language passes a full UI, notification, and error review |
-| Paid convenience features | The free core has steady use. Never put the core behind a paywall |
+| Paid convenience features. A paid "Pro" tier comes in version 1.2 (D099) | The free core has steady use. Never put the core behind a paywall |
 
 Not planned: inventory, accounts, AI chat, health scores, community, ads.
