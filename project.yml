@@ -21,14 +21,12 @@ packages:
   MaruKit:
     path: Packages/MaruKit
 schemes:
-  # The Run action uses a StoreKit configuration for local tests of the tips (D053).
   Maru:
     build:
       targets:
         Maru: all
     run:
       config: Debug
-      storeKitConfiguration: Config/Maru.storekit
     test:
       config: Debug
     profile:

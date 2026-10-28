@@ -7,7 +7,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 | Step | State |
 |---|---|
 | Join the Apple Developer Program as an individual | Done on 2026-10-13 |
-| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open: the agreement has the state "Pending User Info" on 2026-10-13, and a tax form is missing. The maintainer does not register for GST for now, so the tips may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
+| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open: the agreement has the state "Pending User Info" on 2026-10-13, and a tax form is missing. The maintainer does not register for GST for now, so an in-app purchase may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
 | Give the agent the Team ID, and set the paid team in Xcode for each target, also the Watch app (D071) | Team ID `JBG4XL9NQK`. Xcode needs the Apple ID again |
 | Create an App Store Connect API key (App Manager). Enter it in a private prompt, never in chat | Done. The `asc` CLI uses it from the keychain |
 | Buy the landing page domain | Done: `maru.day` |
@@ -28,7 +28,6 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 | Feature | Spec | Acceptance |
 |---|---|---|
 | Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, Switzerland, and South Korea. Each event has the region setting of the iPhone as a two-letter code | §11, D051, D064 | T41–T45 |
-| Supporter tips with StoreKit 2 (D053). They may not be for sale in the Australian storefront (D064) | §14 C | T48 |
 | Optional photo with background removal | §5.2 | T30–T32 |
 | Six languages: en, zh-Hans, ja, es, de, ko | §13.2, D051 | T49 |
 | Privacy manifests and the export compliance key | §10 | Done in this change |
@@ -98,7 +97,7 @@ Health & Fitness is the primary category. On 2026-10-13, in the US, 8 of the 10 
 - EU: the trader status. Maru is declared as a non-trader, so the page shows no address or phone number.
 - EU, EEA, UK, and US: the medical device declaration, see below.
 - Age rating: no territory blocks the rating.
-- The tips: Australia can refuse them while the maintainer has no GST registration (D064). The Paid Apps agreement decides it.
+- In-app purchases: Australia can refuse them while the maintainer has no GST registration (D064). The Paid Apps agreement decides it. Version 1.1.0 has no in-app purchase (D099).
 - Not checked beyond Apple's own pages: local consumer or health law of each territory.
 
 ### Age rating
@@ -141,26 +140,11 @@ The label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`
 
 ### Tips
 
-Three consumable in-app purchases, in `metadata/in-app-purchases/tips.json`.
-
-| Product ID | English name | Price |
-|---|---|---|
-| `com.imhangli.maru.tip.small` | A Small Thanks | USD 0.99 |
-| `com.imhangli.maru.tip.medium` | A Warm Thanks | USD 2.99 |
-| `com.imhangli.maru.tip.large` | A Big Hug | USD 9.99 |
-
-- The other territories have Apple's equalized prices. The tips are available in the same 174 territories as the app.
-- Each has a name and a description in the eight store languages. The app shows the store name, so the app has no tip name of its own.
-- Wording: guideline 3.1.1 allows a tip to the developer through in-app purchase. The names thank, and no text says "donation" or "donate", because Apple keeps donations for approved nonprofits (guideline 3.2.1). Each description and the review note say that a tip unlocks nothing.
-- Each product has a review note with the path Settings, "Support Maru".
-- Each product has its review screenshot, and the public API gives the state "Ready to Submit".
-- The tips are not in the submission of 1.0.0. The version page offers no "In-App Purchases and Subscriptions" section, and the website still shows the three products as drafts. The pending Paid Apps agreement is the probable cause. No message of Apple names it.
-- Before a tip goes on sale, add a Tips section back to `PRIVACY.md` and the site FAQ. The app shows the purchase buttons as soon as a product loads, with no version check. Version 1.0.0 mentions no tips anywhere.
-- The first tip goes to review with a later app version, after the Paid Apps agreement is active. Until then the app loads no tip product, and Settings hides the section "Support Maru".
+The tips were removed (D099). A paid "Pro" tier comes in version 1.2.
 
 ### Notes for App Review
 
-The notes are in App Store Connect. They state: what Maru does, no account, the steps to see a reminder in two minutes, no medical advice and no dose calculation, where the tips are and that they unlock nothing, where the data stays, the usage statistics, the label scan, and the widgets.
+The notes are in App Store Connect. They state: what Maru does, no account, the steps to see a reminder in two minutes, no medical advice and no dose calculation, where the data stays, the usage statistics, the label scan, and the widgets. The notes of 1.0.0 also say where the tips are. Remove that line before the submission of 1.1.0 (D099).
 
 ### TestFlight
 
@@ -191,7 +175,7 @@ Maintainer decisions of 2026-10-15:
 Checks before the text goes to App Store Connect:
 
 - Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, and "What's New".
-- The text says "no paywall", and it does not say "no in-app purchases", because optional tips can come later. Version 1.1 has no in-app purchase. Add the tip answer back to the description when the first tip ships (see Tips).
+- The text says "no paywall", and it does not say "no in-app purchases", because a paid "Pro" tier comes in version 1.2 (D099). Version 1.1 has no in-app purchase.
 - The keyword field holds at most 100 bytes in en, es, and de. The zh-Hans, ja, and ko fields hold at most 100 characters, as in 1.0.0, and they are more than 100 bytes. Apple states the limit as 100 bytes. App Store Connect accepted the 1.0.0 values. Check the CJK fields when you push them.
 - A native speaker has not read the text for zh-Hans, ja, ko, es, and de.
 - The site privacy pages and the FAQ still show the text of 1.0. A maintainer changes them with the release.
