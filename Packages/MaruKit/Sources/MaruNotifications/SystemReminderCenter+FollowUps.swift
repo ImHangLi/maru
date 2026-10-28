@@ -4,7 +4,7 @@ import UserNotifications
 
 extension SystemReminderCenter: FollowUpCenter {
     public func add(_ request: FollowUpRequest) async throws {
-        try await Self.submit(UNNotificationRequest(request))
+        try await Self.submit(UNNotificationRequest(request, sound: sound()))
     }
 
     public func delivered() async -> [PendingReminder] {
@@ -23,12 +23,13 @@ extension SystemReminderCenter: FollowUpCenter {
 extension UNNotificationRequest {
     /// A one-time interval request to the exact fire instant, measured from now (the time of the refresh).
     /// The text is fixed here, in the language of now (spec 8.2, D029).
-    convenience init(_ request: FollowUpRequest, locale: Locale = .current) {
+    convenience init(_ request: FollowUpRequest, locale: Locale = .current, sound: String? = nil) {
         self.init(
             identifier: request.identifier,
             // The follow-ups of one slot time show as one group in Notification Center (D039).
             content: UNMutableNotificationContent.reminder(
-                request.content, userInfo: request.userInfo, threadIdentifier: request.threadIdentifier, locale: locale
+                request.content, userInfo: request.userInfo, threadIdentifier: request.threadIdentifier, locale: locale,
+                sound: sound
             ),
             // The interval must be positive. The plan has only future instants, so this changes a few milliseconds at most.
             trigger: UNTimeIntervalNotificationTrigger(timeInterval: max(1, request.fireDate.timeIntervalSinceNow), repeats: false)

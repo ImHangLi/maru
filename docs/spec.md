@@ -475,7 +475,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 | setting_changed | “再次提醒”次数与间隔枚举（设置页“所有项目”，D085）、是否开启全部项目的闹钟、是否在提醒中显示名称、App 颜色枚举 | 其他设置值；分析开关关闭后不再发送 |
 | data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
-| paywall_shown | `source`: `first_value`, `day7_card`, `feature`, or `settings` (D107) | 项目名称、剂量、时间、ItemID |
+| paywall_shown | `source`: `first_value`, `day7_card`, `feature`, `settings`, `icons`, or `sounds` (D107, D112) | 项目名称、剂量、时间、ItemID |
 | purchase_result | `result`: `purchased`, `cancelled`, `pending`, `failed`, or `restored`. `plan`: `yearly` or `lifetime` (D107) | Apple 账号、原始交易收据、价格、金融身份 |
 
 记录动作精确时间只在本地健康库。每日使用摘要在下一次可运行时合并发送；不为上传摘要唤醒用户，不依赖后台保证送达。没有摘要不代表没有服用。分析同意日期不同于真实首次安装日期，报表不得混用。
