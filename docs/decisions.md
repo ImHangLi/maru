@@ -1963,7 +1963,19 @@ Onboarding (changes D103). Each rule below is true in code:
 
 Not verified: no build of the app on this Mac, and nobody saw the pages on a display. CI builds the app.
 
-## D105 · 2026-10-28 · Maru runs on iPhone Duo with its current layout
+## D105 · 2026-10-28 · An "Appearance" setting
+
+Maintainer decision.
+
+- Settings, section "Display", has the menu "Appearance" after "Color Header", with "System", "Light", and "Dark". The default is "System".
+- The choice is in `UserDefaults.standard`, with the key `display.appearance`, beside the app color (D014). No value means "System".
+- The app root applies it with `preferredColorScheme`. "System" gives `nil`, so the app follows the device. Every window, sheet, alert, and the onboarding follow the choice.
+- The widgets and the Watch app always follow the system. The backup file does not carry the choice, as it does not carry "Color Header".
+- The setting has no preview and no own page.
+
+Not verified: no build of the app on this Mac, and nobody saw the menu on a display. CI builds the app.
+
+## D106 · 2026-10-28 · Maru runs on iPhone Duo with its current layout
 
 Maintainer request: support iPhone Duo simply, with no special layout. Agent decision on the details.
 

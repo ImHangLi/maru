@@ -11,6 +11,7 @@ struct SettingsView: View {
     @Environment(\.openURL) private var openURL
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     @AppStorage(DisplaySetting.headerWash) private var headerWash = true
+    @AppStorage(DisplaySetting.appearance) private var appearance = AppAppearance.system
     @State private var showsNames = true
     @State private var sharesStatistics = false
 
@@ -43,6 +44,12 @@ struct SettingsView: View {
                     .tint(Color.primary)
                     // The wash of the app color behind the title, as in Apple Health (D100).
                     Toggle("Color Header", isOn: $headerWash)
+                    // The system look, or always light or dark (D105).
+                    Picker("Appearance", selection: $appearance) {
+                        ForEach(AppAppearance.allCases, id: \.self) { Text($0.title).tag($0) }
+                    }
+                    .pickerStyle(.menu)
+                    .tint(Color.primary)
                     // iOS sets the app language on the Settings page of Maru (D097).
                     Button {
                         if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }

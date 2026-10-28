@@ -9,6 +9,7 @@ struct MaruApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @State private var model: AppModel
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
+    @AppStorage(DisplaySetting.appearance) private var appearance = AppAppearance.system
     private let tapDelegate: ReminderTapDelegate
 
     init() {
@@ -52,6 +53,8 @@ struct MaruApp: App {
                 .environment(model)
                 // The user picks the app color in settings. Pink is the default (D025).
                 .tint(appColor.tint)
+                // At the root, so every sheet and the onboarding follow it. `nil` is the system look (D105).
+                .preferredColorScheme(appearance.colorScheme)
                 .onOpenURL { model.openWidgetLink($0) }
                 .onChange(of: appColor) { _, color in
                     AppGroup.appColor = color
