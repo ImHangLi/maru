@@ -452,8 +452,6 @@ Seven new strings, and three from the first D115 round. No native speaker read t
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| Dose on Lock Screen | 锁定屏幕显示服用 | ロック画面で服用 | Dosis en pantalla bloqueada | Dosis auf dem Sperrbildschirm | 잠금 화면에 복용 |
-| Colors, Icons, Sounds | 颜色、图标、声音 | カラー、アイコン、音 | Colores, iconos, sonidos | Farben, Symbole, Töne | 색상, 아이콘, 소리 |
 | Try It Free | 免费试用 | 無料で試す | Probar gratis | Gratis testen | 무료로 시작하기 |
 | Free for %lld days, then %@ per year. Renews until you cancel. | 免费 %1$lld 天，之后每年 %2$@。取消前会自动续订。 | %1$lld日間無料、その後は年額%2$@。キャンセルするまで自動更新されます。 | Gratis durante %1$lld días, luego %2$@ al año. Se renueva hasta que lo canceles. | %1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich, bis du kündigst. | %1$lld일 무료, 이후 연 %2$@. 취소할 때까지 갱신돼요. |
 | %@ per year. Renews until you cancel. | 每年 %@。取消前会自动续订。 | 年額%@。キャンセルするまで自動更新されます。 | %@ al año. Se renueva hasta que lo canceles. | %@ pro Jahr. Verlängert sich, bis du kündigst. | 연 %@. 취소할 때까지 갱신돼요. |
@@ -482,8 +480,6 @@ Eight new strings. "Try It Free", "Continue Free", "No subscription", "per year"
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| See your next dose without opening Maru. | 无需打开 Maru，就能看到下一次服药。 | Maruを開かなくても、次の服用がわかります。 | Mira tu próxima dosis sin abrir Maru. | Sieh deine nächste Dosis, ohne Maru zu öffnen. | Maru를 열지 않아도 다음 복용을 볼 수 있어요. |
-| Record a dose from your wrist. | 在手腕上就能记录服药。 | 手首から服用を記録できます。 | Registra una dosis desde tu muñeca. | Erfasse eine Einnahme am Handgelenk. | 손목에서 바로 복용을 기록해요. |
 | Pick your app color, icon, and reminder sound. | 选择应用颜色、图标和提醒声音。 | アプリのカラー、アイコン、通知音を選べます。 | Elige el color, el icono y el sonido de los recordatorios. | Wähle App-Farbe, Symbol und Erinnerungston. | 앱 색상, 아이콘, 알림 소리를 골라요. |
 | One time | 一次买断 | 1回のみ | Pago único | Einmalig | 한 번만 |
 | Cancel anytime | 可随时取消 | いつでもキャンセル可能 | Cancela cuando quieras | Jederzeit kündbar | 언제든 취소 가능 |
@@ -497,8 +493,6 @@ Four strings changed, and four left the catalog: "Maru is made by one independen
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| Choose your app color, icon, and sound. | 选择应用颜色、图标和声音。 | アプリのカラー、アイコン、音を選べます。 | Elige color, icono y sonido de la app. | Wähle App-Farbe, Symbol und Ton. | 앱 색상, 아이콘, 소리를 골라요. |
-| See your next dose without opening Maru. (de only) | | | | Dosis sehen, ohne Maru zu öffnen. | |
 | Free for %lld days, then %@ per year. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。可随时取消。 | %1$lld日間無料、その後は年額%2$@。いつでもキャンセル可能。 | %1$lld días gratis, luego %2$@ al año. Cancela cuando quieras. | %1$lld Tage gratis, dann %2$@ pro Jahr. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 언제든 취소 가능. |
 | %@ per year. Cancel anytime. | 每年 %@。可随时取消。 | 年額%@。いつでもキャンセル可能。 | %@ al año. Cancela cuando quieras. | %@ pro Jahr. Jederzeit kündbar. | 연 %@. 언제든 취소 가능. |
 
@@ -510,3 +504,16 @@ Two strings left the catalog ("One time" and "One payment. Yours to keep."). Two
 |---|---|---|---|---|---|
 | Pay once, keep forever | 一次付款，永久拥有 | 1回の支払いでずっと | Un pago, para siempre | Einmal zahlen, für immer | 한 번 결제로 평생 |
 | ≈ %@/month | 约 %@/月 | 月あたり約%@ | ≈ %@/mes | ≈ %@/Monat | 월 약 %@ |
+
+## Paywall benefit copy (D119, sixth round)
+
+Six strings replace six strings: "Dose on Lock Screen", "See your next dose without opening Maru.", "Apple Watch", "Record a dose from your wrist.", "Colors, Icons, Sounds", and "Choose your app color, icon, and sound." left the catalog. The English text went through two Codex reviews with five simulated personas (`~/Documents/Research/maru/paywall-redesign/copy-review/`). The translations are natural, not literal. No native speaker read them. The reviewer checks that each line fits one line on an iPhone 17e (checked in all six languages) and that the iPhone need in the second row reads as a plain fact. "Taken" in the second row uses the translation of the button "Taken".
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Right on your Lock Screen | 就在锁定屏幕上 | ロック画面にそのまま表示 | En tu pantalla bloqueada | Direkt auf dem Sperrbildschirm | 잠금 화면에 바로 표시 |
+| See dose and time without opening Maru. | 不用打开 Maru，就能看到下次服药时间。 | Maruを開かずに、服用と時刻がわかります。 | Ve la dosis y la hora sin abrir Maru. | Dosis und Zeit sehen, ohne Maru zu öffnen. | Maru를 열지 않아도 복용 시간을 볼 수 있어요. |
+| Record from your wrist | 在手腕上记录服药 | 手首から服用を記録 | Registra desde la muñeca | Am Handgelenk erfassen | 손목에서 바로 기록 |
+| Tap Taken on Apple Watch. Needs iPhone. | 手表上点“已服用”，需连接 iPhone。 | 「服用済み」をタップ。iPhoneが必要です。 | Toca Tomado en el reloj. Necesita iPhone. | Tippe auf Eingenommen. iPhone nötig. | Apple Watch에서 ‘복용함’ 탭. iPhone 필요. |
+| Make Maru yours | 打造你的 Maru | 自分らしいMaruに | Haz Maru tuya | Dein Maru, dein Stil | 나만의 Maru로 |
+| App colors, icons, and reminder sounds. | 应用颜色、图标和提醒声音。 | アプリのカラー、アイコン、リマインダーの音。 | Colores, iconos y sonidos de recordatorio. | App-Farben, Symbole und Erinnerungstöne. | 앱 색상, 아이콘, 미리 알림 소리. |

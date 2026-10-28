@@ -169,12 +169,15 @@ struct PaywallView: View {
     private var benefits: some View {
         VStack(alignment: .leading, spacing: 20) {
             BenefitRow(
-                symbol: "lock.iphone", title: "Dose on Lock Screen", detail: "See your next dose without opening Maru."
+                symbol: "lock.iphone", title: "Right on your Lock Screen",
+                detail: "See dose and time without opening Maru."
             )
-            BenefitRow(symbol: "applewatch", title: "Apple Watch", detail: "Record a dose from your wrist.")
             BenefitRow(
-                symbol: "paintpalette", title: "Colors, Icons, Sounds",
-                detail: "Choose your app color, icon, and sound."
+                symbol: "applewatch", title: "Record from your wrist",
+                detail: "Tap Taken on Apple Watch. Needs iPhone."
+            )
+            BenefitRow(
+                symbol: "paintpalette", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."
             )
         }
     }

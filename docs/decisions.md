@@ -2032,7 +2032,7 @@ Pro:
 Products (prices in App Store Connect, not in code):
 
 - `com.imhangli.maru.pro.yearly`: an auto-renewable subscription in the group "Maru Pro", about USD 9.99 per year, with a free trial of 7 days as the introductory offer.
-- `com.imhangli.maru.pro.lifetime`: a non-consumable, about USD 19.99.
+- `com.imhangli.maru.pro.lifetime`: a non-consumable, about USD 24.99 (amended on 2026-10-28 from USD 19.99, see D119, sixth round).
 - Family Sharing is on for both. Apple does not let a developer turn it off again. No monthly plan.
 - `Config/Maru.storekit` has both products for local tests. The Run action of the `Maru` scheme uses it (`project.yml`).
 
@@ -2454,7 +2454,7 @@ Evidence: captures (light, dark, zh-Hans, scrolled, an iPhone 17e, and "Accessib
 
 Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the long German and Spanish lines, the iPhone SE size, and the contrast of the gray lines on the wash with a tool.
 
-## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118, plan tiles changed in a fourth round below)
+## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118, plan tiles changed in a fourth round below, price and benefit copy changed in a sixth round below)
 
 Maintainer feedback on 2026-10-28 about the paywall of D118. This decision replaces the paywall of D118. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107. The thank-you and the first-value offer are as before.
 
@@ -2468,7 +2468,7 @@ What changed, and why:
 - Black text on white. The benefits start under the end of the picture fade, on the plain background. No dark text sits on the picture or on the fade.
 - No wash. The page background is the plain system background, white in light mode and the system dark color in dark mode. The tint wash is gone. The fade of the picture is longer (96 points under the headline) and eased (smootherstep), and it ends before the first benefit. The page also fades into the plain background above the purchase area.
 
-Fourth round, plan tiles (maintainer decision of 2026-10-28): the maintainer likes the page, and the two tiles felt "not exciting". The maintainer confirmed that Maru Pro has no monthly plan. It keeps the yearly plan ($9.99, 7-day free trial) and the lifetime plan ($19.99). Only the tiles changed, with true information:
+Fourth round, plan tiles (maintainer decision of 2026-10-28): the maintainer likes the page, and the two tiles felt "not exciting". The maintainer confirmed that Maru Pro has no monthly plan. It keeps the yearly plan ($9.99, 7-day free trial) and the lifetime plan ($19.99 then, $24.99 since the sixth round). Only the tiles changed, with true information:
 - Yearly tile: the name, the billed price, and a line "≈ $0.83/month". The number is the price of the StoreKit `Product` divided by 12, in its `priceFormatStyle`, and no code sets it. The free trial is a tag, "7 days free", on the top edge of the tile. It shows only when StoreKit says that the user can still get the trial (the rule of D107).
 - Lifetime tile: the name, the billed price, and "Pay once, keep forever".
 - The selected tile is filled with a smooth linear gradient, from the top leading corner to the bottom trailing corner, in the brand colors of `ProHero`: a pink a little darker than the tint (`#E01F4D`) and the deep crimson of the picture (`#73083D`). It has no image and no noise. The text is white. The pink end is darker than the tint, so white semibold text has a contrast of about 4.7 to 1. The other tile keeps the quiet gray fill and the normal text. The change animates for 0.25 seconds and does not animate with Reduce Motion. It looks the same in light and dark mode, because the colors are fixed. (First, the tile used the picture with a dark veil. The maintainer did not like the picture in the tile, so the fifth round replaced it with this gradient.)
@@ -2476,6 +2476,17 @@ Fourth round, plan tiles (maintainer decision of 2026-10-28): the maintainer lik
 - The price stays the largest text in each tile (App Review 3.1.2 and D107). The tag and the monthly line are smaller. There is no "Most popular", "Best value", "Save xx%", countdown, or strikethrough.
 - Strings: "One time" is gone, and so is "One payment. Yours to keep." (fifth round). "Pay once, keep forever" and "≈ %@/month" are new, in six languages. Every line of the tiles and the terms line fits one line at the default text size on an iPhone 17e and an iPhone 17 Pro in en, zh-Hans, de, es, ja, and ko (captures). Not verified: an accessibility text size with the new tiles, a real iPhone, VoiceOver, Reduce Motion, and the contrast of the white tag text on the tint with a tool.
 - Evidence: captures and `compare.png` (D119 next to the new tiles) are in `~/Documents/Research/maru/paywall-redesign/final-v3/`. The captures of the gradient tile (fifth round) are in `final-v4/`. A copy of the code in `/tmp` set the prices.
+
+Sixth round, price and benefit copy (maintainer decision of 2026-10-28). Only text and one price changed. No layout, StoreKit code, entitlement rule, or trigger changed.
+- The lifetime price is $24.99, not $19.99. The yearly plan stays $9.99 with a 7-day free trial, and there is no monthly plan. `Config/Maru.storekit` has the new lifetime price for local tests. The app has no price in code: every tile and terms line reads `Product.displayPrice` from StoreKit (`ProStore`). The product `com.imhangli.maru.pro.lifetime` does not exist in App Store Connect yet. Create it at USD 24.99 (`docs/release-plan.md`, section 7).
+- The three benefit rows have new plain copy (title / line), each on one line on an iPhone 17e:
+  - "Right on your Lock Screen" / "See dose and time without opening Maru."
+  - "Record from your wrist" / "Tap Taken on Apple Watch. Needs iPhone."
+  - "Make Maru yours" / "App colors, icons, and reminder sounds."
+- Why these words. The titles do not repeat the headline "Your next dose, at a glance." The first draft of the maintainer's proposal had three claims that are not true or too strong: "always in sight" (the Live Activity ends when the day is done, and the system ends it about 8 hours after the last open of Maru), "No unlocking" (the "Taken" button records after an unlock), and "Phone stays put" (the Watch asks the iPhone to write each record, so it needs the iPhone). Two Codex reviews with five simulated personas (a student with basic English, a busy parent, a 60-year-old on blood-pressure medicine, a fitness person, and a design-minded iPhone user) also found two idioms ("in sight", "stays put"), the unclear verb "Log it", and "your" three times in the third row. The final lines have none of these. The lines make no health claim and no promise of adherence (App Review 1.4.1). The reviews are in `~/Documents/Research/maru/paywall-redesign/copy-review/`.
+- A description fits one line at about 40 characters on an iPhone 17e. Captures showed that 43 and 44 characters wrap, so the lines have 39.
+- The six old strings left the catalog ("Dose on Lock Screen", "See your next dose without opening Maru.", "Apple Watch", "Record a dose from your wrist.", "Colors, Icons, Sounds", and "Choose your app color, icon, and sound."). The six new strings are in six languages (`docs/localization-review.md`). The settings rows, the card of Today, and the Watch app keep their own strings.
+- Evidence: captures on an iPhone 17 Pro (yearly and lifetime selected) and on an iPhone 17e (en, zh-Hans, de, ja, es, ko) are in `~/Documents/Research/maru/paywall-redesign/final-v5/`. A copy of the code in `/tmp` set the two prices. The real StoreKit path was not run. No native speaker read the translations.
 
 Fit: the first screen at the default text size on an iPhone 17 Pro and an iPhone 17e shows the headline, the three benefits, both prices, the terms line, the button, and the two links.
 

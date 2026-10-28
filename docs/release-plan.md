@@ -153,7 +153,7 @@ The code has the purchase, the paywall, and the entitlement. The maintainer does
 - [ ] Create the subscription group "Maru Pro", with a localized display name in the eight store languages.
 - [ ] In the group, create the auto-renewable subscription `com.imhangli.maru.pro.yearly`: duration 1 year, price about USD 9.99 with the price tiers of each storefront, a display name and a description in the eight store languages.
 - [ ] Add the introductory offer to the yearly plan: "Free", 1 week, in all storefronts.
-- [ ] Create the non-consumable `com.imhangli.maru.pro.lifetime`: price about USD 19.99, a display name and a description in the eight store languages.
+- [ ] Create the non-consumable `com.imhangli.maru.pro.lifetime`: price about USD 24.99, a display name and a description in the eight store languages.
 - [ ] Turn on Family Sharing for both products. It cannot be turned off later.
 - [ ] Add a review screenshot of the paywall and review notes for each product. The notes say where the paywall is (Settings, "Maru Pro") and that every free feature stays free.
 - [ ] Add both products to the version 1.2 submission. The first in-app purchase of an app must go to review with a new version.

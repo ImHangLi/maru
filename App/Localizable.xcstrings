@@ -2075,37 +2075,37 @@
         }
       }
     },
-    "Apple Watch" : {
-      "comment" : "Paywall of Maru Pro: a benefit row with the symbol of an Apple Watch. The product name, so keep it.",
+    "Record from your wrist" : {
+      "comment" : "Paywall of Maru Pro: the title of the benefit row with the symbol of an Apple Watch. Keep it to one short line.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Watch"
+            "value" : "Am Handgelenk erfassen"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Watch"
+            "value" : "Registra desde la muñeca"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Watch"
+            "value" : "手首から服用を記録"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Watch"
+            "value" : "손목에서 바로 기록"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Apple Watch"
+            "value" : "在手腕上记录服药"
           }
         }
       }
@@ -3125,37 +3125,37 @@
         }
       }
     },
-    "Colors, Icons, Sounds" : {
-      "comment" : "Paywall of Maru Pro: a benefit row with the symbol of a paint palette. Three things in a list: app colors, app icons, and reminder sounds.",
+    "Make Maru yours" : {
+      "comment" : "Paywall of Maru Pro: the title of the benefit row with the symbol of a paint palette. The user changes the app color, the app icon, and the reminder sound. Keep it to one short line.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Farben, Symbole, Töne"
+            "value" : "Dein Maru, dein Stil"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Colores, iconos, sonidos"
+            "value" : "Haz Maru tuya"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "カラー、アイコン、音"
+            "value" : "自分らしいMaruに"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "색상, 아이콘, 소리"
+            "value" : "나만의 Maru로"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "颜色、图标、声音"
+            "value" : "打造你的 Maru"
           }
         }
       }
@@ -4140,37 +4140,37 @@
         }
       }
     },
-    "Dose on Lock Screen" : {
-      "comment" : "Paywall of Maru Pro: a benefit row with the symbol of an iPhone with a lock. At most 4 words. Short label of the Live Activity \"Next Dose on Lock Screen\".",
+    "Right on your Lock Screen" : {
+      "comment" : "Paywall of Maru Pro: the title of the benefit row with the symbol of an iPhone with a lock. It is the Live Activity 'Next Dose on Lock Screen'. Keep it to one short line.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dosis auf dem Sperrbildschirm"
+            "value" : "Direkt auf dem Sperrbildschirm"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dosis en pantalla bloqueada"
+            "value" : "En tu pantalla bloqueada"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ロック画面で服用"
+            "value" : "ロック画面にそのまま表示"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "잠금 화면에 복용"
+            "value" : "잠금 화면에 바로 표시"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "锁定屏幕显示服用"
+            "value" : "就在锁定屏幕上"
           }
         }
       }
@@ -7602,37 +7602,37 @@
         }
       }
     },
-    "Choose your app color, icon, and sound." : {
-      "comment" : "Paywall of Maru Pro: one line under the benefit 'Colors, Icons, Sounds'.",
+    "App colors, icons, and reminder sounds." : {
+      "comment" : "Paywall of Maru Pro: one line under the benefit 'Make Maru yours'. Use the same words as the Settings rows for the color, the icon, and the reminder sound.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wähle App-Farbe, Symbol und Ton."
+            "value" : "App-Farben, Symbole und Erinnerungstöne."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Elige color, icono y sonido de la app."
+            "value" : "Colores, iconos y sonidos de recordatorio."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "アプリのカラー、アイコン、音を選べます。"
+            "value" : "アプリのカラー、アイコン、リマインダーの音。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "앱 색상, 아이콘, 소리를 골라요."
+            "value" : "앱 색상, 아이콘, 미리 알림 소리."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "选择应用颜色、图标和声音。"
+            "value" : "应用颜色、图标和提醒声音。"
           }
         }
       }
@@ -7812,37 +7812,37 @@
         }
       }
     },
-    "Record a dose from your wrist." : {
-      "comment" : "Paywall of Maru Pro: one line under the benefit 'Apple Watch'.",
+    "Tap Taken on Apple Watch. Needs iPhone." : {
+      "comment" : "Paywall of Maru Pro: one line under the benefit 'Record from your wrist'. 'Taken' is the name of the button on the Watch, so use the translation of the string 'Taken'. The Watch app asks the iPhone to write the record, so it needs the iPhone.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erfasse eine Einnahme am Handgelenk."
+            "value" : "Tippe auf Eingenommen. iPhone nötig."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Registra una dosis desde tu muñeca."
+            "value" : "Toca Tomado en el reloj. Necesita iPhone."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "手首から服用を記録できます。"
+            "value" : "「服用済み」をタップ。iPhoneが必要です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "손목에서 바로 복용을 기록해요."
+            "value" : "Apple Watch에서 ‘복용함’ 탭. iPhone 필요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在手腕上就能记录服药。"
+            "value" : "手表上点“已服用”，需连接 iPhone。"
           }
         }
       }
@@ -11417,37 +11417,37 @@
         }
       }
     },
-    "See your next dose without opening Maru." : {
-      "comment" : "Paywall of Maru Pro: one line under the benefit 'Dose on Lock Screen'. The Live Activity shows the next dose on the Lock Screen.",
+    "See dose and time without opening Maru." : {
+      "comment" : "Paywall of Maru Pro: one line under the benefit 'Right on your Lock Screen'. The Live Activity shows the next dose and its planned time on the Lock Screen, with no unlock.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Dosis sehen, ohne Maru zu öffnen."
+            "value" : "Dosis und Zeit sehen, ohne Maru zu öffnen."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mira tu próxima dosis sin abrir Maru."
+            "value" : "Ve la dosis y la hora sin abrir Maru."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maruを開かなくても、次の服用がわかります。"
+            "value" : "Maruを開かずに、服用と時刻がわかります。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru를 열지 않아도 다음 복용을 볼 수 있어요."
+            "value" : "Maru를 열지 않아도 복용 시간을 볼 수 있어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无需打开 Maru，就能看到下一次服药。"
+            "value" : "不用打开 Maru，就能看到下次服药时间。"
           }
         }
       }
