@@ -428,8 +428,8 @@ private struct BenefitRow: View {
 }
 
 /// One plan as a tile: the name, the price as the largest text (App Review 3.1.2), and one small line. The free trial of
-/// the yearly plan is a tag on the top edge, smaller than the price. The selected tile is filled with a gradient in the
-/// brand colors of the picture and has white text, with a thin ring outside it. The other tile is quiet.
+/// the yearly plan is a tag on the top edge, smaller than the price. Both tiles have the same fill and text colors. The
+/// selected tile has a thin ring in the tint outside it.
 private struct PlanTile: View {
     let title: LocalizedStringKey
     let price: String
@@ -439,10 +439,6 @@ private struct PlanTile: View {
     let select: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    /// The brand colors of the hero: its deep crimson and the tint pink. The pink end is a little darker than the tint,
-    /// so white semibold text keeps a contrast of about 4.7 to 1.
-    private static let pink = Color(red: 0.88, green: 0.12, blue: 0.30)
-    private static let crimson = Color(red: 0.45, green: 0.03, blue: 0.24)
     private static let cornerRadius: CGFloat = 16
     /// The selection ring: a thin line, drawn outside the tile with a small gap, like a system selection ring.
     private static let ringWidth: CGFloat = 1.5
@@ -456,30 +452,24 @@ private struct PlanTile: View {
                 // A tile with no note keeps the height of its neighbor.
                 (note ?? Text(verbatim: " "))
                     .font(.footnote)
-                    .foregroundStyle(isSelected ? AnyShapeStyle(.white.opacity(0.9)) : AnyShapeStyle(.secondary))
+                    .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
             }
-            .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
+            .foregroundStyle(.primary)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
             .background {
                 Color(.secondarySystemBackground)
-                    .overlay {
-                        LinearGradient(
-                            colors: [Self.pink, Self.crimson], startPoint: .topLeading, endPoint: .bottomTrailing
-                        )
-                        .opacity(isSelected ? 1 : 0)
-                    }
                     .clipShape(.rect(cornerRadius: Self.cornerRadius, style: .continuous))
             }
             // The ring lies outside the tile, so it never changes the size of the tile or moves the layout.
             .overlay {
                 let outset = Self.ringGap + Self.ringWidth
                 RoundedRectangle(cornerRadius: Self.cornerRadius + outset, style: .continuous)
-                    .strokeBorder(Self.pink, lineWidth: Self.ringWidth)
+                    .strokeBorder(.tint, lineWidth: Self.ringWidth)
                     .padding(-outset)
                     .opacity(isSelected ? 1 : 0)
             }
@@ -492,7 +482,7 @@ private struct PlanTile: View {
                         .padding(.horizontal, 10)
                         .padding(.vertical, 3)
                         .background(.tint, in: .capsule)
-                        // A ring in the page color separates the tag from the filled tile.
+                        // A ring in the page color separates the tag from the tile.
                         .overlay(Capsule().strokeBorder(Color(.systemBackground), lineWidth: 2))
                         .offset(y: -12)
                 }
