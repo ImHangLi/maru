@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, and D100 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, and D103 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -40,6 +40,15 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - The item detail has a section "Last 30 Days" under "Last 7 Days" (D091): "Taken: 26 of 30", "Skipped: 1", and "No record: 3" as plain text, and a row "All Records" that opens the full log of the item. There is no percent, no streak, and no score.
 - The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses as three labelled values with space between them and no separator: "Taken: 5", "Skipped: 1", "No record: 1". They stand one under the other when the row is too narrow (D068). An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
 - For a plan that counts days (every other day, every few days, or days on and off), "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036, D065).
+
+## First run
+
+A short onboarding and two tips, once each (D103). They ask nothing and request no permission.
+
+- The onboarding is a system sheet with three pages in a paged `TabView`, at the first read of a store with no item. Each page has an SF Symbol of 64 points in the tint, a title in bold title style, and one sentence in the secondary color, in the middle. The symbol hides at the three largest text sizes, and the page scrolls.
+- "Skip" is at the top right of every page. Under the pages: "Continue" on pages 1 and 2, and "Add Item" and "Later" on page 3. "Continue" and "Add Item" are large prominent buttons in the tint. "Later" is a borderless button. The page dots have the system background, so they show in light mode.
+- "Add Item" closes the sheet, then opens the add screen. A swipe down closes the sheet as "Skip" does.
+- The tips are TipKit popovers with the system look: the record circle of the first Today row, and the first tile of My Items. A tip waits while a sheet or an alert is up. No tip is an inline card on a page (D028).
 
 ## Today
 

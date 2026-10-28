@@ -1846,3 +1846,32 @@ Maintainer decision. The header wash of D021 returns as a switch. D024 removed i
 - No change for Reduce Transparency or Increase Contrast. The wash is opaque and has no blur, and the title contrast is above 7:1 in both modes.
 - No color picker for the wash and no setting for each page.
 
+
+## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips
+
+Maintainer decision for version 1.1, with agent detail. D101 and D102 are reserved for the branch `leon/warm-voice`, and the copy uses its voice.
+
+Onboarding:
+
+- A sheet with three pages shows once, at the first read of the store, and only when the store has no item, active or archived. An update from a build with items never shows it.
+- The flag is `onboarding.seen` in `UserDefaults.standard`, as the app color (D023), not in the health database. The first read sets it, also when the store has items. So a user who later deletes every item does not see the pages again. A backup does not carry it.
+- Pages: the promise ("Did I take it? Open Maru and you know."), privacy (no account, no ads, the data stays on the device), and a start page with "Add Item", which opens the existing add screen after the sheet closes, and "Later".
+- "Skip" is at the top of every page, as the maintainer asked. On the last page it does the same as "Later". A swipe down also closes the sheet. "Continue" under pages 1 and 2 moves to the next page, so a user who does not swipe, and VoiceOver, can go on.
+- A paged `TabView` with system fonts, SF Symbols in the app tint, and system buttons. Each page scrolls at the largest text sizes, and the symbol hides at the three largest sizes (D013). The button page change uses the layout motion, so with Reduce Motion it shows at once (D030). The privacy title has an iPad form (D072).
+- The onboarding asks nothing: no questionnaire, no age, no goals, and no sign-up (spec §1). It does not ask for the notification permission. The existing rule stays the only one: the reminder run of a confirmed save asks, when the plan has a reminder or an item with an alarm (spec §2.2, `ReminderEngine`, D089 N5).
+- The add screen stays one edit flow (spec §3 P03). The onboarding is not a part of it.
+
+First-use tips (TipKit, iOS 17):
+
+- "Record a Dose", on the record circle of the first row of Today: "Tap the circle when you take it. Tap it again to change or undo the record." A tap that records with the circle ends it.
+- "More for Each Item", on the first tile of My Items: "Touch and hold an item to edit, archive, or delete it." "Edit", "Archive…", or "Delete Item…" from a long press, on Today or on My Items, ends it.
+- Each tip shows once, as a popover, and the close button of the tip ends it too. TipKit keeps the state in its own store in the app container. It holds no item data.
+- A tip popover waits while a sheet, an alert, the onboarding, or a question that waits for the display is up (`tipsMayShow` in `RootView`). UIKit presents one of them at a time, and the first save with a time can bring the "Remind Again?" offer (D091) and the opt-in question (D078) at the moment that the first row comes.
+- The third candidate, a tip about the actions of a reminder on the Lock Screen, is not in the app. The actions are in the notification, so no view of the app is a fitting anchor, and an inline card on Today would be the notice card that D028 does not allow.
+- `Tips.configure` runs in a `.task` of the root view, after the first frame, so the launch path does not wait for it (spec §9).
+
+Debug: `-MaruFirstRun YES` clears the flag and the TipKit store at launch, for a check of both after they showed once. The onboarding still needs a store with no item.
+
+The new strings in zh-Hans, ja, es, de, and ko are a draft until a native speaker reads them (`docs/localization-review.md`). "Skip", "Add Item", and "Record a Dose" reuse their translations, with a wider translator comment.
+
+Not verified: no build of the app on this Mac, and nobody saw the pages or the tips on a display. CI builds the app.

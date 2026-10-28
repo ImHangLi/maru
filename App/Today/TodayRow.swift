@@ -1,5 +1,6 @@
 import MaruCore
 import SwiftUI
+import TipKit
 
 /// One row: the form icon, the name with a second line under it, and the record circle. The second line has
 /// the amount and the time that the user set, or the time of the record (D044).
@@ -15,6 +16,8 @@ struct TodayRow: View {
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
     let entry: TodaySnapshot.Entry
     let timeZone: TimeZone
+    /// The first row of the day has the record tip on its circle (D103).
+    var showsRecordTip = false
     @State private var showsCorrection = false
     @State private var showsTimeEditor = false
 
@@ -56,6 +59,7 @@ struct TodayRow: View {
             RecordButton(
                 entry: entry,
                 timeZone: timeZone,
+                showsRecordTip: showsRecordTip,
                 showsCorrection: $showsCorrection,
                 showsTimeEditor: $showsTimeEditor
             )
@@ -96,11 +100,17 @@ struct TodayRow: View {
             }
             Divider()
             Button("Details", systemImage: "info.circle") { model.today.path.append(entry.look.itemID) }
-            Button("Edit", systemImage: "pencil") { model.openEditor(for: entry.look.itemID) }
+            // An item action of the long press shows that the user knows it, so the tip of My Items does not come (D103).
+            Button("Edit", systemImage: "pencil") {
+                ItemMenuTip().invalidate(reason: .actionPerformed)
+                model.openEditor(for: entry.look.itemID)
+            }
             Button("Archive…", systemImage: "archivebox") {
+                ItemMenuTip().invalidate(reason: .actionPerformed)
                 model.askToEnd(.archive, itemID: entry.look.itemID, name: entry.look.name)
             }
             Button("Delete Item…", systemImage: "trash", role: .destructive) {
+                ItemMenuTip().invalidate(reason: .actionPerformed)
                 model.askToEnd(.delete, itemID: entry.look.itemID, name: entry.look.name)
             }
         }
@@ -148,8 +158,10 @@ fileprivate enum RecordLook {
 /// after the commit (spec 7.2).
 private struct RecordButton: View {
     @Environment(AppModel.self) private var model
+    @Environment(\.tipsMayShow) private var tipsMayShow
     let entry: TodaySnapshot.Entry
     let timeZone: TimeZone
+    let showsRecordTip: Bool
     /// The row owns these, so its context menu can open the same choices.
     @Binding var showsCorrection: Bool
     @Binding var showsTimeEditor: Bool
@@ -158,7 +170,9 @@ private struct RecordButton: View {
         let look = RecordLook(entry, model: model)
         Button {
             switch look {
-            case .open: model.record(entry)
+            case .open:
+                RecordTip().invalidate(reason: .actionPerformed)
+                model.record(entry)
             case .notSaved: model.retry(entry)
             case .taken, .skipped: showsCorrection = true
             }
@@ -166,6 +180,8 @@ private struct RecordButton: View {
             RecordSymbol(state: look.symbolState)
         }
         .buttonStyle(.pressScale)
+        // The tip waits while a sheet or an alert is on the display (D103).
+        .popoverTip(showsRecordTip && tipsMayShow ? RecordTip() : nil)
         .confirmationDialog(dialogTitle, isPresented: $showsCorrection, titleVisibility: .visible) {
             if entry.record.status == .taken {
                 Button("Change Time…") { showsTimeEditor = true }

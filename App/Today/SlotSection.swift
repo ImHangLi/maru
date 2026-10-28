@@ -6,10 +6,12 @@ import SwiftUI
 struct SlotSection: View {
     let group: TodaySnapshot.Group
     let timeZone: TimeZone
+    /// The row whose circle has the record tip (D103).
+    let recordTipEntry: TodaySnapshot.Entry.ID?
 
     var body: some View {
         Section {
-            ForEach(group.entries) { TodayRow(entry: $0, timeZone: timeZone) }
+            ForEach(group.entries) { TodayRow(entry: $0, timeZone: timeZone, showsRecordTip: $0.id == recordTipEntry) }
         } header: {
             SlotHeader(group: group)
         }

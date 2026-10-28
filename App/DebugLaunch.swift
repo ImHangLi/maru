@@ -16,6 +16,12 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruSampleRecords")
     }
 
+    /// `-MaruFirstRun YES`: show the onboarding and the first-use tips again, as after a new install (D103).
+    /// For a check of both on a device or a simulator that already showed them. The onboarding still needs a store with no item.
+    static var wantsFirstRun: Bool {
+        UserDefaults.standard.bool(forKey: "MaruFirstRun")
+    }
+
     /// `-MaruTap 8:00` or `-MaruTap 8:00+120`: after the first read, act as a tap on the reminder of that time of today,
     /// delivered on time or that many minutes late. The simulator cannot set the delivery date of a notification.
     static var tap: (time: WallClockTime, delay: Int)? {

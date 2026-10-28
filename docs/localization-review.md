@@ -212,6 +212,24 @@ The eight strings below are new in `Packages/MaruKit/Sources/MaruNotifications/R
 | Reminder not set | 没能设置提醒 | リマインダーを設定できませんでした | Recordatorio no programado | Erinnerung nicht gesetzt | 알림을 설정하지 못했습니다 |
 | This reminder no longer matches a dose of today. Open Maru to see your plan. | 这条提醒已不对应今天的任何一次服用。打开 Maru 查看你的计划。 | このリマインダーは、今日の記録と一致しなくなりました。Maruを開いて予定を確認してください。 | Este recordatorio ya no corresponde a una toma de hoy. Abre Maru para ver tu plan. | Diese Erinnerung passt nicht mehr zu einer Einnahme von heute. Öffne Maru, um deinen Plan zu sehen. | 이 알림은 더 이상 오늘의 복용과 맞지 않습니다. Maru를 열어 계획을 확인해 주세요. |
 
+## Onboarding and tips (D103)
+
+The eleven strings below are new in `App/Localizable.xcstrings`: the three onboarding pages, their buttons, and two tips. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101). "Stays on Your iPhone" also has an iPad form.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Did I take it? Open Maru and you know. | 我吃了没？打开 Maru 就知道。 | 飲んだっけ？Maruを開けばすぐわかります。 | ¿Me lo tomé? Abre Maru y lo sabrás. | Schon genommen? Öffne Maru, und du weißt es. | 먹었던가? Maru를 열면 바로 알 수 있어요. |
+| Maru reminds you on time, and one tap records each dose. | Maru 准时提醒你，点一下就能记下每次服用。 | Maruが時間どおりにお知らせ。タップひとつで毎回の服用を記録できます。 | Maru te avisa a tiempo, y con un toque registras cada dosis. | Maru erinnert dich pünktlich, und ein Tippen erfasst jede Dosis. | Maru가 제때 알려 드리고, 한 번 탭하면 복용이 기록돼요. |
+| Stays on Your iPhone | 只留在你的 iPhone 上 | iPhoneの中だけに | Se queda en tu iPhone | Bleibt auf deinem iPhone | iPhone에만 남아요 |
+| There’s no account to make and no ads. What you take is yours alone. | 不用注册账户，也没有广告。你服用的内容只属于你。 | アカウント登録も広告もありません。何を飲んでいるかは、あなただけのものです。 | No hay cuenta que crear ni anuncios. Lo que tomas es solo tuyo. | Kein Konto, keine Werbung. Was du nimmst, bleibt deine Sache. | 계정을 만들 필요도, 광고도 없어요. 무엇을 복용하는지는 나만 알아요. |
+| Ready When You Are | 准备好了就开始吧 | 準備ができたら、はじめましょう | Empezamos cuando quieras | Los geht’s, wenn du so weit bist | 준비되면 시작해요 |
+| Add a supplement or medication. You choose the time, and Maru reminds you. | 添加一种保健品或药物。时间由你来定，Maru 按时提醒你。 | サプリメントや薬を追加しましょう。時間はあなたが決めて、Maruがお知らせします。 | Añade un suplemento o un medicamento. Tú eliges la hora, y Maru te avisa. | Füge ein Supplement oder Medikament hinzu. Du wählst die Zeit, und Maru erinnert dich. | 영양제나 의약품을 추가해 보세요. 시간은 직접 정하고, 알림은 Maru가 드려요. |
+| Continue | 继续 | 続ける | Continuar | Weiter | 계속 |
+| Later | 以后再说 | あとで | Más tarde | Später | 나중에 |
+| Tap the circle when you take it. Tap it again to change or undo the record. | 服用后点一下圆圈。再点一次可以修改或撤销记录。 | 飲んだら丸をタップ。もう一度タップすると、記録を変更・取り消しできます。 | Toca el círculo cuando lo tomes. Tócalo otra vez para cambiar o deshacer el registro. | Tippe auf den Kreis, wenn du es nimmst. Tippe erneut, um den Eintrag zu ändern oder zurückzunehmen. | 복용하면 동그라미를 탭하세요. 다시 탭하면 기록을 바꾸거나 취소할 수 있어요. |
+| More for Each Item | 每个药品的更多操作 | 項目ごとの操作 | Más opciones para cada elemento | Mehr für jeden Eintrag | 항목별 더 보기 |
+| Touch and hold an item to edit, archive, or delete it. | 按住一个药品，即可编辑、归档或删除。 | 項目を長押しすると、編集・アーカイブ・削除ができます。 | Mantén pulsado un elemento para editarlo, archivarlo o eliminarlo. | Halte einen Eintrag gedrückt, um ihn zu bearbeiten, zu archivieren oder zu löschen. | 항목을 길게 누르면 편집, 보관, 삭제할 수 있어요. |
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.

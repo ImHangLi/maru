@@ -18,6 +18,11 @@ struct RootView: View {
     /// The one-time offer of "Remind Again" after the first save with a time (D091). The item is a copy, so the alert keeps it.
     @State private var shownOffer: ItemID?
     @State private var showsOffer = false
+    /// The first-run onboarding (D103). The flag is set at the first read of the store, also when it has items.
+    @AppStorage(Onboarding.seenKey) private var onboardingSeen = false
+    @State private var showsOnboarding = false
+    /// The user chose "Add Item" on the last page. The edit screen opens after the onboarding sheet closes.
+    @State private var addsAfterOnboarding = false
 
     var body: some View {
         @Bindable var model = model
@@ -40,7 +45,21 @@ struct RootView: View {
                     if isOpen { editorIsUp = true }
                 }
                 .sheet(isPresented: $model.settings.isPresented) { SettingsView() }
+                // A swipe down closes it as "Skip" does.
+                .sheet(isPresented: $showsOnboarding, onDismiss: onboardingDidClose) {
+                    OnboardingView { addsItem in
+                        addsAfterOnboarding = addsItem
+                        showsOnboarding = false
+                    }
+                }
+                .environment(\.tipsMayShow, tipsMayShow)
             }
+        }
+        // Only a store with no item, archived or not, shows the onboarding. An update with items never sees it (D103).
+        .onChange(of: model.content, initial: true) { _, content in
+            guard !onboardingSeen, case let .loaded(snapshot) = content else { return }
+            onboardingSeen = true
+            if snapshot.list.isEmpty && snapshot.archived.isEmpty { showsOnboarding = true }
         }
         // The storage problem page removes the tabs and their sheet, so `onDismiss` can not run.
         // Without the sheet, the edit screen is not on the display.
@@ -138,6 +157,19 @@ struct RootView: View {
             showsAlert = true
             model.reminderAlertDidShow(alert.id)
         }
+    }
+
+    private func onboardingDidClose() {
+        guard addsAfterOnboarding else { return }
+        addsAfterOnboarding = false
+        model.openEditor(for: nil)
+    }
+
+    /// A tip popover waits until no sheet, alert, or question is on the display or waits for it (D103).
+    private var tipsMayShow: Bool {
+        !showsOnboarding && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
+            && !model.analyticsNotice && model.remindAgainOffer == nil && model.reminderAlerts.isEmpty
+            && !model.settings.isPresented && !model.endFailed && model.today.lockedTap == nil
     }
 
     /// The oldest result that waits, when the display is free for its alert.
