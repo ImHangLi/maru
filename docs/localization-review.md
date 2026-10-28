@@ -247,6 +247,17 @@ The eight strings below are new in `App/Localizable.xcstrings`: the three onboar
 | Continue | 继续 | 続ける | Continuar | Weiter | 계속 |
 | Later | 以后再说 | あとで | Más tarde | Später | 나중에 |
 
+## Appearance (D105)
+
+The four strings below are new in `App/Localizable.xcstrings`: the menu "Appearance" in Settings and its three choices. No native speaker read them. The reviewer checks that each word matches the word of the iOS Settings page "Display & Brightness" in that language.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Appearance | 外观 | 外観モード | Apariencia | Darstellung | 화면 모드 |
+| System | 跟随系统 | システム | Sistema | System | 시스템 |
+| Light | 浅色 | ライト | Claro | Hell | 라이트 |
+| Dark | 深色 | ダーク | Oscuro | Dunkel | 다크 |
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.
