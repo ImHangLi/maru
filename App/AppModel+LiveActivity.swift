@@ -27,6 +27,44 @@ enum NextDoseChange: Sendable {
     case show(NextDoseAttributes.ContentState, staleDate: Date, canStart: Bool)
     /// "Taken" did not get a confirmed commit.
     case notConfirmed
+    /// "Taken" had an unknown or older token. The activity asks to open Maru.
+    case expire
+}
+
+/// The doses of the activity, on the device (D110). The content of the activity holds only the token, because
+/// ActivityKit limits it to 4 KB. A new set of doses, schedule versions, or restore epoch gets a new token, so an older
+/// "Taken" records nothing. It holds no name and no amount.
+struct NextDoseSlot: Codable, Equatable {
+    static let key = "liveActivity.nextDose.slot"
+
+    var token: String
+    var occurrenceIDs: [UUID]
+    var scheduleVersionIDs: [UUID]
+    var epoch: Int
+
+    static var stored: NextDoseSlot? {
+        UserDefaults.standard.data(forKey: key).flatMap { try? JSONDecoder().decode(NextDoseSlot.self, from: $0) }
+    }
+
+    /// Keeps the doses, and returns their token. The same doses keep their token, so the content does not change.
+    static func store(occurrenceIDs: [UUID], scheduleVersionIDs: [UUID], epoch: Int) -> String {
+        if let slot = stored, slot.occurrenceIDs == occurrenceIDs, slot.scheduleVersionIDs == scheduleVersionIDs,
+           slot.epoch == epoch {
+            return slot.token
+        }
+        let slot = NextDoseSlot(
+            token: String(UUID().uuidString.prefix(8)),
+            occurrenceIDs: occurrenceIDs,
+            scheduleVersionIDs: scheduleVersionIDs,
+            epoch: epoch
+        )
+        UserDefaults.standard.set(try? JSONEncoder().encode(slot), forKey: key)
+        return slot.token
+    }
+
+    static func clear() {
+        UserDefaults.standard.removeObject(forKey: key)
+    }
 }
 
 extension AppModel {
@@ -112,30 +150,56 @@ extension AppModel {
         let doses = open.filter { Self.plannedInstant($0.entry) == plannedAt }
         // A restore that runs, or that ended during the read, gives the next read.
         guard let epoch = await store.restoreEpoch(), epoch % 2 == 0, generation == dataGeneration else { return nil }
-        let isOverdue = plannedAt <= now
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = timeZone
         let endOfDay = calendar.date(byAdding: .day, value: 1, to: calendar.startOfDay(for: now)) ?? now
+        let token = NextDoseSlot.store(
+            occurrenceIDs: doses.map(\.entry.id.rawValue),
+            scheduleVersionIDs: doses.map(\.entry.occurrence.scheduleVersionID.rawValue),
+            epoch: epoch
+        )
         let state = NextDoseAttributes.ContentState(
             part: doses[0].part.linkName,
             plannedAt: plannedAt,
             timeZone: timeZone.identifier,
-            names: showsNamesInReminders ? doses.map(\.entry.look.name) : [],
+            names: showsNamesInReminders ? Self.shownNames(doses.map(\.entry.look.name)) : [],
             count: doses.count,
-            occurrenceIDs: doses.map { $0.entry.id.rawValue.uuidString },
-            scheduleVersionIDs: doses.map { $0.entry.occurrence.scheduleVersionID.rawValue.uuidString },
-            epoch: epoch,
-            isOverdue: isOverdue
+            token: token,
+            expiresAt: endOfDay
         )
         // Never during the onboarding (D103). An app in the background can only update or end an activity.
         let canStart = onboarding == .hidden && UIApplication.shared.applicationState == .active
-        return .show(state, staleDate: isOverdue ? endOfDay : plannedAt, canStart: canStart)
+        return .show(state, staleDate: endOfDay, canStart: canStart)
+    }
+
+    /// The names that the activity shows: at most three, in a limit of bytes, so the content stays far below the
+    /// 4 KB of ActivityKit. A long name ends with "…". The activity shows the number of the other doses.
+    private static func shownNames(_ names: [String]) -> [String] {
+        var shown: [String] = []
+        var bytesLeft = 600
+        for name in names.prefix(3) {
+            var fitted = ""
+            for character in name {
+                // Three bytes stay free for the "…".
+                guard character.utf8.count + 3 <= bytesLeft else { break }
+                fitted.append(character)
+                bytesLeft -= character.utf8.count
+            }
+            guard !fitted.isEmpty else { break }
+            guard fitted.count == name.count else {
+                shown.append(fitted + "…")
+                break
+            }
+            shown.append(fitted)
+        }
+        return shown
     }
 
     /// The "Taken" button of the Live Activity (D110). The system runs it in this process, also in the background.
     ///
-    /// It records the doses that the activity shows, with the checks of the "Record Dose" widget (D048): the restore epoch
-    /// must be the one of the activity, and each dose must still be the same occurrence and schedule version, today, and open.
+    /// It records the doses of the token that the activity shows. An unknown or older token records nothing, and
+    /// the activity asks to open Maru. Then the checks of the "Record Dose" widget apply (D048): the restore epoch must
+    /// be the one of the token, and each dose must still be the same occurrence and schedule version, today, and open.
     /// The record transaction checks the active item and the plan of now (`requiresCurrentPlan`). Each event revises the
     /// record that this call read, so a second tap writes nothing (T18). A dose with a record already needs no event.
     ///
@@ -146,16 +210,18 @@ extension AppModel {
         // The generation comes before the first await, so a restore after this line refuses the record (D040).
         let generation = dataGeneration
         let now = Date()
+        guard let slot = NextDoseSlot.stored, slot.token == intent.token else {
+            return await enqueueNextDose { .expire }.value
+        }
         let epoch = await store.restoreEpoch()
         var events: [PendingEvent] = []
         var confirmed: [OccurrenceID: OccurrenceRecord] = [:]
-        var isCurrent = epoch == intent.epoch && intent.epoch % 2 == 0 && !intent.occurrenceIDs.isEmpty
-            && intent.occurrenceIDs.count == intent.scheduleVersionIDs.count
-        for (occurrenceText, versionText) in zip(intent.occurrenceIDs, intent.scheduleVersionIDs) where isCurrent {
-            guard let occurrenceID = UUID(uuidString: occurrenceText).map({ OccurrenceID($0) }),
-                  let versionID = UUID(uuidString: versionText).map({ ScheduleVersionID($0) }),
-                  let target = try? await store.widgetTarget(of: occurrenceID, scheduleVersionID: versionID, at: now)
-            else {
+        var isCurrent = epoch == slot.epoch && slot.epoch % 2 == 0 && !slot.occurrenceIDs.isEmpty
+            && slot.occurrenceIDs.count == slot.scheduleVersionIDs.count
+        for (occurrenceID, versionID) in zip(slot.occurrenceIDs, slot.scheduleVersionIDs) where isCurrent {
+            guard let target = try? await store.widgetTarget(
+                of: OccurrenceID(occurrenceID), scheduleVersionID: ScheduleVersionID(versionID), at: now
+            ) else {
                 isCurrent = false
                 continue
             }
@@ -166,7 +232,7 @@ extension AppModel {
                     scheduleVersionID: occurrence.scheduleVersionID
                 )
                 event.requiresCurrentPlan = true
-                event.restoreEpoch = intent.epoch
+                event.restoreEpoch = slot.epoch
                 events.append(event)
                 confirmed[occurrence.id] = record
             case .alreadyTaken:
@@ -210,6 +276,7 @@ enum NextDoseActivity {
         let live = all.filter { $0.activityState == .active || $0.activityState == .stale }
         switch change {
         case .end:
+            NextDoseSlot.clear()
             for activity in all {
                 await activity.end(nil, dismissalPolicy: .immediate)
             }
@@ -218,6 +285,13 @@ enum NextDoseActivity {
                 var state = activity.content.state
                 state.isNotConfirmed = true
                 await activity.update(ActivityContent(state: state, staleDate: activity.content.staleDate))
+            }
+        case .expire:
+            let now = Date()
+            for activity in live {
+                var state = activity.content.state
+                state.expiresAt = now
+                await activity.update(ActivityContent(state: state, staleDate: now))
             }
         case let .show(state, staleDate, canStart):
             let now = Date()

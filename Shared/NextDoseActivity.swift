@@ -7,6 +7,9 @@ import os
 /// extension draws it. Maru has no server, so no push changes it: only the app process does.
 struct NextDoseAttributes: ActivityAttributes, Sendable {
     /// What the activity shows. It has the item names only when "Show Names in Reminders" is on (D029).
+    ///
+    /// ActivityKit limits the content to 4 KB, so the state holds a short token in place of the doses, and at most
+    /// three names in a limit of bytes. The app keeps the doses of the token on the device.
     struct ContentState: Codable, Hashable, Sendable {
         /// The part of the day of the doses, as its link name (`DayPart.linkName`).
         var part: String
@@ -14,16 +17,14 @@ struct NextDoseAttributes: ActivityAttributes, Sendable {
         var plannedAt: Date
         /// The identifier of the time zone that writes the planned time.
         var timeZone: String
-        /// The item names in the order of Today. Empty when the names are hidden.
+        /// The first item names in the order of Today. Empty when the names are hidden.
         var names: [String]
+        /// The number of doses. It can be more than the names.
         var count: Int
-        /// The doses that "Taken" records. Each occurrence has the schedule version at the same index.
-        var occurrenceIDs: [String]
-        var scheduleVersionIDs: [String]
-        /// The restore epoch of the data that the app read (D040).
-        var epoch: Int
-        /// The planned time was past at the update. The stale date is then the end of the day.
-        var isOverdue: Bool
+        /// The doses that "Taken" records. The app finds them, their schedule versions, and the restore epoch from it.
+        var token: String
+        /// The end of the day of the doses. It is also the stale date. After it, the activity asks to open Maru.
+        var expiresAt: Date
         /// "Taken" did not get a confirmed commit. The next update clears it.
         var isNotConfirmed = false
     }
@@ -37,7 +38,7 @@ struct NextDoseAttributes: ActivityAttributes, Sendable {
 ///
 /// The app and the widget extension both compile this type. A `LiveActivityIntent` runs in the app process, also in the
 /// background. There the model records the doses with the record transaction and its checks. The intent holds no
-/// health data: the IDs of the doses, their schedule versions, and the restore epoch.
+/// health data: only the token of the doses that the activity shows.
 struct TakeNextDoseIntent: LiveActivityIntent {
     static let title: LocalizedStringResource = "Record a Dose"
     /// Only the Live Activity runs it, so Shortcuts does not offer it.
@@ -46,20 +47,12 @@ struct TakeNextDoseIntent: LiveActivityIntent {
     static let authenticationPolicy = IntentAuthenticationPolicy.requiresAuthentication
 
     @Parameter(title: "Dose")
-    var occurrenceIDs: [String]
-
-    @Parameter(title: "Plan")
-    var scheduleVersionIDs: [String]
-
-    @Parameter(title: "Data")
-    var epoch: Int
+    var token: String
 
     init() {}
 
     init(_ state: NextDoseAttributes.ContentState) {
-        occurrenceIDs = state.occurrenceIDs
-        scheduleVersionIDs = state.scheduleVersionIDs
-        epoch = state.epoch
+        token = state.token
     }
 
     func perform() async throws -> some IntentResult {

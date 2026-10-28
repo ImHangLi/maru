@@ -6,9 +6,9 @@ import WidgetKit
 /// "Next Dose on Lock Screen", the Live Activity of Maru Pro (D110): the part of the day, the planned time with the time
 /// left, the item names or the number of doses, and "Taken". The app sets the content. This view only draws it.
 ///
-/// After the planned time, the stale date makes the system draw it again, and it says "Not recorded yet". A dose that was
-/// already past at the update gets the end of the day as its stale date. After it, the activity asks to open Maru, so no
-/// button records a dose of another day.
+/// The stale date is the end of the day of the dose. After it, the activity asks to open Maru and shows no name and no
+/// button, so no button records a dose of another day. Each draw compares the planned time with the time of the draw:
+/// after it, the activity says "Not recorded yet". Until the next draw, the time left stays at zero.
 struct NextDoseLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: NextDoseAttributes.self) { context in
@@ -44,7 +44,7 @@ struct NextDoseLiveActivity: Widget {
                         .frame(maxWidth: 56)
                 case .overdue, .notConfirmed:
                     Text(shown.time).foregroundStyle(shown.tint)
-                case .dayPassed:
+                case .expired:
                     EmptyView()
                 }
             } minimal: {
@@ -63,8 +63,8 @@ private struct NextDoseShown {
         case upcoming
         /// After the planned time, on the same day.
         case overdue
-        /// The dose was past at the update, and the day ended. The activity asks to open Maru.
-        case dayPassed
+        /// The day of the dose ended, or "Taken" had an older token. The activity asks to open Maru.
+        case expired
         /// "Taken" did not get a confirmed commit.
         case notConfirmed
     }
@@ -79,21 +79,27 @@ private struct NextDoseShown {
     init(_ context: ActivityViewContext<NextDoseAttributes>) {
         state = context.state
         part = DayPart(linkName: state.part)
-        if state.isNotConfirmed {
+        // The system draws the activity again at each update and at the stale date.
+        let now = Date()
+        if context.isStale || state.expiresAt <= now {
+            phase = .expired
+        } else if state.isNotConfirmed {
             phase = .notConfirmed
-        } else if state.isOverdue {
-            phase = context.isStale ? .dayPassed : .overdue
         } else {
-            phase = context.isStale ? .overdue : .upcoming
+            phase = state.plannedAt <= now ? .overdue : .upcoming
         }
         tint = AppGroup.appColor.tint
         countdown = min(context.attributes.startedAt, state.plannedAt)...state.plannedAt
         time = state.plannedAt.formatted(.rowTime(in: TimeZone(identifier: state.timeZone) ?? .current))
     }
 
-    /// The names, or the number of doses when "Show Names in Reminders" is off (D029).
+    /// The names, or the number of doses when "Show Names in Reminders" is off (D029). The state has at most three
+    /// names, so the list ends with the number of the other doses.
     var doses: Text {
-        state.names.isEmpty ? Text("\(state.count) doses") : Text(verbatim: state.names.formatted(.list(type: .and)))
+        guard !state.names.isEmpty else { return Text("\(state.count) doses") }
+        let more = state.count - state.names.count
+        let names = more > 0 ? state.names + [String(localized: "\(more) more")] : state.names
+        return Text(verbatim: names.formatted(.list(type: .and)))
     }
 }
 
@@ -131,7 +137,7 @@ private struct NextDoseStatus: View {
                 .fixedSize()
         case .overdue:
             Label("Not recorded yet", systemImage: "clock")
-        case .dayPassed, .notConfirmed:
+        case .expired, .notConfirmed:
             EmptyView()
         }
     }
@@ -143,7 +149,7 @@ private struct NextDoseBody: View {
 
     var body: some View {
         switch shown.phase {
-        case .dayPassed:
+        case .expired:
             Text("Open Maru to update.")
                 .font(.headline)
         case .notConfirmed:

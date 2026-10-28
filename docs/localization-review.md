@@ -374,6 +374,7 @@ The strings below are new. They are drafts. No native speaker read them. Check t
 | Not recorded yet | 还没记录 | まだ記録していません | Aún sin registrar | Noch nicht erfasst | 아직 기록 안 함 |
 | Couldn’t confirm the save. Open Maru to check. | 没能确认是否已保存。请打开 Maru 查看。 | 保存を確認できませんでした。Maruを開いて確認してください。 | No se pudo confirmar que se guardó. Abre Maru para revisarlo. | Speichern nicht bestätigt. Öffne Maru zum Prüfen. | 저장을 확인하지 못했어요. Maru를 열어 확인해 주세요. |
 | Records these doses as taken | 把这些服用记为已服用 | これらの服用を服用済みとして記録します | Registra estas dosis como tomadas | Erfasst diese Dosen als eingenommen | 이 복용들을 복용함으로 기록해요 |
+| %lld more (the end of the list "Vitamin D, Iron, Zinc, and 2 more") | 另外 %lld 项 | ほか%lld件 | %lld más | %lld weitere | 그 외 %lld개 |
 
 The button "Taken", "%lld doses", and "Open Maru to update." reuse the text of the widgets and of Siri.
 
