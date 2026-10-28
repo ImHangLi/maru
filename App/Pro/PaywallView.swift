@@ -4,7 +4,7 @@ import SwiftUI
 /// picture and one headline sit at the top and scroll away. The picture fades out before the benefits start, so all
 /// other text sits on the plain background. Under the picture come three benefits, each with a symbol, a title, and one
 /// line. The purchase area stays at the foot of the sheet while the page scrolls: two plan tiles, the terms of the
-/// selected plan, one capsule button, and one line with the two legal links (App Review 3.1.2). "Restore Purchases" and
+/// selected subscription (the lifetime plan has none), one capsule button, and one line with the two legal links (App Review 3.1.2). "Restore Purchases" and
 /// "Redeem Code" are in Settings (D119).
 ///
 /// The page has one left margin, system fonts with text styles, one accent (the app tint), and the plain system
@@ -190,6 +190,10 @@ struct PaywallView: View {
                     noticeText(notice).font(.footnote)
                 } else if let terms {
                     terms.font(.footnote).foregroundStyle(.secondary).minimumScaleFactor(0.9)
+                } else if plan == .lifetime {
+                    // The lifetime tile says "Pay once, keep forever", so no terms line repeats it. One blank line keeps
+                    // the button where it is.
+                    Text(verbatim: " ").font(.footnote).accessibilityHidden(true)
                 }
             }
             .multilineTextAlignment(.center)
@@ -243,7 +247,8 @@ struct PaywallView: View {
         }
     }
 
-    /// The terms of the selected plan, directly above the button, with its price and its period (App Review 3.1.2).
+    /// The terms of the selected subscription, directly above the button, with its price and its period (App Review
+    /// 3.1.2). The lifetime plan is no subscription, and its tile already says "Pay once, keep forever".
     private var terms: Text? {
         guard let selected = offer(plan) else { return nil }
         let price = selected.displayPrice
@@ -255,7 +260,7 @@ struct PaywallView: View {
                 Text("\(price) per year. Cancel anytime.")
             }
         case .lifetime:
-            Text("One payment. Yours to keep.")
+            nil
         }
     }
 
@@ -420,8 +425,8 @@ private struct BenefitRow: View {
 }
 
 /// One plan as a tile: the name, the price as the largest text (App Review 3.1.2), and one small line. The free trial of
-/// the yearly plan is a tag on the top edge, smaller than the price. The selected tile is filled with the picture of the
-/// paywall and has white text. The other tile is quiet.
+/// the yearly plan is a tag on the top edge, smaller than the price. The selected tile is filled with a gradient in the
+/// brand colors of the picture and has white text. The other tile is quiet.
 private struct PlanTile: View {
     let title: LocalizedStringKey
     let price: String
@@ -451,14 +456,13 @@ private struct PlanTile: View {
             .background {
                 Color(.secondarySystemBackground)
                     .overlay {
-                        Image("ProHero")
-                            .resizable()
-                            .scaledToFill()
-                            // The same dark veil as the header, so white text keeps its contrast on the bright parts.
-                            .overlay(LinearGradient(
-                                colors: [.black.opacity(0.1), .black.opacity(0.45)], startPoint: .top, endPoint: .bottom
-                            ))
-                            .opacity(isSelected ? 1 : 0)
+                        // The brand colors of the hero: its deep crimson and the tint pink. The light end is a little
+                        // darker than the tint, so white semibold text keeps a contrast of about 4.7 to 1.
+                        LinearGradient(
+                            colors: [Color(red: 0.88, green: 0.12, blue: 0.30), Color(red: 0.45, green: 0.03, blue: 0.24)],
+                            startPoint: .topLeading, endPoint: .bottomTrailing
+                        )
+                        .opacity(isSelected ? 1 : 0)
                     }
                     .clipShape(.rect(cornerRadius: 16, style: .continuous))
             }

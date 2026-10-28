@@ -7462,41 +7462,6 @@
         }
       }
     },
-    "One payment. Yours to keep." : {
-      "comment" : "Paywall of Maru Pro: the terms line under the plans for the lifetime plan.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einmalige Zahlung. Gehört dir für immer."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Un solo pago. Es tuyo para siempre."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "1回のお支払いで、ずっと使えます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "한 번만 결제하면 계속 쓸 수 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一次付款，永久拥有。"
-          }
-        }
-      }
-    },
     "Pay once, keep forever" : {
       "comment" : "Paywall of Maru Pro: the small line under the price of the lifetime plan. It must fit one line in a tile of about 137 points.",
       "localizations" : {
