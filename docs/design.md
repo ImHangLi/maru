@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, and D105 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, and D109 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -79,7 +79,7 @@ The paywall is one sheet with system fonts and SF Symbols in the tint (D107).
 
 ## History
 
-A graph of squares at the top, and a section "Last 7 Days" in a system grouped list under it, with one row for each item (spec §3 P05, D032, D041, D054). Today opens it from the History button. A row opens the log of the item, and a tap on a day of the graph opens the log of the day.
+A graph of squares as the first section, and a section "Last 7 Days" in a system grouped list under it, with one row for each item (spec §3 P05, D032, D041, D054). Today opens it from the History button. A row opens the log of the item, and a tap on a day of the graph opens the log of the day.
 
 ### Graph
 
@@ -88,7 +88,7 @@ A graph of squares at the top, and a section "Last 7 Days" in a system grouped l
 - Steps: 13 weeks from the week of the first day. 26 weeks when 13 are full. 52 weeks when 26 are full, as two bands of 26 columns with the older band above. The step changes on the first day of a week that does not fit. After 52 weeks the graph shows the last 52 weeks.
 - The graph fills the card width. Side = (width − left labels) ÷ (columns + (columns − 1) × gap share). The gap share is 0.19 at 13 columns and 0.3 at 26 columns. The corner is 22% of the side, continuous.
 - Sizes on a screen of 402 points (graph width 338): 13 weeks, side 21.2 and gap 4.0. 26 weeks, side 10.1 and gap 3.0. On a screen of 320 points (graph width 256): 13 weeks, side 15.8 and gap 3.0. 26 weeks, side 7.6 and gap 2.3. 52 weeks uses the sizes of 26.
-- The card: the grouped card color, the corner of an inset grouped cell, margins of 16 points, and padding of 16 points. It stays above the list on the grouped background and does not scroll. Its height on 402 points is 222 points at 13 weeks, 138 at 26, and 256 at 52.
+- The card: the grouped card color, the corner of an inset grouped cell, margins of 16 points, and padding of 16 points. It is the first section of the list and scrolls with the page (D109). The list cell has no background and no padding of its own. Its height on 402 points is 222 points at 13 weeks, 138 at 26, and 256 at 52.
 - Levels by the share of the planned doses of the day that are taken. A skipped dose is not taken. An as-needed dose does not count.
 
 | Day | Look |
@@ -106,7 +106,7 @@ A graph of squares at the top, and a section "Last 7 Days" in a system grouped l
 - Month labels: the short month name above the column where the month starts, in the caption 2 style and the secondary color. When no month starts in the first three columns of a band, the first column gets its month. A label that would touch the one before it does not show. Weekday letters for Monday, Wednesday, and Friday at the left, only at 13 weeks and not at the accessibility text sizes.
 - The squares keep their size at every text size. The labels grow.
 - Selection: a ring of 1.5 points in the tint, with a gap of 1 point around the square. The date of the day, for example "Tue, Aug 18", in semibold caption 2 in the label row over its column. The title of the log of that day has the same format (D058). Month labels under it do not show. No dark border, no shadow, no magnifier, and no band behind the week.
-- A touch or a drag selects the nearest day. A day that is not here yet gives today. A light selection haptic comes when the selected day changes.
+- A tap selects the nearest day. A press of 0.2 seconds selects it too, and a drag after the press moves the selection. A finger that moves before 0.2 seconds scrolls the page (D109). A day that is not here yet gives today. A light selection haptic comes when the selected day changes.
 - At the end of the touch, the log of the selected day opens as a push (D054). The ring stays until the log closes.
 - VoiceOver reads the graph as one adjustable element: a summary of the days by level, or the selected day with "2 of 3 taken". Swipe up or down moves the day. The default action opens the log of the selected day.
 

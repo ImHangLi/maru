@@ -624,7 +624,7 @@ Not done, and why:
 
 Tests (D016): four new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A record and an archive with the generation from before a restore are refused and change nothing. A name with a comma, a quotation mark, and a line break stays one CSV field, and a text that starts like a formula gets an apostrophe.
 
-## D041 · 2026-10-11 · History graph (scroll of the timeline to a day replaced by D054, start of the graph replaced by D092)
+## D041 · 2026-10-11 · History graph (scroll of the timeline to a day replaced by D054, start of the graph replaced by D092, graph scrolls with the list by D109)
 
 Owner decision, with agent detail. It brings the passive history heatmap of D006 forward from milestone B. It changes spec 3 P05.
 
@@ -2078,3 +2078,28 @@ Risks:
 - The store text of 1.1 says "no paywall". Guideline 2.3.2 asks the store text to say what needs a purchase. Change the text of 1.2 before its submission.
 
 Not verified: no build of the app on this Mac, and nobody bought a plan. CI builds the app. The checks with the StoreKit configuration are in `docs/status.md`. App Store Connect has no product yet. `docs/release-plan.md` has the maintainer's steps.
+
+## D109 · 2026-10-28 · The History graph scrolls with the list (changes D041)
+
+Maintainer decision: the History graph must not stay at the top of the page. On the iPad and on the inner display of iPhone Duo, the fixed graph covers the rows under it. Agent decision on the gesture. It replaces the point of D041 that the graph stays above the list and does not scroll.
+
+- The graph is the first section of the History list, before the banner of an unsaved record and "Last 7 Days". It scrolls away with the page.
+- The card does not change: the grouped card color, the corner of an inset grouped cell, and padding of 16 points. The list cell has no background and no padding. The card has the side margins of the other sections of the list.
+- A vertical swipe that starts on the graph scrolls the page.
+- A tap on a square selects that day, and the log of the day opens at the end of the touch (D054).
+- A press of 0.2 seconds selects the day under the finger. A drag after the press moves the selection across the days, and the end of the touch opens the log of the day.
+- A finger that moves before 0.2 seconds scrolls the page, and the press does not start. While a press is active, the page does not scroll.
+- The haptic and VoiceOver of D041 and D054 do not change: a light selection haptic when the selected day changes, one adjustable element, and the default action that opens the log.
+- A press that the system cancels, for example for a call, clears the selection, and no log opens.
+
+The gesture: a UIKit tap recognizer and a UIKit long press recognizer, on a clear view over the canvas. In a list, UIKit recognizers share a touch with the scroll of the list by the same rules on iOS 17, 18, and 26. The long press fails when the finger moves before its time, so the list scrolls.
+
+Rejected:
+
+- SwiftUI `LongPressGesture` in sequence before `DragGesture`. It gives no point for the press, so a press that does not move has no day. SwiftUI gestures in a scrolling list also behave differently on iOS 17 and on iOS 18 and later, which is the reason of D041 for the fixed graph.
+- A drag only in the horizontal direction. A SwiftUI drag cannot fail on a vertical movement after it starts, so it can block the scroll. A diagonal drag across the weeks also needs both directions.
+- `UIGestureRecognizerRepresentable`. It needs iOS 18, and Maru supports iOS 17.
+
+No store change, no schema change, and no new test (D016).
+
+Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
