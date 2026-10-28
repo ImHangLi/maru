@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-10-16.
+Updated: 2026-10-28.
 
 Maru was developed in an older private repository. Issue numbers, pull request numbers, and commit IDs in `docs/decisions.md` and `docs/research/` refer to that older history. This repository starts from one clean commit.
 
@@ -10,6 +10,7 @@ Maru was developed in an older private repository. Issue numbers, pull request n
 - Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, optional follow-up reminders, and as-needed items.
 - The app has six languages (D059): English, zh-Hans, ja, es, de, and ko. The translation is not reviewed by a native speaker yet (`docs/localization-review.md`). Nobody saw it on a display.
 - Settings has a "Language" row (D097). It shows the current app language and opens the iOS Settings page of Maru, where iOS sets the language. Nobody saw it on a display.
+- Settings has a switch "Color Header" (D099), off by default. It shows a wash of the app color behind the title of Today and My Items, as in Apple Health. Nobody saw it on a display. It needs a check on a real iPhone: light and dark mode, each app color, the scroll and the pull-down, and the largest text sizes.
 - The design rules are in `docs/design.md`. Native SwiftUI components only (D026).
 - Maru does not integrate with Apple Health in V1 (D022).
 - An "every other day" schedule is in code (D036). Its reminders are dated requests for the next 7 due dates, and they need a check on a real iPhone.

@@ -2575,6 +2575,41 @@
         }
       }
     },
+    "Color Header" : {
+      "comment" : "Settings: a switch that shows a soft wash of the app color behind the page title of Today and My Items, as in Apple Health.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbige Kopfzeile"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cabecera de color"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カラーヘッダー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "색상 헤더"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "彩色页头"
+          }
+        }
+      }
+    },
     "Couldn’t Confirm the Restore" : {
       "comment" : "Settings, Your Data: the title of the alert when Maru could not confirm that the restored data is saved.",
       "localizations" : {
