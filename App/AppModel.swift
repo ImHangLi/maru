@@ -50,6 +50,8 @@ final class AppModel {
     var remindAgainOffer: ItemID?
     /// The paywall and the two offers of Maru Pro (D107). `AppModel+Pro.swift` has the rules.
     var proState = ProState()
+    /// The switch "Next Dose on Lock Screen" and its Live Activity (D110). `AppModel+LiveActivity.swift` has the rules.
+    var liveActivity = LiveActivityState()
     /// Counts the times that Maru asks for an App Store rating. The root view shows the system prompt (D102).
     var reviewRequest = 0
     /// The first-run onboarding (D103, D104). `AppModel+Onboarding.swift` has the rule.
@@ -204,6 +206,8 @@ final class AppModel {
                 // The card of Today needs a count of records. It is read once, and only when the card can show (D107).
                 readProCardRecords()
                 updateShortcutItems(snapshot.list)
+                // The Live Activity starts or follows Today while Maru is in front (D110).
+                updateNextDose()
             }
             // After the content shows, so Today never waits for the reminders (spec 8.1, 9). A Today that did not load, for
             // example for one damaged row, does not stop the run: the plans read their rows with their own checks (D088, D089).
@@ -284,6 +288,7 @@ final class AppModel {
         noteOpen()
         // The user can change the permission in the Settings app while Maru is away (T14).
         readNotificationPermission()
+        readLiveActivityPermission()
         // The first activation of a process has no time in the background. `refresh` already runs.
         guard let backgroundedAt else { return }
         self.backgroundedAt = nil

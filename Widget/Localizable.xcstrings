@@ -36,6 +36,196 @@
         }
       }
     },
+    "%lld doses" : {
+      "comment" : "Live Activity: the number of doses in place of the names when \"Show Names in Reminders\" is off (D110).",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Dosis"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Dosen"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dose"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld doses"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dosis"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dosis"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld件"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld개 항목"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld 项"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld more" : {
+      "comment" : "Live Activity: the last part of the list of names, for the doses after the first three names (D110). Example: \"Vitamin D, Iron, Zinc, and 2 more\".",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld weitere"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld weitere"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld más"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld más"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "ほか%lld件"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "그 외 %lld개"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "另外 %lld 项"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld left" : {
       "comment" : "Small Today widget: the number of open doses of the slot. Example: 2 left.",
       "localizations" : {
@@ -207,6 +397,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "全部完成"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm the save. Open Maru to check." : {
+      "comment" : "Live Activity: the text after a tap on Taken when the record did not confirm. The dose can be stored, so the text does not say that nothing was recorded (spec 7.2, D014, D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern nicht bestätigt. Öffne Maru zum Prüfen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar que se guardó. Abre Maru para revisarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存を確認できませんでした。Maruを開いて確認してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장을 확인하지 못했어요. Maru를 열어 확인해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没能确认是否已保存。请打开 Maru 查看。"
           }
         }
       }
@@ -561,6 +786,41 @@
         }
       }
     },
+    "Not recorded yet" : {
+      "comment" : "Live Activity: the state after the planned time when the dose has no record. Calm, no judgment (D101, D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch nicht erfasst"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún sin registrar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ記録していません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 기록 안 함"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没记录"
+          }
+        }
+      }
+    },
     "Nothing Planned Today" : {
       "comment" : "Widget: shown when no dose is planned today.",
       "localizations" : {
@@ -597,7 +857,7 @@
       }
     },
     "Open Maru to update." : {
-      "comment" : "Widget: shown when the widget cannot read the data, for example on a locked iPhone.",
+      "comment" : "Widget: shown when the widget cannot read the data, for example on a locked iPhone. Live Activity: shown when the day of the dose ended (D110).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -701,8 +961,43 @@
         }
       }
     },
+    "Records these doses as taken" : {
+      "comment" : "Live Activity: VoiceOver hint of the Taken button for more than one dose (D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasst diese Dosen als eingenommen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra estas dosis como tomadas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "これらの服用を服用済みとして記録します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 복용들을 복용함으로 기록해요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把这些服用记为已服用"
+          }
+        }
+      }
+    },
     "Records this dose as taken" : {
-      "comment" : "Widget: VoiceOver hint of a gray capsule.",
+      "comment" : "Widget: VoiceOver hint of a gray capsule. Live Activity: VoiceOver hint of the Taken button for one dose (D110).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -877,7 +1172,7 @@
       }
     },
     "Taken" : {
-      "comment" : "Widget: VoiceOver label of a filled capsule.",
+      "comment" : "Widget: VoiceOver label of a filled capsule. Live Activity: the button that records the shown doses (D110).",
       "localizations" : {
         "de" : {
           "stringUnit" : {

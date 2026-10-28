@@ -68,6 +68,9 @@ final class ProStore {
     @ObservationIgnored private var expiresAt: Date?
     /// Reads the entitlement again at `expiresAt`, also when the process stays alive with no network.
     @ObservationIgnored private var expiryCheck: Task<Void, Never>?
+    /// Runs after each read of StoreKit and each purchase, not after a read of the cache. A loss of Pro ends the Live
+    /// Activity (D110).
+    @ObservationIgnored var entitlementDidLoad: (@MainActor () -> Void)?
 
     private init() {
         let defaults = UserDefaults.standard
@@ -210,6 +213,7 @@ final class ProStore {
         expiresAt = expires
         UserDefaults.standard.set(expires, forKey: Self.expiresKey)
         scheduleExpiryCheck()
+        entitlementDidLoad?()
     }
 
     private func scheduleExpiryCheck() {

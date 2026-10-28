@@ -55,7 +55,7 @@ extension AppModel {
     /// open dose, else the first earlier part with an open dose (D048). A dose with an event that the store did not
     /// confirm is open (D014).
     func siriNext() async throws(StorageError) -> SiriNext {
-        let (day, timeZone) = try await siriToday()
+        let (day, timeZone) = try await freshToday()
         let open = day.groups.compactMap { group -> TodaySnapshot.Group? in
             let entries = group.entries.filter { !isDone($0) }
             return entries.isEmpty ? nil : TodaySnapshot.Group(part: group.part, entries: entries)
@@ -76,7 +76,7 @@ extension AppModel {
     /// did not confirm, or with a record transaction that runs, is left out: it goes again only from Today (D014).
     func siriDueDoses() async throws(StorageError) -> SiriDueDoses {
         let generation = dataGeneration
-        let (day, timeZone) = try await siriToday()
+        let (day, timeZone) = try await freshToday()
         let part = Self.clockPart(at: Date(), in: timeZone)
         let entries = day.groups.first { $0.part == part }?.entries.filter {
             $0.isOpen && today.pending[$0.id] == nil && !today.inFlight.contains($0.id)
@@ -109,8 +109,8 @@ extension AppModel {
     }
 
     /// A new read of today, with the confirmed record of each running transaction. A device time zone with no region
-    /// name gives no today (spec 2), so it is `unavailable`.
-    private func siriToday() async throws(StorageError) -> (TodaySnapshot, TimeZone) {
+    /// name gives no today (spec 2), so it is `unavailable`. Siri and the Live Activity (D110) use it.
+    func freshToday() async throws(StorageError) -> (day: TodaySnapshot, timeZone: TimeZone) {
         let now = Date()
         let generation = dataGeneration
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now),

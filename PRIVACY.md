@@ -86,6 +86,8 @@ Reminders are local notifications. iOS schedules and shows them on your device, 
 
 An alarm (iOS 26 and later, when you turn on "Alarm" for an item) also runs on your device, through Apple's AlarmKit, and does not go through a server. It shows the item names on the Lock Screen, unless you turn off "Show Names in Reminders" in Settings.
 
+Maru draws the Lock Screen activity of Maru Pro, "Next Dose on Lock Screen", only on your device. It hides the item names when "Show Names in Reminders" is off.
+
 ## Export and backup files
 
 Settings has "Export Records", "Share Medication List", "Share Summary…", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first four.
