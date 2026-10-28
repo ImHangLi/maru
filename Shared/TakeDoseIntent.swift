@@ -23,12 +23,18 @@ struct TakeDoseIntent: AppIntent {
     @Parameter(title: "Data")
     var epoch: Int
 
+    /// The instant of the widget read, as seconds since 2001-01-01 UTC. The store refuses the dose when its item changed its owner
+    /// after it (D123).
+    @Parameter(title: "Read")
+    var readAt: Double
+
     init() {}
 
-    init(occurrenceID: String, scheduleVersionID: String, epoch: Int) {
+    init(occurrenceID: String, scheduleVersionID: String, epoch: Int, readAt: Date) {
         self.occurrenceID = occurrenceID
         self.scheduleVersionID = scheduleVersionID
         self.epoch = epoch
+        self.readAt = readAt.timeIntervalSinceReferenceDate
     }
 
     func perform() async throws -> some IntentResult {

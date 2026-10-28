@@ -203,7 +203,8 @@ struct ItemEditorView: View {
 
     /// The amounts, times, and note that the draft does not have yet.
     private var candidates: SmartCompletion? {
-        completion?.open(
+        guard !session.context.people.contains(where: { $0.id.rawValue == draft.personID && $0.kind == .pet }) else { return nil }
+        return completion?.open(
             amount: draft.amount,
             times: draft.times.compactMap { try? WallClockTime(hour: $0.hour, minute: $0.minute) },
             hasNote: draft.note != .none

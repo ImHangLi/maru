@@ -74,7 +74,9 @@ struct ItemEntityQuery: EntityStringQuery {
     @MainActor
     private static func items() async throws -> [ItemEntity] {
         do {
-            return try await AppModel.shared.siriItems().map { ItemEntity(id: $0.id.rawValue, name: $0.name) }
+            return try await AppModel.shared.siriItems().map {
+                ItemEntity(id: $0.id.rawValue, name: $0.owner?.label($0.name) ?? $0.name)
+            }
         } catch {
             throw SiriProblem.unreadable
         }
@@ -141,18 +143,19 @@ struct LastDoseIntent: AppIntent {
             if showsNames { return .result(dialog: "Maru has no taken record for \(item.name) yet.") }
             return .result(dialog: "Maru has no taken record for this item yet.")
         }
+        let name = last.owner?.label(last.name) ?? last.name
         let time = last.takenAt.formatted(date: .omitted, time: .shortened)
         let calendar = Calendar.current
         if calendar.isDateInToday(last.takenAt) {
-            if showsNames { return .result(dialog: "Your last record for \(last.name): taken today at \(time).") }
+            if showsNames { return .result(dialog: "Your last record for \(name): taken today at \(time).") }
             return .result(dialog: "Your last record: taken today at \(time).")
         }
         if calendar.isDateInYesterday(last.takenAt) {
-            if showsNames { return .result(dialog: "Your last record for \(last.name): taken yesterday at \(time).") }
+            if showsNames { return .result(dialog: "Your last record for \(name): taken yesterday at \(time).") }
             return .result(dialog: "Your last record: taken yesterday at \(time).")
         }
         let date = last.takenAt.formatted(date: .abbreviated, time: .omitted)
-        if showsNames { return .result(dialog: "Your last record for \(last.name): taken on \(date) at \(time).") }
+        if showsNames { return .result(dialog: "Your last record for \(name): taken on \(date) at \(time).") }
         return .result(dialog: "Your last record: taken on \(date) at \(time).")
     }
 }
@@ -169,6 +172,8 @@ struct RecordDueDosesIntent: AppIntent {
         let due: SiriDueDoses
         do {
             due = try await model.siriDueDoses()
+        } catch SiriDueDosesError.severalMembers {
+            throw SiriProblem.severalMembers
         } catch {
             throw SiriProblem.unreadable
         }
@@ -199,9 +204,14 @@ enum SiriProblem: Error, CustomLocalizedStringResourceConvertible {
     /// The record transaction gave no commit. SQLite can commit before the flush fails, so the dose can be stored.
     /// After a storage failure, the same event waits on Today for a retry (D014).
     case notConfirmed
+    /// The Family has two or more active members. "Record my doses" would record across members, so Siri records nothing and
+    /// sends the user to Maru, where each row names its member (D123).
+    case severalMembers
 
     var localizedStringResource: LocalizedStringResource {
         switch self {
+        case .severalMembers: "Several people and pets use Maru, so Siri can’t record for them. Open Maru to record each dose."
+
         case .unreadable: "Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again."
         case .notConfirmed: "Maru couldn’t confirm the save. Open Maru to check your records."
         }

@@ -39,11 +39,12 @@ struct AsNeededCard: Equatable, Sendable {
     init() {}
 
     /// - Parameter items: Every item. An archived item and its doses do not show. The store keeps the doses.
-    init(_ day: AsNeededDay, items: [Item], on date: LocalDate) {
+    init(_ day: AsNeededDay, items: [Item], family: Family = Family(), on date: LocalDate) {
         self.date = date
         let looks = Dictionary(uniqueKeysWithValues: items.filter { !$0.isArchived }.map {
             ($0.id, TodaySnapshot.ItemLook(
-                itemID: $0.id, name: $0.name, form: $0.form, color: $0.color, imageReference: $0.imageReference
+                itemID: $0.id, personID: $0.personID, name: $0.name, form: $0.form, color: $0.color,
+                owner: family.owner(of: $0), imageReference: $0.imageReference
             ))
         })
         rows = day.items.compactMap { item in

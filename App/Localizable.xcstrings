@@ -1,6 +1,88 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Several people and pets use Maru, so Siri can’t record for them. Open Maru to record each dose." : {
+      "comment" : "Siri, \"Record my doses\": the answer when the Family has two or more people or pets. One confirmation must not record a dose for another member, so Siri records nothing (D123).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In Maru sind mehrere Personen und Tiere angelegt, daher kann Siri nicht für sie erfassen. Öffne Maru, um jede Einnahme zu erfassen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Several people and pets use Maru, so Siri can’t record for them. Open Maru to record each dose."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En Maru hay varias personas y mascotas, así que Siri no puede registrar por ellas. Abre Maru para registrar cada toma."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruに複数の人やペットがいるため、Siriでは記録できません。Maruを開いて1件ずつ記録してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru에 여러 사람과 반려동물이 있어서 Siri로는 기록할 수 없어요. Maru를 열어 각 복용을 기록해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 里有多位家人，Siri 无法替他们记录。请打开 Maru 逐条记录。"
+          }
+        }
+      }
+    },
+    "Me" : {
+      "comment" : "The word for the member of the Family who owns the device, in a dose name that names its owner. Example: “Me: Vitamin D3”.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Me"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我"
+          }
+        }
+      }
+    },
     "%@ %@" : {
       "comment" : "Edit screen: a reminder time on the device with its days, when the kept zone of a medication is on another day. Example: Sun 6:00 PM.",
       "localizations" : {
@@ -370,7 +452,7 @@
       }
     },
     "%@: %@" : {
-      "comment" : "The title of an alarm that names its items. The first placeholder is the reminder title, the second is the item names. Example: Time to take: Zinc and Vitamin D.",
+      "comment" : "Two uses with one format. 1) The title of an alarm that names its items: the first placeholder is the reminder title, the second is the item names. Example: Time to take: Zinc and Vitamin D. 2) A dose name with its owner when the Family has several members: the first placeholder is the member, the second is the item name. Example: Mochi: Methimazole.",
       "localizations" : {
         "de" : {
           "stringUnit" : {

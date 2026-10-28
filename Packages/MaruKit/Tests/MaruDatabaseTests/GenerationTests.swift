@@ -22,7 +22,7 @@ struct GenerationTests {
         timeZonePolicy: TimeZonePolicy = .fixed(Fixtures.shanghai)
     ) async throws -> (store: LocalStore, item: Item, schedule: Schedule, morning: ScheduleSlotID, evening: ScheduleSlotID) {
         let store = try LocalStore(directory: directory.url)
-        let item = try Item(category: .medication, name: "Metformin", form: .capsule, color: .pink)
+        let item = try Item(personID: store.meID, category: .medication, name: "Metformin", form: .capsule, color: .pink)
         try await store.save(item)
         let (schedule, morning, evening) = Fixtures.twiceDailySchedule(itemID: item.id, timeZonePolicy: timeZonePolicy)
         try await store.save(schedule)

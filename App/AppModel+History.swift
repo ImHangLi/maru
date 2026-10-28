@@ -182,7 +182,8 @@ extension AppModel {
         }
         history.looks = Dictionary(uniqueKeysWithValues: page.items.map {
             ($0.id, TodaySnapshot.ItemLook(
-                itemID: $0.id, name: $0.name, form: $0.form, color: $0.color, imageReference: $0.imageReference
+                itemID: $0.id, personID: $0.personID, name: $0.name, form: $0.form, color: $0.color,
+                imageReference: $0.imageReference
             ))
         })
         history.amounts = page.amounts

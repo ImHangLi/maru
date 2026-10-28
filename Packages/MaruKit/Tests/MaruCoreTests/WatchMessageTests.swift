@@ -12,7 +12,7 @@ struct WatchMessageTests {
         )
         let request = WatchRequest.record(
             dose.id, scheduleVersionID: dose.scheduleVersionID, action: .undo,
-            revision: dose.revision, intent: IntakeEventID()
+            revision: dose.revision, intent: IntakeEventID(), listedAt: dose.time
         )
         let reply = WatchReply(
             outcome: .recorded,

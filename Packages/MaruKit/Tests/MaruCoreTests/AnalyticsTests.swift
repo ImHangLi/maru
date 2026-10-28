@@ -16,6 +16,14 @@ struct AnalyticsTests {
         #expect(throws: AnalyticsEvent.Rejection.invalidValue(event: "core_error", field: "code")) {
             try AnalyticsEvent(name: "core_error", properties: ["code": .text("SQLITE_CORRUPT at /var/mobile/db")])
         }
+        for field in ["person_name", "person_id", "person_kind", "used_family_switcher"] {
+            #expect(throws: AnalyticsEvent.Rejection.unknownField(event: "daily_usage_summary", field: field)) {
+                try AnalyticsEvent(name: "daily_usage_summary", properties: [field: .text("private")])
+            }
+        }
+        for (size, bucket) in [(1, "1"), (2, "2"), (8, "3_plus")] {
+            #expect(AnalyticsEvent.dailyUsage(dayIndex: 0, .init(familySize: size)).properties["family_size"] == .text(bucket))
+        }
         // Each event that the app builds passes the same check.
         let built: [AnalyticsEvent] = [
             .setupStep(.editorOpened, mode: .new),
@@ -24,7 +32,7 @@ struct AnalyticsTests {
                 hasPhoto: true, nameSource: .scan, usedCompletion: true, isFirstItem: false, duration: 95
             )),
             .editorClosed(mode: .edit, hadChanges: true, duration: 400),
-            .dailyUsage(dayIndex: 4, AnalyticsEvent.UsageDay(used: Set(AnalyticsEvent.UsageFlag.allCases), opens: 9, activeItems: 3, hasWidget: true)),
+            .dailyUsage(dayIndex: 4, AnalyticsEvent.UsageDay(used: Set(AnalyticsEvent.UsageFlag.allCases), opens: 9, activeItems: 3, hasWidget: true, familySize: 3)),
             .dailyUsage(dayIndex: 5, AnalyticsEvent.UsageDay(used: [.reminderAction])),
             .coreError(.schedule, .tooMany),
             .notificationPermission(.quiet, previous: nil),
@@ -37,6 +45,7 @@ struct AnalyticsTests {
             .dataAction(.restore, .newerFile),
             .feedbackOpened,
             .paywallShown(.day7Card),
+            .paywallShown(.family),
             .purchaseResult(.purchased, plan: .lifetime),
             .purchaseResult(.restored, plan: nil),
         ]

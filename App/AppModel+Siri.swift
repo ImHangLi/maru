@@ -26,14 +26,22 @@ struct SiriDueDoses: Sendable {
     let entries: [TodaySnapshot.Entry]
     /// The generation of the data of the read (D040).
     let generation: Int
+    /// An instant before the read. The store refuses a dose whose item changed its owner after it (D123).
+    let readAt: Date
 
-    var names: [String] { entries.map(\.look.name) }
+    var names: [String] { entries.map(\.look.labelledName) }
+}
+
+/// Why `siriDueDoses` gives no doses.
+enum SiriDueDosesError: Error {
+    /// The Family has two or more active members (D123).
+    case severalMembers
 }
 
 extension AppModel {
     /// Siri offers the active items by name. The system reads them again only when an item or a name changes (D108).
     func updateShortcutItems(_ list: [ListEntry]) {
-        let names = Dictionary(uniqueKeysWithValues: list.map { ($0.id, $0.name) })
+        let names = Dictionary(uniqueKeysWithValues: list.map { ($0.id, $0.owner?.label($0.name) ?? $0.name) })
         guard names != shortcutItemNames else { return }
         shortcutItemNames = names
         MaruShortcuts.updateAppShortcutParameters()
@@ -41,7 +49,12 @@ extension AppModel {
 
     /// The active items, so Siri can pick one by name (D108). It reads no record.
     func siriItems() async throws(StorageError) -> [ListEntry] {
-        try await store.snapshot(at: Date(), deviceTimeZone: nil, generation: dataGeneration).list
+        let list = try await store.snapshot(at: Date(), deviceTimeZone: nil, generation: dataGeneration).list
+        return showsNamesInReminders ? list : list.map { entry in
+            var hidden = entry
+            hidden.owner = nil
+            return hidden
+        }
     }
 
     /// The newest taken dose of an active item (D108). It records nothing.
@@ -55,7 +68,7 @@ extension AppModel {
     /// open dose, else the first earlier part with an open dose (D048). A dose with an event that the store did not
     /// confirm is open (D014).
     func siriNext() async throws(StorageError) -> SiriNext {
-        let (day, timeZone) = try await freshToday()
+        let (day, timeZone, _) = try await freshToday()
         let open = day.groups.compactMap { group -> TodaySnapshot.Group? in
             let entries = group.entries.filter { !isDone($0) }
             return entries.isEmpty ? nil : TodaySnapshot.Group(part: group.part, entries: entries)
@@ -68,20 +81,27 @@ extension AppModel {
             part: group.part,
             time: group.entries.map { $0.occurrence.timeZone.resolve($0.occurrence.plannedTime, on: $0.occurrence.plannedDate).earliestInstant }.min()!,
             timeZone: timeZone,
-            doses: group.entries.map { ($0.look.name, $0.amount) }
+            doses: group.entries.map { ($0.look.labelledName, $0.amount) }
         ))
     }
 
     /// The open doses of the part of the day of the clock (D108). It records nothing. A dose with an event that the store
     /// did not confirm, or with a record transaction that runs, is left out: it goes again only from Today (D014).
-    func siriDueDoses() async throws(StorageError) -> SiriDueDoses {
+    ///
+    /// With two or more active members it throws `SiriDueDosesError.severalMembers`: one confirmation must not record a dose for
+    /// another member (D123). The Siri member parameter is a later step.
+    func siriDueDoses() async throws -> SiriDueDoses {
         let generation = dataGeneration
-        let (day, timeZone) = try await freshToday()
+        // Before the read, so an owner change during the read refuses the record (D123).
+        let readAt = Date()
+        let (day, timeZone, activeMembers) = try await freshToday()
+        // The members come from the read of the doses, after its items: a member that comes back during the read counts (D123).
+        guard activeMembers < 2 else { throw SiriDueDosesError.severalMembers }
         let part = Self.clockPart(at: Date(), in: timeZone)
         let entries = day.groups.first { $0.part == part }?.entries.filter {
             $0.isOpen && today.pending[$0.id] == nil && !today.inFlight.contains($0.id)
         } ?? []
-        return SiriDueDoses(entries: entries, generation: generation)
+        return SiriDueDoses(entries: entries, generation: generation, readAt: readAt)
     }
 
     /// Records the doses of `due` as taken now, in one record transaction (D108). `true` only after the commit (spec 7.2).
@@ -98,6 +118,7 @@ extension AppModel {
                 scheduleVersionID: entry.occurrence.scheduleVersionID
             )
             event.requiresCurrentPlan = true
+            event.listedAt = due.readAt
             return event
         }
         let confirmed = Dictionary(uniqueKeysWithValues: due.entries.map { ($0.id, $0.record) })
@@ -110,17 +131,19 @@ extension AppModel {
 
     /// A new read of today, with the confirmed record of each running transaction. A device time zone with no region
     /// name gives no today (spec 2), so it is `unavailable`. Siri and the Live Activity (D110) use it.
-    func freshToday() async throws(StorageError) -> (day: TodaySnapshot, timeZone: TimeZone) {
+    /// `activeMembers` is the number of active members of the Family in the same read (D121).
+    func freshToday() async throws(StorageError) -> (day: TodaySnapshot, timeZone: TimeZone, activeMembers: Int) {
         let now = Date()
         let generation = dataGeneration
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now),
-              let timeZone = TimeZone(identifier: deviceTimeZone.identifier),
-              var day = try await store.snapshot(at: now, deviceTimeZone: deviceTimeZone, generation: generation).today
+              let timeZone = TimeZone(identifier: deviceTimeZone.identifier)
         else { throw StorageError.unavailable }
+        let snapshot = try await store.snapshot(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
+        guard var day = snapshot.today else { throw StorageError.unavailable }
         // A restore replaced the data during the read.
         guard generation == dataGeneration else { throw StorageError.replaced }
         day.apply(heldRecords)
-        return (day, timeZone)
+        return (day, timeZone, snapshot.people.filter { !$0.isArchived }.count)
     }
 
     /// The part of the day of the clock at `date`.
@@ -132,6 +155,11 @@ extension AppModel {
 }
 
 extension AppStore {
+    /// Every member of the Family. See `LocalStore.people()`.
+    func people() async throws(StorageError) -> [Person] {
+        try await open().people()
+    }
+
     /// The newest taken dose of an active item. See `LocalStore.lastDose(of:)`.
     func lastDose(of itemID: ItemID) async throws(StorageError) -> LastDose? {
         try await open().lastDose(of: itemID)

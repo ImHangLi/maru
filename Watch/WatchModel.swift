@@ -78,10 +78,12 @@ final class WatchModel {
         notice = nil
         let intent = unanswered[dose.id].flatMap { $0.action == action && $0.revision == dose.revision ? $0.intent : nil }
             ?? IntakeEventID()
+        // The list that the user saw, before a new list can come in during the task (D123).
+        let listedAt = day?.sentAt ?? .distantPast
         Task {
             let answer = await link.send(.record(
                 dose.id, scheduleVersionID: dose.scheduleVersionID, action: action,
-                revision: dose.revision, intent: intent
+                revision: dose.revision, intent: intent, listedAt: listedAt
             ))
             inFlight.remove(dose.id)
             switch answer {

@@ -491,7 +491,7 @@ final class Phone: @unchecked Sendable {
         startsToday: Bool = false
     ) async throws -> ItemID {
         await open()
-        let item = try Item(category: .supplement, name: name, form: .capsule, color: .pink, followUp: followUp, alarm: alarm)
+        let item = try Item(personID: store.meID, category: .supplement, name: name, form: .capsule, color: .pink, followUp: followUp, alarm: alarm)
         var schedule = Schedule(itemID: item.id, isEnabled: !paused)
         var slots: [SimSlot] = []
         var slotTimes: [SlotTime] = []
@@ -601,7 +601,7 @@ final class Phone: @unchecked Sendable {
     /// An item with no schedule. The user can record it at any time (D021).
     func addAsNeededItem(_ name: String) async throws -> Item {
         await open()
-        let item = try Item(category: .medication, name: name, form: .tablet, color: .orange)
+        let item = try Item(personID: store.meID, category: .medication, name: name, form: .tablet, color: .orange)
         try await store.save(item)
         await runAfterChange()
         return item
@@ -894,5 +894,12 @@ final class Phone: @unchecked Sendable {
     static func wallClock(_ text: String) -> WallClockTime {
         let parts = text.split(separator: ":").map { Int($0)! }
         return try! WallClockTime(hour: parts[0], minute: parts[1])
+    }
+}
+
+extension LocalStore {
+    /// The member "Me" that the migration of every database made.
+    var meID: PersonID {
+        try! writer.read { db in try Self.fetchPeople(db).first { $0.kind == .me }!.id }
     }
 }

@@ -214,7 +214,7 @@ extension AppModel {
     ///
     /// An event of a planned dose names a schedule version, and each version belongs to one item.
     /// An as-needed event names the item.
-    private func forgetUnconfirmed(of itemID: ItemID, versions: Set<ScheduleVersionID>) {
+    func forgetUnconfirmed(of itemID: ItemID, versions: Set<ScheduleVersionID>) {
         for (id, pending) in today.pending where versions.contains(pending.scheduleVersionID) {
             if let occurrence = pending.backfill { today.backfills[occurrence.key] = nil }
             today.pending[id] = nil
@@ -233,7 +233,7 @@ extension AppModel {
     /// Takes the doses of a deleted item out of the days that History keeps, so no row offers a correction
     /// of a dose that is gone. A read that started before the delete does not show, and an open History
     /// reads again.
-    private func forgetHistory(of itemID: ItemID) {
+    func forgetHistory(of itemID: ItemID) {
         history.readCount += 1
         history.days = history.days?.map { day in
             var day = day

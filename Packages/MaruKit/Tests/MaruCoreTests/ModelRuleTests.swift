@@ -8,7 +8,7 @@ struct ModelRuleTests {
 
     @Test func newItemGetsTheFirstColorThatNoActiveItemUses() throws {
         func item(_ color: ItemColor, archived: Bool = false) throws -> Item {
-            try Item(category: .supplement, name: "Zinc", form: .tablet, color: color, isArchived: archived)
+            try Item(personID: PersonID(), category: .supplement, name: "Zinc", form: .tablet, color: color, isArchived: archived)
         }
         #expect(ItemColor.forNewItem(among: []) == .pink)
         // An archived item does not hold its color.

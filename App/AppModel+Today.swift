@@ -16,6 +16,9 @@ struct PendingEvent: Equatable, Sendable {
     var requiresCurrentPlan = false
     /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
     var restoreEpoch: Int?
+    /// The instant of the list that a quick action comes from: the Watch list, the widget read, the Live Activity, or the Siri read.
+    /// The store refuses a dose of an item whose owner changed after it (D123). Today records with the owner on screen and sets none.
+    var listedAt: Date?
 }
 
 /// Why a record on Today gave no success. The page shows it in an alert.
@@ -231,7 +234,8 @@ extension AppModel {
                 let now = Date()
                 return NamedTimeZone(device: .current, at: now).map { OccurrenceGeneration(now: now, deviceTimeZone: $0) }
             },
-            restoreEpoch: events.first?.restoreEpoch
+            restoreEpoch: events.first?.restoreEpoch,
+            listedAt: events.compactMap(\.listedAt).min()
         )
     }
 
@@ -326,7 +330,7 @@ extension AppModel {
                 today.pending[pending.event.occurrenceID] = pending
             }
             show(TodayFailure(kind: .notSaved(error), events: events))
-        case .unknownOccurrence, .versionChanged, .rejected:
+        case .unknownOccurrence, .versionChanged, .ownerChanged, .rejected:
             // The store has another state than the page. Nothing was written. Show the stored state.
             didChange(events)
             show(TodayFailure(kind: .changed, events: []))

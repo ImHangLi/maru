@@ -83,6 +83,7 @@ extension AppModel {
                 )
                 event.requiresCurrentPlan = true
                 event.restoreEpoch = intent.epoch
+                event.listedAt = Date(timeIntervalSinceReferenceDate: intent.readAt)
                 if await commitAndWait([event], generation: generation) {
                     await waitForReminders(deviceTimeZone: deviceTimeZone)
                     return

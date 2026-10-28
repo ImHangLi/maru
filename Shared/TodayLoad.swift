@@ -9,11 +9,13 @@ extension TodaySnapshot {
     /// It reads no older intake history (spec 7.3). The as-needed card is not part of it.
     /// - Parameters:
     ///   - items: Every item of the store.
+    ///   - family: The members, so each row knows its owner for a text (D123).
     ///   - generation: The generation of the data that the caller read (D040).
     /// - Returns: The snapshot, and the occurrences that the run gave, also those of yesterday and tomorrow.
     static func load(
         from store: LocalStore,
         items: [Item],
+        family: Family,
         remindersOff: Set<ItemID>,
         at now: Date,
         deviceTimeZone: NamedTimeZone,
@@ -24,7 +26,8 @@ extension TodaySnapshot {
         // An archived item leaves Today, also with a record of today. The record stays in the history (T08).
         let looks = Dictionary(uniqueKeysWithValues: items.filter { !$0.isArchived }.map {
             ($0.id, ItemLook(
-                itemID: $0.id, name: $0.name, form: $0.form, color: $0.color,
+                itemID: $0.id, personID: $0.personID, name: $0.name, form: $0.form, color: $0.color,
+                owner: family.owner(of: $0),
                 remindersOff: remindersOff.contains($0.id), imageReference: $0.imageReference
             ))
         })

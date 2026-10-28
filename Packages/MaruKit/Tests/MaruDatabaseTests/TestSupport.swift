@@ -98,8 +98,13 @@ enum Fixtures {
 }
 
 extension LocalStore {
+    /// The member "Me" that the migration of every database made.
+    var meID: PersonID {
+        try! writer.read { db in try Self.fetchPeople(db).first { $0.kind == .me }!.id }
+    }
+
     func seed() async throws -> Seed {
-        let item = try Item(category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
+        let item = try Item(personID: meID, category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
         try await save(item)
         let (schedule, morning, evening) = Fixtures.twiceDailySchedule(itemID: item.id)
         try await save(schedule)

@@ -105,7 +105,7 @@ private struct TakeNowWidgetView: View {
     private func control(_ dose: WidgetDay.Dose, size: CGFloat, epoch: Int) -> some View {
         let mark = CapsuleMark(status: dose.status, tint: entry.tint.tint, size: size)
         if dose.isOpen {
-            Button(intent: TakeDoseIntent(occurrenceID: dose.id, scheduleVersionID: dose.scheduleVersionID, epoch: epoch)) {
+            Button(intent: TakeDoseIntent(occurrenceID: dose.id, scheduleVersionID: dose.scheduleVersionID, epoch: epoch, readAt: dose.readAt)) {
                 mark.frame(minWidth: 40, minHeight: 40)
             }
             .buttonStyle(.plain)

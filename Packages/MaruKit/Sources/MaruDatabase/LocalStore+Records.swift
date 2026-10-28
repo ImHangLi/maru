@@ -61,15 +61,20 @@ extension LocalStore {
     ///
     /// - Parameter generation: The generation of the data that the caller read: 0, or the generation that
     ///   the last `restore(_:)` gave. Another value is `RecordFailure.replaced`, and nothing is written.
+    /// - Parameter listedAt: The instant of the list that a quick action comes from: the Watch list, the widget read, or the Live
+    ///   Activity. A dose of an item whose owner changed after it is `RecordFailure.ownerChanged`, and nothing is written (D123).
     /// - Returns: The record of each occurrence, in the order of the events.
     @discardableResult
     public func record(
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         generation: Int = 0,
         currentPlan: (@Sendable () -> OccurrenceGeneration?)? = nil,
-        restoreEpoch: Int? = nil
+        restoreEpoch: Int? = nil,
+        listedAt: Date? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
-        try await record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch, sync: Self.fullSync)
+        try await record(
+            events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch, listedAt: listedAt, sync: Self.fullSync
+        )
     }
 
     /// `sync` is for tests. See `flush`.
@@ -88,6 +93,7 @@ extension LocalStore {
         generation: Int = 0,
         currentPlan: (@Sendable () -> OccurrenceGeneration?)? = nil,
         restoreEpoch: Int? = nil,
+        listedAt: Date? = nil,
         sync: @Sendable (Int32) -> Int32
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         let directory = directory
@@ -110,6 +116,7 @@ extension LocalStore {
                 }
                 guard occurrence.scheduleVersionID == scheduleVersionID else { throw RecordFailure.versionChanged }
                 if let plan { try Self.requireCurrentPlan(occurrence, plan, db) }
+                if let listedAt, try Self.ownerChanged(after: listedAt, occurrenceID: occurrence.id, db) { throw RecordFailure.ownerChanged }
                 return try Self.append(event, db)
             }
         }
@@ -129,6 +136,31 @@ extension LocalStore {
               })
         else { throw RecordFailure.versionChanged }
     }
+
+    /// Whether the item of an occurrence changed its owner after `listedAt` (D123). A quick action carries the instant of its
+    /// list, so a list from before an owner change records nothing. An as-needed occurrence names its item itself.
+    ///
+    /// A read that starts while the change is in its transaction still sees the old owner, and its instant is after the stamp of the
+    /// change. So a list instant less than `ownerChangeMargin` after the change also counts as before it. The user then records
+    /// from a new list.
+    static func ownerChanged(after listedAt: Date, occurrenceID: OccurrenceID, _ db: Database) throws -> Bool {
+        try Bool.fetchOne(
+            db,
+            sql: """
+                SELECT EXISTS (
+                    SELECT 1 FROM occurrence
+                    LEFT JOIN scheduleSlot ON scheduleSlot.id = occurrence.slotID
+                    LEFT JOIN schedule ON schedule.id = scheduleSlot.scheduleID
+                    JOIN item ON item.id = COALESCE(occurrence.itemID, schedule.itemID)
+                    WHERE occurrence.id = ? AND item.ownerChangedAt > ?
+                )
+                """,
+            arguments: [occurrenceID.text, listedAt.addingTimeInterval(-ownerChangeMargin).storedSeconds]
+        ) == true
+    }
+
+    /// Far longer than the transaction of an owner change.
+    static let ownerChangeMargin: TimeInterval = 5
 
     /// Runs one record transaction, and returns only after the storage medium has the commit.
     ///

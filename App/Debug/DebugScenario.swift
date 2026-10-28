@@ -174,7 +174,8 @@ extension AppStore {
         case .versionUpdate:
             try await versionUpdate(store, today: today, now: now, deviceTimeZone: deviceTimeZone)
         case .asNeeded:
-            let item = try Item(category: .medication, name: "Demo Antacid", form: .tablet, color: .mint)
+            let me = try await store.people().first { $0.kind == .me }!.id
+            let item = try Item(personID: me, category: .medication, name: "Demo Antacid", form: .tablet, color: .mint)
             try await store.save(item)
             try await add(store, "Demo Vitamin E", .softgel, .pink, [(8, 0)], nil, from: today)
         case .fixedZone:
@@ -200,7 +201,8 @@ extension AppStore {
         category: ItemCategory = .supplement,
         policy: TimeZonePolicy = .followsDevice
     ) async throws -> Schedule {
-        let item = try Item(category: category, name: name, form: form, color: color)
+        let me = try await store.people().first { $0.kind == .me }!.id
+        let item = try Item(personID: me, category: category, name: name, form: form, color: color)
         var schedule = Schedule(itemID: item.id, isEnabled: true)
         let slotTimes = try times.map { time in
             SlotTime(slotID: try schedule.addSlot().id, time: try WallClockTime(hour: time.hour, minute: time.minute))

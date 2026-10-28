@@ -7,6 +7,8 @@ struct EditorContext: Sendable {
     /// `nil` for a new item.
     let item: Item?
     let schedule: Schedule?
+    /// Every member of the Family, archived or not (D121).
+    let people: [Person]
     /// The color of a new item: the first one that no active item uses (D021).
     let newItemColor: ItemColor
     /// The times that the user already confirmed for an active supplement, from the earliest.
@@ -18,6 +20,12 @@ struct EditorContext: Sendable {
 }
 
 extension EditorContext {
+    /// The owner of a new item when the user chose none: "Me", or the first active member when "Me" is archived (D121).
+    var defaultOwner: PersonID {
+        let active = people.filter { !$0.isArchived }
+        return (active.first { $0.kind == .me } ?? active.first ?? people[0]).id
+    }
+
     /// The time at which the time wheel of a new supplement starts (spec 2.1): the earliest time that the user
     /// already confirmed for an active supplement, else 08:00. It counts only after "Add" (D032).
     var exampleTime: WallClockTime {
@@ -40,6 +48,7 @@ extension AppStore {
         return EditorContext(
             item: item,
             schedule: schedule,
+            people: try await store.people(),
             newItemColor: .forNewItem(among: items),
             supplementTimes: confirmed.sorted(),
             itemNames: (items.filter { !$0.isArchived } + items.filter(\.isArchived))

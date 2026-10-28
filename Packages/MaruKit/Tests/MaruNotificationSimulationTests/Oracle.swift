@@ -70,7 +70,7 @@ struct Oracle {
     private func text(_ kind: ReminderContent.Kind, _ names: [String]) -> ReminderText {
         // A reminder with group actions names every item, so its text has no "and N more" (D090).
         phone.center.text(for: ReminderContent(
-            kind: kind, names: showsNames ? names : nil, category: showsNames && names.count >= 2 ? .group : .snooze
+            kind: kind, names: showsNames ? names.map { ReminderName(item: $0) } : nil, category: showsNames && names.count >= 2 ? .group : .snooze
         ))
     }
 
@@ -442,7 +442,7 @@ struct Oracle {
                 let label = "alarm at \(Self.format(fire, device.zone)) (\(alarm.names ?? []))"
                 if doses.isEmpty {
                     found.append("\(label) waits, and no open dose of an alarm item is due then")
-                } else if (alarm.names ?? []) != (showsNames ? expected : []) {
+                } else if (alarm.names ?? []).map(\.item) != (showsNames ? expected : []) {
                     found.append("\(label) names the wrong doses. They are: \(expected)")
                 }
             }

@@ -72,6 +72,9 @@ public enum RecordFailure: Error, Equatable, Sendable {
     case unknownOccurrence
     /// The occurrence has another schedule version than the one that the caller saw.
     case versionChanged
+    /// The item of the occurrence has another owner than when the caller listed the dose (D123). Nothing was written. A quick
+    /// action must not record a dose that the user saw under another member.
+    case ownerChanged
     /// A domain rule rejected the event, for example a second first event for the occurrence (T18).
     case rejected(MaruCore.RecordError)
     /// The database failed. The user can try again. After `unavailable`, the event can already be stored.

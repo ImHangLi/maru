@@ -160,16 +160,19 @@ private struct NextDoseBody: View {
                     .lineLimit(2)
                 Spacer(minLength: 0)
                 // The app records only after the unlock and the checks of the record. The activity changes after the commit.
-                Button(intent: TakeNextDoseIntent(shown.state)) {
-                    Text("Taken")
-                        .font(.subheadline.weight(.semibold))
+                // Doses of two or more members have no button: one tap must not record a dose for another member (D123).
+                if shown.state.canRecord != false {
+                    Button(intent: TakeNextDoseIntent(shown.state)) {
+                        Text("Taken")
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .buttonBorderShape(.capsule)
+                    .tint(shown.tint)
+                    .accessibilityHint(
+                        shown.state.count == 1 ? Text("Records this dose as taken") : Text("Records these doses as taken")
+                    )
                 }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .tint(shown.tint)
-                .accessibilityHint(
-                    shown.state.count == 1 ? Text("Records this dose as taken") : Text("Records these doses as taken")
-                )
             }
         }
     }

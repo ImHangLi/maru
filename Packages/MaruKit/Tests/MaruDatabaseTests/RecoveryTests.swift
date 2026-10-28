@@ -55,13 +55,13 @@ struct RecoveryTests {
 
     @Test func migratorNeverErasesTheDatabase() {
         #expect(!Schema.migrator.eraseDatabaseOnSchemaChange)
-        #expect(Schema.migrator.migrations == ["v1", "v2", "v3", "v4", "v5", "v6", "v7"])
+        #expect(Schema.migrator.migrations == ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8"])
     }
 
     @Test func failedMigrationReturnsATypedErrorAndKeepsTheData() async throws {
         let (seed, taken) = try await storeARecord()
         // The migration changes and deletes data, and then fails.
-        let broken = migrator(adding: "v8") { db in
+        let broken = migrator(adding: "v9") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
             try db.execute(sql: "DELETE FROM occurrenceState")
             try db.execute(sql: "UPDATE item SET name = 'changed'")
@@ -80,7 +80,7 @@ struct RecoveryTests {
         let (applied, hasExtraTable) = try await store.writer.read { db in
             (try Schema.migrator.appliedMigrations(db), try db.tableExists("extra"))
         }
-        #expect(applied == ["v1", "v2", "v3", "v4", "v5", "v6", "v7"])
+        #expect(applied == ["v1", "v2", "v3", "v4", "v5", "v6", "v7", "v8"])
         #expect(!hasExtraTable)
     }
 
@@ -120,9 +120,9 @@ struct RecoveryTests {
         version1.registerMigration("v1") { db in
             try db.execute(sql: Schema.v1)
         }
-        let vitaminD = try Item(category: .supplement, name: "Vitamin D", form: .unknown, color: .pink)
+        let vitaminD = try Item(personID: PersonID(), category: .supplement, name: "Vitamin D", form: .unknown, color: .pink)
         let fishOil = try Item(
-            category: .unknown, name: "Fish oil", form: .unknown, color: .pink, isArchived: true,
+            personID: PersonID(), category: .unknown, name: "Fish oil", form: .unknown, color: .pink, isArchived: true,
             intakeNote: .preset(.withFood)
         )
         let (schedule, morning, _) = Fixtures.twiceDailySchedule(itemID: vitaminD.id)
@@ -148,8 +148,11 @@ struct RecoveryTests {
             try store.writer.close()
         }
 
+        // `v8` gives every old item to the one member "Me", and it keeps the rest of the item (D126, T56).
         let store = try LocalStore(directory: directory.url)
-        #expect(try await store.items() == [vitaminD, fishOil])
+        let me = store.meID
+        #expect(try await store.people().map(\.kind) == [.me])
+        #expect(try await store.items() == [vitaminD, fishOil].map { var owned = $0; owned.personID = me; return owned })
         #expect(try await store.schedule(id: schedule.id) == schedule)
         try await store.expectConsistent(occurrence, events: [taken], status: .taken)
     }
@@ -164,7 +167,7 @@ struct RecoveryTests {
         version2.registerMigration("v2") { db in
             try db.execute(sql: Schema.v2)
         }
-        let item = try Item(category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
+        let item = try Item(personID: PersonID(), category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
         let (schedule, morning, evening) = Fixtures.twiceDailySchedule(itemID: item.id)
         let occurrences = [
             Fixtures.occurrence(slotID: evening, in: schedule),
@@ -207,7 +210,7 @@ struct RecoveryTests {
                 try db.execute(sql: sql)
             }
         }
-        let item = try Item(category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
+        let item = try Item(personID: PersonID(), category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
         var (schedule, morning, _) = Fixtures.twiceDailySchedule(itemID: item.id)
         let occurrence = Fixtures.occurrence(slotID: morning, in: schedule)
         let taken = Fixtures.event(for: occurrence, .taken)
@@ -252,7 +255,7 @@ struct RecoveryTests {
                 try db.execute(sql: sql)
             }
         }
-        let item = try Item(category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
+        let item = try Item(personID: PersonID(), category: .supplement, name: "Vitamin D", form: .capsule, color: .pink)
         let schedule = Fixtures.twiceDailySchedule(itemID: item.id).schedule
         let folder = TestDirectory()
         try FileManager.default.createDirectory(at: folder.url, withIntermediateDirectories: true)
@@ -286,6 +289,9 @@ struct RecoveryTests {
         // The restore replaces the data, so the cycle with a pause goes, and the old rule is there again.
         _ = try await store.restore(try store.stage(backup: backup))
         #expect(try await store.schedule(id: schedule.id)?.versions.map(\.dayCycle) == [everyOtherDay])
+        // A backup from before the Family restores with every item given to the one member "Me" (D126, T56).
+        #expect(try await store.people().map(\.kind) == [.me])
+        #expect(try await store.items().map(\.personID) == [store.meID])
     }
 
     // MARK: First launch
@@ -358,7 +364,7 @@ struct RecoveryTests {
     }
 
     @Test func databaseFromANewerAppIsReportedAndLeftInPlace() async throws {
-        let newer = migrator(adding: "v8") { db in
+        let newer = migrator(adding: "v9") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
         }
         let seed: Seed

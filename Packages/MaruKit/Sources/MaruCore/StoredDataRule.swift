@@ -4,6 +4,9 @@ public enum StoredDataRule: String, CaseIterable, Hashable, Sendable {
     case itemRow = "item_row"
     case itemFollowUp = "item_follow_up"
     case itemNote = "item_note"
+    /// An item whose owner column is empty or is not an ID (D121).
+    case itemPerson = "item_person"
+    case personRow = "person_row"
     case scheduleRow = "schedule_row"
     case scheduleSlot = "schedule_slot"
     case versionRow = "version_row"
@@ -28,6 +31,7 @@ public enum StoredDataRule: String, CaseIterable, Hashable, Sendable {
         case ScheduleError.unknownSlot: self = .versionUnknownSlot
         case is ScheduleError: self = .versionRule
         case is ItemError: self = .itemRow
+        case is PersonError: self = .personRow
         default: self = .other
         }
     }

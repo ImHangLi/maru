@@ -95,6 +95,9 @@ struct ItemDraft: Codable, Equatable {
 
     var itemID: UUID
     var scheduleID: UUID
+    /// The member that owns the item (D121). The editor sets it when the draft starts: the stored owner, or the default owner of a new
+    /// item. A draft file from before the Family has none, and the editor fills it from the context.
+    var personID: UUID?
     var name = ""
     /// A new item starts as a supplement, and the user can change it (D032).
     var category = ItemCategory.supplement
@@ -122,7 +125,7 @@ struct ItemDraft: Codable, Equatable {
     /// The draft file names `cycle` with its key from before D065, so an older file keeps its rule.
     /// A new property of the draft needs a case here, or the file does not keep it.
     private enum CodingKeys: String, CodingKey {
-        case itemID, scheduleID, name, category, form, color, amount, times, weekdays, note, noteText, followUp, alarm, hasReminderOptions
+        case itemID, scheduleID, personID, name, category, form, color, amount, times, weekdays, note, noteText, followUp, alarm, hasReminderOptions
         case cycle = "everyOtherDay"
     }
 
@@ -147,6 +150,7 @@ struct ItemDraft: Codable, Equatable {
     init(item: Item, schedule: Schedule?) {
         itemID = item.id.rawValue
         scheduleID = schedule?.id.rawValue ?? UUID()
+        personID = item.personID.rawValue
         name = item.name
         category = item.category
         form = item.form
@@ -278,8 +282,11 @@ extension ItemDraft {
         case .emptyStomach: .preset(.emptyStomach)
         case .custom: noteText.allSatisfy(\.isWhitespace) ? nil : try IntakeNote.custom(noteText)
         }
-        var item = try existingItem ?? Item(id: ItemID(itemID), category: category, name: name, form: form, color: color)
+        guard let owner = personID.map({ PersonID($0) }) ?? existingItem?.personID else { throw DraftBuildError.noOwner }
+        var item = try existingItem ?? Item(id: ItemID(itemID), personID: owner, category: category, name: name, form: form, color: color)
         try item.rename(name)
+        // A new owner of a stored item. The store sets `ownerChangedAt` (D123).
+        item.personID = owner
         item.category = category
         item.form = form
         item.color = color
@@ -349,6 +356,7 @@ extension ItemDraft {
 }
 
 enum DraftBuildError: Error {
+    case noOwner
     case noTimeZone
     case noDayCount
     case noFirstDay
