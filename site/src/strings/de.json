@@ -6,7 +6,7 @@
   "nav_label": "Hauptmenü",
   "home": {
     "title": "Maru: Tabletten-Erinnerung",
-    "desc": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Einmal tippen, und die Einnahme ist erfasst. Kostenlos und ohne Konto.",
+    "desc": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Einmal tippen, und die Einnahme ist erfasst. Kostenloser Download, ohne Konto.",
     "h1": "Schon genommen? |Maru weiß es.",
     "lede": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Einmal tippen, und die Einnahme ist erfasst."
   },
@@ -71,7 +71,7 @@
   ],
   "trust_title": "Gut zu wissen",
   "trust": [
-    "Kostenlos",
+    "Kostenloser Download",
     "Ohne Konto",
     "Deine Aufzeichnungen bleiben auf deinen Geräten"
   ],
@@ -89,7 +89,7 @@
     "items": [
       [
         "Ist Maru kostenlos?",
-        "Ja, ohne Abo, ohne Werbung und ohne Limit für Einträge."
+        "Maru ist ein kostenloser Download. Erinnerungen und Aufzeichnungen sind kostenlos, ohne Limit für Einträge. Maru hat keine Werbung."
       ],
       [
         "Brauche ich ein Konto?",
@@ -105,11 +105,11 @@
       ],
       [
         "Kann ich direkt in der Erinnerung erfassen?",
-        "Ja, wenn die Erinnerung für einen Eintrag ist: Tippe auf „Eingenommen“. Eine Erinnerung für mehrere Einträge öffnet Maru."
+        "Ja, ohne Maru zu öffnen. Eine Erinnerung für einen Eintrag hat „Eingenommen“, „Überspringen“ und „In 10 Min. erinnern“. Ist „Namen in Erinnerungen anzeigen“ an, hat eine Erinnerung für mehrere Einträge „Alle eingenommen“, „Alle überspringen“ und „In 10 Min. erinnern“. Mit ausgeblendeten Namen hat sie nur „In 10 Min. erinnern“."
       ],
       [
         "Erinnert mich Maru mehrmals?",
-        "Schalte in den Einstellungen „Erneut erinnern“ ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Maru ist kein Wecker, deshalb können der Stummmodus oder ein Fokus eine Erinnerung zurückhalten."
+        "Ja, wenn du willst. Schalte „Erneut erinnern“ für einen Eintrag oder in den Einstellungen für alle Einträge ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Ab iOS 26 schaltest du für einen Eintrag „Wecker“ ein, und zu seiner Zeit klingelt es wie in der Uhr-App. Der Stummmodus oder ein Fokus können eine Erinnerung zurückhalten."
       ],
       [
         "Kann ich etwas alle paar Tage oder mit Pausen nehmen?",
@@ -137,11 +137,11 @@
       ],
       [
         "Kann ich meine Aufzeichnungen mitnehmen?",
-        "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können."
+        "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können. „Medikamentenliste teilen“ und „Zusammenfassung teilen“ erstellen ein PDF. Du entscheidest, wohin jede Datei geht."
       ],
       [
         "Gibt es eine App für die Apple Watch?",
-        "Noch nicht. Version 1.0 ist für iPhone und iPad. Eine App für die Apple Watch kommt später."
+        "Noch nicht. Version 1.1 ist für iPhone und iPad. Eine App für die Apple Watch kommt später."
       ],
       [
         "Welche Sprachen spricht Maru?",

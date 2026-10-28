@@ -170,7 +170,7 @@ Left out on purpose: "お薬手帳" (a pharmacy record book in Japan, which Maru
 
 ## 5. The listing
 
-The files are in `metadata/`, in the layout of `asc metadata` (`app-info/<locale>.json` and `version/1.0.0/<locale>.json`). `asc metadata validate --dir ./metadata` reports no issue. `asc metadata push` with `--dry-run` shows the plan before a change. The files replace the fastlane `deliver` idea in the release plan.
+The files are in `metadata/`, in the layout of `asc metadata` (`app-info/<locale>.json` and `version/1.0.0/<locale>.json`). The `version/1.0.0/` folder was deleted on 2026-10-28. The current text is in `version/1.1.0/`. `asc metadata validate --dir ./metadata` reports no issue. `asc metadata push` with `--dry-run` shows the plan before a change. The files replace the fastlane `deliver` idea in the release plan.
 
 App Store Connect accepted the English name. The names of the other languages are not entered yet.
 

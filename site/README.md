@@ -41,7 +41,7 @@ The top bar has a language menu. It is a `details` element with plain links, so 
 
 On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and deploy.
 
-`DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone", "ipad"]` now: version 1.0 has no Apple Watch app. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
+`DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone", "ipad"]` now: version 1.1 has no Apple Watch app. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
 
 ## Top bar
 

@@ -6,7 +6,7 @@
   "nav_label": "Main",
   "home": {
     "title": "Maru: Pill & Vitamin Reminder",
-    "desc": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took. Free, with no account.",
+    "desc": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took. Free to download, with no account.",
     "h1": "Did I take it? |One look.",
     "lede": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took."
   },
@@ -71,7 +71,7 @@
   ],
   "trust_title": "Good to know",
   "trust": [
-    "Free",
+    "Free to download",
     "No account",
     "Your records stay on your devices"
   ],
@@ -89,7 +89,7 @@
     "items": [
       [
         "Is Maru free?",
-        "Yes, with no subscription, no ads, and no limit on items."
+        "Maru is free to download. Reminders and records are free, with no limit on items. Maru has no ads."
       ],
       [
         "Do I need an account?",
@@ -105,11 +105,11 @@
       ],
       [
         "Can I record from the reminder?",
-        "Yes, when the reminder is for one item: tap Taken. A reminder for several items opens Maru."
+        "Yes, and Maru stays closed. A reminder for one item has Taken, Skip, and Remind in 10 min. When Show Names in Reminders is on, a reminder for several items has Take All, Skip All, and Remind in 10 min. With the names hidden, it has only Remind in 10 min."
       ],
       [
         "Will Maru keep reminding me?",
-        "Turn on Remind Again in Settings, and Maru sends up to 12 more reminders for a dose. Maru is not an alarm, so silent mode or a Focus can hold a reminder."
+        "Yes, if you want. Turn on Remind Again for an item, or for all items in Settings, and Maru sends up to 12 more reminders for a dose. On iOS 26 or later, turn on Alarm for an item, and its time rings like the Clock app. Silent mode or a Focus can hold a reminder."
       ],
       [
         "Can I take something every few days, or with a break?",
@@ -137,11 +137,11 @@
       ],
       [
         "Can I get my records out?",
-        "Yes. Export Records in Settings makes a file that Numbers and Excel can open."
+        "Yes. In Settings, Export Records makes a file that Numbers and Excel can open. Share Medication List and Share Summary make a PDF. You choose where each file goes."
       ],
       [
         "Is there an Apple Watch app?",
-        "Not yet. Version 1.0 is for iPhone and iPad. An Apple Watch app comes later."
+        "Not yet. Version 1.1 is for iPhone and iPad. An Apple Watch app comes later."
       ],
       [
         "Which languages does Maru speak?",

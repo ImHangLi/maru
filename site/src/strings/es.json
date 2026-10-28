@@ -6,7 +6,7 @@
   "nav_label": "Principal",
   "home": {
     "title": "Maru: Recordatorio de pastillas",
-    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste. Gratis y sin cuenta.",
+    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste. Descarga gratuita y sin cuenta.",
     "h1": "¿Ya me lo tomé? |Sal de dudas.",
     "lede": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste."
   },
@@ -71,7 +71,7 @@
   ],
   "trust_title": "Bueno saberlo",
   "trust": [
-    "Gratis",
+    "Descarga gratuita",
     "Sin cuenta",
     "Tus registros se quedan en tus dispositivos"
   ],
@@ -89,7 +89,7 @@
     "items": [
       [
         "¿Maru es gratis?",
-        "Sí, sin suscripción, sin anuncios y sin límite de elementos."
+        "Maru es de descarga gratuita. Los recordatorios y los registros son gratis, sin límite de elementos. No tiene anuncios."
       ],
       [
         "¿Necesito una cuenta?",
@@ -105,11 +105,11 @@
       ],
       [
         "¿Puedo registrar desde el recordatorio?",
-        "Sí, cuando el recordatorio es de un solo elemento: toca «Tomado». Un recordatorio de varios elementos abre Maru."
+        "Sí, sin abrir Maru. Un recordatorio de un elemento tiene «Tomado», «Omitir» y «Recordar en 10 min». Con «Mostrar nombres en recordatorios» activado, un recordatorio de varios elementos tiene «Todo tomado», «Omitir todo» y «Recordar en 10 min». Con los nombres ocultos, solo tiene «Recordar en 10 min»."
       ],
       [
         "¿Maru me sigue avisando?",
-        "Activa «Recordar de nuevo» en Ajustes y Maru envía hasta 12 recordatorios más por toma. Maru no es una alarma, así que el modo Silencio o un modo de concentración pueden retener un recordatorio."
+        "Sí, si quieres. Activa «Recordar de nuevo» en un elemento, o para todos en Ajustes, y Maru envía hasta 12 recordatorios más por toma. Con iOS 26 o posterior, activa «Alarma» en un elemento, y a su hora suena como la app Reloj. El modo Silencio o un modo de concentración pueden retener un recordatorio."
       ],
       [
         "¿Puedo tomar algo cada varios días o con descansos?",
@@ -137,11 +137,11 @@
       ],
       [
         "¿Puedo sacar mis registros?",
-        "Sí. «Exportar registros» en Ajustes crea un archivo que Numbers y Excel pueden abrir."
+        "Sí. «Exportar registros» en Ajustes crea un archivo que Numbers y Excel pueden abrir. «Compartir lista de medicación» y «Compartir resumen» crean un PDF. Tú eliges adónde va cada archivo."
       ],
       [
         "¿Hay app para Apple Watch?",
-        "Todavía no. La versión 1.0 es para iPhone y iPad. La app para Apple Watch llegará más adelante."
+        "Todavía no. La versión 1.1 es para iPhone y iPad. La app para Apple Watch llegará más adelante."
       ],
       [
         "¿En qué idiomas está Maru?",

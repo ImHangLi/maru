@@ -72,7 +72,7 @@ Set on 2026-10-13 (D075), with the `asc` CLI and, for the parts with no public A
 | Setting | Value | Reason |
 |---|---|---|
 | Version | 1.0.0, manual release after approval | The record had "1.0", and the project has 1.0.0. A manual release keeps the release a maintainer decision |
-| Store text | The files in `metadata/`, for en-US, en-GB, zh-Hans, ja, ko, de-DE, es-ES, and es-MX | `asc metadata push`. A second dry run shows no difference |
+| Store text | The files in `metadata/`, for en-US, en-GB, zh-Hans, ja, ko, de-DE, es-ES, and es-MX | `asc metadata push`. A second dry run shows no difference. The folder `metadata/version/1.0.0/` is deleted, because its text has open-source claims (D096). App Store Connect keeps the 1.0.0 text |
 | Support, privacy, and marketing URLs | `https://maru.day/support/`, `https://maru.day/privacy/`, and `https://maru.day/`, with the folder `cn`, `jp`, `kr`, `de`, or `es` for the other languages | The paths of the live site. Each page returns 200 |
 | Copyright | 2026 Hang Li | The name of the account holder |
 | Primary category | Health & Fitness | See "Category" below |
@@ -177,24 +177,32 @@ The notes are in App Store Connect. They state: what Maru does, no account, the 
 
 The files are in `metadata/version/1.1.0/` for the eight store languages. They are drafts. Nobody pushed them to App Store Connect. The plan is `2026-10-15-store-page-personas-and-trust.md` in the maintainer's research folder, and the first feedback is in `pitch-feedback-2026-10-15.md` in the maintainer's notes.
 
-Maintainer decisions of 2026-10-15:
+Maintainer decisions of 2026-10-15. The changes of 2026-10-28 replace some of them, and the next list names each one.
 
-- **Privacy: keep the usage statistics.** The text never says "connects to nothing" or "no data leaves". It says that items and records stay on the iPhone or iPad, that Maru needs no account, and that what the user takes is never sent anywhere. The optional usage counts stay in the text, and they never include what the user takes. The text uses plain words. It does not lead with "server", "local-first", or "open source".
+- **Privacy: keep the usage statistics.** The text never says "connects to nothing" or "no data leaves". It says that items and records stay on the iPhone or iPad, that Maru needs no account, and that Maru sends nothing about what the user takes (changed on 2026-10-28). The optional usage counts stay in the text, and they never include what the user takes. The text uses plain words. It does not lead with "server", "local-first", or "open source".
 - **Subtitle.** English: "Supplement & Medicine Tracker". The other languages keep the same meaning in 30 characters or fewer. The name stays as in 1.0.0.
-- **"Free" must be clear.** The promotional text and the first lines of the description start with "100% free" in the local words, and they say "no subscription, no ads, no paywall". The name, the subtitle, and the keywords have no price word (guideline 2.3.7).
+- **"Free" must be clear.** Replaced on 2026-10-28, see below. The name, the subtitle, and the keywords have no price word (guideline 2.3.7).
 - **No setup.** The first lines say that there is no sign-up and nothing to set up first.
 - **Features in the text.** Dark mode, and alarms for each item (iOS 26 or later).
-- **Persons in proportion.** Vitamins, supplements, and medicine lead. One short paragraph, "Not just for you", says that a user can track a pet or a parent on the user's own phone. The paragraph says that Maru has no profiles and no sharing.
+- **Persons in proportion.** Vitamins, supplements, and medicine lead. One short paragraph, "Not just for you", says that a user can track a pet or a parent on the user's own phone. The paragraph says that Maru has no shared profiles and no sync (changed on 2026-10-28).
 - **Removed from 1.0.0.** The line "It is not an alarm", the lines "Open source", and the tip answer. The zh-Hans text uses 药品 and 保健品 like the app. All languages use the button names of `App/Localizable.xcstrings`.
 - **No medical claim.** The text has no "never miss a dose" and no competitor name.
 
+Changes of 2026-10-28. Version 1.0.0 was approved, but it will not be released. Version 1.1.0 from `main` replaces it. A paid "Pro" tier comes in 1.2. Reminders and records stay free.
+
+- **Free wording.** The text says "Free to download. Reminders and records are free, with no limit on items." It keeps "no account" and "no ads". It never says "100% free", "no subscription", "no paywall", or "Free for real". The site FAQ, the home page, `llms.txt`, and `README.md` use the same words.
+- **Sharing.** The user can export and share files: a CSV file, a PDF list or summary, and a backup. So the text never says "no sharing" or "never sent anywhere". It says that Maru sends nothing about what the user takes, and that the user chooses where each file goes.
+- **Features.** The description adds the features of D090, D091, D093, D094, D097, and D098: the reminder actions, the tracker, the PDF files, the Lock Screen widget, the "Language" row, and "Delete Item".
+- **"What's New".** The public never got 1.0, so it is a short summary of the main features for a first release, not a list of changes.
+- **Keywords.** The zh-Hans, ja, and ko fields hold at most 100 bytes. They have no word of the name or the subtitle.
+
 Checks before the text goes to App Store Connect:
 
-- Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, and "What's New".
-- The text says "no paywall", and it does not say "no in-app purchases", because optional tips can come later. Version 1.1 has no in-app purchase. Add the tip answer back to the description when the first tip ships (see Tips).
-- The keyword field holds at most 100 bytes in en, es, and de. The zh-Hans, ja, and ko fields hold at most 100 characters, as in 1.0.0, and they are more than 100 bytes. Apple states the limit as 100 bytes. App Store Connect accepted the 1.0.0 values. Check the CJK fields when you push them.
+- Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, "What's New", and the site FAQ.
+- The text does not say "no paywall" or "no in-app purchases", because Pro comes in 1.2 and optional tips can come later. Version 1.1 has no in-app purchase. Add the tip answer back to the description when the first tip ships (see Tips).
+- Each keyword field holds at most 100 bytes, as Apple states the limit. Each description has fewer than 4000 characters, and each promotional text fewer than 170.
 - A native speaker has not read the text for zh-Hans, ja, ko, es, and de.
-- The site privacy pages and the FAQ still show the text of 1.0. A maintainer changes them with the release.
+- The site FAQ and home page show the 1.1 text, and `RELEASED` in `site/build.py` stays `False` until the release.
 
 ### What is open before the submission
 
