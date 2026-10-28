@@ -191,6 +191,8 @@ extension AppModel {
         reminderCoverageEnds = [:]
         reminderAlerts = []
         DraftFile.removeAll()
+        // The count of records of the card of Today belongs to the replaced data (D107).
+        proRecordsDidChange()
     }
 
     /// A failed check or restore as one result of the `data_action` event (D077).

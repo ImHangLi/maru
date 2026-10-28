@@ -47,8 +47,11 @@ final class ProStore {
     static let shared = ProStore()
 
     /// The last known plan, in `UserDefaults.standard` beside the display settings (D014). A Pro feature reads it at
-    /// launch, so it does not flicker while StoreKit answers. StoreKit corrects it at each launch and each update.
+    /// launch, so it does not flicker while StoreKit answers. StoreKit corrects it at each launch, each update, and each
+    /// return to the front.
     private static let planKey = "pro.plan"
+    /// The end of access of the yearly plan, with a billing grace period. A cached yearly plan after it is free.
+    private static let expiresKey = "pro.expires"
 
     /// `nil` is free.
     private(set) var plan: ProPlan?
@@ -61,9 +64,22 @@ final class ProStore {
 
     @ObservationIgnored private var products: [ProPlan: Product] = [:]
     @ObservationIgnored private var listener: Task<Void, Never>?
+    /// The end of access of the yearly plan. `nil` for the lifetime plan and for free.
+    @ObservationIgnored private var expiresAt: Date?
+    /// Reads the entitlement again at `expiresAt`, also when the process stays alive with no network.
+    @ObservationIgnored private var expiryCheck: Task<Void, Never>?
 
     private init() {
-        plan = UserDefaults.standard.string(forKey: Self.planKey).flatMap(ProPlan.init(rawValue:))
+        let defaults = UserDefaults.standard
+        let plan = defaults.string(forKey: Self.planKey).flatMap(ProPlan.init(rawValue:))
+        let expiresAt = defaults.object(forKey: Self.expiresKey) as? Date
+        // The cache never grants a yearly plan after its end of access.
+        if plan == .yearly, (expiresAt ?? .distantPast) <= Date() {
+            self.plan = nil
+        } else {
+            self.plan = plan
+            self.expiresAt = plan == .yearly ? expiresAt : nil
+        }
     }
 
     /// `false` when Screen Time or a device profile blocks purchases. Maru then offers nothing by itself.
@@ -83,20 +99,45 @@ final class ProStore {
                 await self?.refreshEntitlement()
             }
         }
+        scheduleExpiryCheck()
         Task { await refreshEntitlement() }
     }
 
     /// Pro is active when a verified transaction for one of the two products is current and not revoked. A family
-    /// member's purchase counts, because `currentEntitlements` includes shared transactions. An expired subscription
-    /// and a refund are not current, so Pro ends.
+    /// member's purchase counts, because `currentEntitlements` includes shared transactions. A refund is not current,
+    /// so Pro ends. The yearly plan also ends at its end of access, which this read checks itself, because the cache of
+    /// StoreKit can keep an expired transaction while the device has no network.
     func refreshEntitlement() async {
+        let now = Date()
         var found: ProPlan?
+        var expires: Date?
         for await result in Transaction.currentEntitlements {
             guard case let .verified(transaction) = result, transaction.revocationDate == nil,
                   let plan = ProPlan(productID: transaction.productID) else { continue }
-            found = found == .lifetime ? .lifetime : plan
+            switch plan {
+            case .lifetime:
+                found = .lifetime
+            case .yearly:
+                guard let end = await Self.endOfAccess(transaction, at: now), end > now else { continue }
+                if found == nil { found = .yearly }
+                expires = max(expires ?? end, end)
+            }
         }
-        set(found)
+        set(found, expires: expires)
+    }
+
+    /// The expiration date of a yearly transaction, or the end of its billing grace period when StoreKit reports one.
+    /// The grace period applies only after the expiration date, so the status is read only then.
+    private static func endOfAccess(_ transaction: Transaction, at now: Date) async -> Date? {
+        guard let expiration = transaction.expirationDate else { return nil }
+        guard expiration <= now, let group = transaction.subscriptionGroupID,
+              let statuses = try? await Product.SubscriptionInfo.status(for: group) else { return expiration }
+        let grace = statuses.compactMap { status -> Date? in
+            guard status.state == .inGracePeriod, case let .verified(renewal) = status.renewalInfo,
+                  renewal.originalTransactionID == transaction.originalID else { return nil }
+            return renewal.gracePeriodExpirationDate
+        }.max()
+        return max(expiration, grace ?? expiration)
     }
 
     /// Loads the two plans when a paywall shows. A failure leaves the offers empty, and the paywall says so.
@@ -131,7 +172,7 @@ final class ProStore {
             case let .success(.verified(transaction)):
                 await transaction.finish()
                 guard transaction.revocationDate == nil else { return .failed }
-                set(self.plan == .lifetime ? .lifetime : plan)
+                if self.plan != .lifetime { set(plan, expires: transaction.expirationDate) }
                 return .purchased
             case let .success(.unverified(transaction, _)):
                 await transaction.finish()
@@ -159,10 +200,26 @@ final class ProStore {
         return isPro ? .restored : nil
     }
 
-    private func set(_ plan: ProPlan?) {
-        guard plan != self.plan else { return }
-        self.plan = plan
-        UserDefaults.standard.set(plan?.rawValue, forKey: Self.planKey)
+    /// `expires` is the end of access of the yearly plan. The lifetime plan never expires.
+    private func set(_ plan: ProPlan?, expires: Date?) {
+        let expires = plan == .yearly ? expires : nil
+        if plan != self.plan {
+            self.plan = plan
+            UserDefaults.standard.set(plan?.rawValue, forKey: Self.planKey)
+        }
+        expiresAt = expires
+        UserDefaults.standard.set(expires, forKey: Self.expiresKey)
+        scheduleExpiryCheck()
+    }
+
+    private func scheduleExpiryCheck() {
+        expiryCheck?.cancel()
+        guard let expiresAt else { return }
+        expiryCheck = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(max(expiresAt.timeIntervalSinceNow + 1, 1)))
+            guard !Task.isCancelled else { return }
+            await self?.refreshEntitlement()
+        }
     }
 }
 

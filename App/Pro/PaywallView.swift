@@ -58,6 +58,10 @@ struct PaywallView: View {
             }
         }
         .task { await model.loadProOffers() }
+        // When only the other plan loaded, select it, so the buy button sells the plan whose card shows.
+        .onChange(of: model.pro.offers) { _, offers in
+            if offers[plan] == nil, let loaded = ProPlan.allCases.first(where: { offers[$0] != nil }) { plan = loaded }
+        }
         .redeemCodeSheet(isPresented: $showsRedeem)
         // A purchase that ends outside the paywall, for example an approved request, closes it too.
         .onChange(of: model.pro.isPro) { _, isPro in
@@ -89,24 +93,29 @@ struct PaywallView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
+    /// Each plan that loaded has its own card, so a plan never sells without its price on the display (App Review 3.1.2).
     @ViewBuilder
     private var plans: some View {
-        if let yearly = offer(.yearly), let lifetime = offer(.lifetime) {
+        if !model.pro.offers.isEmpty {
             HStack(alignment: .top, spacing: 12) {
-                PlanCard(
-                    title: "Yearly",
-                    price: yearly.displayPrice,
-                    period: "per year",
-                    note: yearly.trialDays.map { Text("\($0) days free") },
-                    isSelected: plan == .yearly
-                ) { plan = .yearly }
-                PlanCard(
-                    title: "Lifetime",
-                    price: lifetime.displayPrice,
-                    period: "one time",
-                    note: Text("No subscription"),
-                    isSelected: plan == .lifetime
-                ) { plan = .lifetime }
+                if let yearly = offer(.yearly) {
+                    PlanCard(
+                        title: "Yearly",
+                        price: yearly.displayPrice,
+                        period: "per year",
+                        note: yearly.trialDays.map { Text("\($0) days free") },
+                        isSelected: plan == .yearly
+                    ) { plan = .yearly }
+                }
+                if let lifetime = offer(.lifetime) {
+                    PlanCard(
+                        title: "Lifetime",
+                        price: lifetime.displayPrice,
+                        period: "one time",
+                        note: Text("No subscription"),
+                        isSelected: plan == .lifetime
+                    ) { plan = .lifetime }
+                }
             }
         } else if model.pro.isLoading {
             ProgressView()
@@ -138,6 +147,7 @@ struct PaywallView: View {
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            // A plan whose product and price did not load has no card, so it can not be bought.
             .disabled(offer(plan) == nil || model.pro.buying != nil || isRestoring)
             Button {
                 dismiss()

@@ -29,9 +29,15 @@ struct ProState {
     var paywall: PaywallRequest?
     /// The first-value offer waits for the alerts and the questions after a save.
     var firstValueOffer: NextDosePreview?
-    /// At least 5 doses have a record. The card of Today needs it. It is read once in a process, until it is true.
+    /// At least 5 doses have a record. The card of Today needs it. It is read until it is true, and again after an
+    /// undo, a delete, or a restore.
     var hasEnoughRecords = false
     var isReadingRecords = false
+    /// Goes up when the count is out of date, so a read that started before gives no result.
+    var recordsRead = 0
+    /// Goes up at the planned time of the next open dose of Today, so Today reads the rules of the card again.
+    var cardClock = 0
+    var cardCheck: Task<Void, Never>?
     /// "×" on the card of Today.
     var cardDismissed = UserDefaults.standard.bool(forKey: ProOffers.cardDismissedKey)
 }
@@ -128,6 +134,8 @@ extension AppModel {
     /// a day of the rating prompt, not while a dose is due, on at most 3 days, and never after "×" (D107).
     func showsProCard(_ day: TodaySnapshot, at now: Date = Date()) -> Bool {
         let defaults = UserDefaults.standard
+        // Today shows the card again when the clock goes up.
+        _ = proState.cardClock
         guard proState.hasEnoughRecords, !proState.cardDismissed, !pro.isPro, pro.canMakePayments,
               let firstLaunch = ReviewPrompt.firstLaunch(), now.timeIntervalSince(firstLaunch) >= ProOffers.cardFirstDays,
               !ReviewPrompt.askedToday(now: now) else { return false }
@@ -135,22 +143,59 @@ extension AppModel {
         guard days.count < ProOffers.cardDayLimit || days.contains(Self.dayKey(day.date)) else { return false }
         // A planned dose whose time came and that has no record is due. The card waits until it has one.
         return !day.entries.contains { entry in
-            !isDone(entry) && entry.occurrence.timeZone.resolve(entry.occurrence.plannedTime, on: entry.occurrence.plannedDate)
-                .earliestInstant <= now
+            !isDone(entry) && Self.plannedInstant(entry) <= now
         }
     }
 
-    /// Reads the count of records once, when the other rules of the card can pass. A failed read shows no card.
+    /// The card hides when a dose becomes due. So Today reads the rules again at the planned time of the next open
+    /// dose. Each new content of Today and each commit set the check again. A return to the front reads Today again.
+    func scheduleProCardCheck(for day: TodaySnapshot, at now: Date = Date()) {
+        proState.cardCheck?.cancel()
+        proState.cardCheck = nil
+        guard !proState.cardDismissed, !pro.isPro,
+              let next = day.entries.filter({ !isDone($0) }).map(Self.plannedInstant).filter({ $0 > now }).min()
+        else { return }
+        proState.cardCheck = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(max(next.timeIntervalSinceNow + 1, 1)))
+            guard !Task.isCancelled else { return }
+            guard let self else { return }
+            proState.cardClock += 1
+            if case let .loaded(snapshot) = content, let day = snapshot.today { scheduleProCardCheck(for: day) }
+        }
+    }
+
+    private static func plannedInstant(_ entry: TodaySnapshot.Entry) -> Date {
+        entry.occurrence.timeZone.resolve(entry.occurrence.plannedTime, on: entry.occurrence.plannedDate).earliestInstant
+    }
+
+    /// Reads the count of records, when the other rules of the card can pass. A failed read shows no card.
     func readProCardRecords() {
         guard !proState.hasEnoughRecords, !proState.isReadingRecords, !proState.cardDismissed, !pro.isPro,
               let firstLaunch = ReviewPrompt.firstLaunch(), Date().timeIntervalSince(firstLaunch) >= ProOffers.cardFirstDays
         else { return }
         proState.isReadingRecords = true
+        let generation = dataGeneration
+        let read = proState.recordsRead
         Task {
             let enough = (try? await store.hasRecords(atLeast: ProOffers.cardRecords)) ?? false
+            // A restore, an undo, or a delete after the read started can make the count wrong.
+            guard generation == dataGeneration, read == proState.recordsRead else { return }
             proState.isReadingRecords = false
             if enough { proState.hasEnoughRecords = true }
         }
+    }
+
+    /// An undo removes the record of a dose.
+    func proRecordsDidCommit(_ records: [OccurrenceRecord]) {
+        if records.contains(where: { $0.events.last?.action == .undo }) { proRecordsDidChange() }
+    }
+
+    /// An undo, a delete, or a restore can remove records. The count is read again, and a read that runs gives no result.
+    func proRecordsDidChange() {
+        proState.recordsRead += 1
+        proState.hasEnoughRecords = false
+        proState.isReadingRecords = false
+        readProCardRecords()
     }
 
     /// The card is on Today on this day. Each day counts once.

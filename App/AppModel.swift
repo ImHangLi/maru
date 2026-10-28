@@ -284,6 +284,8 @@ final class AppModel {
         // The first activation of a process has no time in the background. `refresh` already runs.
         guard let backgroundedAt else { return }
         self.backgroundedAt = nil
+        // A plan can end or renew while Maru is away (D107). The read waits for the system, not the return.
+        Task { await pro.refreshEntitlement() }
         if ContinuousClock.now - backgroundedAt > Self.sessionTimeout {
             selectedTab = .today
             // A long absence opens Today, never the history (spec 4, T26). Unconfirmed events stay (D014).
