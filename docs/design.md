@@ -13,7 +13,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## Color
 
-- One app tint for the whole app. The user picks it from the eight item colors in Settings, under "App Color" (D025). The default is pink, the system pink (#FF2D55 in light mode).
+- One app tint for the whole app. The user picks it from the eight item colors in Settings, under "App Color" (D025). The default is pink, the system pink (#FF2D55 in light mode). Pink is free, and the other colors need Maru Pro (D114). A free user's choice tints only the Settings sheet as a preview, with a footer under "Display".
 - The tint marks: buttons, and the record circle when filled. A slot title stays in the text color (D050). Sheets get the same tint.
 - The tint is for icons, controls, and state, not for row text (D076). A row that is an action or a link has the text color, and its symbol keeps the tint. The value of a menu row has the text color. A destructive row stays red.
 - In light mode, the tint has at least 3:1 contrast on white. Orange, yellow, green, and mint are darker when they are the tint: #D97F00, #B49000, #2CAA4C, and #00A69F. Dark mode uses the system colors. The item colors do not change.
@@ -53,7 +53,7 @@ A short onboarding, once (D103, D104). It asks nothing and requests no permissio
 
 ## Maru Pro
 
-The paywall is one sheet with system fonts and SF Symbols in the tint (D107).
+The paywall is one sheet with system fonts and SF Symbols in the tint (D107). Its three benefit rows are "Next Dose on the Lock Screen", "Apple Watch App", and "Make It Yours" (app colors, icons, and reminder sounds, D114).
 
 - The two plans are side by side as two cards. The selected card has a border of 2.5 points in the tint. The price is the largest text of a card.
 - The buy button and "Continue Free" are large prominent buttons of the same width. The buy button has the tint. "Continue Free" has a gray fill and the text color.
@@ -170,7 +170,7 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 
 - "Reminders": the row "Notifications" with its state ("On", "Quiet", "Off", "Not Asked Yet"), the row "Open Settings" when the state is "Off" or "Quiet", and the switch "Show Names in Reminders" (D029, D085). Settings has no test notification (D076). The footer explains a state that needs words.
 - "For All Items" (D085): the switch "Alarm" (from iOS 26), the menu "Remind Again", and the menu "Every". A row shows the value that every active item with a time has. When the items differ, it says "Varies", and "Alarm" is then a menu with "Varies", "On", and "Off". A choice sets every one of those items. "Every" shows only while an item has "Remind Again" on. The only footer is the limit line of "Until I Record It".
-- "Display": "App Color", "Color Header", "Appearance", and "Language". "Appearance" has "System", "Light", and "Dark", and the default is "System" (D105).
+- "Display": "App Color", "Color Header", "Appearance", and "Language". "Appearance" has "System", "Light", and "Dark", and the default is "System" (D105). Only "App Color" has a Pro part: every color except pink (D114).
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
 - "Your Data", then "Send Feedback" (D037). Settings has no "Support Maru" section (D099).
 - "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift. Its footer is "Made with care by the Maru team." (D101).
