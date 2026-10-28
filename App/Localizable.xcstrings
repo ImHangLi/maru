@@ -410,6 +410,41 @@
         }
       }
     },
+    "≈ %@/month" : {
+      "comment" : "Paywall of Maru Pro: the small line under the price of the yearly plan. It shows the yearly price divided by 12, with the currency of the user. Example: ≈ $0.83/month. It must fit one line in a tile of about 137 points.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "≈ %@/Monat"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "≈ %@/mes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月あたり約%@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "월 약 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "约 %@/月"
+          }
+        }
+      }
+    },
     "%lld changes not saved" : {
       "comment" : "Today and History: the banner of the events that are not saved yet. Example: 1 change not saved.",
       "localizations" : {
@@ -601,7 +636,7 @@
       }
     },
     "%lld days free" : {
-      "comment" : "Paywall of Maru Pro: the free trial of the yearly plan, smaller than the price. Example: 7 days free.",
+      "comment" : "Paywall of Maru Pro: the tag on the top edge of the yearly tile for the free trial. Example: 7 days free.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7462,37 +7497,37 @@
         }
       }
     },
-    "One time" : {
-      "comment" : "Paywall of Maru Pro: the small line under the price of the lifetime plan. The user pays once.",
+    "Pay once, keep forever" : {
+      "comment" : "Paywall of Maru Pro: the small line under the price of the lifetime plan. It must fit one line in a tile of about 137 points.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Einmalig"
+            "value" : "Einmal zahlen, für immer"
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pago único"
+            "value" : "Un pago, para siempre"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1回のみ"
+            "value" : "1回の支払いでずっと"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "한 번만"
+            "value" : "한 번 결제로 평생"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "一次买断"
+            "value" : "一次付款，永久拥有"
           }
         }
       }

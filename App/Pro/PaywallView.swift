@@ -211,7 +211,8 @@ struct PaywallView: View {
                     PlanTile(
                         title: "Yearly",
                         price: yearly.displayPrice,
-                        note: yearly.trialDays.map { Text("\($0) days free") },
+                        tag: yearly.trialDays.map { Text("\($0) days free") },
+                        note: yearly.monthlyPrice.map { Text("≈ \($0)/month") },
                         isSelected: plan == .yearly
                     ) { plan = .yearly }
                 }
@@ -219,12 +220,15 @@ struct PaywallView: View {
                     PlanTile(
                         title: "Lifetime",
                         price: lifetime.displayPrice,
-                        note: Text("One time"),
+                        tag: nil,
+                        note: Text("Pay once, keep forever"),
                         isSelected: plan == .lifetime
                     ) { plan = .lifetime }
                 }
             }
             .fixedSize(horizontal: false, vertical: true)
+            // The free trial tag sits half over the top edge of its tile.
+            .padding(.top, offer(.yearly)?.trialDays == nil ? 0 : 10)
         } else if model.pro.isLoading {
             ProgressView()
                 .frame(maxWidth: .infinity, minHeight: 80)
@@ -415,14 +419,17 @@ private struct BenefitRow: View {
     }
 }
 
-/// One plan as a tile: the name, the price as the largest text (App Review 3.1.2), and one small line. The selected tile
-/// has an outline in the tint.
+/// One plan as a tile: the name, the price as the largest text (App Review 3.1.2), and one small line. The free trial of
+/// the yearly plan is a tag on the top edge, smaller than the price. The selected tile is filled with the picture of the
+/// paywall and has white text. The other tile is quiet.
 private struct PlanTile: View {
     let title: LocalizedStringKey
     let price: String
+    let tag: Text?
     let note: Text?
     let isSelected: Bool
     let select: () -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: select) {
@@ -430,18 +437,47 @@ private struct PlanTile: View {
                 Text(title).font(.subheadline.weight(.semibold))
                 Text(verbatim: price).font(.title2.bold())
                 // A tile with no note keeps the height of its neighbor.
-                (note ?? Text(verbatim: " ")).font(.footnote).foregroundStyle(.secondary)
+                (note ?? Text(verbatim: " "))
+                    .font(.footnote)
+                    .foregroundStyle(isSelected ? AnyShapeStyle(.white.opacity(0.9)) : AnyShapeStyle(.secondary))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
+            .foregroundStyle(isSelected ? AnyShapeStyle(.white) : AnyShapeStyle(.primary))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
-            .background(Color(.secondarySystemBackground), in: .rect(cornerRadius: 16, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(isSelected ? AnyShapeStyle(.tint) : AnyShapeStyle(.clear), lineWidth: 2)
+            .background {
+                Color(.secondarySystemBackground)
+                    .overlay {
+                        Image("ProHero")
+                            .resizable()
+                            .scaledToFill()
+                            // The same dark veil as the header, so white text keeps its contrast on the bright parts.
+                            .overlay(LinearGradient(
+                                colors: [.black.opacity(0.1), .black.opacity(0.45)], startPoint: .top, endPoint: .bottom
+                            ))
+                            .opacity(isSelected ? 1 : 0)
+                    }
+                    .clipShape(.rect(cornerRadius: 16, style: .continuous))
+            }
+            .overlay(alignment: .top) {
+                if let tag {
+                    tag
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 3)
+                        .background(.tint, in: .capsule)
+                        // A ring in the page color separates the tag from the filled tile.
+                        .overlay(Capsule().strokeBorder(Color(.systemBackground), lineWidth: 2))
+                        .offset(y: -12)
+                }
             }
             .contentShape(.rect)
+            .animation(reduceMotion ? nil : .smooth(duration: 0.25), value: isSelected)
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)

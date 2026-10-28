@@ -2454,7 +2454,7 @@ Evidence: captures (light, dark, zh-Hans, scrolled, an iPhone 17e, and "Accessib
 
 Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the long German and Spanish lines, the iPhone SE size, and the contrast of the gray lines on the wash with a tool.
 
-## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118)
+## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118, plan tiles changed in a fourth round below)
 
 Maintainer feedback on 2026-10-28 about the paywall of D118. This decision replaces the paywall of D118. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107. The thank-you and the first-value offer are as before.
 
@@ -2467,6 +2467,14 @@ What changed, and why:
 - One line each. The third benefit line is now "Choose your app color, icon, and sound." and the German line of the first benefit is "Dosis sehen, ohne Maru zu öffnen.". Each benefit title, each benefit line, the terms line, and each button label fit on one line at the default text size on an iPhone 17e and an iPhone 17 Pro in English, zh-Hans, German, and Spanish.
 - Black text on white. The benefits start under the end of the picture fade, on the plain background. No dark text sits on the picture or on the fade.
 - No wash. The page background is the plain system background, white in light mode and the system dark color in dark mode. The tint wash is gone. The fade of the picture is longer (96 points under the headline) and eased (smootherstep), and it ends before the first benefit. The page also fades into the plain background above the purchase area.
+
+Fourth round, plan tiles (maintainer decision of 2026-10-28): the maintainer likes the page, and the two tiles felt "not exciting". The maintainer confirmed that Maru Pro has no monthly plan. It keeps the yearly plan ($9.99, 7-day free trial) and the lifetime plan ($19.99). Only the tiles changed, with true information:
+- Yearly tile: the name, the billed price, and a line "≈ $0.83/month". The number is the price of the StoreKit `Product` divided by 12, in its `priceFormatStyle`, and no code sets it. The free trial is a tag, "7 days free", on the top edge of the tile. It shows only when StoreKit says that the user can still get the trial (the rule of D107).
+- Lifetime tile: the name, the billed price, and "Pay once, keep forever".
+- The selected tile is filled with the picture `ProHero` and the same dark veil as the header, with white text. The other tile keeps the quiet gray fill and the normal text. The change animates for 0.25 seconds and does not animate with Reduce Motion. It works in dark mode, because the picture does not change with the mode.
+- The price stays the largest text in each tile (App Review 3.1.2 and D107). The tag and the monthly line are smaller. There is no "Most popular", "Best value", "Save xx%", countdown, or strikethrough.
+- Strings: "One time" is gone. "Pay once, keep forever" and "≈ %@/month" are new, in six languages. Every line of the tiles and the terms line fits one line at the default text size on an iPhone 17e and an iPhone 17 Pro in en, zh-Hans, de, es, ja, and ko (captures). Not verified: an accessibility text size with the new tiles, a real iPhone, VoiceOver, Reduce Motion, and the contrast of the white tag text on the tint with a tool.
+- Evidence: captures and `compare.png` (D119 next to the new tiles) are in `~/Documents/Research/maru/paywall-redesign/final-v3/`. A copy of the code in `/tmp` set the prices.
 
 Fit: the first screen at the default text size on an iPhone 17 Pro and an iPhone 17e shows the headline, the three benefits, both prices, the terms line, the button, and the two links.
 

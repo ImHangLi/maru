@@ -35,6 +35,8 @@ struct ProOffer: Equatable, Sendable {
     let displayPrice: String
     /// The days of the free trial, when this user can still get it. `nil` for the lifetime plan.
     let trialDays: Int?
+    /// The yearly price divided by 12, in the format of the App Store. `nil` for the lifetime plan.
+    let monthlyPrice: String?
 }
 
 /// Maru Pro (D107). This file is the only code that imports StoreKit. `MaruCore` and `MaruDatabase` do not.
@@ -172,7 +174,10 @@ final class ProStore {
                 default: nil
                 }
             }
-            offers[plan] = ProOffer(plan: plan, displayPrice: product.displayPrice, trialDays: trialDays)
+            let monthly = plan == .yearly ? (product.price / 12).formatted(product.priceFormatStyle) : nil
+            offers[plan] = ProOffer(
+                plan: plan, displayPrice: product.displayPrice, trialDays: trialDays, monthlyPrice: monthly
+            )
         }
     }
 

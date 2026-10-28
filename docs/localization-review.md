@@ -502,3 +502,12 @@ Four strings changed, and four left the catalog: "Maru is made by one independen
 | Free for %lld days, then %@ per year. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。可随时取消。 | %1$lld日間無料、その後は年額%2$@。いつでもキャンセル可能。 | %1$lld días gratis, luego %2$@ al año. Cancela cuando quieras. | %1$lld Tage gratis, dann %2$@ pro Jahr. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 언제든 취소 가능. |
 | %@ per year. Cancel anytime. | 每年 %@。可随时取消。 | 年額%@。いつでもキャンセル可能。 | %@ al año. Cancela cuando quieras. | %@ pro Jahr. Jederzeit kündbar. | 연 %@. 언제든 취소 가능. |
 | One payment. Yours to keep. | 一次付款，永久拥有。 | 1回のお支払いで、ずっと使えます。 | Un solo pago. Es tuyo para siempre. | Einmalige Zahlung. Gehört dir für immer. | 한 번만 결제하면 계속 쓸 수 있어요. |
+
+## Paywall plan tiles (D119, fourth round)
+
+One string left the catalog ("One time"). Two strings are new. "%lld days free" is now the tag on the top edge of the yearly tile. No native speaker read them. The reviewer checks that each line fits one line in a tile of about 137 points (checked on an iPhone 17e in all six languages), that "Pay once, keep forever" is a true short claim, and that the monthly line reads as the yearly price divided by 12.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Pay once, keep forever | 一次付款，永久拥有 | 1回の支払いでずっと | Un pago, para siempre | Einmal zahlen, für immer | 한 번 결제로 평생 |
+| ≈ %@/month | 约 %@/月 | 月あたり約%@ | ≈ %@/mes | ≈ %@/Monat | 월 약 %@ |
