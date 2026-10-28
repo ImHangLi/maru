@@ -2,24 +2,10 @@ import Foundation
 import MaruCore
 import MaruDatabase
 
-/// The next dose of the first item, for the Lock Screen preview of the first-value offer (D107). It stays in memory
-/// and on the display. Nothing of it leaves the device.
-struct NextDosePreview: Equatable {
-    let name: String
-    let form: ItemForm
-    let color: ItemColor
-    let imageReference: String?
-    let amount: String?
-    /// The next reminder time of the plan, as the user's region writes it.
-    let time: String
-}
-
 /// One showing of the paywall.
 struct PaywallRequest: Identifiable, Equatable {
     let id = UUID()
     let source: AnalyticsEvent.PaywallSource
-    /// Only the first-value offer has it.
-    let preview: NextDosePreview?
 }
 
 /// The state of Maru Pro that is not in StoreKit (D107). The flags of the offers are in `UserDefaults.standard`, as
@@ -28,7 +14,7 @@ struct ProState {
     /// The paywall on the display.
     var paywall: PaywallRequest?
     /// The first-value offer waits for the alerts and the questions after a save.
-    var firstValueOffer: NextDosePreview?
+    var firstValueOffer = false
     /// At least 5 doses have a record. The card of Today needs it. It is read until it is true, and again after an
     /// undo, a delete, or a restore.
     var hasEnoughRecords = false
@@ -40,12 +26,16 @@ struct ProState {
     var cardCheck: Task<Void, Never>?
     /// "×" on the card of Today.
     var cardDismissed = UserDefaults.standard.bool(forKey: ProOffers.cardDismissedKey)
+    /// A free user tapped "Open on iPhone" on the Watch (D111). The request can start Maru in the background, so it waits
+    /// in `UserDefaults.standard` until Maru is in front.
+    var watchAsked = UserDefaults.standard.bool(forKey: ProOffers.watchAskedKey)
 }
 
 /// The keys and the limits of the two offers that Maru shows by itself (D107).
 enum ProOffers {
     static let firstValueShownKey = "pro.firstValueShown"
     static let cardDismissedKey = "pro.cardDismissed"
+    static let watchAskedKey = "pro.watchAsked"
     /// The days on which the card of Today showed, at most `cardDayLimit`.
     static let cardDaysKey = "pro.cardDays"
     static let cardDayLimit = 3
@@ -64,9 +54,9 @@ extension AppModel {
 
     /// The one entry to the paywall (D107). A Pro feature calls it with `.feature` when a free user taps it. Each
     /// showing sends `paywall_shown` with the source and nothing else.
-    func presentPaywall(reason: AnalyticsEvent.PaywallSource, preview: NextDosePreview? = nil) {
+    func presentPaywall(reason: AnalyticsEvent.PaywallSource) {
         guard proState.paywall == nil, !pro.isPro else { return }
-        proState.paywall = PaywallRequest(source: reason, preview: preview)
+        proState.paywall = PaywallRequest(source: reason)
         analytics.capture(.paywallShown(reason))
     }
 
@@ -92,40 +82,46 @@ extension AppModel {
         return result
     }
 
+    // MARK: Watch
+
+    /// The locked screen of the Watch app asked for Maru Pro (D111). The root view shows the paywall the next time that
+    /// Maru is in front, after the onboarding, the edit screen, and the alerts.
+    func watchAskedForPro() {
+        // A paywall that is open already answers the request, so its close does not open a second one.
+        guard !pro.isPro, proState.paywall == nil else { return }
+        proState.watchAsked = true
+        UserDefaults.standard.set(true, forKey: ProOffers.watchAskedKey)
+    }
+
+    /// The root view shows the paywall that the Watch asked for. It shows one time for each request.
+    func showWatchOffer() {
+        guard proState.watchAsked else { return }
+        proState.watchAsked = false
+        UserDefaults.standard.removeObject(forKey: ProOffers.watchAskedKey)
+        presentPaywall(reason: .feature)
+    }
+
     // MARK: First-value offer
 
-    /// The first save of a new item with a time offers Maru Pro once per install, with the user's own next dose. The
-    /// save already waited for the notification permission alert. The root view shows the offer after the edit screen,
-    /// the alerts, and the questions of the save.
+    /// The first save of a new item with a time offers Maru Pro once per install. The save already waited for the
+    /// notification permission alert. The root view shows the offer after the edit screen, the alerts, and the
+    /// questions of the save.
     ///
     /// Not after a launch from a reminder or a widget in this process. Then the flag stays unset, and the next such save
     /// offers it.
-    func offerFirstValue(for item: Item, schedule: Schedule?, session: EditorSession, at now: Date) {
+    func offerFirstValue(schedule: Schedule?, session: EditorSession) {
         guard session.isNew, session.replaced == nil, let schedule, schedule.isEnabled,
-              let version = schedule.versions.last, !opensForAction, !pro.isPro, pro.canMakePayments,
+              schedule.versions.last?.slotTimes.isEmpty == false, !opensForAction, !pro.isPro, pro.canMakePayments,
               !UserDefaults.standard.bool(forKey: ProOffers.firstValueShownKey) else { return }
-        // A plain clock time of the device. The preview shows a time and no date, so a plan that skips today shows its
-        // first time.
-        let parts = Calendar.current.dateComponents([.hour, .minute], from: now)
-        let times = version.slotTimes.map(\.time).sorted()
-        let clock = try? WallClockTime(hour: parts.hour ?? 0, minute: parts.minute ?? 0)
-        guard let next = times.first(where: { time in clock.map { time > $0 } ?? false }) ?? times.first else { return }
-        proState.firstValueOffer = NextDosePreview(
-            name: item.name,
-            form: item.form,
-            color: item.color,
-            imageReference: item.imageReference,
-            amount: version.dose?.text,
-            time: SchedulePreview.format(hour: next.hour, minute: next.minute)
-        )
+        proState.firstValueOffer = true
     }
 
     /// The root view shows the offer now. It never shows again on this device.
     func showFirstValueOffer() {
-        guard let preview = proState.firstValueOffer else { return }
-        proState.firstValueOffer = nil
+        guard proState.firstValueOffer else { return }
+        proState.firstValueOffer = false
         UserDefaults.standard.set(true, forKey: ProOffers.firstValueShownKey)
-        presentPaywall(reason: .firstValue, preview: preview)
+        presentPaywall(reason: .firstValue)
     }
 
     // MARK: Card of Today

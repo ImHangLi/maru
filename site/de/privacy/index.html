@@ -53,7 +53,7 @@
 <section class="card summary" aria-labelledby="summary-title"><h2 id="summary-title">Kurz gesagt</h2><ul><li>Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad, und jedes Gerät hat seine eigenen Daten. Maru hat kein Konto und keinen Server dafür.</li><li>Die einfache Nutzungsstatistik enthält nie, was du nimmst, und ein Schalter in den Einstellungen stellt sie ab.</li><li>Maru hat keine Werbung und liest weder deine Kontakte noch deinen Standort.</li></ul></section>
 <p class="note">Die vollständige Erklärung steht unten auf Englisch. Maßgeblich ist der englische Text.</p>
 <div class="policy" lang="en">
-<p>Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. This page describes the app in this repository as it is today.</p>
+<p>Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. With Maru Pro, the list of today also goes to your own Apple Watch (see "Apple Watch"). This page describes the app in this repository as it is today.</p>
 <h2 lang="de">Was Maru speichert</h2>
 <ul>
 <li>Your items, schedules, notes, and records.
@@ -67,7 +67,7 @@
 <p>Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so the "Taken" action of a reminder works while the device is locked. When Maru cannot open your records, it records nothing and asks you to unlock.</p>
 <h2 lang="de">Was Maru nicht tut</h2>
 <ul>
-<li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and a request to the App Store for product information when you open Settings. That request carries only product identifiers and none of your item data. Apple's App Store privacy policy applies to it.
+<li>It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the App Store requests of Maru Pro (see "Maru Pro"). Those requests carry none of your item data.
 </li>
 <li>It contains no advertising or crash-reporting code.
 </li>
@@ -116,6 +116,10 @@
 <li><code>data_action</code>: <code>action</code>, one of <code>export</code>, <code>backup</code>, or <code>restore</code>, and <code>result</code>, one of <code>done</code>, <code>failed</code>, <code>cancelled</code>, <code>invalid_file</code>, <code>newer_file</code>, or <code>not_confirmed</code>. Not the file or its content.
 </li>
 <li><code>feedback_entry</code>: <code>entry</code> = <code>settings</code>, when you tap "Send Feedback".
+</li>
+<li><code>paywall_shown</code>: <code>source</code>, the place that showed the Maru Pro screen: <code>first_value</code> (after your first item with a time), <code>day7_card</code> (the card on Today), <code>feature</code> (a Pro feature), or <code>settings</code>.
+</li>
+<li><code>purchase_result</code>: <code>result</code>, one of <code>purchased</code>, <code>cancelled</code>, <code>pending</code>, <code>failed</code>, or <code>restored</code>, and <code>plan</code>, <code>yearly</code> or <code>lifetime</code>. Not the price, the Apple Account, or the receipt. Apple's privacy label lists this as purchase history.
 </li></ul>
 </li>
 <li>What Maru never sends: item names, doses, amounts, intake times, reminder times, item IDs, notes, photos, or the text of a message. It sends no event at the moment of a record, no time of a single dose, and no count of doses.
@@ -127,6 +131,30 @@
 <li>If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage data, also a daily summary that waits. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
 </li>
 <li>Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
+</li></ul>
+<h2 lang="de">Maru Pro</h2>
+<p>Maru Pro is an optional purchase through the App Store: a yearly subscription or a lifetime purchase. Everything else in Maru stays free.</p>
+<ul>
+<li>Apple handles the payment, the Apple Account, and the receipt. Maru does not see your payment details. Apple's privacy policy applies to them.
+</li>
+<li>Maru asks the App Store, through StoreKit on your device, which plan is active, at each launch and when a purchase changes. It loads the prices when the Maru Pro screen shows. These requests carry the product identifiers of Maru Pro and none of your item data.
+</li>
+<li>Maru keeps the name of the active plan in its settings on your device, so Pro features do not flicker at launch.
+</li>
+<li>A purchase, a restore, and an offer code never read or change your items or records. A restore of purchases does not restore your health data. For that, use the Maru backup file.
+</li>
+<li>The first offer of Maru Pro can show a picture of a Lock Screen with your next dose. Maru draws it on your device. Nothing of it leaves the device.
+</li></ul>
+<h2 lang="de">Apple Watch</h2>
+<p>The Apple Watch app is part of Maru Pro. It shows the doses of today, and it records a dose through your iPhone.</p>
+<ul>
+<li>With Maru Pro, your iPhone sends the list of today to your own paired Apple Watch: the names, the amounts, the times, and the record states. Apple's WatchConnectivity sends the list directly between your two devices. Maru has no server in between.
+</li>
+<li>Without Maru Pro, your iPhone sends only whether Maru Pro is active, the app color, and the end of the day. It sends none of your item data.
+</li>
+<li>Nothing goes to the Watch until the Maru Watch app is installed.
+</li>
+<li>The Watch app has no database. Each record that you make on the Watch is saved on your iPhone. The Watch app sends no usage statistics and writes no log.
 </li></ul>
 <h2 lang="de">Kamera</h2>
 <p>Maru uses the camera only when you scan a label or take a photo of an item. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo, and it sends no image and no text. With usage statistics on, Maru sends only the steps of the scan (see <code>setup_step</code>). iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".</p>

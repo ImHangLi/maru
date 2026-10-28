@@ -10,10 +10,14 @@ struct ProCardSection: View {
     var body: some View {
         Section {
             HStack(alignment: .top, spacing: 12) {
-                ProBadge(symbol: "lock.iphone", size: 36)
+                Image(systemName: "lock.iphone")
+                    .font(.title2)
+                    .foregroundStyle(.tint)
+                    .frame(width: 32)
+                    .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 6) {
                     Text("See your next dose on the Lock Screen")
-                        .font(.proDisplay(.headline))
+                        .font(.headline)
                     Text("Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
@@ -31,15 +35,6 @@ struct ProCardSection: View {
             .buttonStyle(.borderless)
             .padding(.vertical, 4)
         }
-        // A soft wash of the app tint, so the card reads as an invitation and not as a dose.
-        .listRowBackground(
-            LinearGradient(
-                colors: [Color.accentColor.opacity(0.14), Color.accentColor.opacity(0.05)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .background(Color(.secondarySystemGroupedBackground))
-        )
         .onAppear { model.proCardDidShow(on: date) }
     }
 }

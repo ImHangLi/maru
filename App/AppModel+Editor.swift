@@ -174,7 +174,7 @@ extension AppModel {
         report(status, of: reported.id, removes: removed != nil)
         offerRemindAgain(for: item, session: session, hasTime: schedule != nil)
         // After the reminder run, so the notification permission alert of this save ended (D107).
-        offerFirstValue(for: item, schedule: schedule, session: session, at: now)
+        offerFirstValue(schedule: schedule, session: session)
     }
 
     /// The first save of an item with a time offers "Remind Again" one time, as a plain question. It turns on nothing by

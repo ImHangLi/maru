@@ -1155,7 +1155,7 @@ Tests (D016): four new tests. The rhythm and the pause across a clock change, th
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
-## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074)
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074) (a Pro feature: D111)
 
 Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
 
@@ -1308,7 +1308,7 @@ Maintainer decision on the concept, with agent detail. The maintainer approved a
 - The PNGs are in `App/Debug/SamplePhotos/`. The Release configuration of the app target sets `EXCLUDED_SOURCE_FILE_NAMES` to `sample-photo-*.png`, so a release build does not copy them. A CI step reads the Release build settings and fails when the setting is missing.
 - Image sources: Unsplash photos by Supliful under the Unsplash License, with invented labels. The brand names had no hit in the US trademark register. A TMview check is still open before a public use of the images.
 
-## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test
+## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test (replaced by D111)
 
 Maintainer decision, with agent detail. The goal is a fast first release. It replaces the "embedded in the app" part of D071 for version 1.0.
 
@@ -2016,7 +2016,7 @@ Sources:
 
 Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
 
-## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114)
+## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115)
 
 Maintainer decisions of 2026-10-28, with agent detail. They follow the two paywall studies of 2026-10-28 in the maintainer's research folder. They define the "Pro" tier of D099.
 
@@ -2323,26 +2323,56 @@ Not verified: no build of the app on this Mac (CI builds it). Nobody saw the men
 3. A refund in the transaction manager: the color stays. Another color opens the paywall. Pink still works.
 4. The footer in the six languages and at the largest text sizes.
 
-## D115 · 2026-10-28 · A calmer look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107)
+## D111 · 2026-10-28 · The Apple Watch app is a Pro feature, and the app embeds it again (replaces D074)
 
-Maintainer request on 2026-10-28: the paywall looked plain, and Maru Pro should feel premium, calm, and simple. This decision changes the look only. The StoreKit code, the entitlement rules, the offers, the analytics, and every price rule of D107 stay as they are. The paywall still has no countdown, no trial switch, no discount, no urgency text, and a "Continue Free" button with the size and shape of the buy button.
+Maintainer decision of 2026-10-28, with agent detail. The Apple Watch app is a Maru Pro feature (D107), and it ships in the first public release. It replaces D074. The rules of D071 and D066 for the list and the record stay.
 
-- Type: New York, the serif of the system (`Font.proDisplay`, design `.serif`), for display text only: the title "Maru Pro", the prices, the Settings row, and the card title. Body text stays SF Pro. A text style keeps Dynamic Type. Maru embeds no font file. A Fontshare font was not added: the system serif costs no license, no size, and no launch time, and it follows the language of the user (a Latin display font has no glyph for zh-Hans, ja, or ko).
-- Color: the app tint only, at low strength. A new `ProGlow` draws two radial gradients of the tint behind the top of the paywall. They drift slowly (9 seconds, ease in and out). With Reduce Motion on, they stand still. The glow scrolls away with the hero. It has no blur and no shader, so it costs no frame time. `MeshGradient` is iOS 18 only, and Maru supports iOS 17.
-- Hero: the app icon in use (76 points, with a soft shadow), the title, and the existing sentence.
-- Benefits: one card of a system material with a hairline edge. Each row has a `ProBadge`: a white symbol on a rounded square in a gradient of the tint, as the icons of the Settings app.
-- Real previews: under the benefits, one card shows the real eight app colors, the real six icons (`AppIconPreview`), and the six real sounds as capsule buttons. A tap on a sound plays it, as the free preview of D112. No lock symbol. Each row scrolls sideways, so it never clips at a large text size.
-- Plans: two cards with a corner of 20 points. The selected card has a wash of the tint, a border of 2 points, and a filled check mark. The price is in New York and is the largest text of the card (App Review 3.1.2). At an accessibility text size, the cards stack. The selection moves with a spring, and with no motion when Reduce Motion is on.
-- Buttons: both are capsules, with the same size, font, and prominent style. The buy button has the tint, and "Continue Free" is gray.
-- Trial timeline: the same two rows in a calm card with a divider.
-- Thank-you: after a purchase, or after Pro turns on while the paywall is open, a full-sheet material shows a check seal (one bounce, none with Reduce Motion), "Welcome to Maru Pro", and "Thank you. Your extras are ready." The success haptic plays when it shows. The paywall closes after 1.6 seconds. The purchase has already finished by then, so no confirmation comes before the commit (spec 7.2). A second trigger does nothing.
-- Settings: the row "Maru Pro" has a `ProBadge`, the title in New York, and the line "Lock Screen, Apple Watch, and more". For a Pro user, the badge is a check seal and the line is "Active, Yearly" or "Active, Lifetime". "Restore Purchases" and "Redeem Code" did not change.
-- Today card: the same content with a `ProBadge`, the title in New York, and a soft wash of the tint as the row background. It still sits at the bottom of the list, never pushes a dose, and "×" hides it.
-- Lock Screen preview: a continuous corner and a soft shadow.
-- New strings: "Welcome to Maru Pro", "Thank you. Your extras are ready.", and "Lock Screen, Apple Watch, and more", in the six languages. `docs/localization-review.md` lists them. The paywall also uses the existing keys "App Color", "App Icon", and "Reminder Sound" as small headings.
+Build:
 
-The paywall already shows the plans and the buttons after the first scroll, below the previews. A pinned buy bar was not added: it would put the buy button away from the price of the plan (App Review 3.1.2).
+- `project.yml`: the `Maru` target depends on `MaruWatch` again. XcodeGen puts the Watch app in the phase "Embed Watch Content", so an archive of the app has `Maru.app/Watch/MaruWatch.app`.
+- CI builds the Watch app as part of the app build, and it checks that the project embeds the Watch app. The separate Watch step of D074 is gone. The `MaruWatch` scheme stays for a run of the Watch app alone.
+- The Watch app keeps the bundle ID `com.imhangli.maru.watchkitapp` and `WKCompanionAppBundleIdentifier` = `com.imhangli.maru`. It needs no App Group and no entitlement: it has no database, and WatchConnectivity needs no capability.
+- The Watch app has no privacy manifest. It uses no API that needs a reason, has no third-party code, and collects no data. `App/PrivacyInfo.xcprivacy` does not change.
 
-Evidence: simulator screenshots and a recording (iPhone 17 Pro, iOS 27) of the old and the new paywall are in `~/Documents/Research/maru/paywall-redesign/`. The simulator cannot attach `Config/Maru.storekit` when it starts from the command line, so a copy of the code that is not in the repository gave the two offers with the prices of that file. The real StoreKit path was not run.
+The gate:
 
-Not verified: no check on a real iPhone. It needs: the largest text sizes (the stacked plans, the card rows), VoiceOver (the benefits read as rows, the plan cards say "selected", the sound buttons), Reduce Motion (no drift, no bounce), light and dark mode, an iPad, the six languages (long German and Spanish lines), the purchase with the StoreKit configuration (the thank-you, then the close), and a restore.
+- `WatchDay` has a new field `isPro`, from `ProStore.isPro` on the iPhone. The iPhone sends it in the same application context and in each reply, after each read, each commit, each change of the tint, and each change of Maru Pro.
+- A free user's list has no dose. So no name, amount, or time leaves the iPhone for a free user. Only the Pro state, the tint, and the times of the list go.
+- The Watch shows the locked screen when the last list says free, also for a list of an earlier day: "Maru Pro", "See and record today's doses on your wrist.", "Unlock with Maru Pro on your iPhone.", and the button "Open on iPhone". The Watch sells nothing and has no purchase.
+- "Open on iPhone" sends the request `WatchRequest.showPro`. The iPhone keeps it in `UserDefaults.standard` (`pro.watchAsked`), because the request can start Maru in the background. The root view shows the paywall the next time that Maru is in front, after the onboarding, the edit screen, and the alerts, once for each request. The source of `paywall_shown` is `feature`. This is the one paywall that can show when Maru comes to the front, because the user asked for it. When the iPhone is not reachable, the Watch says so, and the user opens Maru on the iPhone.
+- When Pro ends (a refund, the end of the yearly plan, or a revoked family share), the next list says free, and the Watch shows the locked screen again.
+- The iPhone checks Pro again for each record request (`recordFromWatch`). A free user's request records nothing, also from a Watch that still shows an old Pro list. All the checks of D071 still apply to a Pro request.
+- The reminders on the Watch are not part of the gate. They are the iPhone notifications that watchOS mirrors, with the "Taken" action of D034, and they stay free.
+
+Debug: `-MaruDebugPro YES` makes `ProStore.isPro` true in a debug build, for a check of the Watch app in a simulator. A release build does not have the code.
+
+`PRIVACY.md` has a section "Apple Watch" again, and the privacy pages of the site are built again. The site build needed headings for "Maru Pro" (D107) and "Apple Watch" in each language. The privacy pages are not deployed. The FAQ, `site/llms.txt`, and `DEVICES` in `site/build.py` still say that Maru has no Watch app, because that is true for the version in the App Store. Change them on the day of the release with the Watch app.
+
+Check: nobody ran the Watch app in paired simulators or on a real Watch for this change. CI builds the embedded Watch app.
+
+Not verified: nobody ran the Watch app on a real Watch. The checks of D071 and D066 for a real iPhone and Watch stay open. App Store Connect needs Apple Watch screenshots before a submission with the Watch app, and App Review needs a way to see the Watch app with Pro (a sandbox purchase).
+
+## D115 · 2026-10-28 · A plain Apple look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107)
+
+Maintainer request on 2026-10-28, in two rounds. First, the paywall looked plain. A serif, a glow, and a preview card followed, and the maintainer rejected them: the paywall was "very ugly", it must be simpler and more direct, a reader of another language must understand it at once, it may use only the app font, and everything must look like Apple. This decision changes the look only. The StoreKit code, the entitlement rules, the offers, and every price rule of D107 stay as they are. The paywall still has no countdown, no trial switch, no discount, no urgency text, and a "Continue Free" button with the size and shape of the buy button.
+
+Research: Apple Music, Fitness+, and News+ sheets, the HIG pages "Apple In-App Purchase" and "Offering subscriptions", and Apple's `SubscriptionStoreView` share one shape: an icon, one title, a short value, a plan list with a check circle, one terms line above one capsule button, a close button in the corner, and small links. None has a glow, a serif, or a preview card. The notes are in `~/Documents/Research/maru/paywall-redesign/references.md`.
+
+- Type: SF Pro only, with text styles (`.largeTitle.bold()`, `.headline`, `.body`, `.subheadline`, `.footnote`). The New York helper, the glow, and the badge view (`ProStyle.swift`) are gone. Dynamic Type works through the text styles.
+- Background: `systemGroupedBackground` with `secondarySystemGroupedBackground` cards, as in Settings. No material, no shadow, no gradient, no motion.
+- First screen, from top to bottom: a close button, the app icon in use (64 points), "Maru Pro", three benefit rows, two plan rows, one terms line, the buy button, "Continue Free", and the four small links. It fits on an iPhone 17 Pro and on an iPhone 17e (390 by 844 points) at the default text size, with no scroll. At an accessibility text size, the page scrolls and the plan rows stack the price under the name.
+- Benefits: an SF Symbol in the tint and a label of at most four words. "Dose on Lock Screen" (`lock.iphone`), "Apple Watch" (`applewatch`), and "Colors, Icons, Sounds" (`paintpalette`). The symbol says the same as the label to a reader of another language. The benefit sentences and the colors, icons, and sounds preview card are gone. The sounds still play in Settings (D112).
+- Plans: one grouped card with two rows, "Yearly" and "Lifetime". Each row has a check circle, the name, a short note ("7 days free" and "No subscription"), and the price with its period at the end. The price is the same size as the name and larger than the note (App Review 3.1.2). The selected row has the filled check circle and the selected trait for VoiceOver.
+- Terms: one footnote line under the plans, for the selected plan, with the price and the period. "Free for 7 days, then $9.99 per year. Renews until you cancel." Without a trial: "$9.99 per year. Renews until you cancel." For the lifetime plan: "One payment. It does not renew." The trial timeline is gone, because the line says the same and the system confirmation sheet shows the dates (HIG: do not replace that sheet).
+- Buttons: "Try It Free" for the yearly plan with a trial, "Subscribe Yearly" without a trial, and "Buy Lifetime". "Continue Free" under it has the same size, font, and shape, with a gray fill and the text color. The close button in the corner also dismisses.
+- Links: "Restore Purchases" and "Redeem Code" in one row, "Terms of Use" and "Privacy Policy" in the next row. The line "Shareable with Family Sharing" and the 24-hour cancel sentence are gone. The renewal fact stays in the terms line, and the App Store sheet states the rest.
+- Thank-you: after a purchase, a full-sheet system background shows a check circle (one bounce, none with Reduce Motion), "Welcome to Maru Pro", and "Thank you. Your extras are ready.", with the success haptic. The paywall closes after 1.6 seconds. The purchase has already finished by then, so no confirmation comes before the commit (spec 7.2).
+- Settings: the row "Maru Pro" has the app icon in use (40 points), a headline title, and "Lock Screen, Apple Watch, and more", with a chevron. For a Pro user it shows "Active, Yearly" or "Active, Lifetime". "Restore Purchases" and "Redeem Code" did not change.
+- Today card: a `lock.iphone` symbol in the tint, a headline title, one sentence, the borderless button "See Maru Pro", and "×", on the normal row background. It still sits at the bottom of the list, never pushes a dose, and "×" hides it.
+- First-value offer: it shows the same paywall. The static Lock Screen picture with the first item is gone, with `NextDosePreview` and the `preview` field of `PaywallRequest`. The offer rules did not change: once per install, after the first save of an item with a time, after the alerts of the save. The offer no longer copies the name, the amount, or the time of an item into view state.
+- `SubscriptionStoreView` was not used. It shows only auto-renewable subscriptions of one group, so the lifetime plan (a non-consumable) cannot sit beside the yearly plan, and the compact picker has no room for "Continue Free". A custom view from system parts has the same look as the Apple sheets and keeps D107. `StoreView` for the lifetime plan would put it one screen deeper.
+- New strings: "Dose on Lock Screen", "Apple Watch", "Colors, Icons, Sounds", "Try It Free", and three terms lines, in the six languages. The strings of the removed rows, timeline, and preview card left the catalog. `docs/localization-review.md` lists the new ones.
+
+Evidence: simulator captures of the Today card, the paywall in light, dark, and zh-Hans, the Settings row, and an iPhone 17e (the smallest simulator here), at the default size and at the accessibility size "Extra Large", and a recording of the open, are in `~/Documents/Research/maru/paywall-redesign/v2/`. The simulator cannot attach `Config/Maru.storekit` when it starts from the command line, so a copy of the code in `/tmp`, not in the repository, set the two prices ($9.99 with a 7-day trial and $19.99) and forced the Today card. The real StoreKit path was not run.
+
+Not verified: no check on a real iPhone, on an iPad, with VoiceOver, or with Reduce Motion. The purchase with the StoreKit configuration (the thank-you, then the close), a restore, a pending purchase, and the long German and Spanish lines are open. The smallest iPhone that iOS 17 supports (iPhone SE, 667 points high) was not available as a simulator, so the first-screen rule is proven only down to 844 points. On a 667-point screen the two small link rows are under the first screen, and the buy button is above them.

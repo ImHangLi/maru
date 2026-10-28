@@ -53,14 +53,17 @@ A short onboarding, once (D103, D104). It asks nothing and requests no permissio
 
 ## Maru Pro
 
-The paywall is one sheet with system fonts and SF Symbols in the tint (D107). D115 gives it a calmer look: New York (the system serif) for the title and the prices, a slow glow of the tint behind the hero (still with Reduce Motion), material cards with a hairline edge, a `ProBadge` for each benefit, the real colors, icons, and sounds in one preview card, and a short thank-you after a purchase. Its three benefit rows are "Next Dose on the Lock Screen", "Apple Watch App", and "Make It Yours" (app colors, icons, and reminder sounds, D114).
+The paywall is one sheet with the system font, SF Symbols in the tint, and the grouped backgrounds of Settings (D107, D115). It follows the Apple Music and Fitness+ sheets: an icon, one title, a list, one terms line, one capsule button, and small links. It has no serif, no glow, no material, and no preview card. The first screen shows the app icon in use and "Maru Pro", three benefit rows, the two plans with their prices, the terms line, the buy button, and "Continue Free", with no scroll on an iPhone 17 Pro and an iPhone 17e at the default text size.
 
-- The two plans are side by side as two cards (stacked at an accessibility text size). The selected card has a wash of the tint, a border of 2 points, and a check mark. The price is in New York and is the largest text of a card (D115).
-- The buy button and "Continue Free" are large prominent capsule buttons of the same width. The buy button has the tint. "Continue Free" has a gray fill and the text color.
-- The first-value offer shows a static picture of a Lock Screen above the paywall: the clock, and a dark platter with the form icon, "Next Dose", the name, and the amount and the time. The background is a gradient from the item color to black. The line "Preview of your Lock Screen" is under it.
-- The card of Today is a list section at the bottom of the page, under every dose: a `ProBadge`, a title in New York, one sentence, the borderless button "See Maru Pro", and an "×" button. The row has a soft wash of the tint (D115).
+- The three benefit rows are an SF Symbol and a label of at most four words: "Dose on Lock Screen", "Apple Watch", and "Colors, Icons, Sounds" (D114). The symbol explains the label to a reader of another language.
+- The two plans are two rows of one grouped card. Each row has a check circle, the name, a short note, and the price with its period at the end. At an accessibility text size, the price goes under the name and the page scrolls. The price is as large as the name and larger than the note (App Review 3.1.2).
+- One footnote line under the plans gives the terms of the selected plan: the trial days, the price, the period, and the renewal. There is no trial timeline.
+- The buy button ("Try It Free", "Subscribe Yearly", or "Buy Lifetime") and "Continue Free" are large prominent capsule buttons of the same width. The buy button has the tint. "Continue Free" has a gray fill and the text color. Under them are "Restore Purchases", "Redeem Code", "Terms of Use", and "Privacy Policy" in footnote size.
+- The first-value offer shows the same paywall. It has no picture of a Lock Screen.
+- After a purchase, a plain full-sheet thank-you shows a check circle, "Welcome to Maru Pro", and one line, and then the paywall closes.
+- The row "Maru Pro" in Settings has the app icon in use at 40 points, a headline title, and one line. The card of Today is a list section at the bottom of the page, under every dose: a symbol in the tint, a headline title, one sentence, the borderless button "See Maru Pro", and an "×" button. It has no badge and no color fill.
 - A Pro feature shows its choices to every user, with no lock symbol and no badge. A free user's choice opens the paywall, and the footer of the page says so in one line (D112).
-- "App Icon" is a grid of the six icons at 62 points, with the corner of the Home Screen, a thin edge, and the name under each. The current icon has a ring of 2.5 points in the tint, as the chosen plan of the paywall. The row in Settings shows the current icon at 29 points (D112).
+- "App Icon" is a grid of the six icons at 62 points, with the corner of the Home Screen, a thin edge, and the name under each. The current icon has a ring of 2.5 points in the tint. The row in Settings shows the current icon at 29 points (D112).
 - "Reminder Sound" is a list: "Default" and six sounds. The sound in use has a check mark in the tint. Each of the six has a play button (`play.circle`) at the end of the row (D112).
 
 ## Today

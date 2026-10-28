@@ -335,6 +335,19 @@ The strings below are new or changed. They are drafts. No native speaker read th
 | Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free. | Maru Pro 提供这项功能，还有 Apple Watch App 和更多颜色、图标与提醒音。其他一切都继续免费。 | Maru Proでは、この機能のほか、Apple Watchアプリや追加のカラー、アイコン、サウンドが使えます。それ以外はすべて無料のままです。 | Maru Pro añade esto, una app para Apple Watch y más colores, iconos y sonidos. Todo lo demás sigue siendo gratis. | Maru Pro bietet das, eine Apple Watch-App und mehr Farben, Symbole und Töne. Alles andere bleibt kostenlos. | Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 색상과 아이콘, 소리가 있어요. 나머지는 모두 계속 무료예요. |
 | This is a preview. With Maru Pro, the whole app uses this color. | 这是预览。有了 Maru Pro，整个 App 都会用这个颜色。 | これはプレビューです。Maru Proなら、App全体がこのカラーになります。 | Es una vista previa. Con Maru Pro, toda la app usa este color. | Das ist eine Vorschau. Mit Maru Pro nutzt die ganze App diese Farbe. | 미리 보기예요. Maru Pro가 있으면 앱 전체에 이 색상이 적용돼요. |
 
+## Watch app of Maru Pro (D111)
+
+The strings below are new. They are drafts. No native speaker read them. The reviewer checks them in `Watch/Localizable.xcstrings`. They show on the locked screen of the Watch app for a free user.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Maru Pro | Maru Pro | Maru Pro | Maru Pro | Maru Pro | Maru Pro |
+| See and record today’s doses on your wrist. | 在手腕上查看并记录今天的服用。 | 今日の服用を手首で確認・記録できます。 | Ve y registra las dosis de hoy en tu muñeca. | Sieh und erfasse die Dosen von heute am Handgelenk. | 오늘의 복용을 손목에서 확인하고 기록해요. |
+| Unlock with Maru Pro on your iPhone. | 在 iPhone 上开通 Maru Pro 即可使用。 | iPhoneのMaru Proで使えるようになります。 | Desbloquéala con Maru Pro en tu iPhone. | Schalte sie mit Maru Pro auf deinem iPhone frei. | iPhone에서 Maru Pro로 잠금 해제하세요. |
+| Open on iPhone | 在 iPhone 上打开 | iPhoneで開く | Abrir en el iPhone | Auf dem iPhone öffnen | iPhone에서 열기 |
+| Sent. Open Maru on your iPhone to see Maru Pro. | 已发送。在 iPhone 上打开 Maru 就能看到 Maru Pro。 | 送信しました。iPhoneでMaruを開くとMaru Proが表示されます。 | Enviado. Abre Maru en tu iPhone para ver Maru Pro. | Gesendet. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen. | 보냈어요. iPhone에서 Maru를 열면 Maru Pro를 볼 수 있어요. |
+| Your iPhone is not reachable. Open Maru on your iPhone to see Maru Pro. | 连不上 iPhone。在 iPhone 上打开 Maru 来查看 Maru Pro。 | iPhoneに接続できません。iPhoneでMaruを開いてMaru Proをご覧ください。 | No se puede conectar con tu iPhone. Abre Maru en tu iPhone para ver Maru Pro. | Dein iPhone ist nicht erreichbar. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen. | iPhone에 연결할 수 없어요. iPhone에서 Maru를 열어 Maru Pro를 확인해 주세요. |
+
 ## Last Dose widget and Siri (D108)
 
 The strings below are new. They are drafts. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101).
@@ -435,10 +448,16 @@ A first review on 2026-10-13 corrected the entries below. Every name, alias, and
 
 ## Maru Pro look (D115)
 
-Three new strings. No native speaker read them. The reviewer checks the warm and calm voice with no pressure (D101), and that each line fits a Settings row and a sheet at a large text size.
+Seven new strings, and three from the first D115 round. No native speaker read them. The reviewer checks that the labels have at most four words or the same length as English, that the terms lines keep the order "days, price" (the number of days first, then the price), and that each line fits at a large text size. "Apple Watch" stays in English in every language. Each terms line states the price, the period, and that the plan renews until the user cancels, as App Review 3.1.2 needs.
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
+| Dose on Lock Screen | 锁定屏幕显示服用 | ロック画面で服用 | Dosis en pantalla bloqueada | Dosis auf dem Sperrbildschirm | 잠금 화면에 복용 |
+| Colors, Icons, Sounds | 颜色、图标、声音 | カラー、アイコン、音 | Colores, iconos, sonidos | Farben, Symbole, Töne | 색상, 아이콘, 소리 |
+| Try It Free | 免费试用 | 無料で試す | Probar gratis | Gratis testen | 무료로 시작하기 |
+| Free for %lld days, then %@ per year. Renews until you cancel. | 免费 %1$lld 天，之后每年 %2$@。取消前会自动续订。 | %1$lld日間無料、その後は年額%2$@。キャンセルするまで自動更新されます。 | Gratis durante %1$lld días, luego %2$@ al año. Se renueva hasta que lo canceles. | %1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich, bis du kündigst. | %1$lld일 무료, 이후 연 %2$@. 취소할 때까지 갱신돼요. |
+| %@ per year. Renews until you cancel. | 每年 %@。取消前会自动续订。 | 年額%@。キャンセルするまで自動更新されます。 | %@ al año. Se renueva hasta que lo canceles. | %@ pro Jahr. Verlängert sich, bis du kündigst. | 연 %@. 취소할 때까지 갱신돼요. |
+| One payment. It does not renew. | 一次付款，不会续订。 | 1回のお支払いです。更新はありません。 | Un solo pago. No se renueva. | Einmalige Zahlung. Keine Verlängerung. | 한 번만 결제해요. 갱신되지 않아요. |
 | Welcome to Maru Pro | 欢迎使用 Maru Pro | Maru Proへようこそ | Te damos la bienvenida a Maru Pro | Willkommen bei Maru Pro | Maru Pro에 오신 것을 환영해요 |
 | Thank you. Your extras are ready. | 谢谢你。新增功能已就绪。 | ありがとうございます。追加機能をお使いいただけます。 | Gracias. Tus extras ya están listos. | Danke. Deine Extras sind bereit. | 고마워요. 추가 기능을 지금 쓸 수 있어요. |
 | Lock Screen, Apple Watch, and more | 锁定屏幕、Apple Watch 等 | ロック画面、Apple Watchなど | Pantalla bloqueada, Apple Watch y más | Sperrbildschirm, Apple Watch und mehr | 잠금 화면, Apple Watch 등 |

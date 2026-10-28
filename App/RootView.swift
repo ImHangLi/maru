@@ -145,6 +145,10 @@ struct RootView: View {
         .onChange(of: firstValueIsDue, initial: true) { _, isDue in
             if isDue { model.showFirstValueOffer() }
         }
+        // The paywall that a free user asked for on the Watch, the next time that Maru is in front (D111).
+        .onChange(of: watchOfferIsDue, initial: true) { _, isDue in
+            if isDue { model.showWatchOffer() }
+        }
         // The opt-in question waits for the edit screen and for the alerts before it.
         .onChange(of: noticeIsDue, initial: true) { _, isDue in
             guard isDue else { return }
@@ -181,9 +185,15 @@ struct RootView: View {
     }
 
     private var firstValueIsDue: Bool {
-        model.proState.firstValueOffer != nil && model.onboarding == .hidden && model.remindAgainOffer == nil
+        model.proState.firstValueOffer && model.onboarding == .hidden && model.remindAgainOffer == nil
             && !model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
             && model.reminderAlerts.isEmpty && !model.settings.isPresented && model.proState.paywall == nil
+    }
+
+    private var watchOfferIsDue: Bool {
+        model.proState.watchAsked && scenePhase == .active && model.onboarding == .hidden
+            && model.proState.firstValueOffer == nil && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice
+            && !showsOffer && model.reminderAlerts.isEmpty && model.proState.paywall == nil
     }
 
     private var storageFailed: Bool {

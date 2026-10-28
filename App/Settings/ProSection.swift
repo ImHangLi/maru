@@ -13,9 +13,10 @@ struct ProSection: View {
         Section {
             if let plan = model.pro.plan {
                 HStack(spacing: 12) {
-                    ProBadge(symbol: "checkmark.seal.fill")
+                    AppIconPreview(icon: model.settings.appIcon, size: 40)
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Maru Pro").font(.proDisplay(.headline))
+                        Text("Maru Pro").font(.headline)
                         Text(plan == .yearly ? "Active, Yearly" : "Active, Lifetime")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
@@ -32,9 +33,10 @@ struct ProSection: View {
                     model.presentPaywall(reason: .settings)
                 } label: {
                     HStack(spacing: 12) {
-                        ProBadge(symbol: "sparkles")
+                        AppIconPreview(icon: model.settings.appIcon, size: 40)
+                            .accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Maru Pro").font(.proDisplay(.headline))
+                            Text("Maru Pro").font(.headline)
                             Text("Lock Screen, Apple Watch, and more")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
