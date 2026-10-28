@@ -152,7 +152,7 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 - "For All Items" (D085): the switch "Alarm" (from iOS 26), the menu "Remind Again", and the menu "Every". A row shows the value that every active item with a time has. When the items differ, it says "Varies", and "Alarm" is then a menu with "Varies", "On", and "Off". A choice sets every one of those items. "Every" shows only while an item has "Remind Again" on. The only footer is the limit line of "Until I Record It".
 - "Display": "App Color".
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
-- "Your Data", then "Send Feedback" (D037), then "Support Maru": three optional tips of a consumable purchase. A tip unlocks nothing (D053).
+- "Your Data", then "Send Feedback" (D037). Settings has no "Support Maru" section (D099).
 - "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift.
 - Each item also has its own "Alarm" and "Remind Again" on the add and edit screen (D079, D085). The menu "Remind Again" has "Off", "1 Time", "2 Times", "3 Times", "5 Times", and "Until I Record It". The menu "Every" has "5 min", "10 min", "15 min", "30 min", and "1 hr". Settings and the edit screen use the same words, from one place in the code.
 - "Until I Record It" has a limit, and the footer under the menus states the number and the last time in one short line: "Reminds you up to 12 times, until 1:00 AM." The time uses the time format of the device.

@@ -38,8 +38,6 @@ struct MaruApp: App {
         WatchLink.shared.start()
         // The widgets read the tint from the App Group.
         AppGroup.appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
-        // Finishes tips that end outside a purchase call. It waits for the system, so the launch does not wait (T35).
-        SupportStore.shared.startListening()
     }
 
     var body: some Scene {
