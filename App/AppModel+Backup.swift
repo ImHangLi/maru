@@ -234,6 +234,7 @@ private enum BackupSettings {
         }
         if let privacy = settings[reminderNames].flatMap(ReminderPrivacy.init(rawValue:)) {
             DefaultsReminderPrivacy().save(privacy)
+            AppGroup.showsNames = privacy == .showNames
         }
     }
 }

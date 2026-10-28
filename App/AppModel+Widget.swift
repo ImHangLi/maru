@@ -2,17 +2,30 @@ import AppIntents
 import Foundation
 import MaruCore
 import MaruDatabase
+import WidgetKit
 
 extension AppModel {
-    /// A tap on a widget opens Today at the slot of the link (D048). The link has no health data.
+    /// A tap on a widget opens Today at the slot of the link (D048), or the detail of an item over Today (D108).
+    /// The link has no health data.
     func openWidgetLink(_ url: URL) {
-        guard url.scheme == "maru", url.host() == "today" else { return }
+        guard url.scheme == "maru", url.host() == "today" || url.host() == "item" else { return }
         analytics.markUsed(.widget)
         onboardingYieldsToAction()
         selectedTab = .today
         resetHistory()
-        pendingWidgetPart = url.pathComponents.dropFirst().first.flatMap(DayPart.init(linkName:))
+        let component = url.pathComponents.dropFirst().first
+        if url.host() == "item" {
+            // The detail goes back to Today when the store has no such item.
+            today.path = component.flatMap(UUID.init(uuidString:)).map { [ItemID($0)] } ?? []
+            return
+        }
+        pendingWidgetPart = component.flatMap(DayPart.init(linkName:))
         showPendingWidgetSlot()
+    }
+
+    /// The widgets read again after each commit, so "Last Dose" and the counts follow a record at once (D108).
+    func reloadWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Scrolls to the slot of a widget link. Before Today loads, the slot waits for the load.

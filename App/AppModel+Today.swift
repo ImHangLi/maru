@@ -265,6 +265,7 @@ extension AppModel {
         // An undo can open a dose with a later time.
         if let day = todaySnapshot { scheduleProCardCheck(for: day) }
         sendWatchDay()
+        reloadWidgets()
         historyDidCommit(records)
         today.commitCount += 1
         if backfilled.isEmpty {

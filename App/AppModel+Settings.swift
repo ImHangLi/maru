@@ -138,6 +138,9 @@ extension AppModel {
     /// or return runs again.
     func setShowsNamesInReminders(_ showsNames: Bool) {
         DefaultsReminderPrivacy().save(showsNames ? .showNames : .hideNames)
+        // The "Last Dose" widget follows the setting (D108).
+        AppGroup.showsNames = showsNames
+        reloadWidgets()
         analytics.capture(.showNamesChanged(showsNames))
         let now = Date()
         guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }

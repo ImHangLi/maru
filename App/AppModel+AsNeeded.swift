@@ -233,6 +233,7 @@ extension AppModel {
             refresh()
         }
         today.commitCount += 1
+        reloadWidgets()
         // An as-needed dose has no reminder, so the notification queue does not change (D021).
     }
 
