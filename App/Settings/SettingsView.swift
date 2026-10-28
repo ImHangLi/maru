@@ -203,7 +203,7 @@ private struct NextDoseSection: View {
                 ))
             } footer: {
                 if model.liveActivity.systemAllows {
-                    Text("Shows your next dose with the time left and a button to record it.")
+                    Text("Shows your next dose, its time, and a button to record it.")
                 } else {
                     Text("Live Activities are off for Maru. Turn them on in the Settings app, under Maru.")
                 }

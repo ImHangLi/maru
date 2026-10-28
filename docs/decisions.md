@@ -2152,10 +2152,10 @@ The switch:
 What the activity shows:
 
 - The next dose: the earliest open planned time of today, with every open dose of that time. A dose with an event that the store did not confirm is left out, because it goes again only from Today (D014).
-- The part of the day in the tint, the planned time, and the time left (`Text(timerInterval:)`). After the planned time it says "Not recorded yet" with a clock symbol. It never says "late" or "missed" (D101).
+- The part of the day in the tint, the planned time, and the planned time relative to now. It never says "late" or "missed" (D101). Amended on 2026-10-28: see "The relative time" below.
 - The item names, when "Show Names in Reminders" is on (D029). It shows at most three names, in a limit of 600 bytes, then the number of the other doses: "Vitamin D, Iron, Zinc, and 2 more". A name that is too long ends with "…". When the setting is off, it shows "2 doses" with no name. A change of the setting updates the activity.
 - A "Taken" button, and a tap elsewhere opens Today at the part of the day.
-- The Dynamic Island: the pill symbol and the time left in the compact form (the planned time after it), the pill symbol in the minimal form, and the full content in the expanded form.
+- The Dynamic Island: the pill symbol and the planned time in the compact form, the pill symbol in the minimal form, and the full content in the expanded form. A relative time does not fit in the compact form in all six languages.
 
 The "Taken" button:
 
@@ -2169,10 +2169,24 @@ The "Taken" button:
 The lifecycle. Maru has no server, so no push starts, updates, or ends the activity. Only the app process changes it.
 
 - The app starts an activity only while it is in front, because iOS lets only an app in front start one. It never starts one during the onboarding (D103).
-- The app updates the activity after each read of Today that shows: at launch, at each return to the front, and after each save, time edit, archive, delete, and restore. It also updates the activity after each record, and after each reminder run in the background: the "Taken" button, the actions of a reminder and of an alarm, the "Record Dose" widget, and Siri. A background run waits for the update before it returns, because the system can suspend the process.
+- The app updates the activity after each read of Today that shows: at launch, at each return to the front, and after each save, time edit, archive, delete, and restore. It also updates the activity after each record, and after each reminder run in the background. A background run waits for the update before it returns, because the system can suspend the process. The background runs are:
+  - the "Taken" button of the activity
+  - the actions of a reminder: "Taken", "Take All", "Skip", "Skip All", and "Remind in 10 min". An action that records nothing also reads the activity again, because the activity can show a dose that another path recorded.
+  - the "Taken" action of an alarm
+  - the "Record Dose" widget
+  - Siri "Record my doses"
+  - a record from the Watch
+- A record that gives every planned dose of today a record ends the activity with an immediate dismissal, in the same background run.
 - The content holds the end of the local day of the dose, and the stale date is that time. After it, the activity says "Open Maru to update." and shows no name and no button, so no button records a dose of another day. A stale date at the planned time showed the dose of the day before as "Not recorded yet", with the names and "Taken", after midnight (Codex review on 2026-10-28).
-- Each draw compares the planned time with the time of the draw, and after it the activity says "Not recorded yet". The system draws the activity at each update and at the stale date, not at the planned time. So from the planned time to the next update, the time left stays at zero. The next update is the next open of Maru, record, or reminder run.
+- The relative time (amended on 2026-10-28, maintainer goal: the activity needs as little care as possible). The first version showed the time left with `Text(timerInterval:countsDown:)`, and "Not recorded yet" after the planned time. The system draws the activity only at each update and at the stale date. So from the planned time to the next update, the time left stayed at zero. Now the activity shows the planned time and a relative time that the system moves on the screen with no update:
+  - iOS 18 and later: `Text(.currentDate, format: .reference(to:allowedFields:))`, with the hour and the minute. It reads "in 12 minutes" before the planned time and "12 minutes ago" after it, in the language of the system. Under one minute it reads "now".
+  - iOS 17: `Text(_:style: .relative)`. It shows only the distance, "12 min", with no direction. The planned time beside it tells before from after.
+  - The text "Not recorded yet" is removed. The activity needs no update at the planned time.
 - The app ends the activity when every planned dose of today has a record, when the switch goes off, and when Maru Pro ends. The activity of the next day starts at the next open of Maru.
+- No refresh at midnight (2026-10-28). The maintainer asked for one background app refresh near local midnight, only if Maru supports background app refresh already. It does not: `project.yml` has no `UIBackgroundModes` and the app has no `BGTaskScheduler` task. So Maru does not add it. A refresh would also give little:
+  - An app in the background cannot start an activity, so a refresh cannot start the activity of the new day.
+  - The system chooses the time of a refresh. It can run hours late, or not at all, for example in Low Power Mode or with Background App Refresh off.
+  - The stale date already changes the activity of the day before at midnight: "Open Maru to update.", with no name and no button.
 - An open dose stays on the activity until it has a record or the day ends. Doz moves its card to the next dose a set time after the planned time (the device walkthrough of 2026-10-28 in the maintainer's research folder). Maru cannot do that with no server and no app code at that time.
 - The system ends an activity 8 hours after its start. It can stay on the Lock Screen for 4 more hours with its last content, 12 hours in total. So each open of Maru starts a new activity when the current one is older than 1 hour. The activity then lasts until 8 hours after the last open of Maru. When Maru does not open for 8 hours, the system ends it, and the next open starts it again.
 - The calls to ActivityKit run one after the other, so an older update never comes after a newer one. An update with the same content does nothing.
@@ -2191,9 +2205,9 @@ Tests: none (D016). The record uses the existing transaction and its checks.
 Not verified: no build of the app on this Mac (CI builds it), and nobody saw the activity. It needs a real iPhone (spec 14 A). Device checks:
 
 1. The switch as a free user (the paywall, the switch stays off) and as a Pro user. The footer with Live Activities off in the Settings app.
-2. The Lock Screen and the Dynamic Island before the planned time (the time left), after it ("Not recorded yet" after the next update), and with the names off. Light and dark, a long name, two items at one time, five items at one time ("and 2 more"), and the largest text sizes.
+2. The Lock Screen and the Dynamic Island before the planned time ("in 12 minutes"), and after it with no open of Maru ("12 minutes ago"). The same on iOS 17, if a device is available ("12 min"). The names off. Light and dark, a long name, two items at one time, five items at one time ("and 2 more"), and the largest text sizes.
 3. "Taken" on a locked iPhone (the unlock comes first), the move to the next dose, and the end after the last dose. A second fast tap.
-4. A record on Today, from a reminder, from an alarm, from the "Record Dose" widget, and from Siri, each followed by the activity. A time edit, an archive, a delete, and a restore.
+4. A record on Today, from a reminder ("Taken", "Take All", "Skip", "Skip All"), from an alarm, from the "Record Dose" widget, from Siri, and from the Watch, each followed by the activity with Maru in the background. "Remind in 10 min". The last record of the day ends the activity at once. A time edit, an archive, a delete, and a restore.
 5. A refund in the StoreKit transaction manager: the activity ends and the switch goes off.
 6. An activity across midnight ("Open Maru to update.", no name, no button), and an activity after 8 hours with no open of Maru.
 

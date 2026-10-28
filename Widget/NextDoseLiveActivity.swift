@@ -3,12 +3,12 @@ import MaruCore
 import SwiftUI
 import WidgetKit
 
-/// "Next Dose on Lock Screen", the Live Activity of Maru Pro (D110): the part of the day, the planned time with the time
-/// left, the item names or the number of doses, and "Taken". The app sets the content. This view only draws it.
+/// "Next Dose on Lock Screen", the Live Activity of Maru Pro (D110): the part of the day, the planned time and a relative
+/// time, the item names or the number of doses, and "Taken". The app sets the content. This view only draws it.
 ///
-/// The stale date is the end of the day of the dose. After it, the activity asks to open Maru and shows no name and no
-/// button, so no button records a dose of another day. Each draw compares the planned time with the time of the draw:
-/// after it, the activity says "Not recorded yet". Until the next draw, the time left stays at zero.
+/// The relative time moves on the screen with no update: "in 12 minutes" before the planned time, "12 minutes ago"
+/// after it. The stale date is the end of the day of the dose. After it, the activity asks to open Maru and shows no
+/// name and no button, so no button records a dose of another day.
 struct NextDoseLiveActivity: Widget {
     var body: some WidgetConfiguration {
         ActivityConfiguration(for: NextDoseAttributes.self) { context in
@@ -36,16 +36,9 @@ struct NextDoseLiveActivity: Widget {
             } compactLeading: {
                 Image(systemName: "pills.fill").foregroundStyle(shown.tint)
             } compactTrailing: {
-                switch shown.phase {
-                case .upcoming:
-                    Text(timerInterval: shown.countdown, countsDown: true)
-                        .monospacedDigit()
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: 56)
-                case .overdue, .notConfirmed:
+                // The planned time, because a relative time does not fit in all languages. It needs no update.
+                if shown.phase != .expired {
                     Text(shown.time).foregroundStyle(shown.tint)
-                case .expired:
-                    EmptyView()
                 }
             } minimal: {
                 Image(systemName: "pills.fill").foregroundStyle(shown.tint)
@@ -59,10 +52,8 @@ struct NextDoseLiveActivity: Widget {
 /// What the activity shows now, from its content and its stale state.
 private struct NextDoseShown {
     enum Phase {
-        /// Before the planned time: the time left.
-        case upcoming
-        /// After the planned time, on the same day.
-        case overdue
+        /// The day of the dose: the relative time, the doses, and "Taken".
+        case open
         /// The day of the dose ended, or "Taken" had an older token. The activity asks to open Maru.
         case expired
         /// "Taken" did not get a confirmed commit.
@@ -73,23 +64,20 @@ private struct NextDoseShown {
     let part: DayPart?
     let phase: Phase
     let tint: Color
-    let countdown: ClosedRange<Date>
     let time: String
 
     init(_ context: ActivityViewContext<NextDoseAttributes>) {
         state = context.state
         part = DayPart(linkName: state.part)
         // The system draws the activity again at each update and at the stale date.
-        let now = Date()
-        if context.isStale || state.expiresAt <= now {
+        if context.isStale || state.expiresAt <= Date() {
             phase = .expired
         } else if state.isNotConfirmed {
             phase = .notConfirmed
         } else {
-            phase = state.plannedAt <= now ? .overdue : .upcoming
+            phase = .open
         }
         tint = AppGroup.appColor.tint
-        countdown = min(context.attributes.startedAt, state.plannedAt)...state.plannedAt
         time = state.plannedAt.formatted(.rowTime(in: TimeZone(identifier: state.timeZone) ?? .current))
     }
 
@@ -124,21 +112,27 @@ private struct NextDoseLockScreen: View {
     }
 }
 
-/// The time left, or the state after the planned time. States use the text color and a symbol (D058).
+/// The planned time relative to now. The system moves it on the screen, also across the planned time, so the activity
+/// needs no update at the planned time. It never says "late" or "missed" (D101).
 private struct NextDoseStatus: View {
     let shown: NextDoseShown
 
     var body: some View {
-        switch shown.phase {
-        case .upcoming:
-            Text(timerInterval: shown.countdown, countsDown: true)
-                .monospacedDigit()
+        if shown.phase == .open {
+            relative
                 .multilineTextAlignment(.trailing)
                 .fixedSize()
-        case .overdue:
-            Label("Not recorded yet", systemImage: "clock")
-        case .expired, .notConfirmed:
-            EmptyView()
+        }
+    }
+
+    @ViewBuilder private var relative: some View {
+        if #available(iOS 18, *) {
+            // "in 12 minutes" before the planned time, "12 minutes ago" after it, in the language of the system.
+            Text(.currentDate, format: .reference(to: shown.state.plannedAt, allowedFields: [.hour, .minute]))
+        } else {
+            // iOS 17 has no relative text with a direction. It shows the distance, "12 min", and the planned time
+            // beside it tells before from after.
+            Text(shown.state.plannedAt, style: .relative)
         }
     }
 }
@@ -159,7 +153,7 @@ private struct NextDoseBody: View {
                 Label("Couldn’t confirm the save. Open Maru to check.", systemImage: "exclamationmark.triangle")
                     .font(.footnote)
             }
-        case .upcoming, .overdue:
+        case .open:
             HStack(alignment: .center, spacing: 12) {
                 shown.doses
                     .font(.headline)
