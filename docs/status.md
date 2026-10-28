@@ -6,6 +6,7 @@ Maru was developed in an older private repository. Issue numbers, pull request n
 
 ## Current state
 
+- The lean cleanup (D016) removes duplicate test setup, a cosmetic color test, unused copy, and unused visual configuration. It keeps record and reminder assertions, recovery fixtures, and purchase guards. Form labels share one localization mapping. No user behavior is intended to change. Device, rendered localization, and StoreKit checks did not run for this cleanup.
 - The app and the package build. CI builds and tests the package, and builds the app for the iOS Simulator with the embedded Watch app (D111).
 - Milestone A (the core loop on one iPhone) is complete in code: add and edit an item, Today, records, undo, history, item detail, settings, local reminders, optional follow-up reminders, and as-needed items.
 - The app has six languages (D059): English, zh-Hans, ja, es, de, and ko. The translation is not reviewed by a native speaker yet (`docs/localization-review.md`). Nobody saw it on a display.

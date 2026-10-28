@@ -21,26 +21,16 @@ struct MaintainerEvidenceTests {
         return phone
     }
 
-    @Test func aFirstReminderOfRecordedDosesIsNotLeftInNotificationCenter() async throws {
+    @Test func theNineOClockNotificationNamesOnlyWhatIsStillOpen() async throws {
         let phone = try await evidenceDay()
         await phone.advance(to: "2026-10-15 09:01")
         #expect(await phone.center.shown.keys.contains { $0.hasPrefix("series|device|09:00") })
-        // 14:17: the three morning doses are recorded in the app.
         await phone.advance(to: "2026-10-15 14:17")
         for name in ["Coenzyme Q10", "Vitamin B Complex", "Creatine Monohydrate"] {
             try await phone.record(name)
         }
         await phone.expectCorrect("after the three records of the morning")
         #expect(!(await phone.center.shown.keys.contains { $0.hasPrefix("series|device|09:00") }))
-    }
-
-    @Test func theNineOClockNotificationNamesOnlyWhatIsStillOpen() async throws {
-        let phone = try await evidenceDay()
-        await phone.advance(to: "2026-10-15 09:01")
-        await phone.advance(to: "2026-10-15 14:17")
-        for name in ["Coenzyme Q10", "Vitamin B Complex", "Creatine Monohydrate"] {
-            try await phone.record(name)
-        }
         await phone.advance(to: "2026-10-15 18:44")
         try await phone.record("Magnesium Glycinate")
         await phone.expectCorrect("after Magnesium at 18:44")
