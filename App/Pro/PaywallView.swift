@@ -194,7 +194,7 @@ struct PaywallView: View {
                 } else if let terms {
                     terms.font(.footnote).foregroundStyle(.secondary).minimumScaleFactor(0.9)
                 } else if plan == .lifetime {
-                    // The lifetime tile says "Pay once, keep forever", so no terms line repeats it. One blank line keeps
+                    // The lifetime tile says "Pay once. It’s yours.", so no terms line repeats it. One blank line keeps
                     // the button where it is.
                     Text(verbatim: " ").font(.footnote).accessibilityHidden(true)
                 }
@@ -228,7 +228,7 @@ struct PaywallView: View {
                         title: "Lifetime",
                         price: lifetime.displayPrice,
                         tag: nil,
-                        note: Text("Pay once, keep forever"),
+                        note: Text("Pay once. It’s yours."),
                         isSelected: plan == .lifetime
                     ) { plan = .lifetime }
                 }
@@ -251,7 +251,7 @@ struct PaywallView: View {
     }
 
     /// The terms of the selected subscription, directly above the button, with its price and its period (App Review
-    /// 3.1.2). The lifetime plan is no subscription, and its tile already says "Pay once, keep forever".
+    /// 3.1.2). The lifetime plan is no subscription, and its tile already says "Pay once. It’s yours.".
     private var terms: Text? {
         guard let selected = offer(plan) else { return nil }
         let price = selected.displayPrice
@@ -411,7 +411,7 @@ private struct BenefitRow: View {
     @ScaledMetric(relativeTo: .title3) private var symbolWidth = 32
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 12) {
+        HStack(alignment: .center, spacing: 12) {
             Image(systemName: symbol)
                 .font(.title3.weight(.light))
                 .foregroundStyle(.tint)
@@ -429,7 +429,7 @@ private struct BenefitRow: View {
 
 /// One plan as a tile: the name, the price as the largest text (App Review 3.1.2), and one small line. The free trial of
 /// the yearly plan is a tag on the top edge, smaller than the price. The selected tile is filled with a gradient in the
-/// brand colors of the picture and has white text. The other tile is quiet.
+/// brand colors of the picture and has white text, with a thin ring outside it. The other tile is quiet.
 private struct PlanTile: View {
     let title: LocalizedStringKey
     let price: String
@@ -438,6 +438,15 @@ private struct PlanTile: View {
     let isSelected: Bool
     let select: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    /// The brand colors of the hero: its deep crimson and the tint pink. The pink end is a little darker than the tint,
+    /// so white semibold text keeps a contrast of about 4.7 to 1.
+    private static let pink = Color(red: 0.88, green: 0.12, blue: 0.30)
+    private static let crimson = Color(red: 0.45, green: 0.03, blue: 0.24)
+    private static let cornerRadius: CGFloat = 16
+    /// The selection ring: a thin line, drawn outside the tile with a small gap, like a system selection ring.
+    private static let ringWidth: CGFloat = 1.5
+    private static let ringGap: CGFloat = 3
 
     var body: some View {
         Button(action: select) {
@@ -459,15 +468,20 @@ private struct PlanTile: View {
             .background {
                 Color(.secondarySystemBackground)
                     .overlay {
-                        // The brand colors of the hero: its deep crimson and the tint pink. The light end is a little
-                        // darker than the tint, so white semibold text keeps a contrast of about 4.7 to 1.
                         LinearGradient(
-                            colors: [Color(red: 0.88, green: 0.12, blue: 0.30), Color(red: 0.45, green: 0.03, blue: 0.24)],
-                            startPoint: .topLeading, endPoint: .bottomTrailing
+                            colors: [Self.pink, Self.crimson], startPoint: .topLeading, endPoint: .bottomTrailing
                         )
                         .opacity(isSelected ? 1 : 0)
                     }
-                    .clipShape(.rect(cornerRadius: 16, style: .continuous))
+                    .clipShape(.rect(cornerRadius: Self.cornerRadius, style: .continuous))
+            }
+            // The ring lies outside the tile, so it never changes the size of the tile or moves the layout.
+            .overlay {
+                let outset = Self.ringGap + Self.ringWidth
+                RoundedRectangle(cornerRadius: Self.cornerRadius + outset, style: .continuous)
+                    .strokeBorder(Self.pink, lineWidth: Self.ringWidth)
+                    .padding(-outset)
+                    .opacity(isSelected ? 1 : 0)
             }
             .overlay(alignment: .top) {
                 if let tag {

@@ -498,11 +498,11 @@ Four strings changed, and four left the catalog: "Maru is made by one independen
 
 ## Paywall plan tiles (D119, fourth round)
 
-Two strings left the catalog ("One time" and "One payment. Yours to keep."). Two strings are new. The lifetime plan has no terms line any more, because its tile says "Pay once, keep forever". "%lld days free" is now the tag on the top edge of the yearly tile. No native speaker read them. The reviewer checks that each line fits one line in a tile of about 137 points (checked on an iPhone 17e in all six languages), that "Pay once, keep forever" is a true short claim, and that the monthly line reads as the yearly price divided by 12.
+Two strings left the catalog ("One time" and "One payment. Yours to keep."). Two strings are new. The lifetime plan has no terms line any more, because its tile says "Pay once. It’s yours." (seventh round of D119). "%lld days free" is now the tag on the top edge of the yearly tile. No native speaker read them. The reviewer checks that each line fits one line in a tile of about 137 points (checked on an iPhone 17e in all six languages), that "Pay once. It’s yours." is a true short claim, and that the monthly line reads as the yearly price divided by 12.
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| Pay once, keep forever | 一次付款，永久拥有 | 1回の支払いでずっと | Un pago, para siempre | Einmal zahlen, für immer | 한 번 결제로 평생 |
+| Pay once. It’s yours. | 买一次，永久归你 | 1回払いで、あなたのもの | Un pago. Es tuyo. | Einmal zahlen. Deins. | 한 번 결제로 내 것 |
 | ≈ %@/month | 约 %@/月 | 月あたり約%@ | ≈ %@/mes | ≈ %@/Monat | 월 약 %@ |
 
 ## Paywall benefit copy (D119, sixth round)
