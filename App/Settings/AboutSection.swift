@@ -6,11 +6,16 @@ struct AboutSection: View {
     static let supportURL = URL(string: "https://maru.day/support.html")
 
     var body: some View {
-        Section("About") {
+        Section {
             if let url = Self.privacyURL { Link("Privacy Policy", destination: url).rowText() }
             if let url = Self.supportURL { Link("Support", destination: url).rowText() }
             NavigationLink("Licenses") { LicensesView() }
                 .rowText()
+        } header: {
+            Text("About")
+        } footer: {
+            // The one line where the app speaks as its maker (D101).
+            Text("Made with care by the Maru team.")
         }
     }
 }

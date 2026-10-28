@@ -1175,37 +1175,37 @@
         }
       }
     },
-    "A newer version of Maru saved your data. Maru did not change or delete it." : {
+    "A newer version of Maru saved your data. It’s safe, and nothing changed." : {
       "comment" : "Storage problem: the text when a newer version of the app saved the data.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eine neuere Version von Maru hat deine Daten gespeichert. Maru hat sie nicht geändert oder gelöscht."
+            "value" : "Eine neuere Version von Maru hat deine Daten gespeichert. Sie sind sicher, und nichts wurde geändert."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Una versión más reciente de Maru guardó tus datos. Maru no los cambió ni borró."
+            "value" : "Una versión más reciente de Maru guardó tus datos. Están a salvo y no cambió nada."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "より新しいバージョンのMaruがデータを保存しました。Maruはデータを変更も削除もしていません。"
+            "value" : "より新しいバージョンのMaruがデータを保存しました。データは無事で、何も変更されていません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "더 최신 버전의 Maru가 데이터를 저장했어요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+            "value" : "더 최신 버전의 Maru가 데이터를 저장했어요. 데이터는 안전하고, 바뀐 건 없어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新版本的 Maru 保存了你的数据。Maru 没有改动或删除这些数据。"
+            "value" : "更新版本的 Maru 保存了你的数据。数据很安全，没有任何改动。"
           }
         }
       }
@@ -1521,6 +1521,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "闹钟没开"
+          }
+        }
+      }
+    },
+    "All done for today. Nice work." : {
+      "comment" : "Today: the line under the title in place of the date, when every planned dose of today has a record, taken or skipped. Warm, with no judgment (D101).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für heute alles erledigt. Gut gemacht."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo listo por hoy. Buen trabajo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日の分はすべて完了です。おつかれさまでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘은 모두 마쳤어요. 잘하셨어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天都完成了，做得好。"
           }
         }
       }
@@ -4185,37 +4220,37 @@
         }
       }
     },
-    "Free some storage, then try again. Maru did not change or delete your data." : {
+    "Free some storage, then try again. Your data is safe." : {
       "comment" : "Storage problem: the text when the disk is full.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gib etwas Speicherplatz frei und versuche es erneut. Maru hat deine Daten nicht geändert oder gelöscht."
+            "value" : "Gib etwas Speicherplatz frei und versuche es erneut. Deine Daten sind sicher."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Libera espacio y vuelve a intentarlo. Maru no cambió ni borró tus datos."
+            "value" : "Libera espacio y vuelve a intentarlo. Tus datos están a salvo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "空き容量を確保してから、もう一度お試しください。Maruはデータを変更も削除もしていません。"
+            "value" : "空き容量を確保してから、もう一度お試しください。データは無事です。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "저장 공간을 확보한 다음 다시 시도해 주세요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+            "value" : "저장 공간을 확보한 다음 다시 시도해 주세요. 데이터는 안전해요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "先腾出一些存储空间再试。Maru 没有改动或删除你的数据。"
+            "value" : "先腾出一些存储空间再试。你的数据很安全。"
           }
         }
       }
@@ -4360,7 +4395,7 @@
         }
       }
     },
-    "If your iPhone is locked, unlock it and try again. Maru did not change or delete your data." : {
+    "If your iPhone is locked, unlock it and try again. Your data is safe." : {
       "comment" : "Storage problem: the text when the data cannot be read now.",
       "localizations" : {
         "de" : {
@@ -4369,13 +4404,13 @@
               "ipad" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Wenn dein iPad gesperrt ist, entsperre es und versuche es erneut. Maru hat deine Daten nicht geändert oder gelöscht."
+                  "value" : "Wenn dein iPad gesperrt ist, entsperre es und versuche es erneut. Deine Daten sind sicher."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Wenn dein iPhone gesperrt ist, entsperre es und versuche es erneut. Maru hat deine Daten nicht geändert oder gelöscht."
+                  "value" : "Wenn dein iPhone gesperrt ist, entsperre es und versuche es erneut. Deine Daten sind sicher."
                 }
               }
             }
@@ -4387,13 +4422,13 @@
               "ipad" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "If your iPad is locked, unlock it and try again. Maru did not change or delete your data."
+                  "value" : "If your iPad is locked, unlock it and try again. Your data is safe."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "If your iPhone is locked, unlock it and try again. Maru did not change or delete your data."
+                  "value" : "If your iPhone is locked, unlock it and try again. Your data is safe."
                 }
               }
             }
@@ -4405,13 +4440,13 @@
               "ipad" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Si el iPad está bloqueado, desbloquéalo y vuelve a intentarlo. Maru no cambió ni borró tus datos."
+                  "value" : "Si el iPad está bloqueado, desbloquéalo y vuelve a intentarlo. Tus datos están a salvo."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "Si el iPhone está bloqueado, desbloquéalo y vuelve a intentarlo. Maru no cambió ni borró tus datos."
+                  "value" : "Si el iPhone está bloqueado, desbloquéalo y vuelve a intentarlo. Tus datos están a salvo."
                 }
               }
             }
@@ -4423,13 +4458,13 @@
               "ipad" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "iPadがロックされている場合は、ロックを解除してもう一度お試しください。Maruはデータを変更も削除もしていません。"
+                  "value" : "iPadがロックされている場合は、ロックを解除してもう一度お試しください。データは無事です。"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "iPhoneがロックされている場合は、ロックを解除してもう一度お試しください。Maruはデータを変更も削除もしていません。"
+                  "value" : "iPhoneがロックされている場合は、ロックを解除してもう一度お試しください。データは無事です。"
                 }
               }
             }
@@ -4441,13 +4476,13 @@
               "ipad" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "iPad가 잠겨 있으면 잠금을 해제하고 다시 시도해 주세요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+                  "value" : "iPad가 잠겨 있으면 잠금을 해제하고 다시 시도해 주세요. 데이터는 안전해요."
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "iPhone이 잠겨 있으면 잠금을 해제하고 다시 시도해 주세요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+                  "value" : "iPhone이 잠겨 있으면 잠금을 해제하고 다시 시도해 주세요. 데이터는 안전해요."
                 }
               }
             }
@@ -4459,13 +4494,13 @@
               "ipad" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "如果 iPad 锁着，先解锁再试。Maru 没有改动或删除你的数据。"
+                  "value" : "如果 iPad 锁着，先解锁再试。你的数据很安全。"
                 }
               },
               "other" : {
                 "stringUnit" : {
                   "state" : "translated",
-                  "value" : "如果 iPhone 锁着，先解锁再试。Maru 没有改动或删除你的数据。"
+                  "value" : "如果 iPhone 锁着，先解锁再试。你的数据很安全。"
                 }
               }
             }
@@ -4936,6 +4971,41 @@
         }
       }
     },
+    "Let’s add the first thing you take." : {
+      "comment" : "Today and My Items: the title of the empty page when the user has no item. A friendly invitation to add the first supplement or medication (D101).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lass uns das Erste eintragen, das du nimmst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añadamos lo primero que tomas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まずは、飲んでいるものを1つ追加しましょう。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "먼저 복용 중인 것을 하나 추가해 볼까요?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "来添加你服用的第一样东西吧。"
+          }
+        }
+      }
+    },
     "Licenses" : {
       "comment" : "Settings: the row and the page with the license text of third-party code.",
       "localizations" : {
@@ -4967,6 +5037,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "开源许可"
+          }
+        }
+      }
+    },
+    "Made with care by the Maru team." : {
+      "comment" : "Settings: the footer at the bottom of the About section. The only line where the app speaks as its maker. Say “the Maru team”, never a person (D101).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Sorgfalt gemacht vom Maru-Team."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hecho con cariño por el equipo de Maru."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruチームが心を込めてつくりました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 팀이 정성을 담아 만들었어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 团队用心制作。"
           }
         }
       }
@@ -5399,76 +5504,6 @@
         }
       }
     },
-    "Maru couldn’t save this change. Try again." : {
-      "comment" : "Item detail: the message when a change did not save.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru konnte diese Änderung nicht speichern. Versuche es erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no pudo guardar este cambio. Inténtalo de nuevo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruがこの変更を保存できませんでした。もう一度お試しください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 이 변경 사항을 저장하지 못했어요. 다시 시도해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "这次更改没保存成功，再试一次。"
-          }
-        }
-      }
-    },
-    "Maru couldn’t save this. Try again." : {
-      "comment" : "Alert message when a record or a correction did not save. The word this means the change that the user just made.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru konnte das nicht speichern. Versuche es erneut."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no pudo guardarlo. Inténtalo de nuevo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruが保存できませんでした。もう一度お試しください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 저장하지 못했어요. 다시 시도해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没保存成功，再试一次。"
-          }
-        }
-      }
-    },
     "Maru deletes this item, its plan, and all its records. You can’t undo this." : {
       "comment" : "The message of the delete confirmation.",
       "localizations" : {
@@ -5500,41 +5535,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 会删除这个药品、它的计划和所有记录，删除后不能恢复。"
-          }
-        }
-      }
-    },
-    "Maru did not change or delete your data." : {
-      "comment" : "Storage problem: the text for a failure with no known cause.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru hat deine Daten nicht geändert oder gelöscht."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru no cambió ni borró tus datos."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruはデータを変更も削除もしていません。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru는 데이터를 바꾸거나 삭제하지 않았어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 没有更改或删除你的数据。"
           }
         }
       }
@@ -5780,6 +5780,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "最近 30 天没有记录。"
+          }
+        }
+      }
+    },
+    "Nothing to take today. Enjoy it." : {
+      "comment" : "Today: the title of the empty page when the user has items but none has a planned dose today. A calm, friendly line, not a cheer (D101).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heute musst du nichts einnehmen. Genieß den Tag."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hoy no tienes nada que tomar. Disfrútalo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日は飲むものはありません。ゆっくり過ごしてくださいね。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘은 복용할 게 없어요. 편안한 하루 보내세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天没有要服用的，享受这一天吧。"
           }
         }
       }
@@ -6555,7 +6590,7 @@
       }
     },
     "No Items Yet" : {
-      "comment" : "Today and My Items: the title of the empty page when the user has no item.",
+      "comment" : "Share Medication List: the line of the PDF when the user has no active item.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -7180,41 +7215,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "备注"
-          }
-        }
-      }
-    },
-    "Nothing Planned Today" : {
-      "comment" : "Today: the title of the empty page when the user has items but none has a planned dose today.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heute nichts geplant"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nada planificado para hoy"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日の服用予定はありません"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘 예정된 복용 없음"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天没有服用计划"
           }
         }
       }
@@ -11023,6 +11023,76 @@
         }
       }
     },
+    "This change didn’t save. Please try again." : {
+      "comment" : "Item detail, the archived list, and an archive or a delete: the message when a change did not save.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diese Änderung wurde nicht gespeichert. Bitte versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este cambio no se guardó. Inténtalo de nuevo, por favor."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この変更はうまく保存できませんでした。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 변경 사항이 저장되지 않았어요. 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这次更改没保存成功，请再试一次。"
+          }
+        }
+      }
+    },
+    "This didn’t save. Please try again." : {
+      "comment" : "Alert message when a record or a correction did not save. The word this means the change that the user just made.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das wurde nicht gespeichert. Bitte versuche es erneut."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se guardó. Inténtalo de nuevo, por favor."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "うまく保存できませんでした。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장되지 않았어요. 다시 시도해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这次没保存成功，请再试一次。"
+          }
+        }
+      }
+    },
     "This isn’t a Maru backup, or the file is damaged. Nothing changed." : {
       "comment" : "Settings, Your Data: the message when the chosen file is not a Maru backup. The data of the app did not change.",
       "localizations" : {
@@ -11128,37 +11198,37 @@
         }
       }
     },
-    "This version of Maru can’t open your data. Maru did not change or delete it." : {
+    "This version of Maru can’t open your data. It’s safe, and nothing changed." : {
       "comment" : "Storage problem: the text when the update of the data to this app version failed.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Diese Version von Maru kann deine Daten nicht öffnen. Maru hat sie nicht geändert oder gelöscht."
+            "value" : "Diese Version von Maru kann deine Daten nicht öffnen. Sie sind sicher, und nichts wurde geändert."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Esta versión de Maru no puede abrir tus datos. Maru no los cambió ni borró."
+            "value" : "Esta versión de Maru no puede abrir tus datos. Están a salvo y no cambió nada."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "このバージョンのMaruはデータを開けません。Maruはデータを変更も削除もしていません。"
+            "value" : "このバージョンのMaruはデータを開けません。データは無事で、何も変更されていません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이 버전의 Maru는 데이터를 열 수 없어요. Maru는 데이터를 바꾸거나 삭제하지 않았어요."
+            "value" : "이 버전의 Maru는 데이터를 열 수 없어요. 데이터는 안전하고, 바뀐 건 없어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "这个版本的 Maru 打不开你的数据。Maru 没有改动或删除这些数据。"
+            "value" : "这个版本的 Maru 打不开你的数据。数据很安全，没有任何改动。"
           }
         }
       }
@@ -12439,41 +12509,6 @@
         }
       }
     },
-    "What you record shows here." : {
-      "comment" : "History: the description of the empty page.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Was du erfasst, erscheint hier."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lo que registres aparecerá aquí."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "記録した内容がここに表示されます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기록한 내용이 여기에 표시돼요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "你记录的内容会显示在这里。"
-          }
-        }
-      }
-    },
     "With food" : {
       "comment" : "Edit screen: the text “With food”.",
       "localizations" : {
@@ -12824,37 +12859,72 @@
         }
       }
     },
-    "Your data file is damaged. Maru did not change or delete it." : {
-      "comment" : "Storage problem: the text for a damaged data file.",
+    "Your data file is damaged. Maru left it exactly as it was." : {
+      "comment" : "Storage problem: the text for a damaged data file. Maru did not touch the file.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Deine Datendatei ist beschädigt. Maru hat sie nicht geändert oder gelöscht."
+            "value" : "Deine Datendatei ist beschädigt. Maru hat sie genau so gelassen, wie sie war."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu archivo de datos está dañado. Maru no lo cambió ni borró."
+            "value" : "Tu archivo de datos está dañado. Maru lo dejó tal como estaba."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "データファイルが破損しています。Maruはデータを変更も削除もしていません。"
+            "value" : "データファイルが破損しています。Maruはファイルに一切手を加えていません。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "데이터 파일이 손상되었어요. Maru는 파일을 바꾸거나 삭제하지 않았어요."
+            "value" : "데이터 파일이 손상되었어요. Maru는 파일을 그대로 두었어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "你的数据文件坏了。Maru 没有改动或删除它。"
+            "value" : "你的数据文件坏了。Maru 没有动它，一切保持原样。"
+          }
+        }
+      }
+    },
+    "Your data is safe. Nothing changed." : {
+      "comment" : "Storage problem: the text for a failure with no known cause. It reassures that the data is still there (D101).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Daten sind sicher. Nichts wurde geändert."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus datos están a salvo. No cambió nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データは無事です。何も変更されていません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터는 안전해요. 바뀐 건 없어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的数据很安全，没有任何改动。"
           }
         }
       }
@@ -13229,6 +13299,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "你的备注"
+          }
+        }
+      }
+    },
+    "Your records will appear here, one day at a time." : {
+      "comment" : "History: the description of the empty page.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine Einträge erscheinen hier, Tag für Tag."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus registros aparecerán aquí, día a día."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録は、一日ずつここにたまっていきます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록은 하루하루 여기에 쌓여요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的记录会一天天出现在这里。"
           }
         }
       }

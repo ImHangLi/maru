@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, and D103 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, and D103 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -27,7 +27,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - Every page is a system grouped list or form. The custom cards are the tile of My Items and the graph of History (D026, D032, D041).
 - Today and My Items use the plain grouped background by default (D024). The switch "Color Header" in Settings adds a header wash to both (D100): the app tint behind the large title, mixed to a relative luminance of 0.54 in light mode and 0.09 in dark mode, fading to the page background over 280 points with the curve of Apple Health. It scrolls away with the content on iOS 18 and later. The cards stay opaque on top of it.
 - Every page is the gray grouped background with white cards, as in Apple Health and Settings. This includes a page that loads or shows an error (D028).
-- An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058).
+- An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058). The empty Today and My Items pages have a warm title in sentence case with a period instead (D101).
 - A small sheet has the detents medium and large: a time wheel, a short list of choices, and the share sheet. The edit screen and the settings are full sheets. The modifier `smallSheet()` holds the rule (D058).
 - The card margin and the card padding are 16 points (`Tile.margin`). The second line of a list row sits 2 points under the name (D058).
 
@@ -52,7 +52,7 @@ A short onboarding and two tips, once each (D103). They ask nothing and request 
 
 ## Today
 
-- The large title "Today" with the date under it. No ring (D026).
+- The large title "Today" with the date under it. No ring (D026). The date line is the progress area of D101.
 - A gear button at the top left opens the settings sheet. An add button sits at the top right (D020). Both tabs have them. Today also has a History button with a calendar symbol, beside the add button (D026).
 - One list section per time slot, in time order. The section header is the slot name, for example "Morning", not a clock time (D011).
 - The header has no button. Each row records on its own (D060).
@@ -64,7 +64,8 @@ A short onboarding and two tips, once each (D103). They ask nothing and request 
 - A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Record Dose" (D068). Every action uses the same record transaction as the circle (D028).
 - The menu of a recorded row has "Change Time…". The menu of an open row has "Taken Earlier…". Each opens the time sheet directly. The sheet shows the time wheel at once, and "Save" records the dose as taken at that time. The wheel does not go past the current time. So a change of a record time needs three taps (D033).
 - An "As Needed" section at the end lists items with no schedule. Each row has a record button that records a dose at the current time (D021). An item has a second line with its usual amount and "Last dose 9:12 PM", also when the last dose was on an earlier day ("Yesterday, 9:12 PM", or the date). A dose of today shows under its item as "Taken at 8:07 AM" or "Skipped" in the text color. It lines up with the name, past the icon column, at every text size (D058).
-- With no item, the empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing Planned Today" (D026, D058, D068).
+- With no item, the empty view in the middle of the page says "Let’s add the first thing you take." and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing to take today. Enjoy it." (D026, D058, D101).
+- When every planned dose of today has a record, taken or skipped, the line "All done for today. Nice work." takes the place of the date under the title. As-needed doses do not count (D101).
 - Success text and the success haptic come only after the local transaction commits (spec §7.2).
 
 ## History
@@ -162,7 +163,7 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 - "Display": "App Color".
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
 - "Your Data", then "Send Feedback" (D037). Settings has no "Support Maru" section (D099).
-- "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift.
+- "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift. Its footer is "Made with care by the Maru team." (D101).
 - Each item also has its own "Alarm" and "Remind Again" on the add and edit screen (D079, D085). The menu "Remind Again" has "Off", "1 Time", "2 Times", "3 Times", "5 Times", and "Until I Record It". The menu "Every" has "5 min", "10 min", "15 min", "30 min", and "1 hr". Settings and the edit screen use the same words, from one place in the code.
 - "Until I Record It" has a limit, and the footer under the menus states the number and the last time in one short line: "Reminds you up to 12 times, until 1:00 AM." The time uses the time format of the device.
 - The first turn-on of "Alarm" asks the system. A refusal turns the switch off and shows the alert "Alarms Are Off" with "Open Settings" and "Cancel". The alarm switch has no footer.
@@ -266,6 +267,17 @@ One screen (spec §3 P03) with a short first view (D085). In this order: name, t
 - The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date". The plan line of the other two names the first day as a date: "21 days on, 7 days off at 8:00 AM, from Tue, Oct 13, with no end date".
 - The photo is part of the look of the item, in the section of the form and the color on the page "More Options" (D073, D085). The section has no header. Its first row shows the icon as the lists show it, 56 points, in the middle: the photo, else the form icon in the item color. It changes at once with the form, the color, or a new photo. Then come "Form", "Color", "Choose Photo", "Take Photo", and "Remove Photo" when the item has a photo. The camera asks for permission only at the tap on "Take Photo". After a pick, a row with a progress view says "Removing the background…". When Maru finds one subject, the switch "Remove Background" shows, and it starts on. With no clear subject, the footer says that the photo stays as it is. Save is never off because of the photo.
 - The item detail shows "Every other day", "Every 3 days", or "21 days on, 7 days off" under "Days", and a row "Next Dose" with "Today", "Tomorrow", a weekday, or a date when the dose is 7 or more days away (D036, D065).
+
+## Voice
+
+Maru speaks like a reliable friend, not a nurse and not a cheerleader (D101).
+
+- Warm words only at key moments: a day with every dose recorded, the first item, empty states, errors and recoveries, and the footer of Settings.
+- Buttons, settings labels, and record states stay short and exact. The text states the record, not the intake (D068).
+- No guilt, no nagging, no streak talk, and no "don't forget". A missed dose gets no judgment.
+- Few exclamation marks, no emoji, and nothing cute. No medical promise.
+- The app speaks as its maker only as "the Maru team".
+- An App Store rating request uses only the system prompt, after the third day with every dose recorded (D102).
 
 ## Text and accessibility
 

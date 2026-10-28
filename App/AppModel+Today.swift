@@ -2,6 +2,7 @@ import Foundation
 import MaruCore
 import MaruDatabase
 import SwiftUI
+import UIKit
 
 /// An event that the store did not confirm. The row offers only a retry of this same event (D014).
 struct PendingEvent: Equatable, Sendable {
@@ -247,6 +248,7 @@ extension AppModel {
     }
 
     func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
+        let wasComplete = todaySnapshot.map { isComplete($0) } ?? true
         noteRecords(records)
         for record in records {
             today.pending[record.occurrenceID] = nil
@@ -258,6 +260,7 @@ extension AppModel {
             snapshot.today?.apply(records)
             content = .loaded(snapshot)
         }
+        if !wasComplete, let day = todaySnapshot, isComplete(day) { dayDidComplete(day.date) }
         sendWatchDay()
         historyDidCommit(records)
         today.commitCount += 1
@@ -269,6 +272,23 @@ extension AppModel {
             refresh()
         }
         refreshReminders()
+    }
+
+    /// Every planned dose of Today has a confirmed record, taken or skipped. As-needed doses do not count, and a day
+    /// with no planned dose is not complete. Today shows a short line, and the count of the rating prompt uses it (D101, D102).
+    func isComplete(_ day: TodaySnapshot) -> Bool {
+        !day.entries.isEmpty && day.entries.allSatisfy { isDone($0) }
+    }
+
+    private var todaySnapshot: TodaySnapshot? {
+        if case let .loaded(snapshot) = content { snapshot.today } else { nil }
+    }
+
+    /// A record completed the day. Maru asks for a rating only while the user sees the app, so a record from a
+    /// reminder or a widget in the background only counts the day (D102).
+    private func dayDidComplete(_ date: LocalDate) {
+        let canAsk = UIApplication.shared.applicationState == .active
+        if ReviewPrompt.dayDidComplete(date, canAsk: canAsk) { reviewRequest += 1 }
     }
 
     /// A record, a skip, an undo, or a new time changes which slot times are open. The reminders and the follow-ups
