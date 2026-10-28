@@ -155,9 +155,11 @@ extension AppStore {
         let today = LocalDate(now, in: deviceTimeZone)
         var items: [Item] = []
         var schedules: [Schedule] = []
+        let me = try await store.people().first { $0.kind == .me }!.id
         for sample in Self.samples {
             // Each sample gets the color that the edit screen gives a new item, so the colors differ (D021).
             let item = try Item(
+                personID: me,
                 category: sample.category,
                 name: sample.name,
                 form: sample.form,

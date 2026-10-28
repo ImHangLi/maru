@@ -26,7 +26,8 @@ extension LocalStore: FollowUpSource {
                 now: now,
                 deviceTimeZone: deviceTimeZone,
                 privacy: privacy,
-                snoozes: snoozes
+                snoozes: snoozes,
+                family: inputs.family
             )
         }
     }
@@ -46,13 +47,14 @@ extension LocalStore: FollowUpSource {
         let schedules: [Schedule]
         let stored: [StoredOccurrence]
         let closed: Set<OccurrenceKey>
+        let family: Family
         let reminders: ReminderPlan
     }
 
     static func doseInputs(
         _ db: Database, now: Date, deviceTimeZone: NamedTimeZone, privacy: ReminderPrivacy, alarms: AlarmCover
     ) throws -> DoseInputs {
-        let (items, schedules, unreadableSchedules) = try Self.planInputs(db)
+        let (items, schedules, unreadableSchedules, family) = try Self.planInputs(db)
         let dates = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone).candidateDates
         // The query of `generateOccurrences`, with the state of each occurrence. Records exist only for these dates.
         let rows = try Row.fetchAll(
@@ -88,9 +90,10 @@ extension LocalStore: FollowUpSource {
             schedules: schedules,
             stored: stored,
             closed: closed,
+            family: family,
             reminders: ReminderPlan(
                 items: items, schedules: schedules, now: now, deviceTimeZone: deviceTimeZone, privacy: privacy,
-                closed: closed, alarms: alarms, unreadable: unreadable
+                closed: closed, alarms: alarms, unreadable: unreadable, family: family
             )
         )
     }
@@ -111,7 +114,8 @@ extension LocalStore: AlarmSource {
                 closed: inputs.closed,
                 now: now,
                 deviceTimeZone: deviceTimeZone,
-                privacy: privacy
+                privacy: privacy,
+                family: inputs.family
             )
         }
     }

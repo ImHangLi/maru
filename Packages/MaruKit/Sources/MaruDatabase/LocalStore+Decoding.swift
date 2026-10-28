@@ -83,11 +83,27 @@ extension LocalStore {
     /// The inputs of the reminder plans (D088). An item or a schedule that does not load is skipped and logged, so one bad row
     /// does not stop the reminders of the other items. The schedules that were skipped, and the schedules of a skipped item,
     /// are in `unreadable`. The plan reports each as not set, and the engines remove nothing while there is one.
-    static func planInputs(_ db: Database) throws -> (items: [Item], schedules: [Schedule], unreadable: Set<ScheduleID>) {
+    /// `family` has the members, so the text can name the owner of a dose (D123).
+    static func planInputs(
+        _ db: Database
+    ) throws -> (items: [Item], schedules: [Schedule], unreadable: Set<ScheduleID>, family: Family) {
+        // A member that does not load is skipped. Its items must not produce an ambiguous reminder (D123).
+        var people: [Person] = []
+        for row in try Row.fetchAll(db, sql: "SELECT * FROM person ORDER BY rowid") {
+            do {
+                people.append(try decodePerson(row))
+            } catch let error as DecodeRule {
+                DecodeFaults.skipped(error.rule)
+            }
+        }
         var items: [Item] = []
         for row in try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid") {
             do {
-                items.append(try decodeItem(row))
+                let item = try decodeItem(row)
+                guard let person = people.first(where: { $0.id == item.personID }), item.isArchived || !person.isArchived else {
+                    throw DecodeRule(rule: .itemPerson)
+                }
+                items.append(item)
             } catch let error as DecodeRule {
                 DecodeFaults.skipped(error.rule)
             }
@@ -107,7 +123,7 @@ extension LocalStore {
                 if let id { unreadable.insert(id) }
             }
         }
-        return (items, schedules, unreadable)
+        return (items, schedules, unreadable, Family(people: people))
     }
 
     /// The schedule of the slot that a raw occurrence row names, or `nil` when the row or the slot does not say it.

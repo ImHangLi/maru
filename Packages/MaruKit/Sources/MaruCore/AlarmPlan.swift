@@ -37,8 +37,9 @@ public struct AlarmRequest: Hashable, Sendable {
     public let fireDate: Date
     /// The items with an open dose at this time that the alarm stands for.
     public let itemIDs: [ItemID]
-    /// The names of the items, in the order of the schedules. `nil` when the user hides the names (D029).
-    public let names: [String]?
+    /// The names of the items, in the order of the schedules, each with its owner when the Family names owners (D123).
+    /// `nil` when the user hides the names (D029).
+    public let names: [ReminderName]?
     /// What the "Taken" button needs, when the alarm stands for exactly one item that is alone at its time.
     /// The keys are the ones of a follow-up (D034), so the same checks run. `nil`: the button opens the app.
     /// A repeating alarm has no plan date and no fire time. The button finds the date when it runs (D089).
@@ -50,7 +51,7 @@ public struct AlarmRequest: Hashable, Sendable {
     public let scheduleIDs: Set<ScheduleID>
 
     public init(
-        id: UUID, fireDate: Date, itemIDs: [ItemID], names: [String]?, taken: [String: String]?, repeating: Repeat? = nil,
+        id: UUID, fireDate: Date, itemIDs: [ItemID], names: [ReminderName]?, taken: [String: String]?, repeating: Repeat? = nil,
         scheduleIDs: Set<ScheduleID> = []
     ) {
         self.scheduleIDs = scheduleIDs
@@ -156,10 +157,12 @@ public struct AlarmPlan: Hashable, Sendable {
     /// What the doses of one time must have in common to share one repeating alarm.
     private struct Signature: Hashable {
         let items: [ItemID]
-        let names: [String]
+        let names: [ReminderName]
         let takenItem: ItemID?
         let takenVersion: ScheduleVersionID?
         let seriesID: String
+        /// `ReminderRequest.ownerChangedKey` of the open items, or `nil` (D123).
+        let ownerChanged: String?
     }
 
     /// One dose group with an alarm.
@@ -167,14 +170,16 @@ public struct AlarmPlan: Hashable, Sendable {
         let group: FollowUpGroup
         let instant: Date
         let items: [ItemID]
-        let names: [String]
+        let names: [ReminderName]
         let single: (itemID: ItemID, versionID: ScheduleVersionID)?
         /// The item follows the device, and its plan has no day cycle, so a repeating alarm can stand for it.
         let isRepeatable: Bool
+        let ownerChanged: String?
 
         var signature: Signature {
             Signature(
-                items: items, names: names, takenItem: single?.itemID, takenVersion: single?.versionID, seriesID: group.seriesID
+                items: items, names: names, takenItem: single?.itemID, takenVersion: single?.versionID, seriesID: group.seriesID,
+                ownerChanged: ownerChanged
             )
         }
     }
@@ -199,7 +204,8 @@ public struct AlarmPlan: Hashable, Sendable {
         closed: Set<OccurrenceKey>,
         now: Date,
         deviceTimeZone: NamedTimeZone,
-        privacy: ReminderPrivacy = .showNames
+        privacy: ReminderPrivacy = .showNames,
+        family: Family = Family()
     ) {
         hasUnreadable = !reminders.unreadable.isEmpty
         unreadableSchedules = reminders.unreadable
@@ -219,7 +225,7 @@ public struct AlarmPlan: Hashable, Sendable {
         }
         let groups = DoseGroups(
             reminding: reminding, items: items, stored: stored, closed: closed, now: now, deviceTimeZone: deviceTimeZone,
-            days: Self.datedDays
+            days: Self.datedDays, family: family
         )
         let end = now.addingTimeInterval(Double(Self.datedDays) * 86_400)
         let scheduleOfItem = Dictionary(schedules.map { ($0.itemID, $0) }, uniquingKeysWith: { first, _ in first })
@@ -234,7 +240,11 @@ public struct AlarmPlan: Hashable, Sendable {
             candidates.append(
                 Candidate(
                     group: group, instant: instant, items: open.map(\.itemID),
-                    names: privacy == .showNames ? open.compactMap(\.name) : [], single: single, isRepeatable: isRepeatable
+                    names: privacy == .showNames ? open.compactMap { open in open.name.map { ReminderName(item: $0, owner: open.owner) } } : [],
+                    single: single, isRepeatable: isRepeatable,
+                    ownerChanged: ReminderRequest.ownerChangedText(
+                        of: items.filter { item in open.contains { $0.itemID == item.id } }.map(\.ownerChangedAt)
+                    )
                 )
             )
         }
@@ -274,11 +284,14 @@ public struct AlarmPlan: Hashable, Sendable {
                     FollowUpRequest.itemIDKey: single.itemID.rawValue.uuidString,
                     FollowUpRequest.scheduleVersionIDKey: single.versionID.rawValue.uuidString,
                 ]
+                taken?[ReminderRequest.ownerChangedKey] = signature.ownerChanged
             }
             let text = (
                 ["repeat", signature.seriesID, value.weekdays.sorted().map { String($0.rawValue) }.joined()]
-                    + signature.items.map { $0.rawValue.uuidString } + signature.names
+                    + signature.items.map { $0.rawValue.uuidString } + signature.names.map(\.key)
                     + [taken == nil ? "open" : "taken", value.single?.versionID.rawValue.uuidString ?? ""]
+                    // An owner change gives a new alarm, so the "Taken" button carries the new instant (D123).
+                    + (signature.ownerChanged.map { [$0] } ?? [])
             ).joined(separator: "\n")
             repeating.append(
                 AlarmRequest(
@@ -304,9 +317,11 @@ public struct AlarmPlan: Hashable, Sendable {
                     FollowUpRequest.itemIDKey: single.itemID.rawValue.uuidString,
                     FollowUpRequest.scheduleVersionIDKey: single.versionID.rawValue.uuidString,
                 ]
+                taken?[ReminderRequest.ownerChangedKey] = candidate.ownerChanged
             }
-            let key = ([candidate.group.identifier] + candidate.items.map { $0.rawValue.uuidString } + candidate.names
-                + [taken == nil ? "open" : "taken", candidate.single?.versionID.rawValue.uuidString ?? ""])
+            let key = ([candidate.group.identifier] + candidate.items.map { $0.rawValue.uuidString } + candidate.names.map(\.key)
+                + [taken == nil ? "open" : "taken", candidate.single?.versionID.rawValue.uuidString ?? ""]
+                + (candidate.ownerChanged.map { [$0] } ?? []))
                 .joined(separator: "\n")
             dated.append(
                 AlarmRequest(

@@ -49,12 +49,15 @@ extension AppModel {
             do {
                 let context = try await store.editorContext(for: itemID)
                 if itemID != nil, context.item == nil { throw EditorOpenError.itemNotFound }
-                let original = context.item.map { ItemDraft(item: $0, schedule: context.schedule) }
+                var original = context.item.map { ItemDraft(item: $0, schedule: context.schedule) }
                     ?? ItemDraft(color: context.newItemColor, reminders: context.newItemReminders)
+                if original.personID == nil { original.personID = context.defaultOwner.rawValue }
                 var session = EditorSession(
                     context: context, original: original, start: original, isRestored: false, generation: generation
                 )
                 if var kept = DraftFile.load(key: session.draftKey) {
+                    // A draft file from before the Family has no owner. It takes the owner of the stored item or the default (D121).
+                    kept.personID = kept.personID ?? original.personID
                     // A draft of version 1.0 has no reminder options. It keeps the options of the stored item.
                     if kept.hasReminderOptions != true {
                         kept.followUp = original.followUp

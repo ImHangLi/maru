@@ -41,22 +41,34 @@ struct NextDoseSlot: Codable, Equatable {
     var occurrenceIDs: [UUID]
     var scheduleVersionIDs: [UUID]
     var epoch: Int
+    /// The members of the doses, in the order of the doses. A new owner gives a new token (D123).
+    var personIDs: [UUID] = []
+    /// The instant at which the app made these doses. "Taken" records nothing for an item whose owner changed after it (D123).
+    var listedAt = Date.distantPast
 
     static var stored: NextDoseSlot? {
         UserDefaults.standard.data(forKey: key).flatMap { try? JSONDecoder().decode(NextDoseSlot.self, from: $0) }
     }
 
     /// Keeps the doses, and returns their token. The same doses keep their token, so the content does not change.
-    static func store(occurrenceIDs: [UUID], scheduleVersionIDs: [UUID], epoch: Int) -> String {
-        if let slot = stored, slot.occurrenceIDs == occurrenceIDs, slot.scheduleVersionIDs == scheduleVersionIDs,
-           slot.epoch == epoch {
+    static func store(occurrenceIDs: [UUID], scheduleVersionIDs: [UUID], personIDs: [UUID], epoch: Int, at now: Date) -> String {
+        if var slot = stored, slot.occurrenceIDs == occurrenceIDs, slot.scheduleVersionIDs == scheduleVersionIDs,
+           slot.personIDs == personIDs, slot.epoch == epoch {
+            // The same doses with the same owners: the new read is the list now. An owner change away and back must not keep
+            // an instant from before it, or "Taken" never records again (D123).
+            if now > slot.listedAt {
+                slot.listedAt = now
+                UserDefaults.standard.set(try? JSONEncoder().encode(slot), forKey: key)
+            }
             return slot.token
         }
         let slot = NextDoseSlot(
             token: String(UUID().uuidString.prefix(8)),
             occurrenceIDs: occurrenceIDs,
             scheduleVersionIDs: scheduleVersionIDs,
-            epoch: epoch
+            epoch: epoch,
+            personIDs: personIDs,
+            listedAt: now
         )
         UserDefaults.standard.set(try? JSONEncoder().encode(slot), forKey: key)
         return slot.token
@@ -156,16 +168,21 @@ extension AppModel {
         let token = NextDoseSlot.store(
             occurrenceIDs: doses.map(\.entry.id.rawValue),
             scheduleVersionIDs: doses.map(\.entry.occurrence.scheduleVersionID.rawValue),
-            epoch: epoch
+            personIDs: doses.map(\.entry.look.personID.rawValue),
+            epoch: epoch,
+            // The read of the doses, not the clock now: an owner change after the read refuses the record (D123).
+            at: day.generatedAt
         )
         let state = NextDoseAttributes.ContentState(
             part: doses[0].part.linkName,
             plannedAt: plannedAt,
             timeZone: timeZone.identifier,
-            names: showsNamesInReminders ? Self.shownNames(doses.map(\.entry.look.name)) : [],
+            names: showsNamesInReminders ? Self.shownNames(doses.map(\.entry.look.labelledName)) : [],
             count: doses.count,
             token: token,
-            expiresAt: endOfDay
+            expiresAt: endOfDay,
+            // The button records for one member only (D123).
+            canRecord: Set(doses.map(\.entry.look.personID)).count == 1
         )
         // Never during the onboarding (D103). An app in the background can only update or end an activity.
         let canStart = onboarding == .hidden && UIApplication.shared.applicationState == .active
@@ -217,7 +234,7 @@ extension AppModel {
         var events: [PendingEvent] = []
         var confirmed: [OccurrenceID: OccurrenceRecord] = [:]
         var isCurrent = epoch == slot.epoch && slot.epoch % 2 == 0 && !slot.occurrenceIDs.isEmpty
-            && slot.occurrenceIDs.count == slot.scheduleVersionIDs.count
+            && slot.occurrenceIDs.count == slot.scheduleVersionIDs.count && Set(slot.personIDs).count == 1
         for (occurrenceID, versionID) in zip(slot.occurrenceIDs, slot.scheduleVersionIDs) where isCurrent {
             guard let target = try? await store.widgetTarget(
                 of: OccurrenceID(occurrenceID), scheduleVersionID: ScheduleVersionID(versionID), at: now
@@ -233,6 +250,7 @@ extension AppModel {
                 )
                 event.requiresCurrentPlan = true
                 event.restoreEpoch = slot.epoch
+                event.listedAt = slot.listedAt
                 events.append(event)
                 confirmed[occurrence.id] = record
             case .alreadyTaken:

@@ -7,7 +7,7 @@ import UserNotifications
 @Suite("System notification requests (spec 8.1, 8.2, 8.3)")
 struct SystemRequestTests {
     @Test func requestRepeatsOnItsCalendarTimeAndNamesTheItems() throws {
-        let item = try Item(category: .medication, name: "Metformin", form: .tablet, color: .blue)
+        let item = try Item(personID: PersonID(), category: .medication, name: "Metformin", form: .tablet, color: .blue)
         var schedule = Schedule(itemID: item.id, isEnabled: true)
         let slotID = try schedule.addSlot().id
         try schedule.appendVersion(

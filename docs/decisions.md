@@ -716,7 +716,7 @@ Tests (D016): one new test in `MaruCore` for the choice of words. The old part o
 
 Not verified: no app build on a Mac of the maintainer. CI builds the app. Nobody saw the card. The default choice needs a check on a real iPhone with real bottles.
 
-## D043 · 2026-10-12 · Smart completion for supplements
+## D043 · 2026-10-12 · Smart completion for supplements (pet candidates changed by D121)
 
 Owner decision, with agent detail. It changes spec 2.1 and 3 P03 in part.
 
@@ -1155,7 +1155,7 @@ Tests (D016): four new tests. The rhythm and the pause across a clock change, th
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
-## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074) (a Pro feature: D111)
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074) (a Pro feature: D111) (the owner in the row name: D123)
 
 Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
 
@@ -1685,7 +1685,7 @@ D089 follow-up 3 (Codex round 2): the engine reads the waiting and the active al
 
 D089 follow-up 4 (Codex round 3): (1) The durable cancel-when-quiet set drops every id that the plan wants again, at the start of each run, and the engine removes a cancelled alarm from its own list, so a wanted alarm is scheduled again in the same run (rename A, B, A while the alarm rings). (2) The alarm index becomes complete by a one-time clean slate: until `AlarmIndex.isComplete` (App Group flag, set only after a run with no error), the first run treats every waiting alarm with no entry as obsolete, cancels it, and schedules the alarms of the plan again with entries. After that, an alarm with no entry is never kept, also with an unreadable schedule. An alarm of an unreadable schedule that had no entry is cancelled once, and the normal fail-open rule applies. Tests: `aWantedAlarmInTheQuietSetIsNotCancelled`, `theFirstRunMakesTheAlarmIndexComplete`.
 
-## D090 · 2026-10-16 · Reminder actions: "Take All", "Skip", and "Remind in 10 min" (changes the group clause of D034, spec 8.3, and the "no group record" idea of D060)
+## D090 · 2026-10-16 · Reminder actions: "Take All", "Skip", and "Remind in 10 min" (changes the group clause of D034, spec 8.3, and the "no group record" idea of D060) (group actions for one member only: D123)
 
 Maintainer approval on 2026-10-16 (Phase 1 of `~/Documents/Research/maru/2026-10-16-reminder-tracker-plan.md`). The agent made the design choices below. It changes spec 8.3 and 4 by amendment, and it adds T53 to T55.
 
@@ -2081,7 +2081,7 @@ Risks:
 
 Not verified: no build of the app on this Mac, and nobody bought a plan. CI builds the app. The checks with the StoreKit configuration are in `docs/status.md`. App Store Connect has no product yet. `docs/release-plan.md` has the maintainer's steps.
 
-## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts
+## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts ("Record my doses" with several members: D123)
 
 Maintainer decision on 2026-10-28, with agent detail. Both features are free. They are not part of Pro (D107). It follows spec 6, 7.2, 9, and 10, and it adds to D048 and D091.
 
@@ -2138,7 +2138,7 @@ No store change, no schema change, and no new test (D016).
 
 Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
 
-## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro
+## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123)
 
 Maintainer decision on 2026-10-28, with agent detail. It is the first Pro feature of D107. It follows spec 6, 7.2, 8, 9, and 10, and it uses the record checks of D034, D048, and D089.
 
@@ -2519,3 +2519,97 @@ The maintainer listened to eight candidate sounds on 2026-10-29 and liked them. 
 - `docs/brand/make_sounds.py` and the six generated files are removed. `make_icons.py` stays. The six old names leave `App/Localizable.xcstrings`.
 
 Not verified: nobody heard the sounds on a device. Nobody checked on a device that each file plays as a notification sound, at full ringer volume, in silent mode, on a locked iPhone, or in a Focus. The device checks 3 and 5 of D112 apply to the new sounds.
+
+## D121 · 2026-10-29 · Family: several people and pets on one iPhone (changes the "Profile" line of spec 1)
+
+Maintainer decisions of 2026-10-28, with agent detail. The design is in `~/Documents/Research/maru/family-mode/design.md`. Its Codex reviews are in the same folder.
+
+- Maru can hold several people and pets on one iPhone. The UI name is "Family". A member is a local label on this iPhone. It is not an account, not a health profile, and not a login. Remote view, sharing, and sync between phones are not planned (spec 1).
+- The approved scope replaces these spec clauses: §1 "Profile" and "家庭远程监督", §8.3 "two or more items", and §11.5 the paywall source list. Remote supervision stays excluded. Local members are allowed. Group actions require one member. The source list gains `family`.
+- There is no mode switch. Every database has one member "Me". The app looks as before until the user adds a second member (T57).
+- One table `person` holds the members: `id`, `kind` (`me`, `person`, or `pet`), `name` (`NULL` only for `me` before a rename, and the app shows its own word "Me"), `symbol` (the animal of a pet), `imageReference` (an optional photo, D124), and `archivedAt`. A member has no color: every avatar uses the app tint (UI v2 of the design).
+- Each item belongs to exactly one member: `item.personID`. Schedules, versions, occurrences, and events belong to the member through their item. No other table has a member column, so there is one source of truth.
+- `item.ownerChangedAt` is the instant of the last owner change (D123). The store sets it in the same write as the change. A caller cannot set or erase it for a stored item.
+- Pet items receive no human amount, time, or note candidates in the editor. Name suggestions stay. This changes D043 and spec 4.
+- An owner change is a correction ("I set it up under the wrong person"). The records, schedules, and history move with the item. No record is copied or rewritten (T64).
+- Store operations (`MaruDatabase`): `people()`, `save(_:)` for a member, `archive(person:)`, `restore(person:)`, `delete(person:)` (D125), and `setOwner(_:of:)`. Each is one write transaction with the generation check (D040). The store never reads Maru Pro (D122).
+- Invariants that the store keeps: exactly one `me`, at least one active member, and no active item of an archived member. A save, an owner change, or a restore that breaks one is `StorageError.conflict`. The SQL has a CHECK for each rule of a row, a unique index for `me`, and two triggers that refuse an item with no owner.
+- A stored item with no owner or an owner that is not an ID is a row that does not load: `StoredDataRule.itemPerson` (D088). A member row that does not load is `personRow`. The other items keep their reminders.
+- Today, the widgets, the Watch list, and the item list carry the member ID and the owner of each dose (`TodaySnapshot.ItemLook.personID` and `owner`), so the UI can filter Today by member after the merge of the pending and the as-needed rows. The filter UI is not in this change.
+- Analytics: `daily_usage_summary` gets `family_size` as a bucket (`1`, `2`, or `3_plus`). No name, no ID, no kind, and no count of pets leaves the iPhone (spec 10, 11.5, T68).
+
+Not in this change (the UI work does them): the Family page, the add and edit sheet, the switcher and the Today filter, the "For" row in the editor, the History filter by member, the per-member summary PDF, the CSV column "Person", `PRIVACY.md`, and the store text.
+
+## D122 · 2026-10-29 · Family is a Maru Pro feature, and a member that exists never locks
+
+Maintainer decision of 2026-10-28. Free: "Me" and every item, always. Pro: the creation of a second or later member. A member that exists never locks after Pro ends. A free user can use, rename, change, archive, restore, and delete an existing member, add items for it, and restore a backup with members (T58, T59). This follows D107 ("a purchase never blocks a local feature") and D114.
+
+- The one gate is `AppModel.addMember(_:)`. A free user gets the paywall with the new source `family` (`AnalyticsEvent.PaywallSource.family`), and nothing is saved. Every other Family operation has no gate.
+- The store has no gate, because the store never reads Pro. The free edit path calls `update(_:)`, which refuses a missing member in the write transaction.
+- Family does not unlock the Watch app (D111) or the Live Activity (D110).
+
+## D123 · 2026-10-29 · Reminder text with members, no group action across members, and no quick action after an owner change (changes D090, D110, D108, and the Watch row name of D071)
+
+Maintainer decision 4 of 2026-10-28, with agent detail from the design and its two Codex reviews.
+
+Text:
+
+- A text names the owner of a dose only when the Family has two or more active members (`Family.namesOwners`). With one active member every text is as before (T57).
+- `ReminderContent.names` and `AlarmRequest.names` hold `ReminderName` (an item name and an optional owner). A notification body with owners has one line for each member, for example "Me: Vitamin D3" and "Mochi: Methimazole and Flea Drops". The line pattern is one String Catalog entry, so each language chooses its colon. An alarm title joins the lines into one list.
+- "Show Names in Reminders" off (D029) hides the member names too (T62). The Watch list is the exception, as for the item names (D071): with two or more members, each row name has the owner ("Mom: Levothyroxine"), so an old Watch list tells two rows of one item name apart.
+- The Lock Screen widgets, the Live Activity, the Last Dose widget, and Siri use the same "owner: item" text when names show. The Home Screen widgets "Today" and "Record Dose" always showed the item names (D048), so they always show the owner too. Without it, two rows of one item name for two members look the same, and a tap could record for the wrong member.
+- No member name or member ID goes to `userInfo`, a log line, or analytics.
+
+Actions:
+
+- A request that names doses of two or more members has only "Remind in 10 min" (`ReminderCategory.choose`, `membersCount`). One tap must not record a dose for another member (T60).
+- A request that names doses of one member keeps its actions: "Taken" and "Skip" for one dose, and "Take All" and "Skip All" for two or more doses with the names shown (D090, T61).
+- The category and the identity of a follow-up come from the doses that the request names. Example: Mom and the cat share 08:00, and only Mom has follow-ups. The follow-up names only Mom, so it has "Taken" (`DoseGroups.single(of:among:)`). The identity is then the list of its doses (`membersKey`).
+- The Live Activity shows "Taken" only when its doses belong to one member (`canRecord`), and the record path checks the same rule again. This changes D110.
+- Siri "Record my doses" records nothing when the Family has two or more active members. It says "Several people and pets use Maru, so Siri can't record for them. Open Maru to record each dose." A member parameter for Siri is later work. This changes D108.
+
+An owner change and old actions:
+
+- An owner change does not change the identity of a dose. So each quick action carries the instant of the list that the user saw, and the record transaction refuses a dose of an item whose `ownerChangedAt` is later (`RecordFailure.ownerChanged`, nothing written, T70):
+  - A notification action and the "Taken" button of an alarm: the request carries `ownerChanged`, the latest `ownerChangedAt` of the items that it names, only when one of them changed its owner. It holds no ID and no name, so a single-person user's requests do not change (T57). The transaction refuses a dose whose item changed its owner after that value, or after the delivery date. A request with no value records only an item whose owner never changed. This also covers a pending request that the system delivers after an owner change before the reminder run replaced it, and a follow-up of yesterday after midnight (D039).
+  - The Watch: `WatchRequest.record` carries `listedAt`, which is `WatchDay.sentAt` of the list that the user saw. The iPhone sets `sentAt` to the read time of the list, not later.
+  - A widget capsule: `TakeDoseIntent.readAt`, the instant before the widget read.
+  - The Live Activity: `NextDoseSlot.listedAt`, the read time of the doses. A new owner also gives a new token.
+  - Siri: an instant before the read. The count of active members comes from the same read as the doses, after the items, so a member that comes back during the read stops the record.
+- The store takes the instant of an owner change inside its write transaction. A read that starts during that transaction still sees the old owner, so a list instant less than 5 seconds after the change also counts as before it (`ownerChangeMargin`). The user then records from a new list.
+- Rare cases, accepted after the second Codex review (`~/Documents/Research/maru/family-mode/core-codex-review-2.md`). Each needs an owner change and a quick action from an old list in one short time:
+  - The clock of the iPhone moves back after a Watch, widget, or Live Activity list, and the owner changes before a new list. The list instant is then later than the change.
+  - An owner change transaction that takes longer than 5 seconds.
+  - A restore of a backup in which an item has another owner, followed by a tap on a Watch row, a widget capsule, or a notification from before the restore. A restore already replaces the lists and the requests.
+  A check of the member that the user saw (its ID in each quick action, compared in the record transaction) closes all three. It is a later step if a device check finds one of them.
+- Today records with the owner on the screen and sets no instant. The future Family UI must refresh owner labels before a record.
+- An as-needed dose has no quick action, so it needs nothing.
+- A change of a member name, an owner, or an archive starts one reminder run, as a rename of an item does (D084, D086). The run replaces the pending requests whose text changed.
+
+A pending request can keep its old text until the next reminder run. Its old `ownerChanged` value refuses the record, also with the names hidden. The record transaction also refuses an action whose doses belong to two or more members now, also for a request with an old category.
+
+## D124 · 2026-10-29 · The avatar of a member: a photo, an animal, or the initial
+
+Maintainer decision 5 of 2026-10-28 (the switcher UI is designed elsewhere). A member has an optional photo from the library or the camera. The core stores it as an item photo (D056): `person.imageReference` holds the file name, and the file is in the photo folder of the items. The avatar shows the photo when the file is on the iPhone, else the animal of a pet, a person symbol for "Me", or the initial of the name. An avatar has no gradient and no member color.
+
+- The backup does not hold the photo files, as for items. A restore keeps the names, and the app removes the files that no item and no member uses.
+- A replaced photo file and the photo of a deleted member are removed after the save.
+
+## D125 · 2026-10-29 · Archive, restore, and delete of a member (follows D033 and D084)
+
+- Archive: one transaction sets `person.archivedAt` and archives each active item of the member with the same instant. Reminders stop with the next run (D084). History keeps the past doses (D091).
+- Restore: one transaction clears `person.archivedAt` and restores only the items with the same `archivedAt`. An item that the user archived on its own keeps its own archive.
+- Delete: one transaction deletes every item of the member with its versions, schedules, occurrences, and events, as `deleteItem` (D033), then the member. The user asks and confirms. It is never a recovery from an error (spec 7.3).
+- `me` cannot be deleted. The last active member cannot be archived or deleted. Each is `StorageError.conflict`, and nothing changes (T63).
+
+## D126 · 2026-10-29 · Migration `v8`: one plain migration, because Maru has no public users yet
+
+Maintainer decision of 2026-10-28: version 1.0.0 will not be released. The first public release has Maru Pro, the new paywall, and Family. The maintainer's iPhone and the TestFlight testers have data, and spec 7.3 forbids a clear and rebuild. So the migration is plain, and there is no special work for old public backups.
+
+- `v8` runs in one transaction: it creates `person`, inserts "Me", adds `item.personID` and `item.ownerChangedAt`, and gives every item to "Me", also an archived item. SQLite cannot add a `NOT NULL` column with a `REFERENCES` clause, so the column is nullable and two triggers refuse a `NULL` after the migration. No table is copied or rebuilt. A failure rolls back the whole migration, so the database stays at `v7` with its data (T37, T56).
+- A new database runs `v1` to `v8` and gets "Me" with no item.
+- Restore of a backup of this version: the restore stages the backup on a copy and migrates the copy to the level of the backup, which seeds a "Me". When the backup has a `person` table, the stage deletes the seeded members before it copies the rows of the backup, so there is no second "Me" (T69). The check of the staged copy then needs exactly one `me`, at least one active member, and no active item of an archived member.
+- Restore of an older backup: it has no `person` table, so the seed stays, and the later migration gives every item to "Me" (T67).
+- An older app refuses a backup of `v8` as a newer schema (T38). The backup format version stays 1 (`docs/export-format.md`).
+
+Tests (D016): the upgrade fixture gives every item to "Me" (T56), an older backup restores with "Me", a backup with members restores with one "Me" and the owners (T69), an action listed before an owner change records nothing (T70), and a request for two members has no group action (T60). The archive test covers T63.

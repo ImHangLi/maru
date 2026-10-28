@@ -49,6 +49,8 @@ extension LocalStore {
 public struct WidgetRead: Sendable {
     public let epoch: Int
     public let items: [Item]
+    /// Every member of the Family (D121). A dose name has its owner only when two or more are active (D123).
+    public let people: [Person]
     /// The occurrences of the plan of now, also those that no generation run stored. A stored one keeps its ID.
     public let occurrences: [Occurrence]
     public let planZones: Set<NamedTimeZone>
@@ -112,7 +114,7 @@ extension LocalStore {
                 }
             }
             return WidgetRead(
-                epoch: epoch, items: items, occurrences: outcome.occurrences, planZones: Set(planZones),
+                epoch: epoch, items: items, people: try Self.fetchPeople(db), occurrences: outcome.occurrences, planZones: Set(planZones),
                 itemIDsBySlot: itemIDs, doses: doses, records: records
             )
         }

@@ -11,9 +11,12 @@ public struct LastDose: Equatable, Sendable {
     /// The amount as the user typed it: the amount of the dose for an as-needed item, else the amount of the
     /// schedule version of the dose. `nil` when there is none.
     public let amount: Dose?
+    /// The owner for a text: `nil` when the Family has one active member (D123).
+    public let owner: DoseOwner?
 
-    public init(itemID: ItemID, name: String, takenAt: Date, amount: Dose?) {
+    public init(itemID: ItemID, name: String, takenAt: Date, amount: Dose?, owner: DoseOwner? = nil) {
         self.itemID = itemID
+        self.owner = owner
         self.name = name
         self.takenAt = takenAt
         self.amount = amount
@@ -36,6 +39,7 @@ extension LocalStore {
     /// Each dose with an event or a state row goes through `fetchCheckedRecord`, as the history read does. A projection
     /// that does not match the history is `invalidData`, so the read fails and does not say "no dose" (spec 7.3, T20).
     static func fetchLastDose(_ db: Database, of itemID: ItemID?) throws -> LastDose? {
+        let family = Family(people: try fetchPeople(db))
         let active = Dictionary(uniqueKeysWithValues: try itemsAndSchedules(db).items.filter { !$0.isArchived }.map { ($0.id, $0) })
         let rows = try Row.fetchAll(
             db,
@@ -61,7 +65,8 @@ extension LocalStore {
                   newest.map({ event.occurredAt > $0.takenAt }) ?? true
             else { continue }
             let text: String? = try row.decode(forColumn: "dose")
-            newest = LastDose(itemID: item.id, name: item.name, takenAt: event.occurredAt, amount: text.flatMap(Dose.init))
+            newest = LastDose(itemID: item.id, name: item.name, takenAt: event.occurredAt, amount: text.flatMap(Dose.init),
+                              owner: family.owner(of: item))
         }
         return newest
     }

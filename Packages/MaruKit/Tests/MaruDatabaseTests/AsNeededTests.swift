@@ -11,7 +11,7 @@ struct AsNeededTests {
     /// gives `unavailable`. The retry with the same occurrence and event adds nothing (D014).
     @Test func oneTapGivesOneOccurrenceAndOneEventAlsoOnARetry() async throws {
         let store = try LocalStore(directory: directory.url)
-        let item = try Item(category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
+        let item = try Item(personID: store.meID, category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
         try await store.save(item)
         let now = Fixtures.instant("2026-03-01T06:30:00Z")
         let dose = AsNeededOccurrence(itemID: item.id, at: now, in: Fixtures.shanghai)
@@ -33,7 +33,7 @@ struct AsNeededTests {
     /// A taken dose whose projection row is gone is `invalidData`. The read does not hide it as undone (spec 7.3).
     @Test func aDoseWithABrokenProjectionIsReportedNotHidden() async throws {
         let store = try LocalStore(directory: directory.url)
-        let item = try Item(category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
+        let item = try Item(personID: store.meID, category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
         try await store.save(item)
         let now = Fixtures.instant("2026-03-01T06:30:00Z")
         let dose = AsNeededOccurrence(itemID: item.id, at: now, in: Fixtures.shanghai)

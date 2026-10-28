@@ -11,6 +11,9 @@ struct DoseGroups {
         let order: Int
         let itemID: ItemID
         let name: String?
+        /// The member of the item and the owner for the text (D123).
+        let personID: PersonID
+        let owner: DoseOwner?
         /// The dose itself: its slot and the schedule version that it has. A group action records exactly these (D090).
         let slotID: ScheduleSlotID
         let versionID: ScheduleVersionID
@@ -24,6 +27,8 @@ struct DoseGroups {
     private var members: [FollowUpGroup: [ItemID: Set<ScheduleVersionID>]] = [:]
     /// The instant of every slot time of each item, with a record or not.
     private(set) var doses: [ItemID: Set<Date>] = [:]
+    /// The member of every item of a group.
+    private var personOfItem: [ItemID: PersonID] = [:]
 
     /// - Parameters:
     ///   - reminding: The schedules whose reminder the plan sets up, in a stable order.
@@ -37,7 +42,8 @@ struct DoseGroups {
         closed: Set<OccurrenceKey>,
         now: Date,
         deviceTimeZone: NamedTimeZone,
-        days: Int = FollowUpPlan.days
+        days: Int = FollowUpPlan.days,
+        family: Family = Family()
     ) {
         let scheduleOfSlot = Dictionary(
             reminding.flatMap { schedule in schedule.slots.map { ($0.id, schedule) } },
@@ -57,12 +63,14 @@ struct DoseGroups {
             // The zone, the date, and the time give one instant, so every member of a group has it.
             let instant = timeZone.resolve(time, on: key.plannedDate).earliestInstant
             members[group, default: [:]][schedule.itemID, default: []].insert(versionID)
+            if let item = itemOfID[schedule.itemID] { personOfItem[item.id] = item.personID }
             doses[schedule.itemID, default: []].insert(instant)
             guard !closed.contains(key) else { return }
             slotInstants[group] = instant
             open[group, default: []].append(
                 OpenItem(
                     order: order[schedule.id] ?? 0, itemID: schedule.itemID, name: itemOfID[schedule.itemID]?.name,
+                    personID: itemOfID[schedule.itemID]?.personID ?? PersonID(), owner: itemOfID[schedule.itemID].flatMap(family.owner(of:)),
                     slotID: key.slotID, versionID: versionID
                 )
             )
@@ -107,10 +115,20 @@ struct DoseGroups {
     }
 
     /// The one item and its one schedule version, for a group that gets the "Taken" action.
-    func single(of group: FollowUpGroup) -> (itemID: ItemID, versionID: ScheduleVersionID)? {
-        guard let all = members[group], all.count == 1, let (itemID, versions) = all.first, versions.count == 1 else {
-            return nil
+    ///
+    /// A group whose items belong to one member answers for the whole group, as before the Family (D034). A group of two or more
+    /// members answers for the doses that the request names (`named`): the doses of the other members do not count (D123).
+    func single(of group: FollowUpGroup, among named: Set<ItemID>? = nil) -> (itemID: ItemID, versionID: ScheduleVersionID)? {
+        guard var all = members[group] else { return nil }
+        if let named, Set(all.keys.compactMap { personOfItem[$0] }).count > 1 {
+            all = all.filter { named.contains($0.key) }
         }
+        guard all.count == 1, let (itemID, versions) = all.first, versions.count == 1 else { return nil }
         return (itemID, versions.first!)
+    }
+
+    /// Whether the items of the group belong to two or more members.
+    func spansMembers(_ group: FollowUpGroup) -> Bool {
+        Set((members[group] ?? [:]).keys.compactMap { personOfItem[$0] }).count > 1
     }
 }

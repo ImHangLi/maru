@@ -51,7 +51,7 @@ extension NextDoseDay {
         let byTime = Dictionary(grouping: entries.filter(\.isOpen)) { $0.occurrence.plannedInstant }
         open = byTime.keys.sorted().map { plannedAt in
             let doses = byTime[plannedAt]!
-            return Time(plannedAt: plannedAt, part: DayPart(doses[0].occurrence.plannedTime), names: doses.map(\.look.name))
+            return Time(plannedAt: plannedAt, part: DayPart(doses[0].occurrence.plannedTime), names: doses.map(\.look.labelledName))
         }
         timeZone = TimeZone(identifier: today.timeZone.identifier) ?? .current
         expiresAt = today.expiresAt

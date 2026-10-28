@@ -253,7 +253,7 @@ extension AppModel {
             // The event can be stored already, after `unavailable`. Keep it, and send the same one again (D014).
             today.asNeeded.unconfirmed[pending.occurrence.id] = entry
             show(AsNeededFailure(kind: .notSaved(error), pending: pending))
-        case .unknownOccurrence, .versionChanged, .rejected:
+        case .unknownOccurrence, .versionChanged, .ownerChanged, .rejected:
             // The store has another state than the card. Nothing was written. Show the stored state.
             forget(pending)
             show(AsNeededFailure(kind: .changed, pending: nil))

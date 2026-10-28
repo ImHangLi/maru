@@ -40,6 +40,6 @@ Additions from research (D006):
 | Read-only import of medication names from Apple Health (D022) | Users ask to bring their list from Health |
 | Optional end-to-end encrypted sync | Users with several devices ask for it |
 | More languages: zh-Hant, ja, de, fr, es | Each language passes a full UI, notification, and error review |
-| Paid convenience features: Maru Pro in version 1.2 (D099, D107), with the Lock Screen Live Activity, the Apple Watch app, extra app icons, and extra reminder sounds. The purchase and the paywall are in code (D107) | The free core has steady use. Never put the core behind a paywall or limit items |
+| Paid convenience features: Maru Pro in version 1.2 (D099, D107), with the Lock Screen Live Activity, the Apple Watch app, extra app icons, extra reminder sounds, and a Family of several people and pets on one iPhone (D121, D122). The purchase and the paywall are in code (D107) | The free core has steady use. Never put the core behind a paywall or limit items |
 
-Not planned: inventory, accounts, AI chat, health scores, community, ads.
+Not planned: inventory, accounts, remote view or sync of a family, AI chat, health scores, community, ads.

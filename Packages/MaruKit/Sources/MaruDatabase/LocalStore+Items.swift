@@ -78,44 +78,54 @@ extension LocalStore {
         generation: Int = 0
     ) async throws(StorageError) -> (schedules: [ScheduleID], versions: [ScheduleVersionID])? {
         try await write(generation: generation) { db in
-            let item: StatementArguments = ["item": id.text]
-            guard try Bool.fetchOne(db, sql: "SELECT EXISTS (SELECT 1 FROM item WHERE id = :item)", arguments: item) == true else {
-                return nil
-            }
-            let schedules = "SELECT id FROM schedule WHERE itemID = :item"
-            // A scheduled occurrence has a slot of the item. An as-needed occurrence has the item itself.
-            let occurrences = """
-                SELECT id FROM occurrence
-                WHERE itemID = :item OR slotID IN (SELECT id FROM scheduleSlot WHERE scheduleID IN (\(schedules)))
-                """
-            let scheduleIDs = try String.fetchAll(db, sql: schedules + " ORDER BY rowid", arguments: item)
-                .map(ScheduleID.init(text:))
-            let versionIDs = try String.fetchAll(
-                db, sql: "SELECT id FROM scheduleVersion WHERE scheduleID IN (\(schedules))", arguments: item
-            ).map(ScheduleVersionID.init(text:))
-            // The foreign keys have no cascade, so each row goes before the row that it refers to.
-            // One statement deletes every event of an occurrence, so the revision links do not block it.
-            for sql in [
-                "DELETE FROM occurrenceState WHERE occurrenceID IN (\(occurrences))",
-                "DELETE FROM intakeEvent WHERE occurrenceID IN (\(occurrences))",
-                "DELETE FROM occurrence WHERE id IN (\(occurrences))",
-                """
-                DELETE FROM scheduleVersionSlot
-                WHERE scheduleVersionID IN (SELECT id FROM scheduleVersion WHERE scheduleID IN (\(schedules)))
-                """,
-                "DELETE FROM scheduleVersion WHERE scheduleID IN (\(schedules))",
-                "DELETE FROM scheduleSlot WHERE scheduleID IN (\(schedules))",
-                "DELETE FROM schedule WHERE itemID = :item",
-                "DELETE FROM productVersion WHERE itemID = :item",
-                "DELETE FROM item WHERE id = :item",
-            ] {
-                try db.execute(sql: sql, arguments: item)
-            }
-            return (scheduleIDs, versionIDs)
+            try Self.deleteRows(ofItem: id, db)
         }
     }
 
-    private static func upsert(_ item: Item, _ db: Database) throws {
+    /// The rows of `deleteItem(_:generation:)`. Member delete runs it for each item of the member (D125).
+    static func deleteRows(
+        ofItem id: ItemID, _ db: Database
+    ) throws -> (schedules: [ScheduleID], versions: [ScheduleVersionID])? {
+        let item: StatementArguments = ["item": id.text]
+        guard try Bool.fetchOne(db, sql: "SELECT EXISTS (SELECT 1 FROM item WHERE id = :item)", arguments: item) == true else {
+            return nil
+        }
+        let schedules = "SELECT id FROM schedule WHERE itemID = :item"
+        // A scheduled occurrence has a slot of the item. An as-needed occurrence has the item itself.
+        let occurrences = """
+            SELECT id FROM occurrence
+            WHERE itemID = :item OR slotID IN (SELECT id FROM scheduleSlot WHERE scheduleID IN (\(schedules)))
+            """
+        let scheduleIDs = try String.fetchAll(db, sql: schedules + " ORDER BY rowid", arguments: item)
+            .map(ScheduleID.init(text:))
+        let versionIDs = try String.fetchAll(
+            db, sql: "SELECT id FROM scheduleVersion WHERE scheduleID IN (\(schedules))", arguments: item
+        ).map(ScheduleVersionID.init(text:))
+        // The foreign keys have no cascade, so each row goes before the row that it refers to.
+        // One statement deletes every event of an occurrence, so the revision links do not block it.
+        for sql in [
+            "DELETE FROM occurrenceState WHERE occurrenceID IN (\(occurrences))",
+            "DELETE FROM intakeEvent WHERE occurrenceID IN (\(occurrences))",
+            "DELETE FROM occurrence WHERE id IN (\(occurrences))",
+            """
+            DELETE FROM scheduleVersionSlot
+            WHERE scheduleVersionID IN (SELECT id FROM scheduleVersion WHERE scheduleID IN (\(schedules)))
+            """,
+            "DELETE FROM scheduleVersion WHERE scheduleID IN (\(schedules))",
+            "DELETE FROM scheduleSlot WHERE scheduleID IN (\(schedules))",
+            "DELETE FROM schedule WHERE itemID = :item",
+            "DELETE FROM productVersion WHERE itemID = :item",
+            "DELETE FROM item WHERE id = :item",
+        ] {
+            try db.execute(sql: sql, arguments: item)
+        }
+        return (scheduleIDs, versionIDs)
+    }
+
+    /// Inserts or updates the item. A change of the owner sets `ownerChangedAt` to `now`, so no path can change an owner and forget
+    /// the instant (D123). The caller never sets `ownerChangedAt` for a stored item: a stale value cannot erase it.
+    /// No active item belongs to an archived member (D125), and an unknown owner is `conflict`.
+    static func upsert(_ item: Item, at now: Date = Date(), _ db: Database) throws {
         let (preset, text): (String?, String?) = switch item.intakeNote {
         case nil: (nil, nil)
         case let .preset(preset): (preset.rawValue, nil)
@@ -125,9 +135,9 @@ extension LocalStore {
             sql: """
                 INSERT INTO item (
                     id, category, name, form, color, isArchived, intakeNotePreset, intakeNoteText, imageReference,
-                    followUpCount, followUpMinutes, followUpChanged, alarm, archivedAt, asNeededDose
+                    followUpCount, followUpMinutes, followUpChanged, alarm, archivedAt, asNeededDose, personID, ownerChangedAt
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (id) DO UPDATE SET
                     category = excluded.category, name = excluded.name, form = excluded.form,
                     color = excluded.color, isArchived = excluded.isArchived,
@@ -135,17 +145,27 @@ extension LocalStore {
                     imageReference = excluded.imageReference,
                     followUpCount = excluded.followUpCount, followUpMinutes = excluded.followUpMinutes,
                     followUpChanged = excluded.followUpChanged, alarm = excluded.alarm,
-                    archivedAt = excluded.archivedAt, asNeededDose = excluded.asNeededDose
+                    archivedAt = excluded.archivedAt, asNeededDose = excluded.asNeededDose,
+                    ownerChangedAt = CASE WHEN personID IS excluded.personID THEN ownerChangedAt ELSE max(?, COALESCE(ownerChangedAt + 0.000001, ?)) END,
+                    personID = excluded.personID
                 """,
             arguments: [
                 item.id.text, item.category.rawValue, item.name, item.form.rawValue, item.color.rawValue,
                 item.isArchived, preset, text, item.imageReference,
                 item.followUp?.count.rawValue, item.followUp?.interval.rawValue, item.followUpChanged?.storedSeconds,
                 item.alarm, item.archivedAt?.storedSeconds, item.asNeededDose?.text,
+                item.personID.text, item.ownerChangedAt?.storedSeconds, now.storedSeconds, now.storedSeconds,
             ]
         )
         // The load path checks the row with the domain rules. A failure rolls back the write.
-        guard try Self.fetchItem(db, id: item.id) == item else { throw StorageError.invalidData }
+        guard var stored = try Self.fetchItem(db, id: item.id) else { throw StorageError.invalidData }
+        // The store owns `ownerChangedAt` of a stored item.
+        stored.ownerChangedAt = item.ownerChangedAt
+        guard stored == item else { throw StorageError.invalidData }
+        if !item.isArchived,
+           try Bool.fetchOne(db, sql: "SELECT archivedAt IS NOT NULL FROM person WHERE id = ?", arguments: [item.personID.text]) == true {
+            throw StorageError.conflict
+        }
     }
 
     public func item(id: ItemID) async throws(StorageError) -> Item? {
@@ -245,7 +265,7 @@ extension LocalStore {
         ).map(decodeItem)
     }
 
-    private static func fetchItem(_ db: Database, id: ItemID) throws -> Item? {
+    static func fetchItem(_ db: Database, id: ItemID) throws -> Item? {
         try Row.fetchOne(db, sql: "SELECT * FROM item WHERE id = ?", arguments: [id.text]).map(decodeItem)
     }
 
@@ -282,9 +302,13 @@ extension LocalStore {
         case let (nil, text?): try Self.named(.itemNote) { try IntakeNote.custom(text) }
         case (.some, .some): throw DecodeRule(rule: .itemNote)
         }
+        let personText: String? = try row.decode(forColumn: "personID")
+        guard let personText, let personID = try? PersonID(text: personText) else { throw DecodeRule(rule: .itemPerson) }
+        let ownerChangedAt: Double? = try row.decode(forColumn: "ownerChangedAt")
         return try Self.domain {
             try Item(
                 id: ItemID(text: row.decode(forColumn: "id")),
+                personID: personID,
                 category: ItemCategory(text: row.decode(forColumn: "category")),
                 name: row.decode(forColumn: "name"),
                 form: ItemForm(text: row.decode(forColumn: "form")),
@@ -296,7 +320,8 @@ extension LocalStore {
                 followUpChanged: followUpChanged.map(Date.init(storedSeconds:)),
                 alarm: row.decode(forColumn: "alarm"),
                 archivedAt: archivedAt.map(Date.init(storedSeconds:)),
-                asNeededDose: asNeededDose
+                asNeededDose: asNeededDose,
+                ownerChangedAt: ownerChangedAt.map(Date.init(storedSeconds:))
             )
         }
     }

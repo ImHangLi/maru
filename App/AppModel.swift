@@ -198,6 +198,7 @@ final class AppModel {
             updateOnboarding()
             if case let .loaded(snapshot) = content {
                 analytics.noteActiveItems(snapshot.list.count)
+                analytics.noteFamilySize(snapshot.people.filter { !$0.isArchived }.count)
                 // The widgets show what is stored, so they read again after each read of the app (D048).
                 // The Watch app gets the list (D071).
                 WidgetCenter.shared.reloadAllTimelines()

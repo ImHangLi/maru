@@ -13,11 +13,13 @@ public final class AnalyticsService {
     private static let usageOpensKey = "analytics.usage.opens"
     private static let usageItemsKey = "analytics.usage.items"
     private static let usageWidgetKey = "analytics.usage.widget"
+    private static let usageFamilyKey = "analytics.usage.family"
     private static let sinceKey = "analytics.since"
     private static let usagePendingKey = "analytics.usage.pending"
     private static let permissionKey = "analytics.permission"
     private static let localKeys = [
-        usageDayKey, usageFlagsKey, usageOpensKey, usageItemsKey, usageWidgetKey, usagePendingKey, sinceKey, permissionKey,
+        usageDayKey, usageFlagsKey, usageOpensKey, usageItemsKey, usageWidgetKey, usageFamilyKey, usagePendingKey, sinceKey,
+        permissionKey,
     ]
 
     /// The summary of an ended day that waits for the next open of the app. It has no time.
@@ -27,6 +29,7 @@ public final class AnalyticsService {
         let opens: Int
         let items: Int?
         let widget: Bool?
+        let family: Int?
     }
 
     public let isAvailable: Bool
@@ -104,6 +107,12 @@ public final class AnalyticsService {
         defaults.set(max(count, 0), forKey: Self.usageItemsKey)
     }
 
+    /// Keeps the number of active members of the Family at the last read today. The summary sends only a bucket of it (D121).
+    public func noteFamilySize(_ count: Int, at now: Date = Date()) {
+        guard isActive, hasDay(at: now) else { return }
+        defaults.set(max(count, 0), forKey: Self.usageFamilyKey)
+    }
+
     /// Keeps whether a widget of Maru is on the Home Screen, at the last check today.
     public func noteWidget(installed: Bool, at now: Date = Date()) {
         guard isActive, hasDay(at: now) else { return }
@@ -135,7 +144,8 @@ public final class AnalyticsService {
                 used: Set(day.flags.compactMap(AnalyticsEvent.UsageFlag.init)),
                 opens: day.opens,
                 activeItems: day.items,
-                hasWidget: day.widget
+                hasWidget: day.widget,
+                familySize: day.family
             )
         ))
     }
@@ -162,13 +172,14 @@ public final class AnalyticsService {
         let opens = defaults.integer(forKey: Self.usageOpensKey)
         let items = defaults.object(forKey: Self.usageItemsKey) as? Int
         let widget = defaults.object(forKey: Self.usageWidgetKey) as? Bool
-        for key in [Self.usageDayKey, Self.usageFlagsKey, Self.usageOpensKey, Self.usageItemsKey, Self.usageWidgetKey] {
+        let family = defaults.object(forKey: Self.usageFamilyKey) as? Int
+        for key in [Self.usageDayKey, Self.usageFlagsKey, Self.usageOpensKey, Self.usageItemsKey, Self.usageWidgetKey, Self.usageFamilyKey] {
             defaults.removeObject(forKey: key)
         }
         guard !flags.isEmpty || opens > 0 else { return }
         let since = defaults.object(forKey: Self.sinceKey) as? Date ?? day
         let index = calendar.dateComponents([.day], from: since, to: day).day ?? 0
-        let pending = PendingDay(dayIndex: index, flags: flags.map(\.rawValue).sorted(), opens: opens, items: items, widget: widget)
+        let pending = PendingDay(dayIndex: index, flags: flags.map(\.rawValue).sorted(), opens: opens, items: items, widget: widget, family: family)
         if let data = try? JSONEncoder().encode(pending) { defaults.set(data, forKey: Self.usagePendingKey) }
     }
 }

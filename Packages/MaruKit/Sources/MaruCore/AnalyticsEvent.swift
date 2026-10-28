@@ -63,6 +63,7 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "used_my_items": .flag,
             "used_item_detail": .flag,
             "used_settings": .flag,
+            "family_size": .choice(["1", "2", "3_plus"]),
             "app_opens": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
             "active_items": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
             "has_widget": .flag,
@@ -147,12 +148,17 @@ public extension AnalyticsEvent {
         public var activeItems: Int?
         /// Whether a widget of Maru was on the Home Screen at the last check of the day. `nil` when not checked.
         public var hasWidget: Bool?
+        /// The number of active members of the Family at the last read of the day. `nil` when the app did not read them.
+        public var familySize: Int?
 
-        public init(used: Set<UsageFlag> = [], opens: Int = 0, activeItems: Int? = nil, hasWidget: Bool? = nil) {
+        public init(
+            used: Set<UsageFlag> = [], opens: Int = 0, activeItems: Int? = nil, hasWidget: Bool? = nil, familySize: Int? = nil
+        ) {
             self.used = used
             self.opens = opens
             self.activeItems = activeItems
             self.hasWidget = hasWidget
+            self.familySize = familySize
         }
     }
 
@@ -272,6 +278,8 @@ public extension AnalyticsEvent {
         case icons
         /// A free user chose a reminder sound other than the default (D112).
         case sounds
+        /// A free user tried to add a second member of the Family (D122).
+        case family
     }
 
     /// The end of a purchase or a restore (D107).
@@ -342,6 +350,8 @@ public extension AnalyticsEvent {
             properties["active_items"] = .text(bucket(items, ["0": 0...0, "1": 1...1, "2_3": 2...3, "4_6": 4...6], over: "7_plus"))
         }
         if let hasWidget = day.hasWidget { properties["has_widget"] = .flag(hasWidget) }
+        // Only a bucket. No name, no ID, no kind, and no count of pets (spec 10, D121).
+        if let size = day.familySize { properties["family_size"] = .text(bucket(size, ["1": 0...1, "2": 2...2], over: "3_plus")) }
         return AnalyticsEvent(unchecked: "daily_usage_summary", properties)
     }
 

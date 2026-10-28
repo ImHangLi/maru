@@ -201,8 +201,36 @@ extension ReminderContent {
                 locale: locale,
                 comment: "The last entry of a list of item names in a reminder, for example “Zinc, Creatine, and 2 more”. The placeholder is the number of items not named."
             )
-            names = names.prefix(Self.listedNames - 1) + [more]
+            // The count has no owner. With owners it is a line of its own, because it can stand for doses of other members (D123).
+            names = names.prefix(Self.listedNames - 1) + [ReminderName(item: more)]
         }
-        return ReminderText(title: title, body: names.formatted(.list(type: .and).locale(locale)))
+        // With no owner, the text is the list of the items. With owners, each member has one line (D123).
+        guard names.contains(where: { $0.owner != nil }) else {
+            return ReminderText(title: title, body: names.map(\.item).formatted(.list(type: .and).locale(locale)))
+        }
+        var lines: [(owner: DoseOwner?, items: [String])] = []
+        for name in names {
+            if let index = lines.firstIndex(where: { $0.owner == name.owner }) {
+                lines[index].items.append(name.item)
+            } else {
+                lines.append((name.owner, [name.item]))
+            }
+        }
+        let body = lines.map { line -> String in
+            let items = line.items.formatted(.list(type: .and).locale(locale))
+            let owner: String? = switch line.owner {
+            case nil: nil
+            case .me?: String(localized: "Me", bundle: .module, locale: locale, comment: "The word for the member of the Family who owns the device, in the text of a reminder that names owners. Example: “Me: Vitamin D3”.")
+            case let .named(name)?: name
+            }
+            guard let owner else { return items }
+            return String(
+                localized: "\(owner): \(items)",
+                bundle: .module,
+                locale: locale,
+                comment: "One line of a reminder for a Family with several members. The first placeholder is the member, the second is the list of the items of that member. Example: “Mochi: Methimazole and Flea Drops”. Each language chooses its own colon."
+            )
+        }.joined(separator: "\n")
+        return ReminderText(title: title, body: body)
     }
 }

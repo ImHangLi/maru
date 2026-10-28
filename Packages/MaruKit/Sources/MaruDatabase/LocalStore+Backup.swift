@@ -103,6 +103,14 @@ extension LocalStore {
                 try db.inTransaction {
                     // The foreign keys are checked at the commit, so the order of the tables does not matter.
                     try db.execute(sql: "PRAGMA defer_foreign_keys = ON")
+                    // The migration of `v8` seeded a member "Me" in the staged database. A backup of `v8` has its own "Me" with its own
+                    // ID, so the seed goes before the copy, or the second "Me" fails. A backup before `v8` has no `person` table,
+                    // so the staged copy has none yet: the later migration seeds "Me" and gives every item to it (D126, T67, T69).
+                    if try Bool.fetchOne(
+                        db, sql: "SELECT EXISTS (SELECT 1 FROM source.sqlite_master WHERE type = 'table' AND name = 'person')"
+                    ) == true {
+                        try db.execute(sql: "DELETE FROM main.person")
+                    }
                     let tables = try String.fetchAll(
                         db,
                         sql: """
@@ -191,6 +199,15 @@ extension LocalStore {
     private static func validate(_ db: Database) throws {
         guard try String.fetchAll(db, sql: "PRAGMA integrity_check") == ["ok"],
               try Row.fetchOne(db, sql: "PRAGMA foreign_key_check") == nil
+        else { throw StorageError.corrupt }
+        // Exactly one "Me", and no active item that belongs to an archived member (D121, D125). An item with no owner or with an
+        // unknown owner is caught by the item decode and by the foreign key check above.
+        let people = try Row.fetchAll(db, sql: "SELECT * FROM person").map(decodePerson)
+        guard people.filter({ $0.kind == .me }).count == 1, people.contains(where: { !$0.isArchived }),
+              try Row.fetchOne(
+                  db,
+                  sql: "SELECT 1 FROM item JOIN person ON person.id = item.personID WHERE item.isArchived = 0 AND person.archivedAt IS NOT NULL"
+              ) == nil
         else { throw StorageError.corrupt }
         _ = try Row.fetchAll(db, sql: "SELECT * FROM item").map(decodeItem)
         for id in try String.fetchAll(db, sql: "SELECT id FROM schedule") {

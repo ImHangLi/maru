@@ -1,3 +1,4 @@
+import Foundation
 import GRDB
 
 /// The database schema. A released migration is frozen: change the schema with a new migration (spec 7.3).
@@ -27,6 +28,17 @@ enum Schema {
         }
         migrator.registerMigration("v7") { db in
             try db.execute(sql: v7)
+        }
+        // The Family (D121, D126). One transaction: the table, the member "Me", and the owner of every item. A failure rolls
+        // everything back, so the database keeps `v7` and its data (spec 7.3, T37). No table is copied or rebuilt.
+        migrator.registerMigration("v8") { db in
+            try db.execute(sql: v8)
+            let me = UUID().uuidString
+            try db.execute(
+                sql: "INSERT INTO person (id, kind, name, symbol, imageReference, archivedAt) VALUES (?, 'me', NULL, NULL, NULL, NULL)",
+                arguments: [me]
+            )
+            try db.execute(sql: "UPDATE item SET personID = ?", arguments: [me])
         }
         return migrator
     }
@@ -214,5 +226,35 @@ enum Schema {
         ALTER TABLE item ADD COLUMN archivedAt REAL;
         ALTER TABLE item ADD COLUMN asNeededDose TEXT;
         ALTER TABLE occurrence ADD COLUMN dose TEXT CHECK (dose IS NULL OR itemID IS NOT NULL);
+        """
+
+    /// The Family (D121). A member is a person or a pet. `me` is the one member that every database has: its `name` is `NULL` until
+    /// the user renames it. `symbol` is the animal of a pet. `imageReference` is the name of an optional photo file, as for an item
+    /// (D056, D124). The checks list the raw values of `PersonKind` and
+    /// `PetSymbol`. A member has no color. An item belongs to one member, and no other table has a member column.
+    ///
+    /// SQLite cannot add a `NOT NULL` column with a `REFERENCES` clause. So `item.personID` is nullable, the migration fills it for
+    /// every row, and two triggers refuse a `NULL` after that. `ownerChangedAt` is the instant of the last owner change (D123).
+    static let v8 = """
+        CREATE TABLE person (
+            id TEXT NOT NULL PRIMARY KEY,
+            kind TEXT NOT NULL CHECK (kind IN ('me', 'person', 'pet')),
+            name TEXT,
+            symbol TEXT CHECK (symbol IN ('dog', 'cat', 'bird', 'rabbit', 'fish', 'paw')),
+            imageReference TEXT,
+            archivedAt REAL,
+            CHECK (name IS NULL OR length(trim(name)) > 0),
+            CHECK (kind = 'me' OR name IS NOT NULL),
+            CHECK (symbol IS NULL OR kind = 'pet')
+        ) STRICT;
+        CREATE UNIQUE INDEX person_me ON person(kind) WHERE kind = 'me';
+
+        ALTER TABLE item ADD COLUMN personID TEXT REFERENCES person(id);
+        ALTER TABLE item ADD COLUMN ownerChangedAt REAL;
+        CREATE INDEX item_personID ON item(personID);
+        CREATE TRIGGER item_personRequiredInsert BEFORE INSERT ON item WHEN NEW.personID IS NULL
+            BEGIN SELECT RAISE(ABORT, 'item.personID'); END;
+        CREATE TRIGGER item_personRequiredUpdate BEFORE UPDATE OF personID ON item WHEN NEW.personID IS NULL
+            BEGIN SELECT RAISE(ABORT, 'item.personID'); END;
         """
 }

@@ -1,6 +1,47 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@: %@" : {
+      "comment" : "One line of a reminder for a Family with several members. The first placeholder is the member, the second is the list of the items of that member. Example: “Mochi: Methimazole and Flea Drops”. Each language chooses its own colon.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：%@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@：%@"
+          }
+        }
+      }
+    },
     "%lld more" : {
       "comment" : "The last entry of a list of item names in a reminder, for example “Zinc, Creatine, and 2 more”. The placeholder is the number of items not named.",
       "localizations" : {
@@ -120,6 +161,47 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 没能保存这次记录。打开 Maru 再试一次。"
+          }
+        }
+      }
+    },
+    "Me" : {
+      "comment" : "The word for the member of the Family who owns the device, in the text of a reminder that names owners. Example: “Me: Vitamin D3”.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Me"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我"
           }
         }
       }

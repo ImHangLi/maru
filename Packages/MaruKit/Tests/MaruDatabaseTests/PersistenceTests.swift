@@ -13,10 +13,10 @@ struct PersistenceTests {
     @Test func itemIsStoredAndUpdated() async throws {
         let store = try LocalStore(directory: directory.url)
         var item = try Item(
-            category: .medication, name: "Metformin", form: .tablet, color: .blue, intakeNote: .preset(.withFood)
+            personID: store.meID, category: .medication, name: "Metformin", form: .tablet, color: .blue, intakeNote: .preset(.withFood)
         )
         let other = try Item(
-            category: .unknown, name: "鱼油", form: .softgel, color: .orange
+            personID: store.meID, category: .unknown, name: "鱼油", form: .softgel, color: .orange
         )
         try await store.save(item)
         try await store.save(other)
@@ -42,21 +42,21 @@ struct PersistenceTests {
         let earlier = Fixtures.instant("2026-03-01T00:00:00Z")
         let now = Fixtures.instant("2026-03-02T00:00:00Z")
         let target = FollowUpSetting(count: .untilRecorded, interval: .minutes30)
-        let off = try Item(category: .supplement, name: "Zinc", form: .capsule, color: .pink)
+        let off = try Item(personID: store.meID, category: .supplement, name: "Zinc", form: .capsule, color: .pink)
         let same = try Item(
-            category: .supplement, name: "Iron", form: .capsule, color: .blue, followUp: target, followUpChanged: earlier
+            personID: store.meID, category: .supplement, name: "Iron", form: .capsule, color: .blue, followUp: target, followUpChanged: earlier
         )
         let other = try Item(
-            category: .medication, name: "Metformin", form: .tablet, color: .green,
+            personID: store.meID, category: .medication, name: "Metformin", form: .tablet, color: .green,
             followUp: FollowUpSetting(count: .five, interval: .minutes10), followUpChanged: earlier
         )
         // A migrated item whose old change was not confirmed keeps its marker, so the legacy removal check still runs (D079).
         let pending = try Item(
-            category: .supplement, name: "Calcium", form: .tablet, color: .orange,
+            personID: store.meID, category: .supplement, name: "Calcium", form: .tablet, color: .orange,
             followUp: FollowUpSetting(count: .two, interval: .minutes15), followUpChanged: .distantFuture
         )
-        let archived = try Item(category: .supplement, name: "Old", form: .capsule, color: .brown, isArchived: true)
-        let untimed = try Item(category: .supplement, name: "Arnica", form: .drop, color: .mint)
+        let archived = try Item(personID: store.meID, category: .supplement, name: "Old", form: .capsule, color: .brown, isArchived: true)
+        let untimed = try Item(personID: store.meID, category: .supplement, name: "Arnica", form: .drop, color: .mint)
         for item in [off, same, other, pending, archived, untimed] { try await store.save(item) }
         for item in [off, same, other, pending, archived] {
             try await store.save(Fixtures.twiceDailySchedule(itemID: item.id).schedule)
@@ -118,7 +118,7 @@ struct PersistenceTests {
     /// double the item, and a failed schedule must not leave a changed item behind.
     @Test func itemAndScheduleAreSavedInOneTransaction() async throws {
         let store = try LocalStore(directory: directory.url)
-        var item = try Item(category: .supplement, name: "Zinc", form: .capsule, color: .pink)
+        var item = try Item(personID: store.meID, category: .supplement, name: "Zinc", form: .capsule, color: .pink)
         let (schedule, _, _) = Fixtures.twiceDailySchedule(itemID: item.id, dose: Dose("1000 IU"))
         try await store.save(item, schedule: schedule)
         try await store.save(item, schedule: schedule)
@@ -139,7 +139,7 @@ struct PersistenceTests {
         let store = try LocalStore(directory: directory.url)
         let seed = try await store.seed()
         _ = try await store.record(Fixtures.event(for: seed.occurrence, .taken), scheduleVersionID: seed.occurrence.scheduleVersionID)
-        let new = try Item(category: .supplement, name: "Vitamin D3 2000 IU", form: .softgel, color: .pink)
+        let new = try Item(personID: store.meID, category: .supplement, name: "Vitamin D3 2000 IU", form: .softgel, color: .pink)
         let (schedule, _, _) = Fixtures.twiceDailySchedule(itemID: new.id)
 
         let archivedAt = Fixtures.instant("2026-03-05T02:00:00Z")
@@ -160,7 +160,7 @@ struct PersistenceTests {
 
     @Test func scheduleIsStoredWithItsSlotsAndVersions() async throws {
         let store = try LocalStore(directory: directory.url)
-        let item = try Item(category: .supplement, name: "Zinc", form: .capsule, color: .pink)
+        let item = try Item(personID: store.meID, category: .supplement, name: "Zinc", form: .capsule, color: .pink)
         try await store.save(item)
         // The dose keeps the exact text of the user. The database does not parse or convert it.
         var (schedule, morning, _) = Fixtures.twiceDailySchedule(itemID: item.id, dose: Dose(" 500 μg"))
@@ -183,7 +183,7 @@ struct PersistenceTests {
 
     @Test func scheduleThatDoesNotLoadIsRejectedOnSave() async throws {
         let store = try LocalStore(directory: directory.url)
-        let item = try Item(category: .supplement, name: "Zinc", form: .capsule, color: .pink)
+        let item = try Item(personID: store.meID, category: .supplement, name: "Zinc", form: .capsule, color: .pink)
         try await store.save(item)
         let (schedule, _, _) = Fixtures.twiceDailySchedule(itemID: item.id, dose: Dose("500 μg"))
         try await store.save(schedule)

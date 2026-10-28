@@ -15,7 +15,7 @@ public enum ReminderActionKind: String, CaseIterable, Hashable, Sendable {
 public enum ReminderCategory: String, CaseIterable, Hashable, Sendable {
     /// The request names one item, or its group has one item: "Taken", "Skip", and "Remind in 10 min" (D034).
     case single = "reminder.single.v2"
-    /// The request names two or more items, and the names are shown: "Take All", "Skip All", and "Remind in 10 min" (D090).
+    /// The request names two or more items of one member, and the names are shown: "Take All", "Skip All", and "Remind in 10 min" (D090, D123).
     /// With the names hidden the user cannot see what the action records, so such a request has no group action.
     case group = "reminder.group.v2"
     /// Any other request: only "Remind in 10 min". A snooze writes no record.
@@ -35,8 +35,11 @@ public enum ReminderCategory: String, CaseIterable, Hashable, Sendable {
     ///   - showsNames: The text names the items (D029). A group action needs this.
     ///   - singleItem: The request stands for one item: a first reminder that names one item, or a follow-up of a group
     ///     that has one item (D034). The names can be hidden, as before.
-    static func choose(named: Int, showsNames: Bool, singleItem: Bool) -> ReminderCategory {
+    ///   - membersCount: How many members of the Family own the named items. A request that names doses of two or more members
+    ///     has no group action, because one tap must not record a dose for another member (D123).
+    static func choose(named: Int, showsNames: Bool, singleItem: Bool, membersCount: Int = 1) -> ReminderCategory {
         if singleItem { return .single }
+        if membersCount >= 2 { return .snooze }
         return named >= 2 && showsNames ? .group : .snooze
     }
 }

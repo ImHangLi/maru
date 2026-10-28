@@ -9,6 +9,8 @@ struct Snapshot: Equatable, Sendable {
     let list: [ListEntry]
     /// The archived items, for the "Archived" entry at the end of My Items (spec 3 P02).
     var archived: [ListEntry] = []
+    /// Every member of the Family, archived or not, in the order of the first save (D121). The first one is "Me".
+    var people: [Person] = []
 
     /// `false` when the day or the time zone is not the one of the read, so Today must not show this content (spec 9).
     /// A snapshot with no Today is current while the device time zone still has no region name.
@@ -19,6 +21,9 @@ struct Snapshot: Equatable, Sendable {
 
 struct ListEntry: Identifiable, Equatable, Sendable {
     let id: ItemID
+    let personID: PersonID
+    /// The owner for a text: `nil` when the Family has one active member (D123).
+    var owner: DoseOwner?
     let name: String
     let form: ItemForm
     let color: ItemColor
@@ -35,9 +40,13 @@ struct TodaySnapshot: Equatable, Sendable {
     struct ItemLook: Equatable, Sendable {
         /// The name area of a row opens the detail of this item (spec 3 P01).
         let itemID: ItemID
+        /// The member of the item (D121). A view that filters by member reads it.
+        let personID: PersonID
         let name: String
         let form: ItemForm
         let color: ItemColor
+        /// The owner for a text: `nil` when the Family has one active member (D123). `labelledName` has the text.
+        var owner: DoseOwner?
         /// The reminders of the item are off. The row stays, and the user can still record it (T07).
         var remindersOff = false
         /// The photo file of the item, or `nil` (D056). The app draws it. The widgets draw the form icon.

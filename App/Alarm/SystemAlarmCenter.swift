@@ -56,8 +56,10 @@ struct SystemAlarmCenter: AlarmCenter {
 
     func schedule(_ request: AlarmRequest) async throws {
         let text = SystemReminderCenter().text(for: ReminderContent(kind: .due, names: request.names))
+        // A text that names owners has one line for each member. An alarm title has one line, so the lines become a list (D123).
+        let names = text.body.split(separator: "\n").map(String.init).formatted(.list(type: .and))
         let title = request.names == nil ? text.title : String(
-            localized: "\(text.title): \(text.body)",
+            localized: "\(text.title): \(names)",
             comment: "The title of an alarm that names its items. The first placeholder is the reminder title, the second is the item names. Example: Time to take: Zinc and Vitamin D."
         )
         let secondary: AlarmButton
@@ -142,6 +144,9 @@ struct TakeFromAlarmIntent: LiveActivityIntent {
     var itemID: String
     @Parameter(title: "Dose")
     var scheduleVersionID: String
+    /// `ReminderRequest.ownerChangedKey`, or empty when no item of the alarm changed its owner (D123).
+    @Parameter(title: "Dose")
+    var ownerChanged: String
     @Parameter(title: "Alarm")
     var alarmID: String
 
@@ -154,6 +159,7 @@ struct TakeFromAlarmIntent: LiveActivityIntent {
         fireTime = userInfo[FollowUpRequest.fireTimeKey] ?? ""
         itemID = userInfo[FollowUpRequest.itemIDKey] ?? ""
         scheduleVersionID = userInfo[FollowUpRequest.scheduleVersionIDKey] ?? ""
+        ownerChanged = userInfo[ReminderRequest.ownerChangedKey] ?? ""
     }
 
     @MainActor
@@ -166,13 +172,14 @@ struct TakeFromAlarmIntent: LiveActivityIntent {
                 AlarmRequest.plannedDate(ofSeries: seriesID, at: .now, deviceTimeZone: $0)
             } ?? ""
             : plannedDate
-        let userInfo = [
+        var userInfo = [
             ReminderRequest.seriesIDKey: seriesID,
             FollowUpRequest.plannedDateKey: resolvedDate,
             FollowUpRequest.fireTimeKey: fireTime,
             FollowUpRequest.itemIDKey: itemID,
             FollowUpRequest.scheduleVersionIDKey: scheduleVersionID,
         ]
+        if !ownerChanged.isEmpty { userInfo[ReminderRequest.ownerChangedKey] = ownerChanged }
         let firedAt = (try? Date(fireTime, strategy: .iso8601)) ?? Date()
         await AppModel.shared.performReminderAction(
             .taken, on: DeliveredReminder(deliveredAt: firedAt, userInfo: userInfo, triggerWeekday: nil)

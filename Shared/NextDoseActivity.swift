@@ -27,6 +27,9 @@ struct NextDoseAttributes: ActivityAttributes, Sendable {
         var expiresAt: Date
         /// "Taken" did not get a confirmed commit. The next update clears it.
         var isNotConfirmed = false
+        /// The doses belong to one member of the Family, so the button records for one member only (D123).
+        /// A state from before the Family has no value and keeps the button.
+        var canRecord: Bool? = nil
     }
 
     /// The start of the activity. The system ends an activity 8 hours after its start, so the app starts a new one

@@ -190,7 +190,7 @@ private struct LastDoseWidgetView: View {
 
     /// The item name, or "Dose recorded" when the names are off.
     private func title(_ dose: LastDose) -> String {
-        entry.showsNames ? dose.name : String(localized: "Dose recorded", comment: "Last Dose widget: the text in place of the item name when \"Show Names in Reminders\" is off (D029, D108).")
+        entry.showsNames ? (dose.owner?.label(dose.name) ?? dose.name) : String(localized: "Dose recorded", comment: "Last Dose widget: the text in place of the item name when \"Show Names in Reminders\" is off (D029, D108).")
     }
 
     /// The amount, only with names on. An amount can tell what the item is.
