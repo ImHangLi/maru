@@ -224,7 +224,7 @@ private struct ItemTile: View {
             }
         }
         // The tip waits while a sheet or an alert is on the display.
-        .popoverTip(showsMenuTip && tipsMayShow ? ItemMenuTip() : nil)
+        .popoverTip(ItemMenuTip(), when: showsMenuTip && tipsMayShow)
         .accessibilityValue(entry.remindersOff ? Text("Reminders off") : Text(verbatim: ""))
         .accessibilityHint(Text("Opens the details"))
     }

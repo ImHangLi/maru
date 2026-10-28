@@ -181,7 +181,7 @@ private struct RecordButton: View {
         }
         .buttonStyle(.pressScale)
         // The tip waits while a sheet or an alert is on the display (D103).
-        .popoverTip(showsRecordTip && tipsMayShow ? RecordTip() : nil)
+        .popoverTip(RecordTip(), when: showsRecordTip && tipsMayShow)
         .confirmationDialog(dialogTitle, isPresented: $showsCorrection, titleVisibility: .visible) {
             if entry.record.status == .taken {
                 Button("Change Time…") { showsTimeEditor = true }

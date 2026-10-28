@@ -27,6 +27,13 @@ struct ItemMenuTip: Tip {
     var image: Image? { Image(systemName: "hand.tap") }
 }
 
+extension View {
+    /// The popover of the tip, only when `shows` is true. Before iOS 26, `popoverTip` takes no optional tip.
+    @ViewBuilder func popoverTip(_ tip: some Tip, when shows: Bool) -> some View {
+        if shows { popoverTip(tip) } else { self }
+    }
+}
+
 extension EnvironmentValues {
     /// No sheet, alert, or onboarding is on the display or waits for it. A tip popover and an alert must not
     /// show at the same time, because UIKit presents only one of them. `RootView` sets it.
