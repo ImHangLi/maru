@@ -88,7 +88,7 @@ struct PaywallView: View {
                 text: "See what’s next without opening Maru."
             )
             Benefit(symbol: "applewatch", title: "Apple Watch App", text: "See and record today’s doses on your wrist.")
-            Benefit(symbol: "paintpalette", title: "Icons and Sounds", text: "More app icons and reminder sounds.")
+            Benefit(symbol: "paintpalette", title: "Make It Yours", text: "App colors, icons, and reminder sounds.")
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

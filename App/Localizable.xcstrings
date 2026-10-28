@@ -2040,6 +2040,41 @@
         }
       }
     },
+    "App colors, icons, and reminder sounds." : {
+      "comment" : "Paywall of Maru Pro: the text of the third benefit (D114).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App-Farben, App-Symbole und Erinnerungstöne."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Colores e iconos de la app, y sonidos de recordatorio."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appのカラー、アイコン、リマインダーの音。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "앱 색상, 아이콘, 미리 알림 소리."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App 颜色、图标和提醒声音。"
+          }
+        }
+      }
+    },
     "Appearance" : {
       "comment" : "Settings: a menu that sets the app look: the system look, always light, or always dark.",
       "localizations" : {
@@ -5120,41 +5155,6 @@
         }
       }
     },
-    "Icons and Sounds" : {
-      "comment" : "Paywall of Maru Pro: the title of the third benefit: extra app icons and reminder sounds.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Symbole und Töne"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iconos y sonidos"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アイコンとサウンド"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "아이콘과 소리"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "图标和提醒音"
-          }
-        }
-      }
-    },
     "If your iPhone is locked, unlock it and try again. Your data is safe." : {
       "comment" : "Storage problem: the text when the data cannot be read now.",
       "localizations" : {
@@ -6186,6 +6186,41 @@
         }
       }
     },
+    "Make It Yours" : {
+      "comment" : "Paywall of Maru Pro: the title of the third benefit: app colors, app icons, and reminder sounds (D114).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ganz nach deinem Geschmack"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A tu manera"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自分らしく"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나만의 스타일로"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "随心定制"
+          }
+        }
+      }
+    },
     "Manage Subscription" : {
       "comment" : "Settings, section Maru Pro: opens the system sheet that changes or cancels the yearly plan.",
       "localizations" : {
@@ -6972,37 +7007,37 @@
         }
       }
     },
-    "Maru Pro adds this, an Apple Watch app, and more icons and sounds. Everything else stays free." : {
+    "Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free." : {
       "comment" : "Today, the card of Maru Pro: the text. No pressure.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru Pro bietet das, eine Apple Watch-App und mehr Symbole und Töne. Alles andere bleibt kostenlos."
+            "value" : "Maru Pro bietet das, eine Apple Watch-App und mehr Farben, Symbole und Töne. Alles andere bleibt kostenlos."
           }
         },
         "es" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru Pro añade esto, una app para Apple Watch y más iconos y sonidos. Todo lo demás sigue siendo gratis."
+            "value" : "Maru Pro añade esto, una app para Apple Watch y más colores, iconos y sonidos. Todo lo demás sigue siendo gratis."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru Proでは、この機能のほか、Apple Watchアプリや追加のアイコンとサウンドが使えます。それ以外はすべて無料のままです。"
+            "value" : "Maru Proでは、この機能のほか、Apple Watchアプリや追加のカラー、アイコン、サウンドが使えます。それ以外はすべて無料のままです。"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 아이콘과 소리가 있어요. 나머지는 모두 계속 무료예요."
+            "value" : "Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 색상과 아이콘, 소리가 있어요. 나머지는 모두 계속 무료예요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru Pro 提供这项功能，还有 Apple Watch App 和更多图标与提醒音。其他一切都继续免费。"
+            "value" : "Maru Pro 提供这项功能，还有 Apple Watch App 和更多颜色、图标与提醒音。其他一切都继续免费。"
           }
         }
       }
@@ -7213,41 +7248,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "单色"
-          }
-        }
-      }
-    },
-    "More app icons and reminder sounds." : {
-      "comment" : "Paywall of Maru Pro: the text of the third benefit.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mehr App-Symbole und Erinnerungstöne."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más iconos de la app y sonidos de recordatorio."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アプリアイコンと通知音が増えます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "더 많은 앱 아이콘과 알림 소리."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更多 App 图标和提醒声音。"
           }
         }
       }
@@ -13817,6 +13817,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "这次没保存成功，请再试一次。"
+          }
+        }
+      }
+    },
+    "This is a preview. With Maru Pro, the whole app uses this color." : {
+      "comment" : "Settings, footer of \"Display\": a free user chose an app color other than pink. Only the settings sheet shows it (D114).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das ist eine Vorschau. Mit Maru Pro nutzt die ganze App diese Farbe."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es una vista previa. Con Maru Pro, toda la app usa este color."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "これはプレビューです。Maru Proなら、App全体がこのカラーになります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "미리 보기예요. Maru Pro가 있으면 앱 전체에 이 색상이 적용돼요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是预览。有了 Maru Pro，整个 App 都会用这个颜色。"
           }
         }
       }

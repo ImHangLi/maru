@@ -193,7 +193,7 @@ Owner decisions after the first install on a device.
 - The empty Today page does not read like a to-do list. With no items, it says "Add a supplement or medication with the + button." With items but nothing due today, it says "No doses to take today."
 - The "tab bar icons only" setting must work. A label style has no effect in the tab bar, so the icon-only item uses an image with an accessibility label.
 
-## D025 · 2026-10-11 · App color setting
+## D025 · 2026-10-11 · App color setting (colors other than pink need Pro by D114)
 
 Owner decision. The owner asked for a setting that changes the accent color of the whole app. This replaces "no accent setting" in D021. The item colors of D021 stay.
 
@@ -2016,7 +2016,7 @@ Sources:
 
 Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
 
-## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48)
+## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114)
 
 Maintainer decisions of 2026-10-28, with agent detail. They follow the two paywall studies of 2026-10-28 in the maintainer's research folder. They define the "Pro" tier of D099.
 
@@ -2290,3 +2290,35 @@ Not verified: no build of the app on this Mac (CI builds it), and nobody saw the
 3. A record in the app, from a reminder, from the "Record Dose" widget, and from Siri: the dose leaves the widget.
 4. "All done for today" after the last record, and the first dose of tomorrow after midnight, with no open of Maru.
 5. A restart with no unlock ("Open Maru to update."), and a tap on each family.
+
+## D114 · 2026-10-28 · Maru Pro: the app color (changes D025 and the paywall rows of D107)
+
+Maintainer decision on 2026-10-28, with agent detail. Personalization is part of Pro.
+
+App color (D025):
+
+- Pink, the default, stays free. Every other color of the "App Color" menu needs Pro.
+- A free user can choose another color. The Settings sheet then shows it as a preview, and `presentPaywall(reason: .feature)` opens. The app color stays pink. Only the Settings sheet has the preview tint. Today, the other pages, the header wash, the widgets, and the Watch keep pink.
+- While the preview shows, the footer of "Display" says "This is a preview. With Maru Pro, the whole app uses this color." The preview ends when the sheet closes or when the user chooses pink or the current color.
+- A purchase while the preview shows makes the preview color the app color, also a purchase from the "Maru Pro" row.
+- When Pro ends, Maru keeps the chosen color and does not change it. Further changes need Pro again. Only pink stays free. This is the same rule as the icons of D112. A user who chose a color before this change keeps it under the same rule.
+- A restore of a backup (D040) sets the color of the backup, as before. It is the user's own earlier choice, so it does not need Pro.
+- The source of `paywall_shown` is `feature`, as for the Live Activity (D110). So the events, the analytics schema, and the privacy policy do not change. A Pro user's change sends `setting_changed` with `app_color` as before. A preview sends no event of its own.
+- Widgets, the Live Activity, alarms, and the Watch follow the stored color as before.
+
+Stays free:
+
+- "Appearance" (D105), because it is about readability.
+- "Color Header" (D100, D104), because it follows the current tint.
+- Item colors and item photos, because they tell items apart.
+
+Paywall (D107): the third benefit row changes from "Icons and Sounds" with "More app icons and reminder sounds." to "Make It Yours" with "App colors, icons, and reminder sounds." The symbol stays `paintpalette`. The text of the card of Today changes to "Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free.", because its last sentence was not true with a paid color. The six languages are drafts (`docs/localization-review.md`).
+
+No store change, no schema change, and no test (D016). The change adds no record rule.
+
+Not verified: no build of the app on this Mac (CI builds it). Nobody saw the menu, the preview, or the paywall. Device checks with the StoreKit configuration:
+
+1. A free user chooses blue: the Settings sheet turns blue, the paywall opens, and the footer shows. Close the paywall: the sheet stays blue. Close Settings: the app is pink.
+2. A free user chooses blue, then buys in the paywall: the whole app turns blue.
+3. A refund in the transaction manager: the color stays. Another color opens the paywall. Pink still works.
+4. The footer in the six languages and at the largest text sizes.

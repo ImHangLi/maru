@@ -271,8 +271,6 @@ The strings below are new in `App/Localizable.xcstrings`: the paywall, the card 
 | See what’s next without opening Maru. | 不打开 Maru，也能看到下一次安排。 | Maruを開かなくても次の予定がわかります。 | Mira lo siguiente sin abrir Maru. | Sieh, was als Nächstes ansteht, ohne Maru zu öffnen. | Maru를 열지 않아도 다음 일정을 볼 수 있어요. |
 | Apple Watch App | Apple Watch App | Apple Watchアプリ | App para Apple Watch | Apple Watch-App | Apple Watch 앱 |
 | See and record today’s doses on your wrist. | 在手腕上查看并记录今天的服用。 | 今日の服用を手首で確認・記録できます。 | Ve y registra las dosis de hoy en tu muñeca. | Sieh und erfasse die Dosen von heute am Handgelenk. | 오늘의 복용을 손목에서 확인하고 기록해요. |
-| Icons and Sounds | 图标和提醒音 | アイコンとサウンド | Iconos y sonidos | Symbole und Töne | 아이콘과 소리 |
-| More app icons and reminder sounds. | 更多 App 图标和提醒声音。 | アプリアイコンと通知音が増えます。 | Más iconos de la app y sonidos de recordatorio. | Mehr App-Symbole und Erinnerungstöne. | 더 많은 앱 아이콘과 알림 소리. |
 | Yearly | 按年 | 年額 | Anual | Jährlich | 연간 |
 | per year | 每年 | 1年ごと | al año | pro Jahr | 1년마다 |
 | %lld days free | 免费 %lld 天 | %lld日間無料 | %lld días gratis | %lld Tage kostenlos | %lld일 무료 |
@@ -296,7 +294,6 @@ The strings below are new in `App/Localizable.xcstrings`: the paywall, the card 
 | %@/year. Cancel any time in Settings. | %@/年。随时可在“设置”中取消。 | %@/年。設定でいつでもキャンセルできます。 | %@ al año. Cancela cuando quieras en Ajustes. | %@ pro Jahr. Jederzeit in den Einstellungen kündbar. | 연 %@. 설정에서 언제든 취소할 수 있어요. |
 | Preview of your Lock Screen | 锁定屏幕预览 | ロック画面のプレビュー | Vista previa de tu pantalla bloqueada | Vorschau deines Sperrbildschirms | 잠금 화면 미리 보기 |
 | See your next dose on the Lock Screen | 在锁定屏幕上看到下次服用 | 次の服用をロック画面で確認 | Ve tu próxima dosis en la pantalla bloqueada | Deine nächste Dosis auf dem Sperrbildschirm | 다음 복용을 잠금 화면에서 확인하세요 |
-| Maru Pro adds this, an Apple Watch app, and more icons and sounds. Everything else stays free. | Maru Pro 提供这项功能，还有 Apple Watch App 和更多图标与提醒音。其他一切都继续免费。 | Maru Proでは、この機能のほか、Apple Watchアプリや追加のアイコンとサウンドが使えます。それ以外はすべて無料のままです。 | Maru Pro añade esto, una app para Apple Watch y más iconos y sonidos. Todo lo demás sigue siendo gratis. | Maru Pro bietet das, eine Apple Watch-App und mehr Symbole und Töne. Alles andere bleibt kostenlos. | Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 아이콘과 소리가 있어요. 나머지는 모두 계속 무료예요. |
 | See Maru Pro | 了解 Maru Pro | Maru Proを見る | Ver Maru Pro | Maru Pro ansehen | Maru Pro 보기 |
 | Hide | 隐藏 | 非表示 | Ocultar | Ausblenden | 숨기기 |
 | Active, Yearly | 已开启，按年 | 有効（年額） | Activo, anual | Aktiv, jährlich | 사용 중, 연간 |
@@ -326,6 +323,17 @@ The strings below are new in `App/Localizable.xcstrings`: the rows "App Icon" an
 | Pebble | 卵石 | 小石 | Guijarro | Kiesel | 조약돌 |
 | Sunrise | 日出 | 日の出 | Amanecer | Sonnenaufgang | 해돋이 |
 | Lantern | 灯笼 | ランタン | Farol | Laterne | 등불 |
+
+## App color of Maru Pro (D114)
+
+The strings below are new or changed. They are drafts. No native speaker read them. The reviewer checks that the voice is warm and calm with no pressure (D101), and that "App Color", "App Icon", and "Reminder Sound" use the same words as their rows in Settings.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Make It Yours | 随心定制 | 自分らしく | A tu manera | Ganz nach deinem Geschmack | 나만의 스타일로 |
+| App colors, icons, and reminder sounds. | App 颜色、图标和提醒声音。 | Appのカラー、アイコン、リマインダーの音。 | Colores e iconos de la app, y sonidos de recordatorio. | App-Farben, App-Symbole und Erinnerungstöne. | 앱 색상, 아이콘, 미리 알림 소리. |
+| Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free. | Maru Pro 提供这项功能，还有 Apple Watch App 和更多颜色、图标与提醒音。其他一切都继续免费。 | Maru Proでは、この機能のほか、Apple Watchアプリや追加のカラー、アイコン、サウンドが使えます。それ以外はすべて無料のままです。 | Maru Pro añade esto, una app para Apple Watch y más colores, iconos y sonidos. Todo lo demás sigue siendo gratis. | Maru Pro bietet das, eine Apple Watch-App und mehr Farben, Symbole und Töne. Alles andere bleibt kostenlos. | Maru Pro에는 이 기능과 Apple Watch 앱, 더 많은 색상과 아이콘, 소리가 있어요. 나머지는 모두 계속 무료예요. |
+| This is a preview. With Maru Pro, the whole app uses this color. | 这是预览。有了 Maru Pro，整个 App 都会用这个颜色。 | これはプレビューです。Maru Proなら、App全体がこのカラーになります。 | Es una vista previa. Con Maru Pro, toda la app usa este color. | Das ist eine Vorschau. Mit Maru Pro nutzt die ganze App diese Farbe. | 미리 보기예요. Maru Pro가 있으면 앱 전체에 이 색상이 적용돼요. |
 
 ## Last Dose widget and Siri (D108)
 

@@ -14,6 +14,8 @@ struct SettingsView: View {
     @AppStorage(DisplaySetting.appearance) private var appearance = AppAppearance.system
     @State private var showsNames = true
     @State private var sharesStatistics = false
+    /// A color that a free user chose and did not buy. It tints only this sheet, until the sheet closes (D114).
+    @State private var previewColor: ItemColor?
 
     var body: some View {
         NavigationStack {
@@ -29,14 +31,11 @@ struct SettingsView: View {
                 ))
                 NextDoseSection()
                 AllItemsSection()
-                Section("Display") {
-                    // A system menu of the eight colors (D025, D026).
+                Section {
+                    // A system menu of the eight colors (D025, D026). Only pink is free (D114).
                     Picker("App Color", selection: Binding(
-                        get: { appColor },
-                        set: {
-                            appColor = $0
-                            model.appColorDidChange($0)
-                        }
+                        get: { previewColor ?? appColor },
+                        set: { chooseAppColor($0) }
                     )) {
                         ForEach(ItemColor.allCases, id: \.self) { color in
                             Label { Text(color.title) } icon: { color.tint.circleImage }
@@ -73,6 +72,12 @@ struct SettingsView: View {
                         }
                     }
                     .rowText()
+                } header: {
+                    Text("Display")
+                } footer: {
+                    if previewColor != nil {
+                        Text("This is a preview. With Maru Pro, the whole app uses this color.")
+                    }
                 }
                 if model.analyticsIsAvailable {
                     Section {
@@ -114,8 +119,13 @@ struct SettingsView: View {
         // A paywall from a row of Settings shows over this sheet (D107).
         .paywallHost(true)
         .interactiveDismissDisabled(model.transfer.isRestoring)
-        // The sheet sets the tint again, so every control in it changes at once with a new app color.
-        .tint(appColor.tint)
+        // The sheet sets the tint again, so every control in it changes at once with a new app color. A preview of a
+        // free user tints only this sheet (D114).
+        .tint((previewColor ?? appColor).tint)
+        // A purchase while a preview shows keeps the color of the preview.
+        .onChange(of: model.pro.isPro) { _, isPro in
+            if isPro, let previewColor { chooseAppColor(previewColor) }
+        }
         .onAppear {
             showsNames = model.showsNamesInReminders
             sharesStatistics = model.sharesUsageStatistics
@@ -124,6 +134,18 @@ struct SettingsView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { model.readNotificationPermission() }
         }
+    }
+
+    /// Pink is free. Another color needs Pro, also after Pro ends, so a free user sees a preview and the paywall (D114).
+    private func chooseAppColor(_ color: ItemColor) {
+        guard color == .pink || color == appColor || model.pro.isPro else {
+            previewColor = color
+            return model.presentPaywall(reason: .feature)
+        }
+        previewColor = nil
+        guard color != appColor else { return }
+        appColor = color
+        model.appColorDidChange(color)
     }
 
     /// The name of the language that the app uses, in that language, for example "English" or "日本語".
