@@ -1,5 +1,6 @@
 import MaruCore
 import SwiftUI
+import TipKit
 
 /// My Items: the active items as a grid of tiles, so the user sees at once which items they have (spec 3 P02, D032).
 /// A tile shows the form icon in the item color and the name. A tap opens the item detail, where the plan is.
@@ -153,7 +154,10 @@ private struct ItemGrid: View {
         LazyVStack(spacing: Tile.spacing) {
             ForEach(Array(stride(from: 0, to: entries.count, by: columns)), id: \.self) { start in
                 HStack(alignment: .top, spacing: Tile.spacing) {
-                    ForEach(entries[start..<min(start + columns, entries.count)]) { ItemTile(entry: $0) }
+                    ForEach(entries[start..<min(start + columns, entries.count)]) {
+                        // The first tile has the tip about the long press (D103).
+                        ItemTile(entry: $0, showsMenuTip: $0.id == entries.first?.id)
+                    }
                     // The last row keeps the column width.
                     if start + columns > entries.count {
                         Color.clear.frame(maxWidth: .infinity, maxHeight: 0)
@@ -169,7 +173,9 @@ private struct ItemGrid: View {
 private struct ItemTile: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.tipsMayShow) private var tipsMayShow
     let entry: ListEntry
+    let showsMenuTip: Bool
     @ScaledMetric(relativeTo: .headline) private var iconSize = 44
 
     var body: some View {
@@ -203,14 +209,22 @@ private struct ItemTile: View {
         }
         .buttonStyle(.pressScale)
         .contextMenu {
-            Button("Edit", systemImage: "pencil") { model.openEditor(for: entry.id) }
+            // An action here shows that the user found the long press, so the tip goes (D103).
+            Button("Edit", systemImage: "pencil") {
+                ItemMenuTip().invalidate(reason: .actionPerformed)
+                model.openEditor(for: entry.id)
+            }
             Button("Archive…", systemImage: "archivebox") {
+                ItemMenuTip().invalidate(reason: .actionPerformed)
                 model.askToEnd(.archive, itemID: entry.id, name: entry.name)
             }
             Button("Delete Item…", systemImage: "trash", role: .destructive) {
+                ItemMenuTip().invalidate(reason: .actionPerformed)
                 model.askToEnd(.delete, itemID: entry.id, name: entry.name)
             }
         }
+        // The tip waits while a sheet or an alert is on the display.
+        .popoverTip(ItemMenuTip(), when: showsMenuTip && tipsMayShow)
         .accessibilityValue(entry.remindersOff ? Text("Reminders off") : Text(verbatim: ""))
         .accessibilityHint(Text("Opens the details"))
     }

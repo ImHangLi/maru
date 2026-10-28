@@ -66,7 +66,8 @@ private struct TodayContent: View {
                 UnsavedSection()
                 NotificationsOffSection()
                 ForEach(today.groups) { group in
-                    SlotSection(group: group, timeZone: timeZone)
+                    // The record tip points at the circle of the first row of the day (D103).
+                    SlotSection(group: group, timeZone: timeZone, recordTipEntry: today.groups.first?.entries.first?.id)
                         .id(group.part)
                 }
                 if !asNeededRows.isEmpty {

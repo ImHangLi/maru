@@ -1315,8 +1315,43 @@
         }
       }
     },
+    "Add a supplement or medication. You choose the time, and Maru reminds you." : {
+      "comment" : "Onboarding, page 3: the line under the title. The user sets the reminder time. Maru sets none.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge ein Supplement oder Medikament hinzu. Du wählst die Zeit, und Maru erinnert dich."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Añade un suplemento o un medicamento. Tú eliges la hora, y Maru te avisa."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サプリメントや薬を追加しましょう。時間はあなたが決めて、Maruがお知らせします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "영양제나 의약품을 추가해 보세요. 시간은 직접 정하고, 알림은 Maru가 드려요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加一种保健品或药物。时间由你来定，Maru 按时提醒你。"
+          }
+        }
+      }
+    },
     "Add Item" : {
-      "comment" : "Today and My Items: the add button, and the button of the empty My Items.",
+      "comment" : "Today and My Items: the add button, and the button of the empty My Items. Onboarding, page 3: the main button, which opens the add screen.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -2610,6 +2645,41 @@
         }
       }
     },
+    "Continue" : {
+      "comment" : "Onboarding, pages 1 and 2: the button that opens the next page.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "続ける"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계속"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "继续"
+          }
+        }
+      }
+    },
     "Couldn’t Confirm the Restore" : {
       "comment" : "Settings, Your Data: the title of the alert when Maru could not confirm that the restored data is saved.",
       "localizations" : {
@@ -3201,6 +3271,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "详细信息"
+          }
+        }
+      }
+    },
+    "Did I take it? Open Maru and you know." : {
+      "comment" : "Onboarding, page 1: the title. The question that a user asks, and the promise of the app.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schon genommen? Öffne Maru, und du weißt es."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Me lo tomé? Abre Maru y lo sabrás."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "飲んだっけ？Maruを開けばすぐわかります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "먹었던가? Maru를 열면 바로 알 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我吃了没？打开 Maru 就知道。"
           }
         }
       }
@@ -4831,6 +4936,41 @@
         }
       }
     },
+    "Later" : {
+      "comment" : "Onboarding, page 3: the button that closes the onboarding with no new item.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Später"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más tarde"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あとで"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나중에"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以后再说"
+          }
+        }
+      }
+    },
     "Let’s add the first thing you take." : {
       "comment" : "Today and My Items: the title of the empty page when the user has no item. A friendly invitation to add the first supplement or medication (D101).",
       "localizations" : {
@@ -5469,6 +5609,41 @@
         }
       }
     },
+    "Maru reminds you on time, and one tap records each dose." : {
+      "comment" : "Onboarding, page 1: the line under the title.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru erinnert dich pünktlich, und ein Tippen erfasst jede Dosis."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru te avisa a tiempo, y con un toque registras cada dosis."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruが時間どおりにお知らせ。タップひとつで毎回の服用を記録できます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru가 제때 알려 드리고, 한 번 탭하면 복용이 기록돼요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru 准时提醒你，点一下就能记下每次服用。"
+          }
+        }
+      }
+    },
     "Maru sets the reminders of the next 7 dose days each time you open it." : {
       "comment" : "Item detail: the footer of a plan that counts days (every other day, every few days, or days on and days off) when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open.",
       "localizations" : {
@@ -5535,6 +5710,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "药品清单"
+          }
+        }
+      }
+    },
+    "More for Each Item" : {
+      "comment" : "Tip on the first tile of My Items: the title. The line under it names the actions of a long press.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehr für jeden Eintrag"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Más opciones para cada elemento"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目ごとの操作"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목별 더 보기"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每个药品的更多操作"
           }
         }
       }
@@ -5710,6 +5920,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "计划 %lld 次"
+          }
+        }
+      }
+    },
+    "Ready When You Are" : {
+      "comment" : "Onboarding, page 3: the title. A calm invitation to add the first item.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Los geht’s, wenn du so weit bist"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Empezamos cuando quieras"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "準備ができたら、はじめましょう"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "준비되면 시작해요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "准备好了就开始吧"
           }
         }
       }
@@ -7955,7 +8200,7 @@
       }
     },
     "Record a Dose" : {
-      "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts.",
+      "comment" : "Widget: the name of the action of a tap on a capsule. It shows in Shortcuts. Also the title of the tip on the record circle of the first Today row.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9425,7 +9670,7 @@
       }
     },
     "Skip" : {
-      "comment" : "Today: a row action that records the dose as skipped.",
+      "comment" : "Today: a row action that records the dose as skipped. Onboarding: the button at the top that closes the onboarding.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -9665,6 +9910,119 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从明天开始"
+          }
+        }
+      }
+    },
+    "Stays on Your iPhone" : {
+      "comment" : "Onboarding, page 2 (privacy): the title. The iPad form names the iPad.",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bleibt auf deinem iPad"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Bleibt auf deinem iPhone"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Stays on Your iPad"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Stays on Your iPhone"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Se queda en tu iPad"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Se queda en tu iPhone"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPadの中だけに"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhoneの中だけに"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPad에만 남아요"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "iPhone에만 남아요"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "只留在你的 iPad 上"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "只留在你的 iPhone 上"
+                }
+              }
+            }
           }
         }
       }
@@ -10299,6 +10657,41 @@
         }
       }
     },
+    "Tap the circle when you take it. Tap it again to change or undo the record." : {
+      "comment" : "Tip on the record circle of the first Today row, under the title \"Record a Dose\".",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf den Kreis, wenn du es nimmst. Tippe erneut, um den Eintrag zu ändern oder zurückzunehmen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca el círculo cuando lo tomes. Tócalo otra vez para cambiar o deshacer el registro."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "飲んだら丸をタップ。もう一度タップすると、記録を変更・取り消しできます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용하면 동그라미를 탭하세요. 다시 탭하면 기록을 바꾸거나 취소할 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用后点一下圆圈。再点一次可以修改或撤销记录。"
+          }
+        }
+      }
+    },
     "Tap the name on the label" : {
       "comment" : "Label scan: the prompt on the card before the user taps a text.",
       "localizations" : {
@@ -10591,6 +10984,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 Maru 再次检查之前，提醒可能还开着。"
+          }
+        }
+      }
+    },
+    "There’s no account to make and no ads. What you take is yours alone." : {
+      "comment" : "Onboarding, page 2 (privacy): the line under the title.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Konto, keine Werbung. Was du nimmst, bleibt deine Sache."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay cuenta que crear ni anuncios. Lo que tomas es solo tuyo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント登録も広告もありません。何を飲んでいるかは、あなただけのものです。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계정을 만들 필요도, 광고도 없어요. 무엇을 복용하는지는 나만 알아요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不用注册账户，也没有广告。你服用的内容只属于你。"
           }
         }
       }
@@ -11116,6 +11544,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "明天"
+          }
+        }
+      }
+    },
+    "Touch and hold an item to edit, archive, or delete it." : {
+      "comment" : "Tip on the first tile of My Items: the line under the title \"More for Each Item\".",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halte einen Eintrag gedrückt, um ihn zu bearbeiten, zu archivieren oder zu löschen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mantén pulsado un elemento para editarlo, archivarlo o eliminarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "項目を長押しすると、編集・アーカイブ・削除ができます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "항목을 길게 누르면 편집, 보관, 삭제할 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住一个药品，即可编辑、归档或删除。"
           }
         }
       }
