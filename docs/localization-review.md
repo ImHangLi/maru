@@ -212,6 +212,26 @@ The eight strings below are new in `Packages/MaruKit/Sources/MaruNotifications/R
 | Reminder not set | 没能设置提醒 | リマインダーを設定できませんでした | Recordatorio no programado | Erinnerung nicht gesetzt | 알림을 설정하지 못했습니다 |
 | This reminder no longer matches a dose of today. Open Maru to see your plan. | 这条提醒已不对应今天的任何一次服用。打开 Maru 查看你的计划。 | このリマインダーは、今日の記録と一致しなくなりました。Maruを開いて予定を確認してください。 | Este recordatorio ya no corresponde a una toma de hoy. Abre Maru para ver tu plan. | Diese Erinnerung passt nicht mehr zu einer Einnahme von heute. Öffne Maru, um deinen Plan zu sehen. | 이 알림은 더 이상 오늘의 복용과 맞지 않습니다. Maru를 열어 계획을 확인해 주세요. |
 
+## Warm voice (D101)
+
+The strings below are new or changed in `App/Localizable.xcstrings`. They are drafts. No native speaker read them. The reviewer checks the same three things as above. The tone is warm and calm, like a reliable friend: polite but friendly in ja and ko, and 你 in zh-Hans. A line must not sound like a nurse, a cheerleader, or a reproach.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Nothing to take today. Enjoy it. | 今天没有要服用的，享受这一天吧。 | 今日は飲むものはありません。ゆっくり過ごしてくださいね。 | Hoy no tienes nada que tomar. Disfrútalo. | Heute musst du nichts einnehmen. Genieß den Tag. | 오늘은 복용할 게 없어요. 편안한 하루 보내세요. |
+| Let’s add the first thing you take. | 来添加你服用的第一样东西吧。 | まずは、飲んでいるものを1つ追加しましょう。 | Añadamos lo primero que tomas. | Lass uns das Erste eintragen, das du nimmst. | 먼저 복용 중인 것을 하나 추가해 볼까요? |
+| All done for today. Nice work. | 今天都完成了，做得好。 | 今日の分はすべて完了です。おつかれさまでした。 | Todo listo por hoy. Buen trabajo. | Für heute alles erledigt. Gut gemacht. | 오늘은 모두 마쳤어요. 잘하셨어요. |
+| Your records will appear here, one day at a time. | 你的记录会一天天出现在这里。 | 記録は、一日ずつここにたまっていきます。 | Tus registros aparecerán aquí, día a día. | Deine Einträge erscheinen hier, Tag für Tag. | 기록은 하루하루 여기에 쌓여요. |
+| Your data is safe. Nothing changed. | 你的数据很安全，没有任何改动。 | データは無事です。何も変更されていません。 | Tus datos están a salvo. No cambió nada. | Deine Daten sind sicher. Nichts wurde geändert. | 데이터는 안전해요. 바뀐 건 없어요. |
+| Free some storage, then try again. Your data is safe. | 先腾出一些存储空间再试。你的数据很安全。 | 空き容量を確保してから、もう一度お試しください。データは無事です。 | Libera espacio y vuelve a intentarlo. Tus datos están a salvo. | Gib etwas Speicherplatz frei und versuche es erneut. Deine Daten sind sicher. | 저장 공간을 확보한 다음 다시 시도해 주세요. 데이터는 안전해요. |
+| If your iPhone is locked, unlock it and try again. Your data is safe. | 如果 iPhone 锁着，先解锁再试。你的数据很安全。 | iPhoneがロックされている場合は、ロックを解除してもう一度お試しください。データは無事です。 | Si el iPhone está bloqueado, desbloquéalo y vuelve a intentarlo. Tus datos están a salvo. | Wenn dein iPhone gesperrt ist, entsperre es und versuche es erneut. Deine Daten sind sicher. | iPhone이 잠겨 있으면 잠금을 해제하고 다시 시도해 주세요. 데이터는 안전해요. |
+| A newer version of Maru saved your data. It’s safe, and nothing changed. | 更新版本的 Maru 保存了你的数据。数据很安全，没有任何改动。 | より新しいバージョンのMaruがデータを保存しました。データは無事で、何も変更されていません。 | Una versión más reciente de Maru guardó tus datos. Están a salvo y no cambió nada. | Eine neuere Version von Maru hat deine Daten gespeichert. Sie sind sicher, und nichts wurde geändert. | 더 최신 버전의 Maru가 데이터를 저장했어요. 데이터는 안전하고, 바뀐 건 없어요. |
+| This version of Maru can’t open your data. It’s safe, and nothing changed. | 这个版本的 Maru 打不开你的数据。数据很安全，没有任何改动。 | このバージョンのMaruはデータを開けません。データは無事で、何も変更されていません。 | Esta versión de Maru no puede abrir tus datos. Están a salvo y no cambió nada. | Diese Version von Maru kann deine Daten nicht öffnen. Sie sind sicher, und nichts wurde geändert. | 이 버전의 Maru는 데이터를 열 수 없어요. 데이터는 안전하고, 바뀐 건 없어요. |
+| Your data file is damaged. Maru left it exactly as it was. | 你的数据文件坏了。Maru 没有动它，一切保持原样。 | データファイルが破損しています。Maruはファイルに一切手を加えていません。 | Tu archivo de datos está dañado. Maru lo dejó tal como estaba. | Deine Datendatei ist beschädigt. Maru hat sie genau so gelassen, wie sie war. | 데이터 파일이 손상되었어요. Maru는 파일을 그대로 두었어요. |
+| This didn’t save. Please try again. | 这次没保存成功，请再试一次。 | うまく保存できませんでした。もう一度お試しください。 | No se guardó. Inténtalo de nuevo, por favor. | Das wurde nicht gespeichert. Bitte versuche es erneut. | 저장되지 않았어요. 다시 시도해 주세요. |
+| This change didn’t save. Please try again. | 这次更改没保存成功，请再试一次。 | この変更はうまく保存できませんでした。もう一度お試しください。 | Este cambio no se guardó. Inténtalo de nuevo, por favor. | Diese Änderung wurde nicht gespeichert. Bitte versuche es erneut. | 이 변경 사항이 저장되지 않았어요. 다시 시도해 주세요. |
+| Made with care by the Maru team. | Maru 团队用心制作。 | Maruチームが心を込めてつくりました。 | Hecho con cariño por el equipo de Maru. | Mit Sorgfalt gemacht vom Maru-Team. | Maru 팀이 정성을 담아 만들었어요. |
+
 ## Name lists (D070)
 
 The name suggestions of each language come from `App/Resources/SupplementNames-<language>.txt` and `App/Resources/MedicationNames-<language>.txt`. A native speaker checks each list: the names are the names that people in that market use and see on labels, the spelling is the usual one, no name is a brand, and no alias leads to another medicine. The debug sample data in `App/DebugLaunch.swift` has six names and dose words per language. The names in the table are the ones the author is least sure of.

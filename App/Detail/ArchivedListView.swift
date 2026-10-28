@@ -44,7 +44,7 @@ struct ArchivedListView: View {
         .alert("Not Changed", isPresented: $restoreFailed) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Maru couldn’t save this change. Try again.")
+            Text("This change didn’t save. Please try again.")
         }
     }
 

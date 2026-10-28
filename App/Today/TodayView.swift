@@ -59,11 +59,9 @@ private struct TodayContent: View {
         let asNeededRows = model.shownRows(of: today.asNeeded)
         ScrollViewReader { scroller in
             List {
-                // Before iOS 26 the bar has no subtitle, so the date is the first header.
+                // Before iOS 26 the bar has no subtitle, so the line under the title is the first header.
                 if #unavailable(iOS 26) {
-                    Section {} header: {
-                        Text(today.generatedAt, format: dateFormat)
-                    }
+                    Section {} header: { subtitle }
                 }
                 UnsavedSection()
                 NotificationsOffSection()
@@ -82,10 +80,10 @@ private struct TodayContent: View {
             .overlay {
                 if today.groups.isEmpty && asNeededRows.isEmpty {
                     if hasItems {
-                        ContentUnavailableView("Nothing Planned Today", systemImage: "checkmark.circle")
+                        ContentUnavailableView("Nothing to take today. Enjoy it.", systemImage: "checkmark.circle")
                     } else {
                         ContentUnavailableView {
-                            Label("No Items Yet", systemImage: "pills")
+                            Label("Let’s add the first thing you take.", systemImage: "pills")
                         } description: {
                             Text("Tap + to add a supplement or medication.")
                         }
@@ -104,7 +102,7 @@ private struct TodayContent: View {
                 }
             }
         }
-        .modifier(DateSubtitle(date: today.generatedAt, format: dateFormat))
+        .modifier(Subtitle(text: subtitle))
         // The haptic follows the commit, not the tap (spec 7.2).
         .sensoryFeedback(.success, trigger: model.today.commitCount)
         .alert(
@@ -145,6 +143,15 @@ private struct TodayContent: View {
         return layout
     }
 
+    /// The date, or a short line in its place when every planned dose of today has a record (D101).
+    private var subtitle: Text {
+        if model.isComplete(today) {
+            Text("All done for today. Nice work.")
+        } else {
+            Text(today.generatedAt, format: dateFormat)
+        }
+    }
+
     /// The date in the language and the region of the user, for example "Sunday, October 11" (spec 13.2).
     private var dateFormat: Date.FormatStyle {
         var format = Date.FormatStyle.dateTime.weekday(.wide).month(.wide).day()
@@ -154,14 +161,13 @@ private struct TodayContent: View {
 
 }
 
-/// The date under the title, in the system navigation bar (iOS 26 and later).
-private struct DateSubtitle: ViewModifier {
-    let date: Date
-    let format: Date.FormatStyle
+/// The line under the title, in the system navigation bar (iOS 26 and later).
+private struct Subtitle: ViewModifier {
+    let text: Text
 
     func body(content: Content) -> some View {
         if #available(iOS 26, *) {
-            content.navigationSubtitle(Text(date, format: format))
+            content.navigationSubtitle(text)
         } else {
             content
         }

@@ -155,7 +155,7 @@ private struct HistoryList: View {
                 ContentUnavailableView {
                     Label("No History Yet", systemImage: "calendar")
                 } description: {
-                    Text("What you record shows here.")
+                    Text("Your records will appear here, one day at a time.")
                 }
             }
         }

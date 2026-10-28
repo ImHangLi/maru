@@ -16,7 +16,7 @@ extension TodayFailure.Kind {
         case .notSaved(.diskFull):
             Text("Your iPhone is full. Free some storage, then try again.")
         case .notSaved:
-            Text("Maru couldn’t save this. Try again.")
+            Text("This didn’t save. Please try again.")
         case .changed:
             Text("This item changed. Check it, then try again.")
         }
