@@ -17,7 +17,7 @@ struct ProCardSection: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text("See your next dose on the Lock Screen")
                         .font(.headline)
-                    Text("Maru Pro adds this, an Apple Watch app, and more icons and sounds. Everything else stays free.")
+                    Text("Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Button("See Maru Pro") { model.presentPaywall(reason: .day7Card) }
