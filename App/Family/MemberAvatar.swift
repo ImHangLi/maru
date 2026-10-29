@@ -38,7 +38,7 @@ enum AvatarSubject: Equatable {
     case everyone
 }
 
-/// The avatar of a member (D124, D127): the photo, else a soft fill of the member color with the initial, the person silhouette
+/// The avatar of a member (D124, D128): the photo, else a soft fill of the member color with the initial, the person silhouette
 /// for "Me", or the animal of a pet in the full member color. No gradient and no ring. "Me" and a member with no color use the
 /// app color.
 struct MemberAvatar: View {

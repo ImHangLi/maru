@@ -39,7 +39,7 @@ public struct Person: Hashable, Sendable {
     public private(set) var name: String?
     /// The avatar animal of a pet. `nil` for `me` and for a person: their avatar is a person symbol or the initial of the name.
     public private(set) var symbol: PetSymbol?
-    /// The color of the avatar (D127). `nil` uses the app color, as "Me" always does.
+    /// The color of the avatar (D128). `nil` uses the app color, as "Me" always does.
     public var color: ItemColor?
     /// The name of a photo file that the user chose from the library or took with the camera (D124). The app stores the file as the
     /// photo of an item (D056). The avatar shows the photo when the file is on the iPhone, else the symbol or the initial.
@@ -98,7 +98,7 @@ public struct Person: Hashable, Sendable {
 
 extension ItemColor {
     /// The color of a new member: the first color in the row that no other member uses, and not the app color when another color
-    /// is free (D127). The user can change it on the page of the member.
+    /// is free (D128). The user can change it on the page of the member.
     public static func forNewMember(among people: some Sequence<Person>, appColor: ItemColor) -> ItemColor {
         let used = Set(people.compactMap(\.color))
         let free = allCases.filter { !used.contains($0) }

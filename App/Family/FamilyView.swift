@@ -97,7 +97,7 @@ struct FamilyPage: View {
 }
 
 /// "Add Person or Pet", as a new contact in Contacts: the avatar at the top with "Add Photo", the kind, then the name.
-/// The color is the first free member color (D127). The page of the member changes it later.
+/// The color is the first free member color (D128). The page of the member changes it later.
 struct NewMemberSheet: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -147,7 +147,7 @@ struct NewMemberSheet: View {
     }
 }
 
-/// The page of one member: the same fields as the add page, the color, and archive, restore, or delete (D121, D125, D127).
+/// The page of one member: the same fields as the add page, the color, and archive, restore, or delete (D121, D125, D128).
 struct MemberPage: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss

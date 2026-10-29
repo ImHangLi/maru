@@ -234,7 +234,7 @@ enum Schema {
     /// The Family (D121). A member is a person or a pet. `me` is the one member that every database has: its `name` is `NULL` until
     /// the user renames it. `symbol` is the animal of a pet. `imageReference` is the name of an optional photo file, as for an item
     /// (D056, D124). The checks list the raw values of `PersonKind` and
-    /// `PetSymbol`. `v9` adds the color of a member (D127). An item belongs to one member, and no other table has a member column.
+    /// `PetSymbol`. `v9` adds the color of a member (D128). An item belongs to one member, and no other table has a member column.
     ///
     /// SQLite cannot add a `NOT NULL` column with a `REFERENCES` clause. So `item.personID` is nullable, the migration fills it for
     /// every row, and two triggers refuse a `NULL` after that. `ownerChangedAt` is the instant of the last owner change (D123).
@@ -261,7 +261,7 @@ enum Schema {
             BEGIN SELECT RAISE(ABORT, 'item.personID'); END;
         """
 
-    /// The avatar color of a member (D127). `NULL` uses the app color: "Me" and each member of `v8` have it. The check lists the raw
+    /// The avatar color of a member (D128). `NULL` uses the app color: "Me" and each member of `v8` have it. The check lists the raw
     /// values of `ItemColor`.
     static let v9 = """
         ALTER TABLE person ADD COLUMN color TEXT

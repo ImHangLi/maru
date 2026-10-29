@@ -16,7 +16,7 @@ extension AppModel {
         analytics.markUsed(.notification)
         onboardingYieldsToAction()
         selectedTab = .today
-        // A reminder can name doses of several members, so Today shows everyone (D081, D127).
+        // A reminder can name doses of several members, so Today shows everyone (D081, D128).
         today.member = nil
         today.lockedTap = nil
         Task { await resolve(reminder) }

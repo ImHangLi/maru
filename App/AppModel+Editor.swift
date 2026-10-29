@@ -15,7 +15,7 @@ struct EditorSession: Identifiable {
     let generation: Int
     /// The item that a save replaces, with its schedule (T06). The draft is then a new item.
     var replaced: (item: Item, schedule: Schedule?)?
-    /// The item that a new item copies for another member, and its photo file (D127). The save copies the file, so each item has
+    /// The item that a new item copies for another member, and its photo file (D128). The save copies the file, so each item has
     /// its own photo, and a later delete of one item keeps the photo of the other.
     var copied: (itemID: ItemID, person: PersonID, photo: String?)?
     /// For the duration bucket of the usage statistics (D077). It is not stored, and no clock time leaves the device.

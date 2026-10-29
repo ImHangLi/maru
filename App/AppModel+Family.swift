@@ -53,7 +53,7 @@ extension AppModel {
         return snapshot.list.filter { $0.personID == id }.count
     }
 
-    /// The color of a new member: the first item color that no member uses, not the app color when another is free (D127).
+    /// The color of a new member: the first item color that no member uses, not the app color when another is free (D128).
     var newMemberColor: ItemColor {
         let appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
         return .forNewMember(among: people, appColor: appColor)

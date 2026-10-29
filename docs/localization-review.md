@@ -520,7 +520,7 @@ Six strings replace six strings: "Dose on Lock Screen", "See your next dose with
 | Make Maru yours | 打造你的 Maru | 自分らしいMaruに | Haz Maru tuya | Dein Maru, dein Stil | 나만의 Maru로 |
 | App colors, icons, and reminder sounds. | 应用颜色、图标和提醒声音。 | アプリのカラー、アイコン、リマインダーの音。 | Colores, iconos y sonidos de recordatorio. | App-Farben, Symbole und Erinnerungstöne. | 앱 색상, 아이콘, 미리 알림 소리. |
 
-## Family UI (D127)
+## Family UI (D128)
 
 These strings are new for the Family pages, the person menu of Today, the "For" row, "Add for…", and the Family headline of the paywall. No native speaker read them. The reviewer checks that "Family" does not read as Apple "Family Sharing", that a member name fits each title pattern, and that the Family headline fits two lines.
 

@@ -93,7 +93,7 @@ extension AppModel {
         }
     }
 
-    /// "Add for": the edit screen of a new item for another member, with every value of the stored item (D127). Nothing is saved
+    /// "Add for": the edit screen of a new item for another member, with every value of the stored item (D128). Nothing is saved
     /// until the user taps Save (spec 2, 7.2). The new item has its own IDs, plan, and records. The stored item does not change.
     func openEditorForCopy(_ itemID: ItemID, for person: PersonID) {
         let generation = dataGeneration

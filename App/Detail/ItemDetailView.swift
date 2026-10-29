@@ -94,7 +94,7 @@ struct ItemDetailView: View {
                     }
                 }
             }
-            // A new item with the same values for another member (D127). It shows only with a second active member.
+            // A new item with the same values for another member (D128). It shows only with a second active member.
             let others = model.activePeople.filter { $0.id != item.personID }
             if !item.isArchived, model.hasFamily, !others.isEmpty {
                 Section {

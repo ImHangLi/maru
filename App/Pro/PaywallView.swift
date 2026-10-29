@@ -4,7 +4,7 @@ import SwiftUI
 /// The Maru Pro paywall uses `ProStore` for purchases (D107, D119).
 /// This custom view offers yearly and lifetime plans together, which `SubscriptionStoreView` cannot do (D115).
 struct PaywallView: View {
-    /// Why the paywall shows. The headline names the reason for Family (D127).
+    /// Why the paywall shows. The headline names the reason for Family (D128).
     let source: AnalyticsEvent.PaywallSource
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss

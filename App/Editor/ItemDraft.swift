@@ -187,7 +187,7 @@ struct ItemDraft: Codable, Equatable {
         return draft
     }
 
-    /// A new item for another member of the Family, from a stored item (D127): every value of the item and of its plan, with new
+    /// A new item for another member of the Family, from a stored item (D128): every value of the item and of its plan, with new
     /// IDs and the chosen owner. The user reviews it and saves it. Records and history stay with the first item.
     static func copying(_ item: Item, schedule: Schedule?, for person: PersonID) -> ItemDraft {
         var draft = ItemDraft(item: item, schedule: schedule)

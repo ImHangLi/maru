@@ -17539,7 +17539,7 @@
       }
     },
     "Add for…" : {
-      "comment" : "Item detail: the menu that opens a new item with the same values for another person or pet (D127).",
+      "comment" : "Item detail: the menu that opens a new item with the same values for another person or pet (D128).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
