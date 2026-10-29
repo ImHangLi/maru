@@ -393,7 +393,7 @@ struct PaywallView: View {
 }
 
 /// The gradient picture. It drifts slowly and stops with Reduce Motion.
-private struct HeroArt: View {
+struct HeroArt: View {
     let isStill: Bool
     @State private var drifts = false
 

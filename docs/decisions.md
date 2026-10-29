@@ -2831,3 +2831,8 @@ Every switch, menu, permission flow, paywall source, analytics event, backup, an
 ## D136 · 2026-10-29 · One size and one column for the Settings root symbols (refines D135)
 
 The maintainer asked for smaller symbols of one size that line up with Maru Pro. Each root symbol now has one point size and sits centered in a column as wide as the Maru Pro icon. The titles start at the same x as "Maru Pro". "Display" uses `sun.max`.
+
+## D137 · 2026-10-29 · Settings symbols match the item icons, and the Maru Pro card uses the paywall art
+
+- The root symbols of Settings use the box of an item icon (28 points), so the icons of the app have one size (refines D136).
+- For a free user, the Maru Pro card shows the slow art of the paywall with a dark wash and white text. One light sweep crosses it when Settings opens. Reduce Motion stops the drift and the sweep. A Pro user sees the plain card.

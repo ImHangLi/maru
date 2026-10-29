@@ -30,15 +30,18 @@ struct ProSection: View {
                             Text("Maru Pro").font(.headline)
                             Text("Lock Screen, Apple Watch, and more")
                                 .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                                .opacity(0.85)
                         }
                         Spacer(minLength: 0)
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tertiary)
+                            .opacity(0.7)
                     }
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 6)
                 }
-                .rowText()
+                // The art of the paywall, so the card looks like the place it opens (D137).
+                .listRowBackground(ProCardBackground())
             }
             NavigationLink(value: SettingsPage.purchases) {
                 SettingsRowLabel("Purchases", systemImage: "creditcard")
@@ -98,6 +101,36 @@ struct PurchasesPage: View {
             case .cancelled?, .purchased?, .pending?, .dismissed?: break
             }
             isRestoring = false
+        }
+    }
+}
+
+/// The background of the Maru Pro card for a free user: the slow art of the paywall, a dark wash for the white text, and
+/// one light sweep when Settings opens. With Reduce Motion the art stays still and there is no sweep (D137).
+private struct ProCardBackground: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var sweeps = false
+
+    var body: some View {
+        ZStack {
+            HeroArt(isStill: reduceMotion)
+            LinearGradient(colors: [.black.opacity(0.35), .black.opacity(0.1)], startPoint: .leading, endPoint: .trailing)
+            GeometryReader { proxy in
+                LinearGradient(
+                    colors: [.clear, .white.opacity(0.35), .clear],
+                    startPoint: .leading, endPoint: .trailing
+                )
+                .frame(width: proxy.size.width * 0.4)
+                .rotationEffect(.degrees(20))
+                .offset(x: sweeps ? proxy.size.width * 1.2 : -proxy.size.width * 0.6)
+                .opacity(reduceMotion ? 0 : 1)
+            }
+            .allowsHitTesting(false)
+        }
+        .task {
+            guard !reduceMotion else { return }
+            try? await Task.sleep(for: .milliseconds(400))
+            withAnimation(.easeInOut(duration: 1.4)) { sweeps = true }
         }
     }
 }

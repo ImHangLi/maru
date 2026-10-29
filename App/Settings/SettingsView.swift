@@ -196,15 +196,16 @@ enum SettingsPage: Hashable {
 }
 
 /// The label of a row on the root of Settings: a symbol in the app tint, then the title in the text color (D076, D135).
-/// Every symbol has one size and sits centered in a column as wide as the Maru Pro icon, so the titles line up with
-/// "Maru Pro" and with each other (D136).
+/// Every symbol has the size of an item icon (`FormIcon`, 28 points) and sits centered in a column as wide as the Maru Pro
+/// icon, so the icons of the app match and the titles line up with "Maru Pro" (D136).
 struct SettingsRowLabel: View {
     let title: LocalizedStringKey
     let systemImage: String
     var isPro = false
     /// The width of the icon of the Maru Pro card (ProSection).
     @ScaledMetric(relativeTo: .body) private var column = 40
-    @ScaledMetric(relativeTo: .body) private var symbolSize = 17
+    /// The box of an item icon (`FormIcon`).
+    @ScaledMetric(relativeTo: .body) private var box = 28
 
     init(_ title: LocalizedStringKey, systemImage: String, isPro: Bool = false) {
         self.title = title
@@ -215,10 +216,10 @@ struct SettingsRowLabel: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: systemImage)
-                .font(.system(size: symbolSize, weight: .regular))
-                .imageScale(.medium)
+                .font(.system(size: box * 0.8, weight: .regular))
                 .foregroundStyle(.tint)
-                .frame(width: column, height: symbolSize * 1.4)
+                .frame(width: min(box, 44), height: min(box, 44))
+                .frame(width: column)
                 .accessibilityHidden(true)
             HStack(spacing: 8) {
                 Text(title).rowText()
