@@ -17,7 +17,7 @@ struct EditorSession: Identifiable {
     var replaced: (item: Item, schedule: Schedule?)?
     /// The item that a new item copies for another member, and its photo file (D127). The save copies the file, so each item has
     /// its own photo, and a later delete of one item keeps the photo of the other.
-    var copied: (itemID: ItemID, photo: String?)?
+    var copied: (itemID: ItemID, person: PersonID, photo: String?)?
     /// For the duration bucket of the usage statistics (D077). It is not stored, and no clock time leaves the device.
     let openedAt = Date()
 
@@ -33,7 +33,7 @@ struct EditorSession: Identifiable {
     /// The name of the draft file: one for a new item, one for each item in edit or in replacement.
     var draftKey: String {
         if let replaced { return Self.replaceKey(of: replaced.item.id) }
-        if let copied { return "copy-\(copied.itemID.rawValue.uuidString)" }
+        if let copied { return "copy-\(copied.itemID.rawValue.uuidString)-\(copied.person.rawValue.uuidString)" }
         return context.item.map { Self.editKey(of: $0.id) } ?? "new"
     }
 

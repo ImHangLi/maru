@@ -107,7 +107,12 @@ extension AppModel {
                 var session = EditorSession(
                     context: context, original: start, start: start, isRestored: false, generation: generation
                 )
-                session.copied = (item.id, item.imageReference)
+                session.copied = (item.id, person, item.imageReference)
+                // A draft that the app kept after it stopped comes back with its own IDs.
+                if let kept = DraftFile.load(key: session.draftKey), kept != start {
+                    session = EditorSession(context: context, original: start, start: kept, isRestored: true, generation: generation)
+                    session.copied = (item.id, person, item.imageReference)
+                }
                 editor = session
                 analytics.capture(.setupStep(.editorOpened, mode: session.mode))
             } catch {

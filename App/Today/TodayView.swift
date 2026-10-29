@@ -66,14 +66,19 @@ private struct TodayContent: View {
     let hasItems: Bool
 
     var body: some View {
-        let asNeededRows = model.shownRows(of: today.asNeeded).filter { member == nil || $0.look.personID == member }
+        // An unconfirmed dose keeps the look of its first read, so the filter reads the current owner of the item (D121).
+        let asNeededRows = model.shownRows(of: today.asNeeded).filter { member == nil || model.owner(of: $0.itemID, or: $0.look.personID) == member }
         ScrollViewReader { scroller in
             List {
                 // Before iOS 26 the bar has no subtitle, so the line under the title is the first header.
                 if #unavailable(iOS 26) {
                     Section {} header: { subtitle }
                 }
-                UnsavedSection()
+                // One retry sends the unconfirmed events of every member, so it shows only in "Everyone". In the view of one
+                // member, each row of that member keeps its own retry (D014, D121).
+                if member == nil {
+                    UnsavedSection()
+                }
                 NotificationsOffSection()
                 ForEach(today.groups) { group in
                     SlotSection(group: group, timeZone: timeZone)

@@ -16,6 +16,8 @@ extension AppModel {
         analytics.markUsed(.notification)
         onboardingYieldsToAction()
         selectedTab = .today
+        // A reminder can name doses of several members, so Today shows everyone (D081, D127).
+        today.member = nil
         today.lockedTap = nil
         Task { await resolve(reminder) }
     }
@@ -27,7 +29,7 @@ extension AppModel {
     }
 
     func focus(_ keys: Set<OccurrenceKey>) {
-        // A tapped reminder can name doses of several members, so Today shows everyone (D081, D121).
+        // A tapped reminder or widget can name doses of several members, so Today shows everyone (D081, D121).
         today.member = nil
         today.focus = TodayFocus(keys: keys)
     }

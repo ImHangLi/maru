@@ -41,6 +41,12 @@ extension AppModel {
         today.member = id
     }
 
+    /// The current owner of an item from the last read, else `fallback`.
+    func owner(of itemID: ItemID, or fallback: PersonID) -> PersonID {
+        guard case let .loaded(snapshot) = content else { return fallback }
+        return (snapshot.list.first { $0.id == itemID } ?? snapshot.archived.first { $0.id == itemID })?.personID ?? fallback
+    }
+
     /// The count of active items of a member, for the Family page.
     func itemCount(of id: PersonID) -> Int {
         guard case let .loaded(snapshot) = content else { return 0 }
@@ -75,12 +81,15 @@ extension AppModel {
         }
         var person = person
         if let photo { person.imageReference = try await store.writePhoto(photo.data, fileExtension: photo.fileExtension) }
+        let saved: Bool
         do {
-            try await changeFamily { store, generation in try await store.savePerson(person, generation: generation) }
+            saved = try await changeFamily { store, generation in try await store.savePerson(person, generation: generation) }
         } catch {
             await store.removePhoto(person.imageReference)
             throw error
         }
+        // A restore refused the save, so the new file has no member.
+        if !saved { await store.removePhoto(person.imageReference) }
     }
 
     /// Changes the name, the kind, the animal, the color, or the photo of a member. A replaced photo file goes after the save (D124).
@@ -95,11 +104,18 @@ extension AppModel {
         case .removed: person.imageReference = nil
         case let .replaced(image): person.imageReference = try await store.writePhoto(image.data, fileExtension: image.fileExtension)
         }
+        let saved: Bool
         do {
-            try await changeFamily { store, generation in try await store.updatePerson(person, generation: generation) }
+            saved = try await changeFamily { store, generation in try await store.updatePerson(person, generation: generation) }
         } catch {
             if person.imageReference != stored { await store.removePhoto(person.imageReference) }
             throw error
+        }
+        // Only a committed save drops the old file. A save that a restore refused drops only the file that it wrote, because the
+        // restored member can still use the old one.
+        guard saved else {
+            if person.imageReference != stored { await store.removePhoto(person.imageReference) }
+            return
         }
         if let stored, stored != person.imageReference { await store.removePhoto(stored) }
     }
@@ -154,14 +170,18 @@ extension AppModel {
 
     /// One write, then the pages read again and one run of the reminders follows: a name, an owner, or an archive changes the text
     /// and the plan (D084, D123). After a restore the store refuses the write, and the pages read again (D040).
-    private func changeFamily(_ write: (AppStore, Int) async throws -> Void) async throws {
+    /// - Returns: `false` when a restore refused the write.
+    @discardableResult
+    private func changeFamily(_ write: (AppStore, Int) async throws -> Void) async throws -> Bool {
         do {
             try await write(store, dataGeneration)
         } catch StorageError.replaced {
-            return refresh()
+            refresh()
+            return false
         }
         refresh()
         refreshReminders()
+        return true
     }
 }
 
