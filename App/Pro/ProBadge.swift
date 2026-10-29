@@ -1,3 +1,4 @@
+import MaruCore
 import SwiftUI
 
 /// The "PRO" mark right after the title of an entry of Maru Pro, for a free user only (D133, changed by D134). A Pro user
