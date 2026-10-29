@@ -1,0 +1,22 @@
+{
+  "images": [
+    {
+      "filename": "IconPreview-RoseAndSage.png",
+      "idiom": "universal"
+    },
+    {
+      "filename": "IconPreview-RoseAndSage-Dark.png",
+      "idiom": "universal",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  }
+}

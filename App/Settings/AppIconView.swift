@@ -1,10 +1,10 @@
 import SwiftUI
 import UIKit
 
-/// The app icons (D112). `docs/brand/make_icons.py` draws the alternate icons and the previews in
-/// `App/AppIcons.xcassets`. `project.yml` lists the alternate icons for the asset compiler.
+/// The app icons (D112, D132). The asset catalog includes vector colors and generated ceramic artwork.
+/// `project.yml` lists the alternate icons for the asset compiler.
 enum AppIcon: String, CaseIterable, Identifiable {
-    case pink, blue, purple, green, night, mono
+    case pink, blue, purple, green, night, mono, roseCeramic, blueLotus, roseAndSage
 
     var id: Self { self }
 
@@ -15,7 +15,14 @@ enum AppIcon: String, CaseIterable, Identifiable {
 
     var previewName: String { "IconPreview-\(self == .pink ? "Default" : assetName)" }
 
-    private var assetName: String { rawValue.capitalized }
+    private var assetName: String {
+        switch self {
+        case .roseCeramic: "RoseCeramic"
+        case .blueLotus: "BlueLotus"
+        case .roseAndSage: "RoseAndSage"
+        default: rawValue.capitalized
+        }
+    }
 
     var title: LocalizedStringKey {
         switch self {
@@ -25,6 +32,9 @@ enum AppIcon: String, CaseIterable, Identifiable {
         case .green: "Green"
         case .night: "Night"
         case .mono: "Mono"
+        case .roseCeramic: "Rose Ceramic"
+        case .blueLotus: "Blue Lotus"
+        case .roseAndSage: "Rose and Sage"
         }
     }
 
