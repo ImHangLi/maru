@@ -134,7 +134,7 @@ final class ProStore {
             case .lifetime:
                 found = .lifetime
             case .yearly:
-                guard let end = await Self.endOfAccess(transaction, at: now), end > now else { continue }
+                guard let end = await Self.endOfAccess(transaction, at: now, cached: expiresAt), end > now else { continue }
                 if found == nil { found = .yearly }
                 expires = max(expires ?? end, end)
             }
@@ -143,11 +143,14 @@ final class ProStore {
     }
 
     /// The expiration date of a yearly transaction, or the end of its billing grace period when StoreKit reports one.
-    /// The grace period applies only after the expiration date, so the status is read only then.
-    private static func endOfAccess(_ transaction: StoreKit.Transaction, at now: Date) async -> Date? {
+    /// The grace period applies only after the expiration date, so the status is read only then. A failed read of the
+    /// status keeps the end of access of the last good read, so a paying user in the grace period keeps Pro (D130).
+    private static func endOfAccess(_ transaction: StoreKit.Transaction, at now: Date, cached: Date?) async -> Date? {
         guard let expiration = transaction.expirationDate else { return nil }
-        guard expiration <= now, let group = transaction.subscriptionGroupID,
-              let statuses = try? await Product.SubscriptionInfo.status(for: group) else { return expiration }
+        guard expiration <= now, let group = transaction.subscriptionGroupID else { return expiration }
+        guard let statuses = try? await Product.SubscriptionInfo.status(for: group) else {
+            return max(expiration, cached ?? expiration)
+        }
         let grace = statuses.compactMap { status -> Date? in
             guard status.state == .inGracePeriod, case let .verified(renewal) = status.renewalInfo,
                   renewal.originalTransactionID == transaction.originalID else { return nil }

@@ -325,6 +325,12 @@ public extension AnalyticsEvent {
         case sounds
         /// A free user tried to add a second member of the Family (D122).
         case family
+        /// A free user asked Siri or ran a Maru shortcut, then chose to open Maru (D130).
+        case siri
+        /// A free user tried to share the medication list or the summary as a PDF file (D130).
+        case report
+        /// A free user tapped the counts of the last 30 days on the item detail (D130).
+        case insights
     }
 
     /// The end of a purchase or a restore (D107).

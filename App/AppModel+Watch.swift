@@ -29,7 +29,7 @@ extension AppModel {
                 id, scheduleVersionID: scheduleVersionID, action, revision: revision, intent: intent, listedAt: listedAt
             )
         case .showPro:
-            watchAskedForPro()
+            askedForPro(from: .watch)
         case .today, nil:
             break
         }

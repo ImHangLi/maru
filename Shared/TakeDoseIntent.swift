@@ -10,6 +10,8 @@ import os
 /// the database for a record. It holds no health data in the intent: two IDs and a counter.
 struct TakeDoseIntent: AppIntent {
     static let title: LocalizedStringResource = "Record a Dose"
+    /// Only the widget runs it, so Shortcuts does not offer it. Shortcuts is part of Maru Pro, and the widget is free (D130).
+    static var isDiscoverable: Bool { false }
 
     /// The occurrence that the widget showed, as the text of its ID.
     @Parameter(title: "Dose")
