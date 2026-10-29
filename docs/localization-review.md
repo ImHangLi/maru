@@ -590,3 +590,15 @@ Drafts by the team. A native speaker must check them.
 | Apple Watch, Siri, and Shortcuts. | Apple Watch、Siri 和快捷指令。 | Apple Watch、Siri、ショートカット。 | Apple Watch, Siri y Atajos. | Apple Watch, Siri und Kurzbefehle. | Apple Watch, Siri, 단축어. |
 | Reports for your doctor | 给医生的报告 | 医師に見せるレポート | Informes para tu médico | Berichte für die Arztpraxis | 의사에게 보여줄 리포트 |
 | PDF summaries and 30-day counts. | PDF 汇总和 30 天统计。 | PDF サマリーと30日間の集計。 | Resúmenes en PDF y recuentos de 30 días. | PDF-Zusammenfassungen und 30-Tage-Übersicht. | PDF 요약과 30일 집계. |
+
+## Settings pages and search (D135)
+
+Drafts by the team. A native speaker must check them. The keyword lines are not shown. The search uses them to find a setting, so each one must hold the words that a user types.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Lock Screen | 锁定屏幕 | ロック画面 | Pantalla de bloqueo | Sperrbildschirm | 잠금 화면 |
+| Privacy | 隐私 | プライバシー | Privacidad | Datenschutz | 개인정보 보호 |
+| Purchases | 购买项目 | 購入 | Compras | Käufe | 구입 항목 |
+| Version | 版本 | バージョン | Versión | Version | 버전 |
+| Keywords of 11 settings, for example "dark, light, theme, mode" | 深色, 浅色, 夜间, 主题, 模式 | ダーク, ライト, テーマ, モード | oscuro, claro, tema, modo | dunkel, hell, Design, Modus | 다크, 라이트, 테마, 모드 |
