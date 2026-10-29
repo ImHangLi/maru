@@ -1,4 +1,5 @@
 import Foundation
+import MaruCore
 
 /// Where the first-run onboarding is in this process (D103, D104).
 enum OnboardingState: Equatable {
@@ -51,7 +52,15 @@ extension AppModel {
     /// unset, so the next launch with no item shows it (D104).
     func onboardingYieldsToAction() {
         opensForAction = true
-        if onboarding == .shows { onboarding = .hidden }
+        guard onboarding == .shows else { return }
+        onboarding = .hidden
+        analytics.capture(.onboardingResult(.yielded))
+    }
+
+    /// A button of the onboarding ended it. It sends the button as one fixed word (D127).
+    func finishOnboarding(_ result: AnalyticsEvent.OnboardingResult) {
+        analytics.capture(.onboardingResult(result))
+        endOnboarding()
     }
 
     /// "Add Item", "Later", "Skip", or a restore. The onboarding never shows again on this device.

@@ -56,9 +56,16 @@ struct SettingsView: View {
                         }
                     }
                     // The wash of the app color behind the title, as in Apple Health (D100).
-                    Toggle("Color Header", isOn: $headerWash)
+                    // A binding of its own sends the change of the user only, not the change of a restore (D127).
+                    Toggle("Color Header", isOn: Binding(get: { headerWash }, set: {
+                        headerWash = $0
+                        model.headerWashDidChange($0)
+                    }))
                     // The system look, or always light or dark (D105).
-                    Picker("Appearance", selection: $appearance) {
+                    Picker("Appearance", selection: Binding(get: { appearance }, set: {
+                        appearance = $0
+                        model.appearanceDidChange($0)
+                    })) {
                         ForEach(AppAppearance.allCases, id: \.self) { Text($0.title).tag($0) }
                     }
                     .pickerStyle(.menu)
@@ -140,7 +147,7 @@ struct SettingsView: View {
     private func chooseAppColor(_ color: ItemColor) {
         guard color == .pink || color == appColor || model.pro.isPro else {
             previewColor = color
-            return model.presentPaywall(reason: .feature)
+            return model.presentPaywall(reason: .appColor)
         }
         previewColor = nil
         guard color != appColor else { return }

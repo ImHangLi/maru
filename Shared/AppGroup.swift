@@ -44,6 +44,14 @@ enum AppGroup {
         URL(string: "maru://today" + (part.map { "/" + $0.linkName } ?? ""))!
     }
 
+    /// The link of a tap on the Live Activity: the link of the slot, marked so that analytics counts it apart from a
+    /// widget (D127).
+    static func activityURL(_ part: DayPart?) -> URL {
+        URL(string: todayURL(part).absoluteString + "?" + activityQuery)!
+    }
+
+    static let activityQuery = "from=activity"
+
     /// The link of a tap on the "Last Dose" widget. Today opens the detail of the item (D108).
     static func itemURL(_ id: ItemID) -> URL {
         URL(string: "maru://item/" + id.rawValue.uuidString)!

@@ -132,11 +132,11 @@ The question is: "Is your app a regulated medical device in any country or regio
 | Data type | Purpose | Linked to the user | Tracking | What it is in the code |
 |---|---|---|---|---|
 | Identifiers: Device ID | Analytics | Yes | No | `distinct_id`, the random install ID |
-| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077), and `paywall_shown` from 1.2 (D107) |
+| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077), and `paywall_shown` from 1.2 (D107). From 1.2 also `onboarding_result` and the new flags of `daily_usage_summary` and `setting_changed` (D127) |
 | Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, `ios_major`, and `device` |
 | Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) and `app_language` (D077) |
 
-| Purchases: Purchase History | Analytics | Yes | No | `purchase_result` (D107). Not published yet |
+| Purchases: Purchase History | Analytics | Yes | No | `purchase_result` (D107) and `pro_plan` in `daily_usage_summary` (D127). Not published yet |
 
 The published label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy` of 1.1. The code of 1.2 sends `purchase_result` (D107), and `App/PrivacyInfo.xcprivacy` lists "Purchase History". Add "Purchase History" to the label in App Store Connect before the release of 1.2.
 

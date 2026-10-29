@@ -1,3 +1,4 @@
+import MaruCore
 import SwiftUI
 
 /// The short first-run onboarding (D103, D104): three pages, shown once, only when the store has no item.
@@ -10,8 +11,8 @@ enum Onboarding {
 }
 
 struct OnboardingView: View {
-    /// `true` when the user chose to add an item. The caller opens the edit screen after the sheet closes.
-    let finish: (_ addsItem: Bool) -> Void
+    /// The button that ended the onboarding. For `addItem` the caller opens the edit screen after the page closes.
+    let finish: (AnalyticsEvent.OnboardingResult) -> Void
     @State private var page = Page.promise
 
     private enum Page: Int, CaseIterable {
@@ -52,7 +53,7 @@ struct OnboardingView: View {
                 // The last page has "Later" for the same action (D104).
                 if page != .start {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("Skip") { finish(false) }
+                        Button("Skip") { finish(.skipped) }
                     }
                 }
             }
@@ -62,11 +63,11 @@ struct OnboardingView: View {
     @ViewBuilder private var buttons: some View {
         VStack(spacing: 8) {
             if page == .start {
-                Button { finish(true) } label: {
+                Button { finish(.addItem) } label: {
                     Text("Add Item").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
-                Button { finish(false) } label: {
+                Button { finish(.later) } label: {
                     Text("Later").frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderless)

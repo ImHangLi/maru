@@ -63,10 +63,18 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "used_my_items": .flag,
             "used_item_detail": .flag,
             "used_settings": .flag,
+            "used_live_activity": .flag,
+            "used_watch": .flag,
+            "used_siri": .flag,
             "family_size": .choice(["1", "2", "3_plus"]),
             "app_opens": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
             "active_items": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
             "has_widget": .flag,
+            // The Pro state at the last check of the day (D127): the plan and three flags. No date, no price, no ID.
+            "pro_plan": .choice(["none"] + PurchasePlan.allCases.map(\.rawValue)),
+            "has_live_activity": .flag,
+            "custom_icon": .flag,
+            "custom_sound": .flag,
         ],
         "core_error": [
             "operation": .choice(Operation.allCases.map(\.rawValue)),
@@ -84,12 +92,16 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "all_alarm": .flag,
             "all_remind_again": .choice(["off", "1", "2", "3", "5", "until_recorded"]),
             "all_remind_again_minutes": .choice(["5", "10", "15", "30", "60"]),
+            "header_wash": .flag,
+            "appearance": .choice(Appearance.allCases.map(\.rawValue)),
         ],
         "data_action": [
             "action": .choice(DataAction.allCases.map(\.rawValue)),
             "result": .choice(DataResult.allCases.map(\.rawValue)),
         ],
         "feedback_entry": ["entry": .choice(["settings"])],
+        // The end of a first-run onboarding that showed (D104, D127).
+        "onboarding_result": ["result": .choice(OnboardingResult.allCases.map(\.rawValue))],
         // Maru Pro (D107). The place that showed the paywall, and the end of a purchase or a restore. No item data.
         "paywall_shown": ["source": .choice(PaywallSource.allCases.map(\.rawValue))],
         "purchase_result": [
@@ -137,6 +149,31 @@ public extension AnalyticsEvent {
         case myItems = "used_my_items"
         case itemDetail = "used_item_detail"
         case settings = "used_settings"
+        /// The "Taken" button of the Live Activity, or a tap on the Live Activity (D110).
+        case liveActivity = "used_live_activity"
+        /// A record request from the Apple Watch app (D111).
+        case watch = "used_watch"
+        /// A Siri or Shortcuts question or record (D108).
+        case siri = "used_siri"
+    }
+
+    /// The Pro plan and the Pro features in use at one check (D127). Each feature is a flag, not the icon or the sound.
+    struct ProUse: Sendable, Equatable, Codable {
+        /// `nil` is free.
+        public var plan: PurchasePlan?
+        /// "Next Dose on Lock Screen" is on (D110).
+        public var liveActivity: Bool
+        /// The app icon is not the default icon (D112).
+        public var customIcon: Bool
+        /// The reminders use a sound other than the default sound (D112).
+        public var customSound: Bool
+
+        public init(plan: PurchasePlan?, liveActivity: Bool, customIcon: Bool, customSound: Bool) {
+            self.plan = plan
+            self.liveActivity = liveActivity
+            self.customIcon = customIcon
+            self.customSound = customSound
+        }
     }
 
     /// The local tallies of one day, sent as coarse buckets in the summary of that day.
@@ -150,15 +187,19 @@ public extension AnalyticsEvent {
         public var hasWidget: Bool?
         /// The number of active members of the Family at the last read of the day. `nil` when the app did not read them.
         public var familySize: Int?
+        /// The Pro state at the last check of the day. `nil` when the app did not check it.
+        public var pro: ProUse?
 
         public init(
-            used: Set<UsageFlag> = [], opens: Int = 0, activeItems: Int? = nil, hasWidget: Bool? = nil, familySize: Int? = nil
+            used: Set<UsageFlag> = [], opens: Int = 0, activeItems: Int? = nil, hasWidget: Bool? = nil, familySize: Int? = nil,
+            pro: ProUse? = nil
         ) {
             self.used = used
             self.opens = opens
             self.activeItems = activeItems
             self.hasWidget = hasWidget
             self.familySize = familySize
+            self.pro = pro
         }
     }
 
@@ -271,9 +312,13 @@ public extension AnalyticsEvent {
         case firstValue = "first_value"
         /// The card at the bottom of Today.
         case day7Card = "day7_card"
-        /// A tap on a Pro feature by a free user.
-        case feature
         case settings
+        /// A free user chose an app color other than pink (D114).
+        case appColor = "app_color"
+        /// A free user turned on "Next Dose on Lock Screen" (D110).
+        case liveActivity = "live_activity"
+        /// A free user tapped "Open on iPhone" on the Watch (D111).
+        case watch
         /// A free user chose an app icon other than the default (D112).
         case icons
         /// A free user chose a reminder sound other than the default (D112).
@@ -285,11 +330,42 @@ public extension AnalyticsEvent {
     /// The end of a purchase or a restore (D107).
     enum PurchaseResult: String, CaseIterable, Sendable {
         case purchased, cancelled, pending, failed, restored
+        /// The paywall closed, and Pro is not active (D127). It has no plan.
+        case dismissed
     }
 
     /// The plan of a purchase. It is not a price and not an Apple ID.
-    enum PurchasePlan: String, CaseIterable, Sendable {
+    enum PurchasePlan: String, CaseIterable, Sendable, Codable {
         case yearly, lifetime
+    }
+
+    /// The look of the app in Settings (D105).
+    enum Appearance: String, CaseIterable, Sendable {
+        case system, light, dark
+    }
+
+    /// How a first-run onboarding that showed ended (D104, D127).
+    enum OnboardingResult: String, CaseIterable, Sendable {
+        /// "Add Item" on the last page.
+        case addItem = "add_item"
+        /// "Later" on the last page.
+        case later
+        /// "Skip" before the last page.
+        case skipped
+        /// A reminder tap or a widget link opened Today. The onboarding shows again at the next launch with no item.
+        case yielded
+    }
+
+    static func onboardingResult(_ result: OnboardingResult) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "onboarding_result", ["result": .text(result.rawValue)])
+    }
+
+    static func headerWashChanged(_ isOn: Bool) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setting_changed", ["header_wash": .flag(isOn)])
+    }
+
+    static func appearanceChanged(_ appearance: Appearance) -> AnalyticsEvent {
+        AnalyticsEvent(unchecked: "setting_changed", ["appearance": .text(appearance.rawValue)])
     }
 
     static func paywallShown(_ source: PaywallSource) -> AnalyticsEvent {
@@ -352,6 +428,12 @@ public extension AnalyticsEvent {
         if let hasWidget = day.hasWidget { properties["has_widget"] = .flag(hasWidget) }
         // Only a bucket. No name, no ID, no kind, and no count of pets (spec 10, D121).
         if let size = day.familySize { properties["family_size"] = .text(bucket(size, ["1": 0...1, "2": 2...2], over: "3_plus")) }
+        if let pro = day.pro {
+            properties["pro_plan"] = .text(pro.plan?.rawValue ?? "none")
+            properties["has_live_activity"] = .flag(pro.liveActivity)
+            properties["custom_icon"] = .flag(pro.customIcon)
+            properties["custom_sound"] = .flag(pro.customSound)
+        }
         return AnalyticsEvent(unchecked: "daily_usage_summary", properties)
     }
 

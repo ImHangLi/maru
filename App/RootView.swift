@@ -30,10 +30,10 @@ struct RootView: View {
                 Color.clear
             } else if model.onboarding == .shows {
                 // The page of the window, not a sheet: Today is not under it, and a rotation or Split View keeps it (D104).
-                OnboardingView { addsItem in
-                    model.endOnboarding()
+                OnboardingView { result in
+                    model.finishOnboarding(result)
                     // The edit screen opens on the tabs.
-                    if addsItem { model.openEditor(for: nil) }
+                    if result == .addItem { model.openEditor(for: nil) }
                 }
             } else {
                 TabView(selection: $model.selectedTab) {

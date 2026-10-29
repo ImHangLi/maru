@@ -59,7 +59,8 @@ extension AppModel {
 
     /// The newest taken dose of an active item (D108). It records nothing.
     func siriLastDose(of itemID: ItemID) async throws(StorageError) -> LastDose? {
-        try await store.lastDose(of: itemID)
+        analytics.markUsed(.siri)
+        return try await store.lastDose(of: itemID)
     }
 
     /// The next open doses of today (D108). It records nothing.
@@ -68,6 +69,7 @@ extension AppModel {
     /// open dose, else the first earlier part with an open dose (D048). A dose with an event that the store did not
     /// confirm is open (D014).
     func siriNext() async throws(StorageError) -> SiriNext {
+        analytics.markUsed(.siri)
         let (day, timeZone, _) = try await freshToday()
         let open = day.groups.compactMap { group -> TodaySnapshot.Group? in
             let entries = group.entries.filter { !isDone($0) }
@@ -91,6 +93,7 @@ extension AppModel {
     /// With two or more active members it throws `SiriDueDosesError.severalMembers`: one confirmation must not record a dose for
     /// another member (D123). The Siri member parameter is a later step.
     func siriDueDoses() async throws -> SiriDueDoses {
+        analytics.markUsed(.siri)
         let generation = dataGeneration
         // Before the read, so an owner change during the read refuses the record (D123).
         let readAt = Date()
