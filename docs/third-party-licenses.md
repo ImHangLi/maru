@@ -50,8 +50,11 @@ SOFTWARE.
 
 ## App icons (not third-party)
 
-- Use: the alternate app icons and their previews in `App/AppIcons.xcassets` (D112).
-- Source: Maru made them. `docs/brand/make_icons.py` draws the icons from vector geometry. They use no third-party image, sample, or font.
+- Use: the alternate app icons and their previews in `App/AppIcons.xcassets` (D112, D132).
+- Source: `docs/brand/make_icons.py` draws the original color icons from vector geometry.
+- D132 adds generated ceramic artwork owned by the project: Rose Ceramic, Blue Lotus, and Rose and Sage.
+- The chosen round 2 concepts supply the light artwork. Image generation edits supply the dark artwork. Grayscale conversions supply the tinted artwork.
+- The source prompts and generation records stay in the research folder. These icons use no third-party image, sample, or font.
 - License: the same terms as the rest of this repository (`README.md`, "License"). The script uses Pillow on the Mac only. The app does not contain it, so it shows no notice for it.
 
 ## Reminder sounds (CC0)

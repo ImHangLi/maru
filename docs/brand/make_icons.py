@@ -5,7 +5,7 @@
 # ///
 """Draw the alternate app icons of Maru Pro (D112): uv run docs/brand/make_icons.py
 
-The icon is one capsule on a plain background (docs/brand/icon-notes.md). This script is the source of the alternate
+The icon is one capsule on a plain background (docs/brand/icon-notes.md). This script is the source of the vector alternate
 icons. It draws each one from vector geometry with an exact anti-aliased edge, so a second run gives the same files.
 
 It writes App/AppIcons.xcassets:
@@ -114,7 +114,7 @@ TINTED_LOOK = [{"appearance": "luminosity", "value": "tinted"}]
 
 def write_icon(name, spec):
     folder = CATALOG / f"AppIcon-{name}.appiconset"
-    folder.mkdir(parents=True)
+    folder.mkdir(parents=True, exist_ok=True)
     base = f"AppIcon-{name}"
     draw(spec["background"], spec["capsule"]).save(folder / f"{base}.png", optimize=True)
     images = [{"filename": f"{base}.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"}]
@@ -131,7 +131,7 @@ def write_icon(name, spec):
 
 def write_preview(name, spec):
     folder = CATALOG / f"IconPreview-{name}.imageset"
-    folder.mkdir(parents=True)
+    folder.mkdir(parents=True, exist_ok=True)
     base = f"IconPreview-{name}"
     draw(spec["background"], spec["capsule"], PREVIEW).save(folder / f"{base}.png", optimize=True)
     images = [{"filename": f"{base}.png", "idiom": "universal"}]
@@ -142,9 +142,8 @@ def write_preview(name, spec):
 
 
 def main():
-    if CATALOG.exists():
-        shutil.rmtree(CATALOG)
-    CATALOG.mkdir(parents=True)
+    # Preserve the material icon sets of D132. This script owns only VARIANTS.
+    CATALOG.mkdir(parents=True, exist_ok=True)
     # The catalog itself has only "info".
     (CATALOG / "Contents.json").write_text(json.dumps({"info": {"author": "xcode", "version": 1}}, indent=2) + "\n")
     for name, spec in VARIANTS.items():

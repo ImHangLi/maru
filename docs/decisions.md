@@ -2211,7 +2211,7 @@ Not verified: no build of the app on this Mac (CI builds it), and nobody saw the
 5. A refund in the StoreKit transaction manager: the activity ends and the switch goes off.
 6. An activity across midnight ("Open Maru to update.", no name, no button), and an activity after 8 hours with no open of Maru.
 
-## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds (the sounds are replaced by D120)
+## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds (icons extended by D132, sounds replaced by D120)
 
 Maintainer decision on 2026-10-28, with agent detail. It adds two Pro features of D107. It does not change a reminder rule. Only the sound of a request changes.
 
@@ -2750,3 +2750,27 @@ The maintainer decided:
 
 - Maru Pro has two plans: yearly and lifetime. There is no Supporter tier. The product `com.imhangli.maru.pro.supporter` was never in the app and never submitted. It is deleted in App Store Connect.
 - The benefit rows of the paywall use two-tone vector icons in the style of the item form icons (`Icons.xcassets`), in the app color, with no background. The maintainer rejected tinted tiles.
+
+## D132 · 2026-10-29 · Three ceramic icons for Maru Pro (extends D112)
+
+The maintainer chose Rose Ceramic, Qinghua Lotus, and Rose and Sage from the round 2 concepts.
+All three are normal Maru Pro icons under D131. The picker names are "Rose Ceramic", "Blue Lotus", and "Rose and Sage".
+
+- The chosen concepts supply the light artwork without a crop. Image generation edits supply the dark artwork on a dark background.
+- Each icon has an opaque 1024 × 1024 PNG for light, dark, and tinted appearances. The tinted artwork keeps grayscale material detail on black.
+- Each preview has light and dark images. The picker adds the three choices after the five existing Pro icons.
+- Names cover en, zh-Hans, ja, es, de, and ko. The gate stays in `AppModel.chooseAppIcon`. Default stays free.
+- `project.yml` names all eight alternate icons. The vector generator preserves the material assets when it runs again.
+- The artwork belongs to the project. The research folder holds the generation records and the comparison image.
+
+Scope: spec §13.3 and the icon rules of D112. No record, reminder, purchase, or schema rule changes. No new tests (D016).
+
+Checks pass: `xcodegen generate`, `swift build`, the app build, and checks of PNG dimensions, opacity, grayscale, catalog entries, and six locales.
+The compiled iPhone and iPad Info.plist entries include all eight alternate icons.
+
+These assets follow the existing PNG asset catalog path. They do not add Icon Composer layers or prove live Liquid Glass effects.
+The dark edits retain the visible patterns. Fine floral details merge at small sizes, especially in the tinted artwork.
+
+The simulator capture is blocked. Device tools report "No device" for the dedicated simulator, including after a device list refresh.
+The dedicated simulator was deleted. The existing simulator named "iPhone 18 Pro" was not used.
+Home Screen switching, system appearances, the Pro purchase flow, and localized layout still need device checks.
