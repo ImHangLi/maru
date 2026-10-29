@@ -175,28 +175,28 @@ struct PaywallView: View {
 
     // MARK: Benefits
 
-    /// Four rows, each a thin symbol in the tint, a semibold title, and one gray line. Siri shares the row of the Watch, and
+    /// Five rows, each a two-tone icon in the tint, a semibold title, and one gray line. Siri shares the row of the Watch, and
     /// the reports share a row with the insights, so the list stays short (D130).
     private var benefits: some View {
         VStack(alignment: .leading, spacing: 20) {
             BenefitRow(
-                symbol: "lock.fill", title: "Right on your Lock Screen",
+                icon: "benefit-lock-screen", title: "Right on your Lock Screen",
                 detail: "See dose and time without opening Maru."
             )
             BenefitRow(
-                symbol: "person.2.fill", title: "Your whole family",
+                icon: "benefit-family", title: "Your whole family",
                 detail: "People and pets, each with their own reminders."
             )
             BenefitRow(
-                symbol: "applewatch", title: "Record by wrist or voice",
+                icon: "benefit-watch", title: "Record by wrist or voice",
                 detail: "Apple Watch, Siri, and Shortcuts."
             )
             BenefitRow(
-                symbol: "doc.text.fill", title: "Reports for your doctor",
+                icon: "benefit-report", title: "Reports for your doctor",
                 detail: "PDF summaries and 30-day counts."
             )
             BenefitRow(
-                symbol: "paintpalette.fill", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."
+                icon: "benefit-palette", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."
             )
         }
     }
@@ -420,25 +420,22 @@ private struct HeroArt: View {
     }
 }
 
-/// One paid feature: a thin symbol in the tint, a semibold title, and one line in gray. The symbols share one column.
+/// One paid feature: a two-tone icon in the tint, a semibold title, and one line in gray. The icons share one column.
 private struct BenefitRow: View {
-    let symbol: String
+    /// An image of Icons.xcassets.
+    let icon: String
     let title: LocalizedStringKey
     let detail: LocalizedStringKey
-    @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
-    @ScaledMetric(relativeTo: .title3) private var tileSide = 32
+    @ScaledMetric(relativeTo: .title3) private var iconSide = 32
 
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
-            // Each symbol sits on a tile of one size, as in iOS Settings, so the rows look the same.
-            RoundedRectangle(cornerRadius: tileSide * 0.24, style: .continuous)
-                .fill(.tint)
-                .frame(width: tileSide, height: tileSide)
-                .overlay {
-                    Image(systemName: symbol)
-                        .font(.system(size: tileSide * 0.5, weight: .semibold))
-                        .foregroundStyle(appColor.labelOnTint)
-                }
+            // Two-tone icons in the style of the item forms (Icons.xcassets), in the app color.
+            Image(icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: iconSide, height: iconSide)
+                .foregroundStyle(.tint)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.headline)

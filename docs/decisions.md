@@ -2743,3 +2743,10 @@ Tests (D016): none. The gate is in the app target, and the project has no app te
 Review: one Codex review (gpt-6.1-sol, high) found the two defects above, the item query and the grace period. A re-check of both found them fixed.
 
 Not checked: no simulator captures. The device tools of this session did not list a dedicated simulator, and the rules do not allow `simctl` captures. Nobody used Siri, saw the paywall rows, or saw the new rows on a display. The new strings are drafts in five languages (`docs/localization-review.md`).
+
+## D131 · 2026-10-29 · No Supporter tier. The paywall icons follow the item forms
+
+The maintainer decided:
+
+- Maru Pro has two plans: yearly and lifetime. There is no Supporter tier. The product `com.imhangli.maru.pro.supporter` was never in the app and never submitted. It is deleted in App Store Connect.
+- The benefit rows of the paywall use two-tone vector icons in the style of the item form icons (`Icons.xcassets`), in the app color, with no background. The maintainer rejected tinted tiles.
