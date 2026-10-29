@@ -2774,3 +2774,23 @@ The dark edits retain the visible patterns. Fine floral details merge at small s
 The simulator capture is blocked. Device tools report "No device" for the dedicated simulator, including after a device list refresh.
 The dedicated simulator was deleted. The existing simulator named "iPhone 18 Pro" was not used.
 Home Screen switching, system appearances, the Pro purchase flow, and localized layout still need device checks.
+
+## D133 · 2026-10-29 · A quiet "PRO" badge marks each Maru Pro entry for a free user (extends D107)
+
+The maintainer decided:
+
+- Each Maru Pro feature stays in its place. There is no separate Pro section.
+- For a free user, a small "PRO" badge shows at the trailing edge of the entry, before a value, a switch, or a chevron. A Pro user sees no badge. The debug override `-MaruDebugPro` and Family Sharing count as Pro.
+- A tap keeps its action. It opens the paywall with the source of the entry.
+
+The badged entries:
+
+- Settings: "App Color", "App Icon", "Reminder Sound", "Next Dose on Lock Screen", "Share Medication List", and "Share Summary…".
+- The Family page: "Add Person or Pet". The Family row of Settings has no badge, because the page is free to open (D122).
+- Item detail: "30-Day Counts". The badge replaces the text "Maru Pro" (D130).
+
+Settings has no entry for Apple Watch or for Siri and Shortcuts, so they have no badge. The Lock Screen, the widgets, the Watch, the notifications, and the Live Activity show no badge (D107).
+
+The design: one view `ProBadge` in `App/Pro/ProBadge.swift`. It shows "PRO" in `caption2` semibold, in the secondary color, on a `quaternary` capsule. It uses the system font (D012) and Dynamic Type. "PRO" is a brand mark and stays in English. VoiceOver reads "Maru Pro" as a part of the row, from the existing String Catalog entry. Each item of a menu or a picker stays as before.
+
+Scope: the UI of D107, D110, D112, D114, D122, and D130. No record, reminder, purchase, or analytics rule changes. No new tests (D016).

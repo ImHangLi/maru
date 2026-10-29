@@ -36,13 +36,14 @@ struct DataSection: View {
                         }
                     }
                 } label: {
-                    Text("Share Medication List…").rowText()
+                    ProRowTitle("Share Medication List…").rowText()
                 }
             } else {
-                Button("Share Medication List") { model.shareMedicationList(for: nil) }
+                Button { model.shareMedicationList(for: nil) } label: { ProRowTitle("Share Medication List") }
                     .rowText()
             }
-            Button("Share Summary…") { showsSummary = true }
+            // The sheet is free to open. Only the share of the PDF needs Maru Pro (D130).
+            Button { showsSummary = true } label: { ProRowTitle("Share Summary…") }
                 .rowText()
                 .sheet(isPresented: $showsSummary, onDismiss: {
                     guard let request = summaryRequest else { return }

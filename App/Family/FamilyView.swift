@@ -56,7 +56,12 @@ struct FamilyPage: View {
                 Button {
                     Task { if await model.mayAddMember() { addsMember = true } }
                 } label: {
-                    Label("Add Person or Pet", systemImage: "person.badge.plus")
+                    HStack {
+                        Label("Add Person or Pet", systemImage: "person.badge.plus")
+                        Spacer(minLength: 8)
+                        // The page is free to open. A new member needs Maru Pro (D122).
+                        ProBadge()
+                    }
                 }
                 .labelStyle(RowLabelStyle())
             } footer: {

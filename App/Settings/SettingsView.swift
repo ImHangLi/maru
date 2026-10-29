@@ -35,7 +35,7 @@ struct SettingsView: View {
                 AllItemsSection()
                 Section {
                     // A system menu of the eight colors (D025, D026). Only pink is free (D114).
-                    Picker("App Color", selection: Binding(
+                    Picker(selection: Binding(
                         get: { previewColor ?? appColor },
                         set: { chooseAppColor($0) }
                     )) {
@@ -43,6 +43,8 @@ struct SettingsView: View {
                             Label { Text(color.title) } icon: { color.tint.circleImage }
                                 .tag(color)
                         }
+                    } label: {
+                        ProRowTitle("App Color")
                     }
                     .pickerStyle(.menu)
                     .tint(Color.primary)
@@ -52,8 +54,11 @@ struct SettingsView: View {
                             AppIconView()
                         } label: {
                             LabeledContent("App Icon") {
-                                AppIconPreview(icon: model.settings.appIcon, size: 29)
-                                    .accessibilityLabel(Text(model.settings.appIcon.title))
+                                HStack(spacing: 8) {
+                                    ProBadge()
+                                    AppIconPreview(icon: model.settings.appIcon, size: 29)
+                                        .accessibilityLabel(Text(model.settings.appIcon.title))
+                                }
                             }
                         }
                     }
@@ -190,7 +195,10 @@ private struct ReminderSection: View {
                 ReminderSoundView()
             } label: {
                 LabeledContent("Reminder Sound") {
-                    if let sound = model.reminderSound { Text(sound.title) } else { Text("Default") }
+                    HStack(spacing: 8) {
+                        ProBadge()
+                        if let sound = model.reminderSound { Text(sound.title) } else { Text("Default") }
+                    }
                 }
             }
         } header: {
@@ -234,10 +242,12 @@ private struct NextDoseSection: View {
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .phone {
             Section {
-                Toggle("Next Dose on Lock Screen", isOn: Binding(
+                Toggle(isOn: Binding(
                     get: { model.liveActivity.isOn },
                     set: { model.setNextDoseOnLockScreen($0) }
-                ))
+                )) {
+                    ProRowTitle("Next Dose on Lock Screen")
+                }
             } footer: {
                 if model.liveActivity.systemAllows {
                     Text("Shows your next dose, its time, and a button to record it.")

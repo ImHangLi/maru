@@ -405,7 +405,7 @@ private struct MonthSection: View {
                     .numberMotion(value: counts)
             } else {
                 Button { model.presentPaywall(reason: .insights) } label: {
-                    LabeledContent("30-Day Counts", value: "Maru Pro")
+                    LabeledContent("30-Day Counts") { ProBadge() }
                 }
                 .tint(.primary)
             }
