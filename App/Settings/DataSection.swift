@@ -2,9 +2,20 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
-/// "Your Data": the record export, the backup, and the restore (D040).
+/// The page "Your Data" (D135).
+struct DataPage: View {
+    var body: some View {
+        Form {
+            DataSection()
+        }
+        .navigationTitle("Your Data")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// The record export, the reports, the backup, and the restore (D040).
 /// Maru sends nothing by itself. The user gives each file to an app in the share sheet.
-struct DataSection: View {
+private struct DataSection: View {
     @Environment(AppModel.self) private var model
     @State private var picksBackup = false
     /// The failure on the display. It is a copy, so the alert keeps its text while it closes.
@@ -87,8 +98,6 @@ struct DataSection: View {
                 } message: {
                     Text("This replaces everything in Maru with the backup. You can’t undo it.")
                 }
-        } header: {
-            Text("Your Data")
         } footer: {
             Text("A backup has your items and records, but not photos. The file isn’t encrypted, so keep it private.")
         }
