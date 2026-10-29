@@ -388,16 +388,27 @@ private struct WeekSection: View {
 
 /// The counts of the last 30 days, and the way to the full log (D091). Plain numbers: no percent, no streak, no score.
 /// The full log lists every day of the item, also an archived item and a day older than the graph.
+///
+/// The counts are part of Maru Pro (D130). A free user sees one quiet row that opens the paywall. "All Records" stays free,
+/// so no record is hidden.
 private struct MonthSection: View {
+    @Environment(AppModel.self) private var model
     let month: ItemSummary?
     let item: Item
 
     var body: some View {
         Section("Last 30 Days") {
-            ForEach(counts, id: \.self) { Text(verbatim: $0) }
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .numberMotion(value: counts)
+            if model.pro.isPro {
+                ForEach(counts, id: \.self) { Text(verbatim: $0) }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .numberMotion(value: counts)
+            } else {
+                Button { model.presentPaywall(reason: .insights) } label: {
+                    LabeledContent("30-Day Counts", value: "Maru Pro")
+                }
+                .tint(.primary)
+            }
             NavigationLink {
                 ItemLogView(itemID: item.id)
             } label: {

@@ -2291,41 +2291,6 @@
         }
       }
     },
-    "Record from your wrist" : {
-      "comment" : "Paywall of Maru Pro: the title of the benefit row with the symbol of an Apple Watch. Keep it to one short line.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Am Handgelenk erfassen"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Registra desde la muñeca"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手首から服用を記録"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "손목에서 바로 기록"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在手腕上记录服药"
-          }
-        }
-      }
-    },
     "Archive" : {
       "comment" : "The destructive button of the archive confirmation.",
       "localizations" : {
@@ -7954,41 +7919,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "合成铃声"
-          }
-        }
-      }
-    },
-    "Tap Taken on Apple Watch. Needs iPhone." : {
-      "comment" : "Paywall of Maru Pro: one line under the benefit 'Record from your wrist'. 'Taken' is the name of the button on the Watch, so use the translation of the string 'Taken'. The Watch app asks the iPhone to write the record, so it needs the iPhone.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tippe auf Eingenommen. iPhone nötig."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Toca Tomado en el reloj. Necesita iPhone."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「服用済み」をタップ。iPhoneが必要です。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apple Watch에서 ‘복용함’ 탭. iPhone 필요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "手表上点“已服用”，需连接 iPhone。"
           }
         }
       }
@@ -17808,6 +17738,391 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Für %1$@ als eingenommen erfasst: %2$@."
+          }
+        }
+      }
+    },
+    "Siri and Shortcuts are part of Maru Pro. Open Maru to take a look?" : {
+      "comment" : "Siri and Shortcuts, for a free user: the one line before Maru opens with the Maru Pro screen. Warm, short, no pressure (D130).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri 和快捷指令属于 Maru Pro。要打开 Maru 看看吗？"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri とショートカットは Maru Pro の機能です。Maru を開いて見てみますか？"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri y Atajos forman parte de Maru Pro. ¿Abrir Maru para verlo?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri und Kurzbefehle gehören zu Maru Pro. Maru öffnen und ansehen?"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri와 단축어는 Maru Pro 기능이에요. Maru를 열어 볼까요?"
+          }
+        }
+      }
+    },
+    "Here’s Maru Pro." : {
+      "comment" : "Siri and Shortcuts, for a free user: the answer after Maru opened with the Maru Pro screen (D130).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这是 Maru Pro。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro はこちらです。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aquí tienes Maru Pro."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hier ist Maru Pro."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru Pro를 소개할게요."
+          }
+        }
+      }
+    },
+    "Sharing a PDF summary is part of Maru Pro." : {
+      "comment" : "Summary sheet footer for a free user. The PDF summary is a Maru Pro feature (D130).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以 PDF 分享汇总属于 Maru Pro。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サマリーを PDF で共有するには Maru Pro が必要です。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir un resumen en PDF forma parte de Maru Pro."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine Zusammenfassung als PDF teilen gehört zu Maru Pro."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요약을 PDF로 공유하는 기능은 Maru Pro에 포함돼요."
+          }
+        }
+      }
+    },
+    "30-Day Counts" : {
+      "comment" : "Item detail, section \"Last 30 Days\", for a free user: the row that opens the Maru Pro screen. The value beside it is \"Maru Pro\" (D130).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 天统计"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30日間の集計"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recuento de 30 días"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30-Tage-Übersicht"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30일 집계"
+          }
+        }
+      }
+    },
+    "Just ask Siri." : {
+      "comment" : "Paywall headline when a free user used Siri or Shortcuts (source siri, D130). Short.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "问问 Siri 就好。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri に頼むだけ。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo pídeselo a Siri."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Frag einfach Siri."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Siri에게 물어보세요."
+          }
+        }
+      }
+    },
+    "A clear summary for your doctor." : {
+      "comment" : "Paywall headline when a free user tried to share a PDF report (source report, D130).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给医生的一份清晰汇总。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "医師に見せやすいサマリーを。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un resumen claro para tu médico."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eine klare Übersicht für die Arztpraxis."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "의사에게 보여줄 깔끔한 요약."
+          }
+        }
+      }
+    },
+    "Your last 30 days, at a glance." : {
+      "comment" : "Paywall headline when a free user tapped the 30-day counts (source insights, D130). Same form as \"Your next dose, at a glance.\".",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最近 30 天，一目了然。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "この30日間が、ひと目で。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tus últimos 30 días, de un vistazo."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine letzten 30 Tage auf einen Blick."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "지난 30일을 한눈에."
+          }
+        }
+      }
+    },
+    "Record by wrist or voice" : {
+      "comment" : "Paywall of Maru Pro: the title of the benefit row for the Apple Watch app and Siri (D130). Keep it to one short line.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用手腕或语音记录"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手首や声で記録"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra con la muñeca o la voz"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Per Uhr oder Stimme erfassen"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "손목이나 음성으로 기록"
+          }
+        }
+      }
+    },
+    "Apple Watch, Siri, and Shortcuts." : {
+      "comment" : "Paywall of Maru Pro: the gray line under \"Record by wrist or voice\" (D130). Keep it to one short line.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch、Siri 和快捷指令。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch、Siri、ショートカット。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch, Siri y Atajos."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch, Siri und Kurzbefehle."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Watch, Siri, 단축어."
+          }
+        }
+      }
+    },
+    "Reports for your doctor" : {
+      "comment" : "Paywall of Maru Pro: the title of the benefit row for the PDF reports and the 30-day counts (D130). Keep it to one short line.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "给医生的报告"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "医師に見せるレポート"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Informes para tu médico"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Berichte für die Arztpraxis"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "의사에게 보여줄 리포트"
+          }
+        }
+      }
+    },
+    "PDF summaries and 30-day counts." : {
+      "comment" : "Paywall of Maru Pro: the gray line under \"Reports for your doctor\" (D130). Keep it to one short line.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF 汇总和 30 天统计。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF サマリーと30日間の集計。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resúmenes en PDF y recuentos de 30 días."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF-Zusammenfassungen und 30-Tage-Übersicht."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PDF 요약과 30일 집계."
           }
         }
       }

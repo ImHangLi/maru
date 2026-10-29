@@ -7,6 +7,10 @@ import SwiftUI
 // model (spec 6). The two questions only read. "Record my doses" records with the record transaction after a confirmation,
 // and it says "recorded" only after the commit (spec 7.2). Analytics gets only the `used_siri` flag of the day (D127). With "Show Names in Reminders" off,
 // Siri says the number of doses in place of the names (D029, D108).
+//
+// The three intents are part of Maru Pro (D130). Each one checks Pro first, before it reads or records, and a free user gets
+// one line and "Open Maru". The widget and Live Activity buttons use their own intents (`TakeDoseIntent`, `TakeNextDoseIntent`),
+// so they stay free and have no gate here.
 
 /// The phrases of the three App Shortcuts. `App/AppShortcuts.xcstrings` has them in the other languages.
 struct MaruShortcuts: AppShortcutsProvider {
@@ -57,7 +61,8 @@ struct ItemEntity: AppEntity {
     }
 }
 
-/// The active items of the store. An archived item is not offered.
+/// The active items of the store. An archived item is not offered. A free user gets no item, so Siri and Shortcuts read
+/// no name before the Pro check of the intent (D130).
 struct ItemEntityQuery: EntityStringQuery {
     func entities(for identifiers: [UUID]) async throws -> [ItemEntity] {
         try await Self.items().filter { identifiers.contains($0.id) }
@@ -73,6 +78,7 @@ struct ItemEntityQuery: EntityStringQuery {
 
     @MainActor
     private static func items() async throws -> [ItemEntity] {
+        guard await AppModel.shared.confirmedPro() else { return [] }
         do {
             return try await AppModel.shared.siriItems().map {
                 ItemEntity(id: $0.id.rawValue, name: $0.owner?.label($0.name) ?? $0.name)
@@ -96,7 +102,7 @@ struct MemberEntity: AppEntity {
     }
 }
 
-/// The active members of the store. An archived member is not offered.
+/// The active members of the store. An archived member is not offered. A free user gets no member (D130).
 struct MemberEntityQuery: EntityQuery {
     func entities(for identifiers: [UUID]) async throws -> [MemberEntity] {
         try await Self.members().filter { identifiers.contains($0.id) }
@@ -108,6 +114,7 @@ struct MemberEntityQuery: EntityQuery {
 
     @MainActor
     private static func members() async throws -> [MemberEntity] {
+        guard await AppModel.shared.confirmedPro() else { return [] }
         do {
             return try await AppModel.shared.store.people().filter { !$0.isArchived }.map {
                 MemberEntity(id: $0.id.rawValue, name: $0.displayName)
@@ -120,12 +127,18 @@ struct MemberEntityQuery: EntityQuery {
 
 /// "What do I take next": the next open doses of today, spoken and in a snippet. It records nothing.
 /// A locked iPhone asks for an unlock first, so a person who holds it can not hear the names.
-struct NextDoseIntent: AppIntent {
+struct NextDoseIntent: ProIntent {
     static let title: LocalizedStringResource = "Next Dose"
     static let authenticationPolicy = IntentAuthenticationPolicy.requiresAuthentication
+    @available(iOS 26, *)
+    static var supportedModes: IntentModes { [.background, .foreground(.dynamic)] }
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & ShowsSnippetView {
+        guard await AppModel.shared.confirmedPro() else {
+            try await offerPro()
+            return .result(dialog: IntentDialog(ProIntentText.opened), view: NextDoseSnippet(next: nil, showsNames: false, message: ProIntentText.opened))
+        }
         let next: SiriNext
         do {
             next = try await AppModel.shared.siriNext()
@@ -153,12 +166,15 @@ struct NextDoseIntent: AppIntent {
 
 /// "Did I take my …": the newest taken record of one item, with its time. It records nothing.
 /// A locked iPhone asks for an unlock first, as for "Next Dose".
-struct LastDoseIntent: AppIntent {
+struct LastDoseIntent: ProIntent {
     static let title: LocalizedStringResource = "Last Dose of an Item"
     static let authenticationPolicy = IntentAuthenticationPolicy.requiresAuthentication
+    @available(iOS 26, *)
+    static var supportedModes: IntentModes { [.background, .foreground(.dynamic)] }
 
+    /// Optional, so a free user hears about Maru Pro before Siri asks for an item.
     @Parameter(title: "Item", requestValueDialog: "Which item?")
-    var item: ItemEntity
+    var item: ItemEntity?
 
     static var parameterSummary: some ParameterSummary {
         Summary("Last dose of \(\.$item)")
@@ -166,6 +182,11 @@ struct LastDoseIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
+        guard await AppModel.shared.confirmedPro() else {
+            try await offerPro()
+            return .result(dialog: IntentDialog(ProIntentText.opened))
+        }
+        guard let item else { throw $item.needsValueError("Which item?") }
         let last: LastDose?
         do {
             last = try await AppModel.shared.siriLastDose(of: ItemID(item.id))
@@ -200,9 +221,13 @@ struct LastDoseIntent: AppIntent {
 ///
 /// With two or more active members, Siri asks "For whom?" and records only the doses of that member, so one confirmation never
 /// records for another member (D123, D129). With names off, Siri speaks no member name and no item name (T62).
-struct RecordDueDosesIntent: AppIntent {
+///
+/// A free user records nothing: the Pro check comes before the read of the doses (D130).
+struct RecordDueDosesIntent: ProIntent {
     static let title: LocalizedStringResource = "Record Due Doses"
     static let authenticationPolicy = IntentAuthenticationPolicy.requiresAuthentication
+    @available(iOS 26, *)
+    static var supportedModes: IntentModes { [.background, .foreground(.dynamic)] }
 
     @Parameter(title: "For", requestValueDialog: "For whom?")
     var member: MemberEntity?
@@ -210,6 +235,10 @@ struct RecordDueDosesIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let model = AppModel.shared
+        guard await model.confirmedPro() else {
+            try await offerPro()
+            return .result(dialog: IntentDialog(ProIntentText.opened))
+        }
         let due: SiriDueDoses
         do {
             due = try await model.siriDueDoses(for: member.map { PersonID($0.id) })
@@ -240,6 +269,31 @@ struct RecordDueDosesIntent: AppIntent {
         guard await model.recordFromSiri(due) else { throw SiriProblem.notConfirmed }
         return .result(dialog: "Recorded as taken: \(names).")
     }
+}
+
+/// An intent of Siri and Shortcuts that is part of Maru Pro (D130). A free user hears one line and can open Maru, where the
+/// paywall shows with the source `siri`. A "Cancel" throws and opens nothing.
+///
+/// `confirmedPro()` reads StoreKit again before a free answer counts, as for the Watch (D111). A failed read gives the offer
+/// and records nothing, and the next request reads again, so a paying user is never locked out for good.
+protocol ProIntent: ForegroundContinuableIntent {}
+
+extension ProIntent {
+    @MainActor
+    func offerPro() async throws {
+        let dialog = IntentDialog(ProIntentText.offer)
+        if #available(iOS 26, *) {
+            try await continueInForeground(dialog, alwaysConfirm: true)
+            AppModel.shared.askedForPro(from: .siri)
+        } else {
+            try await requestToContinueInForeground(dialog) { @MainActor @Sendable in AppModel.shared.askedForPro(from: .siri) }
+        }
+    }
+}
+
+private enum ProIntentText {
+    static let offer: LocalizedStringResource = "Siri and Shortcuts are part of Maru Pro. Open Maru to take a look?"
+    static let opened: LocalizedStringResource = "Here’s Maru Pro."
 }
 
 /// The words that Siri says in place of the names when "Show Names in Reminders" is off (D029, D108).

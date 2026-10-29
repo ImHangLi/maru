@@ -55,7 +55,13 @@ struct SummarySheet: View {
                     .pickerStyle(.menu)
                     .tint(Color.primary)
                 } footer: {
-                    Text("A summary has the number of doses that you took, skipped, and did not record. It stays on this iPhone until you share it.")
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("A summary has the number of doses that you took, skipped, and did not record. It stays on this iPhone until you share it.")
+                        // The sheet stays open to every user, so a free user can see what a summary holds (D130).
+                        if !model.pro.isPro {
+                            Text("Sharing a PDF summary is part of Maru Pro.")
+                        }
+                    }
                 }
                 if case let .loaded(snapshot) = model.content,
                    case let entries = (snapshot.list + snapshot.archived).filter({ member == nil || $0.personID == member }),

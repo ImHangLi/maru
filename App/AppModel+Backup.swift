@@ -47,7 +47,10 @@ extension AppModel {
 
     /// "Share Medication List": a PDF with the name, form, amount, times, and note of each item (D091). `member` makes the list
     /// of one member, and its title names the member (D129).
+    ///
+    /// The PDF reports are part of Maru Pro (D130). A free user gets the paywall. "Export Records" and the backup stay free.
     func shareMedicationList(for member: Person?) {
+        guard pro.isPro else { return presentPaywall(reason: .report) }
         let owner = member.map { (id: $0.id, name: $0.displayName) }
         share(nil) { store, now in
             let rows = try await store.medicationListData(owner: owner?.id)
@@ -58,7 +61,10 @@ extension AppModel {
 
     /// "Share Summary": a PDF with the counts of each chosen item over the last `days` days (D091). `member` counts only the items
     /// of one member, and the title names the member (T65, D129).
+    ///
+    /// Part of Maru Pro (D130). A free user gets the paywall after the sheet closes.
     func shareSummary(days: Int, excluding: Set<ItemID>, member: PersonID?) {
+        guard pro.isPro else { return presentPaywall(reason: .report) }
         // The chosen member reads from the store, not from the page, so a read that runs can not turn it into everyone.
         share(nil) { store, now in
             var owner: (id: PersonID, name: String)?

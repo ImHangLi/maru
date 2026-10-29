@@ -29,7 +29,8 @@ enum DebugLaunch {
     }
 
     /// `-MaruDebugPro YES`: act as if Maru Pro is active, with no purchase. For the check of the Watch app in a
-    /// simulator (D111). Without it, the purchase of the StoreKit configuration decides.
+    /// simulator (D111), and of Siri, the PDF reports, and the 30-day counts (D130). Without it, the purchase of the
+    /// StoreKit configuration decides.
     static var forcesPro: Bool {
         UserDefaults.standard.bool(forKey: "MaruDebugPro")
     }

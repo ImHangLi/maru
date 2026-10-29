@@ -1735,7 +1735,7 @@ Not verified: the app target. No build on this Mac (CI builds it): `AppModel+Rem
 
 Device check, with the live log of `docs/process.md`: (1) two items at one time, names on: the reminder has "Take All", "Skip All", and "Remind in 10 min". (2) "Take All" on the lock screen after an unlock: both doses are recorded, and the notification goes. (3) Names off: only "Remind in 10 min" shows for the group. (4) "Skip" on one item. (5) "Remind in 10 min" with "Remind Again" on: one banner after ten minutes, and no follow-up before it. (6) "Remind in 10 min", then record the dose in the app: no banner. (7) Update an iPhone that has version 1.1 reminders: the pending requests get the new buttons after the first run.
 
-## D091 · 2026-10-16 · Phase 2 of the reminder plan: the tracker
+## D091 · 2026-10-16 · Phase 2 of the reminder plan: the tracker (the PDF reports and the 30-day counts are Pro: D130)
 
 Maintainer decision (approved with the plan of 2026-10-16: "focus on what users meet, keep it simple, do not chase rare races"). D090 is reserved for the parallel notification pull request. Migration `v7`. It changes spec 3 P05 and 7.1 by amendment, and `docs/design.md` (Today, History, item detail, archived list, Settings, widgets).
 
@@ -2081,7 +2081,7 @@ Risks:
 
 Not verified: no build of the app on this Mac, and nobody bought a plan. CI builds the app. The checks with the StoreKit configuration are in `docs/status.md`. App Store Connect has no product yet. `docs/release-plan.md` has the maintainer's steps.
 
-## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts ("Record my doses" with several members: D123)
+## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts ("Record my doses" with several members: D123, Siri is Pro: D130)
 
 Maintainer decision on 2026-10-28, with agent detail. Both features are free. They are not part of Pro (D107). It follows spec 6, 7.2, 9, and 10, and it adds to D048 and D091.
 
@@ -2702,3 +2702,44 @@ Tests (D016): one store test checks that the history, the graph counts, the firs
 
 Checks: the upgrade from `v7` to `v9` is covered by package tests, so no device-style upgrade check ran. `FamilyTests.version7BackfillsMeWithoutChangingRecords` migrates a `v7` database with records to the current schema. `UpgradeTests` opens the shipped fixtures of 1.0 (`v5`) and 1.1 (`v6`) and runs the whole reminder queue through `v9`.
 
+
+## D130 · 2026-10-29 · Siri and Shortcuts, the PDF reports, and the 30-day counts are Maru Pro features (changes D108 and D091)
+
+Maintainer decision of 2026-10-29. Three free features of D091 and D108 move into Maru Pro. The safety features stay free: reminders, alarms, follow-ups, records, undo, skip, the widgets, the CSV export, the backup, and the restore.
+
+Siri and Shortcuts (changes D108):
+
+- The three App Shortcuts are Pro: "Next Dose", "Last Dose of an Item", and "Record Due Doses". Each intent checks Pro first, before it reads or records anything.
+- The check is `confirmedPro()` of the Watch (D111): the cached plan, and for a free answer one more read of StoreKit. A failed read gives the free answer and records nothing. The next request reads again, so a paying user is not locked out for good.
+- A free user hears one line: "Siri and Shortcuts are part of Maru Pro. Open Maru to take a look?". "Open" brings Maru to the front, and the paywall shows with the source `siri` after the onboarding, the edit screen, and the alerts, as the request of the Watch does. "Cancel" opens nothing. iOS 26 and later use `continueInForeground`. iOS 17 to 25 use `ForegroundContinuableIntent`.
+- The item of "Last Dose" is now an optional parameter, so a free user hears the line before Siri asks "Which item?".
+- The item and member queries of Siri and Shortcuts give nothing to a free user, so no name is read before the Pro check. A change of Pro makes the system read them again.
+- A failed read of the subscription status keeps the end of access of the last good read. Before, it removed a billing grace period, and the new gates then locked a paying user out until a good read.
+- The widget buttons (`TakeDoseIntent`) and the Live Activity button (`TakeNextDoseIntent`) are separate intents, so no intent serves both a widget and Siri. The widget buttons stay free. `TakeDoseIntent` is no longer offered in Shortcuts, because only the widget runs it. The alarm intents were not offered before.
+- The Watch request and the Siri request share one stored key, `pro.askedSource`, in place of `pro.watchAsked`. The rule that shows the stored offer compared a `Bool` with `nil`, so it never showed the offer of the Watch. It now reads the flag of the first-value offer.
+
+PDF reports (changes D091):
+
+- "Share Medication List" and "Share Summary…" stay in Settings for every user. For a free user, "Share Medication List" opens the paywall with the source `report`. The summary sheet opens, says "Sharing a PDF summary is part of Maru Pro.", and "Share" closes it and opens the paywall.
+- "Export Records", "Back Up", and "Restore from Backup…" stay free.
+
+Insights (changes D091):
+
+- The item detail keeps "Last 7 Days" free, and History keeps its graph, "Last 7 Days", and every log free. The graph shows each day of the records, and it is the way to the log of a day, so it stays free.
+- In "Last 30 Days" of the item detail, a free user sees one row "30-Day Counts" with "Maru Pro", which opens the paywall with the source `insights`. "All Records" stays in the section for every user. No record is hidden.
+
+Paywall:
+
+- Four benefits, in this order: "Right on your Lock Screen", "Record by wrist or voice" ("Apple Watch, Siri, and Shortcuts."), "Reports for your doctor" ("PDF summaries and 30-day counts."), and "Make Maru yours". Siri shares the row of the Watch, so the list has one new row.
+- New headlines: `siri` "Just ask Siri.", `report` "A clear summary for your doctor.", and `insights` "Your last 30 days, at a glance.". The insights headline has the form of the default one and uses its narrow measure.
+- No paywall after a record and none at app open. A Siri request shows it only after the user chooses "Open".
+
+Analytics: `paywall_shown` has three new sources, `siri`, `report`, and `insights` (spec 11.5, `PRIVACY.md`). No other field. A free Siri request does not set `used_siri`, because no Siri operation runs.
+
+`-MaruDebugPro YES` covers the new gates, because each gate reads `ProStore.isPro`.
+
+Tests (D016): none. The gate is in the app target, and the project has no app test target. The rule that a free Siri request records nothing is in the order of `perform()`: the Pro check returns before the read of the doses.
+
+Review: one Codex review (gpt-6.1-sol, high) found the two defects above, the item query and the grace period. A re-check of both found them fixed.
+
+Not checked: no simulator captures. The device tools of this session did not list a dedicated simulator, and the rules do not allow `simctl` captures. Nobody used Siri, saw the paywall rows, or saw the new rows on a display. The new strings are drafts in five languages (`docs/localization-review.md`).

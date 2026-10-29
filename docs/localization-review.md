@@ -572,3 +572,21 @@ Drafts by the team. A native speaker must check them. `%1$@` is the member and `
 | For whom? | 为谁记录？ | 誰の分を記録しますか？ | ¿Para quién? | Für wen? | 누구의 복용을 기록할까요? |
 | Record as taken now for %@: %@? | 现在将%1$@的%2$@记录为已服用？ | %1$@の%2$@を今の時刻で服用済みとして記録しますか？ | ¿Registrar ahora como tomado para %1$@: %2$@? | Jetzt für %1$@ als eingenommen erfassen: %2$@? | %1$@의 %2$@을(를) 지금 복용함으로 기록할까요? |
 | Recorded as taken for %@: %@. | 已将%1$@的%2$@记录为已服用。 | %1$@の%2$@を服用済みとして記録しました。 | Registrado como tomado para %1$@: %2$@. | Für %1$@ als eingenommen erfasst: %2$@. | %1$@의 %2$@을(를) 복용함으로 기록했어요. |
+
+## Siri, reports, and insights in Maru Pro (D130)
+
+Drafts by the team. A native speaker must check them.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Siri and Shortcuts are part of Maru Pro. Open Maru to take a look? | Siri 和快捷指令属于 Maru Pro。要打开 Maru 看看吗？ | Siri とショートカットは Maru Pro の機能です。Maru を開いて見てみますか？ | Siri y Atajos forman parte de Maru Pro. ¿Abrir Maru para verlo? | Siri und Kurzbefehle gehören zu Maru Pro. Maru öffnen und ansehen? | Siri와 단축어는 Maru Pro 기능이에요. Maru를 열어 볼까요? |
+| Here’s Maru Pro. | 这是 Maru Pro。 | Maru Pro はこちらです。 | Aquí tienes Maru Pro. | Hier ist Maru Pro. | Maru Pro를 소개할게요. |
+| Sharing a PDF summary is part of Maru Pro. | 以 PDF 分享汇总属于 Maru Pro。 | サマリーを PDF で共有するには Maru Pro が必要です。 | Compartir un resumen en PDF forma parte de Maru Pro. | Eine Zusammenfassung als PDF teilen gehört zu Maru Pro. | 요약을 PDF로 공유하는 기능은 Maru Pro에 포함돼요. |
+| 30-Day Counts | 30 天统计 | 30日間の集計 | Recuento de 30 días | 30-Tage-Übersicht | 30일 집계 |
+| Just ask Siri. | 问问 Siri 就好。 | Siri に頼むだけ。 | Solo pídeselo a Siri. | Frag einfach Siri. | Siri에게 물어보세요. |
+| A clear summary for your doctor. | 给医生的一份清晰汇总。 | 医師に見せやすいサマリーを。 | Un resumen claro para tu médico. | Eine klare Übersicht für die Arztpraxis. | 의사에게 보여줄 깔끔한 요약. |
+| Your last 30 days, at a glance. | 最近 30 天，一目了然。 | この30日間が、ひと目で。 | Tus últimos 30 días, de un vistazo. | Deine letzten 30 Tage auf einen Blick. | 지난 30일을 한눈에. |
+| Record by wrist or voice | 用手腕或语音记录 | 手首や声で記録 | Registra con la muñeca o la voz | Per Uhr oder Stimme erfassen | 손목이나 음성으로 기록 |
+| Apple Watch, Siri, and Shortcuts. | Apple Watch、Siri 和快捷指令。 | Apple Watch、Siri、ショートカット。 | Apple Watch, Siri y Atajos. | Apple Watch, Siri und Kurzbefehle. | Apple Watch, Siri, 단축어. |
+| Reports for your doctor | 给医生的报告 | 医師に見せるレポート | Informes para tu médico | Berichte für die Arztpraxis | 의사에게 보여줄 리포트 |
+| PDF summaries and 30-day counts. | PDF 汇总和 30 天统计。 | PDF サマリーと30日間の集計。 | Resúmenes en PDF y recuentos de 30 días. | PDF-Zusammenfassungen und 30-Tage-Übersicht. | PDF 요약과 30일 집계. |

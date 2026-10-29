@@ -4,7 +4,7 @@ import SwiftUI
 /// The Maru Pro paywall uses `ProStore` for purchases (D107, D119).
 /// This custom view offers yearly and lifetime plans together, which `SubscriptionStoreView` cannot do (D115).
 struct PaywallView: View {
-    /// Why the paywall shows. The headline names the reason for Family (D128).
+    /// Why the paywall shows. The headline names the reason for Family (D128), Siri, the reports, and the insights (D130).
     let source: AnalyticsEvent.PaywallSource
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -99,21 +99,32 @@ struct PaywallView: View {
                 .font(.headline)
                 .opacity(0.85)
             Group {
-                if source == .family {
-                    Text("Everyone you care for, in one place.")
-                } else {
-                    Text("Your next dose, at a glance.")
+                switch source {
+                case .family: Text("Everyone you care for, in one place.")
+                case .siri: Text("Just ask Siri.")
+                case .report: Text("A clear summary for your doctor.")
+                case .insights: Text("Your last 30 days, at a glance.")
+                default: Text("Your next dose, at a glance.")
                 }
             }
                 // At an accessibility text size the picture would fill the whole screen, so the lines are one step smaller.
                 .font(typeSize.isAccessibilitySize ? .title2.bold() : .largeTitle.bold())
                 // A narrow measure breaks the line in two balanced parts: "Your next dose," and "at a glance."
-                // The Family headline is longer, so it takes the whole width.
-                .frame(maxWidth: typeSize.isAccessibilitySize || source == .family ? .infinity : headlineWidth, alignment: .leading)
+                // The other headlines have their own length, so they take the whole width.
+                .frame(maxWidth: typeSize.isAccessibilitySize || !usesNarrowHeadline ? .infinity : headlineWidth, alignment: .leading)
                 .accessibilityAddTraits(.isHeader)
         }
         .foregroundStyle(.white)
         .multilineTextAlignment(.leading)
+    }
+
+    /// The default headline and the insights headline have the same form, "…, at a glance.", so both break in two balanced
+    /// parts.
+    private var usesNarrowHeadline: Bool {
+        switch source {
+        case .family, .siri, .report: false
+        default: true
+        }
     }
 
     private var header: some View {
@@ -164,7 +175,8 @@ struct PaywallView: View {
 
     // MARK: Benefits
 
-    /// Three rows, each a thin symbol in the tint, a semibold title, and one gray line.
+    /// Four rows, each a thin symbol in the tint, a semibold title, and one gray line. Siri shares the row of the Watch, and
+    /// the reports share a row with the insights, so the list stays short (D130).
     private var benefits: some View {
         VStack(alignment: .leading, spacing: 20) {
             BenefitRow(
@@ -172,8 +184,12 @@ struct PaywallView: View {
                 detail: "See dose and time without opening Maru."
             )
             BenefitRow(
-                symbol: "applewatch", title: "Record from your wrist",
-                detail: "Tap Taken on Apple Watch. Needs iPhone."
+                symbol: "applewatch", title: "Record by wrist or voice",
+                detail: "Apple Watch, Siri, and Shortcuts."
+            )
+            BenefitRow(
+                symbol: "doc.text", title: "Reports for your doctor",
+                detail: "PDF summaries and 30-day counts."
             )
             BenefitRow(
                 symbol: "paintpalette", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."

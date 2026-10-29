@@ -42,7 +42,7 @@
 | 图像是辅助 | 默认小图标 + 完整文字；用户可选用自己的瓶身照片；抠图不阻塞设置或记录 |
 | 不惩罚中断 | 未记录保持未知；不欠账、不自动补记、不付费补签 |
 | 上线具备可观察性 | 开发期本地性能和错误诊断；公测/上线时具备经明确同意的最小产品分析与反馈 |
-| 商业不干扰核心 | The core stays free forever, with no ads and no item limit. Maru Pro sells extras only. Maru offers it by itself in two places only: once after the first save with a time, and on a card at the bottom of Today on at most 3 days. Settings always has a "Maru Pro" row. A purchase never blocks a local feature (D107). Creating a second member of the Family is a Pro feature, and a member that exists never locks (D122) |
+| 商业不干扰核心 | The core stays free forever, with no ads and no item limit. Maru Pro sells extras only. Maru offers it by itself in two places only: once after the first save with a time, and on a card at the bottom of Today on at most 3 days. Settings always has a "Maru Pro" row. A purchase never blocks a local feature (D107). Creating a second member of the Family is a Pro feature, and a member that exists never locks (D122). Siri and Shortcuts, the PDF reports (medication list and summary), and the counts of the last 30 days on the item detail are Pro features. The 7-day views, every record, the CSV export, the backup, the widgets, and the reminders stay free (D130) |
 | 宣传聚焦 | 提醒、混乱时清楚、回看记录；换瓶/断签恢复是基本质量，不是首屏主要卖点 |
 
 ### 明确不做
@@ -481,7 +481,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 | data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
 | onboarding_result | `result`: `add_item`, `later`, `skipped`, or `yielded` (a reminder tap or a widget link opened Today) (D127). Only an onboarding that showed sends it | 页面停留时间、页序列 |
-| paywall_shown | `source`: `first_value`, `day7_card`, `settings`, `app_color`, `live_activity`, `watch`, `icons`, `sounds`, or `family` (D107, D112, D122, D127) | 项目名称、剂量、时间、ItemID |
+| paywall_shown | `source`: `first_value`, `day7_card`, `settings`, `app_color`, `live_activity`, `watch`, `icons`, `sounds`, `family`, `siri`, `report`, or `insights` (D107, D112, D122, D127, D130) | 项目名称、剂量、时间、ItemID |
 | purchase_result | `result`: `purchased`, `cancelled`, `pending`, `failed`, `restored`, or `dismissed` (the paywall closed with no active Pro, D127). `plan`: `yearly` or `lifetime` (D107) | Apple 账号、原始交易收据、价格、金融身份 |
 
 记录动作精确时间只在本地健康库。每日使用摘要在下一次可运行时合并发送；不为上传摘要唤醒用户，不依赖后台保证送达。没有摘要不代表没有服用。分析同意日期不同于真实首次安装日期，报表不得混用。
