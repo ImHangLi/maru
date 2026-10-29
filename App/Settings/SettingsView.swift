@@ -103,7 +103,7 @@ struct SettingsView: View {
                 LabeledContent {
                     Text(appearance.title)
                 } label: {
-                    SettingsRowLabel("Display", systemImage: "circle.lefthalf.filled")
+                    SettingsRowLabel("Display", systemImage: "sun.max")
                 }
             }
             // iOS sets the app language on the Settings page of Maru (D097).
@@ -192,11 +192,15 @@ enum SettingsPage: Hashable {
 }
 
 /// The label of a row on the root of Settings: a symbol in the app tint, then the title in the text color (D076, D135).
+/// Every symbol has one size and sits centered in a column as wide as the Maru Pro icon, so the titles line up with
+/// "Maru Pro" and with each other (D136).
 struct SettingsRowLabel: View {
     let title: LocalizedStringKey
     let systemImage: String
     var isPro = false
-    @ScaledMetric(relativeTo: .body) private var iconWidth = 28
+    /// The width of the icon of the Maru Pro card (ProSection).
+    @ScaledMetric(relativeTo: .body) private var column = 40
+    @ScaledMetric(relativeTo: .body) private var symbolSize = 17
 
     init(_ title: LocalizedStringKey, systemImage: String, isPro: Bool = false) {
         self.title = title
@@ -205,17 +209,20 @@ struct SettingsRowLabel: View {
     }
 
     var body: some View {
-        Label {
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: symbolSize, weight: .regular))
+                .imageScale(.medium)
+                .foregroundStyle(.tint)
+                .frame(width: column, height: symbolSize * 1.4)
+                .accessibilityHidden(true)
             HStack(spacing: 8) {
-                Text(title)
+                Text(title).rowText()
                 if isPro { ProBadge() }
             }
-        } icon: {
-            Image(systemName: systemImage)
-                .foregroundStyle(.tint)
-                .frame(width: iconWidth)
+            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
         }
-        .labelStyle(RowLabelStyle())
+        .accessibilityElement(children: .combine)
     }
 }
 

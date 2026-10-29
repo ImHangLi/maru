@@ -2827,3 +2827,7 @@ The pages:
 The search field is always visible at the top of the root. It finds every setting by its title in the app language or in English, and by a few localized keywords, for example "dark" for "Appearance". A result shows the title and its place, for example "Reminders › For All Items". A tap opens that page. "Maru Pro" opens the paywall for a free user. "Language" and "Send Feedback" do the same as their rows. With no match, the system "No Results" view shows.
 
 Every switch, menu, permission flow, paywall source, analytics event, backup, and restore works as before. No record, reminder, or database rule changes. No new tests (D016).
+
+## D136 · 2026-10-29 · One size and one column for the Settings root symbols (refines D135)
+
+The maintainer asked for smaller symbols of one size that line up with Maru Pro. Each root symbol now has one point size and sits centered in a column as wide as the Maru Pro icon. The titles start at the same x as "Maru Pro". "Display" uses `sun.max`.
