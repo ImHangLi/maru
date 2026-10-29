@@ -78,7 +78,7 @@ struct ProSection: View {
             case .restored?: restoreNotice = "Maru Pro is back. Thank you."
             case nil: restoreNotice = "No Maru Pro purchase was found for this Apple Account."
             case .failed?: restoreNotice = "The restore didn’t go through. Please try again."
-            case .cancelled?, .purchased?, .pending?: break
+            case .cancelled?, .purchased?, .pending?, .dismissed?: break
             }
             isRestoring = false
         }
