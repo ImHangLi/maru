@@ -53,12 +53,11 @@ struct SettingsView: View {
                         NavigationLink {
                             AppIconView()
                         } label: {
-                            LabeledContent("App Icon") {
-                                HStack(spacing: 8) {
-                                    ProBadge()
-                                    AppIconPreview(icon: model.settings.appIcon, size: 29)
-                                        .accessibilityLabel(Text(model.settings.appIcon.title))
-                                }
+                            LabeledContent {
+                                AppIconPreview(icon: model.settings.appIcon, size: 29)
+                                    .accessibilityLabel(Text(model.settings.appIcon.title))
+                            } label: {
+                                ProRowTitle("App Icon")
                             }
                         }
                     }
@@ -194,11 +193,10 @@ private struct ReminderSection: View {
             NavigationLink {
                 ReminderSoundView()
             } label: {
-                LabeledContent("Reminder Sound") {
-                    HStack(spacing: 8) {
-                        ProBadge()
-                        if let sound = model.reminderSound { Text(sound.title) } else { Text("Default") }
-                    }
+                LabeledContent {
+                    if let sound = model.reminderSound { Text(sound.title) } else { Text("Default") }
+                } label: {
+                    ProRowTitle("Reminder Sound")
                 }
             }
         } header: {

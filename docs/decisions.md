@@ -2775,7 +2775,7 @@ The simulator capture is blocked. Device tools report "No device" for the dedica
 The dedicated simulator was deleted. The existing simulator named "iPhone 18 Pro" was not used.
 Home Screen switching, system appearances, the Pro purchase flow, and localized layout still need device checks.
 
-## D133 · 2026-10-29 · A quiet "PRO" badge marks each Maru Pro entry for a free user (extends D107)
+## D133 · 2026-10-29 · A quiet "PRO" badge marks each Maru Pro entry for a free user (extends D107) (look and place changed by D134)
 
 The maintainer decided:
 
@@ -2794,3 +2794,11 @@ Settings has no entry for Apple Watch or for Siri and Shortcuts, so they have no
 The design: one view `ProBadge` in `App/Pro/ProBadge.swift`. It shows "PRO" in `caption2` semibold, in the secondary color, on a `quaternary` capsule. It uses the system font (D012) and Dynamic Type. "PRO" is a brand mark and stays in English. VoiceOver reads "Maru Pro" as a part of the row, from the existing String Catalog entry. Each item of a menu or a picker stays as before.
 
 Scope: the UI of D107, D110, D112, D114, D122, and D130. No record, reminder, purchase, or analytics rule changes. No new tests (D016).
+
+## D134 · 2026-10-29 · The "PRO" badge is a filled capsule right after the title (changes D133)
+
+The maintainer rejected the gray capsule at the trailing edge and chose the style of a competitor app.
+
+- The badge is a filled capsule in the app color with "PRO" in bold, in the readable label color of that app color.
+- It sits right after the title of the row. The value, the toggle, or the chevron stays at the trailing edge.
+- The rest of D133 stays: free users only, no badge outside the app, and a tap keeps the action of the row.
