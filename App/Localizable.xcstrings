@@ -6280,41 +6280,6 @@
         }
       }
     },
-    "Lock Screen, Apple Watch, and more" : {
-      "comment" : "Settings: the line under \"Maru Pro\" in the row that opens the paywall.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sperrbildschirm, Apple Watch und mehr"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pantalla bloqueada, Apple Watch y más"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ロック画面、Apple Watchなど"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잠금 화면, Apple Watch 등"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "锁定屏幕、Apple Watch 等"
-          }
-        }
-      }
-    },
     "Look at every icon for free. Maru Pro lets you choose one." : {
       "comment" : "Settings, App Icon: the footer for a user without Maru Pro.",
       "localizations" : {

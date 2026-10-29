@@ -2835,4 +2835,4 @@ The maintainer asked for smaller symbols of one size that line up with Maru Pro.
 ## D137 · 2026-10-29 · Settings symbols match the item icons, and the Maru Pro card uses the paywall art
 
 - The root symbols of Settings use the box of an item icon (28 points), so the icons of the app have one size (refines D136).
-- For a free user, the Maru Pro card shows the slow art of the paywall with a dark wash and white text. One light sweep crosses it when Settings opens. Reduce Motion stops the drift and the sweep. A Pro user sees the plain card.
+- For a free user, the Maru Pro card is one thin row: a small app icon and "Maru Pro" in white on the slow art of the paywall with a dark wash. It has no feature line and no light sweep (the maintainer rejected both). Reduce Motion stops the drift. A Pro user sees the plain card.

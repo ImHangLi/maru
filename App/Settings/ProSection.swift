@@ -23,22 +23,18 @@ struct ProSection: View {
                 Button {
                     model.presentPaywall(reason: .settings)
                 } label: {
+                    // One thin row, as tall as the other rows (D137).
                     HStack(spacing: 12) {
-                        AppIconPreview(icon: model.settings.appIcon, size: 40)
+                        AppIconPreview(icon: model.settings.appIcon, size: 29)
+                            .frame(width: 40)
                             .accessibilityHidden(true)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Maru Pro").font(.headline)
-                            Text("Lock Screen, Apple Watch, and more")
-                                .font(.subheadline)
-                                .opacity(0.85)
-                        }
+                        Text("Maru Pro").font(.headline)
                         Spacer(minLength: 0)
                         Image(systemName: "chevron.right")
                             .font(.footnote.weight(.semibold))
                             .opacity(0.7)
                     }
                     .foregroundStyle(.white)
-                    .padding(.vertical, 6)
                 }
                 // The art of the paywall, so the card looks like the place it opens (D137).
                 .listRowBackground(ProCardBackground())
@@ -105,32 +101,15 @@ struct PurchasesPage: View {
     }
 }
 
-/// The background of the Maru Pro card for a free user: the slow art of the paywall, a dark wash for the white text, and
-/// one light sweep when Settings opens. With Reduce Motion the art stays still and there is no sweep (D137).
+/// The background of the Maru Pro card for a free user: the slow art of the paywall and a dark wash for the white text.
+/// With Reduce Motion the art stays still (D137).
 private struct ProCardBackground: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var sweeps = false
 
     var body: some View {
         ZStack {
             HeroArt(isStill: reduceMotion)
             LinearGradient(colors: [.black.opacity(0.35), .black.opacity(0.1)], startPoint: .leading, endPoint: .trailing)
-            GeometryReader { proxy in
-                LinearGradient(
-                    colors: [.clear, .white.opacity(0.35), .clear],
-                    startPoint: .leading, endPoint: .trailing
-                )
-                .frame(width: proxy.size.width * 0.4)
-                .rotationEffect(.degrees(20))
-                .offset(x: sweeps ? proxy.size.width * 1.2 : -proxy.size.width * 0.6)
-                .opacity(reduceMotion ? 0 : 1)
-            }
-            .allowsHitTesting(false)
-        }
-        .task {
-            guard !reduceMotion else { return }
-            try? await Task.sleep(for: .milliseconds(400))
-            withAnimation(.easeInOut(duration: 1.4)) { sweeps = true }
         }
     }
 }
