@@ -24,14 +24,30 @@ struct DataSection: View {
                     ShareSheet(url: file.url) { model.transfer.shared = nil }
                         .smallSheet()
                 }
-            Button("Share Medication List") { model.shareMedicationList() }
-                .rowText()
+            // With a second active member, one list for everyone or for one member (D129).
+            if model.hasFamily {
+                Menu {
+                    Button("Everyone") { model.shareMedicationList(for: nil) }
+                    ForEach(model.activePeople, id: \.id) { person in
+                        Button {
+                            model.shareMedicationList(for: person)
+                        } label: {
+                            Text(verbatim: person.displayName)
+                        }
+                    }
+                } label: {
+                    Text("Share Medication List…").rowText()
+                }
+            } else {
+                Button("Share Medication List") { model.shareMedicationList(for: nil) }
+                    .rowText()
+            }
             Button("Share Summary…") { showsSummary = true }
                 .rowText()
                 .sheet(isPresented: $showsSummary, onDismiss: {
                     guard let request = summaryRequest else { return }
                     summaryRequest = nil
-                    model.shareSummary(days: request.days, excluding: request.excluded)
+                    model.shareSummary(days: request.days, excluding: request.excluded, member: request.member)
                 }) {
                     SummarySheet { summaryRequest = $0 }
                 }

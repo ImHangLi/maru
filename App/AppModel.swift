@@ -207,6 +207,8 @@ final class AppModel {
                 // The card of Today needs a count of records. It is read once, and only when the card can show (D107).
                 readProCardRecords()
                 updateShortcutItems(snapshot.list)
+                // An owner change or an archive moves items between members, so the History of one member reads again (D129).
+                historyOwnersDidChange(snapshot)
                 // The Live Activity starts or follows Today while Maru is in front (D110).
                 updateNextDose()
             }

@@ -16,8 +16,9 @@ struct HistoryView: View {
             if model.history.days != nil, model.history.graphDidLoad {
                 HistoryList()
             } else {
-                // A retry of the banner can show its error also before the first read ends.
-                List { UnsavedSection() }
+                // A retry of the banner can show its error also before the first read ends. It retries every member, so it
+                // shows only in "Everyone" (D121, D129).
+                List { if model.shownMember == nil { UnsavedSection() } }
                     .listStyle(.insetGrouped)
                     .overlay {
                         if model.history.loadFailure != nil {
@@ -37,6 +38,8 @@ struct HistoryView: View {
         #endif
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
+        // The same person menu as Today. The graph, the week, and the logs then count only that member (T65, D129).
+        .toolbar { PersonMenu() }
         // A log that opens over the page shows the haptic and the alerts itself, so they never come twice.
         .onAppear { isTop = true }
         .onDisappear { isTop = false }
@@ -116,7 +119,10 @@ private struct HistoryList: View {
                     .listRowBackground(Color.clear)
                 }
             }
-            UnsavedSection()
+            // One retry sends the unconfirmed events of every member, so it shows only in "Everyone", as on Today (D121).
+            if model.shownMember == nil {
+                UnsavedSection()
+            }
             if !weeks.isEmpty || model.history.graph != nil {
                 Section {
                     if weeks.isEmpty {

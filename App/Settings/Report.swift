@@ -24,9 +24,10 @@ struct ReportDocument {
 @MainActor
 enum Report {
     /// The name, the form, the amount, the times, and the note of each active item, as the user typed them. It converts nothing.
-    static func medicationList(_ rows: [(item: Item, schedule: Schedule?)], at now: Date) -> ReportDocument {
+    /// `member` is the name of the member of a list of one member. The title names it (D129).
+    static func medicationList(_ rows: [(item: Item, schedule: Schedule?)], for member: String?, at now: Date) -> ReportDocument {
         var document = ReportDocument()
-        document.add(.title, String(localized: "Medication List"))
+        document.add(.title, member.map { String(localized: "Medication List for \($0)") } ?? String(localized: "Medication List"))
         document.add(.subtitle, now.formatted(date: .long, time: .omitted))
         if rows.isEmpty { document.add(.body, String(localized: "No Items Yet")) }
         for (item, schedule) in rows {
@@ -58,12 +59,15 @@ enum Report {
 
     /// For each item of the last `days` days, the planned doses, and how many are taken, skipped, and with no record.
     /// Numbers only: no percent, no streak, no score. The words say "No record", never "Missed" (spec 4).
-    static func summary(_ read: HistorySummaryRead, days: Int, excluding: Set<ItemID>, today: LocalDate) -> ReportDocument {
+    /// `member` is the name of the member of a summary of one member. The title names it (T65, D129).
+    static func summary(
+        _ read: HistorySummaryRead, for member: String?, days: Int, excluding: Set<ItemID>, today: LocalDate
+    ) -> ReportDocument {
         func day(_ date: LocalDate) -> String {
             date.noon.formatted(Date.FormatStyle.dateTime.year().month(.abbreviated).day().timeZone(.utc))
         }
         var document = ReportDocument()
-        document.add(.title, String(localized: "Summary"))
+        document.add(.title, member.map { String(localized: "Summary for \($0)") } ?? String(localized: "Summary"))
         document.add(.subtitle, "\(day(today.adding(days: 1 - days))) – \(day(today))")
         let items = read.items
             .filter { read.summaries[$0.id] != nil && !excluding.contains($0.id) }

@@ -30,15 +30,19 @@ extension AppModel {
     /// Today, the person menu, and the "For" row show only with a second active member. With only "Me" the app looks as before (T57).
     var hasFamily: Bool { activePeople.count >= 2 }
 
-    /// The member that Today shows, or `nil` for everyone. A member that is archived or deleted shows everyone again.
+    /// The member that Today, History, and My Items show, or `nil` for everyone (D129). A member that is archived or deleted shows
+    /// everyone again.
     var shownMember: Person? {
         guard hasFamily, let id = today.member else { return nil }
         return activePeople.first { $0.id == id }
     }
 
-    /// The person menu of Today: everyone (`nil`) or one member.
+    /// The person menu of Today, History, and My Items: everyone (`nil`) or one member. The three pages share the choice (D129).
+    /// An open History page reads again for the new member.
     func show(member id: PersonID?) {
+        guard today.member != id else { return }
         today.member = id
+        if history.isOpen { openHistory() }
     }
 
     /// The current owner of an item from the last read, else `fallback`.

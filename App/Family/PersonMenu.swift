@@ -71,16 +71,24 @@ private struct PersonMenuButton: View {
 
 /// The owner of a row in "Everyone": a small avatar before the record circle, as Reminders shows the assignee of a shared
 /// reminder (D121). A row of "Me" has no avatar, as Messages draws no avatar beside your own messages. A view of one member has
-/// no avatar, because every row has the same owner.
+/// no avatar, because every row has the same owner. A tile of My Items uses it too (D129).
 struct RowOwner: View {
     @Environment(AppModel.self) private var model
     let personID: PersonID
     @ScaledMetric(relativeTo: .body) private var side = 24
 
     var body: some View {
-        if model.hasFamily, model.shownMember == nil,
-           let owner = model.activePeople.first(where: { $0.id == personID }), owner.kind != .me {
+        if let owner = model.rowOwner(of: personID) {
             MemberAvatar(owner, side: min(side, 32))
         }
+    }
+}
+
+extension AppModel {
+    /// The member that a row or a tile names in "Everyone": not "Me", and only with a second active member (D121, D129).
+    func rowOwner(of personID: PersonID) -> Person? {
+        guard hasFamily, shownMember == nil, let owner = activePeople.first(where: { $0.id == personID }), owner.kind != .me
+        else { return nil }
+        return owner
     }
 }

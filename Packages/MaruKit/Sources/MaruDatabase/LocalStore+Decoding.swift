@@ -73,10 +73,14 @@ extension LocalStore {
 
     /// Every item and every schedule. A row that does not load is `invalidData`. Today, History, My Items, the widget, and every
     /// write use this, so a damaged row shows the storage problem and never hides data (spec 7.3).
-    static func itemsAndSchedules(_ db: Database) throws -> (items: [Item], schedules: [Schedule]) {
+    /// `owner` reads only the items of one member and their schedules, `nil` every item (T65).
+    static func itemsAndSchedules(_ db: Database, owner: PersonID? = nil) throws -> (items: [Item], schedules: [Schedule]) {
         let items = try Row.fetchAll(db, sql: "SELECT * FROM item ORDER BY rowid").map(decodeItem)
+            .filter { owner == nil || $0.personID == owner }
+        let itemIDs = Set(items.map(\.id))
         let schedules = try String.fetchAll(db, sql: "SELECT id FROM schedule ORDER BY rowid")
             .compactMap { try fetchSchedule(db, id: ScheduleID(text: $0)) }
+            .filter { owner == nil || itemIDs.contains($0.itemID) }
         return (items, schedules)
     }
 

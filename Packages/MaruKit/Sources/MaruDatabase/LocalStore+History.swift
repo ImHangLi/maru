@@ -34,24 +34,29 @@ extension LocalStore {
     ///
     /// It reads only the occurrences of these dates, not the full history (spec 7.3). It writes nothing,
     /// so a planned dose that no generation run stored gets a new occurrence value, not a stored row.
+    ///
+    /// `owner` limits every part of the page to the items of one member, `nil` to none (T65).
     public func history(
         before today: LocalDate,
         days: Int,
-        deviceTimeZone: NamedTimeZone
+        deviceTimeZone: NamedTimeZone,
+        owner: PersonID? = nil
     ) async throws(StorageError) -> HistoryPage {
         try await read { db in
-            try Self.historyPage(db, before: today, days: days, deviceTimeZone: deviceTimeZone)
+            try Self.historyPage(db, before: today, days: days, deviceTimeZone: deviceTimeZone, owner: owner)
         }
     }
 
-    /// The read of `history(before:days:deviceTimeZone:)`. The record export reads its pages in one read (D040).
+    /// The read of `history(before:days:deviceTimeZone:owner:)`. The record export reads its pages in one read (D040).
     static func historyPage(
         _ db: Database,
         before today: LocalDate,
         days: Int,
-        deviceTimeZone: NamedTimeZone
+        deviceTimeZone: NamedTimeZone,
+        owner: PersonID? = nil
     ) throws -> HistoryPage {
-        let (items, schedules) = try Self.itemsAndSchedules(db)
+        let (items, schedules) = try Self.itemsAndSchedules(db, owner: owner)
+        let itemIDs = Set(items.map(\.id))
         let newest = today.adding(days: -1)
         let oldest = today.adding(days: -max(days, 1))
         // The join to the slot is a LEFT JOIN, so an as-needed dose (no slot, D021) loads too. Its item is
@@ -72,6 +77,11 @@ extension LocalStore {
         )
         for row in rows {
             let slotID: String? = try row.decode(forColumn: "slotID")
+            // `History.days` keeps a stored record of an item that is not in the list, so the rows of another member go here (T65).
+            if owner != nil {
+                let itemText: String? = try row.decode(forColumn: slotID == nil ? "itemID" : "scheduleItemID")
+                guard let itemText, itemIDs.contains(try ItemID(text: itemText)) else { continue }
+            }
             if slotID == nil {
                 let occurrence = try Self.decodeAsNeededOccurrence(row)
                 asNeeded.append(
@@ -88,7 +98,7 @@ extension LocalStore {
                 )
             }
         }
-        let earliest = try Self.firstDay(db, schedules: schedules)
+        let earliest = try Self.firstDay(db, schedules: schedules, owner: owner)
         let dates = (1...max(days, 1)).map { today.adding(days: -$0) }.filter { date in earliest.map { date >= $0 } ?? false }
         return HistoryPage(
             days: History.days(
@@ -105,14 +115,18 @@ extension LocalStore {
 
     /// The counts of each item for the last `days` days up to and with `today`, from the one reader of the history
     /// (D091, R5). `History.summary` has the rules, so a count agrees with the timeline and the week strip.
+    /// `owner` counts only the items of one member, `nil` every item (T65).
     public func summary(
         days: Int,
         through today: LocalDate,
         at now: Date,
-        deviceTimeZone: NamedTimeZone
+        deviceTimeZone: NamedTimeZone,
+        owner: PersonID? = nil
     ) async throws(StorageError) -> HistorySummaryRead {
         try await read { db in
-            let page = try Self.historyPage(db, before: today.adding(days: 1), days: days, deviceTimeZone: deviceTimeZone)
+            let page = try Self.historyPage(
+                db, before: today.adding(days: 1), days: days, deviceTimeZone: deviceTimeZone, owner: owner
+            )
             return HistorySummaryRead(items: page.items, summaries: History.summary(days: page.days, today: today, now: now))
         }
     }
@@ -122,15 +136,17 @@ extension LocalStore {
     ///
     /// One query reads every stored planned dose of the range with its state, so a year reads fast. The state
     /// comes from the projection. The timeline checks the projection against the events (spec 7.3).
+    /// `owner` counts only the doses of the items of one member, `nil` of every item (T65).
     public func historyCounts(
         from oldest: LocalDate,
         through today: LocalDate,
         at now: Date = Date(),
-        deviceTimeZone: NamedTimeZone
+        deviceTimeZone: NamedTimeZone,
+        owner: PersonID? = nil
     ) async throws(StorageError) -> HistoryCounts {
         try await read { db in
-            let (items, schedules) = try Self.itemsAndSchedules(db)
-            guard let firstDay = try Self.firstDay(db, schedules: schedules) else {
+            let (items, schedules) = try Self.itemsAndSchedules(db, owner: owner)
+            guard let firstDay = try Self.firstDay(db, schedules: schedules, owner: owner) else {
                 return HistoryCounts(firstDay: nil, days: [:])
             }
             let from = max(oldest, firstDay)
@@ -143,8 +159,9 @@ extension LocalStore {
                     FROM occurrence
                         LEFT JOIN occurrenceState ON occurrenceState.occurrenceID = occurrence.id
                     WHERE occurrence.slotID IS NOT NULL AND occurrence.plannedDate BETWEEN ? AND ?
+                        \(owner == nil ? "" : "AND occurrence.slotID IN (\(Self.slotsOfOwner))")
                     """,
-                arguments: [try from.text, try today.text]
+                arguments: [try from.text, try today.text] + (owner.map { [$0.text] } ?? [])
             ).map { row in
                 let status: String? = try row.decode(forColumn: "status")
                 return StoredDoseState(
@@ -168,18 +185,31 @@ extension LocalStore {
 
     /// The first date that can have a dose: the first schedule version, or the first record.
     /// The events, not the projection, set the bound. A record with a missing projection row stays
-    /// reachable, so its page reads it and reports `invalidData` (spec 7.3).
-    private static func firstDay(_ db: Database, schedules: [Schedule]) throws -> LocalDate? {
+    /// reachable, so its page reads it and reports `invalidData` (spec 7.3). `owner` reads only the records of one member.
+    private static func firstDay(_ db: Database, schedules: [Schedule], owner: PersonID?) throws -> LocalDate? {
         let firstRecord = try String.fetchOne(
             db,
             sql: """
                 SELECT MIN(occurrence.plannedDate)
                 FROM occurrence
                 WHERE EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
-                """
+                    \(owner == nil ? "" : "AND (occurrence.slotID IN (\(slotsOfOwner)) OR occurrence.itemID IN (\(itemsOfOwner)))")
+                """,
+            arguments: StatementArguments(owner.map { [$0.text, $0.text] } ?? [])
         ).map(LocalDate.init(text:))
         return History.earliestDate(schedules: schedules, stored: firstRecord.map { [$0] } ?? [])
     }
+
+    /// The items of one member, as SQL with one argument: the member ID. An owner change moves the records with the item (T64).
+    private static let itemsOfOwner = "SELECT id FROM item WHERE personID = ?"
+
+    /// The slots of the items of one member, as SQL with one argument: the member ID.
+    private static let slotsOfOwner = """
+        SELECT scheduleSlot.id FROM scheduleSlot
+            JOIN schedule ON schedule.id = scheduleSlot.scheduleID
+            JOIN item ON item.id = schedule.itemID
+        WHERE item.personID = ?
+        """
 
     /// Records the first event of a past dose that no generation run stored (spec 3 P05). One transaction stores
     /// the occurrence and the event, so a failure leaves neither.

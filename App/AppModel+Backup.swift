@@ -45,22 +45,31 @@ extension AppModel {
         }
     }
 
-    /// "Share Medication List": a PDF with the name, form, amount, times, and note of each item (D091).
-    func shareMedicationList() {
+    /// "Share Medication List": a PDF with the name, form, amount, times, and note of each item (D091). `member` makes the list
+    /// of one member, and its title names the member (D129).
+    func shareMedicationList(for member: Person?) {
+        let owner = member.map { (id: $0.id, name: $0.displayName) }
         share(nil) { store, now in
-            let rows = try await store.medicationListData()
-            let pdf = await Report.pdf(Report.medicationList(rows, at: now))
+            let rows = try await store.medicationListData(owner: owner?.id)
+            let pdf = await Report.pdf(Report.medicationList(rows, for: owner?.name, at: now))
             return try await store.writeReport(pdf, named: "Maru Medication List", at: now)
         }
     }
 
-    /// "Share Summary": a PDF with the counts of each chosen item over the last `days` days (D091).
-    func shareSummary(days: Int, excluding: Set<ItemID>) {
+    /// "Share Summary": a PDF with the counts of each chosen item over the last `days` days (D091). `member` counts only the items
+    /// of one member, and the title names the member (T65, D129).
+    func shareSummary(days: Int, excluding: Set<ItemID>, member: PersonID?) {
+        // The chosen member reads from the store, not from the page, so a read that runs can not turn it into everyone.
         share(nil) { store, now in
+            var owner: (id: PersonID, name: String)?
+            if let member {
+                guard let person = try await store.people().first(where: { $0.id == member }) else { throw StorageError.conflict }
+                owner = (person.id, person.displayName)
+            }
             guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw StorageError.invalidData }
-            let read = try await store.summaryData(days: days, at: now, deviceTimeZone: deviceTimeZone)
+            let read = try await store.summaryData(days: days, at: now, deviceTimeZone: deviceTimeZone, owner: owner?.id)
             let today = LocalDate(now, in: deviceTimeZone)
-            let pdf = await Report.pdf(Report.summary(read, days: days, excluding: excluding, today: today))
+            let pdf = await Report.pdf(Report.summary(read, for: owner?.name, days: days, excluding: excluding, today: today))
             return try await store.writeReport(pdf, named: "Maru Summary", at: now)
         }
     }

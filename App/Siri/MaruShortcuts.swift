@@ -83,6 +83,41 @@ struct ItemEntityQuery: EntityStringQuery {
     }
 }
 
+/// An active member of the Family, so "Record my doses" can ask for whom (D129). It holds the ID and the name, and nothing else.
+struct MemberEntity: AppEntity {
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Person or Pet"
+    static let defaultQuery = MemberEntityQuery()
+
+    let id: UUID
+    let name: String
+
+    var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(name)")
+    }
+}
+
+/// The active members of the store. An archived member is not offered.
+struct MemberEntityQuery: EntityQuery {
+    func entities(for identifiers: [UUID]) async throws -> [MemberEntity] {
+        try await Self.members().filter { identifiers.contains($0.id) }
+    }
+
+    func suggestedEntities() async throws -> [MemberEntity] {
+        try await Self.members()
+    }
+
+    @MainActor
+    private static func members() async throws -> [MemberEntity] {
+        do {
+            return try await AppModel.shared.store.people().filter { !$0.isArchived }.map {
+                MemberEntity(id: $0.id.rawValue, name: $0.displayName)
+            }
+        } catch {
+            throw SiriProblem.unreadable
+        }
+    }
+}
+
 /// "What do I take next": the next open doses of today, spoken and in a snippet. It records nothing.
 /// A locked iPhone asks for an unlock first, so a person who holds it can not hear the names.
 struct NextDoseIntent: AppIntent {
@@ -162,26 +197,45 @@ struct LastDoseIntent: AppIntent {
 
 /// "Record my doses": records the open doses of the part of the day of the clock as taken now, after a confirmation.
 /// A locked iPhone asks for an unlock first, as the "Taken" action of a reminder does (D034, D066).
+///
+/// With two or more active members, Siri asks "For whom?" and records only the doses of that member, so one confirmation never
+/// records for another member (D123, D129). With names off, Siri speaks no member name and no item name (T62).
 struct RecordDueDosesIntent: AppIntent {
     static let title: LocalizedStringResource = "Record Due Doses"
     static let authenticationPolicy = IntentAuthenticationPolicy.requiresAuthentication
+
+    @Parameter(title: "For", requestValueDialog: "For whom?")
+    var member: MemberEntity?
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let model = AppModel.shared
         let due: SiriDueDoses
         do {
-            due = try await model.siriDueDoses()
+            due = try await model.siriDueDoses(for: member.map { PersonID($0.id) })
         } catch SiriDueDosesError.severalMembers {
-            throw SiriProblem.severalMembers
+            // The list of members shows on the unlocked iPhone. The choice then reads the doses again.
+            throw $member.needsValueError("For whom?")
         } catch {
             throw SiriProblem.unreadable
         }
         guard !due.entries.isEmpty else {
             return .result(dialog: "Nothing is due right now. You’re all set.")
         }
-        let names = model.showsNamesInReminders ? due.names.formatted(.list(type: .and)) : SiriText.count(due.entries.count)
-        // A "Cancel" throws, and nothing is recorded.
+        guard model.showsNamesInReminders else {
+            let count = SiriText.count(due.entries.count)
+            // A "Cancel" throws, and nothing is recorded.
+            try await requestConfirmation(result: .result(dialog: "Record as taken now: \(count)?"))
+            guard await model.recordFromSiri(due) else { throw SiriProblem.notConfirmed }
+            return .result(dialog: "Recorded as taken: \(count).")
+        }
+        if let member, due.namesMember {
+            let names = due.entries.map(\.look.name).formatted(.list(type: .and))
+            try await requestConfirmation(result: .result(dialog: "Record as taken now for \(member.name): \(names)?"))
+            guard await model.recordFromSiri(due) else { throw SiriProblem.notConfirmed }
+            return .result(dialog: "Recorded as taken for \(member.name): \(names).")
+        }
+        let names = due.names.formatted(.list(type: .and))
         try await requestConfirmation(result: .result(dialog: "Record as taken now: \(names)?"))
         guard await model.recordFromSiri(due) else { throw SiriProblem.notConfirmed }
         return .result(dialog: "Recorded as taken: \(names).")
@@ -204,14 +258,8 @@ enum SiriProblem: Error, CustomLocalizedStringResourceConvertible {
     /// The record transaction gave no commit. SQLite can commit before the flush fails, so the dose can be stored.
     /// After a storage failure, the same event waits on Today for a retry (D014).
     case notConfirmed
-    /// The Family has two or more active members. "Record my doses" would record across members, so Siri records nothing and
-    /// sends the user to Maru, where each row names its member (D123).
-    case severalMembers
-
     var localizedStringResource: LocalizedStringResource {
         switch self {
-        case .severalMembers: "Several people and pets use Maru, so Siri can’t record for them. Open Maru to record each dose."
-
         case .unreadable: "Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again."
         case .notConfirmed: "Maru couldn’t confirm the save. Open Maru to check your records."
         }

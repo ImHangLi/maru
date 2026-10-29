@@ -77,6 +77,16 @@ struct ItemDetailView: View {
         return List {
             Section {
                 DetailHeader(item: item, remindersOff: detail.schedule?.isEnabled == false)
+                // The owner, only with a second active member (T57). "Edit" changes it, so the user reads "Records move with the
+                // item." before the save (D128, D129).
+                if model.hasFamily, let owner = model.people.first(where: { $0.id == item.personID }) {
+                    LabeledContent("For") {
+                        HStack(spacing: 8) {
+                            MemberAvatar(owner, side: 24)
+                            Text(verbatim: owner.displayName)
+                        }
+                    }
+                }
             }
             ScheduleSection(
                 schedule: detail.schedule,
