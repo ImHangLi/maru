@@ -42,6 +42,8 @@ struct ProSection: View {
             NavigationLink(value: SettingsPage.purchases) {
                 SettingsRowLabel("Purchases", systemImage: "creditcard")
             }
+        } header: {
+            Text("Membership")
         } footer: {
             if !model.pro.isPro {
                 Text("Reminders, records, and your data stay free.")

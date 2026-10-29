@@ -67,10 +67,10 @@ struct SettingsView: View {
         }
     }
 
-    /// The root list: Maru Pro at the top (D107), then the groups of pages.
+    /// The root list: Maru Pro at the top (D107), then the groups of pages, each with a header (D138).
     @ViewBuilder private var pages: some View {
         ProSection()
-        Section {
+        Section("General") {
             // As the Family row of iOS Settings, with the avatars at its end (D121).
             NavigationLink(value: SettingsPage.family) {
                 LabeledContent {
@@ -102,7 +102,7 @@ struct SettingsView: View {
                 }
             }
         }
-        Section {
+        Section("Personalization") {
             NavigationLink(value: SettingsPage.display) {
                 LabeledContent {
                     Text(appearance.title)
@@ -120,7 +120,7 @@ struct SettingsView: View {
             }
             .rowText()
         }
-        Section {
+        Section("Data and Privacy") {
             NavigationLink(value: SettingsPage.data) {
                 SettingsRowLabel("Your Data", systemImage: "externaldrive")
             }

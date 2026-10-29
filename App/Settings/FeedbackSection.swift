@@ -19,6 +19,8 @@ struct FeedbackSection: View {
             NavigationLink(value: SettingsPage.about) {
                 SettingsRowLabel("About", systemImage: "info.circle")
             }
+        } header: {
+            Text("Support")
         } footer: {
             Text("Opens a web page. We read every message.")
         }
