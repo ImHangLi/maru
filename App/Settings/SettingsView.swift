@@ -74,7 +74,11 @@ struct SettingsView: View {
             // As the Family row of iOS Settings, with the avatars at its end (D121).
             NavigationLink(value: SettingsPage.family) {
                 LabeledContent {
-                    if model.hasFamily { AvatarStack(people: model.activePeople) }
+                    if model.hasFamily {
+                        // The initials of the avatars must not move the separator under the row.
+                        AvatarStack(people: model.activePeople)
+                            .alignmentGuide(.listRowSeparatorLeading) { $0[.trailing] }
+                    }
                 } label: {
                     SettingsRowLabel("Family", systemImage: "person.2")
                 }
