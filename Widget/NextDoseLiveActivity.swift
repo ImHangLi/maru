@@ -43,7 +43,7 @@ struct NextDoseLiveActivity: Widget {
             } minimal: {
                 Image(systemName: "pills.fill").foregroundStyle(shown.tint)
             }
-            .widgetURL(AppGroup.todayURL(shown.part))
+            .widgetURL(AppGroup.activityURL(shown.part))
             .keylineTint(shown.tint)
         }
     }
@@ -108,7 +108,7 @@ private struct NextDoseLockScreen: View {
             NextDoseBody(shown: shown)
         }
         .padding(16)
-        .widgetURL(AppGroup.todayURL(shown.part))
+        .widgetURL(AppGroup.activityURL(shown.part))
     }
 }
 

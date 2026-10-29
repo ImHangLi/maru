@@ -6,10 +6,10 @@ import WidgetKit
 
 extension AppModel {
     /// A tap on a widget opens Today at the slot of the link (D048), or the detail of an item over Today (D108).
-    /// The link has no health data.
+    /// The link has no health data. A tap on the Live Activity has the same link with a mark (D127).
     func openWidgetLink(_ url: URL) {
         guard url.scheme == "maru", url.host() == "today" || url.host() == "item" else { return }
-        analytics.markUsed(.widget)
+        analytics.markUsed(url.query() == AppGroup.activityQuery ? .liveActivity : .widget)
         onboardingYieldsToAction()
         selectedTab = .today
         resetHistory()

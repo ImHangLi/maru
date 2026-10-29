@@ -356,7 +356,7 @@ struct PaywallView: View {
             case .pending?: notice = .pending
             case .failed?: notice = .failed
             // A cancel leaves the paywall as it was, with no other offer.
-            case .cancelled?, .restored?, nil: break
+            case .cancelled?, .restored?, .dismissed?, nil: break
             }
         }
     }

@@ -62,6 +62,7 @@ extension AppModel {
         _ id: OccurrenceID, scheduleVersionID: ScheduleVersionID, _ action: IntakeAction,
         revision: IntakeEventID?, intent: IntakeEventID, listedAt: Date
     ) async -> WatchReply.Outcome {
+        analytics.markUsed(.watch)
         guard await confirmedPro() else { return .notRecorded }
         // The generation comes before the read, so a restore after this line refuses the record (D040).
         let generation = dataGeneration

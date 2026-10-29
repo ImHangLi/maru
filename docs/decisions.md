@@ -2016,7 +2016,7 @@ Sources:
 
 Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
 
-## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115, paywall changed by D118)
+## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115, paywall changed by D118) (paywall source `feature` replaced by D127)
 
 Maintainer decisions of 2026-10-28, with agent detail. They follow the two paywall studies of 2026-10-28 in the maintainer's research folder. They define the "Pro" tier of D099.
 
@@ -2138,7 +2138,7 @@ No store change, no schema change, and no new test (D016).
 
 Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
 
-## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123)
+## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123) (paywall source `feature` replaced by D127)
 
 Maintainer decision on 2026-10-28, with agent detail. It is the first Pro feature of D107. It follows spec 6, 7.2, 8, 9, and 10, and it uses the record checks of D034, D048, and D089.
 
@@ -2291,7 +2291,7 @@ Not verified: no build of the app on this Mac (CI builds it), and nobody saw the
 4. "All done for today" after the last record, and the first dose of tomorrow after midnight, with no open of Maru.
 5. A restart with no unlock ("Open Maru to update."), and a tap on each family.
 
-## D114 · 2026-10-28 · Maru Pro: the app color (changes D025 and the paywall rows of D107)
+## D114 · 2026-10-28 · Maru Pro: the app color (changes D025 and the paywall rows of D107) (paywall source `feature` replaced by D127)
 
 Maintainer decision on 2026-10-28, with agent detail. Personalization is part of Pro.
 
@@ -2323,7 +2323,7 @@ Not verified: no build of the app on this Mac (CI builds it). Nobody saw the men
 3. A refund in the transaction manager: the color stays. Another color opens the paywall. Pink still works.
 4. The footer in the six languages and at the largest text sizes.
 
-## D111 · 2026-10-28 · The Apple Watch app is a Pro feature, and the app embeds it again (replaces D074)
+## D111 · 2026-10-28 · The Apple Watch app is a Pro feature, and the app embeds it again (replaces D074) (paywall source `feature` replaced by D127)
 
 Maintainer decision of 2026-10-28, with agent detail. The Apple Watch app is a Maru Pro feature (D107), and it ships in the first public release. It replaces D074. The rules of D071 and D066 for the list and the record stay.
 
@@ -2613,3 +2613,19 @@ Maintainer decision of 2026-10-28: version 1.0.0 will not be released. The first
 - An older app refuses a backup of `v8` as a newer schema (T38). The backup format version stays 1 (`docs/export-format.md`).
 
 Tests (D016): the upgrade fixture gives every item to "Me" (T56), an older backup restores with "Me", a backup with members restores with one "Me" and the owners (T69), an action listed before an owner change records nothing (T70), and a request for two members has no group action (T60). The archive test covers T63.
+
+## D127 · 2026-10-29 · Analytics for the features since D099: Pro state, new surfaces, onboarding, and the paywall close (changes spec 11.5)
+
+Lead decision for the maintainer, who asked for usage and Pro conversion data before the first public release. Each new field is a fixed choice or a flag in the strict schema of `AnalyticsEvent` (T45). No field holds an item, a member, a dose, a time, an ID, a date, a price, an icon name, or a sound name (spec 10, 11.2, T42, T68).
+
+- `daily_usage_summary` gets three usage flags: `used_live_activity` (the "Taken" button of the Live Activity, or a tap on it), `used_watch` (a record request from the Watch), and `used_siri` (a Siri or Shortcuts question or record). A record from these paths also sets `used_record` after the commit, through the one commit path. A tap on the Live Activity has the link of the widget with the mark `?from=activity`, so it does not count as `used_widget`.
+- `daily_usage_summary` gets the Pro state at the last check of the day: `pro_plan` (`none`, `yearly`, or `lifetime`), and the flags `has_live_activity` ("Next Dose on Lock Screen" is on), `custom_icon` (the icon is not the default icon), and `custom_sound` (the reminders use a sound other than the default). Each open, each read of StoreKit, and each change of one of these checks again. A plan from Family Sharing counts as the plan. StoreKit tells the two apart, and this change does not.
+- `setting_changed` gets `header_wash` (a flag, D100) and `appearance` (`system`, `light`, or `dark`, D105). Only a change of the user sends it, not a restore.
+- A new event `onboarding_result` has `result`: `add_item`, `later`, `skipped`, or `yielded` (a reminder tap or a widget link opened Today while the onboarding showed). An onboarding that never showed sends nothing. In an opt-in region analytics is not active yet at the onboarding, so it sends nothing there (spec 11.3).
+- `paywall_shown` replaces the source `feature` with three sources: `app_color` (D114), `live_activity` (D110), and `watch` (D111). Every source has a caller, except `family`: the Family UI does not call `addMember` yet (D122).
+- `purchase_result` gets `dismissed`: the paywall closed while Pro is not active. So each showing has an end that counts. A close after a pending purchase sends `pending` and then `dismissed`.
+- A restore at launch, a renewal, a code, an approved purchase, and Family Sharing go through `refreshEntitlement` and send no `purchase_result`. Only a purchase from the paywall sends `purchased`. So an approved "Ask to Buy" purchase shows only as `pending` and a later `pro_plan`.
+- `PRIVACY.md` lists every new field. The site pages come from `PRIVACY.md` and change when the maintainer publishes the site. `docs/release-plan.md` names `onboarding_result` under Product Interaction and `pro_plan` under Purchase History.
+- Not in this change: the Supporter lifetime product (`com.imhangli.maru.pro.supporter`). When it comes, `PurchasePlan` and `pro_plan` need a value for it.
+
+Tests (D016): the factory check of `AnalyticsTests` sends the new factories through the checked init. No other test.

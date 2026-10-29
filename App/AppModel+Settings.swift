@@ -131,6 +131,21 @@ extension AppModel {
         analytics.capture(.appColorChanged(color))
     }
 
+    /// "Color Header" in Settings (D100).
+    func headerWashDidChange(_ isOn: Bool) {
+        analytics.capture(.headerWashChanged(isOn))
+    }
+
+    /// "Appearance" in Settings (D105).
+    func appearanceDidChange(_ appearance: AppAppearance) {
+        let value: AnalyticsEvent.Appearance = switch appearance {
+        case .system: .system
+        case .light: .light
+        case .dark: .dark
+        }
+        analytics.capture(.appearanceChanged(value))
+    }
+
     /// "Show Names in Reminders". It starts on (D029).
     var showsNamesInReminders: Bool {
         DefaultsReminderPrivacy().load() == .showNames
@@ -180,6 +195,7 @@ extension AppModel {
         let before = reminderSound
         UserDefaults.standard.set(sound?.rawValue, forKey: ReminderSound.key)
         settings.chosenSound = sound
+        noteProUse()
         let now = Date()
         guard reminderSound != before, let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { return }
         Task { await runReminders(at: now, deviceTimeZone: deviceTimeZone) }
@@ -203,6 +219,7 @@ extension AppModel {
             return false
         }
         settings.appIcon = icon
+        noteProUse()
         return true
     }
 

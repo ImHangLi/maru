@@ -34,6 +34,8 @@ struct AnalyticsTests {
             .editorClosed(mode: .edit, hadChanges: true, duration: 400),
             .dailyUsage(dayIndex: 4, AnalyticsEvent.UsageDay(used: Set(AnalyticsEvent.UsageFlag.allCases), opens: 9, activeItems: 3, hasWidget: true, familySize: 3)),
             .dailyUsage(dayIndex: 5, AnalyticsEvent.UsageDay(used: [.reminderAction])),
+            .dailyUsage(dayIndex: 6, AnalyticsEvent.UsageDay(pro: .init(plan: nil, liveActivity: false, customIcon: true, customSound: false))),
+            .dailyUsage(dayIndex: 7, AnalyticsEvent.UsageDay(pro: .init(plan: .yearly, liveActivity: true, customIcon: false, customSound: true))),
             .coreError(.schedule, .tooMany),
             .notificationPermission(.quiet, previous: nil),
             .showNamesChanged(false),
@@ -42,12 +44,17 @@ struct AnalyticsTests {
             .allRemindAgainChanged(.untilRecorded),
             .allRemindAgainChanged(nil),
             .allRemindAgainIntervalChanged(.minutes60),
+            .headerWashChanged(false),
+            .appearanceChanged(.dark),
+            .onboardingResult(.yielded),
             .dataAction(.restore, .newerFile),
             .feedbackOpened,
             .paywallShown(.day7Card),
             .paywallShown(.family),
+            .paywallShown(.liveActivity),
             .purchaseResult(.purchased, plan: .lifetime),
             .purchaseResult(.restored, plan: nil),
+            .purchaseResult(.dismissed, plan: nil),
         ]
         for event in built {
             #expect(try AnalyticsEvent(name: event.name, properties: event.properties) == event)

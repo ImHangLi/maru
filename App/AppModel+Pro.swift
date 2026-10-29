@@ -52,7 +52,7 @@ extension AppStore {
 extension AppModel {
     var pro: ProStore { .shared }
 
-    /// The one entry to the paywall (D107). A Pro feature calls it with `.feature` when a free user taps it. Each
+    /// The one entry to the paywall (D107). A Pro feature calls it with its own source when a free user taps it. Each
     /// showing sends `paywall_shown` with the source and nothing else.
     func presentPaywall(reason: AnalyticsEvent.PaywallSource) {
         guard proState.paywall == nil, !pro.isPro else { return }
@@ -60,8 +60,11 @@ extension AppModel {
         analytics.capture(.paywallShown(reason))
     }
 
+    /// A close with no active Pro sends `dismissed`, so each showing has an end that counts (D127). A close after a purchase
+    /// or a restore sends nothing more.
     func paywallDidClose() {
         proState.paywall = nil
+        if !pro.isPro { analytics.capture(.purchaseResult(.dismissed, plan: nil)) }
     }
 
     func loadProOffers() async {
@@ -98,7 +101,7 @@ extension AppModel {
         guard proState.watchAsked else { return }
         proState.watchAsked = false
         UserDefaults.standard.removeObject(forKey: ProOffers.watchAskedKey)
-        presentPaywall(reason: .feature)
+        presentPaywall(reason: .watch)
     }
 
     // MARK: First-value offer

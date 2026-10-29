@@ -75,11 +75,23 @@ extension AppModel {
     func noteOpen() {
         analytics.noteOpen()
         guard analytics.isActive else { return }
+        noteProUse()
         // The system calls back on a queue of its own, so the closure has no actor.
         WidgetCenter.shared.getCurrentConfigurations { @Sendable result in
             guard let installed = (try? result.get()).map({ !$0.isEmpty }) else { return }
             Task { @MainActor in AppModel.shared.analytics.noteWidget(installed: installed) }
         }
+    }
+
+    /// The Pro plan and the Pro features in use, for the summary of the day (D127). Only the plan and three flags: not the
+    /// icon, not the sound, and no date. Each open, each read of StoreKit, and each change of one of these calls it.
+    func noteProUse() {
+        analytics.noteProUse(AnalyticsEvent.ProUse(
+            plan: pro.plan?.analytics,
+            liveActivity: liveActivity.isOn,
+            customIcon: AppIcon.current != .pink,
+            customSound: reminderSound != nil
+        ))
     }
 
     /// The permission that the app read. The service sends an event only when it differs from the last one sent.

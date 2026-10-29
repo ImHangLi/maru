@@ -83,15 +83,17 @@ extension AppModel {
     /// The switch in Settings. A free user gets the paywall, and the switch stays off (D107).
     func setNextDoseOnLockScreen(_ isOn: Bool) {
         guard isOn else { return turnOffNextDose() }
-        guard pro.isPro else { return presentPaywall(reason: .feature) }
+        guard pro.isPro else { return presentPaywall(reason: .liveActivity) }
         liveActivity.isOn = true
         UserDefaults.standard.set(true, forKey: LiveActivityState.isOnKey)
+        noteProUse()
         updateNextDose()
     }
 
     private func turnOffNextDose() {
         liveActivity.isOn = false
         UserDefaults.standard.set(false, forKey: LiveActivityState.isOnKey)
+        noteProUse()
         enqueueNextDose { .end }
     }
 
@@ -99,6 +101,7 @@ extension AppModel {
     /// and turns the switch off. The cached plan at launch does not turn it off, because a renewal can come after the
     /// cached end of access.
     func proEntitlementDidLoad() {
+        noteProUse()
         if pro.isPro {
             updateNextDose()
         } else if liveActivity.isOn {
@@ -224,6 +227,7 @@ extension AppModel {
     /// When a check fails, it records nothing and shows the doses of now. When the commit does not confirm, the activity
     /// says so, and Today keeps the events for a retry (D014).
     func takeNextDose(_ intent: TakeNextDoseIntent) async {
+        analytics.markUsed(.liveActivity)
         // The generation comes before the first await, so a restore after this line refuses the record (D040).
         let generation = dataGeneration
         let now = Date()

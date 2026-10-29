@@ -5,7 +5,7 @@ import SwiftUI
 
 // Siri and Shortcuts (D108). Each intent runs in the app process, in the background, and calls an operation of the one
 // model (spec 6). The two questions only read. "Record my doses" records with the record transaction after a confirmation,
-// and it says "recorded" only after the commit (spec 7.2). Nothing goes to analytics. With "Show Names in Reminders" off,
+// and it says "recorded" only after the commit (spec 7.2). Analytics gets only the `used_siri` flag of the day (D127). With "Show Names in Reminders" off,
 // Siri says the number of doses in place of the names (D029, D108).
 
 /// The phrases of the three App Shortcuts. `App/AppShortcuts.xcstrings` has them in the other languages.
