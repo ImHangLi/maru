@@ -13,8 +13,14 @@ struct TodayView: View {
                 // While the first read runs, the page is empty like the launch screen (spec 9).
                 if case let .loaded(snapshot) = model.content {
                     if let today = snapshot.today {
-                        TodayContent(today: today, hasItems: !snapshot.list.isEmpty)
-                            .onAppear { model.todayContentDidAppear() }
+                        // The person menu shows the doses of one member (D121). The rows of the other members leave the list.
+                        let member = model.shownMember?.id
+                        TodayContent(
+                            today: today.only(member),
+                            member: member,
+                            hasItems: snapshot.list.contains { member == nil || $0.personID == member }
+                        )
+                        .onAppear { model.todayContentDidAppear() }
                     } else {
                         ContentUnavailableView {
                             Label("Maru Can’t Use Your Time Zone", systemImage: "globe")
@@ -30,7 +36,8 @@ struct TodayView: View {
             .modifier(DebugDataBanner())
             .modifier(DebugNoticeAlert())
             #endif
-            .navigationTitle("Today")
+            // One member: the title is the name, as Health titles the data of a person who shares with you (D121).
+            .navigationTitle(model.shownMember.map { Text(verbatim: $0.displayName) } ?? Text("Today"))
             .toolbar {
                 SettingsButton()
                 // History has its own button in the bar (spec 3 P01, D026).
@@ -38,6 +45,7 @@ struct TodayView: View {
                     Button("History", systemImage: "calendar") { model.openHistory() }
                 }
                 AddItemButton()
+                PersonMenu()
             }
             .navigationDestination(isPresented: $model.history.isOpen) { HistoryView() }
             .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
@@ -52,18 +60,25 @@ struct TodayView: View {
 private struct TodayContent: View {
     @Environment(AppModel.self) private var model
     let today: TodaySnapshot
+    /// The member that the person menu shows, or `nil` for everyone (D121).
+    let member: PersonID?
     /// Whether My Items has any item. The empty text then says what to do next.
     let hasItems: Bool
 
     var body: some View {
-        let asNeededRows = model.shownRows(of: today.asNeeded)
+        // An unconfirmed dose keeps the look of its first read, so the filter reads the current owner of the item (D121).
+        let asNeededRows = model.shownRows(of: today.asNeeded).filter { member == nil || model.owner(of: $0.itemID, or: $0.look.personID) == member }
         ScrollViewReader { scroller in
             List {
                 // Before iOS 26 the bar has no subtitle, so the line under the title is the first header.
                 if #unavailable(iOS 26) {
                     Section {} header: { subtitle }
                 }
-                UnsavedSection()
+                // One retry sends the unconfirmed events of every member, so it shows only in "Everyone". In the view of one
+                // member, each row of that member keeps its own retry (D014, D121).
+                if member == nil {
+                    UnsavedSection()
+                }
                 NotificationsOffSection()
                 ForEach(today.groups) { group in
                     SlotSection(group: group, timeZone: timeZone)

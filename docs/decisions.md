@@ -2520,7 +2520,7 @@ The maintainer listened to eight candidate sounds on 2026-10-29 and liked them. 
 
 Not verified: nobody heard the sounds on a device. Nobody checked on a device that each file plays as a notification sound, at full ringer volume, in silent mode, on a locked iPhone, or in a Focus. The device checks 3 and 5 of D112 apply to the new sounds.
 
-## D121 · 2026-10-29 · Family: several people and pets on one iPhone (changes the "Profile" line of spec 1)
+## D121 · 2026-10-29 · Family: several people and pets on one iPhone (changes the "Profile" line of spec 1, member color changed by D128)
 
 Maintainer decisions of 2026-10-28, with agent detail. The design is in `~/Documents/Research/maru/family-mode/design.md`. Its Codex reviews are in the same folder.
 
@@ -2588,7 +2588,7 @@ An owner change and old actions:
 
 A pending request can keep its old text until the next reminder run. Its old `ownerChanged` value refuses the record, also with the names hidden. The record transaction also refuses an action whose doses belong to two or more members now, also for a request with an old category.
 
-## D124 · 2026-10-29 · The avatar of a member: a photo, an animal, or the initial
+## D124 · 2026-10-29 · The avatar of a member: a photo, an animal, or the initial (the "no member color" rule replaced by D128)
 
 Maintainer decision 5 of 2026-10-28 (the switcher UI is designed elsewhere). A member has an optional photo from the library or the camera. The core stores it as an item photo (D056): `person.imageReference` holds the file name, and the file is in the photo folder of the items. The avatar shows the photo when the file is on the iPhone, else the animal of a pet, a person symbol for "Me", or the initial of the name. An avatar has no gradient and no member color.
 
@@ -2629,3 +2629,37 @@ Lead decision for the maintainer, who asked for usage and Pro conversion data be
 - Not in this change: the Supporter lifetime product (`com.imhangli.maru.pro.supporter`). When it comes, `PurchasePlan` and `pro_plan` need a value for it.
 
 Tests (D016): the factory check of `AnalyticsTests` sends the new factories through the checked init. No other test.
+
+## D128 · 2026-10-29 · The Family UI: member colors, the person menu, and "Add for" (replaces the color rule of D121 and D124)
+
+Maintainer decisions of 2026-10-29 on the design prototype (`~/Documents/Research/maru/family-mode/apple-style/`), with team defaults for the open points. The captures of the real UI are in `~/Documents/Research/maru/family-mode/real-ui/`.
+
+Avatar colors (style "C"):
+
+- Each member has a color. The avatar is a soft fill of the member color (about 16% opacity) with the initial, the person silhouette ("Me"), or the animal of a pet in the full member color. It has no gradient and no ring. A photo from the library or the camera replaces the fill, also for a pet.
+- "Me" always uses the app color. A member with no stored color also uses the app color.
+- A new member gets the first `ItemColor` that no member uses. It skips the current app color when another color is free (`ItemColor.forNewMember`). The user changes it on the page of the member.
+- Migration `v9` adds `person.color` (`NULL` or an `ItemColor` raw value). It adds one column and copies no table (spec 7.3). A backup of `v8` restores through `v9` with no color.
+- Color is never the only signal: the name, the initial, or the animal is always there (spec 5.3).
+
+Today and Settings:
+
+- A person menu at the top right of Today, as the profile picture of Health: "Everyone", each active member, and "Add Person or Pet". It shows only with a second active member. With only "Me", Today is as before (T57).
+- In "Everyone", a row of another member has the small avatar of the owner before the record circle. A row of "Me" has no avatar (team default). A view of one member has the name of the member as its title, for example "Mom" (team default). The parts of the day stay.
+- The choice of the menu lives in memory. A new launch and a tapped reminder show "Everyone" (team default).
+- Settings has a row "Family" under "Maru Pro", with overlapping avatars. The Family page lists the members, "Add Person or Pet", and the archived members. The add page is in the style of a new contact: photo, person or pet, name, and the animal of a pet. The page of a member also has the color, archive or restore, and delete.
+- The item editor has a row "For" with a second active member. A change of a stored item says "Records move with the item." A new item belongs to the member that Today shows, else to "Me".
+
+Pro:
+
+- The add of a second or later member stays the only gate (D122). The paywall with the source `family` has the headline "Everyone you care for, in one place."
+
+"Add for" (copy for another member, changes "Copy this item to another member" in the "Cut and later" list of the design):
+
+- The item detail has a row "Add for…" with a second active member. It opens a system menu of the other active members.
+- A choice opens the editor for a new item with the values of the item: name, type, form, color, amount, times and plan, alarm, follow-ups, note, and photo. The owner is the chosen member. Nothing saves until the user taps Save (spec 2, spec 7.2).
+- The copy is a new item with its own IDs, schedule, and records. It copies no record. The first item does not change.
+- The save copies the photo file to a new file, so a delete of one item never removes the photo of the other.
+- It adds no Pro gate. The usage statistics count it as a new item (`mode` `new`), because the event schema needs no new value. No member data leaves the iPhone.
+
+Not in this change: the History and summary filter by member (T65), the per-member PDF, the CSV column "Person", the My Items filter and tile avatars, the "For" row on the item detail, the footer of "Show Names in Reminders", a member parameter for Siri, and `PRIVACY.md`.

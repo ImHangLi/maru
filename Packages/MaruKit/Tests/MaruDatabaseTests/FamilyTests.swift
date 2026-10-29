@@ -67,7 +67,7 @@ struct FamilyTests {
         let seed = try await store.seed()
         let event = Fixtures.event(for: seed.occurrence, .taken)
         try await store.record(event, scheduleVersionID: seed.versionID)
-        let mochi = try Person(kind: .pet, name: "Mochi", symbol: .cat, imageReference: "mochi.jpg")
+        let mochi = try Person(kind: .pet, name: "Mochi", symbol: .cat, color: .orange, imageReference: "mochi.jpg")
         try await store.save(mochi)
         var cat = try Item(personID: mochi.id, category: .medication, name: "Methimazole", form: .tablet, color: .blue)
         try await store.save(cat)

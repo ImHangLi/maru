@@ -8,7 +8,7 @@ extension LocalStore {
         try await read { db in try Self.fetchPeople(db) }
     }
 
-    /// Inserts a member, or updates the name, the kind, the animal, and the photo of the stored member with the same ID (D121, D124).
+    /// Inserts a member, or updates the name, the kind, the animal, the color, and the photo of the stored member with the same ID (D121, D124).
     ///
     /// The store never reads Maru Pro: the app checks it before a new member (D122). `save` never changes the archive state.
     /// Use `archive(person:)` and `restore(person:)` for that, because an archive moves the items of the member too (D125).
@@ -30,12 +30,15 @@ extension LocalStore {
             if stored == nil, person.kind == .me { throw StorageError.conflict }
             try db.execute(
                 sql: """
-                    INSERT INTO person (id, kind, name, symbol, imageReference, archivedAt) VALUES (?, ?, ?, ?, ?, NULL)
+                    INSERT INTO person (id, kind, name, symbol, color, imageReference, archivedAt) VALUES (?, ?, ?, ?, ?, ?, NULL)
                     ON CONFLICT (id) DO UPDATE SET
-                        kind = excluded.kind, name = excluded.name, symbol = excluded.symbol,
+                        kind = excluded.kind, name = excluded.name, symbol = excluded.symbol, color = excluded.color,
                         imageReference = excluded.imageReference
                     """,
-                arguments: [person.id.text, person.kind.rawValue, person.name, person.symbol?.rawValue, person.imageReference]
+                arguments: [
+                    person.id.text, person.kind.rawValue, person.name, person.symbol?.rawValue, person.color?.rawValue,
+                    person.imageReference,
+                ]
             )
             guard var saved = try Self.fetchPerson(db, id: person.id) else { throw StorageError.invalidData }
             saved.archivedAt = person.archivedAt
@@ -138,12 +141,14 @@ extension LocalStore {
     static func decodePerson(_ row: Row) throws -> Person {
         try named(.personRow) {
             let symbol: String? = try row.decode(forColumn: "symbol")
+            let color: String? = try row.decode(forColumn: "color")
             let archivedAt: Double? = try row.decode(forColumn: "archivedAt")
             return try Person(
                 id: PersonID(text: row.decode(forColumn: "id")),
                 kind: PersonKind(text: row.decode(forColumn: "kind")),
                 name: row.decode(forColumn: "name"),
                 symbol: symbol.map { try PetSymbol(text: $0) },
+                color: color.map { try ItemColor(text: $0) },
                 imageReference: row.decode(forColumn: "imageReference"),
                 archivedAt: archivedAt.map(Date.init(storedSeconds:))
             )

@@ -40,6 +40,9 @@ enum Schema {
             )
             try db.execute(sql: "UPDATE item SET personID = ?", arguments: [me])
         }
+        migrator.registerMigration("v9") { db in
+            try db.execute(sql: v9)
+        }
         return migrator
     }
 
@@ -231,7 +234,7 @@ enum Schema {
     /// The Family (D121). A member is a person or a pet. `me` is the one member that every database has: its `name` is `NULL` until
     /// the user renames it. `symbol` is the animal of a pet. `imageReference` is the name of an optional photo file, as for an item
     /// (D056, D124). The checks list the raw values of `PersonKind` and
-    /// `PetSymbol`. A member has no color. An item belongs to one member, and no other table has a member column.
+    /// `PetSymbol`. `v9` adds the color of a member (D128). An item belongs to one member, and no other table has a member column.
     ///
     /// SQLite cannot add a `NOT NULL` column with a `REFERENCES` clause. So `item.personID` is nullable, the migration fills it for
     /// every row, and two triggers refuse a `NULL` after that. `ownerChangedAt` is the instant of the last owner change (D123).
@@ -256,5 +259,12 @@ enum Schema {
             BEGIN SELECT RAISE(ABORT, 'item.personID'); END;
         CREATE TRIGGER item_personRequiredUpdate BEFORE UPDATE OF personID ON item WHEN NEW.personID IS NULL
             BEGIN SELECT RAISE(ABORT, 'item.personID'); END;
+        """
+
+    /// The avatar color of a member (D128). `NULL` uses the app color: "Me" and each member of `v8` have it. The check lists the raw
+    /// values of `ItemColor`.
+    static let v9 = """
+        ALTER TABLE person ADD COLUMN color TEXT
+            CHECK (color IN ('pink', 'orange', 'yellow', 'green', 'mint', 'blue', 'purple', 'brown'));
         """
 }

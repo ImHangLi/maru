@@ -22,6 +22,8 @@ struct SettingsView: View {
             Form {
                 // At the top, so a user who looks for it finds it (D107).
                 ProSection()
+                // Under Maru Pro, as the Family row of iOS Settings (D121).
+                FamilySection()
                 ReminderSection(showsNames: Binding(
                     get: { showsNames },
                     set: {

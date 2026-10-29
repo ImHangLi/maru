@@ -93,6 +93,34 @@ extension AppModel {
         }
     }
 
+    /// "Add for": the edit screen of a new item for another member, with every value of the stored item (D128). Nothing is saved
+    /// until the user taps Save (spec 2, 7.2). The new item has its own IDs, plan, and records. The stored item does not change.
+    func openEditorForCopy(_ itemID: ItemID, for person: PersonID) {
+        let generation = dataGeneration
+        Task {
+            do {
+                let stored = try await store.editorContext(for: itemID)
+                guard let item = stored.item else { throw EditorOpenError.itemNotFound }
+                let context = try await store.editorContext(for: nil)
+                let start = ItemDraft.copying(item, schedule: stored.schedule, for: person)
+                // The copy is the start, so Cancel closes the screen with no question.
+                var session = EditorSession(
+                    context: context, original: start, start: start, isRestored: false, generation: generation
+                )
+                session.copied = (item.id, person, item.imageReference)
+                // A draft that the app kept after it stopped comes back with its own IDs.
+                if let kept = DraftFile.load(key: session.draftKey), kept != start {
+                    session = EditorSession(context: context, original: start, start: kept, isRestored: true, generation: generation)
+                    session.copied = (item.id, person, item.imageReference)
+                }
+                editor = session
+                analytics.capture(.setupStep(.editorOpened, mode: session.mode))
+            } catch {
+                refresh()
+            }
+        }
+    }
+
     /// Turns the reminders of an item off or on. Off keeps the item on Today and My Items, and the user can
     /// still record it (T07). A failure throws, and the store is unchanged. After a restore the store refuses
     /// the change, and the pages read again (D040).

@@ -139,6 +139,20 @@ struct TodaySnapshot: Equatable, Sendable {
 
     var entries: [Entry] { groups.flatMap(\.entries) }
 
+    /// The planned doses of one member, or every dose for `nil` (D121). The parts of the day stay. A part with no dose of the member
+    /// goes. The as-needed card stays whole: Today filters its rows after it adds the unconfirmed doses, so a failed record of one
+    /// member never shows for another.
+    func only(_ person: PersonID?) -> TodaySnapshot {
+        guard let person else { return self }
+        var day = self
+        day.groups = groups.compactMap { group in
+            var group = group
+            group.entries = group.entries.filter { $0.look.personID == person }
+            return group.entries.isEmpty ? nil : group
+        }
+        return day
+    }
+
     /// Puts committed records in place. The rows keep their places.
     mutating func apply(_ records: [OccurrenceRecord]) {
         for record in records {

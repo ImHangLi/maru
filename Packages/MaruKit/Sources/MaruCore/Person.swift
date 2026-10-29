@@ -38,8 +38,9 @@ public struct Person: Hashable, Sendable {
     /// `nil` only for `me` that the user did not rename. The app shows its own word for it.
     public private(set) var name: String?
     /// The avatar animal of a pet. `nil` for `me` and for a person: their avatar is a person symbol or the initial of the name.
-    /// A member has no color. Every avatar uses the app tint (D121).
     public private(set) var symbol: PetSymbol?
+    /// The color of the avatar (D128). `nil` uses the app color, as "Me" always does.
+    public var color: ItemColor?
     /// The name of a photo file that the user chose from the library or took with the camera (D124). The app stores the file as the
     /// photo of an item (D056). The avatar shows the photo when the file is on the iPhone, else the symbol or the initial.
     public var imageReference: String?
@@ -51,6 +52,7 @@ public struct Person: Hashable, Sendable {
         kind: PersonKind,
         name: String?,
         symbol: PetSymbol? = nil,
+        color: ItemColor? = nil,
         imageReference: String? = nil,
         archivedAt: Date? = nil
     ) throws {
@@ -58,6 +60,7 @@ public struct Person: Hashable, Sendable {
         self.kind = kind
         self.name = try Self.validated(name, kind: kind)
         self.symbol = try Self.validated(symbol, kind: kind)
+        self.color = color
         self.imageReference = imageReference
         self.archivedAt = archivedAt
     }
@@ -90,6 +93,16 @@ public struct Person: Hashable, Sendable {
     private static func validated(_ symbol: PetSymbol?, kind: PersonKind) throws -> PetSymbol? {
         guard symbol == nil || kind == .pet else { throw PersonError.symbolForPetOnly }
         return symbol
+    }
+}
+
+extension ItemColor {
+    /// The color of a new member: the first color in the row that no other member uses, and not the app color when another color
+    /// is free (D128). The user can change it on the page of the member.
+    public static func forNewMember(among people: some Sequence<Person>, appColor: ItemColor) -> ItemColor {
+        let used = Set(people.compactMap(\.color))
+        let free = allCases.filter { !used.contains($0) }
+        return free.first { $0 != appColor } ?? free.first ?? allCases.first { $0 != appColor } ?? .blue
     }
 }
 

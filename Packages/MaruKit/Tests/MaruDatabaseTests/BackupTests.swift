@@ -89,7 +89,7 @@ struct BackupTests {
 
     @Test func aDamagedOrNewerBackupIsRefusedAndTheDataStays() async throws {
         var newer = Schema.migrator
-        newer.registerMigration("v9") { db in
+        newer.registerMigration("v10") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
         }
         // The backup comes from a newer version of the app.

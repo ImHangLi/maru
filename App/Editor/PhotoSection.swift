@@ -221,14 +221,11 @@ struct LookSection<Choices: View>: View {
     /// to Settings (spec 2.2).
     private func startCamera() {
         Task {
-            switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized: break
-            case .notDetermined: guard await AVCaptureDevice.requestAccess(for: .video) else { return }
-            default:
-                cameraIsOff = true
-                return
+            switch await CameraPicker.access() {
+            case true?: takesPhoto = true
+            case false?: cameraIsOff = true
+            case nil: break
             }
-            takesPhoto = true
         }
     }
 
@@ -242,9 +239,19 @@ struct LookSection<Choices: View>: View {
 
 /// The system camera for one photo. The system keeps the photo only in memory and gives it to Maru. It is not
 /// saved to the photo library.
-private struct CameraPicker: UIViewControllerRepresentable {
+struct CameraPicker: UIViewControllerRepresentable {
     /// Gives the photo, or `nil` when the user cancels. The caller closes the camera.
     let done: (UIImage?) -> Void
+
+    /// The system asks for the camera at the first tap. `true` when Maru may use it, `false` when the camera is off for Maru, and
+    /// `nil` when the user said no to the question just now.
+    static func access() async -> Bool? {
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized: true
+        case .notDetermined: await AVCaptureDevice.requestAccess(for: .video) ? true : nil
+        default: false
+        }
+    }
 
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let controller = UIImagePickerController()
