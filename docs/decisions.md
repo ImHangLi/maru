@@ -2802,3 +2802,41 @@ The maintainer rejected the gray capsule at the trailing edge and chose the styl
 - The badge is a filled capsule in the app color with "PRO" in bold, in the readable label color of that app color.
 - It sits right after the title of the row. The value, the toggle, or the chevron stays at the trailing edge.
 - The rest of D133 stays: free users only, no badge outside the app, and a tap keeps the action of the row.
+
+## D135 · 2026-10-29 · Settings is a short list of pages with a search field (changes D107, D121, D133)
+
+The maintainer said that the Settings sheet was messy and asked for a tidy layout, as in iOS Settings, with a search field. The look waits for the approval of the maintainer.
+
+The root is a short list. Each row has a symbol in the app tint, the title, an optional value, and a chevron. There are no colored tiles.
+
+1. The Maru Pro card. Under it, the row "Purchases" opens "Manage Subscription" (yearly plan only), "Restore Purchases", and "Redeem Code".
+2. "Family", "Reminders" (value: the notification state), and "Lock Screen" (value: On or Off, iPhone only).
+3. "Display" (value: the appearance) and "Language".
+4. "Your Data" and "Privacy".
+5. "Send Feedback" and "About".
+6. "Debug", in debug builds only.
+
+The pages:
+
+- "Reminders": "Notifications", "Open Settings" when needed, "Show Names in Reminders", "Reminder Sound", and the section "For All Items" ("Alarm", "Remind Again", "Every").
+- "Lock Screen": "Next Dose on Lock Screen". The whole page is Maru Pro, so its root row has the "PRO" badge (D134). No other root row has a badge.
+- "Display": "Appearance", "App Color", "App Icon", and "Color Header". The page is called "Display", not "Appearance", so that the page and its first row do not have the same name.
+- "Your Data": the export, the two reports, the backup, and the restore. "Privacy": "Share Usage Statistics" and the privacy policy.
+- "About": the version and build, "Support", "Privacy Policy", "Terms of Use" (the same link as the paywall), and "Licenses".
+
+The search field is always visible at the top of the root. It finds every setting by its title in the app language or in English, and by a few localized keywords, for example "dark" for "Appearance". A result shows the title and its place, for example "Reminders › For All Items". A tap opens that page. "Maru Pro" opens the paywall for a free user. "Language" and "Send Feedback" do the same as their rows. With no match, the system "No Results" view shows.
+
+Every switch, menu, permission flow, paywall source, analytics event, backup, and restore works as before. No record, reminder, or database rule changes. No new tests (D016).
+
+## D136 · 2026-10-29 · One size and one column for the Settings root symbols (refines D135)
+
+The maintainer asked for smaller symbols of one size that line up with Maru Pro. Each root symbol now has one point size and sits centered in a column as wide as the Maru Pro icon. The titles start at the same x as "Maru Pro". "Display" uses `sun.max`.
+
+## D137 · 2026-10-29 · Settings symbols match the item icons, and the Maru Pro card uses the paywall art
+
+- The root symbols of Settings use the box of an item icon (28 points), so the icons of the app have one size (refines D136).
+- For a free user, the Maru Pro card is one thin row: a small app icon and "Maru Pro" in white on the slow art of the paywall with a dark wash. It has no feature line and no light sweep (the maintainer rejected both). Reduce Motion stops the drift. A Pro user sees the plain card.
+
+## D138 · 2026-10-29 · Each group on the Settings root has a header
+
+The maintainer asked for a header on every group, as other apps show. The headers are "Membership", "General", "Personalization", "Data and Privacy", and "Support". The Debug group keeps its own header.

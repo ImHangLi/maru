@@ -2,25 +2,6 @@ import MaruCore
 import PhotosUI
 import SwiftUI
 
-/// The row "Family" in Settings, with the avatars of the members at its end, as the Family row of iOS Settings (D121).
-struct FamilySection: View {
-    @Environment(AppModel.self) private var model
-
-    var body: some View {
-        Section {
-            NavigationLink {
-                FamilyPage()
-            } label: {
-                LabeledContent("Family") {
-                    if model.hasFamily {
-                        AvatarStack(people: model.activePeople)
-                    }
-                }
-            }
-        }
-    }
-}
-
 /// The Family page: one row per member, as Family Sharing lists its members, the row that adds one, and the archived members.
 struct FamilyPage: View {
     @Environment(AppModel.self) private var model

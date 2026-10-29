@@ -1,6 +1,146 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Membership" : {
+      "comment" : "A section header on the root of Settings (D138).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会员"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メンバーシップ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suscripción"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitgliedschaft"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "멤버십"
+          }
+        }
+      }
+    },
+    "General" : {
+      "comment" : "A section header on the root of Settings (D138).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通用"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一般"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "General"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allgemein"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "일반"
+          }
+        }
+      }
+    },
+    "Personalization" : {
+      "comment" : "A section header on the root of Settings (D138).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "个性化"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "パーソナライズ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalización"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalisierung"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인화"
+          }
+        }
+      }
+    },
+    "Data and Privacy" : {
+      "comment" : "A section header on the root of Settings (D138).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "数据与隐私"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データとプライバシー"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datos y privacidad"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daten und Datenschutz"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "데이터 및 개인정보"
+          }
+        }
+      }
+    },
     "Rose and Sage" : {
       "comment" : "Name of a Maru Pro ceramic app icon.",
       "localizations" : {
@@ -4235,7 +4375,7 @@
       }
     },
     "Display" : {
-      "comment" : "Settings: the header of the display section.",
+      "comment" : "Settings: the row and the title of the page with Appearance, App Color, App Icon, and Color Header (D135).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -6276,41 +6416,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Maru 的实时活动已关闭。请在“设置”App 的 Maru 中打开。"
-          }
-        }
-      }
-    },
-    "Lock Screen, Apple Watch, and more" : {
-      "comment" : "Settings: the line under \"Maru Pro\" in the row that opens the paywall.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sperrbildschirm, Apple Watch und mehr"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pantalla bloqueada, Apple Watch y más"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ロック画面、Apple Watchなど"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "잠금 화면, Apple Watch 등"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "锁定屏幕、Apple Watch 等"
           }
         }
       }
@@ -15577,7 +15682,7 @@
       }
     },
     "Your Data" : {
-      "comment" : "Settings: the header of the section with the record export, the backup, and the restore.",
+      "comment" : "Settings: the row and the title of the page with the record export, the reports, the backup, and the restore (D135).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -18316,6 +18421,531 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PDF 요약과 30일 집계."
+          }
+        }
+      }
+    },
+    "Lock Screen" : {
+      "comment" : "Settings: the row and the title of the page with \"Next Dose on Lock Screen\" (D135).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁定屏幕"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pantalla de bloqueo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sperrbildschirm"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 화면"
+          }
+        }
+      }
+    },
+    "Privacy" : {
+      "comment" : "Settings: the row and the title of the page with \"Share Usage Statistics\" and the privacy policy (D135).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プライバシー"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacidad"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutz"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "개인정보 보호"
+          }
+        }
+      }
+    },
+    "Purchases" : {
+      "comment" : "Settings: the row under the Maru Pro card and the title of its page, with \"Restore Purchases\" and \"Redeem Code\" (D135).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "购买项目"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "購入"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compras"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Käufe"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "구입 항목"
+          }
+        }
+      }
+    },
+    "Version" : {
+      "comment" : "Settings, About: the label of the app version and build number.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "版本"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "バージョン"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Versión"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "버전"
+          }
+        }
+      }
+    },
+    "pro, subscription, premium, upgrade, purchase" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Maru Pro.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "专业版, 订阅, 高级, 升级, 购买"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロ, サブスクリプション, プレミアム, アップグレード, 購入"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pro, suscripción, premium, mejorar, compra"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pro, Abo, Abonnement, Premium, Upgrade, Kauf"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "프로, 구독, 프리미엄, 업그레이드, 구입"
+          }
+        }
+      }
+    },
+    "family, person, people, pet, member" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Family.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家人, 家庭, 成员, 宠物, 孩子"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家族, 人, ペット, メンバー, 子ども"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "familia, persona, mascota, miembro, hijo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Familie, Person, Haustier, Mitglied, Kind"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가족, 사람, 반려동물, 구성원, 아이"
+          }
+        }
+      }
+    },
+    "notifications, alerts, permission" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Notifications.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知, 推送, 权限"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知, アラート, 許可"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "notificaciones, avisos, permiso"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mitteilungen, Benachrichtigungen, Berechtigung"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림, 푸시, 권한"
+          }
+        }
+      }
+    },
+    "sound, tone, ringtone" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Reminder Sound.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "声音, 铃声, 提示音"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サウンド, 音, 着信音"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sonido, tono, timbre"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ton, Klang, Klingelton"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "소리, 사운드, 알림음"
+          }
+        }
+      }
+    },
+    "follow-up, repeat, again" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Remind Again.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再次提醒, 重复, 跟进"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再通知, 繰り返し, もう一度"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "repetir, de nuevo, seguimiento"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "erneut, wiederholen, nochmal"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다시 알림, 반복, 재알림"
+          }
+        }
+      }
+    },
+    "lock screen, live activity" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Next Dose on Lock Screen.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "锁屏, 锁定屏幕, 实时活动"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ロック画面, ライブアクティビティ"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "pantalla de bloqueo, actividad en vivo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sperrbildschirm, Live-Aktivität"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "잠금 화면, 실시간 현황"
+          }
+        }
+      }
+    },
+    "dark, light, theme, mode" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Appearance (System, Light, Dark).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "深色, 浅色, 夜间, 主题, 模式"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダーク, ライト, テーマ, モード"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "oscuro, claro, tema, modo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "dunkel, hell, Design, Modus"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다크, 라이트, 테마, 모드"
+          }
+        }
+      }
+    },
+    "color, tint" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: App Color.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "颜色, 主题色"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "色, カラー"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "color, tono"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Farbe, Akzentfarbe"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "색상, 색"
+          }
+        }
+      }
+    },
+    "export, backup, restore, file" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Your Data.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导出, 备份, 恢复, 文件"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "書き出し, バックアップ, 復元, ファイル"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exportar, copia de seguridad, restaurar, archivo"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Export, Backup, Sicherung, Wiederherstellen, Datei"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "내보내기, 백업, 복원, 파일"
+          }
+        }
+      }
+    },
+    "analytics, statistics" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Share Usage Statistics.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "统计, 分析, 数据"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "統計, 分析"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "análisis, estadísticas"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Analyse, Statistik"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "분석, 통계"
+          }
+        }
+      }
+    },
+    "feedback, contact, help, bug" : {
+      "comment" : "Settings search: more words that find this setting. Not shown. Comma-separated, in the language of the app. Setting: Send Feedback.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "反馈, 联系, 帮助, 问题"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "フィードバック, お問い合わせ, ヘルプ, 不具合"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "comentarios, contacto, ayuda, error"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feedback, Kontakt, Hilfe, Fehler"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "피드백, 문의, 도움말, 버그"
           }
         }
       }
