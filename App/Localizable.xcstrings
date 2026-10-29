@@ -18057,6 +18057,76 @@
         }
       }
     },
+    "Your whole family" : {
+      "comment" : "Paywall of Maru Pro: the title of the benefit row for Family mode (D121, D128). Keep it to one short line.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "照顾全家"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家族みんなの分も"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toda tu familia"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die ganze Familie"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "온 가족을 함께"
+          }
+        }
+      }
+    },
+    "People and pets, each with their own reminders." : {
+      "comment" : "Paywall of Maru Pro: the gray line under \"Your whole family\". Keep it to one short line.",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家人和宠物，各有各的提醒。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家族もペットも、それぞれのリマインダーで。"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personas y mascotas, cada una con sus recordatorios."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Menschen und Haustiere, jeweils mit eigenen Erinnerungen."
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가족과 반려동물, 각자의 알림으로."
+          }
+        }
+      }
+    },
     "Reports for your doctor" : {
       "comment" : "Paywall of Maru Pro: the title of the benefit row for the PDF reports and the 30-day counts (D130). Keep it to one short line.",
       "localizations" : {

@@ -184,6 +184,10 @@ struct PaywallView: View {
                 detail: "See dose and time without opening Maru."
             )
             BenefitRow(
+                symbol: "person.2", title: "Your whole family",
+                detail: "People and pets, each with their own reminders."
+            )
+            BenefitRow(
                 symbol: "applewatch", title: "Record by wrist or voice",
                 detail: "Apple Watch, Siri, and Shortcuts."
             )
