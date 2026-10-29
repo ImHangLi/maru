@@ -186,7 +186,8 @@ private struct ItemTile: View {
     var body: some View {
         NavigationLink(value: entry.id) {
             VStack(alignment: .leading, spacing: 12) {
-                HStack(alignment: .top) {
+                // The owner avatar sits on the center line of the icon.
+                HStack(alignment: .center) {
                     ItemPhotoView(reference: entry.imageReference, side: min(iconSize, 64)) {
                         entry.form.image
                             .resizable()
