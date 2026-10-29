@@ -94,6 +94,28 @@ struct ItemDetailView: View {
                     }
                 }
             }
+            // A new item with the same values for another member (D127). It shows only with a second active member.
+            let others = model.activePeople.filter { $0.id != item.personID }
+            if !item.isArchived, model.hasFamily, !others.isEmpty {
+                Section {
+                    Menu {
+                        ForEach(others, id: \.id) { person in
+                            Button {
+                                model.openEditorForCopy(item.id, for: person.id)
+                            } label: {
+                                Label {
+                                    Text(verbatim: person.displayName)
+                                } icon: {
+                                    MemberAvatar.menuImage(.member(person))
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Add for…", systemImage: "plus.square.on.square")
+                            .labelStyle(RowLabelStyle())
+                    }
+                }
+            }
             WeekSection(week: detail.week, item: item)
             MonthSection(month: detail.month, item: item)
             Section {

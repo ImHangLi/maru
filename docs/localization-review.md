@@ -519,3 +519,41 @@ Six strings replace six strings: "Dose on Lock Screen", "See your next dose with
 | Tap Taken on Apple Watch. Needs iPhone. | 手表上点“已服用”，需连接 iPhone。 | 「服用済み」をタップ。iPhoneが必要です。 | Toca Tomado en el reloj. Necesita iPhone. | Tippe auf Eingenommen. iPhone nötig. | Apple Watch에서 ‘복용함’ 탭. iPhone 필요. |
 | Make Maru yours | 打造你的 Maru | 自分らしいMaruに | Haz Maru tuya | Dein Maru, dein Stil | 나만의 Maru로 |
 | App colors, icons, and reminder sounds. | 应用颜色、图标和提醒声音。 | アプリのカラー、アイコン、リマインダーの音。 | Colores, iconos y sonidos de recordatorio. | App-Farben, Symbole und Erinnerungstöne. | 앱 색상, 아이콘, 미리 알림 소리. |
+
+## Family UI (D127)
+
+These strings are new for the Family pages, the person menu of Today, the "For" row, "Add for…", and the Family headline of the paywall. No native speaker read them. The reviewer checks that "Family" does not read as Apple "Family Sharing", that a member name fits each title pattern, and that the Family headline fits two lines.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Family | 家人 | 家族 | Familia | Familie | 가족 |
+| Everyone | 所有人 | みんな | Todos | Alle | 모두 |
+| Show | 显示 | 表示 | Mostrar | Anzeigen | 표시 |
+| Add Person or Pet | 添加家人或宠物 | 人やペットを追加 | Añadir persona o mascota | Person oder Tier hinzufügen | 사람 또는 반려동물 추가 |
+| Add for… | 为其他人添加… | ほかの人に追加… | Añadir para… | Hinzufügen für … | 다른 구성원에게 추가… |
+| For | 给谁 | 対象 | Para | Für | 대상 |
+| Records move with the item. | 记录会随药品一起移动。 | 記録も項目と一緒に移ります。 | Los registros se mueven con el elemento. | Die Aufzeichnungen wandern mit dem Eintrag. | 기록도 항목과 함께 옮겨져요. |
+| Keep doses and records for the people and pets you care for, each on their own. | 为你照顾的人和宠物分别管理用药和记录。 | 大切な人やペットの服用と記録を、それぞれ別に管理できます。 | Lleva las dosis y los registros de las personas y mascotas que cuidas, cada uno por separado. | Behalte Einnahmen und Aufzeichnungen der Menschen und Tiere, um die du dich kümmerst, getrennt im Blick. | 돌보는 사람과 반려동물의 복용과 기록을 각각 따로 관리해요. |
+| Each one has their own items, reminders, and records. Nothing leaves this iPhone. | 每位成员都有自己的药品、提醒和记录。所有数据都只留在这台 iPhone 上。 | それぞれに項目、リマインダー、記録があります。データがこのiPhoneの外に出ることはありません。 | Cada uno tiene sus propios elementos, recordatorios y registros. Nada sale de este iPhone. | Alle haben eigene Einträge, Erinnerungen und Aufzeichnungen. Nichts verlässt dieses iPhone. | 각자 항목, 미리 알림, 기록을 따로 가져요. 어떤 데이터도 이 iPhone 밖으로 나가지 않아요. |
+| New Person | 新成员 | 新しいメンバー | Nueva persona | Neue Person | 새 구성원 |
+| New Pet | 新宠物 | 新しいペット | Nueva mascota | Neues Tier | 새 반려동물 |
+| Person | 人 | 人 | Persona | Person | 사람 |
+| Pet | 宠物 | ペット | Mascota | Haustier | 반려동물 |
+| Kind | 类型 | 種類 | Tipo | Art | 종류 |
+| Animal | 动物 | 動物 | Animal | Tier | 동물 |
+| Dog | 狗 | 犬 | Perro | Hund | 개 |
+| Cat | 猫 | 猫 | Gato | Katze | 고양이 |
+| Bird | 鸟 | 鳥 | Pájaro | Vogel | 새 |
+| Rabbit | 兔子 | ウサギ | Conejo | Kaninchen | 토끼 |
+| Fish | 鱼 | 魚 | Pez | Fisch | 물고기 |
+| Other Animal | 其他动物 | その他の動物 | Otro animal | Anderes Tier | 기타 동물 |
+| Add Photo | 添加照片 | 写真を追加 | Añadir foto | Foto hinzufügen | 사진 추가 |
+| Edit Photo | 编辑照片 | 写真を編集 | Editar foto | Foto bearbeiten | 사진 편집 |
+| Delete | 删除 | 削除 | Eliminar | Löschen | 삭제 |
+| Delete… | 删除… | 削除… | Eliminar… | Löschen … | 삭제… |
+| Archive %@ and Their Items? | 要归档“%@”及其药品吗？ | 「%@」とその項目をアーカイブしますか？ | ¿Archivar a %@ y sus elementos? | „%@“ und die zugehörigen Einträge archivieren? | “%@” 및 해당 항목을 보관할까요? |
+| Delete %@ and Their Items? | 要删除“%@”及其药品吗？ | 「%@」とその項目を削除しますか？ | ¿Eliminar a %@ y sus elementos? | „%@“ und die zugehörigen Einträge löschen? | “%@” 및 해당 항목을 삭제할까요? |
+| Their reminders stop. History keeps their records. | 提醒会停止。历史记录会保留其记录。 | リマインダーは止まります。記録は履歴に残ります。 | Sus recordatorios se detienen. El historial conserva sus registros. | Die Erinnerungen enden. Der Verlauf behält die Aufzeichnungen. | 미리 알림이 멈춰요. 기록은 내역에 남아요. |
+| Every record of their items goes too. You can’t undo this. | 其药品的所有记录也会一起删除。此操作无法撤销。 | 項目のすべての記録も削除されます。この操作は取り消せません。 | También se eliminan todos los registros de sus elementos. No se puede deshacer. | Alle Aufzeichnungen der Einträge werden ebenfalls gelöscht. Das lässt sich nicht widerrufen. | 항목의 모든 기록도 함께 삭제돼요. 되돌릴 수 없어요. |
+| Everyone you care for, in one place. | 你在乎的每个人，都在这里。 | 大切な人を、ひとつの場所に。 | Todos los que cuidas, en un solo lugar. | Alle, für die du sorgst, an einem Ort. | 아끼는 모든 이를 한곳에서. |
+| %lld items | %lld 个药品 | %lld項目 | %lld elementos | %lld Einträge | %lld개 항목 |

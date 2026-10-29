@@ -8,27 +8,99 @@ enum FamilyError: Error, Equatable {
     case needsPro
 }
 
+/// What the member page does with the photo of a member at the save (D124).
+enum MemberPhotoEdit {
+    case unchanged
+    case removed
+    case replaced(PhotoImage)
+}
+
 extension AppModel {
-    /// Adds a person or a pet (D121). Maru Pro adds a member. A free user gets the paywall with the source `family`, and nothing is
-    /// saved (D122). A member that exists never locks: every other operation here is free, also after Pro ends.
+    /// The members that are not archived, in the order of the first save. "Me" is first while it is active.
+    var activePeople: [Person] {
+        guard case let .loaded(snapshot) = content else { return [] }
+        return snapshot.people.filter { !$0.isArchived }
+    }
+
+    /// Every member, archived or not, for the Family page.
+    var people: [Person] {
+        if case let .loaded(snapshot) = content { snapshot.people } else { [] }
+    }
+
+    /// Today, the person menu, and the "For" row show only with a second active member. With only "Me" the app looks as before (T57).
+    var hasFamily: Bool { activePeople.count >= 2 }
+
+    /// The member that Today shows, or `nil` for everyone. A member that is archived or deleted shows everyone again.
+    var shownMember: Person? {
+        guard hasFamily, let id = today.member else { return nil }
+        return activePeople.first { $0.id == id }
+    }
+
+    /// The person menu of Today: everyone (`nil`) or one member.
+    func show(member id: PersonID?) {
+        today.member = id
+    }
+
+    /// The count of active items of a member, for the Family page.
+    func itemCount(of id: PersonID) -> Int {
+        guard case let .loaded(snapshot) = content else { return 0 }
+        return snapshot.list.filter { $0.personID == id }.count
+    }
+
+    /// The color of a new member: the first item color that no member uses, not the app color when another is free (D127).
+    var newMemberColor: ItemColor {
+        let appColor = UserDefaults.standard.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
+        return .forNewMember(among: people, appColor: appColor)
+    }
+
+    /// "Add Person or Pet". Maru Pro opens the add page. A free user gets the paywall with the source `family`, and nothing
+    /// opens (D122, T58).
+    func mayAddMember() async -> Bool {
+        guard await confirmedPro() else {
+            presentPaywall(reason: .family)
+            return false
+        }
+        return true
+    }
+
+    /// Adds a person or a pet (D121), with an optional photo (D124). Maru Pro adds a member. A free user gets the paywall with the
+    /// source `family`, and nothing is saved (D122). A member that exists never locks: every other operation here is free, also after
+    /// Pro ends.
     ///
-    /// The store never reads Pro, so this is the one gate. The UI calls it and shows the add sheet again after a purchase.
-    func addMember(_ person: Person) async throws {
+    /// The store never reads Pro, so this is the one gate. The UI asks `mayAddMember()` before it opens the add page.
+    func addMember(_ person: Person, photo: PhotoImage?) async throws {
         guard await confirmedPro() else {
             presentPaywall(reason: .family)
             throw FamilyError.needsPro
         }
-        try await changeFamily { store, generation in try await store.savePerson(person, generation: generation) }
+        var person = person
+        if let photo { person.imageReference = try await store.writePhoto(photo.data, fileExtension: photo.fileExtension) }
+        do {
+            try await changeFamily { store, generation in try await store.savePerson(person, generation: generation) }
+        } catch {
+            await store.removePhoto(person.imageReference)
+            throw error
+        }
     }
 
-    /// Changes the name, the kind, the animal, or the photo of a member. A replaced photo file goes after the save (D124).
-    /// The UI writes a new photo with `AppStore.writePhoto` first, as the item editor does (D056).
-    func updateMember(_ person: Person) async throws {
+    /// Changes the name, the kind, the animal, the color, or the photo of a member. A replaced photo file goes after the save (D124).
+    func updateMember(_ person: Person, photo: MemberPhotoEdit) async throws {
         guard let existing = try await store.people().first(where: { $0.id == person.id }) else {
             throw StorageError.conflict
         }
         let stored = existing.imageReference
-        try await changeFamily { store, generation in try await store.updatePerson(person, generation: generation) }
+        var person = person
+        switch photo {
+        case .unchanged: person.imageReference = stored
+        case .removed: person.imageReference = nil
+        case let .replaced(image): person.imageReference = try await store.writePhoto(image.data, fileExtension: image.fileExtension)
+        }
+        do {
+            try await changeFamily { store, generation in try await store.updatePerson(person, generation: generation) }
+        } catch {
+            if person.imageReference != stored { await store.removePhoto(person.imageReference) }
+            throw error
+        }
         if let stored, stored != person.imageReference { await store.removePhoto(stored) }
     }
 

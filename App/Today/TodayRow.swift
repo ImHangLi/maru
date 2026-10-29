@@ -18,6 +18,10 @@ struct TodayRow: View {
     @State private var showsCorrection = false
     @State private var showsTimeEditor = false
 
+    private var spokenName: String {
+        model.shownMember == nil ? entry.look.labelledName : entry.look.name
+    }
+
     var body: some View {
         let look = RecordLook(entry, model: model)
         HStack(spacing: 12) {
@@ -47,12 +51,14 @@ struct TodayRow: View {
                 .contentShape(Rectangle())
                 // Two VoiceOver stops, like the two touch areas: the name, then the record circle (spec 3 P01).
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text(verbatim: "\(entry.look.name), \(entry.detailText(in: timeZone))"))
+                // In "Everyone" VoiceOver reads the owner with the name, as the avatar shows it (D121).
+                .accessibilityLabel(Text(verbatim: "\(spokenName), \(entry.detailText(in: timeZone))"))
                 .accessibilityValue(entry.look.remindersOff ? Text("Reminders off") : Text(verbatim: ""))
             }
             // The record circle is the end of the row, so the row has no chevron.
             .navigationLinkIndicatorVisibility(.hidden)
             .accessibilityHint(Text("Opens the details"))
+            RowOwner(personID: entry.look.personID)
             RecordButton(
                 entry: entry,
                 timeZone: timeZone,

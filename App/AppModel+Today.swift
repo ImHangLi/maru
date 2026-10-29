@@ -65,6 +65,9 @@ struct TodayState {
     var lockedTap: DeliveredReminder?
     /// The state of the "As needed" card. See `AppModel+AsNeeded.swift`.
     var asNeeded = AsNeededState()
+    /// The member that the person menu shows, or `nil` for everyone (D121). It lives in memory, so a new launch shows everyone.
+    /// `AppModel.shownMember` ignores a member that is no longer active.
+    var member: PersonID?
 }
 
 extension AppModel {

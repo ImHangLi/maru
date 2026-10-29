@@ -164,6 +164,7 @@ struct ItemEditorView: View {
     private var layout: [AnyHashable] {
         [
             showsRestored,
+            draft.personID != session.original.personID,
             draft.times.map(\.id),
             Dose(draft.amount) != nil,
             canRemoveTime,
@@ -280,7 +281,31 @@ struct ItemEditorView: View {
                 Text("Medication").tag(ItemCategory.medication)
             }
             .pickerStyle(.segmented)
+            // The owner of the item, only with a second active member (D121, T57). A change moves the item with its records (T64).
+            if owners.filter({ !$0.isArchived }).count >= 2 {
+                Picker("For", selection: $draft.personID) {
+                    ForEach(owners, id: \.id) { person in
+                        Label {
+                            Text(verbatim: person.displayName)
+                        } icon: {
+                            MemberAvatar.menuImage(.member(person))
+                        }
+                        .tag(UUID?.some(person.id.rawValue))
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(Color.primary)
+            }
+        } footer: {
+            if !session.isNew, draft.personID != session.original.personID {
+                Text("Records move with the item.")
+            }
         }
+    }
+
+    /// The members that can own the item: the active ones, and the stored owner of the item if it is archived.
+    private var owners: [Person] {
+        session.context.people.filter { !$0.isArchived || $0.id.rawValue == session.original.personID }
     }
 
     private var timesSection: some View {
@@ -426,7 +451,7 @@ struct ItemEditorView: View {
     private var lookSection: some View {
         LookSection(
             state: $photo,
-            storedReference: session.context.item?.imageReference,
+            storedReference: session.context.item?.imageReference ?? session.copied?.photo,
             form: draft.form,
             color: draft.color
         ) {

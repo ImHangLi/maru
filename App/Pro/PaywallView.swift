@@ -1,8 +1,11 @@
+import MaruCore
 import SwiftUI
 
 /// The Maru Pro paywall uses `ProStore` for purchases (D107, D119).
 /// This custom view offers yearly and lifetime plans together, which `SubscriptionStoreView` cannot do (D115).
 struct PaywallView: View {
+    /// Why the paywall shows. The headline names the reason for Family (D127).
+    let source: AnalyticsEvent.PaywallSource
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -95,11 +98,18 @@ struct PaywallView: View {
             Text("Maru Pro")
                 .font(.headline)
                 .opacity(0.85)
-            Text("Your next dose, at a glance.")
+            Group {
+                if source == .family {
+                    Text("Everyone you care for, in one place.")
+                } else {
+                    Text("Your next dose, at a glance.")
+                }
+            }
                 // At an accessibility text size the picture would fill the whole screen, so the lines are one step smaller.
                 .font(typeSize.isAccessibilitySize ? .title2.bold() : .largeTitle.bold())
                 // A narrow measure breaks the line in two balanced parts: "Your next dose," and "at a glance."
-                .frame(maxWidth: typeSize.isAccessibilitySize ? .infinity : headlineWidth, alignment: .leading)
+                // The Family headline is longer, so it takes the whole width.
+                .frame(maxWidth: typeSize.isAccessibilitySize || source == .family ? .infinity : headlineWidth, alignment: .leading)
                 .accessibilityAddTraits(.isHeader)
         }
         .foregroundStyle(.white)
@@ -499,8 +509,8 @@ private struct PaywallHost: ViewModifier {
         content.sheet(item: Binding(
             get: { isActive ? model.proState.paywall : nil },
             set: { if $0 == nil, isActive { model.paywallDidClose() } }
-        )) { _ in
-            PaywallView()
+        )) { request in
+            PaywallView(source: request.source)
         }
     }
 }

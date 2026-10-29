@@ -15,6 +15,9 @@ struct EditorSession: Identifiable {
     let generation: Int
     /// The item that a save replaces, with its schedule (T06). The draft is then a new item.
     var replaced: (item: Item, schedule: Schedule?)?
+    /// The item that a new item copies for another member, and its photo file (D127). The save copies the file, so each item has
+    /// its own photo, and a later delete of one item keeps the photo of the other.
+    var copied: (itemID: ItemID, photo: String?)?
     /// For the duration bucket of the usage statistics (D077). It is not stored, and no clock time leaves the device.
     let openedAt = Date()
 
@@ -30,6 +33,7 @@ struct EditorSession: Identifiable {
     /// The name of the draft file: one for a new item, one for each item in edit or in replacement.
     var draftKey: String {
         if let replaced { return Self.replaceKey(of: replaced.item.id) }
+        if let copied { return "copy-\(copied.itemID.rawValue.uuidString)" }
         return context.item.map { Self.editKey(of: $0.id) } ?? "new"
     }
 
@@ -51,7 +55,8 @@ extension AppModel {
                 if itemID != nil, context.item == nil { throw EditorOpenError.itemNotFound }
                 var original = context.item.map { ItemDraft(item: $0, schedule: context.schedule) }
                     ?? ItemDraft(color: context.newItemColor, reminders: context.newItemReminders)
-                if original.personID == nil { original.personID = context.defaultOwner.rawValue }
+                // A new item belongs to the member that Today shows, else to "Me" (D121).
+                if original.personID == nil { original.personID = (shownMember?.id ?? context.defaultOwner).rawValue }
                 var session = EditorSession(
                     context: context, original: original, start: original, isRestored: false, generation: generation
                 )
@@ -115,7 +120,11 @@ extension AppModel {
         let storedPhoto = session.context.item?.imageReference
         var newPhoto: String?
         switch photo {
-        case .unchanged: break
+        case .unchanged:
+            if let source = session.copied?.photo {
+                newPhoto = await store.copyPhoto(source)
+                item.imageReference = newPhoto
+            }
         case .removed: item.imageReference = nil
         case let .replaced(choice):
             newPhoto = try await store.writePhoto(choice.chosen.data, fileExtension: choice.chosen.fileExtension)

@@ -27,6 +27,8 @@ extension AppModel {
     }
 
     func focus(_ keys: Set<OccurrenceKey>) {
+        // A tapped reminder can name doses of several members, so Today shows everyone (D081, D121).
+        today.member = nil
         today.focus = TodayFocus(keys: keys)
     }
 
