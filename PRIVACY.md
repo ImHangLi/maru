@@ -8,6 +8,7 @@ Maru keeps your health data on your iPhone or iPad. Each device has its own data
 - Your settings.
 - A draft of an item that you add or edit. Maru deletes the draft when you save or cancel.
 - The photo of an item, if you add one. See "Item photos".
+- The members of your Family, if you add people or pets. See "Family".
 
 Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so the "Taken" action of a reminder works while the device is locked. When Maru cannot open your records, it records nothing and asks you to unlock.
 
@@ -69,9 +70,22 @@ The Apple Watch app is part of Maru Pro. It shows the doses of today, and it rec
 - Nothing goes to the Watch until the Maru Watch app is installed.
 - The Watch app has no database. Each record that you make on the Watch is saved on your iPhone. The Watch app sends no usage statistics and writes no log. With usage statistics on, the iPhone notes only that the Watch asked to record on that day (`used_watch`).
 
+## Family
+
+You can add people and pets to Maru, for example a parent or a cat. Each member has its own items and records.
+
+- A member has a name, a color, an optional animal, and an optional photo. Maru stores them in the same database as your items, on your device.
+- Member names and photos never leave your device through Maru. Maru sends no member name, no member ID, no photo, and no count of pets in the usage statistics. The statistics have only `family_size` (see "Usage statistics").
+- A member is not an account. Maru does not share a member's data with another device, and it does not sync it.
+- With "Show Names in Reminders" on and two or more members, reminders, alarms, widgets, the Lock Screen activity, and Siri name the member, for example "Mom: Levothyroxine". With the setting off, they name no member.
+- The Apple Watch list always has the names (see "Apple Watch"). With two or more members, each name also has its member.
+- The record export has a "Person" column with the member of each dose. The medication list and the summary can be for one member, and then the title has the member name.
+- The backup file holds the member names, as it holds the item names. It does not hold the member photos.
+- A member photo is stored as an item photo (see "Item photos"). Maru deletes the file when you remove the photo or delete the member.
+
 ## Camera
 
-Maru uses the camera only when you scan a label or take a photo of an item. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo, and it sends no image and no text. With usage statistics on, Maru sends only the steps of the scan (see `setup_step`). iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".
+Maru uses the camera only when you scan a label or take a photo of an item or a member. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo, and it sends no image and no text. With usage statistics on, Maru sends only the steps of the scan (see `setup_step`). iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".
 
 ## Item photos
 
@@ -102,10 +116,10 @@ Maru draws the Lock Screen activity of Maru Pro, "Next Dose on Lock Screen", onl
 
 Settings has "Export Records", "Share Medication List", "Share Summary…", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first four.
 
-- The record export is a CSV file. It has your item names, your amounts, and your records.
-- The medication list is a PDF file. It has the name, form, amount, times, and note of each active item, as you typed them.
-- The summary is a PDF file. It has the name of each item that you choose, and how many planned doses you took, skipped, and did not record in the period that you choose. Maru counts it on your device.
-- The backup is a full copy of the database and of two settings: the app color and the names in reminders. The database holds the "Remind Again" and alarm choices of each item. The backup does not include the item photos.
+- The record export is a CSV file. It has your item names, your amounts, your records, and the member of each dose.
+- The medication list is a PDF file. It has the name, form, amount, times, and note of each active item, as you typed them. A list for one member has only that member's items, and its title has the member name.
+- The summary is a PDF file. It has the name of each item that you choose, and how many planned doses you took, skipped, and did not record in the period that you choose. Maru counts it on your device. A summary for one member has only that member's items, and its title has the member name.
+- The backup is a full copy of the database and of two settings: the app color and the names in reminders. The database holds the "Remind Again" and alarm choices of each item, and the members of your Family. The backup does not include the item photos or the member photos.
 - The files are not encrypted. Anyone with a file can read it.
 - Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.
 - Maru keeps the file in a protected temporary folder and removes it when the share sheet closes.

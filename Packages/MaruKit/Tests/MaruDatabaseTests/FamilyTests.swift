@@ -4,7 +4,7 @@ import MaruCore
 import Testing
 @testable import MaruDatabase
 
-@Suite("Family (D121 to D126, T63, T69, T70)")
+@Suite("Family (D121 to D126, D129, T63, T65, T69, T70)")
 struct FamilyTests {
     let directory = TestDirectory()
     let folder = TestDirectory()
@@ -147,5 +147,51 @@ struct FamilyTests {
         #expect(try await store.item(id: seed.item.id)?.isArchived == true)
         try await store.restore(person: mom.id)
         #expect(try await store.item(id: seed.item.id)?.isArchived == false)
+    }
+
+    /// The history, the graph, the summary, and the first day of one member never count a dose of another member. The export
+    /// names the member of each line (T65, D129).
+    @Test func theHistoryOfOneMemberHasOnlyItsDoses() async throws {
+        let store = try LocalStore(directory: directory.url)
+        let seed = try await store.seed()
+        let me = store.meID
+        let mom = try Person(kind: .person, name: "Mom")
+        try await store.save(mom)
+        let pill = try Item(personID: mom.id, category: .medication, name: "Levothyroxine", form: .tablet, color: .blue)
+        try await store.save(pill)
+        let (schedule, morning, _) = Fixtures.twiceDailySchedule(itemID: pill.id)
+        try await store.save(schedule)
+        let occurrence = Fixtures.occurrence(slotID: morning, in: schedule)
+        try await store.save(occurrence)
+        let drops = try Item(personID: mom.id, category: .medication, name: "Eye Drops", form: .drop, color: .green)
+        try await store.save(drops)
+        let early = Fixtures.instant("2025-12-01T04:00:00Z")
+        let dose = AsNeededOccurrence(itemID: drops.id, at: early, in: Fixtures.shanghai, dose: nil)
+        try await store.recordAsNeeded(
+            IntakeEvent(occurrenceID: dose.id, action: .taken, occurredAt: early, recordedAt: early, source: .app), occurrence: dose
+        )
+        for (taken, version) in [(seed.occurrence, seed.schedule.versions[0].id), (occurrence, schedule.versions[0].id)] {
+            try await store.record(Fixtures.event(for: taken, .taken), scheduleVersionID: version)
+        }
+        let today = Fixtures.date(2026, 3, 2)
+        let now = Fixtures.instant("2026-03-02T04:00:00Z")
+        let zone = Fixtures.shanghai
+
+        let page = try await store.history(before: today, days: 120, deviceTimeZone: zone, owner: me)
+        #expect(page.items.map(\.id) == [seed.item.id])
+        #expect(page.days.allSatisfy { $0.asNeeded.isEmpty && $0.doses.allSatisfy { $0.itemID == seed.item.id } })
+        #expect(!page.hasEarlier)
+        let mine = try await store.historyCounts(from: Fixtures.date(2025, 1, 1), through: today, at: now, deviceTimeZone: zone, owner: me)
+        let all = try await store.historyCounts(from: Fixtures.date(2025, 1, 1), through: today, at: now, deviceTimeZone: zone)
+        #expect(mine.firstDay == Fixtures.date(2026, 1, 1) && all.firstDay == Fixtures.date(2025, 12, 1))
+        #expect(mine.days[Fixtures.date(2026, 3, 1)] == HistoryDayCount(scheduled: 2, taken: 1))
+        #expect(all.days[Fixtures.date(2026, 3, 1)] == HistoryDayCount(scheduled: 4, taken: 2))
+        let summary = try await store.summary(days: 120, through: today, at: now, deviceTimeZone: zone, owner: mom.id)
+        #expect(Set(summary.summaries.keys) == [pill.id, drops.id])
+
+        let lines = try await store.exportedDoses(through: today, deviceTimeZone: zone)
+        #expect(lines.filter { $0.itemName == "Vitamin D" }.allSatisfy { $0.person == RecordExport.meName })
+        #expect(lines.filter { $0.itemName != "Vitamin D" }.allSatisfy { $0.person == "Mom" })
+        #expect(lines.contains { $0.itemName == "Eye Drops" })
     }
 }

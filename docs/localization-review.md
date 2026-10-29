@@ -557,3 +557,18 @@ These strings are new for the Family pages, the person menu of Today, the "For" 
 | Every record of their items goes too. You can’t undo this. | 其药品的所有记录也会一起删除。此操作无法撤销。 | 項目のすべての記録も削除されます。この操作は取り消せません。 | También se eliminan todos los registros de sus elementos. No se puede deshacer. | Alle Aufzeichnungen der Einträge werden ebenfalls gelöscht. Das lässt sich nicht widerrufen. | 항목의 모든 기록도 함께 삭제돼요. 되돌릴 수 없어요. |
 | Everyone you care for, in one place. | 你在乎的每个人，都在这里。 | 大切な人を、ひとつの場所に。 | Todos los que cuidas, en un solo lugar. | Alle, für die du sorgst, an einem Ort. | 아끼는 모든 이를 한곳에서. |
 | %lld items | %lld 个药品 | %lld項目 | %lld elementos | %lld Einträge | %lld개 항목 |
+
+## Family follow-ups (D129)
+
+Drafts by the team. A native speaker must check them. `%1$@` is the member and `%2$@` the item list.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| With names on, reminders also name the person or pet. | 显示名称时，提醒也会写明是哪位家人或宠物。 | 名前を表示すると、通知に家族やペットの名前も表示されます。 | Con los nombres activados, los recordatorios también indican la persona o la mascota. | Mit Namen nennen Erinnerungen auch die Person oder das Tier. | 이름을 표시하면 알림에 가족이나 반려동물의 이름도 표시돼요. |
+| Share Medication List… | 分享药品清单… | 服用リストを共有… | Compartir lista de medicación… | Medikamentenliste teilen … | 복용 목록 공유… |
+| Medication List for %@ | %@的药品清单 | %@の服用リスト | Lista de medicación de %@ | Medikamentenliste für %@ | %@의 복용 목록 |
+| Summary for %@ | %@的汇总 | %@のサマリー | Resumen de %@ | Zusammenfassung für %@ | %@의 요약 |
+| Person or Pet | 家人或宠物 | 人またはペット | Persona o mascota | Person oder Tier | 사람 또는 반려동물 |
+| For whom? | 为谁记录？ | 誰の分を記録しますか？ | ¿Para quién? | Für wen? | 누구의 복용을 기록할까요? |
+| Record as taken now for %@: %@? | 现在将%1$@的%2$@记录为已服用？ | %1$@の%2$@を今の時刻で服用済みとして記録しますか？ | ¿Registrar ahora como tomado para %1$@: %2$@? | Jetzt für %1$@ als eingenommen erfassen: %2$@? | %1$@의 %2$@을(를) 지금 복용함으로 기록할까요? |
+| Recorded as taken for %@: %@. | 已将%1$@的%2$@记录为已服用。 | %1$@の%2$@を服用済みとして記録しました。 | Registrado como tomado para %1$@: %2$@. | Für %1$@ als eingenommen erfasst: %2$@. | %1$@의 %2$@을(를) 복용함으로 기록했어요. |

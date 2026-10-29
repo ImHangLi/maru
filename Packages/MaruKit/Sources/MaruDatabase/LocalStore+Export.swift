@@ -22,6 +22,14 @@ extension LocalStore {
                 guard let dose = Dose(try row.decode(forColumn: "dose")) else { throw StorageError.invalidData }
                 amounts[try ScheduleVersionID(text: row.decode(forColumn: "id"))] = dose
             }
+            // The owner of an item now. The records move with the item, so a line names its current member (T64, D129).
+            let people = Dictionary(
+                try Self.fetchPeople(db).map { ($0.id, $0.name ?? RecordExport.meName) }, uniquingKeysWith: { first, _ in first }
+            )
+            func person(of item: Item) throws -> String {
+                guard let name = people[item.personID] else { throw StorageError.invalidData }
+                return name
+            }
             let lastRecord = try String.fetchOne(
                 db,
                 sql: """
@@ -49,7 +57,8 @@ extension LocalStore {
                                 dose: amounts[dose.occurrence.scheduleVersionID],
                                 status: dose.record.status,
                                 takenAt: Self.takenAt(dose.record),
-                                timeZone: dose.occurrence.timeZone
+                                timeZone: dose.occurrence.timeZone,
+                                person: try person(of: item)
                             )
                         )
                     }
@@ -64,7 +73,8 @@ extension LocalStore {
                                 dose: dose.occurrence.dose,
                                 status: dose.record.status,
                                 takenAt: Self.takenAt(dose.record),
-                                timeZone: dose.occurrence.timeZone
+                                timeZone: dose.occurrence.timeZone,
+                                person: try person(of: item)
                             )
                         )
                     }

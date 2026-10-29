@@ -196,7 +196,13 @@ private struct ReminderSection: View {
         } header: {
             Text("Reminders")
         } footer: {
-            if let text = footerText(permission) { Text(text) }
+            VStack(alignment: .leading, spacing: 4) {
+                if let text = footerText(permission) { Text(text) }
+                // Only with a second active member, so a user of one member sees no change (T57, D129).
+                if model.hasFamily {
+                    Text("With names on, reminders also name the person or pet.")
+                }
+            }
         }
     }
 

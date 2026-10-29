@@ -15,7 +15,8 @@ struct RecordExportTests {
             dose: Dose("+1+1"),
             status: .taken,
             takenAt: try Date("2026-03-01T00:05:00Z", strategy: .iso8601),
-            timeZone: zone
+            timeZone: zone,
+            person: RecordExport.meName
         )
         let asNeeded = ExportedDose(
             date: try LocalDate(year: 2026, month: 3, day: 1),
@@ -25,14 +26,15 @@ struct RecordExportTests {
             dose: nil,
             status: .skipped,
             takenAt: nil,
-            timeZone: zone
+            timeZone: zone,
+            person: "Mochi, \"Cat\""
         )
 
         let csv = RecordExport.csv([taken, asNeeded])
 
         #expect(csv == "\u{FEFF}"
-            + "Date,Planned Time,Item,Type,Amount,State,Time Taken,Time Zone\r\n"
-            + "2026-03-01,08:00,\"Zinc, 15 mg \"\"chelated\"\"\nwith copper\",Supplement,'+1+1,Taken,2026-03-01 08:05,Asia/Shanghai\r\n"
-            + "2026-03-01,,'=1+1 维生素 D,,,Skipped,,Asia/Shanghai\r\n")
+            + "Date,Planned Time,Item,Type,Amount,State,Time Taken,Time Zone,Person\r\n"
+            + "2026-03-01,08:00,\"Zinc, 15 mg \"\"chelated\"\"\nwith copper\",Supplement,'+1+1,Taken,2026-03-01 08:05,Asia/Shanghai,Me\r\n"
+            + "2026-03-01,,'=1+1 维生素 D,,,Skipped,,Asia/Shanghai,\"Mochi, \"\"Cat\"\"\"\r\n")
     }
 }

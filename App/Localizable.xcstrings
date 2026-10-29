@@ -1,47 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Several people and pets use Maru, so Siri can’t record for them. Open Maru to record each dose." : {
-      "comment" : "Siri, \"Record my doses\": the answer when the Family has two or more people or pets. One confirmation must not record a dose for another member, so Siri records nothing (D123).",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In Maru sind mehrere Personen und Tiere angelegt, daher kann Siri nicht für sie erfassen. Öffne Maru, um jede Einnahme zu erfassen."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Several people and pets use Maru, so Siri can’t record for them. Open Maru to record each dose."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En Maru hay varias personas y mascotas, así que Siri no puede registrar por ellas. Abre Maru para registrar cada toma."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruに複数の人やペットがいるため、Siriでは記録できません。Maruを開いて1件ずつ記録してください。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru에 여러 사람과 반려동물이 있어서 Siri로는 기록할 수 없어요. Maru를 열어 각 복용을 기록해 주세요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 里有多位家人，Siri 无法替他们记录。请打开 Maru 逐条记录。"
-          }
-        }
-      }
-    },
     "Me" : {
       "comment" : "The word for the member of the Family who owns the device, in a dose name that names its owner and in the Family pages. Example: “Me: Vitamin D3”.",
       "localizations" : {
@@ -17569,6 +17528,286 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "为其他人添加…"
+          }
+        }
+      }
+    },
+    "With names on, reminders also name the person or pet." : {
+      "comment" : "Settings, footer of the Reminders section, only with two or more Family members: \"Show Names in Reminders\" also shows member names (D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示名称时，提醒也会写明是哪位家人或宠物。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "名前を表示すると、通知に家族やペットの名前も表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이름을 표시하면 알림에 가족이나 반려동물의 이름도 표시돼요."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Con los nombres activados, los recordatorios también indican la persona o la mascota."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Namen nennen Erinnerungen auch die Person oder das Tier."
+          }
+        }
+      }
+    },
+    "Share Medication List…" : {
+      "comment" : "Settings, Your Data: the row that opens a menu to share the medication list of everyone or of one Family member (D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "分享药品清单…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用リストを共有…"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 목록 공유…"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compartir lista de medicación…"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medikamentenliste teilen …"
+          }
+        }
+      }
+    },
+    "Medication List for %@" : {
+      "comment" : "The title of the medication list PDF of one Family member. The placeholder is the member name, for example “Mochi” (D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@的药品清单"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@の服用リスト"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@의 복용 목록"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lista de medicación de %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Medikamentenliste für %@"
+          }
+        }
+      }
+    },
+    "Summary for %@" : {
+      "comment" : "The title of the summary PDF of one Family member, for example for a doctor or a vet. The placeholder is the member name (T65, D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@的汇总"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@のサマリー"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@의 요약"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resumen de %@"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zusammenfassung für %@"
+          }
+        }
+      }
+    },
+    "Person or Pet" : {
+      "comment" : "Siri and Shortcuts: the type name of a Family member that \"Record my doses\" asks for (D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "家人或宠物"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "人またはペット"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "사람 또는 반려동물"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Persona o mascota"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Person oder Tier"
+          }
+        }
+      }
+    },
+    "For whom?" : {
+      "comment" : "Siri, \"Record my doses\" with two or more Family members: the question for the member. Siri then lists the members (D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "为谁记录？"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "誰の分を記録しますか？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "누구의 복용을 기록할까요?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Para quién?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für wen?"
+          }
+        }
+      }
+    },
+    "Record as taken now for %@: %@?" : {
+      "comment" : "Siri, \"Record my doses\" for one Family member: the question before the record. The first placeholder is the member name, the second a list of item names (D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "现在将%1$@的%2$@记录为已服用？"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@の%2$@を今の時刻で服用済みとして記録しますか？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@의 %2$@을(를) 지금 복용함으로 기록할까요?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Registrar ahora como tomado para %1$@: %2$@?"
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt für %1$@ als eingenommen erfassen: %2$@?"
+          }
+        }
+      }
+    },
+    "Recorded as taken for %@: %@." : {
+      "comment" : "Siri, \"Record my doses\" for one Family member: the answer after the commit. The first placeholder is the member name, the second a list of item names (D129).",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已将%1$@的%2$@记录为已服用。"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@の%2$@を服用済みとして記録しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@의 %2$@을(를) 복용함으로 기록했어요."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registrado como tomado para %1$@: %2$@."
+          }
+        },
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für %1$@ als eingenommen erfasst: %2$@."
           }
         }
       }

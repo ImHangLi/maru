@@ -28,13 +28,15 @@ struct SiriDueDoses: Sendable {
     let generation: Int
     /// An instant before the read. The store refuses a dose whose item changed its owner after it (D123).
     let readAt: Date
+    /// The read had two or more active members, so the doses are of the one member that the user chose (D129).
+    let namesMember: Bool
 
     var names: [String] { entries.map(\.look.labelledName) }
 }
 
 /// Why `siriDueDoses` gives no doses.
 enum SiriDueDosesError: Error {
-    /// The Family has two or more active members (D123).
+    /// The Family has two or more active members, and the user did not choose one yet (D123, D129).
     case severalMembers
 }
 
@@ -90,21 +92,23 @@ extension AppModel {
     /// The open doses of the part of the day of the clock (D108). It records nothing. A dose with an event that the store
     /// did not confirm, or with a record transaction that runs, is left out: it goes again only from Today (D014).
     ///
-    /// With two or more active members it throws `SiriDueDosesError.severalMembers`: one confirmation must not record a dose for
-    /// another member (D123). The Siri member parameter is a later step.
-    func siriDueDoses() async throws -> SiriDueDoses {
+    /// With two or more active members it needs `member`, else it throws `SiriDueDosesError.severalMembers`: one confirmation must
+    /// not record a dose for another member (D123). With `member` it gives only the doses of the items of that member now (D129).
+    func siriDueDoses(for member: PersonID?) async throws -> SiriDueDoses {
         analytics.markUsed(.siri)
         let generation = dataGeneration
         // Before the read, so an owner change during the read refuses the record (D123).
         let readAt = Date()
         let (day, timeZone, activeMembers) = try await freshToday()
         // The members come from the read of the doses, after its items: a member that comes back during the read counts (D123).
-        guard activeMembers < 2 else { throw SiriDueDosesError.severalMembers }
+        guard activeMembers < 2 || member != nil else { throw SiriDueDosesError.severalMembers }
         let part = Self.clockPart(at: Date(), in: timeZone)
+        // The owner comes from the same read. An owner change after `readAt` refuses the record in the transaction (D123).
         let entries = day.groups.first { $0.part == part }?.entries.filter {
             $0.isOpen && today.pending[$0.id] == nil && !today.inFlight.contains($0.id)
+                && (member == nil || $0.look.personID == member)
         } ?? []
-        return SiriDueDoses(entries: entries, generation: generation, readAt: readAt)
+        return SiriDueDoses(entries: entries, generation: generation, readAt: readAt, namesMember: activeMembers >= 2)
     }
 
     /// Records the doses of `due` as taken now, in one record transaction (D108). `true` only after the commit (spec 7.2).

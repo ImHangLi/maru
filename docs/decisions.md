@@ -2548,7 +2548,7 @@ Maintainer decision of 2026-10-28. Free: "Me" and every item, always. Pro: the c
 - The store has no gate, because the store never reads Pro. The free edit path calls `update(_:)`, which refuses a missing member in the write transaction.
 - Family does not unlock the Watch app (D111) or the Live Activity (D110).
 
-## D123 · 2026-10-29 · Reminder text with members, no group action across members, and no quick action after an owner change (changes D090, D110, D108, and the Watch row name of D071)
+## D123 · 2026-10-29 · Reminder text with members, no group action across members, and no quick action after an owner change (changes D090, D110, D108, and the Watch row name of D071, Siri record rule changed by D129)
 
 Maintainer decision 4 of 2026-10-28, with agent detail from the design and its two Codex reviews.
 
@@ -2630,7 +2630,7 @@ Lead decision for the maintainer, who asked for usage and Pro conversion data be
 
 Tests (D016): the factory check of `AnalyticsTests` sends the new factories through the checked init. No other test.
 
-## D128 · 2026-10-29 · The Family UI: member colors, the person menu, and "Add for" (replaces the color rule of D121 and D124)
+## D128 · 2026-10-29 · The Family UI: member colors, the person menu, and "Add for" (replaces the color rule of D121 and D124, "not in this change" list done by D129)
 
 Maintainer decisions of 2026-10-29 on the design prototype (`~/Documents/Research/maru/family-mode/apple-style/`), with team defaults for the open points. The captures of the real UI are in `~/Documents/Research/maru/family-mode/real-ui/`.
 
@@ -2663,3 +2663,42 @@ Pro:
 - It adds no Pro gate. The usage statistics count it as a new item (`mode` `new`), because the event schema needs no new value. No member data leaves the iPhone.
 
 Not in this change: the History and summary filter by member (T65), the per-member PDF, the CSV column "Person", the My Items filter and tile avatars, the "For" row on the item detail, the footer of "Show Names in Reminders", a member parameter for Siri, and `PRIVACY.md`.
+
+## D129 · 2026-10-29 · Family follow-ups: History, My Items, the summary, the CSV column, and Siri for one member (changes the Siri rule of D123)
+
+Maintainer approval of 2026-10-29 for the "not in this change" list of D128, with team defaults for the open points. Simulator captures are in `~/Documents/Research/maru/family-mode/follow-ups/`.
+
+One choice for three pages:
+
+- History and My Items have the person menu of Today. The three pages share one choice in memory (`TodayState.member`), as section 7.1 of the design says. A new launch and a tapped reminder show "Everyone" (D128).
+- History of one member: the store reads take `owner` (`history`, `historyCounts`, `summary`). The filter limits the items, the schedules, the stored and the as-needed doses, the graph counts, and the first day (T65). An item belongs to its current owner, so the records move with it (T64). A change of the menu, an owner change, or an archive reads the page again. The log of an item from its detail reads every member. While the History of one member is open, a log of an item of another member shows "Everyone".
+- History hides the "not saved" banner in the view of one member, as Today does (D128). Its retry sends the events of every member.
+- My Items of one member shows only the active items of that member. "Archived" stays one list for everyone. A member with no item shows "No Items Yet" with "Add Item". In "Everyone", a tile of another member has the avatar of the owner at its top corner. A tile of "Me" has none, as a row of Today. VoiceOver reads the tile as "Mom: Levothyroxine".
+
+Item detail:
+
+- The detail has a row "For" with the avatar and the name of the owner, only with a second active member (T57). The row only shows the owner. "Edit" changes it, so the user reads "Records move with the item." before the save. This replaces "tap changes it" of the design.
+
+Reports and export:
+
+- The summary sheet has a "For" menu with "Everyone" and each active member. It starts at the member of the person menu. The item list and the counts then have only that member, and the PDF title is "Summary for Mochi" (T65).
+- "Share Medication List" becomes a menu "Share Medication List…" with "Everyone" and each active member, only with a second active member. The title of a list of one member is "Medication List for Mochi".
+- The CSV export has a new last column "Person": the name of the current owner, or `Me` in fixed English for "Me" before a rename. The column is always there, also with one member, so a parser reads one header. The backup format does not change (`docs/export-format.md`). An older parser that reads the columns by position still reads the first eight.
+
+Settings:
+
+- With a second active member, the footer of "Reminders" says "With names on, reminders also name the person or pet." With one member it shows nothing new (T57).
+
+Siri (changes D123):
+
+- "Record my doses" has an optional parameter "For" (`MemberEntity`, the active members). With two or more active members and no member, Siri asks "For whom?" and lists the members. It then reads the doses again and records only the open doses of the items of that member. One confirmation never records for two members (D123).
+- The confirmation names the member and the items: "Record as taken now for Mom: Levothyroxine?". With "Show Names in Reminders" off, Siri says only the count, with no member name and no item name (T62). The list of members of the question shows on the unlocked iPhone, because the user must choose one.
+- The record keeps the checks of D108 and D123: the read instant refuses a dose whose owner changed after it. The phrases do not change.
+- The refusal text of D123 ("Several people and pets use Maru…") is removed.
+
+Analytics: nothing new. No member name, ID, or photo goes to an event (T68).
+
+Tests (D016): one store test checks that the history, the graph counts, the first day, and the summary of one member never count another member, and that the export names the member of each line (T65). The CSV test has the new column. No UI test.
+
+Checks: the upgrade from `v7` to `v9` is covered by package tests, so no device-style upgrade check ran. `FamilyTests.version7BackfillsMeWithoutChangingRecords` migrates a `v7` database with records to the current schema. `UpgradeTests` opens the shipped fixtures of 1.0 (`v5`) and 1.1 (`v6`) and runs the whole reminder queue through `v9`.
+
