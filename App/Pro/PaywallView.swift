@@ -180,11 +180,11 @@ struct PaywallView: View {
     private var benefits: some View {
         VStack(alignment: .leading, spacing: 20) {
             BenefitRow(
-                symbol: "lock.iphone", title: "Right on your Lock Screen",
+                symbol: "lock.fill", title: "Right on your Lock Screen",
                 detail: "See dose and time without opening Maru."
             )
             BenefitRow(
-                symbol: "person.2", title: "Your whole family",
+                symbol: "person.2.fill", title: "Your whole family",
                 detail: "People and pets, each with their own reminders."
             )
             BenefitRow(
@@ -192,11 +192,11 @@ struct PaywallView: View {
                 detail: "Apple Watch, Siri, and Shortcuts."
             )
             BenefitRow(
-                symbol: "doc.text", title: "Reports for your doctor",
+                symbol: "doc.text.fill", title: "Reports for your doctor",
                 detail: "PDF summaries and 30-day counts."
             )
             BenefitRow(
-                symbol: "paintpalette", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."
+                symbol: "paintpalette.fill", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."
             )
         }
     }
@@ -425,14 +425,20 @@ private struct BenefitRow: View {
     let symbol: String
     let title: LocalizedStringKey
     let detail: LocalizedStringKey
-    @ScaledMetric(relativeTo: .title3) private var symbolWidth = 32
+    @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
+    @ScaledMetric(relativeTo: .title3) private var tileSide = 32
 
     var body: some View {
-        HStack(alignment: .center, spacing: 12) {
-            Image(systemName: symbol)
-                .font(.title3.weight(.light))
-                .foregroundStyle(.tint)
-                .frame(width: symbolWidth, alignment: .leading)
+        HStack(alignment: .center, spacing: 14) {
+            // Each symbol sits on a tile of one size, as in iOS Settings, so the rows look the same.
+            RoundedRectangle(cornerRadius: tileSide * 0.24, style: .continuous)
+                .fill(.tint)
+                .frame(width: tileSide, height: tileSide)
+                .overlay {
+                    Image(systemName: symbol)
+                        .font(.system(size: tileSide * 0.5, weight: .semibold))
+                        .foregroundStyle(appColor.labelOnTint)
+                }
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title).font(.headline)
