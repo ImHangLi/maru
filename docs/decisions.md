@@ -2866,7 +2866,8 @@ Other changes:
 
 - The thank-you after a purchase keeps "Welcome to Maru Pro" and says "Thank you. Your journey starts here.". The translations follow the meaning, not each word.
 - The "For" pickers of the editor and of the summary sheet have clear space beside the avatar, so the avatar and the name do not touch.
-- The person menu on Today has the button style of Settings: its own bar button with the system background and a 28 point avatar inside it. Before, it was a 36 point avatar with no background.
+- The person menu is a plain `person.2` symbol in the same bar group as History and Add, so the top right has one group of three buttons. Before, it was a 36 point avatar with no background. The title names the shown member.
+- The "For" pickers put an 8 point gap after the avatar, the same gap as between a title and its PRO badge.
 
 Tests (D016): none new. No package test covered only Siri.
 
