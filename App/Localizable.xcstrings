@@ -11082,13 +11082,13 @@
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maru를 열지 않아도 복용 시간을 볼 수 있어요."
+            "value" : "Maru를 열지 않아도 복용 항목과 시간을 볼 수 있어요."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不用打开 Maru，就能看到下次服药时间。"
+            "value" : "不用打开 Maru，就能看到服用内容和时间。"
           }
         }
       }
@@ -11729,7 +11729,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gratis testen starten"
+            "value" : "Kostenlos testen"
           }
         },
         "es" : {
@@ -16765,7 +16765,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "ほかの人に追加…"
+            "value" : "ほかのメンバーに追加…"
           }
         },
         "ko" : {
@@ -16777,7 +16777,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "为其他人添加…"
+            "value" : "为其他成员添加…"
           }
         }
       }
@@ -16812,7 +16812,7 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mit Namen nennen Erinnerungen auch die Person oder das Tier."
+            "value" : "Wenn Namen angezeigt werden, nennen Erinnerungen auch die Person oder das Tier."
           }
         }
       }

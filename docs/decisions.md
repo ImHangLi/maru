@@ -2871,3 +2871,19 @@ Other changes:
 Tests (D016): none new. No package test covered only Siri.
 
 The new strings are drafts in five languages (`docs/localization-review.md`).
+
+## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning
+
+Maintainer decisions of 2026-10-30:
+
+- Lead the alarm section and promo with free alarms through Silent mode and Focus, like the Clock app. Keep iOS 26 nearby.
+- Each item has an Alarm switch. Alarms stay free and need no Maru Pro purchase.
+- The maintainer tested Silent mode on an iPhone. Focus rests on [Apple's WWDC25 statement](https://developer.apple.com/videos/play/wwdc2025/230/).
+- Focus still needs a maintainer device check. The wording does not promise a health outcome or an unmissed dose.
+- Review the store, paywall, thank-you, and Family translations before release. Native speaker review follows.
+- Make no per-country price changes at launch. Keep Apple's default price equalization. Revisit with real regional data.
+- Add pt-BR and pt-PT first after launch. Then add fr, it, and zh-Hant, from the Doz teardown.
+- Plan primary Medical and secondary Health & Fitness. Apply the categories in a later authorized App Store Connect task.
+
+The local FAQ and generated pages follow the store claim. Nothing is deployed or uploaded in this task.
+`docs/localization-review.md` lists the corrections and sources. `docs/release-plan.md` keeps screenshots and category changes open.

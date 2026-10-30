@@ -432,7 +432,7 @@ Five new strings for the second paywall. No native speaker read them. The review
 | Add Lock Screen, Apple Watch, and your own look. Reminders stay free. | 添加锁定屏幕、Apple Watch 和专属外观。提醒仍然免费。 | ロック画面、Apple Watch、あなた好みの見た目を追加。リマインダーは引き続き無料です。 | Añade pantalla bloqueada, Apple Watch y tu propio estilo. Los recordatorios siguen siendo gratis. | Mit Sperrbildschirm, Apple Watch und eigenem Look. Erinnerungen bleiben kostenlos. | 잠금 화면, Apple Watch, 나만의 스타일을 더해요. 알림은 계속 무료예요. |
 | Free for %lld days, then %@ per year. Renews automatically. Cancel anytime. | 免费 %1$lld 天，之后每年 %2$@。自动续订，可随时取消。 | %1$lld日間無料、その後は年額%2$@。自動更新で、いつでもキャンセルできます。 | Gratis durante %1$lld días, luego %2$@ al año. Se renueva automáticamente. Cancela cuando quieras. | %1$lld Tage kostenlos, dann %2$@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | %1$lld일 무료, 이후 연 %2$@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
 | %@ per year. Renews automatically. Cancel anytime. | 每年 %@。自动续订，可随时取消。 | 年額%@。自動更新で、いつでもキャンセルできます。 | %@ al año. Se renueva automáticamente. Cancela cuando quieras. | %@ pro Jahr. Verlängert sich automatisch. Jederzeit kündbar. | 연 %@. 자동으로 갱신되며 언제든 취소할 수 있어요. |
-| Start Free Trial | 开始免费试用 | 無料トライアルを開始 | Empezar prueba gratis | Gratis testen starten | 무료 체험 시작 |
+| Start Free Trial | 开始免费试用 | 無料トライアルを開始 | Empezar prueba gratis | Kostenlos testen | 무료 체험 시작 |
 
 ## Final paywall (D118, changed by D119)
 
@@ -472,7 +472,7 @@ Six strings replace six strings: "Dose on Lock Screen", "See your next dose with
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
 | Right on your Lock Screen | 就在锁定屏幕上 | ロック画面にそのまま表示 | En tu pantalla bloqueada | Direkt auf dem Sperrbildschirm | 잠금 화면에 바로 표시 |
-| See dose and time without opening Maru. | 不用打开 Maru，就能看到下次服药时间。 | Maruを開かずに、服用と時刻がわかります。 | Ve la dosis y la hora sin abrir Maru. | Dosis und Zeit sehen, ohne Maru zu öffnen. | Maru를 열지 않아도 복용 시간을 볼 수 있어요. |
+| See dose and time without opening Maru. | 不用打开 Maru，就能看到服用内容和时间。 | Maruを開かずに、服用と時刻がわかります。 | Ve la dosis y la hora sin abrir Maru. | Dosis und Zeit sehen, ohne Maru zu öffnen. | Maru를 열지 않아도 복용 항목과 시간을 볼 수 있어요. |
 | Record from your wrist | 在手腕上记录服药 | 手首から服用を記録 | Registra desde la muñeca | Am Handgelenk erfassen | 손목에서 바로 기록 |
 | Tap Taken on Apple Watch. Needs iPhone. | 手表上点“已服用”，需连接 iPhone。 | 「服用済み」をタップ。iPhoneが必要です。 | Toca Tomado en el reloj. Necesita iPhone. | Tippe auf Eingenommen. iPhone nötig. | Apple Watch에서 ‘복용함’ 탭. iPhone 필요. |
 | Make Maru yours | 打造你的 Maru | 自分らしいMaruに | Haz Maru tuya | Dein Maru, dein Stil | 나만의 Maru로 |
@@ -488,7 +488,7 @@ These strings are new for the Family pages, the person menu of Today, the "For" 
 | Everyone | 所有人 | みんな | Todos | Alle | 모두 |
 | Show | 显示 | 表示 | Mostrar | Anzeigen | 표시 |
 | Add Person or Pet | 添加家人或宠物 | 人やペットを追加 | Añadir persona o mascota | Person oder Tier hinzufügen | 사람 또는 반려동물 추가 |
-| Add for… | 为其他人添加… | ほかの人に追加… | Añadir para… | Hinzufügen für … | 다른 구성원에게 추가… |
+| Add for… | 为其他成员添加… | ほかのメンバーに追加… | Añadir para… | Hinzufügen für … | 다른 구성원에게 추가… |
 | For | 给谁 | 対象 | Para | Für | 대상 |
 | Records move with the item. | 记录会随药品一起移动。 | 記録も項目と一緒に移ります。 | Los registros se mueven con el elemento. | Die Aufzeichnungen wandern mit dem Eintrag. | 기록도 항목과 함께 옮겨져요. |
 | Keep doses and records for the people and pets you care for, each on their own. | 为你照顾的人和宠物分别管理用药和记录。 | 大切な人やペットの服用と記録を、それぞれ別に管理できます。 | Lleva las dosis y los registros de las personas y mascotas que cuidas, cada uno por separado. | Behalte Einnahmen und Aufzeichnungen der Menschen und Tiere, um die du dich kümmerst, getrennt im Blick. | 돌보는 사람과 반려동물의 복용과 기록을 각각 따로 관리해요. |
@@ -522,7 +522,7 @@ Drafts by the team. A native speaker must check them. `%1$@` is the member and `
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| With names on, reminders also name the person or pet. | 显示名称时，提醒也会写明是哪位家人或宠物。 | 名前を表示すると、通知に家族やペットの名前も表示されます。 | Con los nombres activados, los recordatorios también indican la persona o la mascota. | Mit Namen nennen Erinnerungen auch die Person oder das Tier. | 이름을 표시하면 알림에 가족이나 반려동물의 이름도 표시돼요. |
+| With names on, reminders also name the person or pet. | 显示名称时，提醒也会写明是哪位家人或宠物。 | 名前を表示すると、通知に家族やペットの名前も表示されます。 | Con los nombres activados, los recordatorios también indican la persona o la mascota. | Wenn Namen angezeigt werden, nennen Erinnerungen auch die Person oder das Tier. | 이름을 표시하면 알림에 가족이나 반려동물의 이름도 표시돼요. |
 | Share Medication List… | 分享药品清单… | 服用リストを共有… | Compartir lista de medicación… | Medikamentenliste teilen … | 복용 목록 공유… |
 | Medication List for %@ | %@的药品清单 | %@の服用リスト | Lista de medicación de %@ | Medikamentenliste für %@ | %@의 복용 목록 |
 | Summary for %@ | %@的汇总 | %@のサマリー | Resumen de %@ | Zusammenfassung für %@ | %@의 요약 |
@@ -561,3 +561,65 @@ Drafts by the team. A native speaker must check them. Translate the meaning of t
 | Record from your wrist | 在手腕上记录 | 手首で記録 | Registra desde tu muñeca | Direkt am Handgelenk erfassen | 손목에서 바로 기록 |
 | Apple Watch shows and records each dose. | Apple Watch 显示并记录每次服用。 | Apple Watch で服用を確認して記録。 | Apple Watch muestra y registra cada dosis. | Die Apple Watch zeigt und erfasst jede Dosis. | Apple Watch에서 복용을 보고 기록해요. |
 | Thank you. Your journey starts here. | 谢谢你。一切从这里开始。 | ありがとうございます。ここから始まります。 | Gracias. Aquí empieza tu camino. | Danke. Hier beginnt dein Weg. | 고마워요. 이제 여기서 시작해요. |
+
+## Store and purchase text review · 2026-10-30 (D141)
+
+Scope: all local store fields, plus the paywall, thank-you, and Family strings in zh-Hans, ja, ko, de, and es.
+The review checks meaning, natural wording, formality, Apple terms, and text length. Good text stays as it is.
+The thank-you text needs no change. Native speaker review stays open.
+The catalog keeps its Xcode text format. Only the listed values change.
+
+### Translation corrections
+
+| Surface and language | Before | After | Reason |
+|---|---|---|---|
+| App: Start Free Trial (de) | Gratis testen starten | Kostenlos testen | Correct the ungrammatical action label. |
+| App: See dose and time without opening Maru. (zh-Hans) | 不用打开 Maru，就能看到下次服药时间。 | 不用打开 Maru，就能看到服用内容和时间。 | Restore the omitted item. |
+| App: See dose and time without opening Maru. (ko) | Maru를 열지 않아도 복용 시간을 볼 수 있어요. | Maru를 열지 않아도 복용 항목과 시간을 볼 수 있어요. | Restore the omitted item. |
+| App: Add for… (zh-Hans) | 为其他人添加… | 为其他成员添加… | Include pets in the member action. |
+| App: Add for… (ja) | ほかの人に追加… | ほかのメンバーに追加… | Include pets in the member action. |
+| App: With names on, reminders also name the person or pet. (de) | Mit Namen nennen Erinnerungen auch die Person oder das Tier. | Wenn Namen angezeigt werden, nennen Erinnerungen auch die Person oder das Tier. | Clarify the condition for showing names. |
+| Store: description (de-DE) | Dosen sehen und am Handgelenk erfassen. | Einnahmen sehen und am Handgelenk erfassen. | Use the natural term for recorded intakes. |
+| Store: description (ko) | 추가는 짧아요. | 항목을 빠르게 추가할 수 있어요. | Replace an unnatural literal translation of a short task. |
+| Store: description (ko) | 파일은 내가 정해요. | 파일을 어디에 저장할지는 내가 정해요. | State that the user chooses the file destination. |
+
+### Alarm copy and Apple terms
+
+The maintainer tested Silent mode on an iPhone on 2026-10-30. Focus needs a device check.
+[WWDC25 session 230](https://developer.apple.com/videos/play/wwdc2025/230/) states that AlarmKit alerts pass through Silent mode and the current Focus.
+The review reads that transcript and the localized Apple support pages below on 2026-10-30.
+
+| Locale | Term | Apple source |
+|---|---|---|
+| en | Focus | [Set up a Focus](https://support.apple.com/en-gb/guide/iphone/iphd6288a67f/ios) |
+| zh-Hans | 专注模式 | [设置专注模式](https://support.apple.com/zh-cn/guide/iphone/iphd6288a67f/27/ios/27) |
+| ja | 集中モード | [集中モードを設定する](https://support.apple.com/ja-jp/guide/iphone/-iphd6288a67f/ios) |
+| ko | 집중 모드 | [집중 모드](https://support.apple.com/ko-kr/105112) |
+| de | Fokus | [Fokus einrichten](https://support.apple.com/de-de/guide/iphone/-iphd6288a67f/ios) |
+| es-ES | Concentración | [Configurar un modo de concentración](https://support.apple.com/es-es/guide/iphone/iphd6288a67f/ios) |
+| es-MX | Enfoque | [Configurar un enfoque](https://support.apple.com/es-mx/guide/iphone/-iphd6288a67f/ios) |
+
+Apple uses Enfoque in es-MX. That store locale follows its regional term. The shared Spanish FAQ follows es-ES.
+
+| Locale | Before: alarm section | After: alarm section |
+|---|---|---|
+| en-US | • Choose for each item: a quiet reminder, or an alarm that rings like the Clock app, even in silent mode. Alarms need iOS 26 or later. | • Free alarms ring through Silent mode and Focus, like the Clock app. Alarms need iOS 26 or later. / • Choose a reminder or turn on "Alarm" for each item. |
+| en-GB | • Choose for each item: a quiet reminder, or an alarm that rings like the Clock app, even in silent mode. Alarms need iOS 26 or later. | • Free alarms ring through Silent mode and Focus, like the Clock app. Alarms need iOS 26 or later. / • Choose a reminder or turn on "Alarm" for each item. |
+| zh-Hans | • 每个药品或保健品都能单独选：安静的提醒，或者像“时钟”App 那样响铃的闹钟，静音模式下也会响。闹钟需要 iOS 26 或更高版本。 | • 免费闹钟像“时钟”App 一样，在静音模式或专注模式下也会响铃。闹钟需要 iOS 26 或更高版本。 / • 每个药品或保健品都能选择普通提醒，或打开“闹钟”开关。 |
+| ja | • 項目ごとに選べます。静かなリマインダー、または「時計」アプリのように、消音モードでも鳴るアラーム。アラームはiOS 26以降で使えます。 | • 無料のアラームは「時計」アプリのように、消音モードや集中モードでも鳴ります。アラームはiOS 26以降で使えます。 / • 項目ごとに通常のリマインダーを使うか、「アラーム」をオンにするか選べます。 |
+| ko | • 항목마다 고를 수 있어요. 조용한 미리 알림, 또는 시계 앱처럼 무음 모드에서도 울리는 알람이에요. 알람은 iOS 26 이상에서 쓸 수 있어요. | • 무료 알람은 시계 앱처럼 무음 모드나 집중 모드에서도 울려요. 알람은 iOS 26 이상에서 쓸 수 있어요. / • 항목마다 일반 미리 알림을 쓰거나 ‘알람’을 켤 수 있어요. |
+| de-DE | • Wähle für jeden Eintrag: eine leise Erinnerung oder einen Wecker, der klingelt wie in der Uhr-App, auch im Stumm-Modus. Wecker brauchen iOS 26 oder neuer. | • Kostenlose Wecker klingeln wie die Uhr-App, auch im Stummmodus und bei aktivem Fokus. Wecker brauchen iOS 26 oder neuer. / • Wähle pro Eintrag eine Erinnerung oder aktiviere „Wecker“. |
+| es-ES | • Elige para cada elemento: un recordatorio discreto o una alarma que suena como la app Reloj, incluso en modo silencio. Las alarmas necesitan iOS 26 o posterior. | • Las alarmas gratuitas suenan como la app Reloj, incluso con el modo Silencio o Concentración activados. Necesitan iOS 26 o posterior. / • Elige un recordatorio o activa «Alarma» para cada elemento. |
+| es-MX | • Elige para cada elemento: un recordatorio discreto o una alarma que suena como la app Reloj, incluso en modo silencio. Las alarmas necesitan iOS 26 o posterior. | • Las alarmas gratuitas suenan como la app Reloj, incluso con el modo Silencio o Enfoque activados. Necesitan iOS 26 o posterior. / • Elige un recordatorio o activa «Alarma» para cada elemento. |
+
+Each closing caution now names a normal reminder. It keeps the previous caution about Silent mode and Focus.
+Each promo starts with the free alarm claim and its iOS 26 requirement.
+The six FAQ answers use the same alarm claim and distinguish normal reminders.
+
+### Validation and remaining checks
+
+- Local metadata validation reports no errors or warnings. No description needs a trim.
+- The site build generates 24 pages. The site stays unpublished.
+- Static layout review finds wrapping in benefit rows and purchase terms. It proves no rendered layout result.
+- Check the longest labels, prices, and legal links on a device, including large text.
+- A native speaker must review each language before release.
