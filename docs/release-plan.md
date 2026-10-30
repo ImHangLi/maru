@@ -48,11 +48,12 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 ## 5. Store page
 
 - Name, subtitle, keywords, and description: the files in `metadata/`, in the layout of `asc metadata`. Six languages, es-MX, and en-GB. The reasons are in `docs/research/2026-10-13-aso-and-store-page.md`. The text is in App Store Connect (section 7).
-- Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. Section 7 of the same note has the six frames and their order. The frames use simulator captures of `main`, and they are in `ui-shots/store-final/iphone/`, outside the repository.
-- Screenshots for the 13-inch iPad in each language (D072), at 2064 × 2752 pixels. App Store Connect requires them for an app that supports the iPad. Both sets are uploaded (section 7).
+- Open: refresh store screenshots for version 1.1.0, including current Pro and Family screens. Screenshots at 1206 × 2622 pixels in each language. This is the required iPhone size. Section 7 of the same note has the six frames and their order. The frames use simulator captures of `main`, and they are in `ui-shots/store-final/iphone/`, outside the repository.
+- Open: refresh screenshots for the 13-inch iPad in each language (D072), at 2064 × 2752 pixels. App Store Connect requires them for an app that supports the iPad. Both sets are uploaded (section 7).
 - A privacy policy page and a support page on the landing page domain. The pages are live.
 - Privacy labels that match the build and `App/PrivacyInfo.xcprivacy`, all for analytics, linked to the user (D069), and with no tracking: Identifiers (Device ID), Usage Data (Product Interaction), Diagnostics (Other Diagnostic Data), and Other Data (Other Data Types, the region setting, D064). Do not select Location. Published (section 7).
-- Age rating, the category Health & Fitness, and review notes: no account, the reminder behavior, and no medical advice (T50). Drafts are in section 8 of the note. The secondary category is Medical. Set (section 7).
+- Open: set primary Medical and secondary Health & Fitness for launch (D141). No App Store Connect change occurs in this task.
+- Age rating and review notes: no account, the reminder behavior, and no medical advice (T50). Drafts are in section 8 of the note.
 
 ## 6. Launch
 
@@ -88,7 +89,19 @@ Set on 2026-10-13 (D075), with the `asc` CLI and, for the parts with no public A
 
 ### Category
 
-Health & Fitness is the primary category. On 2026-10-13, in the US, 8 of the 10 top results for "pill reminder" and 7 of 10 for "medication reminder" have Medical as the primary category. 8 of 9 for "supplement tracker" and 7 of 9 for "vitamin tracker" have Health & Fitness. The name and the subtitle lead with supplements and vitamins, where a new app can rank, so the primary category follows that group. No reminder app is in the top 100 free apps of the Medical chart, and Medisafe with 101,000 ratings is not there, so the smaller chart gives a new app no place. Medical stays the secondary category, and search reads it.
+The launch plan uses primary Medical and secondary Health & Fitness (maintainer decision of 2026-10-30, D141).
+This replaces the earlier category plan. The settings table above records the earlier App Store Connect values.
+Open: apply the new categories in App Store Connect before submission. This task changes local files only.
+
+### Regional prices and later languages (D141)
+
+Maintainer decision of 2026-10-30:
+
+- Make no per-country price changes at launch. Keep Apple's default price equalization.
+- Revisit regional prices with real regional data after launch.
+- Add pt-BR and pt-PT first after launch. Then add fr, it, and zh-Hant, from the Doz teardown.
+- Keep native speaker review before release. The current translation review does not replace it.
+
 
 ### Territories
 
@@ -219,11 +232,13 @@ Changes of 2026-10-30. Version 1.1.0 is the first public release, and it is a fr
 
 Checks before the text goes to App Store Connect:
 
-- Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, "What's New", and the site FAQ.
+- D141 approves the free alarm claim through Silent mode and Focus, with the iOS 26 limit and the per-item switch.
+- The maintainer tested Silent mode on an iPhone on 2026-10-30. Apple supports Focus in WWDC25 session 230.
+- Open: check Focus and the locked screen on the submitted build. Focus is not yet tested by the maintainer.
 - Keep a Pro line only when the feature is in the submitted build.
 - The keyword field holds at most 100 bytes in en, es, and de. The zh-Hans, ja, and ko fields hold at most 100 characters, as in 1.0.0, and they are more than 100 bytes. Apple states the limit as 100 bytes. App Store Connect accepted the 1.0.0 values. Check the CJK fields when you push them.
-- Each subtitle has at most 30 characters, each promotional text at most 170, and each description fewer than 4000.
-- A native speaker has not read the text for zh-Hans, ja, ko, es, and de.
+- Each subtitle has at most 30 characters, each promotional text at most 170, and each description at most 4000.
+- The translation review of 2026-10-30 covers zh-Hans, ja, ko, es, and de (`docs/localization-review.md`). Native speaker review stays open.
 - The site FAQ and home page show the 1.1 text, and `RELEASED` in `site/build.py` stays `False` until the release.
 
 ### What is open before the submission
