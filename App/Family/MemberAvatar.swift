@@ -124,9 +124,12 @@ struct MemberAvatar: View {
 
 extension MemberAvatar {
     /// The avatar as an image for a system menu, which draws only images. It keeps its own colors.
-    @MainActor static func menuImage(_ subject: AvatarSubject, side: CGFloat = 24) -> Image {
+    /// `gap` is clear space on each side. The value of a menu picker draws the image right beside the name, so the "For"
+    /// pickers use it (D140).
+    @MainActor static func menuImage(_ subject: AvatarSubject, side: CGFloat = 24, gap: CGFloat = 0) -> Image {
         let style = UITraitCollection.current.userInterfaceStyle
         let renderer = ImageRenderer(content: MemberAvatar(subject, side: side, waitsForPhoto: false)
+            .padding(.horizontal, gap)
             .environment(\.colorScheme, style == .dark ? .dark : .light))
         renderer.scale = UITraitCollection.current.displayScale
         guard let image = renderer.uiImage else { return Image(systemName: "person.crop.circle") }

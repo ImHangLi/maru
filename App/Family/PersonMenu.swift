@@ -3,7 +3,8 @@ import SwiftUI
 
 /// The person menu of Today: the avatar of the shown member at the top right, as the profile picture of Health (D121).
 /// A tap opens a system menu with "Everyone", each member, and "Add Person or Pet". It shows only with a second active member,
-/// so with only "Me" Today looks as before (T57).
+/// so with only "Me" Today looks as before (T57). It has the button style of Settings at the top left: its own bar button
+/// with the system background, and the avatar inside it (D140).
 struct PersonMenu: ToolbarContent {
     @Environment(AppModel.self) private var model
 
@@ -12,7 +13,6 @@ struct PersonMenu: ToolbarContent {
             if #available(iOS 26, *) {
                 ToolbarSpacer(.fixed, placement: .primaryAction)
                 ToolbarItem(placement: .primaryAction) { PersonMenuButton() }
-                    .sharedBackgroundVisibility(.hidden)
             } else {
                 ToolbarItem(placement: .primaryAction) { PersonMenuButton() }
             }
@@ -57,9 +57,9 @@ private struct PersonMenuButton: View {
         } label: {
             Group {
                 if let shown {
-                    MemberAvatar(shown, side: 36)
+                    MemberAvatar(shown, side: 28)
                 } else {
-                    MemberAvatar(.everyone, side: 36)
+                    MemberAvatar(.everyone, side: 28)
                 }
             }
         }

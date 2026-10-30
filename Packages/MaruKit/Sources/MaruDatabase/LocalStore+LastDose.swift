@@ -2,7 +2,7 @@ import Foundation
 import GRDB
 import MaruCore
 
-/// The newest taken dose of an active item (D108). The "Last Dose" widget and Siri show it.
+/// The newest taken dose of an active item (D108). The "Last Dose" widget shows it.
 public struct LastDose: Equatable, Sendable {
     public let itemID: ItemID
     public let name: String
@@ -24,21 +24,16 @@ public struct LastDose: Equatable, Sendable {
 }
 
 extension LocalStore {
-    /// The newest taken dose of `itemID`, or of every active item when `itemID` is `nil`. `nil` when there is none.
-    /// An archived item does not count. A skipped or undone dose does not count.
-    public func lastDose(of itemID: ItemID? = nil) async throws(StorageError) -> LastDose? {
-        try await read { db in try Self.fetchLastDose(db, of: itemID) }
-    }
-
-    /// The newest taken dose of every active item, for the "Last Dose" widget. It reads as `readForWidget` does:
+    /// The newest taken dose of every active item, for the "Last Dose" widget. `nil` when there is none. An archived item
+    /// does not count. A skipped or undone dose does not count. It reads as `readForWidget` does:
     /// read-only, in one read transaction, and never across a restore.
     public static func readLastDoseForWidget(in directory: URL) throws(StorageError) -> LastDose? {
-        try readOnly(in: directory) { db, _ in try fetchLastDose(db, of: nil) }
+        try readOnly(in: directory) { db, _ in try fetchLastDose(db) }
     }
 
     /// Each dose with an event or a state row goes through `fetchCheckedRecord`, as the history read does. A projection
     /// that does not match the history is `invalidData`, so the read fails and does not say "no dose" (spec 7.3, T20).
-    static func fetchLastDose(_ db: Database, of itemID: ItemID?) throws -> LastDose? {
+    static func fetchLastDose(_ db: Database) throws -> LastDose? {
         let family = Family(people: try fetchPeople(db))
         let active = Dictionary(uniqueKeysWithValues: try itemsAndSchedules(db).items.filter { !$0.isArchived }.map { ($0.id, $0) })
         let rows = try Row.fetchAll(
@@ -51,11 +46,9 @@ extension LocalStore {
                     LEFT JOIN scheduleSlot ON scheduleSlot.id = occurrence.slotID
                     LEFT JOIN schedule ON schedule.id = scheduleSlot.scheduleID
                     LEFT JOIN scheduleVersion ON scheduleVersion.id = occurrence.scheduleVersionID
-                WHERE (EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
-                        OR EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id))
-                    AND (? IS NULL OR COALESCE(occurrence.itemID, schedule.itemID) = ?)
-                """,
-            arguments: [itemID?.text, itemID?.text]
+                WHERE EXISTS (SELECT 1 FROM intakeEvent WHERE occurrenceID = occurrence.id)
+                    OR EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id)
+                """
         )
         var newest: LastDose?
         for row in rows {

@@ -180,8 +180,6 @@ extension AppModel {
     /// changes the sound in use, so one run follows each change of Pro (D112). StoreKit calls this only after it answers,
     /// so the launch does not wait for it (T35).
     func proDidChange() {
-        // The items of Siri and Shortcuts are part of Maru Pro, so the system reads them again (D130).
-        MaruShortcuts.updateAppShortcutParameters()
         guard settings.chosenSound != nil else { return }
         refreshReminders()
     }

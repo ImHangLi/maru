@@ -288,7 +288,7 @@ struct ItemEditorView: View {
                         Label {
                             Text(verbatim: person.displayName)
                         } icon: {
-                            MemberAvatar.menuImage(.member(person))
+                            MemberAvatar.menuImage(.member(person), gap: 4)
                         }
                         .tag(UUID?.some(person.id.rawValue))
                     }

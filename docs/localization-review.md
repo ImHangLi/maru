@@ -350,50 +350,9 @@ The strings below are new. They are drafts. No native speaker read them. The rev
 | Sent. Open Maru on your iPhone to see Maru Pro. | 已发送。在 iPhone 上打开 Maru 就能看到 Maru Pro。 | 送信しました。iPhoneでMaruを開くとMaru Proが表示されます。 | Enviado. Abre Maru en tu iPhone para ver Maru Pro. | Gesendet. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen. | 보냈어요. iPhone에서 Maru를 열면 Maru Pro를 볼 수 있어요. |
 | Your iPhone is not reachable. Open Maru on your iPhone to see Maru Pro. | 连不上 iPhone。在 iPhone 上打开 Maru 来查看 Maru Pro。 | iPhoneに接続できません。iPhoneでMaruを開いてMaru Proをご覧ください。 | No se puede conectar con tu iPhone. Abre Maru en tu iPhone para ver Maru Pro. | Dein iPhone ist nicht erreichbar. Öffne Maru auf deinem iPhone, um Maru Pro zu sehen. | iPhone에 연결할 수 없어요. iPhone에서 Maru를 열어 Maru Pro를 확인해 주세요. |
 
-## Last Dose widget and Siri (D108)
+## Last Dose widget (D108, Siri part removed by D140)
 
 The strings below are new. They are drafts. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101).
-
-Siri phrases, in `App/AppShortcuts.xcstrings`. A phrase must sound like a natural spoken request. `${applicationName}` is "Maru", and `${item}` is an item name. The reviewer says each phrase to Siri on a device.
-
-| English | zh-Hans | ja | es | de | ko |
-|---|---|---|---|---|---|
-| Check my last dose in ${applicationName} | ${applicationName}里查看上一次服用 | ${applicationName}で前回の服用を確認 | Consulta mi última dosis en ${applicationName} | Zeig meine letzte Dosis in ${applicationName} | ${applicationName}에서 마지막 복용 확인 |
-| Did I take my ${item} in ${applicationName} | ${applicationName}里我吃${item}了吗 | ${applicationName}で${item}を飲んだ | Tomé ${item} en ${applicationName} | Habe ich ${item} in ${applicationName} genommen | ${applicationName}에서 ${item} 먹었어 |
-| Last dose of ${item} in ${applicationName} | ${applicationName}里${item}的上一次服用 | ${applicationName}で${item}の前回の服用 | Última dosis de ${item} en ${applicationName} | Letzte Dosis von ${item} in ${applicationName} | ${applicationName}에서 ${item} 마지막 복용 |
-| Log my doses in ${applicationName} | 用${applicationName}记下服用 | ${applicationName}で今の分を記録 | Anota mis dosis en ${applicationName} | Trag meine Dosen in ${applicationName} ein | ${applicationName}에 복용 남겨 줘 |
-| Next dose in ${applicationName} | ${applicationName}下次服用 | ${applicationName}で次の服用 | Próxima dosis en ${applicationName} | Nächste Dosis in ${applicationName} | ${applicationName}에서 다음 복용 |
-| Record my doses in ${applicationName} | 在${applicationName}里记录服用 | ${applicationName}で服用を記録 | Registra mis dosis en ${applicationName} | Erfasse meine Dosen in ${applicationName} | ${applicationName}에서 복용 기록해 줘 |
-| What do I take next in ${applicationName} | ${applicationName}里下一次吃什么 | ${applicationName}で次に飲むものは | Qué tomo ahora en ${applicationName} | Was nehme ich als Nächstes in ${applicationName} | ${applicationName}에서 다음에 뭐 먹어 |
-| What's next in ${applicationName} | ${applicationName}接下来是什么 | ${applicationName}で次は何 | Qué sigue en ${applicationName} | Was steht als Nächstes an in ${applicationName} | ${applicationName}에서 다음은 뭐야 |
-| When did I last take ${item} in ${applicationName} | ${applicationName}里我上次什么时候吃的${item} | ${applicationName}で${item}を最後に飲んだのはいつ | Cuándo tomé ${item} por última vez en ${applicationName} | Wann habe ich zuletzt ${item} in ${applicationName} genommen | ${applicationName}에서 ${item} 마지막으로 언제 먹었어 |
-
-Siri answers and Shortcuts titles, in `App/Localizable.xcstrings`. The text that names the iPhone also has an iPad form. With "Show Names in Reminders" off, "%lld doses" takes the place of the names in "Next up", "Record as taken now", and "Recorded as taken".
-
-| English | zh-Hans | ja | es | de | ko |
-|---|---|---|---|---|---|
-| Next up: %@, planned for %@. | 接下来：%1$@，计划时间 %2$@。 | 次は%1$@です。予定は%2$@です。 | Lo siguiente: %1$@, hora prevista %2$@. | Als Nächstes: %1$@, geplant um %2$@. | 다음 차례: %1$@, 예정 시간 %2$@. |
-| Maru has no taken record for %@ yet. | Maru 里还没有%@的服用记录。 | Maruには%@の服用記録がまだありません。 | Maru aún no tiene ningún registro de toma de %@. | Für %@ gibt es in Maru noch keine Aufzeichnung einer Einnahme. | Maru에 아직 %@ 복용 기록이 없어요. |
-| Your last record for %@: taken today at %@. | %1$@的上一次记录：今天 %2$@ 已服用。 | %1$@の最新の記録：今日%2$@に服用済み。 | Tu último registro de %1$@: tomado hoy a las %2$@. | Deine letzte Aufzeichnung für %1$@: heute um %2$@ eingenommen. | %1$@ 마지막 기록: 오늘 %2$@ 복용함. |
-| Your last record for %@: taken yesterday at %@. | %1$@的上一次记录：昨天 %2$@ 已服用。 | %1$@の最新の記録：昨日%2$@に服用済み。 | Tu último registro de %1$@: tomado ayer a las %2$@. | Deine letzte Aufzeichnung für %1$@: gestern um %2$@ eingenommen. | %1$@ 마지막 기록: 어제 %2$@ 복용함. |
-| Your last record for %@: taken on %@ at %@. | %1$@的上一次记录：%2$@ %3$@ 已服用。 | %1$@の最新の記録：%2$@ %3$@に服用済み。 | Tu último registro de %1$@: tomado el %2$@ a las %3$@. | Deine letzte Aufzeichnung für %1$@: am %2$@ um %3$@ eingenommen. | %1$@ 마지막 기록: %2$@ %3$@ 복용함. |
-| Nothing is due right now. You’re all set. | 现在没有需要记录的，一切都好。 | 今は記録するものはありません。大丈夫ですよ。 | Ahora no hay nada pendiente. Todo en orden. | Gerade steht nichts an. Alles in Ordnung. | 지금은 기록할 게 없어요. 다 괜찮아요. |
-| Record as taken now: %@? | 现在将%@记录为已服用？ | %@を今の時刻で服用済みとして記録しますか？ | ¿Registrar ahora como tomado: %@? | Jetzt als eingenommen erfassen: %@? | %@을(를) 지금 복용함으로 기록할까요? |
-| Recorded as taken: %@. | 已记录为已服用：%@。 | 服用済みとして記録しました：%@。 | Registrado como tomado: %@. | Als eingenommen erfasst: %@. | 복용함으로 기록했어요: %@. |
-| %lld doses (one: %lld dose) | %lld 项 | %lld件 | %lld dosis | %lld Dosen (one: %lld Dosis) | %lld개 항목 |
-| Maru has no taken record for this item yet. | Maru 里还没有这个药品的服用记录。 | Maruにはこの項目の服用記録がまだありません。 | Maru aún no tiene ningún registro de toma de este elemento. | Für diesen Eintrag gibt es in Maru noch keine Aufzeichnung einer Einnahme. | Maru에 아직 이 항목의 복용 기록이 없어요. |
-| Your last record: taken today at %@. | 上一次记录：今天 %@ 已服用。 | 最新の記録：今日%@に服用済み。 | Tu último registro: tomado hoy a las %@. | Deine letzte Aufzeichnung: heute um %@ eingenommen. | 마지막 기록: 오늘 %@ 복용함. |
-| Your last record: taken yesterday at %@. | 上一次记录：昨天 %@ 已服用。 | 最新の記録：昨日%@に服用済み。 | Tu último registro: tomado ayer a las %@. | Deine letzte Aufzeichnung: gestern um %@ eingenommen. | 마지막 기록: 어제 %@ 복용함. |
-| Your last record: taken on %@ at %@. | 上一次记录：%1$@ %2$@ 已服用。 | 最新の記録：%1$@ %2$@に服用済み。 | Tu último registro: tomado el %1$@ a las %2$@. | Deine letzte Aufzeichnung: am %1$@ um %2$@ eingenommen. | 마지막 기록: %1$@ %2$@ 복용함. |
-| Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again. | Maru 现在打不开你的记录。如果你的 iPhone 刚重启过，请先解锁，再问一次。 | Maruは今、記録を開けません。iPhoneを再起動した場合は、先にロックを解除してからもう一度お試しください。 | Maru no puede abrir tus registros ahora. Si el iPhone se reinició, desbloquéalo primero y vuelve a preguntar. | Maru kann deine Aufzeichnungen gerade nicht öffnen. Wenn dein iPhone neu gestartet wurde, entsperre es zuerst und frag dann erneut. | Maru가 지금 기록을 열 수 없어요. iPhone을 다시 시작했다면 먼저 잠금을 해제한 후 다시 물어봐 주세요. |
-| Maru couldn’t confirm the save. Open Maru to check your records. | Maru 没能确认是否已保存。请打开 Maru 查看你的记录。 | Maruは保存を確認できませんでした。Maruを開いて記録を確認してください。 | Maru no pudo confirmar que se guardó. Abre Maru para revisar tus registros. | Maru konnte das Speichern nicht bestätigen. Öffne Maru, um deine Aufzeichnungen zu prüfen. | Maru가 저장을 확인하지 못했어요. Maru를 열어 기록을 확인해 주세요. |
-| Which item? | 哪个药品？ | どの項目ですか？ | ¿Qué elemento? | Welcher Eintrag? | 어떤 항목인가요? |
-| Item | 药品 | 項目 | Elemento | Eintrag | 항목 |
-| Last dose of ${item} | ${item}的上一次服用 | ${item}の前回の服用 | Última dosis de ${item} | Letzte Dosis von ${item} | ${item} 마지막 복용 |
-| Last Dose of an Item | 某个药品的上一次服用 | 項目の前回の服用 | Última dosis de un elemento | Letzte Dosis eines Eintrags | 항목의 마지막 복용 |
-| Record Due Doses | 记录当前的服用 | 今の分を記録 | Registrar dosis pendientes | Fällige Dosen erfassen | 지금 복용분 기록 |
-| Last Dose | 上一次服用 | 前回の服用 | Última dosis | Letzte Dosis | 마지막 복용 |
-| Record Doses | 记录服用 | 服用を記録 | Registrar dosis | Dosen erfassen | 복용 기록 |
 
 The "Last Dose" widget, in `Widget/Localizable.xcstrings`.
 
@@ -420,7 +379,7 @@ The strings below are new. They are drafts. No native speaker read them. Check t
 | Records these doses as taken | 把这些服用记为已服用 | これらの服用を服用済みとして記録します | Registra estas dosis como tomadas | Erfasst diese Dosen als eingenommen | 이 복용들을 복용함으로 기록해요 |
 | %lld more (the end of the list "Vitamin D, Iron, Zinc, and 2 more") | 另外 %lld 项 | ほか%lld件 | %lld más | %lld weitere | 그 외 %lld개 |
 
-The button "Taken", "%lld doses", and "Open Maru to update." reuse the text of the widgets and of Siri. The relative time ("in 12 minutes", "12 minutes ago") comes from the system in each language. The text "Not recorded yet" was removed on 2026-10-28.
+The button "Taken", "%lld doses", and "Open Maru to update." reuse the text of the widgets. The relative time ("in 12 minutes", "12 minutes ago") comes from the system in each language. The text "Not recorded yet" was removed on 2026-10-28.
 
 ## Next Dose widget (D113)
 
@@ -459,7 +418,6 @@ Seven new strings, and three from the first D115 round. No native speaker read t
 | %@ per year. Renews until you cancel. | 每年 %@。取消前会自动续订。 | 年額%@。キャンセルするまで自動更新されます。 | %@ al año. Se renueva hasta que lo canceles. | %@ pro Jahr. Verlängert sich, bis du kündigst. | 연 %@. 취소할 때까지 갱신돼요. |
 | One payment. It does not renew. | 一次付款，不会续订。 | 1回のお支払いです。更新はありません。 | Un solo pago. No se renueva. | Einmalige Zahlung. Keine Verlängerung. | 한 번만 결제해요. 갱신되지 않아요. |
 | Welcome to Maru Pro | 欢迎使用 Maru Pro | Maru Proへようこそ | Te damos la bienvenida a Maru Pro | Willkommen bei Maru Pro | Maru Pro에 오신 것을 환영해요 |
-| Thank you. Your extras are ready. | 谢谢你。新增功能已就绪。 | ありがとうございます。追加機能をお使いいただけます。 | Gracias. Tus extras ya están listos. | Danke. Deine Extras sind bereit. | 고마워요. 추가 기능을 지금 쓸 수 있어요. |
 | Lock Screen, Apple Watch, and more | 锁定屏幕、Apple Watch 等 | ロック画面、Apple Watchなど | Pantalla bloqueada, Apple Watch y más | Sperrbildschirm, Apple Watch und mehr | 잠금 화면, Apple Watch 등 |
 
 ## Paywall style B (D116)
@@ -568,26 +526,17 @@ Drafts by the team. A native speaker must check them. `%1$@` is the member and `
 | Share Medication List… | 分享药品清单… | 服用リストを共有… | Compartir lista de medicación… | Medikamentenliste teilen … | 복용 목록 공유… |
 | Medication List for %@ | %@的药品清单 | %@の服用リスト | Lista de medicación de %@ | Medikamentenliste für %@ | %@의 복용 목록 |
 | Summary for %@ | %@的汇总 | %@のサマリー | Resumen de %@ | Zusammenfassung für %@ | %@의 요약 |
-| Person or Pet | 家人或宠物 | 人またはペット | Persona o mascota | Person oder Tier | 사람 또는 반려동물 |
-| For whom? | 为谁记录？ | 誰の分を記録しますか？ | ¿Para quién? | Für wen? | 누구의 복용을 기록할까요? |
-| Record as taken now for %@: %@? | 现在将%1$@的%2$@记录为已服用？ | %1$@の%2$@を今の時刻で服用済みとして記録しますか？ | ¿Registrar ahora como tomado para %1$@: %2$@? | Jetzt für %1$@ als eingenommen erfassen: %2$@? | %1$@의 %2$@을(를) 지금 복용함으로 기록할까요? |
-| Recorded as taken for %@: %@. | 已将%1$@的%2$@记录为已服用。 | %1$@の%2$@を服用済みとして記録しました。 | Registrado como tomado para %1$@: %2$@. | Für %1$@ als eingenommen erfasst: %2$@. | %1$@의 %2$@을(를) 복용함으로 기록했어요. |
 
-## Siri, reports, and insights in Maru Pro (D130)
+## Reports and insights in Maru Pro (D130, Siri part removed by D140)
 
 Drafts by the team. A native speaker must check them.
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| Siri and Shortcuts are part of Maru Pro. Open Maru to take a look? | Siri 和快捷指令属于 Maru Pro。要打开 Maru 看看吗？ | Siri とショートカットは Maru Pro の機能です。Maru を開いて見てみますか？ | Siri y Atajos forman parte de Maru Pro. ¿Abrir Maru para verlo? | Siri und Kurzbefehle gehören zu Maru Pro. Maru öffnen und ansehen? | Siri와 단축어는 Maru Pro 기능이에요. Maru를 열어 볼까요? |
-| Here’s Maru Pro. | 这是 Maru Pro。 | Maru Pro はこちらです。 | Aquí tienes Maru Pro. | Hier ist Maru Pro. | Maru Pro를 소개할게요. |
 | Sharing a PDF summary is part of Maru Pro. | 以 PDF 分享汇总属于 Maru Pro。 | サマリーを PDF で共有するには Maru Pro が必要です。 | Compartir un resumen en PDF forma parte de Maru Pro. | Eine Zusammenfassung als PDF teilen gehört zu Maru Pro. | 요약을 PDF로 공유하는 기능은 Maru Pro에 포함돼요. |
 | 30-Day Counts | 30 天统计 | 30日間の集計 | Recuento de 30 días | 30-Tage-Übersicht | 30일 집계 |
-| Just ask Siri. | 问问 Siri 就好。 | Siri に頼むだけ。 | Solo pídeselo a Siri. | Frag einfach Siri. | Siri에게 물어보세요. |
 | A clear summary for your doctor. | 给医生的一份清晰汇总。 | 医師に見せやすいサマリーを。 | Un resumen claro para tu médico. | Eine klare Übersicht für die Arztpraxis. | 의사에게 보여줄 깔끔한 요약. |
 | Your last 30 days, at a glance. | 最近 30 天，一目了然。 | この30日間が、ひと目で。 | Tus últimos 30 días, de un vistazo. | Deine letzten 30 Tage auf einen Blick. | 지난 30일을 한눈에. |
-| Record by wrist or voice | 用手腕或语音记录 | 手首や声で記録 | Registra con la muñeca o la voz | Per Uhr oder Stimme erfassen | 손목이나 음성으로 기록 |
-| Apple Watch, Siri, and Shortcuts. | Apple Watch、Siri 和快捷指令。 | Apple Watch、Siri、ショートカット。 | Apple Watch, Siri y Atajos. | Apple Watch, Siri und Kurzbefehle. | Apple Watch, Siri, 단축어. |
 | Reports for your doctor | 给医生的报告 | 医師に見せるレポート | Informes para tu médico | Berichte für die Arztpraxis | 의사에게 보여줄 리포트 |
 | PDF summaries and 30-day counts. | PDF 汇总和 30 天统计。 | PDF サマリーと30日間の集計。 | Resúmenes en PDF y recuentos de 30 días. | PDF-Zusammenfassungen und 30-Tage-Übersicht. | PDF 요약과 30일 집계. |
 
@@ -602,3 +551,13 @@ Drafts by the team. A native speaker must check them. The keyword lines are not 
 | Purchases | 购买项目 | 購入 | Compras | Käufe | 구입 항목 |
 | Version | 版本 | バージョン | Versión | Version | 버전 |
 | Keywords of 11 settings, for example "dark, light, theme, mode" | 深色, 浅色, 夜间, 主题, 模式 | ダーク, ライト, テーマ, モード | oscuro, claro, tema, modo | dunkel, hell, Design, Modus | 다크, 라이트, 테마, 모드 |
+
+## Siri removal and new paywall lines (D140)
+
+Drafts by the team. A native speaker must check them. Translate the meaning of the thank-you line, not each word.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Record from your wrist | 在手腕上记录 | 手首で記録 | Registra desde tu muñeca | Direkt am Handgelenk erfassen | 손목에서 바로 기록 |
+| Apple Watch shows and records each dose. | Apple Watch 显示并记录每次服用。 | Apple Watch で服用を確認して記録。 | Apple Watch muestra y registra cada dosis. | Die Apple Watch zeigt und erfasst jede Dosis. | Apple Watch에서 복용을 보고 기록해요. |
+| Thank you. Your journey starts here. | 谢谢你。一切从这里开始。 | ありがとうございます。ここから始まります。 | Gracias. Aquí empieza tu camino. | Danke. Hier beginnt dein Weg. | 고마워요. 이제 여기서 시작해요. |

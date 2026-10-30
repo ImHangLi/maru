@@ -42,7 +42,7 @@
 | 图像是辅助 | 默认小图标 + 完整文字；用户可选用自己的瓶身照片；抠图不阻塞设置或记录 |
 | 不惩罚中断 | 未记录保持未知；不欠账、不自动补记、不付费补签 |
 | 上线具备可观察性 | 开发期本地性能和错误诊断；公测/上线时具备经明确同意的最小产品分析与反馈 |
-| 商业不干扰核心 | The core stays free forever, with no ads and no item limit. Maru Pro sells extras only. Maru offers it by itself in two places only: once after the first save with a time, and on a card at the bottom of Today on at most 3 days. Settings always has a "Maru Pro" row. A purchase never blocks a local feature (D107). Creating a second member of the Family is a Pro feature, and a member that exists never locks (D122). Siri and Shortcuts, the PDF reports (medication list and summary), and the counts of the last 30 days on the item detail are Pro features. The 7-day views, every record, the CSV export, the backup, the widgets, and the reminders stay free (D130) |
+| 商业不干扰核心 | The core stays free forever, with no ads and no item limit. Maru Pro sells extras only. Maru offers it by itself in two places only: once after the first save with a time, and on a card at the bottom of Today on at most 3 days. Settings always has a "Maru Pro" row. A purchase never blocks a local feature (D107). Creating a second member of the Family is a Pro feature, and a member that exists never locks (D122). The PDF reports (medication list and summary) and the counts of the last 30 days on the item detail are Pro features. The 7-day views, every record, the CSV export, the backup, the widgets, and the reminders stay free (D130). Maru has no Siri and no Shortcuts (D140) |
 | 宣传聚焦 | 提醒、混乱时清楚、回看记录；换瓶/断签恢复是基本质量，不是首屏主要卖点 |
 
 ### 明确不做
@@ -474,14 +474,14 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 | 事件 | 允许的信息 | 禁止的信息 |
 |---|---|---|
 | setup_step | 步骤枚举、新建/编辑/替换枚举、是否有提醒时间、是否有用量/备注/照片、名称来源（手输/建议/扫描）、是否用过智能补全、是否首项、是否有改动、耗时桶 | 搜索词、OCR 文本、药名、剂量、计划类型、提醒时间个数、具体提醒钟点、具体星期 |
-| daily_usage_summary | 同意后的相对日序号、是否用过记录/历史/通知入口/小组件入口/提醒动作/跳过/撤销/修改记录/我的项目/项目详情/设置等布尔标志、打开次数桶、活动项目数桶、是否有小组件、Family 成员数桶（`1`、`2`、`3_plus`）（D121）。D127 adds the flags `used_live_activity`, `used_watch`, and `used_siri`, the plan `pro_plan` (`none`, `yearly`, or `lifetime`), and the flags `has_live_activity`, `custom_icon`, and `custom_sound` | 每次“已服”时间序列、已服/跳过明细、一天几剂、稳定药品 ID。No purchase date, end of access, transaction ID, price, icon name, or sound name (D127) |
+| daily_usage_summary | 同意后的相对日序号、是否用过记录/历史/通知入口/小组件入口/提醒动作/跳过/撤销/修改记录/我的项目/项目详情/设置等布尔标志、打开次数桶、活动项目数桶、是否有小组件、Family 成员数桶（`1`、`2`、`3_plus`）（D121）。D127 adds the flags `used_live_activity` and `used_watch` (D140 removes `used_siri`), the plan `pro_plan` (`none`, `yearly`, or `lifetime`), and the flags `has_live_activity`, `custom_icon`, and `custom_sound` | 每次“已服”时间序列、已服/跳过明细、一天几剂、稳定药品 ID。No purchase date, end of access, transaction ID, price, icon name, or sound name (D127) |
 | core_error | 保存/读取/调度/扫描等操作枚举、预定义错误码，以及（读取失败时）被违反的存储规则的固定词（D088） | 原始 exception message、SQL 内容、文件路径或 userInfo |
 | notification_permission | 新的通知权限枚举、之前的权限枚举（只在变化时发送） | 通知内容、提醒钟点 |
 | setting_changed | “再次提醒”次数与间隔枚举（设置页“所有项目”，D085）、是否开启全部项目的闹钟、是否在提醒中显示名称、App 颜色枚举。D127 adds `header_wash` (a flag) and `appearance` (`system`, `light`, or `dark`) | 其他设置值；分析开关关闭后不再发送 |
 | data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
 | onboarding_result | `result`: `add_item`, `later`, `skipped`, or `yielded` (a reminder tap or a widget link opened Today) (D127). Only an onboarding that showed sends it | 页面停留时间、页序列 |
-| paywall_shown | `source`: `first_value`, `day7_card`, `settings`, `app_color`, `live_activity`, `watch`, `icons`, `sounds`, `family`, `siri`, `report`, or `insights` (D107, D112, D122, D127, D130) | 项目名称、剂量、时间、ItemID |
+| paywall_shown | `source`: `first_value`, `day7_card`, `settings`, `app_color`, `live_activity`, `watch`, `icons`, `sounds`, `family`, `report`, or `insights` (D107, D112, D122, D127, D130, D140) | 项目名称、剂量、时间、ItemID |
 | purchase_result | `result`: `purchased`, `cancelled`, `pending`, `failed`, `restored`, or `dismissed` (the paywall closed with no active Pro, D127). `plan`: `yearly` or `lifetime` (D107) | Apple 账号、原始交易收据、价格、金融身份 |
 
 记录动作精确时间只在本地健康库。每日使用摘要在下一次可运行时合并发送；不为上传摘要唤醒用户，不依赖后台保证送达。没有摘要不代表没有服用。分析同意日期不同于真实首次安装日期，报表不得混用。
@@ -622,7 +622,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T59 | Pro ends (D122) | Existing members, items, reminders, and records work. Only a new member requires Pro. |
 | T60 | Two members share a time (D123) | The notification names each member. It has no group record action. Snooze works. Hidden names include no member name. |
 | T61 | One member in a request (D123) | One dose has "Taken" and "Skip". The action records only that member. |
-| T62 | Names hidden (D029, D123) | No member name appears in notifications, alarms, widgets, Live Activity, or Siri. The paired Watch keeps the D071 exception. |
+| T62 | Names hidden (D029, D123) | No member name appears in notifications, alarms, widgets, or Live Activity. The paired Watch keeps the D071 exception. |
 | T63 | Archive, restore, and delete a member (D125) | Archive stops reminders and keeps history. Restore restores only jointly archived items. Confirmed delete removes only that member. One active member stays. |
 | T64 | Change an item owner (D121) | Records and history move with the item. No dose gets two records. |
 | T65 | History and summary for one member (D121) | The graph, strip, counts, and PDF include only that member and show the member name. |
@@ -630,7 +630,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T67 | Current and old backups (D126) | Members restore. Old backups assign all items to "Me". A newer backup is refused (T38). |
 | T68 | Analytics packets (D121) | No member name, ID, or kind leaves the device. Family adds only the `family_size` bucket and paywall source `family` (T42, T45). |
 | T69 | Restore a backup with members (`v8`) | Members and owners restore. Exactly one `me` exists. No UNIQUE error occurs. |
-| T70 | Old quick actions after an owner change (D123) | Notification, Watch, widget, Live Activity, and Siri actions write nothing. This includes yesterday's follow-up after midnight. A single-member follow-up keeps "Taken". |
+| T70 | Old quick actions after an owner change (D123) | Notification, Watch, widget, and Live Activity actions write nothing. This includes yesterday's follow-up after midnight. A single-member follow-up keeps "Taken". |
 
 ## 16. 交付与验收证据
 

@@ -130,9 +130,23 @@ extension AppModel {
     func updateNextDoseNow() async {
         guard liveActivity.isOn else { return }
         await enqueueNextDose {
-            guard let today = try? await self.freshToday() else { return nil }
-            return await self.nextDoseChange(for: today.day)
+            guard let day = try? await self.freshToday() else { return nil }
+            return await self.nextDoseChange(for: day)
         }.value
+    }
+
+    /// A new read of today, with the confirmed record of each running transaction. A device time zone with no region
+    /// name gives no today (spec 2), so it is `unavailable`.
+    private func freshToday() async throws(StorageError) -> TodaySnapshot {
+        let now = Date()
+        let generation = dataGeneration
+        guard let deviceTimeZone = NamedTimeZone(device: .current, at: now) else { throw StorageError.unavailable }
+        let snapshot = try await store.snapshot(at: now, deviceTimeZone: deviceTimeZone, generation: generation)
+        guard var day = snapshot.today else { throw StorageError.unavailable }
+        // A restore replaced the data during the read.
+        guard generation == dataGeneration else { throw StorageError.replaced }
+        day.apply(heldRecords)
+        return day
     }
 
     @discardableResult

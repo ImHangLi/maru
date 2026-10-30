@@ -26,9 +26,8 @@ struct ProState {
     var cardCheck: Task<Void, Never>?
     /// "×" on the card of Today.
     var cardDismissed = UserDefaults.standard.bool(forKey: ProOffers.cardDismissedKey)
-    /// A free user asked for Maru Pro outside the app: "Open on iPhone" on the Watch (D111), or "Open Maru" after a Siri or
-    /// Shortcuts request (D130). The request can start Maru in the background, so it waits in `UserDefaults.standard` until
-    /// Maru is in front.
+    /// A free user asked for Maru Pro outside the app: "Open on iPhone" on the Watch (D111). The request can start Maru in
+    /// the background, so it waits in `UserDefaults.standard` until Maru is in front.
     var askedSource = UserDefaults.standard.string(forKey: ProOffers.askedSourceKey)
         .flatMap(AnalyticsEvent.PaywallSource.init(rawValue:))
 }
@@ -87,9 +86,9 @@ extension AppModel {
         return result
     }
 
-    // MARK: Watch and Siri
+    // MARK: Watch
 
-    /// The locked screen of the Watch app (D111), or a Siri or Shortcuts request of a free user (D130), asked for Maru Pro.
+    /// The locked screen of the Watch app asked for Maru Pro (D111).
     /// The root view shows the paywall the next time that Maru is in front, after the onboarding, the edit screen, and the
     /// alerts.
     func askedForPro(from source: AnalyticsEvent.PaywallSource) {
@@ -99,7 +98,7 @@ extension AppModel {
         UserDefaults.standard.set(source.rawValue, forKey: ProOffers.askedSourceKey)
     }
 
-    /// The root view shows the paywall that the Watch or Siri asked for. It shows one time for each request.
+    /// The root view shows the paywall that the Watch asked for. It shows one time for each request.
     func showAskedOffer() {
         guard let source = proState.askedSource else { return }
         proState.askedSource = nil
