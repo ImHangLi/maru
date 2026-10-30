@@ -13,8 +13,14 @@ struct TodayView: View {
                 // While the first read runs, the page is empty like the launch screen (spec 9).
                 if case let .loaded(snapshot) = model.content {
                     if let today = snapshot.today {
-                        TodayContent(today: today, hasItems: !snapshot.list.isEmpty)
-                            .onAppear { model.todayContentDidAppear() }
+                        // The person menu shows the doses of one member (D121). The rows of the other members leave the list.
+                        let member = model.shownMember?.id
+                        TodayContent(
+                            today: today.only(member),
+                            member: member,
+                            hasItems: snapshot.list.contains { member == nil || $0.personID == member }
+                        )
+                        .onAppear { model.todayContentDidAppear() }
                     } else {
                         ContentUnavailableView {
                             Label("Maru Can’t Use Your Time Zone", systemImage: "globe")
@@ -30,7 +36,8 @@ struct TodayView: View {
             .modifier(DebugDataBanner())
             .modifier(DebugNoticeAlert())
             #endif
-            .navigationTitle("Today")
+            // One member: the title is the name, as Health titles the data of a person who shares with you (D121).
+            .navigationTitle(model.shownMember.map { Text(verbatim: $0.displayName) } ?? Text("Today"))
             .toolbar {
                 SettingsButton()
                 // History has its own button in the bar (spec 3 P01, D026).
@@ -38,6 +45,7 @@ struct TodayView: View {
                     Button("History", systemImage: "calendar") { model.openHistory() }
                 }
                 AddItemButton()
+                PersonMenu()
             }
             .navigationDestination(isPresented: $model.history.isOpen) { HistoryView() }
             .navigationDestination(for: ItemID.self) { ItemDetailView(itemID: $0) }
@@ -52,20 +60,25 @@ struct TodayView: View {
 private struct TodayContent: View {
     @Environment(AppModel.self) private var model
     let today: TodaySnapshot
+    /// The member that the person menu shows, or `nil` for everyone (D121).
+    let member: PersonID?
     /// Whether My Items has any item. The empty text then says what to do next.
     let hasItems: Bool
 
     var body: some View {
-        let asNeededRows = model.shownRows(of: today.asNeeded)
+        // An unconfirmed dose keeps the look of its first read, so the filter reads the current owner of the item (D121).
+        let asNeededRows = model.shownRows(of: today.asNeeded).filter { member == nil || model.owner(of: $0.itemID, or: $0.look.personID) == member }
         ScrollViewReader { scroller in
             List {
-                // Before iOS 26 the bar has no subtitle, so the date is the first header.
+                // Before iOS 26 the bar has no subtitle, so the line under the title is the first header.
                 if #unavailable(iOS 26) {
-                    Section {} header: {
-                        Text(today.generatedAt, format: dateFormat)
-                    }
+                    Section {} header: { subtitle }
                 }
-                UnsavedSection()
+                // One retry sends the unconfirmed events of every member, so it shows only in "Everyone". In the view of one
+                // member, each row of that member keeps its own retry (D014, D121).
+                if member == nil {
+                    UnsavedSection()
+                }
                 NotificationsOffSection()
                 ForEach(today.groups) { group in
                     SlotSection(group: group, timeZone: timeZone)
@@ -74,17 +87,22 @@ private struct TodayContent: View {
                 if !asNeededRows.isEmpty {
                     AsNeededSection(rows: asNeededRows, timeZone: timeZone)
                 }
+                // Last, under every dose (D107).
+                if model.showsProCard(today) {
+                    ProCardSection(date: today.date)
+                }
             }
             .listStyle(.insetGrouped)
             .headerProminence(.increased)
+            .headerWash()
             // The empty text is in the middle of the page (D026).
             .overlay {
                 if today.groups.isEmpty && asNeededRows.isEmpty {
                     if hasItems {
-                        ContentUnavailableView("Nothing Planned Today", systemImage: "checkmark.circle")
+                        ContentUnavailableView("Nothing to take today. Enjoy it.", systemImage: "checkmark.circle")
                     } else {
                         ContentUnavailableView {
-                            Label("No Items Yet", systemImage: "pills")
+                            Label("Let’s add the first thing you take.", systemImage: "pills")
                         } description: {
                             Text("Tap + to add a supplement or medication.")
                         }
@@ -103,7 +121,7 @@ private struct TodayContent: View {
                 }
             }
         }
-        .modifier(DateSubtitle(date: today.generatedAt, format: dateFormat))
+        .modifier(Subtitle(text: subtitle))
         // The haptic follows the commit, not the tap (spec 7.2).
         .sensoryFeedback(.success, trigger: model.today.commitCount)
         .alert(
@@ -129,7 +147,7 @@ private struct TodayContent: View {
     /// What gives the list its layout: the sections, the rows, and the lines of each row. A record is not
     /// in it, because a recorded row keeps its place (spec 4).
     private func layout(_ asNeededRows: [AsNeededCard.Row]) -> [AnyHashable] {
-        var layout: [AnyHashable] = [model.unsavedCount > 0, model.settings.permission == .denied]
+        var layout: [AnyHashable] = [model.unsavedCount > 0, model.settings.permission == .denied, model.showsProCard(today)]
         for group in today.groups {
             layout.append(group.part)
             for entry in group.entries {
@@ -144,6 +162,15 @@ private struct TodayContent: View {
         return layout
     }
 
+    /// The date, or a short line in its place when every planned dose of today has a record (D101).
+    private var subtitle: Text {
+        if model.isComplete(today) {
+            Text("All done for today. Nice work.")
+        } else {
+            Text(today.generatedAt, format: dateFormat)
+        }
+    }
+
     /// The date in the language and the region of the user, for example "Sunday, October 11" (spec 13.2).
     private var dateFormat: Date.FormatStyle {
         var format = Date.FormatStyle.dateTime.weekday(.wide).month(.wide).day()
@@ -153,14 +180,13 @@ private struct TodayContent: View {
 
 }
 
-/// The date under the title, in the system navigation bar (iOS 26 and later).
-private struct DateSubtitle: ViewModifier {
-    let date: Date
-    let format: Date.FormatStyle
+/// The line under the title, in the system navigation bar (iOS 26 and later).
+private struct Subtitle: ViewModifier {
+    let text: Text
 
     func body(content: Content) -> some View {
         if #available(iOS 26, *) {
-            content.navigationSubtitle(Text(date, format: format))
+            content.navigationSubtitle(text)
         } else {
             content
         }

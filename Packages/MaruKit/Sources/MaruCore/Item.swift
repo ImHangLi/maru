@@ -64,6 +64,8 @@ public enum IntakeNote: Hashable, Sendable {
 /// One supplement or medication in the user's list. It has no inventory fields (spec 1, T09).
 public struct Item: Hashable, Sendable {
     public let id: ItemID
+    /// The member of the Family that owns the item (D121). Every item has exactly one owner.
+    public var personID: PersonID
     public var category: ItemCategory
     public private(set) var name: String
     public var form: ItemForm
@@ -86,9 +88,14 @@ public struct Item: Hashable, Sendable {
     /// The usual amount of an item that is as needed (D091). A dose that the user records copies it. `nil` means no
     /// amount. An item with a time has its amount in its schedule.
     public var asNeededDose: Dose?
+    /// The instant of the last change of `personID` (D123). A quick action that was listed before it records nothing,
+    /// because the user saw another owner. The store sets it. `nil` for an item that never changed its owner.
+    public var ownerChangedAt: Date?
+
 
     public init(
         id: ItemID = ItemID(),
+        personID: PersonID,
         category: ItemCategory,
         name: String,
         form: ItemForm,
@@ -100,9 +107,11 @@ public struct Item: Hashable, Sendable {
         followUpChanged: Date? = nil,
         alarm: Bool = false,
         archivedAt: Date? = nil,
-        asNeededDose: Dose? = nil
+        asNeededDose: Dose? = nil,
+        ownerChangedAt: Date? = nil
     ) throws {
         self.id = id
+        self.personID = personID
         self.category = category
         self.name = try Self.validatedName(name)
         self.form = form
@@ -115,6 +124,7 @@ public struct Item: Hashable, Sendable {
         self.alarm = alarm
         self.archivedAt = archivedAt
         self.asNeededDose = asNeededDose
+        self.ownerChangedAt = ownerChangedAt
     }
 
     public mutating func rename(_ name: String) throws {

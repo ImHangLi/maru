@@ -16,8 +16,9 @@ struct HistoryView: View {
             if model.history.days != nil, model.history.graphDidLoad {
                 HistoryList()
             } else {
-                // A retry of the banner can show its error also before the first read ends.
-                List { UnsavedSection() }
+                // A retry of the banner can show its error also before the first read ends. It retries every member, so it
+                // shows only in "Everyone" (D121, D129).
+                List { if model.shownMember == nil { UnsavedSection() } }
                     .listStyle(.insetGrouped)
                     .overlay {
                         if model.history.loadFailure != nil {
@@ -37,6 +38,8 @@ struct HistoryView: View {
         #endif
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
+        // The same person menu as Today. The graph, the week, and the logs then count only that member (T65, D129).
+        .toolbar { PersonMenu() }
         // A log that opens over the page shows the haptic and the alerts itself, so they never come twice.
         .onAppear { isTop = true }
         .onDisappear { isTop = false }
@@ -105,7 +108,21 @@ private struct HistoryList: View {
     var body: some View {
         let weeks = model.historyWeeks()
         List {
-            UnsavedSection()
+            // The graph is the first section, so it scrolls away with the page (D109).
+            if let graph = model.history.graph {
+                Section {
+                    HistoryGraphView(graph: graph, counts: model.history.graphCounts, selection: $selection) {
+                        presentedDay = selection
+                    }
+                    // The graph draws its own card, so the cell adds no background and no padding.
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                }
+            }
+            // One retry sends the unconfirmed events of every member, so it shows only in "Everyone", as on Today (D121).
+            if model.shownMember == nil {
+                UnsavedSection()
+            }
             if !weeks.isEmpty || model.history.graph != nil {
                 Section {
                     if weeks.isEmpty {
@@ -135,16 +152,6 @@ private struct HistoryList: View {
         .listStyle(.insetGrouped)
         // A row that comes or goes moves the list (D030).
         .motion(.layout, value: weeks.map(\.itemID))
-        .safeAreaInset(edge: .top, spacing: 0) {
-            if let graph = model.history.graph {
-                HistoryGraphView(graph: graph, counts: model.history.graphCounts, selection: $selection) {
-                    presentedDay = selection
-                }
-                .padding(.horizontal, Tile.margin)
-                .padding(.vertical, 8)
-                .background(Color(.systemGroupedBackground))
-            }
-        }
         // A day of the graph opens its log. The selection clears when the log closes.
         .navigationDestination(item: $presentedDay) { HistoryLogView(scope: .day($0)) }
         .onChange(of: presentedDay) { _, day in
@@ -155,7 +162,7 @@ private struct HistoryList: View {
                 ContentUnavailableView {
                     Label("No History Yet", systemImage: "calendar")
                 } description: {
-                    Text("What you record shows here.")
+                    Text("Your records will appear here, one day at a time.")
                 }
             }
         }

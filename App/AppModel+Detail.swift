@@ -93,6 +93,34 @@ extension AppModel {
         }
     }
 
+    /// "Add for": the edit screen of a new item for another member, with every value of the stored item (D128). Nothing is saved
+    /// until the user taps Save (spec 2, 7.2). The new item has its own IDs, plan, and records. The stored item does not change.
+    func openEditorForCopy(_ itemID: ItemID, for person: PersonID) {
+        let generation = dataGeneration
+        Task {
+            do {
+                let stored = try await store.editorContext(for: itemID)
+                guard let item = stored.item else { throw EditorOpenError.itemNotFound }
+                let context = try await store.editorContext(for: nil)
+                let start = ItemDraft.copying(item, schedule: stored.schedule, for: person)
+                // The copy is the start, so Cancel closes the screen with no question.
+                var session = EditorSession(
+                    context: context, original: start, start: start, isRestored: false, generation: generation
+                )
+                session.copied = (item.id, person, item.imageReference)
+                // A draft that the app kept after it stopped comes back with its own IDs.
+                if let kept = DraftFile.load(key: session.draftKey), kept != start {
+                    session = EditorSession(context: context, original: start, start: kept, isRestored: true, generation: generation)
+                    session.copied = (item.id, person, item.imageReference)
+                }
+                editor = session
+                analytics.capture(.setupStep(.editorOpened, mode: session.mode))
+            } catch {
+                refresh()
+            }
+        }
+    }
+
     /// Turns the reminders of an item off or on. Off keeps the item on Today and My Items, and the user can
     /// still record it (T07). A failure throws, and the store is unchanged. After a restore the store refuses
     /// the change, and the pages read again (D040).
@@ -189,6 +217,8 @@ extension AppModel {
         DraftFile.remove(key: EditorSession.editKey(of: itemID))
         DraftFile.remove(key: EditorSession.replaceKey(of: itemID))
         forgetUnconfirmed(of: itemID, versions: Set(versions))
+        // The records of the item went with it (D107).
+        proRecordsDidChange()
         for id in schedules {
             reminderStatus[id] = nil
             reminderCoverageEnds[id] = nil
@@ -212,7 +242,7 @@ extension AppModel {
     ///
     /// An event of a planned dose names a schedule version, and each version belongs to one item.
     /// An as-needed event names the item.
-    private func forgetUnconfirmed(of itemID: ItemID, versions: Set<ScheduleVersionID>) {
+    func forgetUnconfirmed(of itemID: ItemID, versions: Set<ScheduleVersionID>) {
         for (id, pending) in today.pending where versions.contains(pending.scheduleVersionID) {
             if let occurrence = pending.backfill { today.backfills[occurrence.key] = nil }
             today.pending[id] = nil
@@ -231,7 +261,7 @@ extension AppModel {
     /// Takes the doses of a deleted item out of the days that History keeps, so no row offers a correction
     /// of a dose that is gone. A read that started before the delete does not show, and an open History
     /// reads again.
-    private func forgetHistory(of itemID: ItemID) {
+    func forgetHistory(of itemID: ItemID) {
         history.readCount += 1
         history.days = history.days?.map { day in
             var day = day

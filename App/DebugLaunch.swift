@@ -16,6 +16,25 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruSampleRecords")
     }
 
+    /// `-MaruSampleFamily YES`: with the sample items, add "Mom" and the cat "Mochi" (D121). Mom gets the second and the fifth
+    /// sample, and Mochi gets one more medication. For the captures of the Family pages and of Today with several members.
+    static var wantsSampleFamily: Bool {
+        UserDefaults.standard.bool(forKey: "MaruSampleFamily")
+    }
+
+    /// `-MaruFirstRun YES`: show the onboarding again, as after a new install (D103).
+    /// For a check on a device or a simulator that already showed it. The onboarding still needs a store with no item.
+    static var wantsFirstRun: Bool {
+        UserDefaults.standard.bool(forKey: "MaruFirstRun")
+    }
+
+    /// `-MaruDebugPro YES`: act as if Maru Pro is active, with no purchase. For the check of the Watch app in a
+    /// simulator (D111), and of Siri, the PDF reports, and the 30-day counts (D130). Without it, the purchase of the
+    /// StoreKit configuration decides.
+    static var forcesPro: Bool {
+        UserDefaults.standard.bool(forKey: "MaruDebugPro")
+    }
+
     /// `-MaruTap 8:00` or `-MaruTap 8:00+120`: after the first read, act as a tap on the reminder of that time of today,
     /// delivered on time or that many minutes late. The simulator cannot set the delivery date of a notification.
     static var tap: (time: WallClockTime, delay: Int)? {
@@ -121,7 +140,9 @@ extension AppStore {
     ]
 
     private static var samples: [Sample] {
-        samplesByLanguage[Bundle.main.preferredLocalizations.first ?? "en"] ?? samplesByLanguage["en"]!
+        let samples = samplesByLanguage[Bundle.main.preferredLocalizations.first ?? "en"] ?? samplesByLanguage["en"]!
+        guard DebugLaunch.wantsSampleFamily else { return samples }
+        return samples + [("Methimazole", .medication, .tablet, "½ tablet", [(8, 0), (20, 0)], nil)]
     }
 
     /// Stores a sample photo as the edit screen stores a cut-out: a PNG of at most `ItemPhotos.maxPixel` pixels,
@@ -143,9 +164,19 @@ extension AppStore {
         let today = LocalDate(now, in: deviceTimeZone)
         var items: [Item] = []
         var schedules: [Schedule] = []
-        for sample in Self.samples {
+        let me = try await store.people().first { $0.kind == .me }!.id
+        var owners: [Int: PersonID] = [:]
+        if DebugLaunch.wantsSampleFamily {
+            let mom = try Person(kind: .person, name: "Mom", color: .blue)
+            let mochi = try Person(kind: .pet, name: "Mochi", symbol: .cat, color: .orange)
+            try await store.save(mom)
+            try await store.save(mochi)
+            owners = [1: mom.id, 4: mom.id, Self.samples.count - 1: mochi.id]
+        }
+        for (index, sample) in Self.samples.enumerated() {
             // Each sample gets the color that the edit screen gives a new item, so the colors differ (D021).
             let item = try Item(
+                personID: owners[index] ?? me,
                 category: sample.category,
                 name: sample.name,
                 form: sample.form,

@@ -2,39 +2,51 @@ import Foundation
 import MaruCore
 
 extension AppModel {
-    /// Sends the list of today to the Watch app, after each read and each commit (D071).
+    /// Sends the list of today to the Watch app, after each read, each commit, and each change of Maru Pro (D071, D111).
     ///
     /// The list goes only to a paired Watch that has the Watch app. WatchConnectivity sends it between the two
-    /// devices with the encryption of the system, and through no server of Maru.
+    /// devices with the encryption of the system, and through no server of Maru. The Watch app is a Pro feature, so
+    /// a free user's list has no dose.
     func sendWatchDay() {
         let now = Date()
         guard WatchLink.shared.hasWatchApp, case let .loaded(snapshot) = content, let day = snapshot.today,
               day.isCurrent(at: now, deviceTimeZone: NamedTimeZone(device: .current, at: now))
         else { return }
-        WatchLink.shared.send(WatchDay(day, unsaved: Set(today.pending.keys), at: now))
+        WatchLink.shared.send(WatchDay(day, unsaved: Set(today.pending.keys), isPro: pro.isPro, at: now))
     }
 
     /// Answers a request of the Watch app (D071). The system can start Maru in the background for it.
     ///
     /// The reply says "recorded" only after the record transaction committed (spec 7.2). It says "changed" when
-    /// the dose is not the one that the Watch showed. In every other case it says "not recorded": an iPhone that was not unlocked after a restart,
-    /// an event that is not confirmed, a restore, or a failed commit. The reply also has the list after the request.
+    /// the dose is not the one that the Watch showed. In every other case it says "not recorded": a free user (D111), an
+    /// iPhone that was not unlocked after a restart, an event that is not confirmed, a restore, or a failed commit. The
+    /// reply also has the list after the request.
     func answerWatch(_ message: Data) async -> Data {
         var outcome = WatchReply.Outcome.notRecorded
-        if case let .record(id, scheduleVersionID, action, revision, intent) = WatchRequest(message: message) {
+        switch WatchRequest(message: message) {
+        case let .record(id, scheduleVersionID, action, revision, intent, listedAt):
             outcome = await recordFromWatch(
-                id, scheduleVersionID: scheduleVersionID, action, revision: revision, intent: intent
+                id, scheduleVersionID: scheduleVersionID, action, revision: revision, intent: intent, listedAt: listedAt
             )
+        case .showPro:
+            askedForPro(from: .watch)
+        case .today, nil:
+            break
         }
+        let isPro = await confirmedPro()
         let day = await readToday(generation: dataGeneration).map {
-            WatchDay($0, unsaved: Set(today.pending.keys), at: Date())
+            WatchDay($0, unsaved: Set(today.pending.keys), isPro: isPro, at: Date())
         }
         return WatchReply(outcome: outcome, day: day).message ?? Data()
     }
 
     /// Records one dose with the record transaction. The source of the event is `app`.
     ///
-    /// The Watch can show an old list, so the dose comes from a new read, and four checks come before the write:
+    /// The Watch app is a Pro feature (D111). A free user's request records nothing, also from a Watch that still shows
+    /// an old Pro list.
+    ///
+    /// The Watch can show an old list, so the dose comes from a new read, and four checks come before the write. A fifth check runs
+    /// in the transaction: the item of the dose did not change its owner after the list (`listedAt`, D123).
     /// - The read is still of today when it ends. A request from before midnight records nothing after it.
     /// - The dose is in the list of today, with the schedule version that the Watch showed.
     /// - The record is the one that the Watch showed: its last event is `revision`. A change on the iPhone
@@ -48,8 +60,10 @@ extension AppModel {
     /// suspend the process after the reply.
     private func recordFromWatch(
         _ id: OccurrenceID, scheduleVersionID: ScheduleVersionID, _ action: IntakeAction,
-        revision: IntakeEventID?, intent: IntakeEventID
+        revision: IntakeEventID?, intent: IntakeEventID, listedAt: Date
     ) async -> WatchReply.Outcome {
+        analytics.markUsed(.watch)
+        guard await confirmedPro() else { return .notRecorded }
         // The generation comes before the read, so a restore after this line refuses the record (D040).
         let generation = dataGeneration
         guard let day = await readToday(generation: generation),
@@ -77,6 +91,8 @@ extension AppModel {
                 scheduleVersionID: scheduleVersionID
             )
             event.requiresCurrentPlan = true
+            // The user saw the list under the owner of that time. After an owner change, the store records nothing (D123).
+            event.listedAt = listedAt
             // The read record stays on the Watch until the commit is flushed (spec 7.2).
             committed = await commitAndWait([event], generation: generation, confirmed: [id: entry.record])
         }
@@ -85,6 +101,14 @@ extension AppModel {
             await waitForReminders(deviceTimeZone: deviceTimeZone)
         }
         return .recorded
+    }
+
+    /// `true` for Maru Pro. A free answer reads StoreKit again before it counts, because the system can start Maru for a
+    /// request of the Watch before the first read of StoreKit ends, for example after a renewal while Maru did not run.
+    func confirmedPro() async -> Bool {
+        if pro.isPro { return true }
+        await pro.refreshEntitlement()
+        return pro.isPro
     }
 
     /// The rows of today from a new read of the store, with the confirmed record of each running transaction.
@@ -103,19 +127,23 @@ extension AppModel {
 private extension WatchDay {
     /// - Parameter unsaved: The occurrences with an event that the store did not confirm. Such a dose is not
     ///   done, also when the read shows the stored event (D014), so the Watch gets it as open.
-    init(_ today: TodaySnapshot, unsaved: Set<OccurrenceID>, at now: Date) {
+    init(_ today: TodaySnapshot, unsaved: Set<OccurrenceID>, isPro: Bool, at now: Date) {
         self.init(
-            sentAt: now,
+            // Not later than the read of the list: the iPhone refuses a dose whose owner changed after it (D123).
+            sentAt: min(now, today.generatedAt),
             expiresAt: today.expiresAt,
             tint: AppGroup.appColor,
-            slots: today.groups.map { group in
+            isPro: isPro,
+            // A free user's list has no dose (D111).
+            slots: !isPro ? [] : today.groups.map { group in
                 Slot(part: group.part, doses: group.entries.map { entry in
                     let occurrence = entry.occurrence
                     let event = unsaved.contains(entry.id) ? nil : entry.record.currentEvent
                     return Dose(
                         id: entry.id,
                         scheduleVersionID: occurrence.scheduleVersionID,
-                        name: entry.look.name,
+                        // With two or more active members the owner is in the name, so an old Watch app tells two rows apart (D123).
+                        name: entry.look.labelledName,
                         amount: entry.amount,
                         status: unsaved.contains(entry.id) ? .unrecorded : entry.record.status,
                         revision: entry.record.events.last?.id,

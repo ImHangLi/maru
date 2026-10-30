@@ -94,13 +94,16 @@ actor AppStore {
         return store
     }
 
+    /// The notification center of both engines. Each request gets the reminder sound of now (D112).
+    private static let center = SystemReminderCenter(sound: { ReminderSound.inUse()?.fileName })
+
     /// The one reminder engine of the process. Its runs do not overlap, so the app must not make a second one.
     /// Each successful run keeps the device time zone for the notification tap (spec 8.1, 8.3).
     func reminderEngine() throws(StorageError) -> ReminderEngine {
         if let engine { return engine }
         let engine = ReminderEngine(
             source: try open(),
-            center: SystemReminderCenter(),
+            center: Self.center,
             privacy: DefaultsReminderPrivacy(),
             zoneRecord: DefaultsTimeZoneRecord(),
             alarms: coverNow,
@@ -116,7 +119,7 @@ actor AppStore {
         if let followUps { return followUps }
         let followUps = FollowUpEngine(
             source: try open(),
-            center: SystemReminderCenter(),
+            center: Self.center,
             privacy: DefaultsReminderPrivacy(),
             snoozes: snoozes,
             alarms: coverNow,
@@ -258,29 +261,32 @@ actor AppStore {
             )
         }
         let items = try await store.items()
+        let people = try await store.people()
+        let family = Family(people: people)
         let remindersOff = try await store.itemIDsWithRemindersOff()
         counts.items = items.count
         var today: TodaySnapshot?
         if let deviceTimeZone {
             let loaded = try await TodaySnapshot.load(
-                from: store, items: items, remindersOff: remindersOff,
+                from: store, items: items, family: family, remindersOff: remindersOff,
                 at: now, deviceTimeZone: deviceTimeZone, generation: generation
             )
             counts.occurrences = loaded.occurrences.count
             today = loaded.snapshot
             let date = LocalDate(now, in: deviceTimeZone)
-            today?.asNeeded = AsNeededCard(try await store.asNeeded(on: date), items: items, on: date)
+            today?.asNeeded = AsNeededCard(try await store.asNeeded(on: date), items: items, family: family, on: date)
         }
         let entries = items.map {
             ListEntry(
-                id: $0.id, name: $0.name, form: $0.form, color: $0.color,
+                id: $0.id, personID: $0.personID, owner: family.owner(of: $0), name: $0.name, form: $0.form, color: $0.color,
                 imageReference: $0.imageReference, remindersOff: remindersOff.contains($0.id)
             )
         }
         return Snapshot(
             today: today,
             list: zip(items, entries).filter { !$0.0.isArchived }.map(\.1),
-            archived: zip(items, entries).filter { $0.0.isArchived }.map(\.1)
+            archived: zip(items, entries).filter { $0.0.isArchived }.map(\.1),
+            people: people
         )
     }
 
@@ -299,10 +305,13 @@ actor AppStore {
         _ events: [(event: IntakeEvent, scheduleVersionID: ScheduleVersionID)],
         generation: Int,
         currentPlan: (@Sendable () -> OccurrenceGeneration?)? = nil,
-        restoreEpoch: Int? = nil
+        restoreEpoch: Int? = nil,
+        listedAt: Date? = nil
     ) async throws(RecordFailure) -> [OccurrenceRecord] {
         let store = try openForRecord()
-        let records = try await store.record(events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch)
+        let records = try await store.record(
+            events, generation: generation, currentPlan: currentPlan, restoreEpoch: restoreEpoch, listedAt: listedAt
+        )
         #if DEBUG
         // The "failed write" scenario: the commit is stored, and the caller gets `unavailable` (D014).
         if debug.failsNextRecord, DebugStore.directory != nil {

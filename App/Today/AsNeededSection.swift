@@ -74,11 +74,12 @@ private struct AsNeededItemRow: View {
                 .contentShape(Rectangle())
                 // Two VoiceOver stops, like the two touch areas: the name, then the record button (spec 3 P01).
                 .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text(verbatim: row.look.name))
+                .accessibilityLabel(Text(verbatim: model.shownMember == nil ? row.look.labelledName : row.look.name))
                 .accessibilityValue(Text(verbatim: detail ?? ""))
             }
             .navigationLinkIndicatorVisibility(.hidden)
             .accessibilityHint(Text("Opens the details"))
+            RowOwner(personID: row.look.personID)
             if canRecord {
                 AsNeededRecordButton(row: row)
             }

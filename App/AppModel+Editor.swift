@@ -15,6 +15,9 @@ struct EditorSession: Identifiable {
     let generation: Int
     /// The item that a save replaces, with its schedule (T06). The draft is then a new item.
     var replaced: (item: Item, schedule: Schedule?)?
+    /// The item that a new item copies for another member, and its photo file (D128). The save copies the file, so each item has
+    /// its own photo, and a later delete of one item keeps the photo of the other.
+    var copied: (itemID: ItemID, person: PersonID, photo: String?)?
     /// For the duration bucket of the usage statistics (D077). It is not stored, and no clock time leaves the device.
     let openedAt = Date()
 
@@ -30,6 +33,7 @@ struct EditorSession: Identifiable {
     /// The name of the draft file: one for a new item, one for each item in edit or in replacement.
     var draftKey: String {
         if let replaced { return Self.replaceKey(of: replaced.item.id) }
+        if let copied { return "copy-\(copied.itemID.rawValue.uuidString)-\(copied.person.rawValue.uuidString)" }
         return context.item.map { Self.editKey(of: $0.id) } ?? "new"
     }
 
@@ -49,12 +53,16 @@ extension AppModel {
             do {
                 let context = try await store.editorContext(for: itemID)
                 if itemID != nil, context.item == nil { throw EditorOpenError.itemNotFound }
-                let original = context.item.map { ItemDraft(item: $0, schedule: context.schedule) }
+                var original = context.item.map { ItemDraft(item: $0, schedule: context.schedule) }
                     ?? ItemDraft(color: context.newItemColor, reminders: context.newItemReminders)
+                // A new item belongs to the member that Today shows, else to "Me" (D121).
+                if original.personID == nil { original.personID = (shownMember?.id ?? context.defaultOwner).rawValue }
                 var session = EditorSession(
                     context: context, original: original, start: original, isRestored: false, generation: generation
                 )
                 if var kept = DraftFile.load(key: session.draftKey) {
+                    // A draft file from before the Family has no owner. It takes the owner of the stored item or the default (D121).
+                    kept.personID = kept.personID ?? original.personID
                     // A draft of version 1.0 has no reminder options. It keeps the options of the stored item.
                     if kept.hasReminderOptions != true {
                         kept.followUp = original.followUp
@@ -112,7 +120,11 @@ extension AppModel {
         let storedPhoto = session.context.item?.imageReference
         var newPhoto: String?
         switch photo {
-        case .unchanged: break
+        case .unchanged:
+            if let source = session.copied?.photo {
+                newPhoto = await store.copyPhoto(source)
+                item.imageReference = newPhoto
+            }
         case .removed: item.imageReference = nil
         case let .replaced(choice):
             newPhoto = try await store.writePhoto(choice.chosen.data, fileExtension: choice.chosen.fileExtension)
@@ -173,6 +185,8 @@ extension AppModel {
         }
         report(status, of: reported.id, removes: removed != nil)
         offerRemindAgain(for: item, session: session, hasTime: schedule != nil)
+        // After the reminder run, so the notification permission alert of this save ended (D107).
+        offerFirstValue(schedule: schedule, session: session)
     }
 
     /// The first save of an item with a time offers "Remind Again" one time, as a plain question. It turns on nothing by

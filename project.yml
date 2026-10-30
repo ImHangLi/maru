@@ -12,6 +12,7 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     # Product copy is in App/Localizable.xcstrings. The Info.plist texts are in App/InfoPlist.xcstrings.
+    # The Siri phrases of the App Shortcuts are in App/AppShortcuts.xcstrings (D108).
     # The widgets and the Watch app have a catalog each: Widget/ and Watch/.
     SWIFT_EMIT_LOC_STRINGS: YES
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
@@ -21,7 +22,7 @@ packages:
   MaruKit:
     path: Packages/MaruKit
 schemes:
-  # The Run action uses a StoreKit configuration for local tests of the tips (D053).
+  # The Run action uses a StoreKit configuration for local tests of Maru Pro (D107).
   Maru:
     build:
       targets:
@@ -37,7 +38,7 @@ schemes:
       config: Debug
     archive:
       config: Release
-  # Builds and runs the Watch app alone. The app does not embed it until 1.1 (D074).
+  # Builds and runs the Watch app alone, for a check in a simulator. The app also embeds it (D111).
   MaruWatch:
     build:
       targets:
@@ -60,6 +61,8 @@ targets:
         product: MaruAnalytics
       # The Home Screen widgets (D048). XcodeGen embeds the extension in the app.
       - target: MaruWidgets
+      # The Watch app, a Pro feature (D071, D111). XcodeGen embeds it in the Watch folder of the app, so an archive has it.
+      - target: MaruWatch
       # The alarm (D079). AlarmKit exists from iOS 26 and the app supports iOS 17, so the link is weak.
       - sdk: AlarmKit.framework
         weak: true
@@ -73,7 +76,10 @@ targets:
         # The label scan (D038) and the item photo (D056) of the edit screen. The system asks at the first tap.
         INFOPLIST_KEY_NSCameraUsageDescription: Maru uses the camera to read the name on a label and to take a photo of an item. A label scan saves no photo.
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        # "Next Dose on Lock Screen", the Live Activity of Maru Pro (D110). The widget extension draws it. No push updates it.
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
         # The iPhone is portrait only. Config/Maru-Info.plist has the four orientations of the iPad (D072).
+        # The inner display of iPhone Duo ignores this lock and resizes the app (D106).
         INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
         # Maru uses only the encryption of iOS, so the upload needs no export compliance document.
         INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: NO
@@ -88,6 +94,9 @@ targets:
         MARU_ANALYTICS_HOST: "https://us.i.posthog.com"
         # The app icon is in App/Assets.xcassets. App/Icons.xcassets holds the form icons.
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        # The alternate icons of Maru Pro are in App/AppIcons.xcassets (D112). The asset compiler adds them to the
+        # Info.plist. D132 adds generated ceramic artwork. The reminder sounds are the files in App/Sounds.
+        ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES: AppIcon-Blue AppIcon-Purple AppIcon-Green AppIcon-Night AppIcon-Mono AppIcon-RoseCeramic AppIcon-BlueLotus AppIcon-RoseAndSage
       configs:
         # The photos of the debug sample items (App/Debug/SamplePhotos) are only in a debug build (D073).
         Release:
@@ -112,7 +121,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: Config/MaruWidgets.entitlements
         SKIP_INSTALL: YES
   # The Watch app (D071). It has no database: it links only MaruCore, and the iPhone app makes each record.
-  # The app does not embed it in 1.0 (D074). To embed it again, add `- target: MaruWatch` to the dependencies of Maru.
+  # It is a Pro feature, and the app embeds it (D111). Version 1.0 did not (D074).
   MaruWatch:
     type: application
     platform: watchOS

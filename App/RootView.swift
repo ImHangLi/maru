@@ -5,6 +5,7 @@ import SwiftUI
 struct RootView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
     /// The edit screen is on the display, also while it closes. A reminder alert waits for its end.
     @State private var editorIsUp = false
     /// The reminder alert on the display. It is a copy, so a later result does not change it.
@@ -24,6 +25,16 @@ struct RootView: View {
         Group {
             if case let .failed(error) = model.content {
                 StorageProblemView(error: error)
+            } else if model.onboarding == .undecided {
+                // The first read decides. Today does not show for a frame before the onboarding (D104).
+                Color.clear
+            } else if model.onboarding == .shows {
+                // The page of the window, not a sheet: Today is not under it, and a rotation or Split View keeps it (D104).
+                OnboardingView { result in
+                    model.finishOnboarding(result)
+                    // The edit screen opens on the tabs.
+                    if result == .addItem { model.openEditor(for: nil) }
+                }
             } else {
                 TabView(selection: $model.selectedTab) {
                     TodayView()
@@ -40,7 +51,13 @@ struct RootView: View {
                     if isOpen { editorIsUp = true }
                 }
                 .sheet(isPresented: $model.settings.isPresented) { SettingsView() }
+                // Settings hosts the paywall while it is up. The edit screen never shows it (D107).
+                .paywallHost(!editorIsUp && !model.settings.isPresented)
             }
+        }
+        // The onboarding decides only in front, so a launch in the background for a reminder action does not use it (D104).
+        .onChange(of: scenePhase == .active, initial: true) { _, isActive in
+            model.windowDidChange(isActive: isActive)
         }
         // The storage problem page removes the tabs and their sheet, so `onDismiss` can not run.
         // Without the sheet, the edit screen is not on the display.
@@ -103,8 +120,11 @@ struct RootView: View {
         .alert("Not Changed", isPresented: $model.endFailed) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Maru couldn’t save this change. Try again.")
+            Text("This change didn’t save. Please try again.")
         }
+        // The system rating prompt, after the record that completes a day (D102). `ProStore.swift` has the modifier,
+        // because only that file imports StoreKit (D107).
+        .reviewPrompt(trigger: model.reviewRequest)
         // The offer of "Remind Again" waits for the edit screen and for the alerts before it. It changes nothing by itself.
         .onChange(of: offerIsDue, initial: true) { _, isDue in
             guard isDue, let itemID = model.remindAgainOffer else { return }
@@ -119,6 +139,15 @@ struct RootView: View {
             Button("Not Now", role: .cancel) {}
         } message: {
             Text("Maru can remind you again up to 2 times, 30 minutes apart, if you don’t record a dose.")
+        }
+        // The first-value offer of Maru Pro comes last after a save: after the edit screen, the notification permission
+        // alert, the reminder alerts, "Remind Again?", and the opt-in question (D107).
+        .onChange(of: firstValueIsDue, initial: true) { _, isDue in
+            if isDue { model.showFirstValueOffer() }
+        }
+        // The paywall that a free user asked for on the Watch or from Siri, the next time that Maru is in front (D111, D130).
+        .onChange(of: askedOfferIsDue, initial: true) { _, isDue in
+            if isDue { model.showAskedOffer() }
         }
         // The opt-in question waits for the edit screen and for the alerts before it.
         .onChange(of: noticeIsDue, initial: true) { _, isDue in
@@ -153,6 +182,18 @@ struct RootView: View {
     private var noticeIsDue: Bool {
         model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
             && model.reminderAlerts.isEmpty && !model.settings.isPresented
+    }
+
+    private var firstValueIsDue: Bool {
+        model.proState.firstValueOffer && model.onboarding == .hidden && model.remindAgainOffer == nil
+            && !model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
+            && model.reminderAlerts.isEmpty && !model.settings.isPresented && model.proState.paywall == nil
+    }
+
+    private var askedOfferIsDue: Bool {
+        model.proState.askedSource != nil && scenePhase == .active && model.onboarding == .hidden
+            && !model.proState.firstValueOffer && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice
+            && !showsOffer && model.reminderAlerts.isEmpty && model.proState.paywall == nil
     }
 
     private var storageFailed: Bool {

@@ -214,6 +214,7 @@ extension AppModel {
 
     private func didCommitAsNeeded(_ record: OccurrenceRecord, _ pending: AsNeededEvent) {
         noteRecords([record])
+        proRecordsDidCommit([record])
         forget(pending)
         historyDidCommitAsNeeded(record, of: pending.occurrence)
         // A retry can succeed after midnight, when the content shows another day. Only a dose of the shown
@@ -232,6 +233,7 @@ extension AppModel {
             refresh()
         }
         today.commitCount += 1
+        reloadWidgets()
         // An as-needed dose has no reminder, so the notification queue does not change (D021).
     }
 
@@ -251,7 +253,7 @@ extension AppModel {
             // The event can be stored already, after `unavailable`. Keep it, and send the same one again (D014).
             today.asNeeded.unconfirmed[pending.occurrence.id] = entry
             show(AsNeededFailure(kind: .notSaved(error), pending: pending))
-        case .unknownOccurrence, .versionChanged, .rejected:
+        case .unknownOccurrence, .versionChanged, .ownerChanged, .rejected:
             // The store has another state than the card. Nothing was written. Show the stored state.
             forget(pending)
             show(AsNeededFailure(kind: .changed, pending: nil))

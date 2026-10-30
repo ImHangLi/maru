@@ -49,6 +49,8 @@ extension LocalStore {
 public struct WidgetRead: Sendable {
     public let epoch: Int
     public let items: [Item]
+    /// Every member of the Family (D121). A dose name has its owner only when two or more are active (D123).
+    public let people: [Person]
     /// The occurrences of the plan of now, also those that no generation run stored. A stored one keeps its ID.
     public let occurrences: [Occurrence]
     public let planZones: Set<NamedTimeZone>
@@ -68,6 +70,61 @@ extension LocalStore {
     public static func readForWidget(
         in directory: URL, at now: Date, deviceTimeZone: NamedTimeZone
     ) throws(StorageError) -> WidgetRead {
+        try readOnly(in: directory) { db, epoch -> WidgetRead in
+            let (items, schedules) = try Self.itemsAndSchedules(db)
+            let generation = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
+            let dates = generation.candidateDates
+            let stored = try Row.fetchAll(
+                db,
+                sql: """
+                    SELECT occurrence.*,
+                        EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id) AS isRecorded
+                    FROM scheduleSlot CROSS JOIN occurrence
+                        ON occurrence.slotID = scheduleSlot.id AND occurrence.plannedDate BETWEEN ? AND ?
+                    ORDER BY occurrence.rowid
+                    """,
+                arguments: [try dates[0].text, try dates[dates.count - 1].text]
+            ).map { row in
+                StoredOccurrence(occurrence: try decodeOccurrence(row), isRecorded: try row.decode(forColumn: "isRecorded"))
+            }
+            let outcome = generation.outcome(items: items, schedules: schedules, stored: stored)
+            let storedIDs = Set(stored.map(\.occurrence.id))
+            var records: [OccurrenceID: OccurrenceRecord] = [:]
+            for occurrence in outcome.occurrences where storedIDs.contains(occurrence.id) {
+                records[occurrence.id] = try fetchCheckedRecord(db, occurrenceID: occurrence.id)
+            }
+            var itemIDs: [ScheduleSlotID: ItemID] = [:]
+            for row in try Row.fetchAll(
+                db,
+                sql: "SELECT scheduleSlot.id, schedule.itemID FROM scheduleSlot JOIN schedule ON schedule.id = scheduleSlot.scheduleID"
+            ) {
+                itemIDs[try ScheduleSlotID(text: row.decode(forColumn: "id"))] = try ItemID(text: row.decode(forColumn: "itemID"))
+            }
+            var doses: [ScheduleVersionID: Dose] = [:]
+            for id in Set(outcome.occurrences.map(\.scheduleVersionID)) {
+                if let text = try String.fetchOne(db, sql: "SELECT dose FROM scheduleVersion WHERE id = ?", arguments: [id.text]) {
+                    guard let dose = Dose(text) else { throw StorageError.invalidData }
+                    doses[id] = dose
+                }
+            }
+            let planZones = schedules.flatMap(\.versions).map { version in
+                switch version.timeZonePolicy {
+                case .fixed(let zone): zone
+                case .followsDevice: deviceTimeZone
+                }
+            }
+            return WidgetRead(
+                epoch: epoch, items: items, people: try Self.fetchPeople(db), occurrences: outcome.occurrences, planZones: Set(planZones),
+                itemIDsBySlot: itemIDs, doses: doses, records: records
+            )
+        }
+    }
+
+    /// One read transaction of a widget (D048, D108). It opens the database read-only, so it creates no file, runs no
+    /// migration, removes no staged backup, and stores nothing. A database that is not there throws `unavailable`.
+    /// The restore epoch is read before and after the read. A restore that runs, or ran in between, throws `unavailable`.
+    /// `body` gets the restore epoch of the data.
+    static func readOnly<T>(in directory: URL, _ body: (Database, Int) throws -> T) throws(StorageError) -> T {
         do {
             guard let epoch = restoreEpoch(in: directory), epoch % 2 == 0, try hasDatabase(in: directory) else {
                 throw StorageError.unavailable
@@ -80,54 +137,7 @@ extension LocalStore {
                 path: directory.appendingPathComponent(fileName).path, configuration: configuration
             )
             defer { try? queue.close() }
-            let result = try queue.read { db -> WidgetRead in
-                let (items, schedules) = try Self.itemsAndSchedules(db)
-                let generation = OccurrenceGeneration(now: now, deviceTimeZone: deviceTimeZone)
-                let dates = generation.candidateDates
-                let stored = try Row.fetchAll(
-                    db,
-                    sql: """
-                        SELECT occurrence.*,
-                            EXISTS (SELECT 1 FROM occurrenceState WHERE occurrenceID = occurrence.id) AS isRecorded
-                        FROM scheduleSlot CROSS JOIN occurrence
-                            ON occurrence.slotID = scheduleSlot.id AND occurrence.plannedDate BETWEEN ? AND ?
-                        ORDER BY occurrence.rowid
-                        """,
-                    arguments: [try dates[0].text, try dates[dates.count - 1].text]
-                ).map { row in
-                    StoredOccurrence(occurrence: try decodeOccurrence(row), isRecorded: try row.decode(forColumn: "isRecorded"))
-                }
-                let outcome = generation.outcome(items: items, schedules: schedules, stored: stored)
-                let storedIDs = Set(stored.map(\.occurrence.id))
-                var records: [OccurrenceID: OccurrenceRecord] = [:]
-                for occurrence in outcome.occurrences where storedIDs.contains(occurrence.id) {
-                    records[occurrence.id] = try fetchCheckedRecord(db, occurrenceID: occurrence.id)
-                }
-                var itemIDs: [ScheduleSlotID: ItemID] = [:]
-                for row in try Row.fetchAll(
-                    db,
-                    sql: "SELECT scheduleSlot.id, schedule.itemID FROM scheduleSlot JOIN schedule ON schedule.id = scheduleSlot.scheduleID"
-                ) {
-                    itemIDs[try ScheduleSlotID(text: row.decode(forColumn: "id"))] = try ItemID(text: row.decode(forColumn: "itemID"))
-                }
-                var doses: [ScheduleVersionID: Dose] = [:]
-                for id in Set(outcome.occurrences.map(\.scheduleVersionID)) {
-                    if let text = try String.fetchOne(db, sql: "SELECT dose FROM scheduleVersion WHERE id = ?", arguments: [id.text]) {
-                        guard let dose = Dose(text) else { throw StorageError.invalidData }
-                        doses[id] = dose
-                    }
-                }
-                let planZones = schedules.flatMap(\.versions).map { version in
-                    switch version.timeZonePolicy {
-                    case .fixed(let zone): zone
-                    case .followsDevice: deviceTimeZone
-                    }
-                }
-                return WidgetRead(
-                    epoch: epoch, items: items, occurrences: outcome.occurrences, planZones: Set(planZones),
-                    itemIDsBySlot: itemIDs, doses: doses, records: records
-                )
-            }
+            let result = try queue.read { db in try body(db, epoch) }
             guard restoreEpoch(in: directory) == epoch else { throw StorageError.unavailable }
             return result
         } catch {

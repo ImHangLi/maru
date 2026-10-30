@@ -1,6 +1,313 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Me" : {
+      "comment" : "The word for the member of the Family who owns the device, in a dose name that names its owner. Example: “Me: Vitamin D3”.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Me"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自分"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "나"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "我"
+          }
+        }
+      }
+    },
+    "%@: %@" : {
+      "comment" : "A dose name with its owner when the Family has several members. The first placeholder is the member, the second is the item name. Example: “Mochi: Methimazole”. Each language chooses its own colon.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：%2$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：%2$@"
+          }
+        }
+      }
+    },
+    "%@, %@" : {
+      "comment" : "Lock Screen one-line form. Last Dose widget: the item name and the time, for example \"Vitamin D, 2 hr. ago\" (D108). Next Dose widget: the time and the names, for example \"8:00 AM, Vitamin D and Iron\" (D113).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@、%2$@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, %2$@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@，%2$@"
+          }
+        }
+      }
+    },
+    "%lld doses" : {
+      "comment" : "Next Dose widget and Live Activity: the number of doses in place of the names when \"Show Names in Reminders\" is off (D110, D113).",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Dosis"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld Dosen"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dose"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld doses"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dosis"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld dosis"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld件"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld개 항목"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld 项"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld more" : {
+      "comment" : "Next Dose widget and Live Activity: the last part of the list of names, for the doses after the first three names (D110, D113). Example: \"Vitamin D, Iron, Zinc, and 2 more\".",
+      "localizations" : {
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld weitere"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld weitere"
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld more"
+                }
+              }
+            }
+          }
+        },
+        "es" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld más"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld más"
+                }
+              }
+            }
+          }
+        },
+        "ja" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "ほか%lld件"
+                }
+              }
+            }
+          }
+        },
+        "ko" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "그 외 %lld개"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "另外 %lld 项"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld left" : {
       "comment" : "Small Today widget: the number of open doses of the slot. Example: 2 left.",
       "localizations" : {
@@ -176,6 +483,41 @@
         }
       }
     },
+    "Couldn’t confirm the save. Open Maru to check." : {
+      "comment" : "Live Activity: the text after a tap on Taken when the record did not confirm. The dose can be stored, so the text does not say that nothing was recorded (spec 7.2, D014, D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Speichern nicht bestätigt. Öffne Maru zum Prüfen."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo confirmar que se guardó. Abre Maru para revisarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存を確認できませんでした。Maruを開いて確認してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "저장을 확인하지 못했어요. Maru를 열어 확인해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没能确认是否已保存。请打开 Maru 查看。"
+          }
+        }
+      }
+    },
     "Dose" : {
       "comment" : "Widget action: the name of the dose parameter.",
       "localizations" : {
@@ -211,6 +553,41 @@
         }
       }
     },
+    "Dose recorded" : {
+      "comment" : "Last Dose widget: the text in place of the item name when \"Show Names in Reminders\" is off (D029, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis erfasst"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dosis registrada"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服用を記録済み"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용 기록됨"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已记录服用"
+          }
+        }
+      }
+    },
     "Evening" : {
       "comment" : "Widget: the name of a slot.",
       "localizations" : {
@@ -242,6 +619,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "晚上"
+          }
+        }
+      }
+    },
+    "Last Dose" : {
+      "comment" : "Last Dose widget: the name in the widget gallery and the title of the small widget (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Letzte Dosis"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Última dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前回の服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "마지막 복용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上一次服用"
           }
         }
       }
@@ -347,6 +759,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "下次 %@"
+          }
+        }
+      }
+    },
+    "No records yet" : {
+      "comment" : "Last Dose widget, Lock Screen one-line form: shown when no item has a taken record. No judgment (D101, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Aufzeichnungen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún no hay registros"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ記録はありません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 기록이 없어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有记录"
           }
         }
       }
@@ -457,7 +904,7 @@
       }
     },
     "Open Maru to update." : {
-      "comment" : "Widget: shown when the widget cannot read the data, for example on a locked iPhone.",
+      "comment" : "Widget: shown when the widget cannot read the data, for example on a locked iPhone. Live Activity: shown when the day of the dose ended (D110).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -561,8 +1008,43 @@
         }
       }
     },
+    "Records these doses as taken" : {
+      "comment" : "Live Activity: VoiceOver hint of the Taken button for more than one dose (D110).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erfasst diese Dosen als eingenommen"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra estas dosis como tomadas"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "これらの服用を服用済みとして記録します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이 복용들을 복용함으로 기록해요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "把这些服用记为已服用"
+          }
+        }
+      }
+    },
     "Records this dose as taken" : {
-      "comment" : "Widget: VoiceOver hint of a gray capsule.",
+      "comment" : "Widget: VoiceOver hint of a gray capsule. Live Activity: VoiceOver hint of the Taken button for one dose (D110).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -627,6 +1109,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "看看还剩几次服用，不显示药名。"
+          }
+        }
+      }
+    },
+    "See your newest taken dose and its time." : {
+      "comment" : "Last Dose widget: the description in the widget gallery (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt deine letzte eingenommene Dosis und ihre Uhrzeit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira tu dosis tomada más reciente y su hora."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の服用とその時刻を表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가장 최근 복용과 그 시간을 보여줘요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看最近一次服用及其时间。"
           }
         }
       }
@@ -702,7 +1219,7 @@
       }
     },
     "Taken" : {
-      "comment" : "Widget: VoiceOver label of a filled capsule.",
+      "comment" : "Widget: VoiceOver label of a filled capsule. Live Activity: the button that records the shown doses (D110).",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -837,6 +1354,251 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "数据"
+          }
+        }
+      }
+    },
+    "Yesterday, %@" : {
+      "comment" : "Last Dose widget: the day and the time of the newest taken dose when it was yesterday. Example: Yesterday, 6:49 PM (D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gestern, %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ayer, %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昨日 %@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "어제 %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "昨天 %@"
+          }
+        }
+      }
+    },
+    "Your last dose will show here." : {
+      "comment" : "Last Dose widget: shown when no item has a taken record. Warm, no judgment (D101, D108).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deine letzte Dosis erscheint hier."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu última dosis aparecerá aquí."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新の服用がここに表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "가장 최근 복용이 여기에 표시돼요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你最近一次服用会显示在这里。"
+          }
+        }
+      }
+    },
+    "Not recorded yet" : {
+      "comment" : "Next Dose widget: the state after the planned time when the dose has no record. Calm, no judgment (D101, D113).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch nicht erfasst"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aún sin registrar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "まだ記録していません"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "아직 기록 안 함"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没记录"
+          }
+        }
+      }
+    },
+    "Next Dose" : {
+      "comment" : "Name of the Next Dose widget in the widget gallery (D113).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächste Dosis"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Próxima dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の服用"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 복용"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "下一次服用"
+          }
+        }
+      }
+    },
+    "See your next dose and the time left." : {
+      "comment" : "Description of the Next Dose widget in the widget gallery (D113).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeigt deine nächste Dosis und die verbleibende Zeit."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mira tu próxima dosis y el tiempo que falta."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "次の服用と残り時間を表示します。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다음 복용과 남은 시간을 보여줘요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "查看下一次服用和剩余时间。"
+          }
+        }
+      }
+    },
+    "In %@" : {
+      "comment" : "Next Dose widget: the time left until the dose. The value is a relative time that the system writes, for example \"2 hr, 5 min\" (D113).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In %@"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "あと%@"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 후"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@后"
+          }
+        }
+      }
+    },
+    "All done for today" : {
+      "comment" : "Next Dose widget: every planned dose of today has a record. Calm (D101, D113).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Für heute alles erledigt"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todo listo por hoy"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日の分はすべて完了"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘은 모두 마쳤어요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天都完成了"
           }
         }
       }

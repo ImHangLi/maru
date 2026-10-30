@@ -2,9 +2,20 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
-/// "Your Data": the record export, the backup, and the restore (D040).
+/// The page "Your Data" (D135).
+struct DataPage: View {
+    var body: some View {
+        Form {
+            DataSection()
+        }
+        .navigationTitle("Your Data")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+/// The record export, the reports, the backup, and the restore (D040).
 /// Maru sends nothing by itself. The user gives each file to an app in the share sheet.
-struct DataSection: View {
+private struct DataSection: View {
     @Environment(AppModel.self) private var model
     @State private var picksBackup = false
     /// The failure on the display. It is a copy, so the alert keeps its text while it closes.
@@ -24,14 +35,31 @@ struct DataSection: View {
                     ShareSheet(url: file.url) { model.transfer.shared = nil }
                         .smallSheet()
                 }
-            Button("Share Medication List") { model.shareMedicationList() }
-                .rowText()
-            Button("Share Summary…") { showsSummary = true }
+            // With a second active member, one list for everyone or for one member (D129).
+            if model.hasFamily {
+                Menu {
+                    Button("Everyone") { model.shareMedicationList(for: nil) }
+                    ForEach(model.activePeople, id: \.id) { person in
+                        Button {
+                            model.shareMedicationList(for: person)
+                        } label: {
+                            Text(verbatim: person.displayName)
+                        }
+                    }
+                } label: {
+                    ProRowTitle("Share Medication List…").rowText()
+                }
+            } else {
+                Button { model.shareMedicationList(for: nil) } label: { ProRowTitle("Share Medication List") }
+                    .rowText()
+            }
+            // The sheet is free to open. Only the share of the PDF needs Maru Pro (D130).
+            Button { showsSummary = true } label: { ProRowTitle("Share Summary…") }
                 .rowText()
                 .sheet(isPresented: $showsSummary, onDismiss: {
                     guard let request = summaryRequest else { return }
                     summaryRequest = nil
-                    model.shareSummary(days: request.days, excluding: request.excluded)
+                    model.shareSummary(days: request.days, excluding: request.excluded, member: request.member)
                 }) {
                     SummarySheet { summaryRequest = $0 }
                 }
@@ -70,8 +98,6 @@ struct DataSection: View {
                 } message: {
                     Text("This replaces everything in Maru with the backup. You can’t undo it.")
                 }
-        } header: {
-            Text("Your Data")
         } footer: {
             Text("A backup has your items and records, but not photos. The file isn’t encrypted, so keep it private.")
         }

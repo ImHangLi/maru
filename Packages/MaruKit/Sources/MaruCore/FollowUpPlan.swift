@@ -170,6 +170,7 @@ public struct FollowUpPlan: Hashable, Sendable {
         let dateText: String
         let itemID: ItemID
         let name: String
+        let owner: DoseOwner?
         /// The position of the schedule. The series text lists the items in this order.
         let order: Int
     }
@@ -193,6 +194,7 @@ public struct FollowUpPlan: Hashable, Sendable {
     ///   - privacy: Whether the text names the open items (D029).
     ///   - snoozes: The "Remind in 10 min" requests of the user (D090). A snooze of a group with an open dose gives one request at its
     ///     time, and it pauses the follow-ups of the group until then.
+    ///   - family: The members. The text names the owner of a dose when the Family has two or more active members (D123).
     public init(
         reminders: ReminderPlan,
         items: [Item],
@@ -202,7 +204,8 @@ public struct FollowUpPlan: Hashable, Sendable {
         now: Date,
         deviceTimeZone: NamedTimeZone,
         privacy: ReminderPrivacy = .showNames,
-        snoozes: [SnoozeEntry] = []
+        snoozes: [SnoozeEntry] = [],
+        family: Family = Family()
     ) {
         let reminding = schedules.filter {
             switch reminders.needs[$0.id] {
@@ -211,7 +214,8 @@ public struct FollowUpPlan: Hashable, Sendable {
             }
         }
         let groups = DoseGroups(
-            reminding: reminding, items: items, stored: stored, closed: closed, now: now, deviceTimeZone: deviceTimeZone
+            reminding: reminding, items: items, stored: stored, closed: closed, now: now, deviceTimeZone: deviceTimeZone,
+            family: family
         )
         let itemOfID = Dictionary(items.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
         // The items whose series request the plan sets. An item that an alarm covers has none (D079).
@@ -224,7 +228,7 @@ public struct FollowUpPlan: Hashable, Sendable {
                     SeriesDose(
                         zoneText: group.seriesTimeZone?.identifier ?? "device", timeZone: group.seriesTimeZone,
                         timeText: String(format: "%02d:%02d", group.time.hour, group.time.minute),
-                        dateText: group.dateText, itemID: open.itemID, name: $0, order: open.order
+                        dateText: group.dateText, itemID: open.itemID, name: $0, owner: open.owner, order: open.order
                     )
                 }
             }
@@ -240,25 +244,36 @@ public struct FollowUpPlan: Hashable, Sendable {
         var standing: [SnoozeEntry] = []
         for (group, slotInstant) in groups.slotInstants {
             let latest = Self.latestInstant(of: group.plannedDate, in: group.timeZone)
-            let single = groups.single(of: group)
+            // A group of one member has one answer for the whole group, as before the Family (D034).
+            let wholeGroupSingle = groups.single(of: group)
             /// The content and the `userInfo` of a request of this group that names `named`. The group has an open dose,
             /// because `slotInstants` has only such groups.
             func request(
                 _ kind: ReminderContent.Kind, _ named: [(itemID: ItemID, name: String)], fireDate: Date
             ) -> (content: ReminderContent, userInfo: [String: String]) {
+                // The action and its identity come from the doses that the request names. In a group of two or more members, the
+                // doses of the other members do not count (D123).
+                let single = groups.single(of: group, among: Set(named.map(\.itemID)))
                 // `nil` when the user hides the names.
-                let shownNames = privacy == .showNames ? named.map(\.name) : []
-                let category = ReminderCategory.choose(named: named.count, showsNames: privacy == .showNames, singleItem: single != nil)
+                let shownNames = privacy == .showNames
+                    ? named.map { ReminderName(item: $0.name, owner: itemOfID[$0.itemID].flatMap(family.owner(of:))) } : []
+                let members = Set(named.compactMap { itemOfID[$0.itemID]?.personID }).count
+                let category = ReminderCategory.choose(
+                    named: named.count, showsNames: privacy == .showNames, singleItem: single != nil, membersCount: members
+                )
                 var userInfo = [
                     ReminderRequest.seriesIDKey: group.seriesID,
                     FollowUpRequest.plannedDateKey: group.dateText,
                     FollowUpRequest.fireTimeKey: fireDate.formatted(.iso8601),
                 ]
-                if let single {
+                userInfo[ReminderRequest.ownerChangedKey] = ReminderRequest.ownerChangedText(
+                    of: named.map { itemOfID[$0.itemID]?.ownerChangedAt }
+                )
+                if let wholeGroupSingle {
                     // The action records only the dose that the request was made for, also after a plan change (D034).
-                    userInfo[FollowUpRequest.itemIDKey] = single.itemID.rawValue.uuidString
-                    userInfo[FollowUpRequest.scheduleVersionIDKey] = single.versionID.rawValue.uuidString
-                } else if category == .group {
+                    userInfo[FollowUpRequest.itemIDKey] = wholeGroupSingle.itemID.rawValue.uuidString
+                    userInfo[FollowUpRequest.scheduleVersionIDKey] = wholeGroupSingle.versionID.rawValue.uuidString
+                } else if category == .group || single != nil {
                     // The group actions record exactly the open doses that the text names (D090).
                     userInfo[FollowUpRequest.membersKey] = groups.membersText(of: group, items: Set(named.map(\.itemID)))
                 }
@@ -388,7 +403,7 @@ public struct FollowUpPlan: Hashable, Sendable {
         let names = seriesDoses.filter {
             $0.dateText == date.dayText && $0.timeText == parts[2]
                 && ($0.zoneText == parts[1] || (parts[1] == "device" && $0.timeZone == deviceTimeZone))
-        }.sorted { $0.order < $1.order }.filter { seen.insert($0.itemID).inserted }.map(\.name)
+        }.sorted { $0.order < $1.order }.filter { seen.insert($0.itemID).inserted }.map { ReminderName(item: $0.name, owner: $0.owner) }
         guard !names.isEmpty else { return nil }
         return ReminderContent(kind: .due, names: showsNames ? names : nil)
     }

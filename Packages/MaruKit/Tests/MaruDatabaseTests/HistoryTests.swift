@@ -57,7 +57,7 @@ struct HistoryTests {
         let directory = TestDirectory()
         let store = try LocalStore(directory: directory.url)
         let seed = try await store.seed()
-        let item = try Item(category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
+        let item = try Item(personID: store.meID, category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
         try await store.save(item)
         let now = Fixtures.instant("2026-03-01T06:30:00Z")
         let dose = AsNeededOccurrence(itemID: item.id, at: now, in: Fixtures.shanghai)
@@ -82,7 +82,7 @@ struct HistoryTests {
         try await store.save(skipped)
         try await store.record(Fixtures.event(for: skipped, .skipped), scheduleVersionID: seed.versionID)
         // Due on March 1 and March 3, not on March 2.
-        let item = try Item(category: .supplement, name: "Iron", form: .tablet, color: .orange)
+        let item = try Item(personID: store.meID, category: .supplement, name: "Iron", form: .tablet, color: .orange)
         try await store.save(item)
         var schedule = Schedule(itemID: item.id, isEnabled: true)
         let slot = try schedule.addSlot().id
@@ -139,7 +139,7 @@ struct HistoryTests {
     @Test func oldRecordWithABrokenProjectionIsReportedNotHidden() async throws {
         let directory = TestDirectory()
         let store = try LocalStore(directory: directory.url)
-        let item = try Item(category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
+        let item = try Item(personID: store.meID, category: .supplement, name: "Ibuprofen", form: .tablet, color: .orange)
         try await store.save(item)
         let now = Fixtures.instant("2026-03-01T06:30:00Z")
         let dose = AsNeededOccurrence(itemID: item.id, at: now, in: Fixtures.shanghai)

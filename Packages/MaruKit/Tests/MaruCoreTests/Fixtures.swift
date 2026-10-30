@@ -18,19 +18,22 @@ enum Fixtures {
         try! Date(text, strategy: .iso8601)
     }
 
+    /// The member of every test item. The core tests have no database, so one fixed ID is enough.
+    static let me = PersonID()
+
     static func item(
         category: ItemCategory = .supplement, name: String = "Vitamin D", followUp: FollowUpSetting? = nil,
         followUpChanged: Date? = nil, alarm: Bool = false
     ) -> Item {
         try! Item(
-            category: category, name: name, form: .capsule, color: .pink,
+            personID: me, category: category, name: name, form: .capsule, color: .pink,
             followUp: followUp, followUpChanged: followUpChanged, alarm: alarm
         )
     }
 
     /// The text of a test notification center: the kind, then the names, so a test sees each change of the text.
     static func text(for content: ReminderContent) -> ReminderText {
-        ReminderText(title: "\(content.kind)", body: content.names?.joined(separator: ", ") ?? "")
+        ReminderText(title: "\(content.kind)", body: content.names?.map(\.item).joined(separator: ", ") ?? "")
     }
 
     /// A schedule with morning and evening slots and a first version, effective on 2026-01-01.

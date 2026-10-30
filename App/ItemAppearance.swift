@@ -20,6 +20,28 @@ extension ItemColor {
     }
 }
 
+/// The look of the app in Settings (D105). The widgets always follow the system.
+enum AppAppearance: String, CaseIterable {
+    case system, light, dark
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+
+    /// `unspecified` follows the system.
+    var style: UIUserInterfaceStyle {
+        switch self {
+        case .system: .unspecified
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+}
+
 extension Color {
     /// A filled circle in this color for a system menu. A menu draws a template image in one color,
     /// so this image keeps its own color.
@@ -60,18 +82,9 @@ extension ItemForm {
     }
 
     /// The same words as `title`, as text for a line that joins several parts (D091).
-    var localizedName: String {
-        switch self {
-        case .capsule: String(localized: "Capsule")
-        case .tablet: String(localized: "Tablet")
-        case .softgel: String(localized: "Softgel")
-        case .powder: String(localized: "Powder")
-        case .drop: String(localized: "Drops")
-        case .unknown: String(localized: "Not sure")
-        }
-    }
+    var localizedName: String { String(localized: title) }
 
-    var title: LocalizedStringKey {
+    var title: LocalizedStringResource {
         switch self {
         case .capsule: "Capsule"
         case .tablet: "Tablet"

@@ -2,16 +2,30 @@ import AppIntents
 import Foundation
 import MaruCore
 import MaruDatabase
+import WidgetKit
 
 extension AppModel {
-    /// A tap on a widget opens Today at the slot of the link (D048). The link has no health data.
+    /// A tap on a widget opens Today at the slot of the link (D048), or the detail of an item over Today (D108).
+    /// The link has no health data. A tap on the Live Activity has the same link with a mark (D127).
     func openWidgetLink(_ url: URL) {
-        guard url.scheme == "maru", url.host() == "today" else { return }
-        analytics.markUsed(.widget)
+        guard url.scheme == "maru", url.host() == "today" || url.host() == "item" else { return }
+        analytics.markUsed(url.query() == AppGroup.activityQuery ? .liveActivity : .widget)
+        onboardingYieldsToAction()
         selectedTab = .today
         resetHistory()
-        pendingWidgetPart = url.pathComponents.dropFirst().first.flatMap(DayPart.init(linkName:))
+        let component = url.pathComponents.dropFirst().first
+        if url.host() == "item" {
+            // The detail goes back to Today when the store has no such item.
+            today.path = component.flatMap(UUID.init(uuidString:)).map { [ItemID($0)] } ?? []
+            return
+        }
+        pendingWidgetPart = component.flatMap(DayPart.init(linkName:))
         showPendingWidgetSlot()
+    }
+
+    /// The widgets read again after each commit, so "Last Dose" and the counts follow a record at once (D108).
+    func reloadWidgets() {
+        WidgetCenter.shared.reloadAllTimelines()
     }
 
     /// Scrolls to the slot of a widget link. Before Today loads, the slot waits for the load.
@@ -36,6 +50,8 @@ extension AppModel {
     /// shows a success, and asks the system to open Maru (spec 7.2).
     func takeFromWidget(_ intent: TakeDoseIntent) async throws {
         analytics.markUsed(.widget)
+        // The intent can continue in front and open Today, so the onboarding waits for the next launch (D104).
+        onboardingYieldsToAction()
         // The generation comes before the first await. A restore that ends after this line changes the generation
         // of the store, so the record is refused (D040). A restore that ended before it changed the epoch.
         let generation = dataGeneration
@@ -67,6 +83,7 @@ extension AppModel {
                 )
                 event.requiresCurrentPlan = true
                 event.restoreEpoch = intent.epoch
+                event.listedAt = Date(timeIntervalSinceReferenceDate: intent.readAt)
                 if await commitAndWait([event], generation: generation) {
                     await waitForReminders(deviceTimeZone: deviceTimeZone)
                     return
@@ -81,9 +98,11 @@ extension AppModel {
         )
     }
 
-    /// The system can suspend the process after a background record returns, so the caller waits for the reminders.
+    /// The system can suspend the process after a background record returns, so the caller waits for the reminders and
+    /// for the Live Activity (D110).
     func waitForReminders(deviceTimeZone: NamedTimeZone) async {
         _ = try? await store.reconcileReminders(at: Date(), deviceTimeZone: deviceTimeZone)
+        await updateNextDoseNow()
     }
 }
 

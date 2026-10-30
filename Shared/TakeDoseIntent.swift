@@ -10,6 +10,8 @@ import os
 /// the database for a record. It holds no health data in the intent: two IDs and a counter.
 struct TakeDoseIntent: AppIntent {
     static let title: LocalizedStringResource = "Record a Dose"
+    /// Only the widget runs it, so Shortcuts does not offer it. Shortcuts is part of Maru Pro, and the widget is free (D130).
+    static var isDiscoverable: Bool { false }
 
     /// The occurrence that the widget showed, as the text of its ID.
     @Parameter(title: "Dose")
@@ -23,12 +25,18 @@ struct TakeDoseIntent: AppIntent {
     @Parameter(title: "Data")
     var epoch: Int
 
+    /// The instant of the widget read, as seconds since 2001-01-01 UTC. The store refuses the dose when its item changed its owner
+    /// after it (D123).
+    @Parameter(title: "Read")
+    var readAt: Double
+
     init() {}
 
-    init(occurrenceID: String, scheduleVersionID: String, epoch: Int) {
+    init(occurrenceID: String, scheduleVersionID: String, epoch: Int, readAt: Date) {
         self.occurrenceID = occurrenceID
         self.scheduleVersionID = scheduleVersionID
         self.epoch = epoch
+        self.readAt = readAt.timeIntervalSinceReferenceDate
     }
 
     func perform() async throws -> some IntentResult {

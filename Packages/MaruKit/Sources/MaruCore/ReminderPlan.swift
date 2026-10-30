@@ -16,12 +16,13 @@ public struct ReminderContent: Hashable, Sendable {
     }
 
     public let kind: Kind
-    /// The names of the items, in the order of the schedules. `nil` when the user hides the names.
-    public let names: [String]?
+    /// The names of the items, in the order of the schedules, each with its owner when the Family names owners (D123).
+    /// `nil` when the user hides the names.
+    public let names: [ReminderName]?
     /// How the request looks and acts: its actions and its level (D034, D090).
     public let presentation: ReminderPresentation
 
-    public init(kind: Kind, names: [String]?, category: ReminderCategory = .snooze, level: ReminderLevel = .timeSensitive) {
+    public init(kind: Kind, names: [ReminderName]?, category: ReminderCategory = .snooze, level: ReminderLevel = .timeSensitive) {
         self.kind = kind
         self.names = names
         presentation = ReminderPresentation(category: category, level: level)
@@ -76,6 +77,22 @@ public struct ReminderTrigger: Hashable, Sendable {
 public struct ReminderRequest: Hashable, Sendable {
     public static let seriesIDKey = "seriesID"
     public static let scheduleRevisionKey = "scheduleRevision"
+    /// The latest owner change of the items that a request names, as seconds since 2001-01-01 UTC (D123). A request has it only
+    /// when one of its items changed its owner. It holds no ID and no name. An action records nothing for an item whose owner
+    /// changed after it, also when the system delivers the request after the change.
+    public static let ownerChangedKey = "ownerChanged"
+
+    /// The value of `ownerChangedKey` for the owner changes of the named items, or `nil` when none of them changed its owner.
+    public static func ownerChangedText(of changes: [Date?]) -> String? {
+        changes.compactMap { $0 }.max().map { String($0.timeIntervalSinceReferenceDate) }
+    }
+
+    /// Whether the owner of `item` changed after the request was made (D123). `text` is the value of `ownerChangedKey`.
+    public static func ownerChanged(_ item: Item, after text: String?) -> Bool {
+        guard let changed = item.ownerChangedAt else { return false }
+        guard let made = text.flatMap(Double.init) else { return true }
+        return changed.timeIntervalSinceReferenceDate > made
+    }
     /// The plan date of a dated request, as `YYYY-MM-DD`. A repeating request does not have it.
     public static let dueDateKey = "dueDate"
     /// The slot IDs that a dated request still reminds for, separated by commas. A request has it only when
@@ -122,7 +139,14 @@ public struct ReminderSeries: Hashable, Sendable {
     struct Entry: Hashable, Sendable {
         let itemID: ItemID
         let name: String
+        /// The member of the item. A request that names doses of two or more members has no group action (D123).
+        let personID: PersonID
+        let ownerChangedAt: Date?
+        /// The owner for the text. `nil` when the Family has one active member.
+        let owner: DoseOwner?
         let weekdays: Set<Weekday>
+
+        var reminderName: ReminderName { ReminderName(item: name, owner: owner) }
     }
 
     public let id: String
@@ -183,13 +207,14 @@ public struct ReminderSeries: Hashable, Sendable {
         if let date {
             var seen = Set<ItemID>()
             let open = zip(members, entries).filter { !done.contains($0.0.slotID) }
-            let names = open.map(\.1).filter { seen.insert($0.itemID).inserted }.map(\.name)
+            let named = open.map(\.1).filter { seen.insert($0.itemID).inserted }
             guard !open.isEmpty else { return [] }
             var userInfo = [
                 ReminderRequest.seriesIDKey: id,
                 ReminderRequest.scheduleRevisionKey: revision,
                 ReminderRequest.dueDateKey: date.dayText,
             ]
+            userInfo[ReminderRequest.ownerChangedKey] = ReminderRequest.ownerChangedText(of: named.map(\.ownerChangedAt))
             if !done.isEmpty {
                 userInfo[ReminderRequest.openSlotsKey] = open.map { $0.0.slotID.rawValue.uuidString }.sorted().joined(separator: ",")
             }
@@ -197,10 +222,7 @@ public struct ReminderSeries: Hashable, Sendable {
                 ReminderRequest(
                     identifier: id + "|" + date.dayText,
                     trigger: ReminderTrigger(time: time, weekday: nil, date: date, timeZone: timeZone),
-                    content: ReminderContent(
-                        kind: .due, names: showsNames ? names : nil,
-                        category: .choose(named: names.count, showsNames: showsNames, singleItem: names.count == 1)
-                    ),
+                    content: Self.content(of: named, showsNames: showsNames),
                     userInfo: userInfo,
                     fireDate: fireDate
                 ),
@@ -215,11 +237,15 @@ public struct ReminderSeries: Hashable, Sendable {
         let daily = weekdays.count == Weekday.allCases.count && Set(contents.values).count == 1
         let days: [Weekday?] = daily ? [nil] : weekdays.sorted()
         return days.map { weekday in
-            ReminderRequest(
+            var userInfo = [ReminderRequest.seriesIDKey: id, ReminderRequest.scheduleRevisionKey: revision]
+            userInfo[ReminderRequest.ownerChangedKey] = ReminderRequest.ownerChangedText(
+                of: entries.filter { weekday.map($0.weekdays.contains) ?? true }.map(\.ownerChangedAt)
+            )
+            return ReminderRequest(
                 identifier: id + "|" + (weekday.map { String($0.rawValue) } ?? "daily"),
                 trigger: ReminderTrigger(time: time, weekday: weekday, date: nil, timeZone: timeZone),
                 content: weekday.map { contents[$0]! } ?? contents[.monday]!,
-                userInfo: [ReminderRequest.seriesIDKey: id, ReminderRequest.scheduleRevisionKey: revision],
+                userInfo: userInfo,
                 fireDate: nil
             )
         }
@@ -229,10 +255,19 @@ public struct ReminderSeries: Hashable, Sendable {
     /// A day with exactly one item has the "Taken" action (D034).
     private func content(on weekday: Weekday) -> ReminderContent {
         var seen = Set<ItemID>()
-        let names = entries.filter { $0.weekdays.contains(weekday) && seen.insert($0.itemID).inserted }.map(\.name)
-        return ReminderContent(
-            kind: .due, names: showsNames ? names : nil,
-            category: .choose(named: names.count, showsNames: showsNames, singleItem: names.count == 1)
+        let named = entries.filter { $0.weekdays.contains(weekday) && seen.insert($0.itemID).inserted }
+        return Self.content(of: named, showsNames: showsNames)
+    }
+
+    /// The text and the actions of a request that names these items, once each (D034, D123). The member count comes
+    /// from the full list, never from a shortened text.
+    private static func content(of named: [Entry], showsNames: Bool) -> ReminderContent {
+        ReminderContent(
+            kind: .due, names: showsNames ? named.map(\.reminderName) : nil,
+            category: .choose(
+                named: named.count, showsNames: showsNames, singleItem: named.count == 1,
+                membersCount: Set(named.map(\.personID)).count
+            )
         )
     }
 }
@@ -336,6 +371,7 @@ public struct ReminderPlan: Hashable, Sendable {
     ///   - alarms: Which items an alarm covers now (D079). An item with `alarm` that an alarm covers gets no series
     ///     request, because its dose time rings. Any other item gets its normal reminder, so a revoked permission or
     ///     an alarm that the system did not schedule loses no reminder.
+    ///   - family: The members, so the text names the owner of a dose when the Family has two or more active members (D123).
     public init(
         items: [Item],
         schedules: [Schedule],
@@ -346,7 +382,8 @@ public struct ReminderPlan: Hashable, Sendable {
         alarms: AlarmCover = .none,
         requestBudget: Int = ReminderPlan.requestBudget,
         longerReach: Bool = true,
-        unreadable: Set<ScheduleID> = []
+        unreadable: Set<ScheduleID> = [],
+        family: Family = Family()
     ) {
         struct Key: Hashable {
             let timeZone: NamedTimeZone?
@@ -443,7 +480,11 @@ public struct ReminderPlan: Hashable, Sendable {
                     if unit.date == nil { weekdays[unit, default: []].formUnion(version.weeklyRule.weekdays) }
                     members[unit, default: []].append(.init(slotID: slotTime.slotID, scheduleVersionID: version.id))
                     entries[unit, default: []].append(
-                        .init(itemID: item.id, name: item.name, weekdays: version.weeklyRule.weekdays)
+                        .init(
+                            itemID: item.id, name: item.name, personID: item.personID, ownerChangedAt: item.ownerChangedAt,
+                            owner: family.owner(of: item),
+                            weekdays: version.weeklyRule.weekdays
+                        )
                     )
                 }
             }

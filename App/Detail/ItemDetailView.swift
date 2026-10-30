@@ -49,7 +49,7 @@ struct ItemDetailView: View {
         .alert("Not Changed", isPresented: $changeFailed) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text("Maru couldn’t save this change. Try again.")
+            Text("This change didn’t save. Please try again.")
         }
     }
 
@@ -77,6 +77,16 @@ struct ItemDetailView: View {
         return List {
             Section {
                 DetailHeader(item: item, remindersOff: detail.schedule?.isEnabled == false)
+                // The owner, only with a second active member (T57). "Edit" changes it, so the user reads "Records move with the
+                // item." before the save (D128, D129).
+                if model.hasFamily, let owner = model.people.first(where: { $0.id == item.personID }) {
+                    LabeledContent("For") {
+                        HStack(spacing: 8) {
+                            MemberAvatar(owner, side: 24)
+                            Text(verbatim: owner.displayName)
+                        }
+                    }
+                }
             }
             ScheduleSection(
                 schedule: detail.schedule,
@@ -91,6 +101,28 @@ struct ItemDetailView: View {
                     case .preset(.withFood): Text("With food")
                     case .preset(.emptyStomach): Text("On an empty stomach")
                     case let .text(text): Text(verbatim: text)
+                    }
+                }
+            }
+            // A new item with the same values for another member (D128). It shows only with a second active member.
+            let others = model.activePeople.filter { $0.id != item.personID }
+            if !item.isArchived, model.hasFamily, !others.isEmpty {
+                Section {
+                    Menu {
+                        ForEach(others, id: \.id) { person in
+                            Button {
+                                model.openEditorForCopy(item.id, for: person.id)
+                            } label: {
+                                Label {
+                                    Text(verbatim: person.displayName)
+                                } icon: {
+                                    MemberAvatar.menuImage(.member(person))
+                                }
+                            }
+                        }
+                    } label: {
+                        Label("Add for…", systemImage: "plus.square.on.square")
+                            .labelStyle(RowLabelStyle())
                     }
                 }
             }
@@ -356,16 +388,28 @@ private struct WeekSection: View {
 
 /// The counts of the last 30 days, and the way to the full log (D091). Plain numbers: no percent, no streak, no score.
 /// The full log lists every day of the item, also an archived item and a day older than the graph.
+///
+/// The counts are part of Maru Pro (D130). A free user sees one quiet row that opens the paywall. "All Records" stays free,
+/// so no record is hidden.
 private struct MonthSection: View {
+    @Environment(AppModel.self) private var model
     let month: ItemSummary?
     let item: Item
 
     var body: some View {
         Section("Last 30 Days") {
-            ForEach(counts, id: \.self) { Text(verbatim: $0) }
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .numberMotion(value: counts)
+            if model.pro.isPro {
+                ForEach(counts, id: \.self) { Text(verbatim: $0) }
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .numberMotion(value: counts)
+            } else {
+                Button { model.presentPaywall(reason: .insights) } label: {
+                    ProRowTitle("30-Day Counts")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .tint(.primary)
+            }
             NavigationLink {
                 ItemLogView(itemID: item.id)
             } label: {

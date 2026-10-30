@@ -11,6 +11,9 @@ struct WidgetDay: Sendable {
         let name: String
         let amount: String?
         let status: OccurrenceStatus
+        /// The instant of the read that made this row. A tap sends it back, so the store refuses the dose when its owner changed
+        /// after it (D123).
+        var readAt = Date.distantPast
 
         var isTaken: Bool { status == .taken }
         var isOpen: Bool { status == .unrecorded }
@@ -88,9 +91,10 @@ extension WidgetDay {
                     Dose(
                         id: $0.occurrence.id.rawValue.uuidString,
                         scheduleVersionID: $0.occurrence.scheduleVersionID.rawValue.uuidString,
-                        name: $0.look.name,
+                        name: $0.look.labelledName,
                         amount: $0.amount,
-                        status: $0.record.status
+                        status: $0.record.status,
+                        readAt: now
                     )
                 }
             )
@@ -130,8 +134,9 @@ extension TodaySnapshot {
     /// The rows of today from one read of the widget (D048). The widget stores nothing, so the read
     /// plans the occurrences in memory. See `LocalStore.readForWidget`.
     init(_ read: WidgetRead, at now: Date, deviceTimeZone: NamedTimeZone) {
+        let family = Family(people: read.people)
         let looks = Dictionary(uniqueKeysWithValues: read.items.filter { !$0.isArchived }.map {
-            ($0.id, ItemLook(itemID: $0.id, name: $0.name, form: $0.form, color: $0.color))
+            ($0.id, ItemLook(itemID: $0.id, personID: $0.personID, name: $0.name, form: $0.form, color: $0.color, owner: family.owner(of: $0)))
         })
         self.init(
             now: now,

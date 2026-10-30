@@ -101,6 +101,12 @@ extension LocalStore {
                 let named = action == .undo ? ReminderActionDoses(named: 0, doses: []) : resolver.actionDoses(
                     of: reminder, items: items, schedules: schedules
                 )
+                let scheduleBySlot = Dictionary(schedules.flatMap { schedule in
+                    schedule.slots.map { ($0.id, schedule.itemID) }
+                }, uniquingKeysWith: { first, _ in first })
+                let targets = items.filter { item in named.doses.contains { scheduleBySlot[$0.slotID] == item.id } }
+                // Recheck the member rule in the transaction, also for old notification categories (D123).
+                guard Set(targets.map(\.personID)).count <= 1 else { return (named.named, []) }
                 var doses: [(key: OccurrenceKey, outcome: DoseOutcome)] = []
                 for planned in named.doses {
                     guard let occurrence = try Row.fetchOne(
@@ -118,6 +124,15 @@ extension LocalStore {
                         occurrence.scheduleVersionID == planned.scheduleVersionID,
                         // A follow-up of one item also has the version that it was made for (D034).
                         reminder.userInfo[FollowUpRequest.scheduleVersionIDKey].map({ $0 == occurrence.scheduleVersionID.text }) ?? true
+                    else {
+                        doses.append((planned.key, .notRecorded))
+                        continue
+                    }
+                    // The request was made, and the user saw it, under the owner of its time. After an owner change it records
+                    // nothing, also when the system delivered a request that the reminder run did not replace yet (D123).
+                    guard let item = targets.first(where: { $0.id == scheduleBySlot[planned.slotID] }),
+                          !ReminderRequest.ownerChanged(item, after: reminder.userInfo[ReminderRequest.ownerChangedKey]),
+                          item.ownerChangedAt.map({ $0 <= reminder.deliveredAt }) ?? true
                     else {
                         doses.append((planned.key, .notRecorded))
                         continue

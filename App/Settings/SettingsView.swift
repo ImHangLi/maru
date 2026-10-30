@@ -3,84 +3,45 @@ import MaruNotifications
 import SwiftUI
 import UIKit
 
-/// The settings sheet behind the gear button (spec 3 P06, D020, D021). Few rows, plain words.
+/// The settings sheet behind the gear button (spec 3 P06, D020, D021). The root is a short list of pages, as in iOS
+/// Settings, with a search field at the top (D135).
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
     @AppStorage(DisplaySetting.appColor) private var appColor = ItemColor.pink
-    @State private var showsNames = true
-    @State private var sharesStatistics = false
+    @AppStorage(DisplaySetting.appearance) private var appearance = AppAppearance.system
+    @State private var path: [SettingsPage] = []
+    @State private var query = ""
+    /// A color that a free user chose and did not buy. It tints only this sheet, until the sheet closes (D114).
+    @State private var previewColor: ItemColor?
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             Form {
-                ReminderSection(showsNames: Binding(
-                    get: { showsNames },
-                    set: {
-                        showsNames = $0
-                        model.setShowsNamesInReminders($0)
-                    }
-                ))
-                AllItemsSection()
-                Section("Display") {
-                    // A system menu of the eight colors (D025, D026).
-                    Picker("App Color", selection: Binding(
-                        get: { appColor },
-                        set: {
-                            appColor = $0
-                            model.appColorDidChange($0)
-                        }
-                    )) {
-                        ForEach(ItemColor.allCases, id: \.self) { color in
-                            Label { Text(color.title) } icon: { color.tint.circleImage }
-                                .tag(color)
-                        }
-                    }
-                    .pickerStyle(.menu)
-                    .tint(Color.primary)
-                    // iOS sets the app language on the Settings page of Maru (D097).
-                    Button {
-                        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-                    } label: {
-                        LabeledContent("Language") {
-                            Text(verbatim: Self.languageName)
-                        }
-                    }
-                    .rowText()
-                }
-                if model.analyticsIsAvailable {
-                    Section {
-                        Toggle("Share Usage Statistics", isOn: Binding(
-                            get: { sharesStatistics },
-                            set: {
-                                sharesStatistics = $0
-                                model.setSharesUsageStatistics($0)
-                            }
-                        ))
-                    } footer: {
-                        Text("Never includes item names, doses, or times.")
+                if searchText.isEmpty {
+                    pages
+                } else {
+                    ForEach(results) { entry in
+                        SettingsSearchRow(entry: entry) { open(entry.target) }
                     }
                 }
-                DataSection()
-                FeedbackSection()
-                SupportSection()
-                AboutSection()
-                #if DEBUG
-                DebugSection()
-                #endif
             }
-            // The rows and the footer of "Reminders" come and go with the permission (D030).
-            .motion(.layout, value: model.settings.permission)
-            .motion(.layout, value: model.settings.reminderOptions)
+            .overlay {
+                if !searchText.isEmpty && results.isEmpty {
+                    ContentUnavailableView.search(text: searchText)
+                }
+            }
+            .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always))
             #if DEBUG
             .modifier(DebugDataBanner())
             #endif
             .navigationTitle("Settings")
-            // The tip section shows only after its products load, so the load starts here.
-            .task { await SupportStore.shared.loadProducts() }
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: SettingsPage.self) { page in
+                destination(page)
+            }
             .toolbar {
                 // A restore replaces the data while it runs. The sheet stays until it ends (D040).
                 if !model.transfer.isRestoring {
@@ -90,17 +51,135 @@ struct SettingsView: View {
                 }
             }
         }
+        // A paywall from a row of Settings shows over this sheet (D107).
+        .paywallHost(true)
         .interactiveDismissDisabled(model.transfer.isRestoring)
-        // The sheet sets the tint again, so every control in it changes at once with a new app color.
-        .tint(appColor.tint)
-        .onAppear {
-            showsNames = model.showsNamesInReminders
-            sharesStatistics = model.sharesUsageStatistics
+        // The sheet sets the tint again, so every control in it changes at once with a new app color. A preview of a
+        // free user tints only this sheet (D114).
+        .tint((previewColor ?? appColor).tint)
+        // A purchase while a preview shows keeps the color of the preview.
+        .onChange(of: model.pro.isPro) { _, isPro in
+            if isPro, let previewColor { chooseAppColor(previewColor) }
         }
         // A return from the Settings app shows the new permission (T14).
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { model.readNotificationPermission() }
         }
+    }
+
+    /// The root list: Maru Pro at the top (D107), then the groups of pages, each with a header (D138).
+    @ViewBuilder private var pages: some View {
+        ProSection()
+        Section("General") {
+            // As the Family row of iOS Settings, with the avatars at its end (D121).
+            NavigationLink(value: SettingsPage.family) {
+                LabeledContent {
+                    if model.hasFamily {
+                        // The initials of the avatars must not move the separator under the row.
+                        AvatarStack(people: model.activePeople)
+                            .alignmentGuide(.listRowSeparatorLeading) { $0[.trailing] }
+                    }
+                } label: {
+                    SettingsRowLabel("Family", systemImage: "person.2")
+                }
+            }
+            NavigationLink(value: SettingsPage.reminders) {
+                LabeledContent {
+                    Text(ReminderSection.statusText(model.settings.permission))
+                } label: {
+                    SettingsRowLabel("Reminders", systemImage: "bell")
+                }
+            }
+            // The iPad has no Live Activities, so it has no Lock Screen page (D110).
+            if UIDevice.current.userInterfaceIdiom == .phone {
+                NavigationLink(value: SettingsPage.lockScreen) {
+                    LabeledContent {
+                        Text(model.liveActivity.isOn ? LocalizedStringKey("On") : "Off")
+                    } label: {
+                        // The whole page is Maru Pro, so the row has the badge (D134).
+                        SettingsRowLabel("Lock Screen", systemImage: "lock", isPro: true)
+                    }
+                }
+            }
+        }
+        Section("Personalization") {
+            NavigationLink(value: SettingsPage.display) {
+                LabeledContent {
+                    Text(appearance.title)
+                } label: {
+                    SettingsRowLabel("Display", systemImage: "sun.max")
+                }
+            }
+            // iOS sets the app language on the Settings page of Maru (D097).
+            Button { openLanguageSettings() } label: {
+                LabeledContent {
+                    Text(verbatim: Self.languageName)
+                } label: {
+                    SettingsRowLabel("Language", systemImage: "globe")
+                }
+            }
+            .rowText()
+        }
+        Section("Data and Privacy") {
+            NavigationLink(value: SettingsPage.data) {
+                SettingsRowLabel("Your Data", systemImage: "externaldrive")
+            }
+            NavigationLink(value: SettingsPage.privacy) {
+                SettingsRowLabel("Privacy", systemImage: "hand.raised")
+            }
+        }
+        FeedbackSection()
+        #if DEBUG
+        DebugSection()
+        #endif
+    }
+
+    @ViewBuilder private func destination(_ page: SettingsPage) -> some View {
+        switch page {
+        case .purchases: PurchasesPage()
+        case .family: FamilyPage()
+        case .reminders: RemindersPage()
+        case .reminderSound: ReminderSoundView()
+        case .lockScreen: LockScreenPage()
+        case .display:
+            DisplayPage(color: previewColor ?? appColor, isPreview: previewColor != nil) { chooseAppColor($0) }
+        case .appIcon: AppIconView()
+        case .data: DataPage()
+        case .privacy: PrivacyPage()
+        case .about: AboutPage()
+        case .licenses: LicensesView()
+        }
+    }
+
+    private var searchText: String { query.trimmingCharacters(in: .whitespacesAndNewlines) }
+
+    private var results: [SettingsSearchEntry] {
+        SettingsSearchEntry.all(for: model).filter { $0.matches(searchText) }
+    }
+
+    private func open(_ target: SettingsSearchEntry.Target) {
+        switch target {
+        case let .pages(pages): path = pages
+        case .paywall: model.presentPaywall(reason: .settings)
+        case .language: openLanguageSettings()
+        case .feedback: FeedbackSection.open(model: model, openURL: openURL)
+        }
+    }
+
+    private func openLanguageSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
+    }
+
+    /// Pink is free. Another color needs Pro, also after Pro ends, so a free user sees a preview and the paywall (D114).
+    private func chooseAppColor(_ color: ItemColor) {
+        guard color == .pink || color == appColor || model.pro.isPro else {
+            previewColor = color
+            return model.presentPaywall(reason: .appColor)
+        }
+        previewColor = nil
+        guard color != appColor else { return }
+        appColor = color
+        model.appColorDidChange(color)
     }
 
     /// The name of the language that the app uses, in that language, for example "English" or "日本語".
@@ -111,179 +190,134 @@ struct SettingsView: View {
     }
 }
 
-/// The honest reminder state and the way to fix it (spec 2.2, T13, T14). The switch for the names is here too, because
-/// it is about what a reminder shows.
-private struct ReminderSection: View {
-    @Environment(AppModel.self) private var model
-    @Environment(\.openURL) private var openURL
-    @Binding var showsNames: Bool
+/// A page of the settings sheet. The root rows and the search results push these values (D135).
+enum SettingsPage: Hashable {
+    case purchases, family, reminders, reminderSound, lockScreen, display, appIcon, data, privacy, about, licenses
+}
+
+/// The label of a row on the root of Settings: a symbol in the app tint, then the title in the text color (D076, D135).
+/// Every symbol has the size of an item icon (`FormIcon`, 28 points) and sits centered in a column as wide as the Maru Pro
+/// icon, so the icons of the app match and the titles line up with "Maru Pro" (D136).
+struct SettingsRowLabel: View {
+    let title: LocalizedStringKey
+    let systemImage: String
+    var isPro = false
+    /// The width of the icon of the Maru Pro card (ProSection).
+    @ScaledMetric(relativeTo: .body) private var column = 40
+    /// The box of an item icon (`FormIcon`).
+    @ScaledMetric(relativeTo: .body) private var box = 28
+
+    init(_ title: LocalizedStringKey, systemImage: String, isPro: Bool = false) {
+        self.title = title
+        self.systemImage = systemImage
+        self.isPro = isPro
+    }
 
     var body: some View {
-        let permission = model.settings.permission
-        Section {
-            LabeledContent("Notifications") {
-                Text(statusText(permission))
+        HStack(spacing: 12) {
+            Image(systemName: systemImage)
+                .font(.system(size: box * 0.8, weight: .regular))
+                .foregroundStyle(.tint)
+                .frame(width: min(box, 44), height: min(box, 44))
+                .frame(width: column)
+                .accessibilityHidden(true)
+            HStack(spacing: 8) {
+                Text(title).rowText()
+                if isPro { ProBadge() }
             }
-            if permission == .denied || permission == .quiet {
-                Button("Open Settings") {
-                    if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
-                }
-                .rowText()
-            }
-            Toggle("Show Names in Reminders", isOn: $showsNames)
-        } header: {
-            Text("Reminders")
-        } footer: {
-            if let text = footerText(permission) { Text(text) }
+            .alignmentGuide(.listRowSeparatorLeading) { $0[.leading] }
         }
-    }
-
-    private func statusText(_ permission: NotificationPermission?) -> LocalizedStringKey {
-        switch permission {
-        case nil: "Checking…"
-        case .allowed: "On"
-        case .quiet: "Quiet"
-        case .denied: "Off"
-        case .notAsked: "Not Asked Yet"
-        }
-    }
-
-    private func footerText(_ permission: NotificationPermission?) -> LocalizedStringKey? {
-        switch permission {
-        case nil, .allowed: nil
-        case .quiet: "Reminders come with no sound or banner."
-        case .denied: "You can still record without reminders."
-        case .notAsked: "Maru asks when you save an item with a time."
-        }
+        .accessibilityElement(children: .combine)
     }
 }
 
-/// "Alarm" and "Remind Again" for every item that has a time (D085). A row shows the value that every item has.
-/// When the items differ, the row says "Varies", and a choice sets every item. An item can still have its own value on
-/// its edit screen.
-private struct AllItemsSection: View {
+/// The page "Display": "Appearance", "App Color", "App Icon", and "Color Header".
+private struct DisplayPage: View {
     @Environment(AppModel.self) private var model
-    @Environment(\.openURL) private var openURL
-
-    private enum CountChoice: Hashable {
-        case varies
-        case off
-        case count(FollowUpCount)
-    }
-
-    private enum IntervalChoice: Hashable {
-        case varies
-        case interval(FollowUpInterval)
-    }
-
-    private enum AlarmChoice: Hashable {
-        case varies, on, off
-    }
-
-    private var summary: ReminderOptionsSummary? { model.settings.reminderOptions }
-    private var start: NewItemReminders { model.settings.newItemReminders }
+    @AppStorage(DisplaySetting.headerWash) private var headerWash = true
+    @AppStorage(DisplaySetting.appearance) private var appearance = AppAppearance.system
+    /// The color on the display: the app color, or the preview of a free user (D114).
+    let color: ItemColor
+    let isPreview: Bool
+    let choose: (ItemColor) -> Void
 
     var body: some View {
-        @Bindable var model = model
-        Section {
-            if #available(iOS 26, *) { alarmRow }
-            Picker("Remind Again", selection: countChoice) {
-                if countChoice.wrappedValue == .varies { Text("Varies").tag(CountChoice.varies) }
-                Text("Off").tag(CountChoice.off)
-                ForEach(FollowUpCount.allCases, id: \.self) { count in
-                    Text(count.title).tag(CountChoice.count(count))
+        Form {
+            Section {
+                // The system look, or always light or dark (D105).
+                Picker("Appearance", selection: Binding(get: { appearance }, set: {
+                    appearance = $0
+                    model.appearanceDidChange($0)
+                })) {
+                    ForEach(AppAppearance.allCases, id: \.self) { Text($0.title).tag($0) }
                 }
-            }
-            .tint(Color.primary)
-            if showsInterval {
-                Picker("Every", selection: intervalChoice) {
-                    if intervalChoice.wrappedValue == .varies { Text("Varies").tag(IntervalChoice.varies) }
-                    ForEach(FollowUpInterval.allCases, id: \.self) { interval in
-                        Text(interval.title).tag(IntervalChoice.interval(interval))
+                .pickerStyle(.menu)
+                .tint(Color.primary)
+                // A system menu of the eight colors (D025, D026). Only pink is free (D114).
+                Picker(selection: Binding(get: { color }, set: { choose($0) })) {
+                    ForEach(ItemColor.allCases, id: \.self) { item in
+                        Label { Text(item.title) } icon: { item.tint.circleImage }
+                            .tag(item)
+                    }
+                } label: {
+                    ProRowTitle("App Color")
+                }
+                .pickerStyle(.menu)
+                .tint(Color.primary)
+                // The icons of Maru Pro, with a free look at each one (D112).
+                if UIApplication.shared.supportsAlternateIcons {
+                    NavigationLink(value: SettingsPage.appIcon) {
+                        LabeledContent {
+                            AppIconPreview(icon: model.settings.appIcon, size: 29)
+                                .accessibilityLabel(Text(model.settings.appIcon.title))
+                        } label: {
+                            ProRowTitle("App Icon")
+                        }
                     }
                 }
-                .tint(Color.primary)
-            }
-        } header: {
-            Text("For All Items")
-        } footer: {
-            if countChoice.wrappedValue == .count(.untilRecorded) { UntilRecordedLimitText() }
-        }
-        .alert("Alarms Are Off", isPresented: $model.settings.alarmsAreOff) {
-            Button("Open Settings") {
-                if let url = URL(string: UIApplication.openSettingsURLString) { openURL(url) }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("To use an alarm, allow alarms for Maru in Settings.")
-        }
-    }
-
-    /// A switch while every item has the same value. A menu with "Varies" while they differ.
-    @available(iOS 26, *)
-    @ViewBuilder private var alarmRow: some View {
-        if summary?.alarm == .varies {
-            Picker("Alarm", selection: alarmChoice) {
-                Text("Varies").tag(AlarmChoice.varies)
-                Text("On").tag(AlarmChoice.on)
-                Text("Off").tag(AlarmChoice.off)
-            }
-            .tint(Color.primary)
-        } else {
-            Toggle("Alarm", isOn: Binding(
-                get: { alarmIsOn },
-                set: { model.setAllAlarms($0) }
-            ))
-        }
-    }
-
-    private var alarmIsOn: Bool {
-        if case let .same(isOn)? = summary?.alarm { isOn } else { start.alarm }
-    }
-
-    private var alarmChoice: Binding<AlarmChoice> {
-        Binding {
-            summary?.alarm == .varies ? .varies : alarmIsOn ? .on : .off
-        } set: { choice in
-            if choice != .varies { model.setAllAlarms(choice == .on) }
-        }
-    }
-
-    /// The interval row shows while at least one item has "Remind Again" on, or, with no item to show, while the
-    /// start value of a new item has it on.
-    private var showsInterval: Bool {
-        switch summary?.followUpCount {
-        case let .same(count)?: count != nil
-        case .varies?: summary?.followUpInterval != SharedValue<FollowUpInterval>.empty
-        case .empty?, nil: start.followUp != nil
-        }
-    }
-
-    private var countChoice: Binding<CountChoice> {
-        Binding {
-            switch summary?.followUpCount {
-            case let .same(count)?: count.map(CountChoice.count) ?? .off
-            case .varies?: .varies
-            case .empty?, nil: start.followUp.map(CountChoice.count) ?? .off
-            }
-        } set: { choice in
-            switch choice {
-            case .varies: break
-            case .off: model.setAllFollowUpCount(nil)
-            case let .count(count): model.setAllFollowUpCount(count)
+                // The wash of the app color behind the title, as in Apple Health (D100).
+                // A binding of its own sends the change of the user only, not the change of a restore (D127).
+                Toggle("Color Header", isOn: Binding(get: { headerWash }, set: {
+                    headerWash = $0
+                    model.headerWashDidChange($0)
+                }))
+            } footer: {
+                if isPreview {
+                    Text("This is a preview. With Maru Pro, the whole app uses this color.")
+                }
             }
         }
+        .navigationTitle("Display")
+        .navigationBarTitleDisplayMode(.inline)
     }
+}
 
-    private var intervalChoice: Binding<IntervalChoice> {
-        Binding {
-            switch summary?.followUpInterval {
-            case let .same(interval)?: .interval(interval)
-            case .varies?: .varies
-            case .empty?, nil: .interval(start.interval)
+/// "Share Usage Statistics" and the privacy policy (spec 10, spec 11).
+private struct PrivacyPage: View {
+    @Environment(AppModel.self) private var model
+    @State private var sharesStatistics = false
+
+    var body: some View {
+        Form {
+            if model.analyticsIsAvailable {
+                Section {
+                    Toggle("Share Usage Statistics", isOn: Binding(
+                        get: { sharesStatistics },
+                        set: {
+                            sharesStatistics = $0
+                            model.setSharesUsageStatistics($0)
+                        }
+                    ))
+                } footer: {
+                    Text("Never includes item names, doses, or times.")
+                }
             }
-        } set: { choice in
-            if case let .interval(interval) = choice { model.setAllFollowUpInterval(interval) }
+            Section {
+                if let url = AboutPage.privacyURL { Link("Privacy Policy", destination: url).rowText() }
+            }
         }
+        .navigationTitle("Privacy")
+        .navigationBarTitleDisplayMode(.inline)
+        .onAppear { sharesStatistics = model.sharesUsageStatistics }
     }
 }

@@ -32,6 +32,12 @@ enum ItemPhotos {
         return name
     }
 
+    /// Writes a copy of a stored file with a new name, and returns the name. `nil` when the file is missing or unreadable.
+    static func copy(_ name: String) -> String? {
+        guard let url = url(name), let data = try? Data(contentsOf: url) else { return nil }
+        return try? write(data, fileExtension: url.pathExtension)
+    }
+
     static func remove(_ name: String?) {
         guard let url = url(name) else { return }
         try? FileManager.default.removeItem(at: url)
@@ -81,17 +87,22 @@ extension AppStore {
         try ItemPhotos.write(data, fileExtension: fileExtension)
     }
 
+    func copyPhoto(_ name: String) -> String? {
+        ItemPhotos.copy(name)
+    }
+
     func removePhoto(_ name: String?) {
         ItemPhotos.remove(name)
     }
 
-    /// Removes the photo files that no stored item uses. A debug scenario has its own items, so it keeps the files.
+    /// Removes the photo files that no stored item and no member of the Family uses (D124). A debug scenario has its own items, so
+    /// it keeps the files.
     func removeUnreferencedPhotos() async {
         #if DEBUG
         guard DebugStore.directory == nil else { return }
         #endif
-        guard let items = try? await open().items() else { return }
-        ItemPhotos.removeAll(keeping: Set(items.compactMap(\.imageReference)))
+        guard let store = try? open(), let items = try? await store.items(), let people = try? await store.people() else { return }
+        ItemPhotos.removeAll(keeping: Set(items.compactMap(\.imageReference) + people.compactMap(\.imageReference)))
     }
 }
 

@@ -12,12 +12,12 @@ struct WatchMessageTests {
         )
         let request = WatchRequest.record(
             dose.id, scheduleVersionID: dose.scheduleVersionID, action: .undo,
-            revision: dose.revision, intent: IntakeEventID()
+            revision: dose.revision, intent: IntakeEventID(), listedAt: dose.time
         )
         let reply = WatchReply(
             outcome: .recorded,
             day: WatchDay(
-                sentAt: dose.time, expiresAt: dose.time.addingTimeInterval(60), tint: .mint,
+                sentAt: dose.time, expiresAt: dose.time.addingTimeInterval(60), tint: .mint, isPro: true,
                 slots: [WatchDay.Slot(part: .evening, doses: [dose])]
             )
         )

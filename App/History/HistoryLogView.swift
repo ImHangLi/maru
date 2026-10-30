@@ -16,7 +16,10 @@ struct HistoryLogView: View {
     var body: some View {
         let shown = sections
         List {
-            UnsavedSection()
+            // One retry sends the events of every member, so a log of the History of one member does not show it (D129).
+            if model.history.owner == nil {
+                UnsavedSection()
+            }
             ForEach(shown, id: \.date) { section in
                 Section {
                     ForEach(section.entries) { HistoryEntryRow(entry: $0) }
@@ -115,7 +118,7 @@ struct ItemLogView: View {
 
     var body: some View {
         HistoryLogView(scope: .item(itemID))
-            .onAppear { model.openItemLog() }
+            .onAppear { model.openItemLog(of: itemID) }
             .onDisappear { model.closeItemLog() }
     }
 }

@@ -15,6 +15,8 @@ public struct ExportedDose: Hashable, Sendable {
     public let takenAt: Date?
     /// The zone of the date and of the two times.
     public let timeZone: NamedTimeZone
+    /// The member of the Family that owns the item now: the name, or "Me" for "Me" before a rename (D121, D129).
+    public let person: String
 
     public init(
         date: LocalDate,
@@ -24,7 +26,8 @@ public struct ExportedDose: Hashable, Sendable {
         dose: Dose?,
         status: OccurrenceStatus,
         takenAt: Date?,
-        timeZone: NamedTimeZone
+        timeZone: NamedTimeZone,
+        person: String
     ) {
         self.date = date
         self.plannedTime = plannedTime
@@ -34,6 +37,7 @@ public struct ExportedDose: Hashable, Sendable {
         self.status = status
         self.takenAt = takenAt
         self.timeZone = timeZone
+        self.person = person
     }
 }
 
@@ -41,7 +45,11 @@ public struct ExportedDose: Hashable, Sendable {
 ///
 /// The words of the file are fixed English text and not product copy, so a file reads the same on every device.
 public enum RecordExport {
-    static let header = ["Date", "Planned Time", "Item", "Type", "Amount", "State", "Time Taken", "Time Zone"]
+    /// "Person" is last and always there, also with one member, so a parser of an older file reads the same columns (D129).
+    static let header = ["Date", "Planned Time", "Item", "Type", "Amount", "State", "Time Taken", "Time Zone", "Person"]
+
+    /// The value of "Person" for "Me" before a rename. Fixed English, as the other words of the file.
+    public static let meName = "Me"
 
     /// The text of the file: a header line, then one line for each dose, in the given order.
     ///
@@ -59,6 +67,7 @@ public enum RecordExport {
                     "\(LocalDate(instant, in: dose.timeZone).dayText) \(clockText(WallClockTime(instant, in: dose.timeZone)))"
                 } ?? "",
                 dose.timeZone.identifier,
+                dose.person,
             ]
         }
         return "\u{FEFF}" + lines.map { $0.map(field).joined(separator: ",") + "\r\n" }.joined()

@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, and D085 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, D109, and D112 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -13,7 +13,7 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## Color
 
-- One app tint for the whole app. The user picks it from the eight item colors in Settings, under "App Color" (D025). The default is pink, the system pink (#FF2D55 in light mode).
+- One app tint for the whole app. The user picks it from the eight item colors in Settings, under "App Color" (D025). The default is pink, the system pink (#FF2D55 in light mode). Pink is free, and the other colors need Maru Pro (D114). A free user's choice tints only the Settings sheet as a preview, with a footer under "Display".
 - The tint marks: buttons, and the record circle when filled. A slot title stays in the text color (D050). Sheets get the same tint.
 - The tint is for icons, controls, and state, not for row text (D076). A row that is an action or a link has the text color, and its symbol keeps the tint. The value of a menu row has the text color. A destructive row stays red.
 - In light mode, the tint has at least 3:1 contrast on white. Orange, yellow, green, and mint are darker when they are the tint: #D97F00, #B49000, #2CAA4C, and #00A69F. Dark mode uses the system colors. The item colors do not change.
@@ -21,14 +21,16 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - Item colors: pink, orange, yellow, green, mint, blue, purple, brown. Use the system colors with the same names, and a system-like brown. Each color has a light value and a dark value. The item color appears only on the form icon. It is never the only signal of a state (spec §5.3).
 - A new item gets the first color in that order that no active item uses. If all are in use, it gets pink.
 - Errors and destructive actions use the system red.
+- The menu "Appearance" in Settings sets the app to the system look, always light, or always dark (D105). Every page and sheet follows it. The widgets always follow the system.
 
 ## Surface
 
 - Every page is a system grouped list or form. The custom cards are the tile of My Items and the graph of History (D026, D032, D041).
-- Today and My Items use the plain grouped background, with no header wash (D024).
+- Today and My Items show a header wash by default (D100, D104). The switch "Color Header" in Settings turns it off, and the pages then use the plain grouped background (D024). The wash is the app tint behind the large title, mixed to a relative luminance of 0.54 in light mode and 0.09 in dark mode, fading to the page background over 280 points with the curve of Apple Health. It scrolls away with the content on iOS 18 and later. The cards stay opaque on top of it.
 - Every page is the gray grouped background with white cards, as in Apple Health and Settings. This includes a page that loads or shows an error (D028).
-- An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058).
+- An empty page or an error page is one system empty view: a title in Title Case with no period, an SF Symbol, and at most one sentence of description. A button follows only when the user can act (D058). The empty Today and My Items pages have a warm title in sentence case with a period instead (D101).
 - A small sheet has the detents medium and large: a time wheel, a short list of choices, and the share sheet. The edit screen and the settings are full sheets. The modifier `smallSheet()` holds the rule (D058).
+- The top bar of a sheet uses the system minimization of iOS 27. On the outer display of iPhone Duo, a scroll in the edit sheet or in Settings hid "Cancel", "Save", and "Done" until a scroll back (simulator check, 2026-10-28). Maru sets no bar modifier, so this is system behavior. Apple says that navigation bars "minimize in certain conditions defined by the system" ([WWDC26 session 278](https://developer.apple.com/videos/play/wwdc2026/278/)). `ToolbarMinimizationBehavior.automatic` documents only a search field as a cause ([Apple documentation](https://developer.apple.com/documentation/swiftui/toolbarminimizationbehavior)). If a system app on the outer display keeps its bar, set `toolbarMinimizationBehavior(.never, for: .navigationBar)` on the two sheets, on iOS 27 only.
 - The card margin and the card padding are 16 points (`Tile.margin`). The second line of a list row sits 2 points under the name (D058).
 
 ## Feedback
@@ -41,9 +43,31 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - The item detail has a section "Last 7 Days" with the strip of 7 capsules of History (D054), drawn by the same view, after the form icon. A line under it counts the doses as three labelled values with space between them and no separator: "Taken: 5", "Skipped: 1", "No record: 1". They stand one under the other when the row is too narrow (D068). An as-needed item has only "Taken". It has no list of records and no tap. The item log is in History (D057).
 - For a plan that counts days (every other day, every few days, or days on and off), "On" has a limit, and the footer states it: Maru sets the reminders of the next 7 dose days at each open (D036, D065).
 
+## First run
+
+A short onboarding, once (D103, D104). It asks nothing and requests no permission. The app has no first-use tips.
+
+- The onboarding fills the window in place of the tabs, with three pages in a paged `TabView`. It is not a sheet, so Today is not under it, and a rotation or Split View keeps it. Before the first read decides, the window shows the plain system background, not Today. Each page has an SF Symbol of 64 points in the tint, a title in bold title style, and one sentence in the secondary color, in the middle. The symbol hides at the three largest text sizes, and the page scrolls.
+- "Skip" is at the top right of pages 1 and 2. Under the pages: "Continue" on pages 1 and 2, and "Add Item" and "Later" on page 3. Page 3 has no "Skip". "Continue" and "Add Item" are large prominent buttons in the tint. "Later" is a borderless button. The page dots have the system background, so they show in light mode.
+- "Add Item" shows the tabs and opens the add screen on them.
+
+## Maru Pro
+
+The paywall is a normal system sheet with the system font and SF Symbols in the tint (D107, D119). The close button is the system one, in the navigation bar at the top right: `Button(role: .close)` on iOS 26 and later, a plain `xmark` button before. The gradient picture and the headline "Your next dose, at a glance." sit at the top. The picture ends in a long, eased fade into the plain system background, and the fade ends before the first benefit. The page has no tint wash. Only the white headline sits on the picture. All other text sits on the plain background. It has no serif, no glow, no preview card, no countdown, no struck-through price, and no badge. The text column is left aligned with one 20 point margin.
+
+- The four benefits are a thin symbol in the tint, a semibold title, and one gray line: "Right on your Lock Screen", "Record by wrist or voice", "Reports for your doctor", and "Make Maru yours" (D114, D119, D130). Each title and each line fits on one line at the default text size on an iPhone 17e.
+- The purchase area stays at the foot of the sheet on the plain background, and the page fades out above it. It has two plan tiles side by side (the name, the price as the largest text, a small line, and a thin tint ring outside the selected plan, with the same fill for both), one terms line for the selected plan ("Free for 7 days, then $9.99 per year. Cancel anytime." for the yearly plan, and no line for the lifetime plan, D119), one capsule button that names the plan ("Start Free Trial", "Subscribe Yearly", or "Buy Lifetime"), and one line at the very bottom with "Terms of Use" and "Privacy Policy" in `caption2`, gray, with a dot between them (App Review 3.1.2). At an accessibility text size, it scrolls with the page and the tiles stack.
+- "Restore Purchases" and "Redeem Code" are only in Settings, in the section "Maru Pro" (D119). The paywall has no note about the developer and no Family Sharing line.
+- The first-value offer shows the same paywall. It has no picture of a Lock Screen.
+- After a purchase, a plain full-sheet thank-you shows a check circle, "Welcome to Maru Pro", and one line, and then the paywall closes.
+- The row "Maru Pro" in Settings has the app icon in use at 40 points, a headline title, and one line. The card of Today is a list section at the bottom of the page, under every dose: a symbol in the tint, a headline title, one sentence, the borderless button "See Maru Pro", and an "×" button. It has no badge and no color fill.
+- A Pro feature shows its choices to every user, with no lock symbol and no badge. A free user's choice opens the paywall, and the footer of the page says so in one line (D112).
+- "App Icon" is a grid of the six icons at 62 points, with the corner of the Home Screen, a thin edge, and the name under each. The current icon has a ring of 2.5 points in the tint. The row in Settings shows the current icon at 29 points (D112).
+- "Reminder Sound" is a list: "Default" and eight sounds (D120). The sound in use has a check mark in the tint. Each of the eight has a play button (`play.circle`) at the end of the row (D112).
+
 ## Today
 
-- The large title "Today" with the date under it. No ring (D026).
+- The large title "Today" with the date under it. No ring (D026). The date line is the progress area of D101.
 - A gear button at the top left opens the settings sheet. An add button sits at the top right (D020). Both tabs have them. Today also has a History button with a calendar symbol, beside the add button (D026).
 - One list section per time slot, in time order. The section header is the slot name, for example "Morning", not a clock time (D011).
 - The header has no button. Each row records on its own (D060).
@@ -55,12 +79,13 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 - A long press opens a system context menu with the same actions, plus "Details", "Edit", and "Archive…". An as-needed item offers "Record Dose" (D068). Every action uses the same record transaction as the circle (D028).
 - The menu of a recorded row has "Change Time…". The menu of an open row has "Taken Earlier…". Each opens the time sheet directly. The sheet shows the time wheel at once, and "Save" records the dose as taken at that time. The wheel does not go past the current time. So a change of a record time needs three taps (D033).
 - An "As Needed" section at the end lists items with no schedule. Each row has a record button that records a dose at the current time (D021). An item has a second line with its usual amount and "Last dose 9:12 PM", also when the last dose was on an earlier day ("Yesterday, 9:12 PM", or the date). A dose of today shows under its item as "Taken at 8:07 AM" or "Skipped" in the text color. It lines up with the name, past the icon column, at every text size (D058).
-- With no item, the empty view in the middle of the page says "No Items Yet" and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing Planned Today" (D026, D058, D068).
+- With no item, the empty view in the middle of the page says "Let’s add the first thing you take." and "Tap + to add a supplement or medication." With items and nothing due today, it says "Nothing to take today. Enjoy it." (D026, D058, D101).
+- When every planned dose of today has a record, taken or skipped, the line "All done for today. Nice work." takes the place of the date under the title. As-needed doses do not count (D101).
 - Success text and the success haptic come only after the local transaction commits (spec §7.2).
 
 ## History
 
-A graph of squares at the top, and a section "Last 7 Days" in a system grouped list under it, with one row for each item (spec §3 P05, D032, D041, D054). Today opens it from the History button. A row opens the log of the item, and a tap on a day of the graph opens the log of the day.
+A graph of squares as the first section, and a section "Last 7 Days" in a system grouped list under it, with one row for each item (spec §3 P05, D032, D041, D054). Today opens it from the History button. A row opens the log of the item, and a tap on a day of the graph opens the log of the day.
 
 ### Graph
 
@@ -69,7 +94,7 @@ A graph of squares at the top, and a section "Last 7 Days" in a system grouped l
 - Steps: 13 weeks from the week of the first day. 26 weeks when 13 are full. 52 weeks when 26 are full, as two bands of 26 columns with the older band above. The step changes on the first day of a week that does not fit. After 52 weeks the graph shows the last 52 weeks.
 - The graph fills the card width. Side = (width − left labels) ÷ (columns + (columns − 1) × gap share). The gap share is 0.19 at 13 columns and 0.3 at 26 columns. The corner is 22% of the side, continuous.
 - Sizes on a screen of 402 points (graph width 338): 13 weeks, side 21.2 and gap 4.0. 26 weeks, side 10.1 and gap 3.0. On a screen of 320 points (graph width 256): 13 weeks, side 15.8 and gap 3.0. 26 weeks, side 7.6 and gap 2.3. 52 weeks uses the sizes of 26.
-- The card: the grouped card color, the corner of an inset grouped cell, margins of 16 points, and padding of 16 points. It stays above the list on the grouped background and does not scroll. Its height on 402 points is 222 points at 13 weeks, 138 at 26, and 256 at 52.
+- The card: the grouped card color, the corner of an inset grouped cell, margins of 16 points, and padding of 16 points. It is the first section of the list and scrolls with the page (D109). The list cell has no background and no padding of its own. Its height on 402 points is 222 points at 13 weeks, 138 at 26, and 256 at 52.
 - Levels by the share of the planned doses of the day that are taken. A skipped dose is not taken. An as-needed dose does not count.
 
 | Day | Look |
@@ -87,7 +112,7 @@ A graph of squares at the top, and a section "Last 7 Days" in a system grouped l
 - Month labels: the short month name above the column where the month starts, in the caption 2 style and the secondary color. When no month starts in the first three columns of a band, the first column gets its month. A label that would touch the one before it does not show. Weekday letters for Monday, Wednesday, and Friday at the left, only at 13 weeks and not at the accessibility text sizes.
 - The squares keep their size at every text size. The labels grow.
 - Selection: a ring of 1.5 points in the tint, with a gap of 1 point around the square. The date of the day, for example "Tue, Aug 18", in semibold caption 2 in the label row over its column. The title of the log of that day has the same format (D058). Month labels under it do not show. No dark border, no shadow, no magnifier, and no band behind the week.
-- A touch or a drag selects the nearest day. A day that is not here yet gives today. A light selection haptic comes when the selected day changes.
+- A tap selects the nearest day. A press of 0.2 seconds selects it too, and a drag after the press moves the selection. A finger that moves before 0.2 seconds scrolls the page (D109). A day that is not here yet gives today. A light selection haptic comes when the selected day changes.
 - At the end of the touch, the log of the selected day opens as a push (D054). The ring stays until the log closes.
 - VoiceOver reads the graph as one adjustable element: a summary of the days by level, or the selected day with "2 of 3 taken". Swipe up or down moves the day. The default action opens the log of the selected day.
 
@@ -148,12 +173,12 @@ One confirmation for each, and no second dialog before it (D033).
 
 The sheet behind the gear button. A "Done" button at the top right closes it. The sections, in order:
 
-- "Reminders": the row "Notifications" with its state ("On", "Quiet", "Off", "Not Asked Yet"), the row "Open Settings" when the state is "Off" or "Quiet", and the switch "Show Names in Reminders" (D029, D085). Settings has no test notification (D076). The footer explains a state that needs words.
+- "Reminders": the row "Notifications" with its state ("On", "Quiet", "Off", "Not Asked Yet"), the row "Open Settings" when the state is "Off" or "Quiet", the switch "Show Names in Reminders" (D029, D085), and the row "Reminder Sound" (D112). Settings has no test notification (D076). The footer explains a state that needs words.
 - "For All Items" (D085): the switch "Alarm" (from iOS 26), the menu "Remind Again", and the menu "Every". A row shows the value that every active item with a time has. When the items differ, it says "Varies", and "Alarm" is then a menu with "Varies", "On", and "Off". A choice sets every one of those items. "Every" shows only while an item has "Remind Again" on. The only footer is the limit line of "Until I Record It".
-- "Display": "App Color".
+- "Display": "App Color", "App Icon" (D112), "Color Header", "Appearance", and "Language". "Appearance" has "System", "Light", and "Dark", and the default is "System" (D105). "App Color" has a Pro part: every color except pink (D114).
 - A row with the switch "Share Usage Statistics". It shows only in a build that has an analytics key (D052).
-- "Your Data", then "Send Feedback" (D037), then "Support Maru": three optional tips of a consumable purchase. A tip unlocks nothing (D053).
-- "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift.
+- "Your Data", then "Send Feedback" (D037). Settings has no "Support Maru" section (D099).
+- "About" is the last section (D063): "Privacy Policy" and "Support" open the pages on maru.day, and "Licenses" shows the license of GRDB.swift. Its footer is "Made with care by the Maru team." (D101).
 - Each item also has its own "Alarm" and "Remind Again" on the add and edit screen (D079, D085). The menu "Remind Again" has "Off", "1 Time", "2 Times", "3 Times", "5 Times", and "Until I Record It". The menu "Every" has "5 min", "10 min", "15 min", "30 min", and "1 hr". Settings and the edit screen use the same words, from one place in the code.
 - "Until I Record It" has a limit, and the footer under the menus states the number and the last time in one short line: "Reminds you up to 12 times, until 1:00 AM." The time uses the time format of the device.
 - The first turn-on of "Alarm" asks the system. A refusal turns the switch off and shows the alert "Alarms Are Off" with "Open Settings" and "Cancel". The alarm switch has no footer.
@@ -166,14 +191,30 @@ The sheet behind the gear button. A "Done" button at the top right closes it. Th
 
 ## Widgets
 
-Two Home Screen widgets, small and medium each (D048). "Today" also has a Lock Screen form (D091): a circular gauge of the doses taken, and a rectangular form with the next part of the day, the number of open doses, and a gauge. It shows no names. They use the capsule of the app icon, tilted by 45 degrees, and no list rows.
+Two Home Screen widgets, small and medium each (D048), and "Last Dose", small (D108). "Today" also has a Lock Screen form (D091): a circular gauge of the doses taken, and a rectangular form with the next part of the day, the number of open doses, and a gauge. It shows no names. "Next Dose" is a Lock Screen widget only (D113). They use the capsule of the app icon, tilted by 45 degrees, and no list rows.
 
 - One capsule is one dose. Taken: filled with the app tint (D025) as a gradient. Open and skipped: light gray (`systemGray5`) with a thin edge (`systemGray3`). VoiceOver says "Taken", "Not recorded", or "Skipped" (D068), so the color is never the only signal.
 - The background is the system background: white in light mode, black in dark mode. Text uses the system font and the system colors.
 - "Today" has no names and no buttons. Small: the slot word in the tint, then the time in gray. Under it a large "2 left", and the capsules of the slot at the bottom right. When every dose is done: "All done" in the tint and "Next 8:00" in gray, "7 of 7", filled capsules. Medium: "Today" and, at the top right on its line, a progress bar (D076), then a column for each slot with its title, its time, and its capsules. The bar is a rounded track of 96 by 8 points in the system fill, with a fill in the tint for the share of the doses that are taken. It has no border, no segments, and no text. VoiceOver reads it as "Today, 4 of 7 taken". The columns end at the bottom edge, so the space over "Today" equals the space under the capsules. The slot of the clock has the title in the tint. A tap opens Today at the slot.
 - "Record Dose" shows only the current slot, with its title in the tint. Small: up to 2 rows (capsule, name, amount). Medium: up to 4 columns (capsule, name, amount). A tap on a gray capsule records the dose. A taken dose shows a filled capsule and a gray name. This is the one place where a name is gray for a state (the owner asked for it). The widget has no undo. A tap elsewhere opens Today at the slot.
+- "Last Dose" shows the newest taken dose of all items (D108). Small: "Last Dose" in the tint with a filled capsule, then the name, the amount in gray, and the time in gray: "2 hr. ago" today, "Yesterday, 6:49 PM", or the date and the time. Lock Screen, rectangular: the symbol and the name in bold, then the time and the amount. Lock Screen, one line: the name and the time. With "Show Names in Reminders" off, "Dose recorded" takes the place of the name, and no family shows the amount (D029). With no taken dose: "Your last dose will show here." A tap opens the item detail over Today.
+- "Next Dose" shows the next open dose of today (D113). Rectangular, in the layout of D094: the pill symbol, the part of the day, and the planned time in bold, then "In 2 hr, 5 min" or "Not recorded yet", then the names. Circular: a ring of the doses taken today, with the planned time in it and no AM or PM. One line: the time and the names. At most three names, then "and 2 more". With "Show Names in Reminders" off, "2 doses" takes the place of the names (D029). When every dose has a record: "All done for today" with a check mark. It shows no price, offer, or Pro. A tap opens Today at the part of the day.
 - The widget never shows a success before the record commits. When the record can not be made, the system asks to open Maru.
 - The words "Today", "Morning", "Noon", and "Evening" match the app. The header of the small "Today" widget has no "·": the color separates the two parts (D068).
+
+## Live Activity
+
+"Next Dose on Lock Screen" is the Live Activity of Maru Pro (D110). It uses the system background of a Live Activity and system fonts.
+
+- Lock Screen: a first line with the pill symbol and the part of the day in the tint, the planned time in gray, and the relative time at the trailing edge in the text color: "in 12 minutes" before the planned time and "12 minutes ago" after it. The system moves it with no update. iOS 17 shows only the distance, "12 min".
+- Under it, the item names in bold, at most two lines, and a capsule button "Taken" in the tint at the trailing edge. At most three names, then the number of the other doses: "Vitamin D, Iron, Zinc, and 2 more". With "Show Names in Reminders" off, "2 doses" takes the place of the names.
+- Dynamic Island: compact, the pill symbol and the planned time, both in the tint. Minimal, the pill symbol. Expanded, the part of the day and the time at the leading edge, the relative time at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
+- A tap outside the button opens Today at the part of the day.
+- When the record does not confirm, a line with a warning symbol takes the place of the button. When the day of the dose ended, only "Open Maru to update." shows, with no name and no button.
+
+## Siri and Shortcuts
+
+Three App Shortcuts (D108): "Next Dose", "Last Dose", and "Record Doses". Siri speaks short answers in the voice of the app (D101). It states the record, not the intake (D068). "Next Dose" also shows a snippet: the part of the day in the tint and its time in gray, then each open dose with its amount in gray. With "Show Names in Reminders" off, the snippet shows the number of doses and Siri says the number, not the names. "Record Doses" asks before it records, and it says what it recorded only after the commit.
 
 ## iPad
 
@@ -183,6 +224,10 @@ The iPad uses the layout of the iPhone at a larger width (D072). It has the same
 - My Items keeps two columns of tiles, and one at the accessibility text sizes. The History graph fills the width.
 - Settings, the add and edit screen, the scanner, and the time sheets are system sheets. A dialog of choices shows as a popover from its button.
 - The iPad has the four orientations. The iPhone is portrait only. Split View and Slide Over show the same pages at their width.
+
+## iPhone Duo
+
+iPhone Duo uses the layout of the iPhone (D106). The outer display shows it as on other iPhones. The inner display shows it at a larger width, as an iPad does, in each orientation, because the inner display ignores the portrait lock. The system bars go to the side in some poses. Maru has no layout of its own for the fold.
 
 ## Watch
 
@@ -257,6 +302,17 @@ One screen (spec §3 P03) with a short first view (D085). In this order: name, t
 - The plan line of every other day reads "Every other day at 8:00 AM, starting tomorrow, with no end date". The plan line of the other two names the first day as a date: "21 days on, 7 days off at 8:00 AM, from Tue, Oct 13, with no end date".
 - The photo is part of the look of the item, in the section of the form and the color on the page "More Options" (D073, D085). The section has no header. Its first row shows the icon as the lists show it, 56 points, in the middle: the photo, else the form icon in the item color. It changes at once with the form, the color, or a new photo. Then come "Form", "Color", "Choose Photo", "Take Photo", and "Remove Photo" when the item has a photo. The camera asks for permission only at the tap on "Take Photo". After a pick, a row with a progress view says "Removing the background…". When Maru finds one subject, the switch "Remove Background" shows, and it starts on. With no clear subject, the footer says that the photo stays as it is. Save is never off because of the photo.
 - The item detail shows "Every other day", "Every 3 days", or "21 days on, 7 days off" under "Days", and a row "Next Dose" with "Today", "Tomorrow", a weekday, or a date when the dose is 7 or more days away (D036, D065).
+
+## Voice
+
+Maru speaks like a reliable friend, not a nurse and not a cheerleader (D101).
+
+- Warm words only at key moments: a day with every dose recorded, the first item, empty states, errors and recoveries, and the footer of Settings.
+- Buttons, settings labels, and record states stay short and exact. The text states the record, not the intake (D068).
+- No guilt, no nagging, no streak talk, and no "don't forget". A missed dose gets no judgment.
+- Few exclamation marks, no emoji, and nothing cute. No medical promise.
+- The app speaks as its maker only as "the Maru team".
+- An App Store rating request uses only the system prompt, after the third day with every dose recorded (D102).
 
 ## Text and accessibility
 

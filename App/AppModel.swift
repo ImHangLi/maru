@@ -48,6 +48,20 @@ final class AppModel {
     /// The item whose first save with a time asks, once, whether "Remind Again" should be on (D091). It waits for the
     /// edit screen and the alerts before it. `AppModel+Detail.swift` has its operation.
     var remindAgainOffer: ItemID?
+    /// The paywall and the two offers of Maru Pro (D107). `AppModel+Pro.swift` has the rules.
+    var proState = ProState()
+    /// The switch "Next Dose on Lock Screen" and its Live Activity (D110). `AppModel+LiveActivity.swift` has the rules.
+    var liveActivity = LiveActivityState()
+    /// Counts the times that Maru asks for an App Store rating. The root view shows the system prompt (D102).
+    var reviewRequest = 0
+    /// The first-run onboarding (D103, D104). `AppModel+Onboarding.swift` has the rule.
+    var onboarding = OnboardingState.initial
+    /// A reminder tap or a widget link opened the app in this process. The onboarding does not show in it (D104).
+    var opensForAction = false
+    /// The window is in front. The onboarding waits for it, so a launch in the background does not decide (D104).
+    var windowIsActive = false
+    /// The onboarding decision waits a short time for a late widget link (D104).
+    var onboardingDecisionPending = false
 
     /// Only the operations of the model use the store. A view calls an operation (spec 6).
     let store: AppStore
@@ -78,6 +92,8 @@ final class AppModel {
     #endif
     /// The slot of a widget link that came before Today loaded. See `AppModel+Widget.swift`.
     var pendingWidgetPart: DayPart?
+    /// The item names that Siri has. See `AppModel+Siri.swift`.
+    var shortcutItemNames: [ItemID: String]?
     private var load: Task<Void, Never>?
     /// A refresh request came while a read ran. The model reads again when that read ends.
     private var needsRefresh = false
@@ -179,13 +195,22 @@ final class AppModel {
         if isCurrent {
             self.content = content
             todayDidShow()
+            updateOnboarding()
             if case let .loaded(snapshot) = content {
                 analytics.noteActiveItems(snapshot.list.count)
+                analytics.noteFamilySize(snapshot.people.filter { !$0.isArchived }.count)
                 // The widgets show what is stored, so they read again after each read of the app (D048).
                 // The Watch app gets the list (D071).
                 WidgetCenter.shared.reloadAllTimelines()
                 sendWatchDay()
                 showPendingWidgetSlot()
+                // The card of Today needs a count of records. It is read once, and only when the card can show (D107).
+                readProCardRecords()
+                updateShortcutItems(snapshot.list)
+                // An owner change or an archive moves items between members, so the History of one member reads again (D129).
+                historyOwnersDidChange(snapshot)
+                // The Live Activity starts or follows Today while Maru is in front (D110).
+                updateNextDose()
             }
             // After the content shows, so Today never waits for the reminders (spec 8.1, 9). A Today that did not load, for
             // example for one damaged row, does not stop the run: the plans read their rows with their own checks (D088, D089).
@@ -266,9 +291,12 @@ final class AppModel {
         noteOpen()
         // The user can change the permission in the Settings app while Maru is away (T14).
         readNotificationPermission()
+        readLiveActivityPermission()
         // The first activation of a process has no time in the background. `refresh` already runs.
         guard let backgroundedAt else { return }
         self.backgroundedAt = nil
+        // A plan can end or renew while Maru is away (D107). The read waits for the system, not the return.
+        Task { await pro.refreshEntitlement() }
         if ContinuousClock.now - backgroundedAt > Self.sessionTimeout {
             selectedTab = .today
             // A long absence opens Today, never the history (spec 4, T26). Unconfirmed events stay (D014).

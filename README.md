@@ -37,7 +37,7 @@
   <b>History.</b> You see each day that you recorded.
 </p>
 
-- Free to download. Reminders and records are free, with no limit on items. No ads.
+- Free to download. Reminders, records, widgets, export, and backup are free, with no limit on items. No ads. Maru Pro is optional.
 - No account.
 - Your records stay on your device. Usage statistics are optional: see [PRIVACY.md](PRIVACY.md).
 - Six languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.

@@ -7,7 +7,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 | Step | State |
 |---|---|
 | Join the Apple Developer Program as an individual | Done on 2026-10-13 |
-| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open: the agreement has the state "Pending User Info" on 2026-10-13, and a tax form is missing. The maintainer does not register for GST for now, so the tips may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
+| Accept the Paid Apps agreement, and add the bank and tax data (W-8BEN) in App Store Connect | Open: the agreement has the state "Pending User Info" on 2026-10-13, and a tax form is missing. The maintainer does not register for GST for now, so an in-app purchase may not be for sale in the Australian storefront (D064). Check the state of the agreement before the first release |
 | Give the agent the Team ID, and set the paid team in Xcode for each target, also the Watch app (D071) | Team ID `JBG4XL9NQK`. Xcode needs the Apple ID again |
 | Create an App Store Connect API key (App Manager). Enter it in a private prompt, never in chat | Done. The `asc` CLI uses it from the keychain |
 | Buy the landing page domain | Done: `maru.day` |
@@ -18,7 +18,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 ## 2. Identity
 
 - Freeze the bundle IDs `com.imhangli.maru` and `com.imhangli.maru.widgets` before the first upload (D005).
-- The Watch app has the bundle ID `com.imhangli.maru.watchkitapp` (D071). Version 1.0 ships without it (D074): the app target does not depend on `MaruWatch`, so an archive has no Watch app. A build with the Watch app needs Watch screenshots and a sentence in the privacy policy.
+- The Watch app has the bundle ID `com.imhangli.maru.watchkitapp` (D071). Version 1.0 shipped without it (D074). It is a Pro feature, and the app embeds it again (D111), so an archive has the Watch app. Register the App ID on the paid team with the first archive. The steps are in "Apple Watch app (D111)" in section 7.
 - Register the App Group on the paid team. Done: the paid team is the free team, so the group ID stays (D062).
 - Set the version to 1.0.0. Done (D062).
 - Add the time-sensitive notification entitlement (D034). Done in code (D062). The device build waits for the Apple ID in Xcode.
@@ -28,7 +28,6 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 | Feature | Spec | Acceptance |
 |---|---|---|
 | Analytics: PostHog with a field allowlist, on by default outside the EU, the EEA, the UK, Switzerland, and South Korea. Each event has the region setting of the iPhone as a two-letter code | §11, D051, D064 | T41–T45 |
-| Supporter tips with StoreKit 2 (D053). They may not be for sale in the Australian storefront (D064) | §14 C | T48 |
 | Optional photo with background removal | §5.2 | T30–T32 |
 | Six languages: en, zh-Hans, ja, es, de, ko | §13.2, D051 | T49 |
 | Privacy manifests and the export compliance key | §10 | Done in this change |
@@ -98,7 +97,7 @@ Health & Fitness is the primary category. On 2026-10-13, in the US, 8 of the 10 
 - EU: the trader status. Maru is declared as a non-trader, so the page shows no address or phone number.
 - EU, EEA, UK, and US: the medical device declaration, see below.
 - Age rating: no territory blocks the rating.
-- The tips: Australia can refuse them while the maintainer has no GST registration (D064). The Paid Apps agreement decides it.
+- In-app purchases: Australia can refuse them while the maintainer has no GST registration (D064). The Paid Apps agreement decides it. Version 1.1.0 has no in-app purchase (D099).
 - Not checked beyond Apple's own pages: local consumer or health law of each territory.
 
 ### Age rating
@@ -133,34 +132,50 @@ The question is: "Is your app a regulated medical device in any country or regio
 | Data type | Purpose | Linked to the user | Tracking | What it is in the code |
 |---|---|---|---|---|
 | Identifiers: Device ID | Analytics | Yes | No | `distinct_id`, the random install ID |
-| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077) |
+| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077), and `paywall_shown` from 1.2 (D107). From 1.2 also `onboarding_result` and the new flags of `daily_usage_summary` and `setting_changed` (D127) |
 | Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, `ios_major`, and `device` |
 | Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) and `app_language` (D077) |
 
-The label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`. Add "Purchase History" in the release that first sends `purchase_result`.
+| Purchases: Purchase History | Analytics | Yes | No | `purchase_result` (D107) and `pro_plan` in `daily_usage_summary` (D127). Not published yet |
+
+The published label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy` of 1.1. The code of 1.2 sends `purchase_result` (D107), and `App/PrivacyInfo.xcprivacy` lists "Purchase History". Add "Purchase History" to the label in App Store Connect before the release of 1.2.
 
 ### Tips
 
-Three consumable in-app purchases, in `metadata/in-app-purchases/tips.json`.
+The tips were removed (D099). Maru Pro comes in version 1.1.0, the first public release. There is no Supporter tier (D131).
 
-| Product ID | English name | Price |
-|---|---|---|
-| `com.imhangli.maru.tip.small` | A Small Thanks | USD 0.99 |
-| `com.imhangli.maru.tip.medium` | A Warm Thanks | USD 2.99 |
-| `com.imhangli.maru.tip.large` | A Big Hug | USD 9.99 |
+### Maru Pro (D107)
 
-- The other territories have Apple's equalized prices. The tips are available in the same 174 territories as the app.
-- Each has a name and a description in the eight store languages. The app shows the store name, so the app has no tip name of its own.
-- Wording: guideline 3.1.1 allows a tip to the developer through in-app purchase. The names thank, and no text says "donation" or "donate", because Apple keeps donations for approved nonprofits (guideline 3.2.1). Each description and the review note say that a tip unlocks nothing.
-- Each product has a review note with the path Settings, "Support Maru".
-- Each product has its review screenshot, and the public API gives the state "Ready to Submit".
-- The tips are not in the submission of 1.0.0. The version page offers no "In-App Purchases and Subscriptions" section, and the website still shows the three products as drafts. The pending Paid Apps agreement is the probable cause. No message of Apple names it.
-- Before a tip goes on sale, add a Tips section back to `PRIVACY.md` and the site FAQ. The app shows the purchase buttons as soon as a product loads, with no version check. Version 1.0.0 mentions no tips anywhere.
-- The first tip goes to review with a later app version, after the Paid Apps agreement is active. Until then the app loads no tip product, and Settings hides the section "Support Maru".
+The code has the purchase, the paywall, and the entitlement. The maintainer does these steps in App Store Connect. The agent does not touch App Store Connect.
+
+- [ ] Paid Apps agreement: the state is "Active", with the bank and the tax forms. No in-app purchase can be sold before that.
+- [ ] Remove the three tip products of D053, or leave them "Removed from Sale" (D099).
+- [ ] Create the subscription group "Maru Pro", with a localized display name in the eight store languages.
+- [ ] In the group, create the auto-renewable subscription `com.imhangli.maru.pro.yearly`: duration 1 year, price about USD 9.99 with the price tiers of each storefront, a display name and a description in the eight store languages.
+- [ ] Add the introductory offer to the yearly plan: "Free", 1 week, in all storefronts.
+- [ ] Create the non-consumable `com.imhangli.maru.pro.lifetime`: price USD 19.99 as a founder price for the first 30 days after the launch, then USD 29.99, a display name and a description in the eight store languages.
+- [ ] Turn on Family Sharing for both products. It cannot be turned off later.
+- [ ] Add a review screenshot of the paywall and review notes for each product. The notes say where the paywall is (Settings, "Maru Pro") and that every free feature stays free.
+- [ ] Add both products to the version 1.1.0 submission. The first in-app purchase of an app must go to review with a new version.
+- [ ] Add "Purchase History" to the privacy label (see "Privacy label").
+- [x] Change the store text of 1.1.0: it says what needs a purchase (guideline 2.3.2), and it has no "no paywall" (see "Store text of version 1.1").
+- [ ] Test in TestFlight with a Sandbox account: buy yearly, buy lifetime, restore, an offer code, and Ask to Buy.
+- [ ] Do not submit before the Pro features are in the build. A purchase with no content is a rejection risk (guideline 3.1.1).
+
+### Apple Watch app (D111)
+
+The app embeds the Watch app, and the Watch app is a Pro feature. The maintainer does these steps.
+
+- [ ] Check on a real iPhone and Watch: the list of D071, the locked iPhone of D066, the locked screen of a free user, "Open on iPhone", and the end of Pro.
+- [ ] Archive with automatic signing. Xcode registers `com.imhangli.maru.watchkitapp` on the paid team. Check that the archive has `Maru.app/Watch/MaruWatch.app`.
+- [ ] Add Apple Watch screenshots to the version in App Store Connect. A version with a Watch app needs them.
+- [ ] Review notes: the Watch app is part of Maru Pro. A free user sees a screen that names Maru Pro and has no purchase. Give App Review the steps to buy Pro with a sandbox account and to see the list on the Watch.
+- [ ] The store text of the release: name the Apple Watch app as a Pro feature (guideline 2.3.2).
+- [ ] On the day of the release: build the site and deploy it. `DEVICES` in `site/build.py`, the FAQ answer about Apple Watch, and `site/llms.txt` already name the Watch app. The privacy pages already have the section "Apple Watch".
 
 ### Notes for App Review
 
-The notes are in App Store Connect. They state: what Maru does, no account, the steps to see a reminder in two minutes, no medical advice and no dose calculation, where the tips are and that they unlock nothing, where the data stays, the usage statistics, the label scan, and the widgets.
+The notes are in App Store Connect. They state: what Maru does, no account, the steps to see a reminder in two minutes, no medical advice and no dose calculation, where the data stays, the usage statistics, the label scan, and the widgets. The notes of 1.0.0 also say where the tips are. Remove that line before the submission of 1.1.0 (D099).
 
 ### TestFlight
 
@@ -181,26 +196,33 @@ Maintainer decisions of 2026-10-15. The changes of 2026-10-28 replace some of th
 
 - **Privacy: keep the usage statistics.** The text never says "connects to nothing" or "no data leaves". It says that items and records stay on the iPhone or iPad, that Maru needs no account, and that Maru sends nothing about what the user takes (changed on 2026-10-28). The optional usage counts stay in the text, and they never include what the user takes. The text uses plain words. It does not lead with "server", "local-first", or "open source".
 - **Subtitle.** English: "Supplement & Medicine Tracker". The other languages keep the same meaning in 30 characters or fewer. The name stays as in 1.0.0.
-- **"Free" must be clear.** Replaced on 2026-10-28, see below. The name, the subtitle, and the keywords have no price word (guideline 2.3.7).
+- **"Free" must be clear.** Replaced on 2026-10-30, see below. The name, the subtitle, and the keywords have no price word (guideline 2.3.7).
 - **No setup.** The first lines say that there is no sign-up and nothing to set up first.
 - **Features in the text.** Dark mode, and alarms for each item (iOS 26 or later).
-- **Persons in proportion.** Vitamins, supplements, and medicine lead. One short paragraph, "Not just for you", says that a user can track a pet or a parent on the user's own phone. The paragraph says that Maru has no shared profiles and no sync (changed on 2026-10-28).
+- **Persons in proportion.** Vitamins, supplements, and medicine lead. One short paragraph, "Not just for you", says that a user can track a pet or a parent on the user's own phone. The paragraph says that Maru has no shared profiles and no sync (changed on 2026-10-28 and 2026-10-30).
 - **Removed from 1.0.0.** The line "It is not an alarm", the lines "Open source", and the tip answer. The zh-Hans text uses 药品 and 保健品 like the app. All languages use the button names of `App/Localizable.xcstrings`.
 - **No medical claim.** The text has no "never miss a dose" and no competitor name.
 
-Changes of 2026-10-28. Version 1.0.0 was approved, but it will not be released. Version 1.1.0 from `main` replaces it. A paid "Pro" tier comes in 1.2. Reminders and records stay free.
+Changes of 2026-10-28. Version 1.0.0 was approved, but it will not be released. Version 1.1.0 from `main` replaces it. The changes of 2026-10-30 replace the parts about Pro.
 
-- **Free wording.** The text says "Free to download. Reminders and records are free, with no limit on items." It keeps "no account" and "no ads". It never says "100% free", "no subscription", "no paywall", or "Free for real". The site FAQ, the home page, `llms.txt`, and `README.md` use the same words.
 - **Sharing.** The user can export and share files: a CSV file, a PDF list or summary, and a backup. So the text never says "no sharing" or "never sent anywhere". It says that Maru sends nothing about what the user takes, and that the user chooses where each file goes.
-- **Features.** The description adds the features of D090, D091, D093, D094, D097, and D098: the reminder actions, the tracker, the PDF files, the Lock Screen widget, the "Language" row, and "Delete Item".
 - **"What's New".** The public never got 1.0, so it is a short summary of the main features for a first release, not a list of changes.
-- **Keywords.** The zh-Hans, ja, and ko fields hold at most 100 bytes. They have no word of the name or the subtitle.
+- **Keywords.** The keywords have no word of the name or the subtitle.
+
+Changes of 2026-10-30. Version 1.1.0 is the first public release, and it is a free app with Maru Pro (D107, D111, D122, D130, D131).
+
+- **Free wording.** The text says "Free to download." It names what is free: reminders, alarms, follow-ups ("Remind Again"), records and History, undo, the widgets, the CSV export, the backup, and no limit on items. It keeps "no account" and "no ads". It never says "100% free", "no subscription", "no paywall", or "no in-app purchases".
+- **Maru Pro.** One section names every Pro feature (guideline 2.3.2): "Next Dose on Lock Screen", the Apple Watch app, Siri and Shortcuts, the PDF reports, the 30-day counts, Family (people and pets, member colors, a filter and a PDF for each member), app icons, reminder sounds, and app colors. It names the two plans: yearly with a 7-day free trial, and lifetime. Family Sharing is on. The store text has no price, because each storefront has its own price.
+- **No Supporter tier and no tips.** The text never names them (D131).
+- **Family.** "Not just for you" now says that Maru Pro adds a person or a pet on the same iPhone. Maru still has no shared profiles and no sync between devices.
+- **Site FAQ.** The FAQ names the US prices: yearly $9.99 with a 7-day free trial, and lifetime $19.99 for the first 30 days after the launch, then $29.99. A maintainer changes the lifetime answer after the 30 days.
 
 Checks before the text goes to App Store Connect:
 
 - Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, "What's New", and the site FAQ.
-- The text does not say "no paywall" or "no in-app purchases", because Pro comes in 1.2 and optional tips can come later. Version 1.1 has no in-app purchase. Add the tip answer back to the description when the first tip ships (see Tips).
-- Each keyword field holds at most 100 bytes, as Apple states the limit. Each description has fewer than 4000 characters, and each promotional text fewer than 170.
+- Keep a Pro line only when the feature is in the submitted build.
+- The keyword field holds at most 100 bytes in en, es, and de. The zh-Hans, ja, and ko fields hold at most 100 characters, as in 1.0.0, and they are more than 100 bytes. Apple states the limit as 100 bytes. App Store Connect accepted the 1.0.0 values. Check the CJK fields when you push them.
+- Each subtitle has at most 30 characters, each promotional text at most 170, and each description fewer than 4000.
 - A native speaker has not read the text for zh-Hans, ja, ko, es, and de.
 - The site FAQ and home page show the 1.1 text, and `RELEASED` in `site/build.py` stays `False` until the release.
 

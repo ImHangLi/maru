@@ -37,19 +37,6 @@ struct ScenarioTests {
         await p.expectCorrect("next day")
     }
 
-    @Test func recordAfterTheTimeRemovesTheDeliveredReminder() async throws {
-        let p = try await phone()
-        try await p.addItem("Zinc", at: ["09:00"])
-        try await p.addItem("Iron", at: ["09:00"])
-        await p.advance(to: "2026-10-15 09:01")
-        #expect(await p.center.shown.count == 1)
-        try await p.record("Zinc")
-        await p.expectCorrect("one of two recorded: the old text is gone")
-        try await p.record("Iron")
-        await p.expectCorrect("both recorded")
-        #expect(await p.center.shown.isEmpty)
-    }
-
     @Test func recordOfTomorrowAndOfYesterday() async throws {
         let p = try await phone("2026-10-15 23:00")
         try await p.addItem("Zinc", at: ["23:30", "08:00"])
@@ -298,12 +285,16 @@ struct ScenarioTests {
         try await p.addItem("Zinc", at: ["12:00"])
         try await p.addItem("Iron", at: ["12:00"])
         await p.advance(to: "2026-10-15 12:01")
+        #expect(await p.center.shown.count == 1)
         let deliveries = await p.center.deliveries.count
         await p.advance(to: "2026-10-15 13:00")
         try await p.record("Zinc")
         #expect(await p.center.shown.isEmpty, "the old notification names a closed dose")
         #expect(await p.center.deliveries.count == deliveries, "no new banner for Iron")
         await p.expectCorrect("Zinc recorded, Iron still open on Today")
+        try await p.record("Iron")
+        await p.expectCorrect("both recorded")
+        #expect(await p.center.shown.isEmpty)
     }
 
     @Test func recordedFromTheTakenActionLeavesNotificationCenter() async throws {

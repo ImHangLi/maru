@@ -58,6 +58,10 @@ struct HistoryState {
     var graphDidLoad = false
     /// Only the result of the last read of the graph shows.
     var graphReadCount = 0
+    /// The member of the read of `days`, or `nil` for every member (D129). A log of an item reads again when it differs.
+    var owner: PersonID?
+    /// The owner and the archive state of each item at the read of the page. A change reads the page again (D129).
+    var owners: [ItemID: PersonID] = [:]
 }
 
 extension AppModel {
@@ -73,9 +77,33 @@ extension AppModel {
 
     /// The full log of one item opens from the item detail while the History page is closed. It needs the days of the
     /// history, so it reads the first page for its own use (D091).
-    func openItemLog() {
-        guard !history.isOpen, history.days == nil else { return }
+    func openItemLog(of itemID: ItemID) {
+        // The open History of one member has only the items of that member. A log of an item of another member, for example
+        // an archived item from My Items, shows "Everyone", and the page reads every member again (D129).
+        if history.isOpen {
+            if let owner = history.owner ?? shownMember?.id, owner != self.owner(of: itemID, or: owner) { show(member: nil) }
+            return
+        }
+        // Days of the History of one member can stay after the page closed. The log of an item needs every member (D129).
+        if history.days != nil, history.owner == nil { return }
+        resetHistory()
         loadHistory()
+    }
+
+    /// A new read of the app shows another owner or another archive state for an item, or a member that left. The open History
+    /// of one member then reads again, so a row of a moved item never shows under its old member (D129).
+    func historyOwnersDidChange(_ snapshot: Snapshot) {
+        guard history.isOpen, history.days != nil, history.owner != nil else { return }
+        if Self.owners(of: snapshot) != history.owners || shownMember?.id != history.owner { openHistory() }
+    }
+
+    private static func owners(of snapshot: Snapshot) -> [ItemID: PersonID] {
+        Dictionary(snapshot.list.map { ($0.id, $0.personID) }, uniquingKeysWith: { first, _ in first })
+    }
+
+    /// The owner of each active item in the last read of the app.
+    private var currentOwners: [ItemID: PersonID] {
+        if case let .loaded(snapshot) = content { Self.owners(of: snapshot) } else { history.owners }
     }
 
     /// The full log closes. The days go, unless the History page needs them.
@@ -120,9 +148,12 @@ extension AppModel {
         let firstWeekday = Weekday(rawValue: (Calendar.current.firstWeekday + 5) % 7 + 1) ?? .monday
         history.graphReadCount += 1
         let read = history.graphReadCount
+        let owner = historyOwner
         Task {
             let oldest = HistoryGraph.oldestStart(today: today, firstWeekday: firstWeekday)
-            let counts = try? await store.open().historyCounts(from: oldest, through: today, at: now, deviceTimeZone: deviceTimeZone)
+            let counts = try? await store.open().historyCounts(
+                from: oldest, through: today, at: now, deviceTimeZone: deviceTimeZone, owner: owner
+            )
             guard history.graphReadCount == read else { return }
             if let counts {
                 history.graph = counts.firstDay.map { HistoryGraph(today: today, firstDay: $0, firstWeekday: firstWeekday) }
@@ -130,6 +161,12 @@ extension AppModel {
             }
             history.graphDidLoad = true
         }
+    }
+
+    /// The member of the History page: the member of the person menu (T65, D129). The log of an item from its detail reads every
+    /// member, because the item can belong to a member that the menu does not show.
+    private var historyOwner: PersonID? {
+        history.isOpen ? shownMember?.id : nil
     }
 
     func loadHistory() {
@@ -144,13 +181,19 @@ extension AppModel {
         history.readCount += 1
         let read = history.readCount
         let generation = history.commitGeneration
+        let owner = historyOwner
+        // The owners of the app read at the start. A newer read with other owners during the read makes this one stale (D129).
+        let owners = currentOwners
         Task {
             do throws(StorageError) {
                 // The timeline starts at today, so the read ends at the day after it.
-                let page = try await store.open().history(before: today.adding(days: 1), days: days, deviceTimeZone: deviceTimeZone)
+                let page = try await store.open().history(
+                    before: today.adding(days: 1), days: days, deviceTimeZone: deviceTimeZone, owner: owner
+                )
                 guard history.readCount == read else { return }
                 guard history.commitGeneration == generation else { return loadHistory() }
-                showHistory(page, today: today, dayCount: days)
+                guard owner == nil || (owners == currentOwners && owner == historyOwner) else { return loadHistory() }
+                showHistory(page, today: today, dayCount: days, owner: owner, owners: owners)
             } catch {
                 guard history.readCount == read else { return }
                 history.loadFailure = error
@@ -158,8 +201,13 @@ extension AppModel {
         }
     }
 
-    private func showHistory(_ page: HistoryPage, today: LocalDate, dayCount: Int) {
+    private func showHistory(
+        _ page: HistoryPage, today: LocalDate, dayCount: Int, owner: PersonID?, owners: [ItemID: PersonID]
+    ) {
         history.loadedDayCount = dayCount
+        history.owner = owner
+        history.owners = owners
+        let pageItems = Set(page.items.map(\.id))
         let held = Dictionary(heldRecords.map { ($0.occurrenceID, $0) }, uniquingKeysWith: { first, _ in first })
         history.days = page.days.map { day in
             var day = day
@@ -177,12 +225,14 @@ extension AppModel {
                 if let record = held[dose.occurrence.id] { dose.record = record }
                 return dose
             }
-            day.asNeeded = shownAsNeeded(day)
+            // A held dose of another member stays out of the page of one member (D129).
+            day.asNeeded = shownAsNeeded(day).filter { owner == nil || pageItems.contains($0.occurrence.itemID) }
             return day
         }
         history.looks = Dictionary(uniqueKeysWithValues: page.items.map {
             ($0.id, TodaySnapshot.ItemLook(
-                itemID: $0.id, name: $0.name, form: $0.form, color: $0.color, imageReference: $0.imageReference
+                itemID: $0.id, personID: $0.personID, name: $0.name, form: $0.form, color: $0.color,
+                imageReference: $0.imageReference
             ))
         })
         history.amounts = page.amounts

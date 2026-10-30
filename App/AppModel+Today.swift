@@ -2,6 +2,7 @@ import Foundation
 import MaruCore
 import MaruDatabase
 import SwiftUI
+import UIKit
 
 /// An event that the store did not confirm. The row offers only a retry of this same event (D014).
 struct PendingEvent: Equatable, Sendable {
@@ -15,6 +16,9 @@ struct PendingEvent: Equatable, Sendable {
     var requiresCurrentPlan = false
     /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
     var restoreEpoch: Int?
+    /// The instant of the list that a quick action comes from: the Watch list, the widget read, the Live Activity, or the Siri read.
+    /// The store refuses a dose of an item whose owner changed after it (D123). Today records with the owner on screen and sets none.
+    var listedAt: Date?
 }
 
 /// Why a record on Today gave no success. The page shows it in an alert.
@@ -61,6 +65,10 @@ struct TodayState {
     var lockedTap: DeliveredReminder?
     /// The state of the "As needed" card. See `AppModel+AsNeeded.swift`.
     var asNeeded = AsNeededState()
+    /// The member that the person menu shows, or `nil` for everyone (D121). Today, History, and My Items share it (D129). It
+    /// lives in memory, so a new launch shows everyone.
+    /// `AppModel.shownMember` ignores a member that is no longer active.
+    var member: PersonID?
 }
 
 extension AppModel {
@@ -230,7 +238,8 @@ extension AppModel {
                 let now = Date()
                 return NamedTimeZone(device: .current, at: now).map { OccurrenceGeneration(now: now, deviceTimeZone: $0) }
             },
-            restoreEpoch: events.first?.restoreEpoch
+            restoreEpoch: events.first?.restoreEpoch,
+            listedAt: events.compactMap(\.listedAt).min()
         )
     }
 
@@ -247,7 +256,9 @@ extension AppModel {
     }
 
     func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
+        let wasComplete = todaySnapshot.map { isComplete($0) } ?? true
         noteRecords(records)
+        proRecordsDidCommit(records)
         for record in records {
             today.pending[record.occurrenceID] = nil
         }
@@ -258,7 +269,12 @@ extension AppModel {
             snapshot.today?.apply(records)
             content = .loaded(snapshot)
         }
+        if !wasComplete, let day = todaySnapshot, isComplete(day) { dayDidComplete(day.date) }
+        // An undo can open a dose with a later time.
+        if let day = todaySnapshot { scheduleProCardCheck(for: day) }
         sendWatchDay()
+        reloadWidgets()
+        updateNextDose()
         historyDidCommit(records)
         today.commitCount += 1
         if backfilled.isEmpty {
@@ -269,6 +285,23 @@ extension AppModel {
             refresh()
         }
         refreshReminders()
+    }
+
+    /// Every planned dose of Today has a confirmed record, taken or skipped. As-needed doses do not count, and a day
+    /// with no planned dose is not complete. Today shows a short line, and the count of the rating prompt uses it (D101, D102).
+    func isComplete(_ day: TodaySnapshot) -> Bool {
+        !day.entries.isEmpty && day.entries.allSatisfy { isDone($0) }
+    }
+
+    private var todaySnapshot: TodaySnapshot? {
+        if case let .loaded(snapshot) = content { snapshot.today } else { nil }
+    }
+
+    /// A record completed the day. Maru asks for a rating only while the user sees the app, so a record from a
+    /// reminder or a widget in the background only counts the day (D102).
+    private func dayDidComplete(_ date: LocalDate) {
+        let canAsk = UIApplication.shared.applicationState == .active
+        if ReviewPrompt.dayDidComplete(date, canAsk: canAsk) { reviewRequest += 1 }
     }
 
     /// A record, a skip, an undo, or a new time changes which slot times are open. The reminders and the follow-ups
@@ -301,7 +334,7 @@ extension AppModel {
                 today.pending[pending.event.occurrenceID] = pending
             }
             show(TodayFailure(kind: .notSaved(error), events: events))
-        case .unknownOccurrence, .versionChanged, .rejected:
+        case .unknownOccurrence, .versionChanged, .ownerChanged, .rejected:
             // The store has another state than the page. Nothing was written. Show the stored state.
             didChange(events)
             show(TodayFailure(kind: .changed, events: []))
@@ -336,5 +369,6 @@ extension AppModel {
             guard !Task.isCancelled else { return }
             self?.refresh()
         }
+        scheduleProCardCheck(for: day)
     }
 }

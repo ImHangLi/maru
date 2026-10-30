@@ -46,7 +46,7 @@ struct BackupTests {
         // The other device has an item of its own. A restore replaces it and does not merge.
         let other = TestDirectory()
         let old = try LocalStore(directory: other.url)
-        try await old.save(try Item(category: .medication, name: "Old", form: .tablet, color: .blue))
+        try await old.save(try Item(personID: old.meID, category: .medication, name: "Old", form: .tablet, color: .blue))
         let staged = try old.stage(backup: backupFile)
         #expect(staged.settings == ["appColor": "mint"])
         _ = try await old.restore(staged)
@@ -89,7 +89,7 @@ struct BackupTests {
 
     @Test func aDamagedOrNewerBackupIsRefusedAndTheDataStays() async throws {
         var newer = Schema.migrator
-        newer.registerMigration("v8") { db in
+        newer.registerMigration("v10") { db in
             try db.execute(sql: "CREATE TABLE extra (id TEXT)")
         }
         // The backup comes from a newer version of the app.

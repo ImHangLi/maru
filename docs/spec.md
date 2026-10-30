@@ -37,17 +37,17 @@
 | 默认无结束日期 | `end_at = nil`；按已确认频率提醒，直到用户修改、关闭或归档 |
 | 结束日期是高级选项 | 有限提醒必须有确实可兑现的停止实现；未通过真机验收时隐藏该能力，不能靠未来某次启动补做停止 |
 | 默认日常入口 | 两个 Tab：今天、我的清单；新会话进入今天；短暂后台返回保留当前页面 |
-| 不建账户 | 无登录、邮箱、Profile、健康目标问卷；StoreKit 购买不意味着创建 App 账户 |
+| 不建账户 | 无登录、邮箱、健康目标问卷、健康档案；StoreKit 购买不意味着创建 App 账户。Family 的成员（D121）只是这台 iPhone 上的本地标签，不是账户，也不是健康档案 |
 | 本地优先 | 清单、日程、记录、照片和规则查询不以网络为前提 |
 | 图像是辅助 | 默认小图标 + 完整文字；用户可选用自己的瓶身照片；抠图不阻塞设置或记录 |
 | 不惩罚中断 | 未记录保持未知；不欠账、不自动补记、不付费补签 |
 | 上线具备可观察性 | 开发期本地性能和错误诊断；公测/上线时具备经明确同意的最小产品分析与反馈 |
-| 商业不干扰核心 | 核心免费、无广告；支持者购买后置于设置，不阻塞本地功能 |
+| 商业不干扰核心 | The core stays free forever, with no ads and no item limit. Maru Pro sells extras only. Maru offers it by itself in two places only: once after the first save with a time, and on a card at the bottom of Today on at most 3 days. Settings always has a "Maru Pro" row. A purchase never blocks a local feature (D107). Creating a second member of the Family is a Pro feature, and a member that exists never locks (D122). Siri and Shortcuts, the PDF reports (medication list and summary), and the counts of the last 30 days on the item detail are Pro features. The 7-day views, every record, the CSV export, the backup, the widgets, and the reminders stay free (D130) |
 | 宣传聚焦 | 提醒、混乱时清楚、回看记录；换瓶/断签恢复是基本质量，不是首屏主要卖点 |
 
 ### 明确不做
 
-AI 聊天、库存/购买推荐、药品外观自动鉴定、个性化剂量与补服建议、健康评分、streak 惩罚、排行榜、动态药柜小游戏、社区、家庭远程监督、血检分析、健康数据云同步、注册账户、完整相互作用检查、以广告 SDK 变现。
+AI 聊天、库存/购买推荐、药品外观自动鉴定、个性化剂量与补服建议、健康评分、streak 惩罚、排行榜、动态药柜小游戏、社区、家庭远程监督（同一台 iPhone 上的多个成员允许：D121；远程查看和同步不做）、血检分析、健康数据云同步、注册账户、完整相互作用检查、以广告 SDK 变现。
 
 V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M 天”这一种固定周期除外，D065）、按指标改变剂量及儿童用量。不要把不支持的用法悄悄变成“每天一次”。
 
@@ -141,13 +141,15 @@ V1 不自动处理每 X 小时、递减剂量、复杂循环（“服 N 天停 M
 
 ### P06 设置与反馈
 
-设置：提醒状态、锁屏显示、语言、显示辅助、导出/恢复、隐私/删除、帮助、反馈、支持者购买。
+设置：Maru Pro（D107：the plan, "Restore Purchases", and "Redeem Code", at the top）、Family（D121）、提醒状态、锁屏显示、语言、显示辅助、导出/恢复、隐私/删除、帮助、反馈。
 
 反馈入口：今天的标准“更多”菜单中有“发送反馈”；设置中也有同一入口；错误状态提供“报告问题”。不使用悬浮客服球、自动弹问卷、摇一摇专用入口或反复询问“喜欢我们吗”。
 
 表单只需正文；邮箱、类型、截图和经过脱敏的诊断资料均可选。发送前预览附件。无邮件账户也能通过安全表单端点发送；失败保留草稿，离线不报成功。健康问题反馈不是临床支持渠道。
 
 ## 4. 回访与低打扰状态
+
+Family amendment (D121): Pet items receive no human amount, time, or note candidates. Name suggestions stay.
 
 - 未记录一天或一周：直接今天；旧状态不变，不先展示欠账清单。
 - 很久后回来：可进入“核对当前安排”；不强制补旧记录，不复活已关闭的提醒。
@@ -219,7 +221,7 @@ SwiftUI 原生 NavigationStack、TabView、List/Form、Sheet、系统字体、�
 | 图片 | ImageIO + Vision + 本地缓存 | 先降采样、异步处理、不阻塞首页 |
 | 小组件 | WidgetKit + 受控 App Group 快照 | 首版只展示/打开记录页，不作为唯一实时状态或关键提醒通道 |
 | Apple Watch | WatchConnectivity，手表端无数据库 | iPhone 数据库是唯一事实来源；手表只显示 iPhone 发来的今日清单，并请求 iPhone 记录；iPhone 提交成功并回复后才显示已记录（D071） |
-| 购买 | StoreKit 2 | 单一支持者包可后置，权益与健康资料分开 |
+| 购买 | StoreKit 2 | Maru Pro (D107): a yearly subscription and a lifetime purchase. One app file imports StoreKit. The entitlement is separate from health data |
 | 性能 | os_signpost、Instruments、XCTest；可选脱敏 MetricKit | 本地先测，生产上传另受隐私策略限制 [S07][S08] |
 | 使用分析 | AnalyticsClient 接口 + PostHog 适配器 | 仅明确同意后启用，显式事件、严格字段表，无自动录屏 [S09][S10] |
 | 反馈 | URLSession → 单一 HTTPS 支持端点 | 有大小限制、限流、幂等与明确状态；不建用户账号 |
@@ -247,7 +249,8 @@ UI 只调用领域操作，不直接散落写库、StoreKit 或 PostHog。数据
 
 | 对象 | 最小字段与责任 |
 |---|---|
-| Item | stableID、类别、显示名称、归档状态、图像引用；不包含瓶数 |
+| Person | Stable ID, kind (`me`, `person`, `pet`), optional name for `me`, pet symbol, optional photo reference, and archive time. A local label, without an account (D121, D124) |
+| Item | stableID、personID（所属成员，必填）、ownerChangedAt、类别、显示名称、归档状态、图像引用；不包含瓶数 |
 | ProductVersion | itemID、核对过的名称/规格/标签、来源、核对时间、生效范围 |
 | Schedule | stableID、itemID、开启状态、可选结束范围；与临床治疗状态无等号 |
 | ScheduleSlot | stable slotID，例如上午那次/晚间那次；改时间不自动产生一个新的“上午剂次” |
@@ -289,7 +292,7 @@ UI 只调用领域操作，不直接散落写库、StoreKit 或 PostHog。数据
 
 迁移、磁盘不足、损坏时，禁止“清空重建以恢复可用”。进入明确的安全错误页，保留文件与恢复路径；不要假装清单为空。
 
-A delete of one item with its records, which the user asks for and confirms, is a different thing: it runs in one transaction, it changes no other item, and it is never a way to recover from an error (D033).
+A delete of one item with its records, which the user asks for and confirms, is a different thing: it runs in one transaction, it changes no other item, and it is never a way to recover from an error (D033). The delete of a member of the Family with its items and records follows the same rule (D125). The migration that introduces the Family adds one table and gives every item to the member "Me" in one transaction, so it never rebuilds the database (D126).
 
 用户主动发起并确认的“从备份恢复”同样不属于上面禁止的“清空重建”：它是整体替换，不合并两份数据，也绝不作为出错后的自动恢复手段（D040）。
 
@@ -350,6 +353,8 @@ A delete of one item with its records, which the user asks for and confirms, is 
 > Amendment (2026-10-11, D039): A follow-up of a dose of the day before has the "Taken" action until 01:00, and the action records that dose. The follow-up carries its plan date and its item, so Maru does not guess the date. After 01:00 the action records nothing, and a tap opens Today. Today still shows only the doses of today (D019).
 
 > Amendment (2026-10-16, D090): The rule "A reminder for two or more items has no action" of D034 and "组通知不提供盲记全组" above change. A reminder that names two or more items has "Take All" and "Skip All" only when "Show Names in Reminders" is on, because only then can the user see what the action records. It records every named dose that is still open. Each dose has the checks of D034 and D089 on its own: the plan of now still has its slot with its schedule version, its date is today in its own zone (for a follow-up also the day before until 01:00), and the stored dose is open. A dose that has a record stays, and a skip is never replaced. A dose that fails a check is not recorded, and the notice says how many were recorded. A first reminder records all of its doses or none: its revision covers the whole group. A reminder for one item has "Taken" and "Skip". Every reminder has "Remind in 10 min", which writes no record (spec 4, 7.2). With the names hidden, a reminder for several items has only "Remind in 10 min". A success is silent. D090 has the rules, the rare cases, and the tests T53 to T55.
+
+> Amendment (2026-10-29, D123): "Take All" and "Skip All" also need that the named doses belong to one member of the Family. A reminder that names doses of two or more members has only "Remind in 10 min", because one tap must not record a dose for another member. A reminder for one member keeps its actions. A reminder whose doses belong to one member has "Taken" and "Skip" when it has one dose, and the group actions when it has several. A quick action with an older owner revision records nothing, even if the system delivers it after the change (T60, T61, T70).
 
 > Amendment (2026-10-14, D081): A tap on a reminder never shows a confirmation sheet. The tap always opens Today and records nothing. If some doses of the reminder are of today, Today scrolls to their rows. A dose of an earlier day is recorded from History. The "Taken" action is unchanged.
 
@@ -414,7 +419,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 
 ## 10. 隐私与安全
 
-健康资料默认只在设备。数据库、WAL/SHM、照片、导出临时文件和小组件快照都列入保护检查。例外（D071）：安装 Apple Watch App 后，今日清单（名称、用量、时间、状态）经 WatchConnectivity 发到用户自己已配对的手表，不经过任何服务器；手表不建数据库；iPhone 重启后尚未解锁时手表无法记录，并明确说明。App 进入后台时应用切换器快照不暴露清单。
+健康资料默认只在设备。数据库、WAL/SHM、照片、导出临时文件和小组件快照都列入保护检查。例外（D071）：安装 Apple Watch App 后，今日清单（名称、用量、时间、状态）经 WatchConnectivity 发到用户自己已配对的手表，不经过任何服务器；手表不建数据库；Family 有两个及以上成员时，清单里每一行带成员名（D123）；iPhone 重启后尚未解锁时手表无法记录，并明确说明。App 进入后台时应用切换器快照不暴露清单。
 
 数据库目录（数据库、WAL/SHM、恢复标记文件）使用“首次解锁前完全保护”（D066，取代首版的严格保护）：静态加密；重启后首次解锁前无法读写，之后锁屏时可读写，使 Apple Watch 记录和手表上通知的“已服”在 iPhone 锁屏时可用。照片、导出临时文件和草稿仍用完全保护。无法读写时要求解锁，不假装快捷动作已完成。Widget 默认只展示非敏感入口，用户主动允许后才显示更多内容；快照可能旧，显示相应状态且不作为实时服用判据。
 
@@ -469,13 +474,15 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 | 事件 | 允许的信息 | 禁止的信息 |
 |---|---|---|
 | setup_step | 步骤枚举、新建/编辑/替换枚举、是否有提醒时间、是否有用量/备注/照片、名称来源（手输/建议/扫描）、是否用过智能补全、是否首项、是否有改动、耗时桶 | 搜索词、OCR 文本、药名、剂量、计划类型、提醒时间个数、具体提醒钟点、具体星期 |
-| daily_usage_summary | 同意后的相对日序号、是否用过记录/历史/通知入口/小组件入口/提醒动作/跳过/撤销/修改记录/我的项目/项目详情/设置等布尔标志、打开次数桶、活动项目数桶、是否有小组件 | 每次“已服”时间序列、已服/跳过明细、一天几剂、稳定药品 ID |
+| daily_usage_summary | 同意后的相对日序号、是否用过记录/历史/通知入口/小组件入口/提醒动作/跳过/撤销/修改记录/我的项目/项目详情/设置等布尔标志、打开次数桶、活动项目数桶、是否有小组件、Family 成员数桶（`1`、`2`、`3_plus`）（D121）。D127 adds the flags `used_live_activity`, `used_watch`, and `used_siri`, the plan `pro_plan` (`none`, `yearly`, or `lifetime`), and the flags `has_live_activity`, `custom_icon`, and `custom_sound` | 每次“已服”时间序列、已服/跳过明细、一天几剂、稳定药品 ID。No purchase date, end of access, transaction ID, price, icon name, or sound name (D127) |
 | core_error | 保存/读取/调度/扫描等操作枚举、预定义错误码，以及（读取失败时）被违反的存储规则的固定词（D088） | 原始 exception message、SQL 内容、文件路径或 userInfo |
 | notification_permission | 新的通知权限枚举、之前的权限枚举（只在变化时发送） | 通知内容、提醒钟点 |
-| setting_changed | “再次提醒”次数与间隔枚举（设置页“所有项目”，D085）、是否开启全部项目的闹钟、是否在提醒中显示名称、App 颜色枚举 | 其他设置值；分析开关关闭后不再发送 |
+| setting_changed | “再次提醒”次数与间隔枚举（设置页“所有项目”，D085）、是否开启全部项目的闹钟、是否在提醒中显示名称、App 颜色枚举。D127 adds `header_wash` (a flag) and `appearance` (`system`, `light`, or `dark`) | 其他设置值；分析开关关闭后不再发送 |
 | data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
-| purchase_result | 商品枚举、结果枚举 | Apple 账号、原始交易收据、金融身份 |
+| onboarding_result | `result`: `add_item`, `later`, `skipped`, or `yielded` (a reminder tap or a widget link opened Today) (D127). Only an onboarding that showed sends it | 页面停留时间、页序列 |
+| paywall_shown | `source`: `first_value`, `day7_card`, `settings`, `app_color`, `live_activity`, `watch`, `icons`, `sounds`, `family`, `siri`, `report`, or `insights` (D107, D112, D122, D127, D130) | 项目名称、剂量、时间、ItemID |
+| purchase_result | `result`: `purchased`, `cancelled`, `pending`, `failed`, `restored`, or `dismissed` (the paywall closed with no active Pro, D127). `plan`: `yearly` or `lifetime` (D107) | Apple 账号、原始交易收据、价格、金融身份 |
 
 记录动作精确时间只在本地健康库。每日使用摘要在下一次可运行时合并发送；不为上传摘要唤醒用户，不依赖后台保证送达。没有摘要不代表没有服用。分析同意日期不同于真实首次安装日期，报表不得混用。
 
@@ -486,7 +493,7 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 - 设置：只统计同意之后实际发生的添加流程、耗时桶及失败分类。默认在首项保存后询问分析同意，因此更早的首次设置流失不可观察；不能补传或把后续添加称作真实首项漏斗。需要首项可用性证据时，使用预先自愿同意的公测或本地观察，与商店用户分开报告。
 - 使用：按同意/有效观察的 cohort 报告日汇总中的记录、历史、通知入口等使用；不只看打开次数，不宣称真实服药依从率。
 - 质量：保存/调度错误、启动和交互性能，按版本/系统分组。
-- 商业：商店真实净收入与验证购买，退款、成本；支持者点击不当付款。
+- 商业：商店真实净收入与验证购买，退款、成本；a paywall view is not a payment (D107)。
 
 公测样本、同意采集样本和所有商店安装量分开报告。D1/D7/D30 必须写清 cohort 起点、完整窗口、是否只有提醒而无动作等限制。没有足够样本先看人数，不发虚假的显著性结论。原补货/续瓶任务指标全部删除。
 
@@ -540,7 +547,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 
 ### C. 公开 App Store 版本
 
-审核说明、隐私政策、权限文案、真实健康数据处理说明、支持入口、实际语言范围、数据删除/恢复测试、StoreKit 购买/恢复（若销售）、原创素材和已检查的品牌。
+审核说明、隐私政策、权限文案、真实健康数据处理说明、支持入口、实际语言范围、数据删除/恢复测试、StoreKit purchase, restore, and offer codes of Maru Pro (D107)、原创素材和已检查的品牌。
 
 商店截图、落地页和推广文案可下一阶段讨论；但不能把隐私与数据架构也等到宣传时才补。Apple 对医疗信息、隐私和内容权利有明确要求；质量差或 AI 编写本身不能简单等同一个统一的自动拒绝规则。[S14]
 
@@ -601,7 +608,7 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T45 | 非法 telemetry 字段 | Schema/适配器拒绝，不静默发送 |
 | T46 | 反馈离线/无邮件账户 | 草稿保留，在线表单可发，不假成功 |
 | T47 | 反馈重试 | 幂等，正文不入 analytics/错误日志 |
-| T48 | 购买失败/取消/退款 | 免费记录不受影响，健康资料不动 |
+| T48 | 购买失败/取消/挂起/退款 | Every free feature and record stays the same, and health data is untouched. A cancel shows no second offer (D107) |
 | T49 | 语言/日期/数字 | 实际支持范围准确，通知和错误同样本地化 |
 | T50 | 宣传与实际构建 | 不声称库存、无限可靠、临床效果或没有实际实现的能力 |
 | T51 | 隔天一次 | 起始日及其后每隔一个日历日应服；夏令时、时区变化、漏服或跳过不改变节奏；非应服日今天和历史都不出现该项目；通知不在非应服日写出该项目；详情写明提醒只排到接下来 7 个应服日 |
@@ -609,6 +616,21 @@ Stack 保留为开发代号/概念。公开商店已有 Supplement Tracker: Stac
 | T53 | 通知“全部已服用”（D090） | 只在点名两个及以上项目且显示名称的提醒上出现；记录所有被点名且仍未记录的剂量，每个剂量各自按 D034/D089 校验（方案版本、今天、仍未记录）；已有记录的保持不变，跳过不被覆盖；校验失败的不记录，通知写明记录了几个；隐藏名称时没有组动作；成功时静默 |
 | T54 | 通知“跳过”（D090） | 单项和组提醒都有；组提醒的跳过与“全部已服用”同样只在显示名称时出现；只记录未记录的剂量，不覆盖已服用或已跳过；超时或划掉通知不记录任何内容 |
 | T55 | “10 分钟后提醒”（D090） | 每组一个；该组的“再次提醒”到它的时间之前不发，之后的照常；记录或跳过该组最后一个未记录剂量后不再提醒；占用 64 条上限，先于后续提示；次日 01:00 之后不设置，并告知；不写任何记录 |
+| T56 | Family upgrade from `v7` (D121, D126) | Every item belongs to "Me". Records and schedules stay. The reminder queue runs. A failed migration leaves `v7` (T37). |
+| T57 | One member | The app has no member filter or "For" row. Reminder, widget, and Watch text stays the same. |
+| T58 | Free user adds a second member (D122) | The paywall uses source `family`. Cancel adds nothing. Existing free features stay (T48). |
+| T59 | Pro ends (D122) | Existing members, items, reminders, and records work. Only a new member requires Pro. |
+| T60 | Two members share a time (D123) | The notification names each member. It has no group record action. Snooze works. Hidden names include no member name. |
+| T61 | One member in a request (D123) | One dose has "Taken" and "Skip". The action records only that member. |
+| T62 | Names hidden (D029, D123) | No member name appears in notifications, alarms, widgets, Live Activity, or Siri. The paired Watch keeps the D071 exception. |
+| T63 | Archive, restore, and delete a member (D125) | Archive stops reminders and keeps history. Restore restores only jointly archived items. Confirmed delete removes only that member. One active member stays. |
+| T64 | Change an item owner (D121) | Records and history move with the item. No dose gets two records. |
+| T65 | History and summary for one member (D121) | The graph, strip, counts, and PDF include only that member and show the member name. |
+| T66 | Pet plan every 30 days (D121) | The user chooses the day count and first day. The text says "Every 30 days", never "Monthly". D036 applies. |
+| T67 | Current and old backups (D126) | Members restore. Old backups assign all items to "Me". A newer backup is refused (T38). |
+| T68 | Analytics packets (D121) | No member name, ID, or kind leaves the device. Family adds only the `family_size` bucket and paywall source `family` (T42, T45). |
+| T69 | Restore a backup with members (`v8`) | Members and owners restore. Exactly one `me` exists. No UNIQUE error occurs. |
+| T70 | Old quick actions after an owner change (D123) | Notification, Watch, widget, Live Activity, and Siri actions write nothing. This includes yesterday's follow-up after midnight. A single-member follow-up keeps "Taken". |
 
 ## 16. 交付与验收证据
 

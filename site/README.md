@@ -107,7 +107,6 @@ The list scrolls with the wheel, a touch, the keys, or a mouse drag, and the scr
 
 - A sheet has two captures: the form at its top, and the form scrolled down until its last card is on the screen. The command joins them. `<name>-<lang>.webp` is the full form, and `<name>-bar-<lang>.webp` is the bar of the sheet with a soft lower edge. A debug build shows a Debug section at the end of Settings, and the command leaves it out.
 - A capture of My Items or of a sheet must not show the home indicator. Capture again if it does.
-- The Settings capture must show the three tips of "Support Maru" with their names and prices. A launch with `simctl` does not load `Config/Maru.storekit`, and Settings then says that tips are not available. Run the app with the StoreKit configuration active: from Xcode, or under a test that makes an `SKTestSession` with the file. The prices are those of the file, in US dollars in every language.
 - A `button` lies over each control of a capture that moves between screens: the gear, the calendar, the plus, the two tabs, the back button, and "Done" or "Cancel". Each button has a label in the language of the page (`phone` in `src/strings/<lang>.json`), and it is 44 pt of the app or more in each direction. Escape closes a sheet or goes back. No other control of a capture does anything.
 - For assistive technology, the phone is one group with a short description, and each picture is hidden.
 - With reduced motion, a screen fades in and out and does not move.

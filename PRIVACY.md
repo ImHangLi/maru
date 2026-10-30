@@ -1,6 +1,6 @@
 # Privacy
 
-Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. This file describes the app in this repository as it is today.
+Maru keeps your health data on your iPhone or iPad. Each device has its own data, and Maru does not sync between devices. With Maru Pro, the list of today also goes to your own Apple Watch (see "Apple Watch"). This file describes the app in this repository as it is today.
 
 ## What Maru stores
 
@@ -8,12 +8,13 @@ Maru keeps your health data on your iPhone or iPad. Each device has its own data
 - Your settings.
 - A draft of an item that you add or edit. Maru deletes the draft when you save or cancel.
 - The photo of an item, if you add one. See "Item photos".
+- The members of your Family, if you add people or pets. See "Family".
 
 Maru asks iOS to encrypt the database file. After a restart of your device, nothing can read the file until you unlock the device one time. After that, Maru can read and write the file while the device is locked, so the "Taken" action of a reminder works while the device is locked. When Maru cannot open your records, it records nothing and asks you to unlock.
 
 ## What Maru does not do
 
-- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and a request to the App Store for product information when you open Settings. That request carries only product identifiers and none of your item data. Apple's App Store privacy policy applies to it.
+- It has no server and no account. Its only network requests are the usage statistics below, when they are on, and the App Store requests of Maru Pro (see "Maru Pro"). Those requests carry none of your item data.
 - It contains no advertising or crash-reporting code.
 - It does not read your contacts, your location, or the advertising identifier.
 - It does not read from or write to Apple Health.
@@ -35,21 +36,56 @@ Some versions of Maru can send usage statistics to PostHog. A version that canno
     - `first_item`: yes if it is the first item on the device.
     - `duration`: the time on the screen, as `under_30s`, `30s_to_2m`, `2m_to_5m`, or `over_5m`.
     - A close with no save has `had_changes` (yes or no) and `duration`.
-  - `daily_usage_summary`: one summary for each day that you used the app. Maru sends it the next time that you open the app on a later day, never from the background. It has `day_index`, the day number since the statistics started, and yes-or-no flags for that day: `used_record` (recorded a dose), `used_history` (opened History), `used_notification` (opened the app from a reminder or used a reminder action), `used_widget` (used a widget), `used_reminder_action` (recorded from the "Taken" action of a reminder), `used_skip`, `used_undo`, `used_correction` (changed an earlier record), `used_my_items`, `used_item_detail`, and `used_settings`. It also has `app_opens`, how often the app came to the front that day, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, `active_items`, the number of your active items, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, and `has_widget`, yes if a Maru widget is on your Home Screen. It has no time and no count of doses.
+  - `daily_usage_summary`: one summary for each day that you used the app. Maru sends it the next time that you open the app on a later day, never from the background. It has `day_index`, the day number since the statistics started, and yes-or-no flags for that day: `used_record` (recorded a dose), `used_history` (opened History), `used_notification` (opened the app from a reminder or used a reminder action), `used_widget` (used a widget), `used_reminder_action` (recorded from the "Taken" action of a reminder), `used_skip`, `used_undo`, `used_correction` (changed an earlier record), `used_my_items`, `used_item_detail`, `used_settings`, `used_live_activity` (used the Maru Pro Lock Screen activity), `used_watch` (recorded from the Apple Watch), and `used_siri` (used Siri or Shortcuts). It also has `app_opens`, how often the app came to the front that day, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, `active_items`, the number of your active items, as `0`, `1`, `2_3`, `4_6`, or `7_plus`, `has_widget`, yes if a Maru widget is on your Home Screen, and `family_size`, the number of active members, as `1`, `2`, or `3_plus`. It also has `pro_plan`, your Maru Pro plan, as `none`, `yearly`, or `lifetime`, and three yes-or-no flags: `has_live_activity` ("Next Dose on Lock Screen" is on), `custom_icon` (an app icon other than the default), and `custom_sound` (a reminder sound other than the default). It has no time and no count of doses. It has no purchase date, no price, no member name, and not the icon or the sound that you chose.
   - `core_error`: `operation`, the operation that failed: `save`, `read`, `schedule` (setting a reminder), or `scan` (the label scanner). `code`, one of ten fixed codes: `locked`, `corrupt`, `newer_schema`, `migration_failed`, `failed`, `too_many`, `not_set`, `not_confirmed`, `invalid_data` (a stored record did not load, so the reminder run stopped), or `row_skipped` (a stored record did not load, and Maru skipped it). With the last two, `rule` names the rule that the record broke, as one fixed word, for example `version_order`. It never holds a name, a dose, a time, or an ID.
   - `notification_permission`: `state`, the notification permission: `not_asked`, `allowed`, `denied`, or `quiet`. `previous`, the permission that Maru sent before, or `unknown`. Maru sends it once when the statistics start, with `previous` = `unknown`, and after that only when the permission changes.
-  - `setting_changed`: a new value of one setting: `show_names` (yes or no), `app_color` (one of the eight color names), `all_alarm` (yes or no, the "Alarm" switch for all items), `all_remind_again` (`off`, `1`, `2`, `3`, `5`, or `until_recorded`), or `all_remind_again_minutes` (`5`, `10`, `15`, `30`, or `60`).
+  - `setting_changed`: a new value of one setting: `show_names` (yes or no), `app_color` (one of the eight color names), `all_alarm` (yes or no, the "Alarm" switch for all items), `all_remind_again` (`off`, `1`, `2`, `3`, `5`, or `until_recorded`), `all_remind_again_minutes` (`5`, `10`, `15`, `30`, or `60`), `header_wash` (yes or no, "Color Header"), or `appearance` (`system`, `light`, or `dark`).
   - `data_action`: `action`, one of `export`, `backup`, or `restore`, and `result`, one of `done`, `failed`, `cancelled`, `invalid_file`, `newer_file`, or `not_confirmed`. Not the file or its content.
   - `feedback_entry`: `entry` = `settings`, when you tap "Send Feedback".
+  - `onboarding_result`: `result`, how the first-run pages ended: `add_item`, `later`, `skipped`, or `yielded` (a reminder or a widget opened the app). Maru sends it once, only when the pages showed.
+  - `paywall_shown`: `source`, the place that showed the Maru Pro screen: `first_value` (after your first item with a time), `day7_card` (the card on Today), `settings`, `app_color` (an app color), `live_activity` ("Next Dose on Lock Screen"), `watch` ("Open on iPhone" on the Watch), `icons` (an app icon), `sounds` (a reminder sound), `family` (a new member), `siri` (Siri or Shortcuts), `report` (a PDF report), or `insights` (the counts of the last 30 days).
+  - `purchase_result`: `result`, one of `purchased`, `cancelled`, `pending`, `failed`, `restored`, or `dismissed` (you closed the Maru Pro screen with no purchase), and `plan`, `yearly` or `lifetime`. Not the price, the Apple Account, or the receipt. Apple's privacy label lists this as purchase history.
 - What Maru never sends: item names, doses, amounts, intake times, reminder times, item IDs, notes, photos, or the text of a message. It sends no event at the moment of a record, no time of a single dose, and no count of doses.
 - Each event also has these fields: `app_version`, `ios_major` (the major version of iOS), `distinct_id` (a random install ID), `app_language` (`en`, `zh-Hans`, `ja`, `ko`, `es`, `de`, or `other`), `device` (`iphone`, `ipad`, or `other`), `region` (the region setting of your device as a two-letter code such as AU, when it has one), and `$process_person_profile` and `$geoip_disable`, which ask PostHog for no profile and no location. Each event also has the time when the app made it, to the millisecond. The region is a setting, not your place. Maru does not use your location. Apple's privacy label lists the install ID as a device ID. The ID is not linked to your name, your email, or an item. It is a pseudonym, not proof of anonymity. The server sees your IP address as any server does. Maru asks PostHog not to build a person profile and not to look up a location. PostHog keeps the data on its servers in the United States.
 - No session recording, no screen capture, and no automatic capture of taps or screens.
 - If you turn the switch off, Maru stops sending, deletes the events that wait, deletes the install ID, and deletes the local usage data, also a daily summary that waits. A new ID is made if you turn it on again. Maru cannot delete data that PostHog already holds. The maintainer cannot find your data without the install ID, and Maru does not show the ID today, so a request to delete earlier data is not possible yet.
 - Events wait in memory, at most 100, for at most 3 days. If the network fails, Maru drops them after that limit and tries again no more than once every 5 minutes, and only when you use the app. Your records do not depend on it.
 
+## Maru Pro
+
+Maru Pro is an optional purchase through the App Store: a yearly subscription or a lifetime purchase. Everything else in Maru stays free.
+
+- Apple handles the payment, the Apple Account, and the receipt. Maru does not see your payment details. Apple's privacy policy applies to them.
+- Maru asks the App Store, through StoreKit on your device, which plan is active, at each launch and when a purchase changes. It loads the prices when the Maru Pro screen shows. These requests carry the product identifiers of Maru Pro and none of your item data.
+- Maru keeps the name of the active plan in its settings on your device, so Pro features do not flicker at launch.
+- A purchase, a restore, and an offer code never read or change your items or records. A restore of purchases does not restore your health data. For that, use the Maru backup file.
+- The first offer of Maru Pro can show a picture of a Lock Screen with your next dose. Maru draws it on your device. Nothing of it leaves the device.
+
+## Apple Watch
+
+The Apple Watch app is part of Maru Pro. It shows the doses of today, and it records a dose through your iPhone.
+
+- With Maru Pro, your iPhone sends the list of today to your own paired Apple Watch: the names, the amounts, the times, and the record states. Apple's WatchConnectivity sends the list directly between your two devices. Maru has no server in between.
+- Without Maru Pro, your iPhone sends only whether Maru Pro is active, the app color, and the end of the day. It sends none of your item data.
+- Nothing goes to the Watch until the Maru Watch app is installed.
+- The Watch app has no database. Each record that you make on the Watch is saved on your iPhone. The Watch app sends no usage statistics and writes no log. With usage statistics on, the iPhone notes only that the Watch asked to record on that day (`used_watch`).
+
+## Family
+
+You can add people and pets to Maru, for example a parent or a cat. Each member has its own items and records.
+
+- A member has a name, a color, an optional animal, and an optional photo. Maru stores them in the same database as your items, on your device.
+- Member names and photos never leave your device through Maru. Maru sends no member name, no member ID, no photo, and no count of pets in the usage statistics. The statistics have only `family_size` (see "Usage statistics").
+- A member is not an account. Maru does not share a member's data with another device, and it does not sync it.
+- With "Show Names in Reminders" on and two or more members, reminders, alarms, widgets, the Lock Screen activity, and Siri name the member, for example "Mom: Levothyroxine". With the setting off, they name no member.
+- The Apple Watch list always has the names (see "Apple Watch"). With two or more members, each name also has its member.
+- The record export has a "Person" column with the member of each dose. The medication list and the summary can be for one member, and then the title has the member name.
+- The backup file holds the member names, as it holds the item names. It does not hold the member photos.
+- A member photo is stored as an item photo (see "Item photos"). Maru deletes the file when you remove the photo or delete the member.
+
 ## Camera
 
-Maru uses the camera only when you scan a label or take a photo of an item. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo, and it sends no image and no text. With usage statistics on, Maru sends only the steps of the scan (see `setup_step`). iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".
+Maru uses the camera only when you scan a label or take a photo of an item or a member. Your device reads the text of the label, and Maru keeps only the name that you choose. A label scan saves no photo, and it sends no image and no text. With usage statistics on, Maru sends only the steps of the scan (see `setup_step`). iOS asks for the camera the first time that you tap "Scan Label" or "Take Photo".
 
 ## Item photos
 
@@ -74,14 +110,16 @@ Reminders are local notifications. iOS schedules and shows them on your device, 
 
 An alarm (iOS 26 and later, when you turn on "Alarm" for an item) also runs on your device, through Apple's AlarmKit, and does not go through a server. It shows the item names on the Lock Screen, unless you turn off "Show Names in Reminders" in Settings.
 
+Maru draws the Lock Screen activity of Maru Pro, "Next Dose on Lock Screen", only on your device. It hides the item names when "Show Names in Reminders" is off.
+
 ## Export and backup files
 
-Settings has "Export Records", "Share Medication List", "Share Summary…", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first four.
+Settings has "Export Records", "Share Medication List", "Share Summary…", "Back Up", and "Restore from Backup…". Maru makes a file only when you tap one of the first four. The medication list and the summary need Maru Pro.
 
-- The record export is a CSV file. It has your item names, your amounts, and your records.
-- The medication list is a PDF file. It has the name, form, amount, times, and note of each active item, as you typed them.
-- The summary is a PDF file. It has the name of each item that you choose, and how many planned doses you took, skipped, and did not record in the period that you choose. Maru counts it on your device.
-- The backup is a full copy of the database and of two settings: the app color and the names in reminders. The database holds the "Remind Again" and alarm choices of each item. The backup does not include the item photos.
+- The record export is a CSV file. It has your item names, your amounts, your records, and the member of each dose.
+- The medication list is a PDF file. It has the name, form, amount, times, and note of each active item, as you typed them. A list for one member has only that member's items, and its title has the member name.
+- The summary is a PDF file. It has the name of each item that you choose, and how many planned doses you took, skipped, and did not record in the period that you choose. Maru counts it on your device. A summary for one member has only that member's items, and its title has the member name.
+- The backup is a full copy of the database and of two settings: the app color and the names in reminders. The database holds the "Remind Again" and alarm choices of each item, and the members of your Family. The backup does not include the item photos or the member photos.
 - The files are not encrypted. Anyone with a file can read it.
 - Maru sends no file by itself. The share sheet of iOS opens, and you choose where the file goes. The app or the service that you choose then handles the file.
 - Maru keeps the file in a protected temporary folder and removes it when the share sheet closes.

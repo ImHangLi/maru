@@ -14,7 +14,10 @@ extension AppModel {
     /// When some doses of the reminder are of today, Today scrolls to their rows.
     func openReminder(_ reminder: DeliveredReminder) {
         analytics.markUsed(.notification)
+        onboardingYieldsToAction()
         selectedTab = .today
+        // A reminder can name doses of several members, so Today shows everyone (D081, D128).
+        today.member = nil
         today.lockedTap = nil
         Task { await resolve(reminder) }
     }
@@ -26,6 +29,8 @@ extension AppModel {
     }
 
     func focus(_ keys: Set<OccurrenceKey>) {
+        // A tapped reminder or widget can name doses of several members, so Today shows everyone (D081, D121).
+        today.member = nil
         today.focus = TodayFocus(keys: keys)
     }
 

@@ -35,9 +35,8 @@ struct SmartCompletionTests {
         #expect(magnesium.open(amount: "1 Capsule", times: [evening], hasNote: true)
             == SmartCompletion(form: .capsule, amounts: ["2 capsules"]))
         #expect(magnesium.open(amount: "200 mg", times: [], hasNote: false).amounts.isEmpty)
-        // A time reuses a supplement time that the user confirmed in that part of the day, else the example.
+        // A time reuses a supplement time that the user confirmed in that part of the day.
         #expect(DayPart.evening.time(confirmed: [try WallClockTime(hour: 8, minute: 0), evening]) == evening)
-        #expect(DayPart.evening.time(confirmed: []) == (try WallClockTime(hour: 20, minute: 0)))
 
         // The form changes by itself only before the user chooses one. The label form comes first.
         #expect(SmartCompletion.formStep(usual: .softgel, scanned: nil, current: .capsule, mayChange: true) == .set(.softgel))

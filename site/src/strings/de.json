@@ -84,12 +84,16 @@
   },
   "faq": {
     "title": "Maru: Fragen und Antworten",
-    "desc": "Kurze Antworten zu Maru: Preis, deine Daten, Erinnerungen und der Umzug auf ein neues iPhone oder iPad.",
+    "desc": "Kurze Antworten zu Maru: Preis, Maru Pro, deine Daten, Erinnerungen und der Umzug auf ein neues iPhone oder iPad.",
     "h1": "Fragen und Antworten",
     "items": [
       [
         "Ist Maru kostenlos?",
-        "Maru ist ein kostenloser Download. Erinnerungen und Aufzeichnungen sind kostenlos, ohne Limit für Einträge. Maru hat keine Werbung."
+        "Maru ist ein kostenloser Download ohne Werbung. Erinnerungen, Wecker, „Erneut erinnern“, Aufzeichnungen, Verlauf, Rückgängig, Widgets, Export und Backup sind kostenlos, ohne Limit für Einträge. Maru Pro ist optional."
+      ],
+      [
+        "Was bietet Maru Pro?",
+        "„Nächste Dosis auf dem Sperrbildschirm“, die App für die Apple Watch, Siri und Kurzbefehle, PDF-Berichte für die Arztpraxis, die 30-Tage-Übersicht, Familie, App-Symbole, Erinnerungstöne und App-Farben. In den USA kostet das Jahresabo 9,99 USD mit 7 Tagen gratis. Der Einmalkauf kostet in den ersten 30 Tagen nach dem Start 19,99 USD, danach 29,99 USD. In anderen Ländern kann der Preis anders sein. Familienfreigabe ist aktiv, und es gibt kein Monatsabo."
       ],
       [
         "Brauche ich ein Konto?",
@@ -137,11 +141,15 @@
       ],
       [
         "Kann ich meine Aufzeichnungen mitnehmen?",
-        "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können. „Medikamentenliste teilen“ und „Zusammenfassung teilen“ erstellen ein PDF. Du entscheidest, wohin jede Datei geht."
+        "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können. Mit Maru Pro erstellen „Medikamentenliste teilen“ und „Zusammenfassung teilen“ ein PDF. Du entscheidest, wohin jede Datei geht."
       ],
       [
         "Gibt es eine App für die Apple Watch?",
-        "Noch nicht. Version 1.1 ist für iPhone und iPad. Eine App für die Apple Watch kommt später."
+        "Ja, mit Maru Pro. Die App für die Apple Watch zeigt deine Dosen, und du erfasst sie am Handgelenk."
+      ],
+      [
+        "Kann ich Maru für meine Eltern oder mein Tier nutzen?",
+        "Ja. Öffne mit Maru Pro in den Einstellungen „Familie“ und tippe auf „Person oder Tier hinzufügen“. Jedes Mitglied hat eine Farbe, und „Heute“, „Verlauf“ und das PDF zeigen auf Wunsch nur ein Mitglied. Alles bleibt auf deinem iPhone. Maru hat keine geteilten Profile und keine Synchronisierung zwischen Geräten."
       ],
       [
         "Welche Sprachen spricht Maru?",
@@ -175,6 +183,9 @@
       "What Maru stores": "Was Maru speichert",
       "What Maru does not do": "Was Maru nicht tut",
       "Usage statistics": "Nutzungsstatistik",
+      "Maru Pro": "Maru Pro",
+      "Apple Watch": "Apple Watch",
+      "Family": "Familie",
       "Camera": "Kamera",
       "Item photos": "Fotos der Einträge",
       "Feedback": "Feedback",

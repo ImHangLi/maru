@@ -185,7 +185,7 @@ Agent decisions from issue #11.
 - No "show item names on the lock screen" option. Spec 8.2 makes neutral text the baseline and does not require the option. Names would need new content for each series and each follow-up. The sheet states in one line that reminders show only a time.
 - No language row: the first release has only English (D017). No help or feedback row: feedback sending is milestone B.
 
-## D024 · 2026-10-11 · No header wash, app-specific empty text (empty text and tab bar point replaced by D026)
+## D024 · 2026-10-11 · No header wash, app-specific empty text (empty text and tab bar point replaced by D026) (wash returns as an option by D100)
 
 Owner decisions after the first install on a device.
 
@@ -193,7 +193,7 @@ Owner decisions after the first install on a device.
 - The empty Today page does not read like a to-do list. With no items, it says "Add a supplement or medication with the + button." With items but nothing due today, it says "No doses to take today."
 - The "tab bar icons only" setting must work. A label style has no effect in the tab bar, so the icon-only item uses an image with an accessibility label.
 
-## D025 · 2026-10-11 · App color setting
+## D025 · 2026-10-11 · App color setting (colors other than pink need Pro by D114)
 
 Owner decision. The owner asked for a setting that changes the accent color of the whole app. This replaces "no accent setting" in D021. The item colors of D021 stay.
 
@@ -624,7 +624,7 @@ Not done, and why:
 
 Tests (D016): four new tests. A backup then a restore on another directory gives the same data and replaces what was there. A newer, damaged, or inconsistent backup is refused and the data stays. A record and an archive with the generation from before a restore are refused and change nothing. A name with a comma, a quotation mark, and a line break stays one CSV field, and a text that starts like a formula gets an apostrophe.
 
-## D041 · 2026-10-11 · History graph (scroll of the timeline to a day replaced by D054, start of the graph replaced by D092)
+## D041 · 2026-10-11 · History graph (scroll of the timeline to a day replaced by D054, start of the graph replaced by D092, graph scrolls with the list by D109)
 
 Owner decision, with agent detail. It brings the passive history heatmap of D006 forward from milestone B. It changes spec 3 P05.
 
@@ -716,7 +716,7 @@ Tests (D016): one new test in `MaruCore` for the choice of words. The old part o
 
 Not verified: no app build on a Mac of the maintainer. CI builds the app. Nobody saw the card. The default choice needs a check on a real iPhone with real bottles.
 
-## D043 · 2026-10-12 · Smart completion for supplements
+## D043 · 2026-10-12 · Smart completion for supplements (pet candidates changed by D121)
 
 Owner decision, with agent detail. It changes spec 2.1 and 3 P03 in part.
 
@@ -865,7 +865,7 @@ Maintainer decisions for the App Store release. The plan is in `docs/release-pla
 - Analytics: on by default, with a one-time notice and a switch in Settings. In the EU, the EEA, the UK, and Switzerland, the user opts in first (GDPR and the ePrivacy rules). This changes spec §11.3. All other rules of spec §11 stay: no names, doses, intake times, or item IDs leave the device.
 - Marketing: a landing page on an own domain. The maintainer buys the domain.
 
-## D053 · 2026-10-12 · Optional supporter tips with StoreKit 2
+## D053 · 2026-10-12 · Optional supporter tips with StoreKit 2 (replaced by D099)
 
 The maintainer asked for an optional supporter purchase. Spec 14 C, spec 9, T35, and T48 apply. The agent made these decisions.
 
@@ -983,7 +983,7 @@ Maintainer decision on 2026-10-12, after use on the device.
 
 Not verified: no build of the app on this Mac and no look on a display. CI builds the app. The strip in the detail at the largest text sizes and with VoiceOver need a check on a real iPhone.
 
-## D058 · 2026-10-12 · Consistency pass across the app
+## D058 · 2026-10-12 · Consistency pass across the app (the empty-view title rule changed by D101)
 
 The maintainer asked to unify the app: the same words, colors, states, and motion for the same thing on every page. The agent made the choices below inside that request. The maintainer can overrule any of them.
 
@@ -1155,7 +1155,7 @@ Tests (D016): four new tests. The rhythm and the pause across a clock change, th
 
 Not verified: no build of the app on this Mac. CI builds the app. Nobody saw the repeat page, the menus, the date picker, the plan line, or the item detail on a display, in any language. The translation is not reviewed by a native speaker. Nobody saw the reminders of a plan with a pause on a real iPhone.
 
-## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074)
+## D071 · 2026-10-13 · A first Apple Watch app: the list of today, and records through the iPhone (not in 1.0: D074) (a Pro feature: D111) (the owner in the row name: D123)
 
 Maintainer decision on the direction, on 2026-10-13, with agent detail. It follows spec 6, 7.2, 9, and 10. It moves "Apple Watch" from the later list of `docs/roadmap.md` into work. It must not delay the first iPhone release, and the Watch app may ship in 1.1.
 
@@ -1224,7 +1224,7 @@ The Watch keeps one plain sentence for the case that remains: "Not recorded. Unl
 `PRIVACY.md` states the new level, and it has one sentence that the list of today goes to the user's own Apple Watch. The maintainer approved both texts. `site/build.py` builds the privacy page of each language from `PRIVACY.md`, so the pages have the same text. The site publishes it when this change merges.
 
 Not verified: no device ran this. A real iPhone must confirm that the level of the existing files changes at the first launch, that a record from the Watch works with the iPhone locked, that it fails with the plain sentence after a restart, and what the widgets show on a locked display.
-## D068 · 2026-10-13 · Copy review: text states the record, not the intake
+## D068 · 2026-10-13 · Copy review: text states the record, not the intake (the empty Today title replaced by D101)
 
 Agent decision, after a copy review of all user-facing text by a different model. It changes text in the six languages, and it replaces parts of D048. The number leaves D065 to D067 for the branches that are open at the same time.
 
@@ -1308,7 +1308,7 @@ Maintainer decision on the concept, with agent detail. The maintainer approved a
 - The PNGs are in `App/Debug/SamplePhotos/`. The Release configuration of the app target sets `EXCLUDED_SOURCE_FILE_NAMES` to `sample-photo-*.png`, so a release build does not copy them. A CI step reads the Release build settings and fails when the setting is missing.
 - Image sources: Unsplash photos by Supliful under the Unsplash License, with invented labels. The brand names had no hit in the US trademark register. A TMview check is still open before a public use of the images.
 
-## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test
+## D074 · 2026-10-13 · Watch app waits for 1.1 until a real-device test (replaced by D111)
 
 Maintainer decision, with agent detail. The goal is a fast first release. It replaces the "embedded in the app" part of D071 for version 1.0.
 
@@ -1685,7 +1685,7 @@ D089 follow-up 3 (Codex round 2): the engine reads the waiting and the active al
 
 D089 follow-up 4 (Codex round 3): (1) The durable cancel-when-quiet set drops every id that the plan wants again, at the start of each run, and the engine removes a cancelled alarm from its own list, so a wanted alarm is scheduled again in the same run (rename A, B, A while the alarm rings). (2) The alarm index becomes complete by a one-time clean slate: until `AlarmIndex.isComplete` (App Group flag, set only after a run with no error), the first run treats every waiting alarm with no entry as obsolete, cancels it, and schedules the alarms of the plan again with entries. After that, an alarm with no entry is never kept, also with an unreadable schedule. An alarm of an unreadable schedule that had no entry is cancelled once, and the normal fail-open rule applies. Tests: `aWantedAlarmInTheQuietSetIsNotCancelled`, `theFirstRunMakesTheAlarmIndexComplete`.
 
-## D090 · 2026-10-16 · Reminder actions: "Take All", "Skip", and "Remind in 10 min" (changes the group clause of D034, spec 8.3, and the "no group record" idea of D060)
+## D090 · 2026-10-16 · Reminder actions: "Take All", "Skip", and "Remind in 10 min" (changes the group clause of D034, spec 8.3, and the "no group record" idea of D060) (group actions for one member only: D123)
 
 Maintainer approval on 2026-10-16 (Phase 1 of `~/Documents/Research/maru/2026-10-16-reminder-tracker-plan.md`). The agent made the design choices below. It changes spec 8.3 and 4 by amendment, and it adds T53 to T55.
 
@@ -1735,7 +1735,7 @@ Not verified: the app target. No build on this Mac (CI builds it): `AppModel+Rem
 
 Device check, with the live log of `docs/process.md`: (1) two items at one time, names on: the reminder has "Take All", "Skip All", and "Remind in 10 min". (2) "Take All" on the lock screen after an unlock: both doses are recorded, and the notification goes. (3) Names off: only "Remind in 10 min" shows for the group. (4) "Skip" on one item. (5) "Remind in 10 min" with "Remind Again" on: one banner after ten minutes, and no follow-up before it. (6) "Remind in 10 min", then record the dose in the app: no banner. (7) Update an iPhone that has version 1.1 reminders: the pending requests get the new buttons after the first run.
 
-## D091 · 2026-10-16 · Phase 2 of the reminder plan: the tracker
+## D091 · 2026-10-16 · Phase 2 of the reminder plan: the tracker (the PDF reports and the 30-day counts are Pro: D130)
 
 Maintainer decision (approved with the plan of 2026-10-16: "focus on what users meet, keep it simple, do not chase rare races"). D090 is reserved for the parallel notification pull request. Migration `v7`. It changes spec 3 P05 and 7.1 by amendment, and `docs/design.md` (Today, History, item detail, archived list, Settings, widgets).
 
@@ -1823,3 +1823,1020 @@ Maintainer decision. It adds places to the "Delete Item…" clause of D033.
 - The entry is red (destructive role) and opens the same one confirmation as the other places. The swipe rule of D033 does not apply: a context menu does not remove the row before the alert.
 - Reason: a user who wanted to delete in one step looked for it there.
 - The entry reuses the translated string. It adds no domain code and no store code.
+
+## D099 · 2026-10-28 · No supporter tips. A paid "Pro" tier comes in 1.2
+
+Maintainer decision. It replaces D053.
+
+- The app has no supporter tips. Version 1.1.0 ships with no in-app purchase.
+- A paid "Pro" tier comes in version 1.2 and takes the place of the tips. A later decision defines it.
+- Removed: `SupportStore`, the "Support Maru" section of Settings, the `Transaction.updates` task at launch, the five strings of the section in all languages, `Config/Maru.storekit` and its reference in the `Maru` scheme, and `metadata/in-app-purchases/tips.json`.
+- The analytics allowlist has no `purchase_result` event. Add the event in the change that first sends it.
+- The spec text about a supporter purchase (§1, P06, §6, §11.5, §14 C, and T48) stays until the decision about "Pro".
+- This change does not touch App Store Connect. The three tip products and the 1.0.0 review notes about the tips are still there. The maintainer removes them before the submission of 1.1.0.
+
+## D100 · 2026-10-28 · "Color Header" brings back the header wash as an option (changes D024) (on by default by D104)
+
+Maintainer decision. The header wash of D021 returns as a switch. D024 removed it as the only look, and the plain look stays the default.
+
+- Settings has a switch "Color Header" in the "Display" section, under "App Color". It is off by default, so the look does not change for anyone. The value is in `UserDefaults` under `display.headerWash`, read with `@AppStorage`, as the app color (D023). A backup does not carry it.
+- When it is on, Today and My Items show the same wash behind the large title. History, the item detail, and the sheets do not. The two tab pages are the main pages, and one wash on both keeps them the same.
+- The wash keeps the measured curve of D021: ten stops over 280 points from the top edge of the screen, solid color above it for the pull-down, and opaque cards on top of it. On iOS 18 and later it moves with the content and scrolls away, as in Apple Health. On iOS 17 SwiftUI cannot read the scroll distance, so the wash stays in place behind the content.
+- The color comes from the app tint (D025), not a fixed pink. In light mode the tint is mixed with white to the relative luminance 0.54. In dark mode it is mixed with black to 0.09. These are the luminances of the top colors of Apple Health. So each app color gives a wash of the same strength, and the title text keeps more than 7:1 contrast. A mix with white in place of the old hue scale keeps green, mint, and yellow soft.
+- No change for Reduce Transparency or Increase Contrast. The wash is opaque and has no blur, and the title contrast is above 7:1 in both modes.
+- No color picker for the wash and no setting for each page.
+
+## D101 · 2026-10-28 · A warm voice at key moments
+
+Maintainer decision. The copy felt cold and artificial. Maru now speaks like a reliable friend at a few key moments: not a nurse and not a cheerleader. Only text changes. The layout does not change. It replaces the "nothing to take" clause of D068 and, for the warm titles, the empty-view title rule of D058.
+
+Rules:
+
+- Warm words come only at key moments: a day with every dose recorded, the first item, empty states, errors and recoveries, and one line at the bottom of Settings.
+- Buttons, settings labels, and record states stay short and exact. The text states the record, not the intake (D068).
+- No guilt, no nagging, no streak talk, and no "don't forget". A missed dose gets no judgment.
+- Few exclamation marks, no emoji, and nothing cute. No medical promise.
+- Where the app speaks as its maker, it says "the Maru team" and never names a person.
+- Each language uses its own natural tone: polite but friendly in ja and ko, and 你 in zh-Hans, as the catalog already does.
+
+Changes in `App/Localizable.xcstrings`, in six languages:
+
+| Where | Before | After |
+|---|---|---|
+| Today, items but nothing planned | Nothing Planned Today | Nothing to take today. Enjoy it. |
+| Today and My Items, no item | No Items Yet | Let’s add the first thing you take. |
+| Today, every planned dose recorded (new) | the date | All done for today. Nice work. |
+| History, empty | What you record shows here. | Your records will appear here, one day at a time. |
+| Storage problem, no known cause | Maru did not change or delete your data. | Your data is safe. Nothing changed. |
+| Storage problem, disk full | … Maru did not change or delete your data. | … Your data is safe. |
+| Storage problem, locked device | … Maru did not change or delete your data. | … Your data is safe. |
+| Storage problem, newer or older version | … Maru did not change or delete it. | … It’s safe, and nothing changed. |
+| Storage problem, damaged file | … Maru did not change or delete it. | … Maru left it exactly as it was. |
+| Alert after a record that did not save | Maru couldn’t save this. Try again. | This didn’t save. Please try again. |
+| Alert after a change that did not save | Maru couldn’t save this change. Try again. | This change didn’t save. Please try again. |
+| Settings, footer of "About" (new) | none | Made with care by the Maru team. |
+
+Details:
+
+- "All done for today. Nice work." takes the place of the date under the "Today" title (the navigation subtitle, or the first header before iOS 26). Today has no progress ring (D026), so this line is the progress area. It shows when every planned dose of today has a confirmed record, taken or skipped. As-needed doses do not count. The line shows only after the commit (spec 7.2).
+- The damaged file does not say "Your data is safe", because Maru does not know that. It says that Maru did not touch the file.
+- "No Items Yet" stays as the line of the PDF medication list with no item. A warm invitation does not fit a document.
+- Not changed: the notification text, because it lives in the package catalog `MaruNotifications`, and the widget text, because the warm lines do not fit a small widget. The site has none of the changed sentences, so `site/src/strings` does not change. The editor errors already say "Your entries are still here."
+- Every new string in zh-Hans, ja, es, de, and ko is a draft until a native speaker reads it (`docs/localization-review.md`).
+
+Not verified: no build of the app on this Mac, and nobody saw the text on a display. CI builds the app.
+
+## D102 · 2026-10-28 · The App Store rating prompt
+
+Maintainer decision.
+
+- Maru uses only the system prompt of `RequestReviewAction` (SwiftUI `@Environment(\.requestReview)`). It has no stars of its own, no "rate 5 stars" text, and no screen before the prompt.
+- The trigger is the third distinct calendar day on which every planned dose of that day has a record, taken or skipped. The prompt comes right after the record that completes such a day, 1.5 seconds later, so it does not cover the fill of the record circle.
+- Maru asks at most once per app version, and never in the first 3 days after the first launch. The system can still decide to show nothing.
+- The state of the day comes from the Today read (`TodaySnapshot`) through `AppModel.isComplete`, the same check as the line of D101.
+- A day counts also when a reminder action, a widget, or the Watch completes it. Maru asks only while the app is active, so a record in the background only counts the day.
+- The values are preferences in `UserDefaults.standard` (D014), not in the health database: the time of the first launch, at most 3 dates of complete days, and the last version that asked. They hold no item data. `App/ReviewPrompt.swift` has the rule.
+- A version before this rule did not keep the first launch, so an update starts the 3 days from the first launch of the update.
+- The prompt sends no analytics event.
+
+Not verified: no build of the app on this Mac. The system shows the prompt in a Debug build every time and never in TestFlight, so only an App Store build shows the real behavior.
+
+## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips (tips removed, timing and "Skip" changed by D104)
+
+Maintainer decision for version 1.1, with agent detail. The copy uses the voice of D101.
+
+Onboarding:
+
+- A sheet with three pages shows once, at the first read of the store, and only when the store has no item, active or archived. An update from a build with items never shows it.
+- The flag is `onboarding.seen` in `UserDefaults.standard`, as the app color (D023), not in the health database. The first read sets it, also when the store has items. So a user who later deletes every item does not see the pages again. A backup does not carry it.
+- Pages: the promise ("Did I take it? Open Maru and you know."), privacy (no account, no ads, the data stays on the device), and a start page with "Add Item", which opens the existing add screen after the sheet closes, and "Later".
+- "Skip" is at the top of every page, as the maintainer asked. On the last page it does the same as "Later". A swipe down also closes the sheet. "Continue" under pages 1 and 2 moves to the next page, so a user who does not swipe, and VoiceOver, can go on.
+- A paged `TabView` with system fonts, SF Symbols in the app tint, and system buttons. Each page scrolls at the largest text sizes, and the symbol hides at the three largest sizes (D013). The button page change uses the layout motion, so with Reduce Motion it shows at once (D030). The privacy title has an iPad form (D072).
+- The onboarding asks nothing: no questionnaire, no age, no goals, and no sign-up (spec §1). It does not ask for the notification permission. The existing rule stays the only one: the reminder run of a confirmed save asks, when the plan has a reminder or an item with an alarm (spec §2.2, `ReminderEngine`, D089 N5).
+- The add screen stays one edit flow (spec §3 P03). The onboarding is not a part of it.
+
+First-use tips (TipKit, iOS 17):
+
+- "Record a Dose", on the record circle of the first row of Today: "Tap the circle when you take it. Tap it again to change or undo the record." A tap that records with the circle ends it.
+- "More for Each Item", on the first tile of My Items: "Touch and hold an item to edit, archive, or delete it." "Edit", "Archive…", or "Delete Item…" from a long press, on Today or on My Items, ends it.
+- Each tip shows once, as a popover, and the close button of the tip ends it too. TipKit keeps the state in its own store in the app container. It holds no item data.
+- A tip popover waits while a sheet, an alert, the onboarding, or a question that waits for the display is up (`tipsMayShow` in `RootView`). UIKit presents one of them at a time, and the first save with a time can bring the "Remind Again?" offer (D091) and the opt-in question (D078) at the moment that the first row comes.
+- The third candidate, a tip about the actions of a reminder on the Lock Screen, is not in the app. The actions are in the notification, so no view of the app is a fitting anchor, and an inline card on Today would be the notice card that D028 does not allow.
+- `Tips.configure` runs in a `.task` of the root view, after the first frame, so the launch path does not wait for it (spec §9).
+
+Debug: `-MaruFirstRun YES` clears the flag and the TipKit store at launch, for a check of both after they showed once. The onboarding still needs a store with no item.
+
+The new strings in zh-Hans, ja, es, de, and ko are a draft until a native speaker reads them (`docs/localization-review.md`). "Skip", "Add Item", and "Record a Dose" reuse their translations, with a wider translator comment.
+
+Not verified: no build of the app on this Mac, and nobody saw the pages or the tips on a display. CI builds the app.
+
+## D104 · 2026-10-28 · No first-use tips, "Color Header" on by default, and exact onboarding timing (changes D100 and D103)
+
+Maintainer decision after a test of TestFlight build 13.
+
+First-use tips:
+
+- The two TipKit tips of D103 are removed: `RecordTip`, `ItemMenuTip`, `FirstUseTips`, the TipKit start at launch, the `tipsMayShow` environment value, and their strings in six languages. The maintainer found them ugly. The app has no first-use tip.
+- The tips kept their state in a TipKit store in the app container. A TestFlight install keeps that file, and it holds no item data. Nothing reads it now.
+
+"Color Header" (changes D100):
+
+- The switch is on by default. A missing value of `display.headerWash` means on.
+- A user who turned the switch off has the value `false`, so the header stays plain for that user.
+
+Onboarding (changes D103). Each rule below is true in code:
+
+- It shows on the first launch of a new install, before Today, when the store has no item, active or archived, and `onboarding.seen` is not set.
+- It never shows again after "Add Item", "Later", or "Skip". The flag is set then, so a relaunch or a delete of all items does not bring it back.
+- An update from an older build with items never shows it. Each read that finds an item sets the flag with no page.
+- A restore sets the flag with no page, also when the backup has no item.
+- The decision waits for the first read. Before it, the window shows the plain background and not Today. The onboarding fills the window in place of the tabs, so Today does not show under it or for a frame before it. A user with the flag set gets Today at once, and the launch waits for nothing new (spec 9).
+- It decides only when the window is in front. A launch in the background, for a reminder action or the widget, does not decide.
+- A reminder tap or a widget link in the process hides it and leaves the flag unset. The next normal launch with no item shows it. The app has no Shortcut that opens it with no item: the alarm button "Open Maru" needs an item with an alarm.
+- With no item, the decision waits 400 ms after the window comes in front, behind the empty page, so a late widget link on a cold launch comes first. The "Record Dose" intent also hides it, because it can continue in front.
+- It is a page of the window, not a sheet. On iPad, in Split View, and after a rotation it stays, with the same page.
+- It asks for no permission. The notification permission comes only with the reminder run of the first save that has a reminder time (spec 2.2, D089 N5).
+- Page 3 has "Add Item" and "Later" only. "Skip" is on pages 1 and 2. A swipe down does not close it, because it is not a sheet.
+- "Add Item" shows the tabs and opens the add screen on them.
+
+`AppModel+Onboarding.swift` has the rule. It stays in the app target and has no test (D016).
+
+Not verified: no build of the app on this Mac, and nobody saw the pages on a display. CI builds the app.
+
+## D105 · 2026-10-28 · An "Appearance" setting
+
+Maintainer decision.
+
+- Settings, section "Display", has the menu "Appearance" after "Color Header", with "System", "Light", and "Dark". The default is "System".
+- The choice is in `UserDefaults.standard`, with the key `display.appearance`, beside the app color (D014). No value means "System".
+- The app sets it on each window with `overrideUserInterfaceStyle`. "System" gives `unspecified`, so the app follows the device. Every window, sheet, alert, and the onboarding follow the choice, also a sheet that is open during the change.
+- Correction after the iPhone Duo simulator check (2026-10-28): the first code used `preferredColorScheme` at the app root. A change from "Dark" to "System" kept the open Settings sheet dark, because `preferredColorScheme(nil)` did not reset an open sheet.
+- The widgets and the Watch app always follow the system. The backup file does not carry the choice, as it does not carry "Color Header".
+- The setting has no preview and no own page.
+
+Not verified: no build of the app on this Mac, and nobody saw the window fix on a display. CI builds the app.
+
+## D106 · 2026-10-28 · Maru runs on iPhone Duo with its current layout
+
+Maintainer request: support iPhone Duo simply, with no special layout. Agent decision on the details.
+
+What iPhone Duo is (Apple sources below):
+
+- iPhone Duo is the first foldable iPhone, on sale from 2026-10-23. It has a compact outer display and a large inner display with the same aspect ratio. A hinge lets it be closed, fully open, or partially folded like a book.
+- It is an iPhone. An app for the iPhone runs on it, and needs no new device family and no new Info.plist key. "Your app may react to different size class boundaries, but it is still an iPhone app."
+- Size classes: the outer display is like other iPhones (compact width, regular height in portrait). The inner display is regular width and regular height.
+- Orientation: the outer display honors the supported orientations. The inner display does not, and the app scales there, also in Split View.
+- The system shows navigation bars, toolbars, and tab bars vertically on the side in some poses: always on the outer display, and in landscape on the inner display. System bars do this with no app code.
+- SDK: an app built with the iOS 26 SDK or earlier shows in the middle of the inner display with empty space around it. An app built with the iOS 27 SDK resizes. An app built with the iOS 27.1 SDK is "optimized for iPhone Duo" and fills the display.
+- The App Store badge "Made for iPhone Duo" shows when the store page has iPhone Duo screenshots. From April 2027, every submission needs iPhone Duo screenshots.
+- Apple asks apps to resize: no `UIScreen.main`, no layout by `userInterfaceIdiom` or interface orientation, no fixed iPhone sizes. Arrangement views, reserved regions (the fold), the hinge angle, and a second screen are optional APIs for custom layouts.
+
+What Maru does:
+
+- Nothing in the app code changes. A search of `App/`, `Widget/`, `Shared/`, and `Watch/` found no `UIScreen`, no layout by idiom, orientation, or size class, and no fixed width of a page. The layout of D072 fills the width of the window, so the inner display gets the iPhone layout at a larger width, as an iPad does.
+- `userInterfaceIdiom` sets only the device field of analytics (D077). iPhone Duo reports `.phone`, so it counts as an iPhone. The scanner view follows its host with an autoresizing mask. The onboarding text has a maximum width of 560 points, which is a limit and not a fixed size.
+- The iPhone stays portrait only. The inner display ignores this, and Apple permits it. Landscape on the outer display is optional, so Maru does not add it.
+- My Items keeps two columns of tiles. The HIG prefers an even number of columns, so the fold falls between them.
+- No arrangement view, no reserved-region code, no hinge code, and no second-screen scene.
+- The toolbars use `ToolbarItem` with semantic placements. "Settings", "History", and "Add Item" have a title and a symbol, so they can go vertical. "Edit" of the item detail and "Skip" of the onboarding are text only. The system keeps a text-only item out of a vertical bar.
+- CI builds with Xcode 27.1 and the iOS 27.1 SDK (runner image `xcode-27-arm64`). The Mac of the maintainer has Xcode 27.1, so the next archive is optimized. Version 1.0.0 build 4 is older, and nobody checked its SDK.
+- `project.yml` and `docs/design.md` say that the inner display ignores the portrait lock.
+
+Maintainer decision still open: iPhone Duo screenshots for the store. They give the badge now, and they are required from April 2027.
+
+Sources:
+
+- Apple Developer, "Preparing your app for iPhone Duo": https://developer.apple.com/documentation/technologyoverviews/preparing-your-app-for-iphone-duo
+- Apple HIG, "Designing for iPhone Duo" (2026-09-09): https://developer.apple.com/design/human-interface-guidelines/designing-for-iphone-duo
+- Apple Developer, "Three steps to make your app shine on iPhone Duo": https://developer.apple.com/iphone-duo/prepare/
+- Tech Talk "Prepare your app for iPhone Duo" (size classes, orientation, `UIRequiresFullScreen`): https://developer.apple.com/videos/play/tech-talks/111461/
+- Apple Developer News, "Prepare and submit your apps for iPhone Duo" (Xcode 27.1, badge, April 2027): https://developer.apple.com/news/?id=kkphp5qo
+- Apple Newsroom, "Developers bring incredible new app experiences to iPhone Duo": https://www.apple.com/uk/newsroom/2026/10/developers-bring-incredible-new-app-experiences-to-iphone-duo/
+- SwiftUI `ReservedRegion`: https://developer.apple.com/documentation/swiftui/reservedregion
+
+Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
+
+## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115, paywall changed by D118) (paywall source `feature` replaced by D127)
+
+Maintainer decisions of 2026-10-28, with agent detail. They follow the two paywall studies of 2026-10-28 in the maintainer's research folder. They define the "Pro" tier of D099.
+
+Free forever:
+
+- Reminders, records, history, undo, widgets, export, backup, and unlimited items. Maru never limits items.
+
+Pro:
+
+- A Lock Screen Live Activity for the next dose, the Apple Watch app, extra app icons, and extra reminder sounds.
+- Those features come in later changes. This change builds the purchase, the entitlement `isPro`, the paywall, and its entries. A later Pro feature reads `AppModel.pro.isPro`, and a tap by a free user calls `AppModel.presentPaywall(reason: .feature)`.
+
+Products (prices in App Store Connect, not in code):
+
+- `com.imhangli.maru.pro.yearly`: an auto-renewable subscription in the group "Maru Pro", about USD 9.99 per year, with a free trial of 7 days as the introductory offer.
+- `com.imhangli.maru.pro.lifetime`: a non-consumable, about USD 24.99 (amended on 2026-10-28 from USD 19.99, see D119, sixth round).
+- Family Sharing is on for both. Apple does not let a developer turn it off again. No monthly plan.
+- `Config/Maru.storekit` has both products for local tests. The Run action of the `Maru` scheme uses it (`project.yml`).
+
+Entitlement:
+
+- Pro is active when `Transaction.currentEntitlements` has a verified transaction for one of the two products with no revocation date. This includes a purchase of a family member. A lifetime purchase wins over the yearly plan.
+- The app starts a listener of `Transaction.updates` and one read of the entitlements at launch, in tasks that wait for the system. The launch waits for neither (spec 9, T35). Each transaction is finished. Each return to the front reads the entitlements again.
+- The yearly plan ends at its end of access: the expiration date of its verified transaction, or the end of the billing grace period when `Product.SubscriptionInfo.Status` reports one. Maru checks this date itself, because the cache of StoreKit can keep an expired transaction while the device has no network. A timer reads the entitlements again at that date. The lifetime plan never expires.
+- The last known plan is in `UserDefaults.standard` under `pro.plan`, and the end of access of the yearly plan under `pro.expires`, beside the display settings (D014). A Pro feature reads the plan at launch, so it does not flicker. A cached yearly plan after its end of access is free. StoreKit corrects the cache at each launch, each update, and each return to the front. The backup does not carry it.
+- `App/Pro/ProStore.swift` is the only file that imports StoreKit. The rating prompt of D102 moved there as a view modifier, so `RootView` does not import StoreKit. `MaruCore` and `MaruDatabase` never import it. A purchase never reads or writes health data.
+- No free feature reads the entitlement. So a failed, cancelled, pending, refunded, or expired purchase changes no free feature (T48).
+
+Paywall (`App/Pro/PaywallView.swift`, one SwiftUI view):
+
+- A custom view. `SubscriptionStoreView` shows one subscription group and cannot sell the non-consumable beside it.
+- Top to bottom: the Lock Screen preview (only for the first-value offer), the title "Maru Pro", a line that the current features stay free, three benefit rows, the two plans side by side with `displayPrice`, the trial timeline, "Shareable with Family Sharing", the buy button, "Continue Free", the renewal terms, "Restore Purchases", "Redeem Code" (`offerCodeRedemption`), "Terms of Use" (Apple's standard EULA), and "Privacy Policy" (https://maru.day/privacy/). A close button is in the bar.
+- The yearly plan is selected first. Each plan that loaded has its own card. When only one plan loaded, it is selected. The buy button is off for a plan with no product and no price. The trial timeline shows only when StoreKit says that the user can still get the trial: "Today: Free for 7 days" and "Day 7: <price>/year. Cancel any time in Settings." The number of days comes from the offer of the product.
+- The price is the largest text of a plan card, larger than the trial words. In the timeline the price is bold, at the size of the trial words (App Review 3.1.2).
+- "Continue Free" has the size, the shape, the fill, and the font of the buy button, in a gray fill.
+- No countdown, no trial switch, no struck price, no discount, and no offer after a cancel.
+- A cancel leaves the paywall as it was. A pending purchase says that it waits for approval. A failure says that it did not go through. A purchase closes the paywall.
+
+Triggers. Maru never shows a paywall at app open, after a record, after a cancelled purchase, or as a notification.
+
+1. First-value offer, once per install. The first save of a new item with an active time plan sets it. It waits until the save's reminder run ends, so the notification permission alert of that save closed first. Then it waits for the edit screen, the reminder alerts, "Remind Again?" (D091), and the opt-in question (D078). It shows a static SwiftUI picture of a Lock Screen with the user's next dose (the name, the amount, and the next time of the plan), and the paywall under it. It is not a real Live Activity. Never during the onboarding. Never in a process that a reminder or a widget opened. Then the flag stays unset, and the next such save offers it. The flag `pro.firstValueShown` is set when it shows. A save of an item with no time does not offer it, because the preview needs a time.
+2. The card of Today. An inline section at the bottom of Today, under every dose, never modal. It shows when all of these are true: Maru is not Pro, the device can make payments, at least 7 days passed since the first launch (`review.firstLaunch` of D102), at least 5 doses have a record (taken or skipped, one read of the store, again after an undo, a delete, or a restore), the rating prompt did not ask on this calendar day, no planned dose of Today is due with no record (Today checks again at the planned time of the next open dose), and the card showed on fewer than 3 days or already on this day. Each day that it appears counts once (`pro.cardDays`). "×" hides it for good (`pro.cardDismissed`). "See Maru Pro" opens the paywall.
+3. Contextual: `AppModel.presentPaywall(reason:)` for the later Pro features. It shows nothing when Maru is Pro or a paywall is up.
+4. Settings: a section at the top. A free user sees the row "Maru Pro", which opens the paywall. A Pro user sees "Active, Yearly" or "Active, Lifetime", and "Manage Subscription" for the yearly plan. "Restore Purchases" and "Redeem Code" are always there. The root view hosts the paywall, and Settings hosts it while Settings is up.
+
+The flags of the offers are in `UserDefaults.standard`, as the onboarding flag (D103). They hold no item data.
+
+Analytics (spec 11, D052). Both events need the same consent as every other event. Neither has item data.
+
+- `paywall_shown`: `source` is one of `first_value`, `day7_card`, `feature`, or `settings`.
+- `purchase_result`: `result` is one of `purchased`, `cancelled`, `pending`, `failed`, or `restored`, and `plan` is `yearly` or `lifetime`. A restore that finds no purchase sends nothing. A failed restore has no plan.
+- The privacy label needs "Purchase History" (analytics, linked, no tracking) before a build that sends `purchase_result` is released. `App/PrivacyInfo.xcprivacy` lists it now.
+
+Data: `LocalStore.hasRecords(atLeast:)` counts the current records for the card. It reads no name, time, or item.
+
+Spec changes: §1 (commerce row), P06, §6 (purchase row), §11.5 (two events), §11.6, §14 C, and T48.
+
+Risks:
+
+- This change sells Pro features that the app does not have yet. Do not release a build with the paywall before the Pro features are in it. App Review rejects a purchase with no content (3.1.1).
+- The store text of 1.1 says "no paywall". Guideline 2.3.2 asks the store text to say what needs a purchase. Change the text of 1.2 before its submission.
+
+Not verified: no build of the app on this Mac, and nobody bought a plan. CI builds the app. The checks with the StoreKit configuration are in `docs/status.md`. App Store Connect has no product yet. `docs/release-plan.md` has the maintainer's steps.
+
+## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts ("Record my doses" with several members: D123, Siri is Pro: D130)
+
+Maintainer decision on 2026-10-28, with agent detail. Both features are free. They are not part of Pro (D107). It follows spec 6, 7.2, 9, and 10, and it adds to D048 and D091.
+
+The "Last Dose" widget:
+
+- Families: Home Screen small, and Lock Screen `accessoryRectangular` and `accessoryInline`.
+- It shows the newest taken dose of all active items: the item name, the amount if the dose has one, and the time. Today gives the time since the dose ("2 hr. ago", "now" in the first 5 minutes). Yesterday gives "Yesterday, 6:49 PM". An earlier day gives the date and the time. The text changes at timeline entries: every 5 minutes in the first hour, then every hour, and at the next two midnights.
+- A skipped dose, an undone dose, and a dose of an archived item do not count. A time change of a taken dose moves it.
+- It follows "Show Names in Reminders" (D029). Maintainer decision on 2026-10-28, after a review: the setting applies to the widget and to Siri. With the setting on, the widget shows the name and the amount. With it off, each family shows "Dose recorded" and the time, with no name and no amount, because an amount can tell what the item is. The tap still opens the item.
+- The app copies the setting to the defaults of the App Group (`AppGroup.showsNames`) at each launch, at each change, and after a restore, then reloads the widgets. No value hides the names, so a widget that runs before the app writes the value shows no name.
+- No taken dose: "Your last dose will show here." (inline: "No records yet"). No judgment (D101).
+- A tap opens Today with the item detail on top (`maru://item/<ID>`). The detail goes back to Today when the item is gone. The empty widget opens Today.
+- Data: `LocalStore.readLastDoseForWidget` reads the App Group database read-only, in one read transaction, with the restore epoch check of D048. It shares `LocalStore.readOnly` with `readForWidget`. Each dose with an event or a state row goes through the check of the history read (`fetchCheckedRecord`). A state row that does not match the history makes the read fail (`invalidData`, spec 7.3, T20). The widget then says "Open Maru to update.", and Siri gives the read failure. It never says "no dose" for this case. A locked iPhone before the first unlock gives "Open Maru to update." (D066), and the widget tries again in 15 minutes.
+- Reload: the app now reloads every widget timeline after each commit of a record (`AppModel.reloadWidgets`), as well as after each read. Before this change, a record in the app reached the widgets only at the next read of the app.
+
+Siri and Shortcuts (App Shortcuts, `App/Siri/MaruShortcuts.swift`):
+
+- "What do I take next in Maru": the open doses of the first part of the day from the clock on that has one, else the first earlier part with one, as the small "Today" widget does (D048). Siri says the names and the planned time, and shows a snippet with the part of the day, the time, and each dose with its amount. With names off, Siri says the number of doses ("Next up: 2 doses, planned for 8:00 AM."), and the snippet shows the number with no name and no amount. With all doses recorded: "All done for today. Nice work." With no planned dose: "Nothing to take today. Enjoy it." It records nothing.
+- "Did I take my <item> in Maru": the newest taken record of the item, with the day and the time. The item is an `AppEntity` of the active items, so Siri picks it by name. Siri asks "Which item?" when the user names none. It records nothing. With names off, the answer names no item: "Your last record: taken today at 8:00 AM." The list of "Which item?" still shows the names, because the user picks an item by its name.
+- "Record my doses in Maru": the open doses of the part of the day of the clock. Siri asks "Record as taken now: …?" first. With names off, the question and the answer give the number of doses ("Record as taken now: 2 doses?"). After a confirmation, one record transaction records them with the checks of the widget and the Watch (`requiresCurrentPlan`, the event revises the read record, the data generation of D040). Siri says "Recorded as taken: …" only after the commit, and it waits for the reminder run (D047). A record with no confirmed commit says "Maru couldn’t confirm the save. Open Maru to check your records." It does not say that nothing was recorded, because SQLite can commit before `F_FULLFSYNC` fails. After a storage failure, the same event waits on Today for a retry, as in the other record paths (D014). With nothing due: "Nothing is due right now. You’re all set." A dose with an unconfirmed event is left out (D014).
+- All three intents need an unlocked iPhone (`requiresAuthentication`). For the record, this is the rule of the "Taken" action of a reminder on the iPhone (D034, D066). For the two questions, a person who holds a locked iPhone can not hear the names through Siri. With names on, the Lock Screen widget shows a name, because the user adds it and keeps the names on.
+- A read that fails, for example before the first unlock after a restart, says "Maru can’t open your records right now. If your iPhone restarted, unlock it first, then ask again." The iPad form names the iPad.
+- Every intent runs in the app process and calls an operation of `AppModel` (`AppModel+Siri.swift`). No intent writes the database. No intent sends an analytics event.
+- The phrases are in `App/AppShortcuts.xcstrings` in the six languages, one translation for each English phrase. The answers are in `App/Localizable.xcstrings`. The app updates the item parameter of Siri after a read that changes an item or a name.
+
+Privacy: Maru sends nothing. The item names go to the on-device index of App Shortcuts. Siri handles the speech by the rules of Apple. `PRIVACY.md` does not mention Siri yet. A change of it is a maintainer decision (`docs/process.md`).
+
+Tests: none. The change adds no record rule. The record uses the existing transaction and its checks.
+
+Not verified: no build of the app on this Mac (CI builds it), and nobody saw the widget or used Siri. Device checks: the widget in the three families in light, dark, and tinted looks, with a long name and the largest text sizes; the time text over one hour and after midnight; a record in the app, from a reminder, and from "Record Dose", each followed by the widget; a tap on the widget; a locked iPhone after a restart. Siri: each phrase in English and one more language, a name with two words, an item name that Siri does not know, "Record my doses" with a confirmation and with "Cancel", with nothing due, on a locked iPhone, and the snippet. The phrases need a native speaker (`docs/localization-review.md`).
+
+## D109 · 2026-10-28 · The History graph scrolls with the list (changes D041)
+
+Maintainer decision: the History graph must not stay at the top of the page. On the iPad and on the inner display of iPhone Duo, the fixed graph covers the rows under it. Agent decision on the gesture. It replaces the point of D041 that the graph stays above the list and does not scroll.
+
+- The graph is the first section of the History list, before the banner of an unsaved record and "Last 7 Days". It scrolls away with the page.
+- The card does not change: the grouped card color, the corner of an inset grouped cell, and padding of 16 points. The list cell has no background and no padding. The card has the side margins of the other sections of the list.
+- A vertical swipe that starts on the graph scrolls the page.
+- A tap on a square selects that day, and the log of the day opens at the end of the touch (D054).
+- A press of 0.2 seconds selects the day under the finger. A drag after the press moves the selection across the days, and the end of the touch opens the log of the day.
+- A finger that moves before 0.2 seconds scrolls the page, and the press does not start. While a press is active, the page does not scroll.
+- The haptic and VoiceOver of D041 and D054 do not change: a light selection haptic when the selected day changes, one adjustable element, and the default action that opens the log.
+- A press that the system cancels, for example for a call, clears the selection, and no log opens.
+
+The gesture: a UIKit tap recognizer and a UIKit long press recognizer, on a clear view over the canvas. In a list, UIKit recognizers share a touch with the scroll of the list by the same rules on iOS 17, 18, and 26. The long press fails when the finger moves before its time, so the list scrolls.
+
+Rejected:
+
+- SwiftUI `LongPressGesture` in sequence before `DragGesture`. It gives no point for the press, so a press that does not move has no day. SwiftUI gestures in a scrolling list also behave differently on iOS 17 and on iOS 18 and later, which is the reason of D041 for the fixed graph.
+- A drag only in the horizontal direction. A SwiftUI drag cannot fail on a vertical movement after it starts, so it can block the scroll. A diagonal drag across the weeks also needs both directions.
+- `UIGestureRecognizerRepresentable`. It needs iOS 18, and Maru supports iOS 17.
+
+No store change, no schema change, and no new test (D016).
+
+Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
+
+## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123) (paywall source `feature` replaced by D127)
+
+Maintainer decision on 2026-10-28, with agent detail. It is the first Pro feature of D107. It follows spec 6, 7.2, 8, 9, and 10, and it uses the record checks of D034, D048, and D089.
+
+The switch:
+
+- Settings has a switch "Next Dose on Lock Screen" in its own section after "Reminders". The iPad has no Live Activities, so it has no row.
+- A free user who turns it on gets the paywall, and the switch stays off. A Pro user who turns it on starts the activity.
+- The switch is in `UserDefaults.standard` under `liveActivity.nextDose`, beside the display settings. It holds no item data, and the backup does not carry it.
+- When Live Activities are off for Maru in the Settings app, the footer says so and tells the user where to turn them on. The app then starts no activity.
+
+What the activity shows:
+
+- The next dose: the earliest open planned time of today, with every open dose of that time. A dose with an event that the store did not confirm is left out, because it goes again only from Today (D014).
+- The part of the day in the tint, the planned time, and the planned time relative to now. It never says "late" or "missed" (D101). Amended on 2026-10-28: see "The relative time" below.
+- The item names, when "Show Names in Reminders" is on (D029). It shows at most three names, in a limit of 600 bytes, then the number of the other doses: "Vitamin D, Iron, Zinc, and 2 more". A name that is too long ends with "…". When the setting is off, it shows "2 doses" with no name. A change of the setting updates the activity.
+- A "Taken" button, and a tap elsewhere opens Today at the part of the day.
+- The Dynamic Island: the pill symbol and the planned time in the compact form, the pill symbol in the minimal form, and the full content in the expanded form. A relative time does not fit in the compact form in all six languages.
+
+The "Taken" button:
+
+- A `LiveActivityIntent`. The system runs it in the app process, also in the background. It needs an unlocked iPhone, as the "Taken" action of a reminder on the iPhone (D034).
+- It holds only a token of 8 characters. ActivityKit limits the content of an activity to 4 KB, and a list of IDs for each dose can go above it with many items (Codex review on 2026-10-28). The app keeps the doses of the token in `UserDefaults.standard` under `liveActivity.nextDose.slot`: the IDs of the doses, their schedule versions, and the restore epoch. It holds no name and no amount. A new set of doses, schedule versions, or restore epoch gets a new token. The same set keeps its token, so an update with the same doses changes nothing. The end of the activity removes the slot.
+- An unknown or older token records nothing. The activity then asks to open Maru, with no name and no button.
+- It records with the checks of the "Record Dose" widget (D048) for each dose: the same restore epoch, the same occurrence and schedule version, today, and open. The record transaction checks the active item and the plan of now (`requiresCurrentPlan`, D089). Each event revises the record that the call read, so a second tap writes nothing (T18). A dose with a record already needs no event.
+- The activity changes only after the commit and the reminder run (spec 7.2, D047). Then it shows the next dose, or it ends when every planned dose of today has a record.
+- When a check fails, it records nothing and shows the doses of now. When the commit does not confirm, the activity says "Couldn’t confirm the save. Open Maru to check.", and Today keeps the events for a retry (D014).
+
+The lifecycle. Maru has no server, so no push starts, updates, or ends the activity. Only the app process changes it.
+
+- The app starts an activity only while it is in front, because iOS lets only an app in front start one. It never starts one during the onboarding (D103).
+- The app updates the activity after each read of Today that shows: at launch, at each return to the front, and after each save, time edit, archive, delete, and restore. It also updates the activity after each record, and after each reminder run in the background. A background run waits for the update before it returns, because the system can suspend the process. The background runs are:
+  - the "Taken" button of the activity
+  - the actions of a reminder: "Taken", "Take All", "Skip", "Skip All", and "Remind in 10 min". An action that records nothing also reads the activity again, because the activity can show a dose that another path recorded.
+  - the "Taken" action of an alarm
+  - the "Record Dose" widget
+  - Siri "Record my doses"
+  - a record from the Watch
+- A record that gives every planned dose of today a record ends the activity with an immediate dismissal, in the same background run.
+- The content holds the end of the local day of the dose, and the stale date is that time. After it, the activity says "Open Maru to update." and shows no name and no button, so no button records a dose of another day. A stale date at the planned time showed the dose of the day before as "Not recorded yet", with the names and "Taken", after midnight (Codex review on 2026-10-28).
+- The relative time (amended on 2026-10-28, maintainer goal: the activity needs as little care as possible). The first version showed the time left with `Text(timerInterval:countsDown:)`, and "Not recorded yet" after the planned time. The system draws the activity only at each update and at the stale date. So from the planned time to the next update, the time left stayed at zero. Now the activity shows the planned time and a relative time that the system moves on the screen with no update:
+  - iOS 18 and later: `Text(.currentDate, format: .reference(to:allowedFields:))`, with the hour and the minute. It reads "in 12 minutes" before the planned time and "12 minutes ago" after it, in the language of the system. Under one minute it reads "now".
+  - iOS 17: `Text(_:style: .relative)`. It shows only the distance, "12 min", with no direction. The planned time beside it tells before from after.
+  - The text "Not recorded yet" is removed. The activity needs no update at the planned time.
+- The app ends the activity when every planned dose of today has a record, when the switch goes off, and when Maru Pro ends. The activity of the next day starts at the next open of Maru.
+- No refresh at midnight (2026-10-28). The maintainer asked for one background app refresh near local midnight, only if Maru supports background app refresh already. It does not: `project.yml` has no `UIBackgroundModes` and the app has no `BGTaskScheduler` task. So Maru does not add it. A refresh would also give little:
+  - An app in the background cannot start an activity, so a refresh cannot start the activity of the new day.
+  - The system chooses the time of a refresh. It can run hours late, or not at all, for example in Low Power Mode or with Background App Refresh off.
+  - The stale date already changes the activity of the day before at midnight: "Open Maru to update.", with no name and no button.
+- An open dose stays on the activity until it has a record or the day ends. Doz moves its card to the next dose a set time after the planned time (the device walkthrough of 2026-10-28 in the maintainer's research folder). Maru cannot do that with no server and no app code at that time.
+- The system ends an activity 8 hours after its start. It can stay on the Lock Screen for 4 more hours with its last content, 12 hours in total. So each open of Maru starts a new activity when the current one is older than 1 hour. The activity then lasts until 8 hours after the last open of Maru. When Maru does not open for 8 hours, the system ends it, and the next open starts it again.
+- The calls to ActivityKit run one after the other, so an older update never comes after a newer one. An update with the same content does nothing.
+
+Maru Pro:
+
+- The switch reads `AppModel.pro.isPro`. A free user who taps it gets `presentPaywall(reason: .feature)`. The maintainer's message named a reason `.liveActivity`. D107 defines `feature` as the source of every Pro feature, and `PRIVACY.md` lists only the four sources of D107. A new source needs a change of the privacy text, which is a maintainer decision.
+- After each read of StoreKit and each purchase, a loss of Pro (an expiry or a refund) ends the activity and turns the switch off. The cached plan at launch does not turn it off, because a renewal can come after the cached end of access (D107).
+
+Privacy: the activity is on the device. With the names on, a person who sees the Lock Screen sees the names, as with a reminder that shows names. `PRIVACY.md` says so in the section about reminders. No analytics event is new, and no event has item data.
+
+Files: `Shared/NextDoseActivity.swift` (the attributes and the intent), `App/AppModel+LiveActivity.swift` (the rules and the calls to ActivityKit), `Widget/NextDoseLiveActivity.swift` (the views), and `INFOPLIST_KEY_NSSupportsLiveActivities` in `project.yml`.
+
+Tests: none (D016). The record uses the existing transaction and its checks.
+
+Not verified: no build of the app on this Mac (CI builds it), and nobody saw the activity. It needs a real iPhone (spec 14 A). Device checks:
+
+1. The switch as a free user (the paywall, the switch stays off) and as a Pro user. The footer with Live Activities off in the Settings app.
+2. The Lock Screen and the Dynamic Island before the planned time ("in 12 minutes"), and after it with no open of Maru ("12 minutes ago"). The same on iOS 17, if a device is available ("12 min"). The names off. Light and dark, a long name, two items at one time, five items at one time ("and 2 more"), and the largest text sizes.
+3. "Taken" on a locked iPhone (the unlock comes first), the move to the next dose, and the end after the last dose. A second fast tap.
+4. A record on Today, from a reminder ("Taken", "Take All", "Skip", "Skip All"), from an alarm, from the "Record Dose" widget, from Siri, and from the Watch, each followed by the activity with Maru in the background. "Remind in 10 min". The last record of the day ends the activity at once. A time edit, an archive, a delete, and a restore.
+5. A refund in the StoreKit transaction manager: the activity ends and the switch goes off.
+6. An activity across midnight ("Open Maru to update.", no name, no button), and an activity after 8 hours with no open of Maru.
+
+## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds (icons extended by D132, sounds replaced by D120)
+
+Maintainer decision on 2026-10-28, with agent detail. It adds two Pro features of D107. It does not change a reminder rule. Only the sound of a request changes.
+
+App icons:
+
+- Six icons: "Default" (the primary pink icon), "Blue", "Purple", "Green", "Night", and "Mono". "Blue", "Purple", and "Green" use the app colors of D025, with the darker light-mode green of the tint. "Night" is the pink capsule on #121212 in every mode. "Mono" is a graphite capsule on white, and a light gray capsule on #121212 in dark mode.
+- Each alternate icon has a light look, a dark look, and the tinted look of the primary icon. "Night" has no separate dark look. iOS 17 shows only the light look.
+- `docs/brand/make_icons.py` draws them from vector geometry that it fits to the shipped `AppIcon.png`. It writes `App/AppIcons.xcassets`: the five alternate icon sets and a preview of each of the six icons. A second run gives the same files. The primary icon does not change. `project.yml` names the alternate icons (`ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES`). The Watch app does not get the new catalog.
+- Settings, section "Display": the row "App Icon" after "App Color", with the current icon. It opens a page with a grid of the six icons, the name under each, and a ring in the tint on the current icon. The grid is a custom control, because SwiftUI has no native icon picker.
+- Every user sees every icon. This is the free preview. A Pro user's tap changes the icon with `UIApplication.setAlternateIconName`, and iOS shows its own alert. A free user's tap on an icon other than "Default" opens `presentPaywall(reason: .icons)`, and the icon does not change. "Default" is free.
+- When Pro ends, Maru keeps the icon and does not change it. iOS shows an alert for each change, so a change that the user did not ask for would surprise. Further changes need Pro again. Only "Default" stays free.
+- The system keeps the choice, so Maru stores nothing. A reinstall shows the primary icon. When the system refuses a change, the alert "Not Changed" says "The icon didn’t change. Please try again."
+
+Reminder sounds:
+
+- (Replaced by D120.) Six sounds: "Dewdrop", "Petal", "Breeze", "Pebble", "Sunrise", and "Lantern". Each is a soft chime, pluck, or bell of 1.0 to 3.0 seconds, with no alarm sound. No name is the name of an Apple tone.
+- `docs/brand/make_sounds.py` synthesizes them from sine waves with numpy, and `afconvert` writes them to `App/Sounds/maru-<name>.caf`: 16-bit linear PCM, 44.1 kHz, mono, with a peak of about -3 dBFS. A second run gives the same files. Together they are about 1.1 MB.
+- Settings, section "Reminders": the row "Reminder Sound" after "Show Names in Reminders", with the sound in use. It opens a page with "Default" and the six sounds, a check mark on the sound in use, and a play button on each of the six. The preview is free. It plays once, also with the ring switch on silent, and it mixes with other audio.
+- A Pro user's choice plays the sound once and replaces the pending reminders in one run, as a change of "Show Names in Reminders" does. A free user's choice of a sound other than "Default" opens `presentPaywall(reason: .sounds)`, and nothing changes. "Default" is free.
+- The choice is in `UserDefaults.standard` under `reminders.sound` (D014). The backup does not carry it.
+- The sound in use is the choice while Pro is active, and the default sound of the system when it is not. It reads the cached plan of D107 (`pro.plan` and `pro.expires`), so a reminder run off the main actor can read it. Each run reads it again. The choice stays, so it comes back when Pro comes back.
+- A change of Pro starts one reminder run: a refund, an expiry, a restore, a purchase, or a change of Family Sharing. `ProStore` calls `entitlementDidChange` when `isPro` changes after a read of StoreKit or a purchase, and `AppModel.proDidChange` runs the engines when the user chose a sound. A run before StoreKit answers uses the cached plan. The launch does not wait for StoreKit (T35). (Codex review on 2026-10-28.)
+- `SystemReminderCenter` gives each request `UNNotificationSound(named:)` and writes the file name in the `userInfo` under `maru.sound`. The system does not tell the sound of a pending request, so the request keeps it there. A request with the default sound has no key, so the requests of earlier builds stay. The key leaves the `userInfo` before the engines compare it. The plan, the identifiers, the triggers, the text, the category, and the level do not change.
+- The sound is not part of a correct request. `PendingReminder.hasCurrentSound` is separate from `isCurrent`, so no run removes a request with the correct dose, text, category, and level because of its sound. Both engines give such a request the new sound with `GenerationCenter.refreshSound`: an add with a new identifier, and a removal of the old request only after the system holds the new one. At the system limit it removes nothing first. A failed add keeps the old request with its old sound, and the next run tries again. The first version of D112 treated another sound as a wrong request, so a failed add could remove a correct reminder (Codex review on 2026-10-28).
+- The first reminders, the follow-ups, and "Remind in 10 min" use the sound. The notice after a reminder action (D034) keeps the default sound.
+- Alarms (D079) keep the default sound of AlarmKit. AlarmKit can take a named sound, but these sounds are 1 to 3 seconds long, and an alarm rings until "Stop". Nobody checked on a device how AlarmKit repeats a short file. A later decision can add an alarm sound after that check.
+
+Analytics: `paywall_shown` gets the sources `icons` and `sounds` (spec 11.5). No event tells which icon or sound the user chose. `PRIVACY.md` lists the two sources. A change of the privacy policy is a maintainer decision (`docs/process.md`).
+
+Licenses: Maru made every icon with `make_icons.py`. It uses no third-party image. (The sounds are replaced by D120.)
+
+No store change and no schema change. The change adds no record rule. One test (D016): `ReminderEngineTests.newSoundNeverRemovesACorrectReminder` shows that a failed add for a new sound keeps the reminder, and that a later run gives it the new sound.
+
+Not verified: no build of the app on this Mac (CI builds it). Nobody heard the sounds on a device or saw the two pages. Device checks:
+
+1. Each icon on the Home Screen, in light, dark, and tinted mode (iOS 18 and later), on an iPhone and an iPad, with the alert of iOS. Spotlight and the Settings app show the same icon.
+2. A free user: a tap on an icon or a sound other than "Default" opens the paywall, and nothing changes. A tap on a play button plays the sound.
+3. A Pro user: a new sound, then a reminder, a follow-up, and "Remind in 10 min" each play it, also on a locked iPhone and in a Focus.
+4. A refund in the StoreKit transaction manager: the icon stays, a tap on another icon opens the paywall, and "Default" still works. When Maru reads the refund, the pending reminders get the default sound with no other step. A restore brings the chosen sound back.
+5. Each sound at full ringer volume, in silent mode, and with music: no sound is harsh, loud, or clipped.
+6. The grid in the six languages and at the largest text sizes, and VoiceOver on a tile and on a play button.
+
+## D113 · 2026-10-28 · A free "Next Dose" Lock Screen widget
+
+Maintainer decision on 2026-10-28, with agent detail. The widget is free. It is not part of Pro (D107), and it shows no price, no offer, and no mention of Pro. It follows spec 6, 7.2, 9, and 10, and it adds to D048, D094, and D108. It is not the Live Activity "Next Dose on Lock Screen" of Maru Pro (D110). The user adds the widget once and does not have to open Maru to keep it current.
+
+What it shows:
+
+- Families: Lock Screen `accessoryRectangular`, `accessoryCircular`, and `accessoryInline`.
+- The next open dose of today: every open dose at one planned time. A dose stays until it has a record or the time of the next open dose comes. Before the first open dose, it is the first one.
+- Rectangular, in the layout of D094: the pill symbol, the part of the day, and the planned time in bold. Then the time left ("In 2 hr, 5 min", a relative date that the system counts), or "Not recorded yet" after the planned time. Never "late" or "missed" (D101). Then the names. The Live Activity of D110 removed "Not recorded yet", because nothing draws it again at the planned time. The widget has an entry at each planned time, so the text changes on time.
+- Circular: a ring of the doses of today that are taken, with the planned time in it. The time has no AM or PM, so it fits. VoiceOver reads the full time and "2 of 5 taken".
+- One line: the planned time and the names.
+- Names: at most three, then the number of the other doses ("Vitamin D, Iron, Zinc, and 2 more"), as in D110. With "Show Names in Reminders" off (D029, D108), "2 doses" takes the place of the names.
+- When every planned dose of today has a record: "All done for today", with a check mark, until midnight. The ring is then full, or it shows the share of the taken doses when a dose has a skip. With no planned dose today: "Nothing Planned Today".
+- Before the first unlock after a restart, or when the read fails: "Open Maru to update." (D066, D108). The widget reads again in 15 minutes.
+- A tap opens Today at the part of the day of the dose (D048).
+
+How it updates itself:
+
+- The widget reads the database in the App Group read-only, in one read transaction, with `LocalStore.readForWidget`, as the "Today" widget does. It plans the doses of today in memory and stores nothing (D048).
+- The timeline has one entry for now, one at each open dose time of today, and one at midnight with the first dose of tomorrow. So it moves to the next dose and to the next day with no reload. The system reads again at midnight.
+- `TodaySnapshot.expiresAt` can come before midnight: 12 hours after the read, or at a midnight in the zone of a plan with a fixed zone. The timeline then plans the same read again from that time.
+- The app already reloads every widget after each commit of a record (D108), so a recorded dose leaves the widget at once. A record from a reminder action, the "Record Dose" widget, Siri, or the Watch goes through the same reload.
+
+Privacy: the names show on the Lock Screen only when the user adds the widget and keeps "Show Names in Reminders" on, as with "Last Dose" (D108). Maru sends nothing.
+
+Copy: "%lld doses" and "%lld more" are the strings of the Live Activity (D110), with the same text. The new strings are drafts in five languages (`docs/localization-review.md`).
+
+Tests: none (D016). The widget only reads, and no record rule changes.
+
+Not verified: no build of the app on this Mac (CI builds it), and nobody saw the widget. Device checks:
+
+1. Each family in the gallery and on the Lock Screen, also in StandBy, with a long name, two and five items at one time, the names off, and the largest text sizes.
+2. The move to the next dose at its time with no open of Maru, the "Not recorded yet" state, and the time left.
+3. A record in the app, from a reminder, from the "Record Dose" widget, and from Siri: the dose leaves the widget.
+4. "All done for today" after the last record, and the first dose of tomorrow after midnight, with no open of Maru.
+5. A restart with no unlock ("Open Maru to update."), and a tap on each family.
+
+## D114 · 2026-10-28 · Maru Pro: the app color (changes D025 and the paywall rows of D107) (paywall source `feature` replaced by D127)
+
+Maintainer decision on 2026-10-28, with agent detail. Personalization is part of Pro.
+
+App color (D025):
+
+- Pink, the default, stays free. Every other color of the "App Color" menu needs Pro.
+- A free user can choose another color. The Settings sheet then shows it as a preview, and `presentPaywall(reason: .feature)` opens. The app color stays pink. Only the Settings sheet has the preview tint. Today, the other pages, the header wash, the widgets, and the Watch keep pink.
+- While the preview shows, the footer of "Display" says "This is a preview. With Maru Pro, the whole app uses this color." The preview ends when the sheet closes or when the user chooses pink or the current color.
+- A purchase while the preview shows makes the preview color the app color, also a purchase from the "Maru Pro" row.
+- When Pro ends, Maru keeps the chosen color and does not change it. Further changes need Pro again. Only pink stays free. This is the same rule as the icons of D112. A user who chose a color before this change keeps it under the same rule.
+- A restore of a backup (D040) sets the color of the backup, as before. It is the user's own earlier choice, so it does not need Pro.
+- The source of `paywall_shown` is `feature`, as for the Live Activity (D110). So the events, the analytics schema, and the privacy policy do not change. A Pro user's change sends `setting_changed` with `app_color` as before. A preview sends no event of its own.
+- Widgets, the Live Activity, alarms, and the Watch follow the stored color as before.
+
+Stays free:
+
+- "Appearance" (D105), because it is about readability.
+- "Color Header" (D100, D104), because it follows the current tint.
+- Item colors and item photos, because they tell items apart.
+
+Paywall (D107): the third benefit row changes from "Icons and Sounds" with "More app icons and reminder sounds." to "Make It Yours" with "App colors, icons, and reminder sounds." The symbol stays `paintpalette`. The text of the card of Today changes to "Maru Pro adds this, an Apple Watch app, and more colors, icons, and sounds. Everything else stays free.", because its last sentence was not true with a paid color. The six languages are drafts (`docs/localization-review.md`).
+
+No store change, no schema change, and no test (D016). The change adds no record rule.
+
+Not verified: no build of the app on this Mac (CI builds it). Nobody saw the menu, the preview, or the paywall. Device checks with the StoreKit configuration:
+
+1. A free user chooses blue: the Settings sheet turns blue, the paywall opens, and the footer shows. Close the paywall: the sheet stays blue. Close Settings: the app is pink.
+2. A free user chooses blue, then buys in the paywall: the whole app turns blue.
+3. A refund in the transaction manager: the color stays. Another color opens the paywall. Pink still works.
+4. The footer in the six languages and at the largest text sizes.
+
+## D111 · 2026-10-28 · The Apple Watch app is a Pro feature, and the app embeds it again (replaces D074) (paywall source `feature` replaced by D127)
+
+Maintainer decision of 2026-10-28, with agent detail. The Apple Watch app is a Maru Pro feature (D107), and it ships in the first public release. It replaces D074. The rules of D071 and D066 for the list and the record stay.
+
+Build:
+
+- `project.yml`: the `Maru` target depends on `MaruWatch` again. XcodeGen puts the Watch app in the phase "Embed Watch Content", so an archive of the app has `Maru.app/Watch/MaruWatch.app`.
+- CI builds the Watch app as part of the app build, and it checks that the project embeds the Watch app. The separate Watch step of D074 is gone. The `MaruWatch` scheme stays for a run of the Watch app alone.
+- The Watch app keeps the bundle ID `com.imhangli.maru.watchkitapp` and `WKCompanionAppBundleIdentifier` = `com.imhangli.maru`. It needs no App Group and no entitlement: it has no database, and WatchConnectivity needs no capability.
+- The Watch app has no privacy manifest. It uses no API that needs a reason, has no third-party code, and collects no data. `App/PrivacyInfo.xcprivacy` does not change.
+
+The gate:
+
+- `WatchDay` has a new field `isPro`, from `ProStore.isPro` on the iPhone. The iPhone sends it in the same application context and in each reply, after each read, each commit, each change of the tint, and each change of Maru Pro.
+- A free user's list has no dose. So no name, amount, or time leaves the iPhone for a free user. Only the Pro state, the tint, and the times of the list go.
+- The Watch shows the locked screen when the last list says free, also for a list of an earlier day: "Maru Pro", "See and record today's doses on your wrist.", "Unlock with Maru Pro on your iPhone.", and the button "Open on iPhone". The Watch sells nothing and has no purchase.
+- "Open on iPhone" sends the request `WatchRequest.showPro`. The iPhone keeps it in `UserDefaults.standard` (`pro.watchAsked`), because the request can start Maru in the background. The root view shows the paywall the next time that Maru is in front, after the onboarding, the edit screen, and the alerts, once for each request. The source of `paywall_shown` is `feature`. This is the one paywall that can show when Maru comes to the front, because the user asked for it. When the iPhone is not reachable, the Watch says so, and the user opens Maru on the iPhone.
+- When Pro ends (a refund, the end of the yearly plan, or a revoked family share), the next list says free, and the Watch shows the locked screen again.
+- The iPhone checks Pro again for each record request (`recordFromWatch`). A free user's request records nothing, also from a Watch that still shows an old Pro list. All the checks of D071 still apply to a Pro request.
+- The reminders on the Watch are not part of the gate. They are the iPhone notifications that watchOS mirrors, with the "Taken" action of D034, and they stay free.
+
+Debug: `-MaruDebugPro YES` makes `ProStore.isPro` true in a debug build, for a check of the Watch app in a simulator. A release build does not have the code.
+
+`PRIVACY.md` has a section "Apple Watch" again, and the privacy pages of the site are built again. The site build needed headings for "Maru Pro" (D107) and "Apple Watch" in each language. The privacy pages are not deployed. The FAQ, `site/llms.txt`, and `DEVICES` in `site/build.py` still say that Maru has no Watch app, because that is true for the version in the App Store. Change them on the day of the release with the Watch app.
+
+Check: after the merge, on 2026-10-29, the merged code ran in paired simulators (iPhone 17 Pro with iOS 27.0, Apple Watch Series 12 with watchOS 27.0), with the maintainer's permission of 2026-10-28. These passed: the locked screen of a free user, "Open on iPhone" (the iPhone in front showed the paywall), the Pro list, "Taken", "Undo", and "Skip" from the Watch with the record on the iPhone, and the locked screen again after Pro ended. The locked iPhone was not tested, because the simulator cannot lock a device. Pro came from `-MaruDebugPro YES`, not from a purchase. The screenshots, a video, and the report are in the maintainer's research folder, `maru/watch-check/`. CI builds the embedded Watch app.
+
+Not verified: nobody ran the Watch app on a real Watch. The checks of D071 and D066 for a real iPhone and Watch stay open. App Store Connect needs Apple Watch screenshots before a submission with the Watch app, and App Review needs a way to see the Watch app with Pro (a sandbox purchase).
+
+## D115 · 2026-10-28 · A plain Apple look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107; the paywall part is replaced by D118)
+
+Maintainer request on 2026-10-28, in two rounds. First, the paywall looked plain. A serif, a glow, and a preview card followed, and the maintainer rejected them: the paywall was "very ugly", it must be simpler and more direct, a reader of another language must understand it at once, it may use only the app font, and everything must look like Apple. This decision changes the look only. The StoreKit code, the entitlement rules, the offers, and every price rule of D107 stay as they are. The paywall still has no countdown, no trial switch, no discount, no urgency text, and a "Continue Free" button with the size and shape of the buy button.
+
+Research: Apple Music, Fitness+, and News+ sheets, the HIG pages "Apple In-App Purchase" and "Offering subscriptions", and Apple's `SubscriptionStoreView` share one shape: an icon, one title, a short value, a plan list with a check circle, one terms line above one capsule button, a close button in the corner, and small links. None has a glow, a serif, or a preview card. The notes are in `~/Documents/Research/maru/paywall-redesign/references.md`.
+
+- Type: SF Pro only, with text styles (`.largeTitle.bold()`, `.headline`, `.body`, `.subheadline`, `.footnote`). The New York helper, the glow, and the badge view (`ProStyle.swift`) are gone. Dynamic Type works through the text styles.
+- Background: `systemGroupedBackground` with `secondarySystemGroupedBackground` cards, as in Settings. No material, no shadow, no gradient, no motion.
+- First screen, from top to bottom: a close button, the app icon in use (64 points), "Maru Pro", three benefit rows, two plan rows, one terms line, the buy button, "Continue Free", and the four small links. It fits on an iPhone 17 Pro and on an iPhone 17e (390 by 844 points) at the default text size, with no scroll. At an accessibility text size, the page scrolls and the plan rows stack the price under the name.
+- Benefits: an SF Symbol in the tint and a label of at most four words. "Dose on Lock Screen" (`lock.iphone`), "Apple Watch" (`applewatch`), and "Colors, Icons, Sounds" (`paintpalette`). The symbol says the same as the label to a reader of another language. The benefit sentences and the colors, icons, and sounds preview card are gone. The sounds still play in Settings (D112).
+- Plans: one grouped card with two rows, "Yearly" and "Lifetime". Each row has a check circle, the name, a short note ("7 days free" and "No subscription"), and the price with its period at the end. The price is the same size as the name and larger than the note (App Review 3.1.2). The selected row has the filled check circle and the selected trait for VoiceOver.
+- Terms: one footnote line under the plans, for the selected plan, with the price and the period. "Free for 7 days, then $9.99 per year. Renews until you cancel." Without a trial: "$9.99 per year. Renews until you cancel." For the lifetime plan: "One payment. It does not renew." The trial timeline is gone, because the line says the same and the system confirmation sheet shows the dates (HIG: do not replace that sheet).
+- Buttons: "Try It Free" for the yearly plan with a trial, "Subscribe Yearly" without a trial, and "Buy Lifetime". "Continue Free" under it has the same size, font, and shape, with a gray fill and the text color. The close button in the corner also dismisses.
+- Links: "Restore Purchases" and "Redeem Code" in one row, "Terms of Use" and "Privacy Policy" in the next row. The line "Shareable with Family Sharing" and the 24-hour cancel sentence are gone. The renewal fact stays in the terms line, and the App Store sheet states the rest.
+- Thank-you: after a purchase, a full-sheet system background shows a check circle (one bounce, none with Reduce Motion), "Welcome to Maru Pro", and "Thank you. Your extras are ready.", with the success haptic. The paywall closes after 1.6 seconds. The purchase has already finished by then, so no confirmation comes before the commit (spec 7.2).
+- Settings: the row "Maru Pro" has the app icon in use (40 points), a headline title, and "Lock Screen, Apple Watch, and more", with a chevron. For a Pro user it shows "Active, Yearly" or "Active, Lifetime". "Restore Purchases" and "Redeem Code" did not change.
+- Today card: a `lock.iphone` symbol in the tint, a headline title, one sentence, the borderless button "See Maru Pro", and "×", on the normal row background. It still sits at the bottom of the list, never pushes a dose, and "×" hides it.
+- First-value offer: it shows the same paywall. The static Lock Screen picture with the first item is gone, with `NextDosePreview` and the `preview` field of `PaywallRequest`. The offer rules did not change: once per install, after the first save of an item with a time, after the alerts of the save. The offer no longer copies the name, the amount, or the time of an item into view state.
+- `SubscriptionStoreView` was not used. It shows only auto-renewable subscriptions of one group, so the lifetime plan (a non-consumable) cannot sit beside the yearly plan, and the compact picker has no room for "Continue Free". A custom view from system parts has the same look as the Apple sheets and keeps D107. `StoreView` for the lifetime plan would put it one screen deeper.
+- New strings: "Dose on Lock Screen", "Apple Watch", "Colors, Icons, Sounds", "Try It Free", and three terms lines, in the six languages. The strings of the removed rows, timeline, and preview card left the catalog. `docs/localization-review.md` lists the new ones.
+
+Evidence: simulator captures of the Today card, the paywall in light, dark, and zh-Hans, the Settings row, and an iPhone 17e (the smallest simulator here), at the default size and at the accessibility size "Extra Large", and a recording of the open, are in `~/Documents/Research/maru/paywall-redesign/v2/`. The simulator cannot attach `Config/Maru.storekit` when it starts from the command line, so a copy of the code in `/tmp`, not in the repository, set the two prices ($9.99 with a 7-day trial and $19.99) and forced the Today card. The real StoreKit path was not run.
+
+Not verified: no check on a real iPhone, on an iPad, with VoiceOver, or with Reduce Motion. The purchase with the StoreKit configuration (the thank-you, then the close), a restore, a pending purchase, and the long German and Spanish lines are open. The smallest iPhone that iOS 17 supports (iPhone SE, 667 points high) was not available as a simulator, so the first-screen rule is proven only down to 844 points. On a 667-point screen the two small link rows are under the first screen, and the buy button is above them.
+
+## D116 · 2026-10-28 · Paywall style B: a gradient picture, one headline, and a button that names the plan (an option next to D115, lower half redesigned by D117, replaced by D118)
+
+Maintainer feedback on the plain paywall of D115, on 2026-10-28: it is too plain and boring, a user would not want to buy it, and it has no focal point. The maintainer asked for a look at the ChatGPT and Claude upgrade pages, and for a very abstract, modern gradient picture as the look of the paywall, and maybe of other places. The earlier rules stay: very simple and direct, understandable at first look by a reader of another language, the system font only, and an Apple look. This decision adds a second paywall ("style B") so the maintainer can compare the two on a display and keep one. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107.
+
+Research: the notes are in `~/Documents/Research/maru/paywall-redesign/references.md`. I found no first-hand screenshots of the current ChatGPT or Claude pages, only captions: both use a plain screen with one primary button that names the plan, a marked selected plan, and a visible way out ("Stay on Free"). They have no decorative hero, so a picture is a focal point that they do not have. The article that the maintainer shared (a study of 1700+ apps) asks for a clear paywall: a headline and a supporting line with the outcome, the paid thing shown, free and paid obvious, the price, trial, renewal, and cancel text up front, a button that names the plan, the price next to the button, a visible close and restore, and a test of small screens, large text, and long translations.
+
+- Where: `App/Pro/PaywallStyleB.swift`, a separate view. `PaywallView` (D115) is unchanged, except that `PaywallHost` shows style B in a debug build with the launch argument `-MaruPaywallStyleB YES` (`DebugLaunch.wantsPaywallStyleB`). A release build shows only the plain paywall until the maintainer picks a style. The purchase code is a copy of the code of `PaywallView`. When the maintainer picks one style, delete the other view, and make the winner the only paywall.
+- Picture: `ProHero` in `App/Assets.xcassets`, a 1024 by 1536 JPEG of 177 KB. The image generation of Codex made it (four candidates, one chosen): soft flowing rose, magenta, coral, and cream color fields with a fine grain, no text, no object, no logo. It uses the palette of the app color (the pink of D025). It is in `docs/third-party-licenses.md` as a generated image with no third-party license. The four candidates are in `~/Documents/Research/maru/paywall-redesign/style-b/art/`.
+- Hero: the picture fills the top of the sheet, from edge to edge, with the bottom corners rounded. Its height is 34 percent of the sheet, at least 220 and at most 320 points, and it grows with the text size. A dark scrim at its foot keeps the white text readable in light and dark mode. The picture drifts slowly (10 seconds, a few points). With Reduce Motion it stands still.
+- Headline: "Your next dose, at a glance." in the large bold system font, over the picture. Over it, a small "Maru Pro". Under it, one supporting line: "Add Lock Screen, Apple Watch, and your own look. Reminders stay free." The headline names the result, and the line makes free and paid clear. Both lines are short, with a plain word order, so they translate well.
+- Paid features: three tiles in a row, each with an SF Symbol in the tint on a rounded square and two to four words: "Dose on Lock Screen", "Apple Watch", and "Colors, Icons, Sounds" (the strings of D115). At an accessibility text size the tiles become rows.
+- Offer: two plan cards with a check circle, the name, a note, and the price with its period. The selected card has a border in the tint. The price is as large as the name and larger than the note (App Review 3.1.2). The yearly plan is selected first.
+- Terms and button: directly above the buttons, one footnote line for the selected plan, with the price next to the button: "Free for 7 days, then $9.99 per year. Renews automatically. Cancel anytime.", "$9.99 per year. Renews automatically. Cancel anytime.", or "One payment. It does not renew." The buy button names the plan: "Start Free Trial" (yearly with a trial), "Subscribe Yearly", or "Buy Lifetime". A change of plan changes the card, the terms line, and the button together.
+- Free and close: "Continue Free" has the size, font, and shape of the buy button, in a gray fill (D107). A close button sits on the picture at the top right and stays in view when the page scrolls. "Restore Purchases", "Redeem Code", "Terms of Use", and "Privacy Policy" are under the buttons, as in D115.
+- Not added: no countdown, no trial switch, no struck price, no discount, no "best value" badge, no other font, and no extra animation. The thank-you after a purchase is the one of D115.
+- Other places: the picture could tint the Settings row or the Today card of Maru Pro. This decision does not do that. It waits for the maintainer's choice.
+- New strings, in the six languages: "Your next dose, at a glance.", "Add Lock Screen, Apple Watch, and your own look. Reminders stay free.", two terms lines, and "Start Free Trial". `docs/localization-review.md` lists them.
+
+Evidence: simulator captures and a recording are in `~/Documents/Research/maru/paywall-redesign/style-b/`. The simulator cannot attach `Config/Maru.storekit` when it starts from the command line, so a copy of the code in `/tmp`, not in the repository, set the two prices ($9.99 with a 7-day trial and $19.99) and opened the paywall at launch. The real StoreKit path was not run.
+
+Not verified: no check on a real iPhone, on an iPad, with VoiceOver, or with Reduce Motion. The purchase, a restore, a pending purchase, and the long German and Spanish lines are open. The smallest iPhone that iOS 17 supports (iPhone SE, 667 points high) is not a simulator here, so the first-screen rule is proven only down to 844 points.
+
+## D117 · 2026-10-28 · Paywall style B, second round: two calm looks for the lower half, B1 "Immersive" and B2 "Clean sheet" (replaces the tiles and plan cards of D116, replaced by D118)
+
+Maintainer feedback on style B, on 2026-10-28: the picture and the headline "Your next dose, at a glance." are good. Everything under the picture is "very, very ugly": some icons and fonts look generated, and the layout is messy. A second message: the join of the picture and the content is abrupt, and the page must flow as one piece. This decision replaces the lower half with two looks, so the maintainer can choose one. It changes no StoreKit code, no entitlement rule, no price rule, no string, and no trigger of D107.
+
+Why the old lower half looked wrong: three colored icon badges on gray tiles, gray plan cards, a pink outline, a gray "Continue Free" with the weight of the buy button, and pink links gave too many container types and fills. The hero was left aligned, and the tiles and terms were centered. The type had too many sizes. The picture ended in a rounded card with a hard edge above a white page.
+
+Shared rules of both looks:
+- One margin (20 points) and one left edge for the headline, the benefits, the plan list, the terms, and the links. Buttons are full width.
+- One type scale of Apple text styles: `largeTitle.bold` (headline), `headline` (name, plan name, price, button, "Maru Pro"), `body` (supporting line, benefits, "Continue Free"), and `footnote` (notes, period, terms, links). At an accessibility size, the headline and supporting line are one step smaller, as in D116.
+- One radius (20 points, continuous) for the plan list. No gray tile, no icon badge, no outline.
+- Benefits: three rows with a monochrome SF Symbol and the labels of D115. The symbol column has one width, so the labels line up.
+- Plans: one list with two rows, a check circle (filled for the selected plan), the name and note, and the price with its period. The yearly plan is selected first. The price has the size of the name and is larger than the note (App Review 3.1.2).
+- Actions: the terms line of the selected plan, one prominent capsule button that names the plan, "Continue Free" as a quiet text button (a full-width target, `body`, primary color), and four small links in secondary gray, in two rows. The headline has a narrow measure, so it breaks as "Your next dose," and "at a glance." The break is the only change to the headline.
+- Accent: the app tint colors the symbols, the selected check, and the buy button (B2). B1 uses white for the same three. Links are never pink.
+- The close button is a dark translucent circle on the picture at the top right, in view when the page scrolls. Restore, Redeem Code, Terms, and Privacy stay. The purchase code, the notices, and the thank-you did not change.
+
+B1 "Immersive": the picture is the whole page (`HeroArt` behind the scroll view, full-bleed under the status bar). Two layers darken it toward the foot: a blurred copy of the picture (radius 32) that a gradient mask fades in from 30 to 90 percent of the height, and a black wash from 12 to 55 percent opacity. The page forces the dark color scheme, so all text is white and vibrant. The plan list is an ultra-thin material. The buy button is a white capsule with black text. On a tall screen, the headline stays at the top and the rest sits at the foot.
+
+B2 "Clean sheet": the picture is the top of the page, full-bleed from the top edge (under the status bar and the close button). It is the background of the headline block and ends in a fade into the system background (white in light mode, black in dark mode). The fade is an alpha mask on the picture: a solid rectangle, then a 120-point gradient with eight eased stops from opaque to clear (no linear ramp, so no visible start or end). The picture extends 60 points below the headline block, under the first benefits, and a dark wash (10 to 45 percent) under the headline keeps white text readable in light mode. The headline sits on the solid part and the start of the fade. The benefits start right below with no card frame. The plan list is one `secondarySystemBackground` group.
+
+Debug launch arguments (a release build shows only the plain paywall): `-MaruPaywallStyleB1 YES` and `-MaruPaywallStyleB2 YES`. They replace `-MaruPaywallStyleB YES` of D116. When the maintainer picks one look, delete the other look, `PaywallView` (D115) if style B wins, and the launch arguments.
+
+Fit: at the default text size, the first screen with no scroll shows the headline, the benefits, both prices, the terms, the buy button, "Continue Free", and the links on an iPhone 17 Pro and an iPhone 17e. At the accessibility size "Extra Large" the page scrolls, and the plan rows stack the price under the name.
+
+Evidence: simulator captures (light, dark, zh-Hans on an iPhone 17 Pro, light and "Extra Large" on an iPhone 17e) and `compare.png` (old B, B1, B2, light and dark) are in `~/Documents/Research/maru/paywall-redesign/style-b2/`. As in D116, a copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
+
+Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, and the long German and Spanish lines. The smallest iPhone that iOS 17 supports (667 points high) is not a simulator here. The white "Continue Free" and link rows were not checked for contrast with a tool. The text on the fade of B2 is black on a pink tint for the first benefit row in light mode, and it is readable in the captures only.
+
+## D118 · 2026-10-28 · The final Maru Pro paywall: a calm page and a pinned purchase area (replaces the paywall of D115 and style B of D116 and D117, replaced by D119)
+
+Maintainer decision on 2026-10-28: keep style B2 "Clean sheet" of D117, then make it as clean as the paywall of Doz (a pill reminder app), with an Apple look. Keep the gradient picture and the headline "Your next dose, at a glance." This decision removes the plain paywall of D115, the style B option of D116, and the look B1 "Immersive" of D117, with their code, strings, and the debug switch. It changes no StoreKit code, no entitlement rule, no price rule, no trigger of D107, and not the thank-you. The Today card and the Settings row did not change.
+
+What I took from Doz, and why:
+- A soft tinted page. The tint of the app washes the whole background, very faint (14 percent in light mode, 20 percent in dark mode, fading to 3 percent at the foot). The picture fades into it, so the page is one piece.
+- Benefit rows with a thin symbol in the tint, a semibold title, and one gray line. The lines are new: "See your next dose without opening Maru.", "Record a dose from your wrist.", and "Pick your app color, icon, and reminder sound."
+- A pinned purchase area at the foot of the sheet, on the same tint wash as the page, with no flat color of its own, and the page fades out above it over 28 points, so the page scrolls away softly. It holds two plan tiles, the line "Share with your family" (symbol `person.2`, Family Sharing is on), the terms of the selected plan, one capsule button, and one line with a check mark under the button: "Cancel anytime" for the yearly plan, "One payment" for the lifetime plan. The terms line stays beside the button (App Review 3.1.2).
+- Plan tiles side by side: the name, the price as the largest text, and a small line ("7 days free", "One time"). The selected tile has an outline in the tint. A per-month price is not shown, because it adds a second price that the user must compare.
+- "Restore Purchases", "Redeem Code", "Terms of Use", and "Privacy Policy" end the scrolling page, after the note "Maru is made by one independent developer. Thank you for your support."
+
+What I did not take: laurel wreaths, a countdown, a struck-through price, "SAVE" badges, user reviews (Maru has none), a large app icon (the picture is the focal point), and centered body text. The text column is left aligned with one 20 point margin.
+
+Other rules:
+- The type is SF Pro with text styles. The one accent is the app tint (symbols, the selected outline, the button).
+- The supporting line under the headline and "Continue Free" are gone. The close button at the top right ends the paywall, and the benefit lines now say what Pro adds. The page says "Reminders stay free" nowhere, because the free app is the app that the user already has.
+- At an accessibility text size, the purchase area scrolls with the page, so it never covers the screen. The tiles stack.
+- Terms lines are the ones of D115 ("Renews until you cancel."). The lines of D116 with "Renews automatically. Cancel anytime." are removed, because the new line under the button says "Cancel anytime".
+- Removed strings: "Try It Free", "Continue Free", "No subscription", "per year", "one time", the supporting line of D116, and the two terms lines of D116.
+- Debug launch arguments `-MaruPaywallStyleB1` and `-MaruPaywallStyleB2` are gone. A debug build shows the paywall as a release build does.
+
+Fit: on an iPhone 17 Pro and an iPhone 17e at the default text size, the first screen shows the headline, the three benefits, both prices, the terms line, the button, and the reassurance line.
+
+Evidence: captures (light, dark, zh-Hans, scrolled, an iPhone 17e, and "Accessibility Extra Large") and `compare.png` (Doz, B2, final) are in `~/Documents/Research/maru/paywall-redesign/final/`. A copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
+
+Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the long German and Spanish lines, the iPhone SE size, and the contrast of the gray lines on the wash with a tool.
+
+## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118, plan tiles changed in a fourth round below, price and benefit copy changed in a sixth round below, small polish in a seventh round below)
+
+Maintainer feedback on 2026-10-28 about the paywall of D118. This decision replaces the paywall of D118. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107. The thank-you and the first-value offer are as before.
+
+What changed, and why:
+- System parts. The paywall is a normal system sheet with a `NavigationStack`. The close button is in the navigation bar, at the top right. On iOS 26 and later it is `Button(role: .close)`, the system glass "X". Before iOS 26 (the deployment target is 17.0), it is a plain `xmark` button. The custom circle is gone. The bar has no background, so the picture runs under it.
+- Less text. These are gone: "Maru is made by one independent developer. Thank you for your support.", "Share with your family" (the maintainer did not understand it there), the line with a check mark under the button ("Cancel anytime", "One payment"), "Restore Purchases", and "Redeem Code". Their strings are removed from the catalog. Family Sharing stays on in the products. The paywall only does not mention it.
+- Restore and Redeem are in Settings only. The "Maru Pro" section of Settings already has "Restore Purchases" and "Redeem Code" with the same logic, so the paywall calls neither. App Review 3.1.1 needs a Restore control somewhere in the app, and Settings has it.
+- Terms and Privacy stay on the paywall, because App Review 3.1.2 needs working links to both in the purchase flow. They are two small gray links on one line at the very bottom of the purchase area, in `caption2`, with a dot between them. Settings has "Privacy Policy" in "About". It has no "Terms of Use", and this decision does not add one.
+- One terms line, directly above the button, for the selected plan: "Free for 7 days, then $9.99 per year. Cancel anytime.", "$9.99 per year. Cancel anytime." (no trial), or no line for the lifetime plan (D119, fifth round). Each subscription line states the price and the period. It may shrink to 90 percent. Nothing else shrinks.
+- One line each. The third benefit line is now "Choose your app color, icon, and sound." and the German line of the first benefit is "Dosis sehen, ohne Maru zu öffnen.". Each benefit title, each benefit line, the terms line, and each button label fit on one line at the default text size on an iPhone 17e and an iPhone 17 Pro in English, zh-Hans, German, and Spanish.
+- Black text on white. The benefits start under the end of the picture fade, on the plain background. No dark text sits on the picture or on the fade.
+- No wash. The page background is the plain system background, white in light mode and the system dark color in dark mode. The tint wash is gone. The fade of the picture is longer (96 points under the headline) and eased (smootherstep), and it ends before the first benefit. The page also fades into the plain background above the purchase area.
+
+Fourth round, plan tiles (maintainer decision of 2026-10-28): the maintainer likes the page, and the two tiles felt "not exciting". The maintainer confirmed that Maru Pro has no monthly plan. It keeps the yearly plan ($9.99, 7-day free trial) and the lifetime plan ($19.99 then, $24.99 since the sixth round). Only the tiles changed, with true information:
+- Yearly tile: the name, the billed price, and a line "≈ $0.83/month". The number is the price of the StoreKit `Product` divided by 12, in its `priceFormatStyle`, and no code sets it. The free trial is a tag, "7 days free", on the top edge of the tile. It shows only when StoreKit says that the user can still get the trial (the rule of D107).
+- Lifetime tile: the name, the billed price, and "Pay once. It’s yours." (seventh round).
+- (The eighth round removed this gradient fill.) The selected tile is filled with a smooth linear gradient, from the top leading corner to the bottom trailing corner, in the brand colors of `ProHero`: a pink a little darker than the tint (`#E01F4D`) and the deep crimson of the picture (`#73083D`). It has no image and no noise. The text is white. The pink end is darker than the tint, so white semibold text has a contrast of about 4.7 to 1. The other tile keeps the quiet gray fill and the normal text. The change animates for 0.25 seconds and does not animate with Reduce Motion. It looks the same in light and dark mode, because the colors are fixed. (First, the tile used the picture with a dark veil. The maintainer did not like the picture in the tile, so the fifth round replaced it with this gradient.)
+- Fifth round: with the lifetime plan selected, the terms line is blank, because the tile already says "Pay once. It’s yours." (seventh round). The blank line keeps the height, so the button does not move. The yearly terms line stays (App Review 3.1.2). The string "One payment. Yours to keep." left the catalog.
+- The price stays the largest text in each tile (App Review 3.1.2 and D107). The tag and the monthly line are smaller. There is no "Most popular", "Best value", "Save xx%", countdown, or strikethrough.
+- Strings: "One time" is gone, and so is "One payment. Yours to keep." (fifth round). "Pay once, keep forever" (now "Pay once. It’s yours.", seventh round) and "≈ %@/month" are new, in six languages. Every line of the tiles and the terms line fits one line at the default text size on an iPhone 17e and an iPhone 17 Pro in en, zh-Hans, de, es, ja, and ko (captures). Not verified: an accessibility text size with the new tiles, a real iPhone, VoiceOver, Reduce Motion, and the contrast of the white tag text on the tint with a tool.
+- Evidence: captures and `compare.png` (D119 next to the new tiles) are in `~/Documents/Research/maru/paywall-redesign/final-v3/`. The captures of the gradient tile (fifth round) are in `final-v4/`. A copy of the code in `/tmp` set the prices.
+
+Sixth round, price and benefit copy (maintainer decision of 2026-10-28). Only text and one price changed. No layout, StoreKit code, entitlement rule, or trigger changed.
+- The lifetime price is $24.99, not $19.99. The yearly plan stays $9.99 with a 7-day free trial, and there is no monthly plan. `Config/Maru.storekit` has the new lifetime price for local tests. The app has no price in code: every tile and terms line reads `Product.displayPrice` from StoreKit (`ProStore`). The product `com.imhangli.maru.pro.lifetime` does not exist in App Store Connect yet. Create it at USD 24.99 (`docs/release-plan.md`, section 7).
+- The three benefit rows have new plain copy (title / line), each on one line on an iPhone 17e:
+  - "Right on your Lock Screen" / "See dose and time without opening Maru."
+  - "Record from your wrist" / "Tap Taken on Apple Watch. Needs iPhone."
+  - "Make Maru yours" / "App colors, icons, and reminder sounds."
+- Why these words. The titles do not repeat the headline "Your next dose, at a glance." The first draft of the maintainer's proposal had three claims that are not true or too strong: "always in sight" (the Live Activity ends when the day is done, and the system ends it about 8 hours after the last open of Maru), "No unlocking" (the "Taken" button records after an unlock), and "Phone stays put" (the Watch asks the iPhone to write each record, so it needs the iPhone). Two Codex reviews with five simulated personas (a student with basic English, a busy parent, a 60-year-old on blood-pressure medicine, a fitness person, and a design-minded iPhone user) also found two idioms ("in sight", "stays put"), the unclear verb "Log it", and "your" three times in the third row. The final lines have none of these. The lines make no health claim and no promise of adherence (App Review 1.4.1). The reviews are in `~/Documents/Research/maru/paywall-redesign/copy-review/`.
+- A description fits one line at about 40 characters on an iPhone 17e. Captures showed that 43 and 44 characters wrap, so the lines have 39.
+- The six old strings left the catalog ("Dose on Lock Screen", "See your next dose without opening Maru.", "Apple Watch", "Record a dose from your wrist.", "Colors, Icons, Sounds", and "Choose your app color, icon, and sound."). The six new strings are in six languages (`docs/localization-review.md`). The settings rows, the card of Today, and the Watch app keep their own strings.
+- Evidence: captures on an iPhone 17 Pro (yearly and lifetime selected) and on an iPhone 17e (en, zh-Hans, de, ja, es, ko) are in `~/Documents/Research/maru/paywall-redesign/final-v5/`. A copy of the code in `/tmp` set the two prices. The real StoreKit path was not run. No native speaker read the translations.
+
+Seventh round, small polish (maintainer request of 2026-10-28). Only `PaywallView` and one string changed. No StoreKit code, entitlement rule, price, or trigger changed.
+- Benefit symbols. Each symbol sits at the vertical center of its row, the block of the title and the line (`HStack(alignment: .center)`). Before, it sat on the first text baseline, so it looked high. The symbol column keeps its fixed, scaled width, so the text stays aligned at every text size.
+- Selection ring. The selected plan tile gets a ring of 1.5 points in the tint pink (the eighth round keeps the ring and removes the gradient). The ring lies outside the tile with a gap of 3 points, with continuous corners (the radius of the tile plus the gap). It is an overlay with a negative inset, so it never changes the size of the tile or moves the layout. The other tile has no ring. The ring fades with the 0.25 second animation of the tile, and not with Reduce Motion.
+- Lifetime line. "Pay once, keep forever" is now "Pay once. It’s yours." and fits one line in all six languages (`docs/localization-review.md`). The old string left the catalog.
+- Evidence: captures are in `~/Documents/Research/maru/paywall-redesign/final-v6/`.
+
+Eighth round, no gradient in the tile (maintainer request of 2026-10-28). Only `PaywallView` changed. No StoreKit code, entitlement rule, price, string, or trigger changed.
+- The selected tile has the same fill as the other tile (`secondarySystemBackground`) and the same text colors (primary and secondary, not white). The gradient fill, its two colors, and the white text are gone from the code.
+- The selection ring stays: 1.5 points, 3 points outside the tile, in the tint pink (the app tint, `.tint`), with the 0.25 second animation and no animation with Reduce Motion. The "7 days free" tag stays as it was.
+- Evidence: captures are in `~/Documents/Research/maru/paywall-redesign/final-v7/`.
+
+Fit: the first screen at the default text size on an iPhone 17 Pro and an iPhone 17e shows the headline, the three benefits, both prices, the terms line, the button, and the two links.
+
+Evidence: captures (light and dark on an iPhone 17 Pro, zh-Hans on both phones, light, German, and Spanish on an iPhone 17e, and the Settings section) and `compare.png` (D118 next to D119) are in `~/Documents/Research/maru/paywall-redesign/final-v2/`. A copy of the code in `/tmp`, not in the repository, set the two prices and opened the paywall at launch.
+
+Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the plain `xmark` button before iOS 26, an accessibility text size after this change, the iPhone SE size, ja and ko line fit, and the contrast of the gray lines with a tool. The two privacy links differ: the paywall opens `https://maru.day/privacy/` and Settings opens `https://maru.day/privacy.html`. The maintainer must check that both open the page.
+
+## D120 · 2026-10-29 · Reminder sounds: eight CC0 sounds (replaces the sound part of D112)
+
+The maintainer listened to eight candidate sounds on 2026-10-29 and liked them. The sounds replace the six sounds that Maru generated in D112. The icon part of D112 does not change.
+
+- Eight sounds, in this order after "Default": "Rising Chime", "Marimba", "Soft Bell", "Glass", "Chime Bars", "Hand Bell", "Music Box", and "Synth Bell". The names are localized in en, zh-Hans, ja, es, de, and ko. The Chinese names are 上升风铃, 马林巴, 柔和钟声, 玻璃, 音条风铃, 手摇铃, 八音盒, and 合成铃声.
+- Each sound is a CC0 1.0 file from another author: seven from Freesound and one from Kenney. `docs/third-party-licenses.md` lists the author, source URL, license, and edits of each. CC0 needs no credit, so the app shows no notice.
+- Each file is `App/Sounds/maru-<name>.caf`: 16-bit linear PCM, 44.1 kHz, about -16 LUFS (Chime Bars is about 3 dB quieter), 0.67 to 2.23 seconds long. This is far below the 30 seconds that iOS allows for a notification sound, and CAF with linear PCM is a supported format. Together the files are about 1.6 MB. Six of them are stereo.
+- All eight sources are lossy: seven are public Freesound previews (Ogg Vorbis, about 160 kbps), and one is an Ogg Vorbis file of Kenney. The edit to 16-bit PCM does not add loss. A later build can use the original Freesound files after a login. This is acceptable for a short reminder sound.
+- The stored value of a sound is its file name without `maru-` and `.caf`, for example `rising-chime`. The Marimba sound has the value `marimba-hello`, because its file keeps the name of the source.
+- A stored choice of a removed sound ("dewdrop", "petal", "breeze", "pebble", "sunrise", or "lantern") has no match in `ReminderSound`, so `ReminderSound.chosen` returns no choice. It means "Default". Nothing crashes, and no migration step runs. The old value stays unread in `UserDefaults`, and the next choice overwrites it. A pending request that still names a removed file has a wrong sound, so the next reminder run replaces it (`hasCurrentSound`, D112). Until then the system plays its default sound, because the file is not in the bundle.
+- The Pro gating, the free preview, the settings page, the reminder run, the alarms, and the analytics of D112 do not change.
+- `docs/brand/make_sounds.py` and the six generated files are removed. `make_icons.py` stays. The six old names leave `App/Localizable.xcstrings`.
+
+Not verified: nobody heard the sounds on a device. Nobody checked on a device that each file plays as a notification sound, at full ringer volume, in silent mode, on a locked iPhone, or in a Focus. The device checks 3 and 5 of D112 apply to the new sounds.
+
+## D121 · 2026-10-29 · Family: several people and pets on one iPhone (changes the "Profile" line of spec 1, member color changed by D128)
+
+Maintainer decisions of 2026-10-28, with agent detail. The design is in `~/Documents/Research/maru/family-mode/design.md`. Its Codex reviews are in the same folder.
+
+- Maru can hold several people and pets on one iPhone. The UI name is "Family". A member is a local label on this iPhone. It is not an account, not a health profile, and not a login. Remote view, sharing, and sync between phones are not planned (spec 1).
+- The approved scope replaces these spec clauses: §1 "Profile" and "家庭远程监督", §8.3 "two or more items", and §11.5 the paywall source list. Remote supervision stays excluded. Local members are allowed. Group actions require one member. The source list gains `family`.
+- There is no mode switch. Every database has one member "Me". The app looks as before until the user adds a second member (T57).
+- One table `person` holds the members: `id`, `kind` (`me`, `person`, or `pet`), `name` (`NULL` only for `me` before a rename, and the app shows its own word "Me"), `symbol` (the animal of a pet), `imageReference` (an optional photo, D124), and `archivedAt`. A member has no color: every avatar uses the app tint (UI v2 of the design).
+- Each item belongs to exactly one member: `item.personID`. Schedules, versions, occurrences, and events belong to the member through their item. No other table has a member column, so there is one source of truth.
+- `item.ownerChangedAt` is the instant of the last owner change (D123). The store sets it in the same write as the change. A caller cannot set or erase it for a stored item.
+- Pet items receive no human amount, time, or note candidates in the editor. Name suggestions stay. This changes D043 and spec 4.
+- An owner change is a correction ("I set it up under the wrong person"). The records, schedules, and history move with the item. No record is copied or rewritten (T64).
+- Store operations (`MaruDatabase`): `people()`, `save(_:)` for a member, `archive(person:)`, `restore(person:)`, `delete(person:)` (D125), and `setOwner(_:of:)`. Each is one write transaction with the generation check (D040). The store never reads Maru Pro (D122).
+- Invariants that the store keeps: exactly one `me`, at least one active member, and no active item of an archived member. A save, an owner change, or a restore that breaks one is `StorageError.conflict`. The SQL has a CHECK for each rule of a row, a unique index for `me`, and two triggers that refuse an item with no owner.
+- A stored item with no owner or an owner that is not an ID is a row that does not load: `StoredDataRule.itemPerson` (D088). A member row that does not load is `personRow`. The other items keep their reminders.
+- Today, the widgets, the Watch list, and the item list carry the member ID and the owner of each dose (`TodaySnapshot.ItemLook.personID` and `owner`), so the UI can filter Today by member after the merge of the pending and the as-needed rows. The filter UI is not in this change.
+- Analytics: `daily_usage_summary` gets `family_size` as a bucket (`1`, `2`, or `3_plus`). No name, no ID, no kind, and no count of pets leaves the iPhone (spec 10, 11.5, T68).
+
+Not in this change (the UI work does them): the Family page, the add and edit sheet, the switcher and the Today filter, the "For" row in the editor, the History filter by member, the per-member summary PDF, the CSV column "Person", `PRIVACY.md`, and the store text.
+
+## D122 · 2026-10-29 · Family is a Maru Pro feature, and a member that exists never locks
+
+Maintainer decision of 2026-10-28. Free: "Me" and every item, always. Pro: the creation of a second or later member. A member that exists never locks after Pro ends. A free user can use, rename, change, archive, restore, and delete an existing member, add items for it, and restore a backup with members (T58, T59). This follows D107 ("a purchase never blocks a local feature") and D114.
+
+- The one gate is `AppModel.addMember(_:)`. A free user gets the paywall with the new source `family` (`AnalyticsEvent.PaywallSource.family`), and nothing is saved. Every other Family operation has no gate.
+- The store has no gate, because the store never reads Pro. The free edit path calls `update(_:)`, which refuses a missing member in the write transaction.
+- Family does not unlock the Watch app (D111) or the Live Activity (D110).
+
+## D123 · 2026-10-29 · Reminder text with members, no group action across members, and no quick action after an owner change (changes D090, D110, D108, and the Watch row name of D071, Siri record rule changed by D129)
+
+Maintainer decision 4 of 2026-10-28, with agent detail from the design and its two Codex reviews.
+
+Text:
+
+- A text names the owner of a dose only when the Family has two or more active members (`Family.namesOwners`). With one active member every text is as before (T57).
+- `ReminderContent.names` and `AlarmRequest.names` hold `ReminderName` (an item name and an optional owner). A notification body with owners has one line for each member, for example "Me: Vitamin D3" and "Mochi: Methimazole and Flea Drops". The line pattern is one String Catalog entry, so each language chooses its colon. An alarm title joins the lines into one list.
+- "Show Names in Reminders" off (D029) hides the member names too (T62). The Watch list is the exception, as for the item names (D071): with two or more members, each row name has the owner ("Mom: Levothyroxine"), so an old Watch list tells two rows of one item name apart.
+- The Lock Screen widgets, the Live Activity, the Last Dose widget, and Siri use the same "owner: item" text when names show. The Home Screen widgets "Today" and "Record Dose" always showed the item names (D048), so they always show the owner too. Without it, two rows of one item name for two members look the same, and a tap could record for the wrong member.
+- No member name or member ID goes to `userInfo`, a log line, or analytics.
+
+Actions:
+
+- A request that names doses of two or more members has only "Remind in 10 min" (`ReminderCategory.choose`, `membersCount`). One tap must not record a dose for another member (T60).
+- A request that names doses of one member keeps its actions: "Taken" and "Skip" for one dose, and "Take All" and "Skip All" for two or more doses with the names shown (D090, T61).
+- The category and the identity of a follow-up come from the doses that the request names. Example: Mom and the cat share 08:00, and only Mom has follow-ups. The follow-up names only Mom, so it has "Taken" (`DoseGroups.single(of:among:)`). The identity is then the list of its doses (`membersKey`).
+- The Live Activity shows "Taken" only when its doses belong to one member (`canRecord`), and the record path checks the same rule again. This changes D110.
+- Siri "Record my doses" records nothing when the Family has two or more active members. It says "Several people and pets use Maru, so Siri can't record for them. Open Maru to record each dose." A member parameter for Siri is later work. This changes D108.
+
+An owner change and old actions:
+
+- An owner change does not change the identity of a dose. So each quick action carries the instant of the list that the user saw, and the record transaction refuses a dose of an item whose `ownerChangedAt` is later (`RecordFailure.ownerChanged`, nothing written, T70):
+  - A notification action and the "Taken" button of an alarm: the request carries `ownerChanged`, the latest `ownerChangedAt` of the items that it names, only when one of them changed its owner. It holds no ID and no name, so a single-person user's requests do not change (T57). The transaction refuses a dose whose item changed its owner after that value, or after the delivery date. A request with no value records only an item whose owner never changed. This also covers a pending request that the system delivers after an owner change before the reminder run replaced it, and a follow-up of yesterday after midnight (D039).
+  - The Watch: `WatchRequest.record` carries `listedAt`, which is `WatchDay.sentAt` of the list that the user saw. The iPhone sets `sentAt` to the read time of the list, not later.
+  - A widget capsule: `TakeDoseIntent.readAt`, the instant before the widget read.
+  - The Live Activity: `NextDoseSlot.listedAt`, the read time of the doses. A new owner also gives a new token.
+  - Siri: an instant before the read. The count of active members comes from the same read as the doses, after the items, so a member that comes back during the read stops the record.
+- The store takes the instant of an owner change inside its write transaction. A read that starts during that transaction still sees the old owner, so a list instant less than 5 seconds after the change also counts as before it (`ownerChangeMargin`). The user then records from a new list.
+- Rare cases, accepted after the second Codex review (`~/Documents/Research/maru/family-mode/core-codex-review-2.md`). Each needs an owner change and a quick action from an old list in one short time:
+  - The clock of the iPhone moves back after a Watch, widget, or Live Activity list, and the owner changes before a new list. The list instant is then later than the change.
+  - An owner change transaction that takes longer than 5 seconds.
+  - A restore of a backup in which an item has another owner, followed by a tap on a Watch row, a widget capsule, or a notification from before the restore. A restore already replaces the lists and the requests.
+  A check of the member that the user saw (its ID in each quick action, compared in the record transaction) closes all three. It is a later step if a device check finds one of them.
+- Today records with the owner on the screen and sets no instant. The future Family UI must refresh owner labels before a record.
+- An as-needed dose has no quick action, so it needs nothing.
+- A change of a member name, an owner, or an archive starts one reminder run, as a rename of an item does (D084, D086). The run replaces the pending requests whose text changed.
+
+A pending request can keep its old text until the next reminder run. Its old `ownerChanged` value refuses the record, also with the names hidden. The record transaction also refuses an action whose doses belong to two or more members now, also for a request with an old category.
+
+## D124 · 2026-10-29 · The avatar of a member: a photo, an animal, or the initial (the "no member color" rule replaced by D128)
+
+Maintainer decision 5 of 2026-10-28 (the switcher UI is designed elsewhere). A member has an optional photo from the library or the camera. The core stores it as an item photo (D056): `person.imageReference` holds the file name, and the file is in the photo folder of the items. The avatar shows the photo when the file is on the iPhone, else the animal of a pet, a person symbol for "Me", or the initial of the name. An avatar has no gradient and no member color.
+
+- The backup does not hold the photo files, as for items. A restore keeps the names, and the app removes the files that no item and no member uses.
+- A replaced photo file and the photo of a deleted member are removed after the save.
+
+## D125 · 2026-10-29 · Archive, restore, and delete of a member (follows D033 and D084)
+
+- Archive: one transaction sets `person.archivedAt` and archives each active item of the member with the same instant. Reminders stop with the next run (D084). History keeps the past doses (D091).
+- Restore: one transaction clears `person.archivedAt` and restores only the items with the same `archivedAt`. An item that the user archived on its own keeps its own archive.
+- Delete: one transaction deletes every item of the member with its versions, schedules, occurrences, and events, as `deleteItem` (D033), then the member. The user asks and confirms. It is never a recovery from an error (spec 7.3).
+- `me` cannot be deleted. The last active member cannot be archived or deleted. Each is `StorageError.conflict`, and nothing changes (T63).
+
+## D126 · 2026-10-29 · Migration `v8`: one plain migration, because Maru has no public users yet
+
+Maintainer decision of 2026-10-28: version 1.0.0 will not be released. The first public release has Maru Pro, the new paywall, and Family. The maintainer's iPhone and the TestFlight testers have data, and spec 7.3 forbids a clear and rebuild. So the migration is plain, and there is no special work for old public backups.
+
+- `v8` runs in one transaction: it creates `person`, inserts "Me", adds `item.personID` and `item.ownerChangedAt`, and gives every item to "Me", also an archived item. SQLite cannot add a `NOT NULL` column with a `REFERENCES` clause, so the column is nullable and two triggers refuse a `NULL` after the migration. No table is copied or rebuilt. A failure rolls back the whole migration, so the database stays at `v7` with its data (T37, T56).
+- A new database runs `v1` to `v8` and gets "Me" with no item.
+- Restore of a backup of this version: the restore stages the backup on a copy and migrates the copy to the level of the backup, which seeds a "Me". When the backup has a `person` table, the stage deletes the seeded members before it copies the rows of the backup, so there is no second "Me" (T69). The check of the staged copy then needs exactly one `me`, at least one active member, and no active item of an archived member.
+- Restore of an older backup: it has no `person` table, so the seed stays, and the later migration gives every item to "Me" (T67).
+- An older app refuses a backup of `v8` as a newer schema (T38). The backup format version stays 1 (`docs/export-format.md`).
+
+Tests (D016): the upgrade fixture gives every item to "Me" (T56), an older backup restores with "Me", a backup with members restores with one "Me" and the owners (T69), an action listed before an owner change records nothing (T70), and a request for two members has no group action (T60). The archive test covers T63.
+
+## D127 · 2026-10-29 · Analytics for the features since D099: Pro state, new surfaces, onboarding, and the paywall close (changes spec 11.5)
+
+Lead decision for the maintainer, who asked for usage and Pro conversion data before the first public release. Each new field is a fixed choice or a flag in the strict schema of `AnalyticsEvent` (T45). No field holds an item, a member, a dose, a time, an ID, a date, a price, an icon name, or a sound name (spec 10, 11.2, T42, T68).
+
+- `daily_usage_summary` gets three usage flags: `used_live_activity` (the "Taken" button of the Live Activity, or a tap on it), `used_watch` (a record request from the Watch), and `used_siri` (a Siri or Shortcuts question or record). A record from these paths also sets `used_record` after the commit, through the one commit path. A tap on the Live Activity has the link of the widget with the mark `?from=activity`, so it does not count as `used_widget`.
+- `daily_usage_summary` gets the Pro state at the last check of the day: `pro_plan` (`none`, `yearly`, or `lifetime`), and the flags `has_live_activity` ("Next Dose on Lock Screen" is on), `custom_icon` (the icon is not the default icon), and `custom_sound` (the reminders use a sound other than the default). Each open, each read of StoreKit, and each change of one of these checks again. A plan from Family Sharing counts as the plan. StoreKit tells the two apart, and this change does not.
+- `setting_changed` gets `header_wash` (a flag, D100) and `appearance` (`system`, `light`, or `dark`, D105). Only a change of the user sends it, not a restore.
+- A new event `onboarding_result` has `result`: `add_item`, `later`, `skipped`, or `yielded` (a reminder tap or a widget link opened Today while the onboarding showed). An onboarding that never showed sends nothing. In an opt-in region analytics is not active yet at the onboarding, so it sends nothing there (spec 11.3).
+- `paywall_shown` replaces the source `feature` with three sources: `app_color` (D114), `live_activity` (D110), and `watch` (D111). Every source has a caller, except `family`: the Family UI does not call `addMember` yet (D122).
+- `purchase_result` gets `dismissed`: the paywall closed while Pro is not active. So each showing has an end that counts. A close after a pending purchase sends `pending` and then `dismissed`.
+- A restore at launch, a renewal, a code, an approved purchase, and Family Sharing go through `refreshEntitlement` and send no `purchase_result`. Only a purchase from the paywall sends `purchased`. So an approved "Ask to Buy" purchase shows only as `pending` and a later `pro_plan`.
+- `PRIVACY.md` lists every new field. The site pages come from `PRIVACY.md` and change when the maintainer publishes the site. `docs/release-plan.md` names `onboarding_result` under Product Interaction and `pro_plan` under Purchase History.
+- Not in this change: the Supporter lifetime product (`com.imhangli.maru.pro.supporter`). When it comes, `PurchasePlan` and `pro_plan` need a value for it.
+
+Tests (D016): the factory check of `AnalyticsTests` sends the new factories through the checked init. No other test.
+
+## D128 · 2026-10-29 · The Family UI: member colors, the person menu, and "Add for" (replaces the color rule of D121 and D124, "not in this change" list done by D129)
+
+Maintainer decisions of 2026-10-29 on the design prototype (`~/Documents/Research/maru/family-mode/apple-style/`), with team defaults for the open points. The captures of the real UI are in `~/Documents/Research/maru/family-mode/real-ui/`.
+
+Avatar colors (style "C"):
+
+- Each member has a color. The avatar is a soft fill of the member color (about 16% opacity) with the initial, the person silhouette ("Me"), or the animal of a pet in the full member color. It has no gradient and no ring. A photo from the library or the camera replaces the fill, also for a pet.
+- "Me" always uses the app color. A member with no stored color also uses the app color.
+- A new member gets the first `ItemColor` that no member uses. It skips the current app color when another color is free (`ItemColor.forNewMember`). The user changes it on the page of the member.
+- Migration `v9` adds `person.color` (`NULL` or an `ItemColor` raw value). It adds one column and copies no table (spec 7.3). A backup of `v8` restores through `v9` with no color.
+- Color is never the only signal: the name, the initial, or the animal is always there (spec 5.3).
+
+Today and Settings:
+
+- A person menu at the top right of Today, as the profile picture of Health: "Everyone", each active member, and "Add Person or Pet". It shows only with a second active member. With only "Me", Today is as before (T57).
+- In "Everyone", a row of another member has the small avatar of the owner before the record circle. A row of "Me" has no avatar (team default). A view of one member has the name of the member as its title, for example "Mom" (team default). The parts of the day stay.
+- The choice of the menu lives in memory. A new launch and a tapped reminder show "Everyone" (team default).
+- Settings has a row "Family" under "Maru Pro", with overlapping avatars. The Family page lists the members, "Add Person or Pet", and the archived members. The add page is in the style of a new contact: photo, person or pet, name, and the animal of a pet. The page of a member also has the color, archive or restore, and delete.
+- The item editor has a row "For" with a second active member. A change of a stored item says "Records move with the item." A new item belongs to the member that Today shows, else to "Me".
+
+Pro:
+
+- The add of a second or later member stays the only gate (D122). The paywall with the source `family` has the headline "Everyone you care for, in one place."
+
+"Add for" (copy for another member, changes "Copy this item to another member" in the "Cut and later" list of the design):
+
+- The item detail has a row "Add for…" with a second active member. It opens a system menu of the other active members.
+- A choice opens the editor for a new item with the values of the item: name, type, form, color, amount, times and plan, alarm, follow-ups, note, and photo. The owner is the chosen member. Nothing saves until the user taps Save (spec 2, spec 7.2).
+- The copy is a new item with its own IDs, schedule, and records. It copies no record. The first item does not change.
+- The save copies the photo file to a new file, so a delete of one item never removes the photo of the other.
+- It adds no Pro gate. The usage statistics count it as a new item (`mode` `new`), because the event schema needs no new value. No member data leaves the iPhone.
+
+Not in this change: the History and summary filter by member (T65), the per-member PDF, the CSV column "Person", the My Items filter and tile avatars, the "For" row on the item detail, the footer of "Show Names in Reminders", a member parameter for Siri, and `PRIVACY.md`.
+
+## D129 · 2026-10-29 · Family follow-ups: History, My Items, the summary, the CSV column, and Siri for one member (changes the Siri rule of D123)
+
+Maintainer approval of 2026-10-29 for the "not in this change" list of D128, with team defaults for the open points. Simulator captures are in `~/Documents/Research/maru/family-mode/follow-ups/`.
+
+One choice for three pages:
+
+- History and My Items have the person menu of Today. The three pages share one choice in memory (`TodayState.member`), as section 7.1 of the design says. A new launch and a tapped reminder show "Everyone" (D128).
+- History of one member: the store reads take `owner` (`history`, `historyCounts`, `summary`). The filter limits the items, the schedules, the stored and the as-needed doses, the graph counts, and the first day (T65). An item belongs to its current owner, so the records move with it (T64). A change of the menu, an owner change, or an archive reads the page again. The log of an item from its detail reads every member. While the History of one member is open, a log of an item of another member shows "Everyone".
+- History hides the "not saved" banner in the view of one member, as Today does (D128). Its retry sends the events of every member.
+- My Items of one member shows only the active items of that member. "Archived" stays one list for everyone. A member with no item shows "No Items Yet" with "Add Item". In "Everyone", a tile of another member has the avatar of the owner at its top corner. A tile of "Me" has none, as a row of Today. VoiceOver reads the tile as "Mom: Levothyroxine".
+
+Item detail:
+
+- The detail has a row "For" with the avatar and the name of the owner, only with a second active member (T57). The row only shows the owner. "Edit" changes it, so the user reads "Records move with the item." before the save. This replaces "tap changes it" of the design.
+
+Reports and export:
+
+- The summary sheet has a "For" menu with "Everyone" and each active member. It starts at the member of the person menu. The item list and the counts then have only that member, and the PDF title is "Summary for Mochi" (T65).
+- "Share Medication List" becomes a menu "Share Medication List…" with "Everyone" and each active member, only with a second active member. The title of a list of one member is "Medication List for Mochi".
+- The CSV export has a new last column "Person": the name of the current owner, or `Me` in fixed English for "Me" before a rename. The column is always there, also with one member, so a parser reads one header. The backup format does not change (`docs/export-format.md`). An older parser that reads the columns by position still reads the first eight.
+
+Settings:
+
+- With a second active member, the footer of "Reminders" says "With names on, reminders also name the person or pet." With one member it shows nothing new (T57).
+
+Siri (changes D123):
+
+- "Record my doses" has an optional parameter "For" (`MemberEntity`, the active members). With two or more active members and no member, Siri asks "For whom?" and lists the members. It then reads the doses again and records only the open doses of the items of that member. One confirmation never records for two members (D123).
+- The confirmation names the member and the items: "Record as taken now for Mom: Levothyroxine?". With "Show Names in Reminders" off, Siri says only the count, with no member name and no item name (T62). The list of members of the question shows on the unlocked iPhone, because the user must choose one.
+- The record keeps the checks of D108 and D123: the read instant refuses a dose whose owner changed after it. The phrases do not change.
+- The refusal text of D123 ("Several people and pets use Maru…") is removed.
+
+Analytics: nothing new. No member name, ID, or photo goes to an event (T68).
+
+Tests (D016): one store test checks that the history, the graph counts, the first day, and the summary of one member never count another member, and that the export names the member of each line (T65). The CSV test has the new column. No UI test.
+
+Checks: the upgrade from `v7` to `v9` is covered by package tests, so no device-style upgrade check ran. `FamilyTests.version7BackfillsMeWithoutChangingRecords` migrates a `v7` database with records to the current schema. `UpgradeTests` opens the shipped fixtures of 1.0 (`v5`) and 1.1 (`v6`) and runs the whole reminder queue through `v9`.
+
+
+## D130 · 2026-10-29 · Siri and Shortcuts, the PDF reports, and the 30-day counts are Maru Pro features (changes D108 and D091)
+
+Maintainer decision of 2026-10-29. Three free features of D091 and D108 move into Maru Pro. The safety features stay free: reminders, alarms, follow-ups, records, undo, skip, the widgets, the CSV export, the backup, and the restore.
+
+Siri and Shortcuts (changes D108):
+
+- The three App Shortcuts are Pro: "Next Dose", "Last Dose of an Item", and "Record Due Doses". Each intent checks Pro first, before it reads or records anything.
+- The check is `confirmedPro()` of the Watch (D111): the cached plan, and for a free answer one more read of StoreKit. A failed read gives the free answer and records nothing. The next request reads again, so a paying user is not locked out for good.
+- A free user hears one line: "Siri and Shortcuts are part of Maru Pro. Open Maru to take a look?". "Open" brings Maru to the front, and the paywall shows with the source `siri` after the onboarding, the edit screen, and the alerts, as the request of the Watch does. "Cancel" opens nothing. iOS 26 and later use `continueInForeground`. iOS 17 to 25 use `ForegroundContinuableIntent`.
+- The item of "Last Dose" is now an optional parameter, so a free user hears the line before Siri asks "Which item?".
+- The item and member queries of Siri and Shortcuts give nothing to a free user, so no name is read before the Pro check. A change of Pro makes the system read them again.
+- A failed read of the subscription status keeps the end of access of the last good read. Before, it removed a billing grace period, and the new gates then locked a paying user out until a good read.
+- The widget buttons (`TakeDoseIntent`) and the Live Activity button (`TakeNextDoseIntent`) are separate intents, so no intent serves both a widget and Siri. The widget buttons stay free. `TakeDoseIntent` is no longer offered in Shortcuts, because only the widget runs it. The alarm intents were not offered before.
+- The Watch request and the Siri request share one stored key, `pro.askedSource`, in place of `pro.watchAsked`. The rule that shows the stored offer compared a `Bool` with `nil`, so it never showed the offer of the Watch. It now reads the flag of the first-value offer.
+
+PDF reports (changes D091):
+
+- "Share Medication List" and "Share Summary…" stay in Settings for every user. For a free user, "Share Medication List" opens the paywall with the source `report`. The summary sheet opens, says "Sharing a PDF summary is part of Maru Pro.", and "Share" closes it and opens the paywall.
+- "Export Records", "Back Up", and "Restore from Backup…" stay free.
+
+Insights (changes D091):
+
+- The item detail keeps "Last 7 Days" free, and History keeps its graph, "Last 7 Days", and every log free. The graph shows each day of the records, and it is the way to the log of a day, so it stays free.
+- In "Last 30 Days" of the item detail, a free user sees one row "30-Day Counts" with "Maru Pro", which opens the paywall with the source `insights`. "All Records" stays in the section for every user. No record is hidden.
+
+Paywall:
+
+- Four benefits, in this order: "Right on your Lock Screen", "Record by wrist or voice" ("Apple Watch, Siri, and Shortcuts."), "Reports for your doctor" ("PDF summaries and 30-day counts."), and "Make Maru yours". Siri shares the row of the Watch, so the list has one new row.
+- New headlines: `siri` "Just ask Siri.", `report` "A clear summary for your doctor.", and `insights` "Your last 30 days, at a glance.". The insights headline has the form of the default one and uses its narrow measure.
+- No paywall after a record and none at app open. A Siri request shows it only after the user chooses "Open".
+
+Analytics: `paywall_shown` has three new sources, `siri`, `report`, and `insights` (spec 11.5, `PRIVACY.md`). No other field. A free Siri request does not set `used_siri`, because no Siri operation runs.
+
+`-MaruDebugPro YES` covers the new gates, because each gate reads `ProStore.isPro`.
+
+Tests (D016): none. The gate is in the app target, and the project has no app test target. The rule that a free Siri request records nothing is in the order of `perform()`: the Pro check returns before the read of the doses.
+
+Review: one Codex review (gpt-6.1-sol, high) found the two defects above, the item query and the grace period. A re-check of both found them fixed.
+
+Not checked: no simulator captures. The device tools of this session did not list a dedicated simulator, and the rules do not allow `simctl` captures. Nobody used Siri, saw the paywall rows, or saw the new rows on a display. The new strings are drafts in five languages (`docs/localization-review.md`).
+
+## D131 · 2026-10-29 · No Supporter tier. The paywall icons follow the item forms
+
+The maintainer decided:
+
+- Maru Pro has two plans: yearly and lifetime. There is no Supporter tier. The product `com.imhangli.maru.pro.supporter` was never in the app and never submitted. It is deleted in App Store Connect.
+- The benefit rows of the paywall use two-tone vector icons in the style of the item form icons (`Icons.xcassets`), in the app color, with no background. The maintainer rejected tinted tiles.
+
+## D132 · 2026-10-29 · Three ceramic icons for Maru Pro (extends D112)
+
+The maintainer chose Rose Ceramic, Qinghua Lotus, and Rose and Sage from the round 2 concepts.
+All three are normal Maru Pro icons under D131. The picker names are "Rose Ceramic", "Blue Lotus", and "Rose and Sage".
+
+- The chosen concepts supply the light artwork without a crop. Image generation edits supply the dark artwork on a dark background.
+- Each icon has an opaque 1024 × 1024 PNG for light, dark, and tinted appearances. The tinted artwork keeps grayscale material detail on black.
+- Each preview has light and dark images. The picker adds the three choices after the five existing Pro icons.
+- Names cover en, zh-Hans, ja, es, de, and ko. The gate stays in `AppModel.chooseAppIcon`. Default stays free.
+- `project.yml` names all eight alternate icons. The vector generator preserves the material assets when it runs again.
+- The artwork belongs to the project. The research folder holds the generation records and the comparison image.
+
+Scope: spec §13.3 and the icon rules of D112. No record, reminder, purchase, or schema rule changes. No new tests (D016).
+
+Checks pass: `xcodegen generate`, `swift build`, the app build, and checks of PNG dimensions, opacity, grayscale, catalog entries, and six locales.
+The compiled iPhone and iPad Info.plist entries include all eight alternate icons.
+
+These assets follow the existing PNG asset catalog path. They do not add Icon Composer layers or prove live Liquid Glass effects.
+The dark edits retain the visible patterns. Fine floral details merge at small sizes, especially in the tinted artwork.
+
+The simulator capture is blocked. Device tools report "No device" for the dedicated simulator, including after a device list refresh.
+The dedicated simulator was deleted. The existing simulator named "iPhone 18 Pro" was not used.
+Home Screen switching, system appearances, the Pro purchase flow, and localized layout still need device checks.
+
+## D133 · 2026-10-29 · A quiet "PRO" badge marks each Maru Pro entry for a free user (extends D107) (look and place changed by D134)
+
+The maintainer decided:
+
+- Each Maru Pro feature stays in its place. There is no separate Pro section.
+- For a free user, a small "PRO" badge shows at the trailing edge of the entry, before a value, a switch, or a chevron. A Pro user sees no badge. The debug override `-MaruDebugPro` and Family Sharing count as Pro.
+- A tap keeps its action. It opens the paywall with the source of the entry.
+
+The badged entries:
+
+- Settings: "App Color", "App Icon", "Reminder Sound", "Next Dose on Lock Screen", "Share Medication List", and "Share Summary…".
+- The Family page: "Add Person or Pet". The Family row of Settings has no badge, because the page is free to open (D122).
+- Item detail: "30-Day Counts". The badge replaces the text "Maru Pro" (D130).
+
+Settings has no entry for Apple Watch or for Siri and Shortcuts, so they have no badge. The Lock Screen, the widgets, the Watch, the notifications, and the Live Activity show no badge (D107).
+
+The design: one view `ProBadge` in `App/Pro/ProBadge.swift`. It shows "PRO" in `caption2` semibold, in the secondary color, on a `quaternary` capsule. It uses the system font (D012) and Dynamic Type. "PRO" is a brand mark and stays in English. VoiceOver reads "Maru Pro" as a part of the row, from the existing String Catalog entry. Each item of a menu or a picker stays as before.
+
+Scope: the UI of D107, D110, D112, D114, D122, and D130. No record, reminder, purchase, or analytics rule changes. No new tests (D016).
+
+## D134 · 2026-10-29 · The "PRO" badge is a filled capsule right after the title (changes D133)
+
+The maintainer rejected the gray capsule at the trailing edge and chose the style of a competitor app.
+
+- The badge is a filled capsule in the app color with "PRO" in bold, in the readable label color of that app color.
+- It sits right after the title of the row. The value, the toggle, or the chevron stays at the trailing edge.
+- The rest of D133 stays: free users only, no badge outside the app, and a tap keeps the action of the row.
+
+## D135 · 2026-10-29 · Settings is a short list of pages with a search field (changes D107, D121, D133)
+
+The maintainer said that the Settings sheet was messy and asked for a tidy layout, as in iOS Settings, with a search field. The look waits for the approval of the maintainer.
+
+The root is a short list. Each row has a symbol in the app tint, the title, an optional value, and a chevron. There are no colored tiles.
+
+1. The Maru Pro card. Under it, the row "Purchases" opens "Manage Subscription" (yearly plan only), "Restore Purchases", and "Redeem Code".
+2. "Family", "Reminders" (value: the notification state), and "Lock Screen" (value: On or Off, iPhone only).
+3. "Display" (value: the appearance) and "Language".
+4. "Your Data" and "Privacy".
+5. "Send Feedback" and "About".
+6. "Debug", in debug builds only.
+
+The pages:
+
+- "Reminders": "Notifications", "Open Settings" when needed, "Show Names in Reminders", "Reminder Sound", and the section "For All Items" ("Alarm", "Remind Again", "Every").
+- "Lock Screen": "Next Dose on Lock Screen". The whole page is Maru Pro, so its root row has the "PRO" badge (D134). No other root row has a badge.
+- "Display": "Appearance", "App Color", "App Icon", and "Color Header". The page is called "Display", not "Appearance", so that the page and its first row do not have the same name.
+- "Your Data": the export, the two reports, the backup, and the restore. "Privacy": "Share Usage Statistics" and the privacy policy.
+- "About": the version and build, "Support", "Privacy Policy", "Terms of Use" (the same link as the paywall), and "Licenses".
+
+The search field is always visible at the top of the root. It finds every setting by its title in the app language or in English, and by a few localized keywords, for example "dark" for "Appearance". A result shows the title and its place, for example "Reminders › For All Items". A tap opens that page. "Maru Pro" opens the paywall for a free user. "Language" and "Send Feedback" do the same as their rows. With no match, the system "No Results" view shows.
+
+Every switch, menu, permission flow, paywall source, analytics event, backup, and restore works as before. No record, reminder, or database rule changes. No new tests (D016).
+
+## D136 · 2026-10-29 · One size and one column for the Settings root symbols (refines D135)
+
+The maintainer asked for smaller symbols of one size that line up with Maru Pro. Each root symbol now has one point size and sits centered in a column as wide as the Maru Pro icon. The titles start at the same x as "Maru Pro". "Display" uses `sun.max`.
+
+## D137 · 2026-10-29 · Settings symbols match the item icons, and the Maru Pro card uses the paywall art
+
+- The root symbols of Settings use the box of an item icon (28 points), so the icons of the app have one size (refines D136).
+- For a free user, the Maru Pro card is one thin row: a small app icon and "Maru Pro" in white on the slow art of the paywall with a dark wash. It has no feature line and no light sweep (the maintainer rejected both). Reduce Motion stops the drift. A Pro user sees the plain card.
+
+## D138 · 2026-10-29 · Each group on the Settings root has a header
+
+The maintainer asked for a header on every group, as other apps show. The headers are "Membership", "General", "Personalization", "Data and Privacy", and "Support". The Debug group keeps its own header.

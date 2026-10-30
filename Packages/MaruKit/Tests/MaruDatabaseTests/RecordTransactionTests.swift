@@ -109,7 +109,7 @@ struct RecordTransactionTests {
         var items: [Item] = []
         var schedules: [Schedule] = []
         for name in ["Iron", "Zinc", "Copper"] {
-            let item = try Item(category: .supplement, name: name, form: .capsule, color: .pink)
+            let item = try Item(personID: store.meID, category: .supplement, name: name, form: .capsule, color: .pink)
             try await store.save(item)
             let (schedule, _, _) = Fixtures.twiceDailySchedule(itemID: item.id)
             try await store.save(schedule)
@@ -326,7 +326,7 @@ struct RecordTransactionTests {
         // Two more items in the same slot. The third one already has a record.
         var occurrences = [seed.occurrence]
         for name in ["Zinc", "Iron"] {
-            let item = try Item(category: .supplement, name: name, form: .tablet, color: .blue)
+            let item = try Item(personID: store.meID, category: .supplement, name: name, form: .tablet, color: .blue)
             try await store.save(item)
             let (schedule, morning, _) = Fixtures.twiceDailySchedule(itemID: item.id)
             try await store.save(schedule)

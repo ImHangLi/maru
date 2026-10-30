@@ -9,7 +9,7 @@ A file for a person: a CSV file that Numbers and Excel open. The name is `Maru R
 - Encoding: UTF-8, with a byte order mark at the start. Excel needs the mark to read UTF-8.
 - Each line ends with CR LF. The first line is the header (RFC 4180).
 - A field with a comma, a quotation mark, or a line break is in quotation marks. A quotation mark in such a field is written two times.
-- The words in the header, in "Type", and in "State" are fixed English text. They do not change with the language of the iPhone.
+- The words in the header, in "Type", in "State", and the word `Me` in "Person" are fixed English text. They do not change with the language of the iPhone.
 - A field that starts with `=`, `+`, `-`, `@`, a tab, or a carriage return gets an apostrophe (`'`) in front. A spreadsheet app can run such a text as a formula, and the apostrophe makes it plain text. The name and the amount in Maru do not change.
 
 One line is one dose, with the state that is valid now. The lines are in the order of the date, then of the planned time. The as-needed doses of a date come after its planned doses.
@@ -24,6 +24,7 @@ One line is one dose, with the state that is valid now. The lines are in the ord
 | State | `Taken`, `Skipped`, or `No record` | `Taken` |
 | Time Taken | When you took the dose, `YYYY-MM-DD HH:MM`. Empty for a dose that is not taken | `2026-03-01 08:05` |
 | Time Zone | The IANA name of the zone of the date and of the two times | `Asia/Shanghai` |
+| Person | The member of the Family that owns the item now (D129). The member name, or `Me` for "Me" before a rename. A line names the current owner, because the records move with the item (T64). The column is always there, also with one member | `Me` |
 
 Which doses are in the file:
 
@@ -57,9 +58,11 @@ The settings:
 
 The follow-ups and the alarm of each item are columns of the `item` table since migration `v6` (D079): `followUpCount` (`0` for "Until Recorded", else the number) and `followUpMinutes` (both empty for off), `followUpChanged` (an instant, or empty), and `alarm` (`0` or `1`). A backup from before `v6` has none of them. The restore applies `v6` to its copy, so every item has no follow-up and no alarm, and then it copies the two settings of version 1.0 above to the items.
 
+The Family is the table `person` since migration `v8` (D121): `id`, `kind` (`me`, `person`, or `pet`), `name` (empty only for `me` that the user did not rename), `symbol` (the animal of a pet: `dog`, `cat`, `bird`, `rabbit`, `fish`, or `paw`, else empty), `imageReference` (the name of a photo file, or empty, D124), `archivedAt`, and `color` since migration `v9` (D128: an item color, or empty for the app color). The `item` table has the columns `personID` (the owner, never empty) and `ownerChangedAt` (an instant, or empty). A backup from before `v8` has none of them. The restore applies `v8` to the copy, which makes one member `me` and gives every item to it (D126). A file of this version has its own `me`: the restore removes the member that `v8` made on the copy before it copies the rows of the file, then it checks that the copy has exactly one `me`, at least one active member, and no active item of an archived member.
+
 A backup does not hold the notification permission, the pending reminders, or an unsaved draft. They belong to one iPhone.
 
-A backup does not hold the item photos (D056). The `item` table has the column `imageReference` with the name of the photo file, and the files are not in the backup. A restore keeps the names. An item shows its photo only when the file is still on the iPhone, and else it shows the form icon. After a restore, Maru removes the photo files that no restored item uses. The record export has no photo.
+A backup does not hold the item photos (D056) or the member photos (D124). The `item` table has the column `imageReference` with the name of the photo file, and the files are not in the backup. A restore keeps the names. An item shows its photo only when the file is still on the iPhone, and else it shows the form icon. After a restore, Maru removes the photo files that no restored item and no restored member uses. The record export has no photo.
 
 ### What a restore accepts
 

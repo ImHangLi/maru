@@ -2,10 +2,8 @@ import Foundation
 import Testing
 @testable import MaruCore
 
-/// The app stops at every call of one run: a suspension that the system never ends, a kill, or a restart of the iPhone.
-/// The data is saved, and the run after it is cut at call N. After the next start, before any notification fires,
-/// every notification must be right again (D086). Without a retry, a removal that the app announced and the system never
-/// did stays open for good: the ledger blocks the request, and nothing removes or replaces it.
+/// Each scenario stops the reminder run at each external call after the data commits.
+/// After restart, fresh request identifiers and generations must restore correct notifications before delivery (D086).
 @Suite("A run that stops anywhere")
 struct KillSweepTests {
     private static let evening = "2026-10-15 18:00"
@@ -38,8 +36,7 @@ struct KillSweepTests {
             phone.autoCheck = false
             try await action(phone)
             let used = phone.callsInLastRun
-            // The next start comes a minute later, before any notification fires. The system took a removal in
-            // milliseconds, so a removal that is still open after seconds never reached it.
+            // Restart before delivery, then check recovery from the interrupted run.
             await phone.advance(to: phone.now.addingTimeInterval(60))
             await phone.foreground()
             await phone.foreground()
