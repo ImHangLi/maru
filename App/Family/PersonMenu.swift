@@ -1,21 +1,15 @@
 import MaruCore
 import SwiftUI
 
-/// The person menu of Today: the avatar of the shown member at the top right, as the profile picture of Health (D121).
-/// A tap opens a system menu with "Everyone", each member, and "Add Person or Pet". It shows only with a second active member,
-/// so with only "Me" Today looks as before (T57). It has the button style of Settings at the top left: its own bar button
-/// with the system background, and the avatar inside it (D140).
+/// The person menu of Today: a plain symbol in the same bar group as History and Add (D140). The title names the shown
+/// member (D121). A tap opens a system menu with "Everyone", each member, and "Add Person or Pet". It shows only with a
+/// second active member, so with only "Me" Today looks as before (T57).
 struct PersonMenu: ToolbarContent {
     @Environment(AppModel.self) private var model
 
     var body: some ToolbarContent {
         if model.hasFamily {
-            if #available(iOS 26, *) {
-                ToolbarSpacer(.fixed, placement: .primaryAction)
-                ToolbarItem(placement: .primaryAction) { PersonMenuButton() }
-            } else {
-                ToolbarItem(placement: .primaryAction) { PersonMenuButton() }
-            }
+            ToolbarItem(placement: .primaryAction) { PersonMenuButton() }
         }
     }
 }
@@ -55,13 +49,7 @@ private struct PersonMenuButton: View {
                 }
             }
         } label: {
-            Group {
-                if let shown {
-                    MemberAvatar(shown, side: 28)
-                } else {
-                    MemberAvatar(.everyone, side: 28)
-                }
-            }
+            Image(systemName: "person.2")
         }
         .accessibilityLabel(Text("Show"))
         .accessibilityValue(shown.map { Text(verbatim: $0.displayName) } ?? Text("Everyone"))

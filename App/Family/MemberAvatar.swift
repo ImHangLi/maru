@@ -123,13 +123,16 @@ struct MemberAvatar: View {
 }
 
 extension MemberAvatar {
+    /// The gap between a small symbol and its text in one line, as in a PRO badge after a title.
+    static let inlineGap: CGFloat = 8
+
     /// The avatar as an image for a system menu, which draws only images. It keeps its own colors.
-    /// `gap` is clear space on each side. The value of a menu picker draws the image right beside the name, so the "For"
-    /// pickers use it (D140).
+    /// `gap` is clear space after the avatar. The value of a menu picker draws the image right beside the name, so the
+    /// "For" pickers use `inlineGap`, the gap of the app between a small symbol and its text (D140).
     @MainActor static func menuImage(_ subject: AvatarSubject, side: CGFloat = 24, gap: CGFloat = 0) -> Image {
         let style = UITraitCollection.current.userInterfaceStyle
         let renderer = ImageRenderer(content: MemberAvatar(subject, side: side, waitsForPhoto: false)
-            .padding(.horizontal, gap)
+            .padding(.trailing, gap)
             .environment(\.colorScheme, style == .dark ? .dark : .light))
         renderer.scale = UITraitCollection.current.displayScale
         guard let image = renderer.uiImage else { return Image(systemName: "person.crop.circle") }
