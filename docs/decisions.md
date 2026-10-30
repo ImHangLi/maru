@@ -2032,7 +2032,7 @@ Pro:
 Products (prices in App Store Connect, not in code):
 
 - `com.imhangli.maru.pro.yearly`: an auto-renewable subscription in the group "Maru Pro", about USD 9.99 per year, with a free trial of 7 days as the introductory offer.
-- `com.imhangli.maru.pro.lifetime`: a non-consumable, about USD 24.99 (amended on 2026-10-28 from USD 19.99, see D119, sixth round).
+- `com.imhangli.maru.pro.lifetime`: a non-consumable, USD 19.99 as a founder price for 30 days after the launch, then USD 29.99 (D139).
 - Family Sharing is on for both. Apple does not let a developer turn it off again. No monthly plan.
 - `Config/Maru.storekit` has both products for local tests. The Run action of the `Maru` scheme uses it (`project.yml`).
 
@@ -2454,7 +2454,7 @@ Evidence: captures (light, dark, zh-Hans, scrolled, an iPhone 17e, and "Accessib
 
 Not verified: a real iPhone, an iPad, VoiceOver, Reduce Motion, the purchase with the StoreKit configuration, the long German and Spanish lines, the iPhone SE size, and the contrast of the gray lines on the wash with a tool.
 
-## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118, plan tiles changed in a fourth round below, price and benefit copy changed in a sixth round below, small polish in a seventh round below)
+## D119 · 2026-10-28 · The Maru Pro paywall, third round: system parts, less text, one line each, and a plain background (replaces D118, plan tiles changed in a fourth round below, price and benefit copy changed in a sixth round below, small polish in a seventh round below, lifetime price replaced by D139)
 
 Maintainer feedback on 2026-10-28 about the paywall of D118. This decision replaces the paywall of D118. It changes no StoreKit code, no entitlement rule, no price rule, and no trigger of D107. The thank-you and the first-value offer are as before.
 
@@ -2840,3 +2840,11 @@ The maintainer asked for smaller symbols of one size that line up with Maru Pro.
 ## D138 · 2026-10-29 · Each group on the Settings root has a header
 
 The maintainer asked for a header on every group, as other apps show. The headers are "Membership", "General", "Personalization", "Data and Privacy", and "Support". The Debug group keeps its own header.
+
+## D139 · 2026-10-30 · The lifetime plan costs $19.99 for 30 days after the launch, then $29.99 (replaces the lifetime price of D119, sixth round)
+
+The maintainer set a founder price on 2026-10-28. The lifetime plan costs USD 19.99 for 30 days after the launch. Then the price changes to USD 29.99. The change is real and the app shows no countdown. The yearly plan stays USD 9.99 with a 7-day free trial.
+
+- App Store Connect has the lifetime product at USD 19.99 in 174 territories, with new territories included.
+- `Config/Maru.storekit` has 19.99 for local tests.
+- Schedule the change to USD 29.99 in App Store Connect before the launch. Then update the lifetime answer of the site FAQ on the day of the change.
