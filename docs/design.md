@@ -69,7 +69,6 @@ The paywall is a normal system sheet with the system font and SF Symbols in the 
 
 - The large title "Today" with the date under it. No ring (D026). The date line is the progress area of D101.
 - A gear button at the top left opens the settings sheet. An add button sits at the top right (D020). Both tabs have them. Today also has a History button with a calendar symbol, beside the add button (D026).
-- With a second active member, the person menu is the last button at the top right. It is a plain `person.2` symbol in the same group as History and Add. The title names the shown member (D121, D140).
 - One list section per time slot, in time order. The section header is the slot name, for example "Morning", not a clock time (D011).
 - The header has no button. Each row records on its own (D060).
 - Row: the form icon in the item color, the name, a second line in small gray text, and the record circle at the end. The name area opens the detail. The circle is a separate hit target (spec §3 P01). The circle is an SF Symbol: an empty circle, a filled check, a gray dash for skipped, or a red mark for not saved.
