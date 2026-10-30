@@ -239,10 +239,9 @@ struct MemberPage: View {
             imageReference: person.imageReference,
             archivedAt: person.archivedAt
         ) else { return }
-        run {
+        // A saved page closes, as every other sheet and page with "Save" does.
+        run(closes: true) {
             try await model.updateMember(changed, photo: fields.photoEdit)
-            fields.didSave()
-            start = (fields, color)
         }
     }
 
@@ -287,11 +286,6 @@ struct MemberFields: Equatable {
 
     var photoEdit: MemberPhotoEdit {
         if let newPhoto { .replaced(newPhoto) } else if photoRemoved { .removed } else { .unchanged }
-    }
-
-    mutating func didSave() {
-        newPhoto = nil
-        photoRemoved = false
     }
 
     static func == (lhs: Self, rhs: Self) -> Bool {
