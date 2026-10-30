@@ -32,14 +32,14 @@ struct SummarySheet: View {
                             Label {
                                 Text("Everyone")
                             } icon: {
-                                MemberAvatar.menuImage(.everyone)
+                                MemberAvatar.menuImage(.everyone, gap: MemberAvatar.inlineGap)
                             }
                             .tag(PersonID?.none)
                             ForEach(model.activePeople, id: \.id) { person in
                                 Label {
                                     Text(verbatim: person.displayName)
                                 } icon: {
-                                    MemberAvatar.menuImage(.member(person))
+                                    MemberAvatar.menuImage(.member(person), gap: MemberAvatar.inlineGap)
                                 }
                                 .tag(PersonID?.some(person.id))
                             }

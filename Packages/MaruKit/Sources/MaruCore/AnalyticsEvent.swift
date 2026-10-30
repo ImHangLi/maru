@@ -65,7 +65,6 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "used_settings": .flag,
             "used_live_activity": .flag,
             "used_watch": .flag,
-            "used_siri": .flag,
             "family_size": .choice(["1", "2", "3_plus"]),
             "app_opens": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
             "active_items": .choice(["0", "1", "2_3", "4_6", "7_plus"]),
@@ -153,8 +152,6 @@ public extension AnalyticsEvent {
         case liveActivity = "used_live_activity"
         /// A record request from the Apple Watch app (D111).
         case watch = "used_watch"
-        /// A Siri or Shortcuts question or record (D108).
-        case siri = "used_siri"
     }
 
     /// The Pro plan and the Pro features in use at one check (D127). Each feature is a flag, not the icon or the sound.
@@ -325,8 +322,6 @@ public extension AnalyticsEvent {
         case sounds
         /// A free user tried to add a second member of the Family (D122).
         case family
-        /// A free user asked Siri or ran a Maru shortcut, then chose to open Maru (D130).
-        case siri
         /// A free user tried to share the medication list or the summary as a PDF file (D130).
         case report
         /// A free user tapped the counts of the last 30 days on the item detail (D130).

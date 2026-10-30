@@ -16,7 +16,7 @@ struct PendingEvent: Equatable, Sendable {
     var requiresCurrentPlan = false
     /// The restore epoch that the widget read. The store checks it in the record transaction (D048).
     var restoreEpoch: Int?
-    /// The instant of the list that a quick action comes from: the Watch list, the widget read, the Live Activity, or the Siri read.
+    /// The instant of the list that a quick action comes from: the Watch list, the widget read, or the Live Activity.
     /// The store refuses a dose of an item whose owner changed after it (D123). Today records with the owner on screen and sets none.
     var listedAt: Date?
 }

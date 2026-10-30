@@ -4,7 +4,7 @@ import SwiftUI
 /// The Maru Pro paywall uses `ProStore` for purchases (D107, D119).
 /// This custom view offers yearly and lifetime plans together, which `SubscriptionStoreView` cannot do (D115).
 struct PaywallView: View {
-    /// Why the paywall shows. The headline names the reason for Family (D128), Siri, the reports, and the insights (D130).
+    /// Why the paywall shows. The headline names the reason for Family (D128), the reports, and the insights (D130).
     let source: AnalyticsEvent.PaywallSource
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -101,7 +101,6 @@ struct PaywallView: View {
             Group {
                 switch source {
                 case .family: Text("Everyone you care for, in one place.")
-                case .siri: Text("Just ask Siri.")
                 case .report: Text("A clear summary for your doctor.")
                 case .insights: Text("Your last 30 days, at a glance.")
                 default: Text("Your next dose, at a glance.")
@@ -122,7 +121,7 @@ struct PaywallView: View {
     /// parts.
     private var usesNarrowHeadline: Bool {
         switch source {
-        case .family, .siri, .report: false
+        case .family, .report: false
         default: true
         }
     }
@@ -175,8 +174,8 @@ struct PaywallView: View {
 
     // MARK: Benefits
 
-    /// Five rows, each a two-tone icon in the tint, a semibold title, and one gray line. Siri shares the row of the Watch, and
-    /// the reports share a row with the insights, so the list stays short (D130).
+    /// Five rows, each a two-tone icon in the tint, a semibold title, and one gray line. The reports share a row with the
+    /// insights, so the list stays short (D130).
     private var benefits: some View {
         VStack(alignment: .leading, spacing: 20) {
             BenefitRow(
@@ -188,8 +187,8 @@ struct PaywallView: View {
                 detail: "People and pets, each with their own reminders."
             )
             BenefitRow(
-                icon: "benefit-watch", title: "Record by wrist or voice",
-                detail: "Apple Watch, Siri, and Shortcuts."
+                icon: "benefit-watch", title: "Record from your wrist",
+                detail: "Apple Watch shows and records each dose."
             )
             BenefitRow(
                 icon: "benefit-report", title: "Reports for your doctor",
@@ -350,7 +349,7 @@ struct PaywallView: View {
                 .symbolEffect(.bounce, value: bounce)
             Text("Welcome to Maru Pro")
                 .font(.title.bold())
-            Text("Thank you. Your extras are ready.")
+            Text("Thank you. Your journey starts here.")
                 .font(.body)
                 .foregroundStyle(.secondary)
         }

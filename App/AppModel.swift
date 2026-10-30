@@ -92,8 +92,6 @@ final class AppModel {
     #endif
     /// The slot of a widget link that came before Today loaded. See `AppModel+Widget.swift`.
     var pendingWidgetPart: DayPart?
-    /// The item names that Siri has. See `AppModel+Siri.swift`.
-    var shortcutItemNames: [ItemID: String]?
     private var load: Task<Void, Never>?
     /// A refresh request came while a read ran. The model reads again when that read ends.
     private var needsRefresh = false
@@ -206,7 +204,6 @@ final class AppModel {
                 showPendingWidgetSlot()
                 // The card of Today needs a count of records. It is read once, and only when the card can show (D107).
                 readProCardRecords()
-                updateShortcutItems(snapshot.list)
                 // An owner change or an archive moves items between members, so the History of one member reads again (D129).
                 historyOwnersDidChange(snapshot)
                 // The Live Activity starts or follows Today while Maru is in front (D110).

@@ -324,6 +324,11 @@ actor AppStore {
 }
 
 extension AppStore {
+    /// Every member of the Family. See `LocalStore.people()`.
+    func people() async throws(StorageError) -> [Person] {
+        try await open().people()
+    }
+
     /// What the tap resolver reads: every item, also the archived ones, and every schedule with its full
     /// version history (spec 8.3).
     func tapInputs() async throws(StorageError) -> (items: [Item], schedules: [Schedule]) {

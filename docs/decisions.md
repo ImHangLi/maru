@@ -2081,7 +2081,7 @@ Risks:
 
 Not verified: no build of the app on this Mac, and nobody bought a plan. CI builds the app. The checks with the StoreKit configuration are in `docs/status.md`. App Store Connect has no product yet. `docs/release-plan.md` has the maintainer's steps.
 
-## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts ("Record my doses" with several members: D123, Siri is Pro: D130)
+## D108 · 2026-10-28 · A "Last Dose" widget, and Siri and Shortcuts ("Record my doses" with several members: D123, Siri is Pro: D130, Siri and Shortcuts replaced by D140)
 
 Maintainer decision on 2026-10-28, with agent detail. Both features are free. They are not part of Pro (D107). It follows spec 6, 7.2, 9, and 10, and it adds to D048 and D091.
 
@@ -2548,7 +2548,7 @@ Maintainer decision of 2026-10-28. Free: "Me" and every item, always. Pro: the c
 - The store has no gate, because the store never reads Pro. The free edit path calls `update(_:)`, which refuses a missing member in the write transaction.
 - Family does not unlock the Watch app (D111) or the Live Activity (D110).
 
-## D123 · 2026-10-29 · Reminder text with members, no group action across members, and no quick action after an owner change (changes D090, D110, D108, and the Watch row name of D071, Siri record rule changed by D129)
+## D123 · 2026-10-29 · Reminder text with members, no group action across members, and no quick action after an owner change (changes D090, D110, D108, and the Watch row name of D071, Siri record rule changed by D129, Siri parts replaced by D140)
 
 Maintainer decision 4 of 2026-10-28, with agent detail from the design and its two Codex reviews.
 
@@ -2614,7 +2614,7 @@ Maintainer decision of 2026-10-28: version 1.0.0 will not be released. The first
 
 Tests (D016): the upgrade fixture gives every item to "Me" (T56), an older backup restores with "Me", a backup with members restores with one "Me" and the owners (T69), an action listed before an owner change records nothing (T70), and a request for two members has no group action (T60). The archive test covers T63.
 
-## D127 · 2026-10-29 · Analytics for the features since D099: Pro state, new surfaces, onboarding, and the paywall close (changes spec 11.5)
+## D127 · 2026-10-29 · Analytics for the features since D099: Pro state, new surfaces, onboarding, and the paywall close (changes spec 11.5, `used_siri` replaced by D140)
 
 Lead decision for the maintainer, who asked for usage and Pro conversion data before the first public release. Each new field is a fixed choice or a flag in the strict schema of `AnalyticsEvent` (T45). No field holds an item, a member, a dose, a time, an ID, a date, a price, an icon name, or a sound name (spec 10, 11.2, T42, T68).
 
@@ -2664,7 +2664,7 @@ Pro:
 
 Not in this change: the History and summary filter by member (T65), the per-member PDF, the CSV column "Person", the My Items filter and tile avatars, the "For" row on the item detail, the footer of "Show Names in Reminders", a member parameter for Siri, and `PRIVACY.md`.
 
-## D129 · 2026-10-29 · Family follow-ups: History, My Items, the summary, the CSV column, and Siri for one member (changes the Siri rule of D123)
+## D129 · 2026-10-29 · Family follow-ups: History, My Items, the summary, the CSV column, and Siri for one member (changes the Siri rule of D123, Siri part replaced by D140)
 
 Maintainer approval of 2026-10-29 for the "not in this change" list of D128, with team defaults for the open points. Simulator captures are in `~/Documents/Research/maru/family-mode/follow-ups/`.
 
@@ -2703,7 +2703,7 @@ Tests (D016): one store test checks that the history, the graph counts, the firs
 Checks: the upgrade from `v7` to `v9` is covered by package tests, so no device-style upgrade check ran. `FamilyTests.version7BackfillsMeWithoutChangingRecords` migrates a `v7` database with records to the current schema. `UpgradeTests` opens the shipped fixtures of 1.0 (`v5`) and 1.1 (`v6`) and runs the whole reminder queue through `v9`.
 
 
-## D130 · 2026-10-29 · Siri and Shortcuts, the PDF reports, and the 30-day counts are Maru Pro features (changes D108 and D091)
+## D130 · 2026-10-29 · Siri and Shortcuts, the PDF reports, and the 30-day counts are Maru Pro features (changes D108 and D091, Siri parts replaced by D140)
 
 Maintainer decision of 2026-10-29. Three free features of D091 and D108 move into Maru Pro. The safety features stay free: reminders, alarms, follow-ups, records, undo, skip, the widgets, the CSV export, the backup, and the restore.
 
@@ -2848,3 +2848,26 @@ The maintainer set a founder price on 2026-10-28. The lifetime plan costs USD 19
 - App Store Connect has the lifetime product at USD 19.99 in 174 territories, with new territories included.
 - `Config/Maru.storekit` has 19.99 for local tests.
 - Schedule the change to USD 29.99 in App Store Connect before the launch. Then update the lifetime answer of the site FAQ on the day of the change.
+
+## D140 · 2026-10-30 · Remove Siri and Shortcuts, a new thank-you line, and two Family UI fixes (replaces the Siri parts of D108, D123, D127, D129, and D130)
+
+Maintainer decisions of 2026-10-30. The maintainer said that Siri was "sooo stupid".
+
+Siri and Shortcuts:
+
+- Maru has no App Shortcuts, no Siri phrases, and no Siri answers. The app deletes `App/Siri/MaruShortcuts.swift`, `App/AppShortcuts.xcstrings`, `App/AppModel+Siri.swift`, and their strings in six languages.
+- The paywall loses the source `siri` and the headline "Just ask Siri.". The daily summary loses the flag `used_siri` (spec 11.5, `PRIVACY.md`).
+- The Watch keeps its request for the paywall (D111) and the stored key `pro.askedSource`.
+- The intents that a widget, the Live Activity, or an alarm runs stay: `TakeDoseIntent`, `TakeNextDoseIntent`, `TakeFromAlarmIntent`, `OpenFromAlarmIntent`, and `RunAfterAlarmIntent`. Each one has `isDiscoverable` set to `false`, so Shortcuts and Siri do not offer it. The widget configuration intents stay too.
+- The "Last Dose" widget stays free. Its store read keeps only the form for all items, because only Siri asked for one item.
+- The paywall benefit row of the Watch is "Record from your wrist", with the line "Apple Watch shows and records each dose.".
+
+Other changes:
+
+- The thank-you after a purchase keeps "Welcome to Maru Pro" and says "Thank you. Your journey starts here.". The translations follow the meaning, not each word.
+- The "For" pickers of the editor and of the summary sheet have clear space beside the avatar, so the avatar and the name do not touch.
+- The "For" pickers put an 8 point gap after the avatar, the same gap as between a title and its PRO badge.
+
+Tests (D016): none new. No package test covered only Siri.
+
+The new strings are drafts in five languages (`docs/localization-review.md`).

@@ -12,7 +12,6 @@ settings:
   base:
     SWIFT_VERSION: "6.0"
     # Product copy is in App/Localizable.xcstrings. The Info.plist texts are in App/InfoPlist.xcstrings.
-    # The Siri phrases of the App Shortcuts are in App/AppShortcuts.xcstrings (D108).
     # The widgets and the Watch app have a catalog each: Widget/ and Watch/.
     SWIFT_EMIT_LOC_STRINGS: YES
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES

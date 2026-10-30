@@ -55,11 +55,11 @@ A short onboarding, once (D103, D104). It asks nothing and requests no permissio
 
 The paywall is a normal system sheet with the system font and SF Symbols in the tint (D107, D119). The close button is the system one, in the navigation bar at the top right: `Button(role: .close)` on iOS 26 and later, a plain `xmark` button before. The gradient picture and the headline "Your next dose, at a glance." sit at the top. The picture ends in a long, eased fade into the plain system background, and the fade ends before the first benefit. The page has no tint wash. Only the white headline sits on the picture. All other text sits on the plain background. It has no serif, no glow, no preview card, no countdown, no struck-through price, and no badge. The text column is left aligned with one 20 point margin.
 
-- The four benefits are a thin symbol in the tint, a semibold title, and one gray line: "Right on your Lock Screen", "Record by wrist or voice", "Reports for your doctor", and "Make Maru yours" (D114, D119, D130). Each title and each line fits on one line at the default text size on an iPhone 17e.
+- The four benefits are a thin symbol in the tint, a semibold title, and one gray line: "Right on your Lock Screen", "Record from your wrist", "Reports for your doctor", and "Make Maru yours" (D114, D119, D130, D140). Each title and each line fits on one line at the default text size on an iPhone 17e.
 - The purchase area stays at the foot of the sheet on the plain background, and the page fades out above it. It has two plan tiles side by side (the name, the price as the largest text, a small line, and a thin tint ring outside the selected plan, with the same fill for both), one terms line for the selected plan ("Free for 7 days, then $9.99 per year. Cancel anytime." for the yearly plan, and no line for the lifetime plan, D119), one capsule button that names the plan ("Start Free Trial", "Subscribe Yearly", or "Buy Lifetime"), and one line at the very bottom with "Terms of Use" and "Privacy Policy" in `caption2`, gray, with a dot between them (App Review 3.1.2). At an accessibility text size, it scrolls with the page and the tiles stack.
 - "Restore Purchases" and "Redeem Code" are only in Settings, in the section "Maru Pro" (D119). The paywall has no note about the developer and no Family Sharing line.
 - The first-value offer shows the same paywall. It has no picture of a Lock Screen.
-- After a purchase, a plain full-sheet thank-you shows a check circle, "Welcome to Maru Pro", and one line, and then the paywall closes.
+- After a purchase, a plain full-sheet thank-you shows a check circle, "Welcome to Maru Pro", and the line "Thank you. Your journey starts here.", and then the paywall closes (D140).
 - The row "Maru Pro" in Settings has the app icon in use at 40 points, a headline title, and one line. The card of Today is a list section at the bottom of the page, under every dose: a symbol in the tint, a headline title, one sentence, the borderless button "See Maru Pro", and an "×" button. It has no badge and no color fill.
 - A Pro feature shows its choices to every user, with no lock symbol and no badge. A free user's choice opens the paywall, and the footer of the page says so in one line (D112).
 - "App Icon" is a grid of the six icons at 62 points, with the corner of the Home Screen, a thin edge, and the name under each. The current icon has a ring of 2.5 points in the tint. The row in Settings shows the current icon at 29 points (D112).
@@ -211,10 +211,6 @@ Two Home Screen widgets, small and medium each (D048), and "Last Dose", small (D
 - Dynamic Island: compact, the pill symbol and the planned time, both in the tint. Minimal, the pill symbol. Expanded, the part of the day and the time at the leading edge, the relative time at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
 - A tap outside the button opens Today at the part of the day.
 - When the record does not confirm, a line with a warning symbol takes the place of the button. When the day of the dose ended, only "Open Maru to update." shows, with no name and no button.
-
-## Siri and Shortcuts
-
-Three App Shortcuts (D108): "Next Dose", "Last Dose", and "Record Doses". Siri speaks short answers in the voice of the app (D101). It states the record, not the intake (D068). "Next Dose" also shows a snippet: the part of the day in the tint and its time in gray, then each open dose with its amount in gray. With "Show Names in Reminders" off, the snippet shows the number of doses and Siri says the number, not the names. "Record Doses" asks before it records, and it says what it recorded only after the commit.
 
 ## iPad
 

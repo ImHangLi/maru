@@ -145,7 +145,7 @@ struct RootView: View {
         .onChange(of: firstValueIsDue, initial: true) { _, isDue in
             if isDue { model.showFirstValueOffer() }
         }
-        // The paywall that a free user asked for on the Watch or from Siri, the next time that Maru is in front (D111, D130).
+        // The paywall that a free user asked for on the Watch, the next time that Maru is in front (D111).
         .onChange(of: askedOfferIsDue, initial: true) { _, isDue in
             if isDue { model.showAskedOffer() }
         }
