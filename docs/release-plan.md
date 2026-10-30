@@ -71,7 +71,7 @@ Set on 2026-10-13 (D075), with the `asc` CLI and, for the parts with no public A
 | Setting | Value | Reason |
 |---|---|---|
 | Version | 1.0.0, manual release after approval | The record had "1.0", and the project has 1.0.0. A manual release keeps the release a maintainer decision |
-| Store text | The files in `metadata/`, for en-US, en-GB, zh-Hans, ja, ko, de-DE, es-ES, and es-MX | `asc metadata push`. A second dry run shows no difference |
+| Store text | The files in `metadata/`, for en-US, en-GB, zh-Hans, ja, ko, de-DE, es-ES, and es-MX | `asc metadata push`. A second dry run shows no difference. The folder `metadata/version/1.0.0/` is deleted, because its text has open-source claims (D096). App Store Connect keeps the 1.0.0 text |
 | Support, privacy, and marketing URLs | `https://maru.day/support/`, `https://maru.day/privacy/`, and `https://maru.day/`, with the folder `cn`, `jp`, `kr`, `de`, or `es` for the other languages | The paths of the live site. Each page returns 200 |
 | Copyright | 2026 Hang Li | The name of the account holder |
 | Primary category | Health & Fitness | See "Category" below |
@@ -142,7 +142,7 @@ The published label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.
 
 ### Tips
 
-The tips were removed (D099). A paid "Pro" tier comes in version 1.2.
+The tips were removed (D099). Maru Pro comes in version 1.1.0, the first public release. There is no Supporter tier (D131).
 
 ### Maru Pro (D107)
 
@@ -153,12 +153,12 @@ The code has the purchase, the paywall, and the entitlement. The maintainer does
 - [ ] Create the subscription group "Maru Pro", with a localized display name in the eight store languages.
 - [ ] In the group, create the auto-renewable subscription `com.imhangli.maru.pro.yearly`: duration 1 year, price about USD 9.99 with the price tiers of each storefront, a display name and a description in the eight store languages.
 - [ ] Add the introductory offer to the yearly plan: "Free", 1 week, in all storefronts.
-- [ ] Create the non-consumable `com.imhangli.maru.pro.lifetime`: price about USD 24.99, a display name and a description in the eight store languages.
+- [ ] Create the non-consumable `com.imhangli.maru.pro.lifetime`: price USD 19.99 as a founder price for the first 30 days after the launch, then USD 29.99, a display name and a description in the eight store languages.
 - [ ] Turn on Family Sharing for both products. It cannot be turned off later.
 - [ ] Add a review screenshot of the paywall and review notes for each product. The notes say where the paywall is (Settings, "Maru Pro") and that every free feature stays free.
-- [ ] Add both products to the version 1.2 submission. The first in-app purchase of an app must go to review with a new version.
+- [ ] Add both products to the version 1.1.0 submission. The first in-app purchase of an app must go to review with a new version.
 - [ ] Add "Purchase History" to the privacy label (see "Privacy label").
-- [ ] Change the store text of 1.2: it must say what needs a purchase (guideline 2.3.2), and "no paywall" must go.
+- [x] Change the store text of 1.1.0: it says what needs a purchase (guideline 2.3.2), and it has no "no paywall" (see "Store text of version 1.1").
 - [ ] Test in TestFlight with a Sandbox account: buy yearly, buy lifetime, restore, an offer code, and Ask to Buy.
 - [ ] Do not submit before the Pro features are in the build. A purchase with no content is a rejection risk (guideline 3.1.1).
 
@@ -171,7 +171,7 @@ The app embeds the Watch app, and the Watch app is a Pro feature. The maintainer
 - [ ] Add Apple Watch screenshots to the version in App Store Connect. A version with a Watch app needs them.
 - [ ] Review notes: the Watch app is part of Maru Pro. A free user sees a screen that names Maru Pro and has no purchase. Give App Review the steps to buy Pro with a sandbox account and to see the list on the Watch.
 - [ ] The store text of the release: name the Apple Watch app as a Pro feature (guideline 2.3.2).
-- [ ] On the day of the release: add `"watch"` to `DEVICES` in `site/build.py`, change the FAQ answer about Apple Watch and `site/llms.txt`, build the site, and deploy it. The privacy pages already have the section "Apple Watch".
+- [ ] On the day of the release: build the site and deploy it. `DEVICES` in `site/build.py`, the FAQ answer about Apple Watch, and `site/llms.txt` already name the Watch app. The privacy pages already have the section "Apple Watch".
 
 ### Notes for App Review
 
@@ -192,24 +192,39 @@ The notes are in App Store Connect. They state: what Maru does, no account, the 
 
 The files are in `metadata/version/1.1.0/` for the eight store languages. They are drafts. Nobody pushed them to App Store Connect. The plan is `2026-10-15-store-page-personas-and-trust.md` in the maintainer's research folder, and the first feedback is in `pitch-feedback-2026-10-15.md` in the maintainer's notes.
 
-Maintainer decisions of 2026-10-15:
+Maintainer decisions of 2026-10-15. The changes of 2026-10-28 replace some of them, and the next list names each one.
 
-- **Privacy: keep the usage statistics.** The text never says "connects to nothing" or "no data leaves". It says that items and records stay on the iPhone or iPad, that Maru needs no account, and that what the user takes is never sent anywhere. The optional usage counts stay in the text, and they never include what the user takes. The text uses plain words. It does not lead with "server", "local-first", or "open source".
+- **Privacy: keep the usage statistics.** The text never says "connects to nothing" or "no data leaves". It says that items and records stay on the iPhone or iPad, that Maru needs no account, and that Maru sends nothing about what the user takes (changed on 2026-10-28). The optional usage counts stay in the text, and they never include what the user takes. The text uses plain words. It does not lead with "server", "local-first", or "open source".
 - **Subtitle.** English: "Supplement & Medicine Tracker". The other languages keep the same meaning in 30 characters or fewer. The name stays as in 1.0.0.
-- **"Free" must be clear.** The promotional text and the first lines of the description start with "100% free" in the local words, and they say "no subscription, no ads, no paywall". The name, the subtitle, and the keywords have no price word (guideline 2.3.7).
+- **"Free" must be clear.** Replaced on 2026-10-30, see below. The name, the subtitle, and the keywords have no price word (guideline 2.3.7).
 - **No setup.** The first lines say that there is no sign-up and nothing to set up first.
 - **Features in the text.** Dark mode, and alarms for each item (iOS 26 or later).
-- **Persons in proportion.** Vitamins, supplements, and medicine lead. One short paragraph, "Not just for you", says that a user can track a pet or a parent on the user's own phone. The paragraph says that Maru has no profiles and no sharing.
+- **Persons in proportion.** Vitamins, supplements, and medicine lead. One short paragraph, "Not just for you", says that a user can track a pet or a parent on the user's own phone. The paragraph says that Maru has no shared profiles and no sync (changed on 2026-10-28 and 2026-10-30).
 - **Removed from 1.0.0.** The line "It is not an alarm", the lines "Open source", and the tip answer. The zh-Hans text uses 药品 and 保健品 like the app. All languages use the button names of `App/Localizable.xcstrings`.
 - **No medical claim.** The text has no "never miss a dose" and no competitor name.
 
+Changes of 2026-10-28. Version 1.0.0 was approved, but it will not be released. Version 1.1.0 from `main` replaces it. The changes of 2026-10-30 replace the parts about Pro.
+
+- **Sharing.** The user can export and share files: a CSV file, a PDF list or summary, and a backup. So the text never says "no sharing" or "never sent anywhere". It says that Maru sends nothing about what the user takes, and that the user chooses where each file goes.
+- **"What's New".** The public never got 1.0, so it is a short summary of the main features for a first release, not a list of changes.
+- **Keywords.** The keywords have no word of the name or the subtitle.
+
+Changes of 2026-10-30. Version 1.1.0 is the first public release, and it is a free app with Maru Pro (D107, D111, D122, D130, D131).
+
+- **Free wording.** The text says "Free to download." It names what is free: reminders, alarms, follow-ups ("Remind Again"), records and History, undo, the widgets, the CSV export, the backup, and no limit on items. It keeps "no account" and "no ads". It never says "100% free", "no subscription", "no paywall", or "no in-app purchases".
+- **Maru Pro.** One section names every Pro feature (guideline 2.3.2): "Next Dose on Lock Screen", the Apple Watch app, the PDF reports, the 30-day counts, Family (people and pets, member colors, a filter and a PDF for each member), app icons, reminder sounds, and app colors. It names the two plans: yearly with a 7-day free trial, and lifetime. Family Sharing is on. The store text has no price, because each storefront has its own price.
+- **No Supporter tier and no tips.** The text never names them (D131).
+- **Family.** "Not just for you" now says that Maru Pro adds a person or a pet on the same iPhone. Maru still has no shared profiles and no sync between devices.
+- **Site FAQ.** The FAQ names the US prices: yearly $9.99 with a 7-day free trial, and lifetime $19.99 for the first 30 days after the launch, then $29.99. A maintainer changes the lifetime answer after the 30 days.
+
 Checks before the text goes to App Store Connect:
 
-- Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, and "What's New".
-- The text says "no paywall", and it does not say "no in-app purchases", because a paid "Pro" tier comes in version 1.2 (D099). Version 1.1 has no in-app purchase.
+- Keep the alarm lines only after the iPhone check in `docs/status.md` passes (silent mode, Focus, locked screen). If the check fails, remove "rings like the Clock app" and the alarm words in the promotional text, the description, "What's New", and the site FAQ.
+- Keep a Pro line only when the feature is in the submitted build.
 - The keyword field holds at most 100 bytes in en, es, and de. The zh-Hans, ja, and ko fields hold at most 100 characters, as in 1.0.0, and they are more than 100 bytes. Apple states the limit as 100 bytes. App Store Connect accepted the 1.0.0 values. Check the CJK fields when you push them.
+- Each subtitle has at most 30 characters, each promotional text at most 170, and each description fewer than 4000.
 - A native speaker has not read the text for zh-Hans, ja, ko, es, and de.
-- The site privacy pages and the FAQ still show the text of 1.0. A maintainer changes them with the release.
+- The site FAQ and home page show the 1.1 text, and `RELEASED` in `site/build.py` stays `False` until the release.
 
 ### What is open before the submission
 

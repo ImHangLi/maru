@@ -64,7 +64,7 @@ JARS = ["omega3", "vitd3", "magnesium"]
 PAGE_BADGE = 56
 # The devices that the line under the badge names. It must match the devices of the released app before a deploy.
 # Possible values: "iphone", "ipad", "watch".
-DEVICES = ["iphone", "ipad"]
+DEVICES = ["iphone", "ipad", "watch"]
 # The icon and the product name of each device. Apple does not translate these names.
 DEVICE_NAMES = {"iphone": ("phone", "iPhone"), "ipad": ("tablet", "iPad"), "watch": ("watch", "Apple Watch")}
 # Every icon comes from Hugeicons (free stroke set, version 4.3.5, MIT license). The stroke width is in style.css.
@@ -604,18 +604,19 @@ def llms():
 
 Facts:
 - Runs on: {devices}.
-- Free, with no subscription, no ads, no account, and no limit on items.
+- Free to download. Reminders, alarms, records, History, widgets, CSV export, and backup are free, with no limit on items. No account and no ads.
+- Maru Pro is optional: "Next Dose on Lock Screen" (a Live Activity), the Apple Watch app, PDF reports, 30-day counts, Family (people and pets on one iPhone), app icons, reminder sounds, and app colors. A yearly plan with a 7-day free trial, or a one-time lifetime purchase. Family Sharing is on.
 - Items and records stay on the device. Optional usage statistics never include names, doses, or times.
 - Today screen: record a dose with one tap.
-- Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose.
+- Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose. On iOS 26 or later, an item can have an alarm that rings like the Clock app.
+- Record from the reminder: "Taken", "Skip", and "Remind in 10 min" for one item, and "Take All" and "Skip All" for several items.
 - Schedules: every day, every other day, every few days (every 3 to 30 days), or days on and days off (for example 21 on and 7 off). As-needed items have no reminders.
-- History with undo and correction. Record export, backup, and restore.
-- Home Screen widgets.
+- History with undo and correction. Record export (CSV), backup, and restore. With Maru Pro, the 30-day counts of each item, and a medication list and a summary as PDF. The user chooses where each file goes.
+- Home Screen and Lock Screen widgets, with "Next Dose" and "Last Dose".
 - Item photos: take or choose a photo of a bottle as the item icon. Maru can remove the background on the device, and it never sends the photo.
 - Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.
 - Maru does not track stock, give medical advice, or pick a dose or a time for you.
-- Each iPhone or iPad keeps its own data. Maru has no sync between devices.
-- Version 1.0 is for iPhone and iPad. It has no Apple Watch app yet.
+- Each iPhone or iPad keeps its own data. Maru has no shared profiles and no sync between devices.
 
 Pages:
 - [FAQ]({ORIGIN}/faq/): short answers.

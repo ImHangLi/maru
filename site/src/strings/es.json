@@ -6,7 +6,7 @@
   "nav_label": "Principal",
   "home": {
     "title": "Maru: Recordatorio de pastillas",
-    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste. Gratis y sin cuenta.",
+    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste. Descarga gratuita y sin cuenta.",
     "h1": "¿Ya me lo tomé? |Sal de dudas.",
     "lede": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste."
   },
@@ -71,7 +71,7 @@
   ],
   "trust_title": "Bueno saberlo",
   "trust": [
-    "Gratis",
+    "Descarga gratuita",
     "Sin cuenta",
     "Tus registros se quedan en tus dispositivos"
   ],
@@ -84,12 +84,16 @@
   },
   "faq": {
     "title": "Maru: Preguntas y respuestas",
-    "desc": "Respuestas cortas sobre Maru: el precio, tus datos, los recordatorios y el cambio a un iPhone o iPad nuevo.",
+    "desc": "Respuestas cortas sobre Maru: el precio, Maru Pro, tus datos, los recordatorios y el cambio a un iPhone o iPad nuevo.",
     "h1": "Preguntas y respuestas",
     "items": [
       [
         "¿Maru es gratis?",
-        "Sí, sin suscripción, sin anuncios y sin límite de elementos."
+        "Maru es de descarga gratuita y no tiene anuncios. Los recordatorios, las alarmas, «Recordar de nuevo», los registros, el historial, deshacer, los widgets, la exportación y las copias de seguridad son gratis, sin límite de elementos. Maru Pro es opcional."
+      ],
+      [
+        "¿Qué incluye Maru Pro?",
+        "«Próxima dosis en la pantalla bloqueada», la app para Apple Watch, informes en PDF para tu médico, el recuento de 30 días, Familia, iconos de la app, sonidos de recordatorio y colores de la app. En EE. UU., el plan anual cuesta 9,99 USD con 7 días de prueba gratis. El pago único cuesta 19,99 USD durante los primeros 30 días tras el lanzamiento, y después 29,99 USD. En otros países, el precio puede ser distinto. Puedes compartirlo con En familia, y no hay plan mensual."
       ],
       [
         "¿Necesito una cuenta?",
@@ -105,11 +109,11 @@
       ],
       [
         "¿Puedo registrar desde el recordatorio?",
-        "Sí, cuando el recordatorio es de un solo elemento: toca «Tomado». Un recordatorio de varios elementos abre Maru."
+        "Sí, sin abrir Maru. Un recordatorio de un elemento tiene «Tomado», «Omitir» y «Recordar en 10 min». Con «Mostrar nombres en recordatorios» activado, un recordatorio de varios elementos tiene «Todo tomado», «Omitir todo» y «Recordar en 10 min». Con los nombres ocultos, solo tiene «Recordar en 10 min»."
       ],
       [
         "¿Maru me sigue avisando?",
-        "Activa «Recordar de nuevo» en Ajustes y Maru envía hasta 12 recordatorios más por toma. Maru no es una alarma, así que el modo Silencio o un modo de concentración pueden retener un recordatorio."
+        "Sí, si quieres. Activa «Recordar de nuevo» en un elemento, o para todos en Ajustes, y Maru envía hasta 12 recordatorios más por toma. Con iOS 26 o posterior, activa «Alarma» en un elemento, y a su hora suena como la app Reloj. El modo Silencio o un modo de concentración pueden retener un recordatorio."
       ],
       [
         "¿Puedo tomar algo cada varios días o con descansos?",
@@ -137,11 +141,15 @@
       ],
       [
         "¿Puedo sacar mis registros?",
-        "Sí. «Exportar registros» en Ajustes crea un archivo que Numbers y Excel pueden abrir."
+        "Sí. «Exportar registros» en Ajustes crea un archivo que Numbers y Excel pueden abrir. Con Maru Pro, «Compartir lista de medicación» y «Compartir resumen» crean un PDF. Tú eliges adónde va cada archivo."
       ],
       [
         "¿Hay app para Apple Watch?",
-        "Todavía no. La versión 1.0 es para iPhone y iPad. La app para Apple Watch llegará más adelante."
+        "Sí, con Maru Pro. La app para Apple Watch muestra tus tomas, y las registras desde la muñeca."
+      ],
+      [
+        "¿Puedo usar Maru para mis padres o mi mascota?",
+        "Sí. Con Maru Pro, abre «Familia» en Ajustes y toca «Añadir persona o mascota». Cada uno tiene un color, y «Hoy», «Historial» y el PDF pueden mostrar solo a uno. Todo se queda en tu iPhone. Maru no tiene perfiles compartidos ni sincroniza entre dispositivos."
       ],
       [
         "¿En qué idiomas está Maru?",
@@ -177,6 +185,7 @@
       "Usage statistics": "Estadísticas de uso",
       "Maru Pro": "Maru Pro",
       "Apple Watch": "Apple Watch",
+      "Family": "Familia",
       "Camera": "Cámara",
       "Item photos": "Fotos de los elementos",
       "Feedback": "Comentarios",
