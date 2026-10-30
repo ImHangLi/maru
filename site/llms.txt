@@ -5,7 +5,7 @@
 Facts:
 - Runs on: iPhone, iPad, Apple Watch.
 - Free to download. Reminders, alarms, records, History, widgets, CSV export, and backup are free, with no limit on items. No account and no ads.
-- Maru Pro is optional: "Next Dose on Lock Screen" (a Live Activity), the Apple Watch app, Siri and Shortcuts, PDF reports, 30-day counts, Family (people and pets on one iPhone), app icons, reminder sounds, and app colors. A yearly plan with a 7-day free trial, or a one-time lifetime purchase. Family Sharing is on.
+- Maru Pro is optional: "Next Dose on Lock Screen" (a Live Activity), the Apple Watch app, PDF reports, 30-day counts, Family (people and pets on one iPhone), app icons, reminder sounds, and app colors. A yearly plan with a 7-day free trial, or a one-time lifetime purchase. Family Sharing is on.
 - Items and records stay on the device. Optional usage statistics never include names, doses, or times.
 - Today screen: record a dose with one tap.
 - Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose. On iOS 26 or later, an item can have an alarm that rings like the Clock app.
