@@ -42,7 +42,7 @@ struct FamilyPage: View {
                 }
                 .labelStyle(RowLabelStyle())
             } footer: {
-                Text("Each one has their own items, reminders, and records. Nothing leaves this iPhone.")
+                Text("Each one has their own items, reminders, and records. The records stay on this iPhone.")
             }
             let archived = model.people.filter(\.isArchived)
             if !archived.isEmpty {

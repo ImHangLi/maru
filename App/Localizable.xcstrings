@@ -16082,37 +16082,115 @@
         }
       }
     },
-    "Each one has their own items, reminders, and records. Nothing leaves this iPhone." : {
+    "Each one has their own items, reminders, and records. The records stay on this iPhone." : {
       "comment" : "Family page: the footer under the members.",
       "localizations" : {
         "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Alle haben eigene Einträge, Erinnerungen und Aufzeichnungen. Nichts verlässt dieses iPhone."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Alle haben eigene Einträge, Erinnerungen und Aufzeichnungen. Die Daten bleiben auf diesem iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Alle haben eigene Einträge, Erinnerungen und Aufzeichnungen. Die Daten bleiben auf diesem iPhone."
+                }
+              }
+            }
+          }
+        },
+        "en" : {
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Each one has their own items, reminders, and records. The records stay on this iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Each one has their own items, reminders, and records. The records stay on this iPhone."
+                }
+              }
+            }
           }
         },
         "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cada uno tiene sus propios elementos, recordatorios y registros. Nada sale de este iPhone."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Cada uno tiene sus propios elementos, recordatorios y registros. Los registros se quedan en este iPad."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Cada uno tiene sus propios elementos, recordatorios y registros. Los registros se quedan en este iPhone."
+                }
+              }
+            }
           }
         },
         "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "それぞれに項目、リマインダー、記録があります。データがこのiPhoneの外に出ることはありません。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "それぞれに項目、リマインダー、記録があります。記録はこのiPadに保存されます。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "それぞれに項目、リマインダー、記録があります。記録はこのiPhoneに保存されます。"
+                }
+              }
+            }
           }
         },
         "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "각자 항목, 미리 알림, 기록을 따로 가져요. 어떤 데이터도 이 iPhone 밖으로 나가지 않아요."
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "각자 항목, 미리 알림, 기록을 따로 가져요. 기록은 이 iPad에 저장돼요."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "각자 항목, 미리 알림, 기록을 따로 가져요. 기록은 이 iPhone에 저장돼요."
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "每位成员都有自己的药品、提醒和记录。所有数据都只留在这台 iPhone 上。"
+          "variations" : {
+            "device" : {
+              "ipad" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "每位成员都有自己的药品、提醒和记录。记录保存在这台 iPad 上。"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "每位成员都有自己的药品、提醒和记录。记录保存在这台 iPhone 上。"
+                }
+              }
+            }
           }
         }
       }
