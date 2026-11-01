@@ -163,7 +163,7 @@ The question is: "Is your app a regulated medical device in any country or regio
 
 | Purchases: Purchase History | Analytics | Yes | No | `purchase_result` (D107) and `pro_plan` in `daily_usage_summary` (D127). Publish this row before the submission of 1.1.0 |
 
-The label must match `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`. Build 18 sends `purchase_result` (D107). Add "Purchase History" to the published label before the submission of 1.1.0.
+The label must match `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`. Build 19 sends `purchase_result` (D107). Add "Purchase History" to the published label before the submission of 1.1.0.
 
 ### Tips
 
@@ -263,7 +263,7 @@ The final check of 2026-11-01 gives these steps. Do them in this order. The reje
 4. Record the Focus check, the sandbox purchases, the iPad check, and the statistics decision.
 5. Publish the Purchases label.
 6. Reject version 1.0.0 on the website. The maintainer signs in.
-7. Set version 1.1.0, attach build 18, and confirm the manual release.
+7. Set version 1.1.0, attach build 19, and confirm the manual release.
 8. Set the categories and the copyright. Push the text of `metadata/`. If App Store Connect refuses `whatsNew` on a first version, remove the field for this push only.
 9. Upload the screenshots: `en` to en-US and en-GB, `de` to de-DE, `es` to es-ES, and `es-MX` to es-MX. The Watch images of es-MX come from `es`.
 10. Paste the review notes. Replace the old notes completely.
@@ -278,4 +278,4 @@ The final check of 2026-11-01 gives these steps. Do them in this order. The reje
 
 - The screenshots are uploaded for the eight store languages: six for the 6.9-inch iPhone and six for the 13-inch iPad in each.
 - The Paid Apps agreement is active by a session note of 2026-10-30. Confirm it on the website before the submission.
-- Version 1.0.0 with build 4 is approved, with the state "Pending Developer Release". It does not ship. Build 18 (code commit `c55005a`) is the submission build of version 1.1.0. No app code changed after that commit.
+- Version 1.0.0 with build 4 is approved, with the state "Pending Developer Release". It does not ship. Build 19 (code commit `5b39508`) is the submission build candidate of version 1.1.0. No app code changed after that commit.
