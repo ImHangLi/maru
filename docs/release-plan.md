@@ -268,7 +268,7 @@ The final check of 2026-11-01 gives these steps. Do them in this order. The reje
 9. Upload the screenshots: `en` to en-US and en-GB, `de` to de-DE, `es` to es-ES, and `es-MX` to es-MX. The Watch images of es-MX come from `es`.
 10. Paste the review notes. Replace the old notes completely.
 11. Add both products to the version on the website.
-12. Run `asc validate --strict`, and read back each value. Submit only after the maintainer says "submit".
+12. Run `asc validate --strict`, and read back each value. Submit only after the maintainer says "submit". Done on 2026-11-01. The field `whatsNew` stays empty on this first version, because App Store Connect refuses it.
 13. After approval, the maintainer releases the version. Set `RELEASED = True`, build, deploy, and check the addresses in `site/README.md`.
 14. Schedule the lifetime price of USD 29.99 for release day plus 30 days. Change the FAQ on that date.
 
@@ -278,4 +278,4 @@ The final check of 2026-11-01 gives these steps. Do them in this order. The reje
 
 - The screenshots are uploaded for the eight store languages: six for the 6.9-inch iPhone and six for the 13-inch iPad in each.
 - The Paid Apps agreement is active by a session note of 2026-10-30. Confirm it on the website before the submission.
-- Version 1.0.0 with build 4 is approved, with the state "Pending Developer Release". It does not ship. Build 19 (code commit `5b39508`) is the submission build candidate of version 1.1.0. No app code changed after that commit.
+- Version 1.1.0 with build 19 (code commit `5b39508`) is in App Review since 2026-11-01. The release of version 1.0.0 with build 4 is cancelled, and App Store Connect reused that record for version 1.1.0. No app code changed after that commit.
