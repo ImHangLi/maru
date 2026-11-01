@@ -39,7 +39,7 @@ The top bar has a language menu. It is a `details` element with plain links, so 
 - When it is `True`, the hero has Apple's "Download on the App Store" badge in the language of the page, the top bar has a "Download" button, the end of the home page has a text link, and the Smart App Banner is on. `STORE_URL` is the link of all of them.
 - The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The badge is in the hero only, because Apple asks for one badge in a layout.
 
-On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and deploy.
+Before the submission: build with `RELEASED = False` and deploy, because App Review reads the FAQ and the privacy pages. On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and deploy.
 
 `DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone", "ipad"]` now: version 1.1 has no Apple Watch app. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
 

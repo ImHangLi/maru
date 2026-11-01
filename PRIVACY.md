@@ -59,7 +59,6 @@ Maru Pro is an optional purchase through the App Store: a yearly subscription or
 - Maru asks the App Store, through StoreKit on your device, which plan is active, at each launch and when a purchase changes. It loads the prices when the Maru Pro screen shows. These requests carry the product identifiers of Maru Pro and none of your item data.
 - Maru keeps the name of the active plan in its settings on your device, so Pro features do not flicker at launch.
 - A purchase, a restore, and an offer code never read or change your items or records. A restore of purchases does not restore your health data. For that, use the Maru backup file.
-- The first offer of Maru Pro can show a picture of a Lock Screen with your next dose. Maru draws it on your device. Nothing of it leaves the device.
 
 ## Apple Watch
 
