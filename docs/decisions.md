@@ -2872,7 +2872,7 @@ Tests (D016): none new. No package test covered only Siri.
 
 The new strings are drafts in five languages (`docs/localization-review.md`).
 
-## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning (the Focus check is replaced by D142)
+## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning (the Focus check is replaced by D143)
 
 Maintainer decisions of 2026-10-30:
 
@@ -2888,7 +2888,7 @@ Maintainer decisions of 2026-10-30:
 The local FAQ and generated pages follow the store claim. Nothing is deployed or uploaded in this task.
 `docs/localization-review.md` lists the corrections and sources. `docs/release-plan.md` keeps screenshots and category changes open.
 
-## D142 · 2026-11-01 · The landing site follows the store page
+## D143 · 2026-11-01 · The landing site follows the store page
 
 The maintainer asked the site to agree with the new store screenshots and focus.
 
