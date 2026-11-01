@@ -212,14 +212,17 @@ extension AppModel {
             presentPaywall(reason: .icons)
             return true
         }
-        UserDefaults.standard.removeObject(forKey: AppIcon.waitingKey)
-        guard icon != settings.appIcon else { return true }
+        guard icon != settings.appIcon else {
+            UserDefaults.standard.removeObject(forKey: AppIcon.waitingKey)
+            return true
+        }
         do {
             // The system shows its own alert that the icon changed.
             try await UIApplication.shared.setAlternateIconName(icon.alternateName)
         } catch {
             return false
         }
+        UserDefaults.standard.removeObject(forKey: AppIcon.waitingKey)
         settings.appIcon = icon
         noteProUse()
         return true
