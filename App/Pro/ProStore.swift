@@ -61,6 +61,9 @@ final class ProStore {
     private(set) var isLoading = false
     /// The plan of a purchase that runs. The paywall disables its buttons while it runs.
     private(set) var buying: ProPlan?
+    /// StoreKit answered in this process. Before it, `isPro` is the cache, and a renewal can come after the cached end of
+    /// access. So the app icon does not follow the cache (D142).
+    @ObservationIgnored private(set) var hasReadEntitlement = false
 
     var isPro: Bool {
         #if DEBUG
@@ -76,7 +79,7 @@ final class ProStore {
     /// Reads the entitlement again at `expiresAt`, also when the process stays alive with no network.
     @ObservationIgnored private var expiryCheck: Task<Void, Never>?
     /// Runs after each read of StoreKit and each purchase, not after a read of the cache. A loss of Pro ends the Live
-    /// Activity (D110).
+    /// Activity (D110) and sets the default app icon (D142).
     @ObservationIgnored var entitlementDidLoad: (@MainActor () -> Void)?
     /// Runs when `isPro` changes after a read of StoreKit or a purchase: a refund, an expiry, a restore, or a new plan.
     /// The reminders follow it, because their sound depends on Pro (D112).
@@ -232,6 +235,7 @@ final class ProStore {
         }
         expiresAt = expires
         UserDefaults.standard.set(expires, forKey: Self.expiresKey)
+        hasReadEntitlement = true
         scheduleExpiryCheck()
         entitlementDidLoad?()
         if isPro != wasPro { entitlementDidChange?() }

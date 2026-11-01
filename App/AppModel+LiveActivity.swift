@@ -10,7 +10,7 @@ struct LiveActivityState {
     /// The switch, in `UserDefaults.standard` beside the display settings. It holds no item data.
     static let isOnKey = "liveActivity.nextDose"
 
-    /// Only a Pro user turns it on. A loss of Pro turns it off.
+    /// The choice of the user. Only a Pro user turns it on. It stays when Pro ends, so it comes back with Pro (D142).
     var isOn = UserDefaults.standard.bool(forKey: isOnKey)
     /// Live Activities are on for Maru in the Settings app. Settings shows a footer when they are off. The launch does
     /// not ask the system (spec 9). Settings, each return to the front, and each update read it.
@@ -80,6 +80,9 @@ struct NextDoseSlot: Codable, Equatable {
 }
 
 extension AppModel {
+    /// The state of the switch in Settings: the choice of the user, while Maru Pro is active (D142).
+    var showsNextDose: Bool { liveActivity.isOn && pro.isPro }
+
     /// The switch in Settings. A free user gets the paywall, and the switch stays off (D107).
     func setNextDoseOnLockScreen(_ isOn: Bool) {
         guard isOn else { return turnOffNextDose() }
@@ -97,16 +100,16 @@ extension AppModel {
         enqueueNextDose { .end }
     }
 
-    /// StoreKit read the entitlement (D107). A loss of Pro, for example after an expiry or a refund, ends the activity
-    /// and turns the switch off. The cached plan at launch does not turn it off, because a renewal can come after the
-    /// cached end of access.
+    /// StoreKit read the entitlement (D107). A loss of Pro, for example after an expiry or a refund, ends the activity.
+    /// The choice stays, so a return of Pro starts the activity again (D142). The app icon follows Pro.
     func proEntitlementDidLoad() {
         noteProUse()
         if pro.isPro {
             updateNextDose()
         } else if liveActivity.isOn {
-            turnOffNextDose()
+            enqueueNextDose { .end }
         }
+        alignAppIcon()
     }
 
     /// The user can change the system switch in the Settings app while Maru is away.

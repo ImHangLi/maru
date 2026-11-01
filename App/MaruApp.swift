@@ -44,7 +44,7 @@ struct MaruApp: App {
         WatchLink.shared.start()
         // The "Taken" button of the Live Activity runs in this process (D110).
         TakeNextDoseHook.install { await AppModel.shared.takeNextDose($0) }
-        // A loss of Pro ends the Live Activity and turns its switch off (D110).
+        // A loss of Pro ends the Live Activity (D110), and the app icon follows Pro (D142).
         ProStore.shared.entitlementDidLoad = { AppModel.shared.proEntitlementDidLoad() }
         // A change of Pro changes the sound of the reminders (D112).
         ProStore.shared.entitlementDidChange = { AppModel.shared.proDidChange() }

@@ -289,6 +289,8 @@ final class AppModel {
         // The user can change the permission in the Settings app while Maru is away (T14).
         readNotificationPermission()
         readLiveActivityPermission()
+        // Only an app in front can change its icon, so a change waits for this moment (D142).
+        alignAppIcon()
         // The first activation of a process has no time in the background. `refresh` already runs.
         guard let backgroundedAt else { return }
         self.backgroundedAt = nil

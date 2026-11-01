@@ -42,7 +42,13 @@ struct FamilyPage: View {
                 }
                 .labelStyle(RowLabelStyle())
             } footer: {
-                Text("Each one has their own items, reminders, and records. The records stay on this iPhone.")
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Each one has their own items, reminders, and records. The records stay on this iPhone.")
+                    // A member that exists never locks, so this says why the members stay (D122, D142).
+                    if model.hasFamily, !model.pro.isPro {
+                        Text("Everyone here keeps their reminders and records. A new person or pet needs Maru Pro.")
+                    }
+                }
             }
             let archived = model.people.filter(\.isArchived)
             if !archived.isEmpty {

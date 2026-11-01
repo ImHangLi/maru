@@ -2138,7 +2138,7 @@ No store change, no schema change, and no new test (D016).
 
 Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
 
-## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123) (paywall source `feature` replaced by D127)
+## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123) (paywall source `feature` replaced by D127) (switch at the end of Pro changed by D142)
 
 Maintainer decision on 2026-10-28, with agent detail. It is the first Pro feature of D107. It follows spec 6, 7.2, 8, 9, and 10, and it uses the record checks of D034, D048, and D089.
 
@@ -2211,7 +2211,7 @@ Not verified: no build of the app on this Mac (CI builds it), and nobody saw the
 5. A refund in the StoreKit transaction manager: the activity ends and the switch goes off.
 6. An activity across midnight ("Open Maru to update.", no name, no button), and an activity after 8 hours with no open of Maru.
 
-## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds (icons extended by D132, sounds replaced by D120)
+## D112 · 2026-10-28 · Maru Pro: app icons and reminder sounds (icons extended by D132, sounds replaced by D120, icon at the end of Pro replaced by D142)
 
 Maintainer decision on 2026-10-28, with agent detail. It adds two Pro features of D107. It does not change a reminder rule. Only the sound of a request changes.
 
@@ -2887,6 +2887,44 @@ Maintainer decisions of 2026-10-30:
 
 The local FAQ and generated pages follow the store claim. Nothing is deployed or uploaded in this task.
 `docs/localization-review.md` lists the corrections and sources. `docs/release-plan.md` keeps screenshots and category changes open.
+
+## D142 · 2026-11-01 · The end of Maru Pro: the icon resets, and every other Pro state is checked (replaces the icon rule of D112, changes the switch rule of D110)
+
+The maintainer reported from TestFlight build 18: after a cancel, the Pro app icon and Family stayed.
+
+Cause:
+
+- A cancel does not end Pro. It stops the renewal, and Pro stays until the end of the paid period or the trial. [TestFlight renews every plan at a speed of one day](https://developer.apple.com/help/app-store-connect/test-a-beta-version/testing-subscriptions-and-in-app-purchases-in-testflight/), so a tester can wait up to one day. The app shows "Active, Yearly" in this period. This is correct.
+- The read of the expiry is correct (D107). A cached yearly plan after its end of access is free, also offline. A timer reads StoreKit at that date.
+- After a real end, the icon stayed because D112 said so. Family stayed because D122 says so.
+
+Decisions:
+
+- The app icon follows Pro. When Pro ends, Maru sets the default icon, and it keeps the old icon in `UserDefaults.standard` under `display.waitingIcon`. When Pro comes back, Maru sets that icon again. A choice in "App Icon" replaces the waiting icon.
+- iOS shows its own alert for each change, and Maru cannot hide it. This is the cost that D112 avoided. The maintainer asked for the reset, so one alert shows at the end of Pro and one at its return.
+- The change runs only with the app in front, after StoreKit answered in this process, and one second after the trigger. So the cache never changes the icon, and a late renewal shorter than that changes nothing. A refused change tries again at the next read of StoreKit or return to the front.
+- Family keeps D122 and T59: every member, item, reminder, and record stays, because a reminder that stops can miss a medication. Only a new member needs Pro. The Family page tells a free user with members so, with a second footer line.
+- The switch "Next Dose on Lock Screen" keeps the choice of the user when Pro ends. The activity ends, no new one starts, and Settings shows the switch off. It comes back with Pro, as the sound does. Before this change, one lapse turned the switch off for good, also for a user who paid again.
+- The app color keeps D114: it stays when Pro ends, and a change needs Pro again. It is a tint and hides no information. The maintainer can reverse this rule in a later decision.
+
+Audited, with no change:
+
+- The reminder sound falls back to the default sound in the next run (D112). The bundled file stays, so a pending reminder always sounds.
+- The Watch shows the locked screen, and a request from an old list records nothing (D111).
+- The PDF reports, the 30-day counts, the badges, the Today card, and the search entries read `isPro` each time.
+- The widgets, alarms, and the "Taken" button of the Live Activity are free. They never read Pro.
+
+Tests (D016): none new. No record rule changes.
+
+Check on 2026-11-01, with StoreKit Test in a hosted test bundle on a deleted iPhone 17 Pro simulator with iOS 27.0, and a harness that was never committed:
+
+- A cancel left Pro on. At the accelerated expiry, the timer ended Pro with no other read.
+- An expiry, a yearly refund, a lifetime refund, and a launch after an expiry each gave the default icon with the iOS alert. The last case ran from a launch with a cached plan after its end.
+- The Live Activity ended, and the 5 pending reminders changed from the Marimba sound to the default sound. All 5 stayed.
+- A new purchase brought back the blue icon, the Live Activity, and the sound. A restore with no purchase changed nothing.
+- A free user with members kept Family, saw the new footer, and "Add Person or Pet" opened the paywall.
+
+Not checked: a real device, the Watch, an offline expiry, a billing grace period, a Family Sharing loss, and the new translations in a rendered layout.
 
 ## D143 · 2026-11-01 · The landing site follows the store page
 
