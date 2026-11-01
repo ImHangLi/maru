@@ -1901,7 +1901,7 @@ Maintainer decision.
 
 Not verified: no build of the app on this Mac. The system shows the prompt in a Debug build every time and never in TestFlight, so only an App Store build shows the real behavior.
 
-## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips (tips removed, timing and "Skip" changed by D104)
+## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips (tips removed, timing and "Skip" changed by D104, pages and look replaced by D145)
 
 Maintainer decision for version 1.1, with agent detail. The copy uses the voice of D101.
 
@@ -1930,7 +1930,7 @@ The new strings in zh-Hans, ja, es, de, and ko are a draft until a native speake
 
 Not verified: no build of the app on this Mac, and nobody saw the pages or the tips on a display. CI builds the app.
 
-## D104 · 2026-10-28 · No first-use tips, "Color Header" on by default, and exact onboarding timing (changes D100 and D103)
+## D104 · 2026-10-28 · No first-use tips, "Color Header" on by default, and exact onboarding timing (changes D100 and D103, the place of "Skip" changed by D145)
 
 Maintainer decision after a test of TestFlight build 13.
 
@@ -2973,3 +2973,41 @@ Other fixes:
 Tests (D016): one new test keeps the summary until the server confirms it, with the same ID and time for a repeat.
 
 Not verified: a real send to PostHog, the real value of `channel` in TestFlight and in the App Store, and a real trial purchase. Local `swift test` crashes on this Mac at each `Date` comparison, also on `main`. All 232 package tests pass with `xcodebuild test` on an iOS 27.0 simulator.
+## D145 · 2026-11-01 · Onboarding in the style of Apple's "What's New" pages (replaces the pages and the look of D103, and the place of "Skip" of D104)
+
+Maintainer decision of 2026-11-01. The maintainer did not like the symbol pages and asked for high-quality pictures that show the product, a zoom in and out on each step, and the style of Apple's "What's New" pages.
+
+Pages:
+
+- A large picture of the product at the top, a large bold title, one line in the secondary color, the page dots, a large capsule button, and a borderless button. The dots and the two buttons stay in place on every page.
+- Reminder page: a reminder on the Lock Screen, its actions, and a tap on "Taken". Title "Reminders, Right on Time".
+- Today page: the Today page of the app, and one more dose recorded. Title "Did I take it? Open Maru and you know.", the promise of the app.
+- Alarm page: the alarm of an item, with "Stop" and "Taken". Title "An Alarm, If You Want One". The line uses the claim of D141. It promises no outcome.
+- The privacy page and the page "Ready When You Are" are removed, with their strings. The store page and `PRIVACY.md` keep the privacy claim.
+
+Page count:
+
+- iOS 26 or later has three pages. iOS 17 to iOS 25 has two pages, because alarms need iOS 26 and the third page must not show a feature that the system does not have. The Today page is then the last page, with "Add Item" and "Later". No Pro feature shows, so no page has a PRO mark.
+
+Buttons:
+
+- "Add Item" and "Later" keep their words and their results, on the last page. "Continue" keeps its word.
+- "Skip" moves from the top right to the place of "Later" on each page before the last. A borderless button under the main button is the pattern of Apple's pages, and the picture stays clear of a bar. Its result and the event value `skipped` do not change.
+- The rules of D104 for when the onboarding shows do not change. `AppModel+Onboarding.swift` did not change.
+
+Picture:
+
+- The app has no video and no image file for it, and the change adds no asset. Each picture is live SwiftUI from the app components (`FormIcon`, `RecordSymbol`, `HeaderWash`, `ReminderAction`, and the text of `SystemReminderCenter`). So it follows the language, the app color, and dark mode, and it stays sharp at each size.
+- A Lock Screen and an alarm are system screens that an app can not show, so these two pictures are drawings of them with the real words of the app. The picture can differ from a future system look.
+- The phone has a fixed size and a fixed text size, as a screenshot has. `OnboardingCamera` scales it. The scale runs inside one `drawingGroup`, so the text draws again at each scale. A system material does not draw in such a group, so a notification uses a plain color.
+- Each page runs a slow loop: wide view, zoom in, hold, zoom out. Only the page on the display runs. `Motion.camera` is the curve, and a view does not name it.
+- With Reduce Motion the page shows one still picture at the close view, with no zoom.
+- VoiceOver reads the title, the line, the dots, and the buttons. The picture is hidden from it, so it never reads a sample as data of the user.
+- At the three largest text sizes the picture hides and the page scrolls (D013).
+- Sample names are generic and in the app language. No brand. The pictures read and write nothing. They use no store, and they fill no value for the user (spec 2). The startup path does not change (spec 9).
+
+`ReminderAction.action` is public now, so the picture shows the exact action words of a reminder.
+
+Tests (D016): none new. No record is at risk.
+
+The new strings are drafts in five languages (`docs/localization-review.md`).

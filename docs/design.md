@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, D109, and D112 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, D109, D112, and D145 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -45,10 +45,13 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## First run
 
-A short onboarding, once (D103, D104). It asks nothing and requests no permission. The app has no first-use tips.
+A short onboarding, once (D103, D104, D145), in the style of Apple's "What's New" pages. It asks nothing and requests no permission. The app has no first-use tips.
 
-- The onboarding fills the window in place of the tabs, with three pages in a paged `TabView`. It is not a sheet, so Today is not under it, and a rotation or Split View keeps it. Before the first read decides, the window shows the plain system background, not Today. Each page has an SF Symbol of 64 points in the tint, a title in bold title style, and one sentence in the secondary color, in the middle. The symbol hides at the three largest text sizes, and the page scrolls.
-- "Skip" is at the top right of pages 1 and 2. Under the pages: "Continue" on pages 1 and 2, and "Add Item" and "Later" on page 3. Page 3 has no "Skip". "Continue" and "Add Item" are large prominent buttons in the tint. "Later" is a borderless button. The page dots have the system background, so they show in light mode.
+- The onboarding fills the window in place of the tabs, with pages in a paged `TabView`. It is not a sheet, so Today is not under it, and a rotation or Split View keeps it. Before the first read decides, the window shows the plain system background, not Today.
+- iOS 26 or later has three pages: a reminder, Today, and an alarm. An older system has the first two, because alarms need iOS 26.
+- Each page has a moving picture of the product at the top, a title in bold large title style, and one line in the secondary color, in the middle. The picture goes under the status bar, sits on the header wash, and fades out at the top and the bottom. It fills what the words leave, and the tallest words of all pages set its height, so it keeps its size from page to page.
+- The picture is a phone with live SwiftUI from the app components. It starts wide, zooms in to the part that matters, holds, and zooms out, on a slow loop. With Reduce Motion it is one still picture at the close view. VoiceOver does not read it. It hides at the three largest text sizes, and the page scrolls.
+- Under the pages: the system page dots, one large capsule button in the tint, and one borderless button. "Continue" and "Skip" are on each page before the last. "Add Item" and "Later" are on the last page.
 - "Add Item" shows the tabs and opens the add screen on them.
 
 ## Maru Pro
@@ -246,6 +249,7 @@ One motion language for the whole app (D030, D058). The same kind of change uses
 | State | A fade of 0.2 seconds, with the system replace effect on a symbol, and the system numeric text effect on a number | A change in place, with no move | The same fade. A symbol and a number cross-fade with no scale |
 | Press | A scale to 0.98 and back, 0.12 seconds | A press on the record circle, the as-needed record button, and a tile of My Items | No scale. The press shows at once |
 | Fill | A spring of 0.35 seconds with bounce 0.4, from a scale of 0.85 to 1 | The record circle, when it fills after the commit | The fade of the state case, with no scale |
+| Camera | A slow ease in and out of 2.2 seconds | The zoom of an onboarding picture (D145) | No motion. The page shows a still picture |
 
 - Layout applies to: a row or a section that comes or goes on Today, the archived list, the item detail, History, and Settings. A row or a footer that comes or goes in the add and edit form, including the candidates of the smart completion. The section under the repeat rule. A line that comes or goes in a row. The change between an empty page and a list. The scroll to the slot of a tapped reminder. A tile or a row that comes or goes on My Items. A row of History that comes or goes after a correction or a load of older days. The scan card when a tapped text adds its words.
 - State applies to: the record circle and the as-needed record button. The mark of an as-needed dose. A word on the scan card that the user chooses or removes (D042). A number or a time that changes in place: the count of the banner of unsaved changes, the line under the name of a Today row, the time of a dose or of a log row, and the line under the week strip of the item detail.

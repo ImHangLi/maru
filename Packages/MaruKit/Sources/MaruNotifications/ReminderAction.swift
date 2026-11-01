@@ -38,7 +38,7 @@ public enum ReminderAction {
         )
     }
 
-    static func action(_ kind: ReminderActionKind, in category: ReminderCategory, locale: Locale) -> UNNotificationAction {
+    public static func action(_ kind: ReminderActionKind, in category: ReminderCategory, locale: Locale) -> UNNotificationAction {
         let isGroup = category == .group
         let title: String
         switch kind {

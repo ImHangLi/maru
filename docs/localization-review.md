@@ -232,20 +232,31 @@ The strings below are new or changed in `App/Localizable.xcstrings`. They are dr
 | This change didn’t save. Please try again. | 这次更改没保存成功，请再试一次。 | この変更はうまく保存できませんでした。もう一度お試しください。 | Este cambio no se guardó. Inténtalo de nuevo, por favor. | Diese Änderung wurde nicht gespeichert. Bitte versuche es erneut. | 이 변경 사항이 저장되지 않았어요. 다시 시도해 주세요. |
 | Made with care by the Maru team. | Maru 团队用心制作。 | Maruチームが心を込めてつくりました。 | Hecho con cariño por el equipo de Maru. | Mit Sorgfalt gemacht vom Maru-Team. | Maru 팀이 정성을 담아 만들었어요. |
 
-## Onboarding (D103, D104)
+## Onboarding (D103, D104, D145)
 
-The eight strings below are new in `App/Localizable.xcstrings`: the three onboarding pages and their buttons. D104 removed the two tips and their strings. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101). "Stays on Your iPhone" also has an iPad form.
+The strings below are in `App/Localizable.xcstrings`: the onboarding pages and their buttons. D145 replaced four of the older strings. "Skip" and "Add Item" reuse their translations. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm. "Taken", "Today", and "Alarm" must match the words of the app, and "Silent mode" and "Focus" must match the words of the system.
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
+| Reminders, Right on Time | 准时提醒 | 時間どおりにお知らせ | Recordatorios puntuales | Pünktlich erinnert | 제때 알려 드려요 |
+| You choose the time. One tap on Taken records the dose. | 时间由你来定。点一下“已服用”就记下这次服用。 | 時間はあなたが決めます。「服用済み」をタップするだけで記録できます。 | Tú eliges la hora. Un toque en «Tomado» registra la dosis. | Du wählst die Zeit. Ein Tippen auf „Eingenommen“ erfasst die Dosis. | 시간은 직접 정해요. ‘복용함’을 한 번 탭하면 기록돼요. |
 | Did I take it? Open Maru and you know. | 我吃了没？打开 Maru 就知道。 | 飲んだっけ？Maruを開けばすぐわかります。 | ¿Me lo tomé? Abre Maru y lo sabrás. | Schon genommen? Öffne Maru, und du weißt es. | 먹었던가? Maru를 열면 바로 알 수 있어요. |
-| Maru reminds you on time, and one tap records each dose. | Maru 准时提醒你，点一下就能记下每次服用。 | Maruが時間どおりにお知らせ。タップひとつで毎回の服用を記録できます。 | Maru te avisa a tiempo, y con un toque registras cada dosis. | Maru erinnert dich pünktlich, und ein Tippen erfasst jede Dosis. | Maru가 제때 알려 드리고, 한 번 탭하면 복용이 기록돼요. |
-| Stays on Your iPhone | 只留在你的 iPhone 上 | iPhoneの中だけに | Se queda en tu iPhone | Bleibt auf deinem iPhone | iPhone에만 남아요 |
-| There’s no account to make and no ads. What you take is yours alone. | 不用注册账户，也没有广告。你服用的内容只属于你。 | アカウント登録も広告もありません。何を飲んでいるかは、あなただけのものです。 | No hay cuenta que crear ni anuncios. Lo que tomas es solo tuyo. | Kein Konto, keine Werbung. Was du nimmst, bleibt deine Sache. | 계정을 만들 필요도, 광고도 없어요. 무엇을 복용하는지는 나만 알아요. |
-| Ready When You Are | 准备好了就开始吧 | 準備ができたら、はじめましょう | Empezamos cuando quieras | Los geht’s, wenn du so weit bist | 준비되면 시작해요 |
-| Add a supplement or medication. You choose the time, and Maru reminds you. | 添加一种保健品或药物。时间由你来定，Maru 按时提醒你。 | サプリメントや薬を追加しましょう。時間はあなたが決めて、Maruがお知らせします。 | Añade un suplemento o un medicamento. Tú eliges la hora, y Maru te avisa. | Füge ein Supplement oder Medikament hinzu. Du wählst die Zeit, und Maru erinnert dich. | 영양제나 의약품을 추가해 보세요. 시간은 직접 정하고, 알림은 Maru가 드려요. |
+| Today shows each dose and when you took it. | “今天”页面列出每次服用和服用时间。 | 「今日」に、服用ごとの記録と時刻が表示されます。 | «Hoy» muestra cada dosis y cuándo la tomaste. | „Heute“ zeigt jede Dosis und wann du sie genommen hast. | ‘오늘’에서 복용 항목과 복용 시간을 확인할 수 있어요. |
+| An Alarm, If You Want One | 需要的话，还有闹钟 | 必要なら、アラームも | Una alarma, si la quieres | Ein Wecker, wenn du möchtest | 원한다면 알람도 |
+| Turn on Alarm for any item, and it rings through Silent mode and Focus. | 为任一药品打开闹钟，静音模式和专注模式下也会响铃。 | 項目ごとにアラームをオンにできます。消音モードや集中モードでも鳴ります。 | Activa Alarma en cualquier elemento. Suena aunque tengas Silencio o Concentración activados. | Schalte „Wecker“ für einen Eintrag ein. Er klingelt auch im Stummmodus und bei aktivem Fokus. | 항목별로 알람을 켤 수 있어요. 무음 모드와 집중 모드에서도 울려요. |
 | Continue | 继续 | 続ける | Continuar | Weiter | 계속 |
 | Later | 以后再说 | あとで | Más tarde | Später | 나중에 |
+
+The pictures also show sample words. Use the common generic name, not a brand. They are never data of a user.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Vitamin D | 维生素 D | ビタミンD | Vitamina D | Vitamin D | 비타민 D |
+| Omega-3 | 鱼油 | オメガ3 | Omega 3 | Omega-3 | 오메가3 |
+| Magnesium | 镁 | マグネシウム | Magnesio | Magnesium | 마그네슘 |
+| 1 softgel | 1 粒 | 1粒 | 1 cápsula blanda | 1 Kapsel | 1캡슐 |
+| 2 softgels | 2 粒 | 2粒 | 2 cápsulas blandas | 2 Kapseln | 2캡슐 |
+| 2 capsules | 2 粒 | 2粒 | 2 cápsulas | 2 Kapseln | 2캡슐 |
 
 ## Appearance (D105)
 

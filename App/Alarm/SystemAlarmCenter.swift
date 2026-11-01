@@ -30,6 +30,14 @@ enum AlarmSupport {
         if AlarmManager.shared.authorizationState == .authorized { return true }
         return (try? await AlarmManager.shared.requestAuthorization()) == .authorized
     }
+
+    /// The title of an alarm that names its items. The alarm and the onboarding picture show the same words (D145).
+    static func title(_ reminderTitle: String, names: String) -> String {
+        String(
+            localized: "\(reminderTitle): \(names)",
+            comment: "The title of an alarm that names its items. The first placeholder is the reminder title, the second is the item names. Example: Time to take: Zinc and Vitamin D."
+        )
+    }
 }
 
 /// AlarmKit as an `AlarmCenter`. It only translates: `AlarmPlan` and `AlarmEngine` in `MaruCore` have every rule.
@@ -58,10 +66,7 @@ struct SystemAlarmCenter: AlarmCenter {
         let text = SystemReminderCenter().text(for: ReminderContent(kind: .due, names: request.names))
         // A text that names owners has one line for each member. An alarm title has one line, so the lines become a list (D123).
         let names = text.body.split(separator: "\n").map(String.init).formatted(.list(type: .and))
-        let title = request.names == nil ? text.title : String(
-            localized: "\(text.title): \(names)",
-            comment: "The title of an alarm that names its items. The first placeholder is the reminder title, the second is the item names. Example: Time to take: Zinc and Vitamin D."
-        )
+        let title = request.names == nil ? text.title : AlarmSupport.title(text.title, names: names)
         let secondary: AlarmButton
         let intent: any LiveActivityIntent
         if let taken = request.taken {
