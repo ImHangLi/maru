@@ -880,7 +880,7 @@ The maintainer asked for an optional supporter purchase. Spec 14 C, spec 9, T35,
 
 Not verified: no app build ran on the Mac of the maintainer, and nobody bought a tip. CI builds the app. Needs a check in a simulator or on an iPhone with the StoreKit configuration: a buy, a cancel, a pending tip, a failure, a refund from the StoreKit transaction manager, and a tip that ends after a relaunch. App Store Connect needs the three products before a TestFlight build.
 
-## D052 · 2026-10-12 · Product analytics: allowlist, region default, own sender (event fields extended by D077, notice outside the opt-in regions replaced by D078)
+## D052 · 2026-10-12 · Product analytics: allowlist, region default, own sender (event fields extended by D077, notice outside the opt-in regions replaced by D078, send of the queue changed by D144)
 
 Agent decisions for the analytics part of D051. They follow spec §10 and §11. Spec §11.3 says "off by default". D051 replaces that with the region rule below.
 
@@ -1346,7 +1346,7 @@ Maintainer decisions after the test of the TestFlight build, for the build that 
 - The columns of the medium "Today" widget end at the bottom edge, so the space over the title equals the space under the capsules.
 - Checked in an iPhone 17 Pro simulator, light and dark, with a view of the widget layout inside the app. Nobody saw the widget on a Home Screen, in the tinted or clear look, or the item detail row. They need a check on a real iPhone.
 
-## D077 · 2026-10-14 · More usage statistics for product decisions
+## D077 · 2026-10-14 · More usage statistics for product decisions (end of a waiting summary changed by D144)
 
 Maintainer request on 2026-10-14, with agent detail. Build 3 sends four events, and the maintainer cannot judge the product from them. This change adds events and fields that answer the questions of spec §11.1. Every value is a fixed word, a flag, or a coarse range. The rules of spec §10 and §11 stay.
 
@@ -2936,3 +2936,40 @@ The maintainer asked the site to agree with the new store screenshots and focus.
 - The hero phone has Today, My Items, and History. Settings and Add Item left the phone, and Today does not scroll, because the store captures have no such pictures, and the old captures show an older Settings and an older sample set. A maintainer can add them back with new captures.
 - The item page block left the site, because the store captures have no item page and the store focus does not name it.
 - The Family claim is the store claim. The site does not say that nothing leaves the device, because Maru Pro sends the list of today to the user's own Apple Watch.
+
+## D144 · 2026-11-01 · Five analytics fixes before the first release (changes the send of D052 and D077, and spec 11.5 and 11.6)
+
+The analytics audit of 2026-11-01 found five defects. A read of the code confirmed each one.
+
+Maintainer decisions of 2026-11-01:
+
+- The statistics stay as they are in each region (D051, D078). They are on by default outside the opt-in regions, and off until opt-in inside them.
+- Maru adds no summary of day 0 from the background. A summary joins the waiting events only at an open, so `PRIVACY.md` says "never from the background" about that step. A background record can close the tallies of the day before, and the summary then waits on the device. A send of events that already wait is a different action, and `PRIVACY.md` now names it.
+
+Lost events:
+
+- When the app leaves the front, `AppModel.flushAnalytics` sends the queue with no 5-second wait, in a short background task. The wait of 5 minutes after a failed request stays. The flush makes no event.
+- The waiting summary stays in `UserDefaults` until a 2xx answer. A refused batch (4xx) does not delete it. The next process sends it again, at most one time, and the next day replaces it.
+- Each event has a random `uuid`. PostHog drops a repeat only when `uuid`, `timestamp`, `distinct_id`, and the event name are the same, so the summary keeps its ID and the time of its first open on the device.
+- Limit: at most one summary waits (D077). A newer day replaces an older one that has no answer. An offline user can lose that older day. A list of summaries needs more code for a rare case, so it stays out.
+
+Channel:
+
+- Each event has `channel`: `app_store`, `testflight`, `debug`, or `unknown`.
+- `ProStore.installChannel` reads `AppTransaction.shared`. A Debug build is `debug`. The environment `production` is `app_store`, `sandbox` is `testflight`, and `xcode` is `debug`. Maru does not call `AppTransaction.refresh()`, because it can ask the user to sign in.
+- The read starts with the first event of the client, so a user with statistics off gets no read, and nothing waits for it (spec 9). A request reads the value when it starts, so an event that waited gets the answer too. With no verified answer the value is `unknown`, and the next event reads again.
+- The `sandbox` environment also covers App Review. The App Store privacy label does not change: `channel` is in Other Diagnostic Data, as `app_version` is. `App/PrivacyInfo.xcprivacy` does not change.
+
+Silent reminder failures:
+
+- `core_error` with `schedule` and `failed` now covers a reminder run with no rule, a failed follow-up refresh, a failed alarm refresh, and an alarm that the system refused. All four share one report for each process. The order of the run and the alarm cover do not change.
+- `AlarmEngine` gets a `scheduleFailed` callback, because the result of `refresh` also holds items that the limit cut, which is not a failure.
+
+Other fixes:
+
+- `purchase_result` has `trial`, true when the purchase starts an introductory free trial. iOS 17.2 and later use `Transaction.offer`. iOS 17.0 and 17.1 use `offerType` and a price of zero, because the only introductory offer of Maru Pro is a free trial. An Ask to Buy purchase sends `pending` with `trial` false, and its approval sends no event.
+- "Replace with a new product" sends `editor_opened` with `mode` = `replace`.
+
+Tests (D016): one new test keeps the summary until the server confirms it, with the same ID and time for a repeat.
+
+Not verified: a real send to PostHog, the real value of `channel` in TestFlight and in the App Store, and a real trial purchase. Local `swift test` crashes on this Mac at each `Date` comparison, also on `main`. All 232 package tests pass with `xcodebuild test` on an iOS 27.0 simulator.

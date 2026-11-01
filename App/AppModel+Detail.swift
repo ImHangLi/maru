@@ -87,6 +87,7 @@ extension AppModel {
                     session.replaced = (item, stored.schedule)
                 }
                 editor = session
+                analytics.capture(.setupStep(.editorOpened, mode: session.mode))
             } catch {
                 refresh()
             }

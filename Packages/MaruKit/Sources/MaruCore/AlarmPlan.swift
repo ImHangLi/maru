@@ -560,9 +560,13 @@ public struct AlarmEngine: Sendable {
     private let wanted: WantedAlarms
     private let generations: any GenerationCounter
     private let index: any AlarmIndex
+    private let scheduleFailed: @Sendable () -> Void
 
-    /// - Parameter wanted: The box that the engine fills with the exact ids that the current plan wants. A `TimedAlarmCenter`
-    ///   reads it, so a schedule that returns after its time out is cancelled when the plan does not want it any more.
+    /// - Parameters:
+    ///   - wanted: The box that the engine fills with the exact ids that the current plan wants. A `TimedAlarmCenter`
+    ///     reads it, so a schedule that returns after its time out is cancelled when the plan does not want it any more.
+    ///   - scheduleFailed: Runs when the system refuses an alarm. `refresh` also returns an item that the limit cut, so its
+    ///     result cannot tell a refused alarm (D144).
     public init(
         source: any AlarmSource,
         center: any AlarmCenter,
@@ -570,7 +574,8 @@ public struct AlarmEngine: Sendable {
         alarmsRing: @escaping @Sendable () -> Bool,
         wanted: WantedAlarms = WantedAlarms(),
         generations: any GenerationCounter = MemoryGenerationCounter.shared,
-        index: any AlarmIndex = MemoryAlarmIndex()
+        index: any AlarmIndex = MemoryAlarmIndex(),
+        scheduleFailed: @escaping @Sendable () -> Void = {}
     ) {
         self.index = index
         self.generations = generations
@@ -579,6 +584,7 @@ public struct AlarmEngine: Sendable {
         self.privacy = privacy
         self.alarmsRing = alarmsRing
         self.wanted = wanted
+        self.scheduleFailed = scheduleFailed
     }
 
     /// An error from the source stops the run before it changes an alarm. A failed schedule leaves
@@ -677,6 +683,7 @@ public struct AlarmEngine: Sendable {
                 // any more, and the late check of `TimedAlarmCenter` cancels the alarm (D089).
                 wanted.remove(registered.id)
                 failed.formUnion(request.itemIDs)
+                scheduleFailed()
             }
         }
         // Cancel each held alarm of a failed item, until no new item fails with it.

@@ -64,6 +64,8 @@ final class ProStore {
     /// StoreKit answered in this process. Before it, `isPro` is the cache, and a renewal can come after the cached end of
     /// access. So the app icon does not follow the cache (D142).
     @ObservationIgnored private(set) var hasReadEntitlement = false
+    /// The last call of `buy` started an introductory free trial (D144).
+    @ObservationIgnored private(set) var purchaseStartedTrial = false
 
     var isPro: Bool {
         #if DEBUG
@@ -192,12 +194,14 @@ final class ProStore {
         guard buying == nil, let product = products[plan] else { return nil }
         buying = plan
         defer { buying = nil }
+        purchaseStartedTrial = false
         do {
             switch try await product.purchase() {
             case let .success(.verified(transaction)):
                 await transaction.finish()
                 guard transaction.revocationDate == nil else { return .failed }
                 if self.plan != .lifetime { set(plan, expires: transaction.expirationDate) }
+                purchaseStartedTrial = Self.startsFreeTrial(transaction)
                 return .purchased
             case let .success(.unverified(transaction, _)):
                 await transaction.finish()
@@ -209,6 +213,31 @@ final class ProStore {
         } catch {
             return .failed
         }
+    }
+
+    /// iOS 17.0 and 17.1 have no `offer`. The one introductory offer of Maru Pro is a free trial, so a price of zero tells it.
+    private static func startsFreeTrial(_ transaction: StoreKit.Transaction) -> Bool {
+        if #available(iOS 17.2, *) {
+            return transaction.offer?.type == .introductory && transaction.offer?.paymentMode == .freeTrial
+        }
+        return transaction.offerType == .introductory && transaction.price == 0
+    }
+
+    /// The channel of the install, for the usage statistics (D144). The first read can wait for the App Store, so no launch
+    /// path waits for it. `AppTransaction.refresh()` can ask the user to sign in, so Maru does not call it. `nil` with no
+    /// verified answer.
+    nonisolated static func installChannel() async -> AnalyticsChannel? {
+        #if DEBUG
+        return .debug
+        #else
+        guard case let .verified(transaction)? = try? await AppTransaction.shared else { return nil }
+        return switch transaction.environment {
+        case .production: .appStore
+        case .sandbox: .testflight
+        case .xcode: .debug
+        default: nil
+        }
+        #endif
     }
 
     /// "Restore Purchases": a sync with the App Store, then a new read of the entitlement. `nil` when the sync

@@ -37,8 +37,20 @@ extension AppModel {
                 osMajor: ProcessInfo.processInfo.operatingSystemVersion.majorVersion,
                 regionCode: regionCode,
                 language: language,
-                device: device
+                device: device,
+                channel: { await ProStore.installChannel() }
             )
+        }
+    }
+
+    /// The app left the front. The events that wait go now, under a short background task, so a quick exit does not lose
+    /// them (D144). It makes no event, so the summary of a day still starts only at an open (D077).
+    func flushAnalytics() {
+        guard analytics.isActive else { return }
+        let assertion = BackgroundAssertion(name: "Analytics")
+        Task {
+            await analytics.flush()
+            assertion.end()
         }
     }
 

@@ -52,6 +52,7 @@ struct AnalyticsTests {
             .paywallShown(.day7Card),
             .paywallShown(.family),
             .paywallShown(.liveActivity),
+            .purchaseResult(.purchased, plan: .yearly, trial: true),
             .purchaseResult(.purchased, plan: .lifetime),
             .purchaseResult(.restored, plan: nil),
             .purchaseResult(.dismissed, plan: nil),

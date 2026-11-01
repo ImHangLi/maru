@@ -20,13 +20,15 @@ public struct PostHogConfiguration: Sendable, Equatable {
 /// A minimal sender to the PostHog capture API (D052). It is not the PostHog SDK, so no automatic capture exists to
 /// switch off (spec 11.4): it sends only the events that the app gives it, with the fields of `AnalyticsEvent`, the
 /// install ID, the app version, the major version of iOS, the region setting of the device (D064), the language of the
-/// app, and the device family (D077).
+/// app, the device family (D077), the channel of the install, and a random ID for each event (D144).
 ///
 /// - The events wait in memory. At most `maxQueued` stay, and the oldest go first. An event older than `maxAge` goes.
 /// - One request carries up to `batchSize` events, a few seconds after the first event, so a burst is one request.
+///   `flush` sends without that wait, when the app leaves the front (D144).
 /// - After a failed request the client sends nothing for `retryDelay`. It has no timer or loop that wakes the
-///   device: the next event or the next launch tries again (T44).
-/// - The queue is not on disk. A lost analytics event costs nothing, and no health record depends on it.
+///   device: the next event, the next exit from the app, or the next launch tries again (T44).
+/// - The queue is not on disk. A lost analytics event costs nothing, and no health record depends on it. The daily summary
+///   stays on disk in `AnalyticsService` until the server confirms it (D144).
 public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     public typealias Send = @Sendable (URLRequest) async throws -> Int
 
@@ -37,10 +39,12 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     static let retryDelay: TimeInterval = 300
 
     private struct Pending {
-        let id = UUID()
+        let id: UUID
         let name: String
         let properties: [String: Any]
         let time: Date
+        /// Runs after the server confirms the event.
+        let acknowledged: (@Sendable () -> Void)?
     }
 
     private let configuration: PostHogConfiguration
@@ -52,9 +56,17 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     private let device: String
     private let send: Send
     private let flushDelay: Duration
+    private let readChannel: @Sendable () async -> AnalyticsChannel?
     private let lock = NSLock()
     private var queue: [Pending] = []
-    private var isFlushing = false
+    /// The wait before the next request. `flush` cancels it.
+    private var delay: Task<Void, Never>?
+    /// The wait and the request that run now. A second request of the same events cannot start beside it.
+    private var sending: Task<Void, Never>?
+    /// `nil` until the system answers. A request reads it when it starts, so an event that waited gets the answer too.
+    private var channel: AnalyticsChannel?
+    /// The read that runs now. `reset` cancels it.
+    private var channelRead: Task<Void, Never>?
     private var retryAfter = Date.distantPast
     /// A `reset` ends this client. A late task of an old event finds the flag and sends nothing.
     private var isStopped = false
@@ -68,7 +80,8 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         device: DeviceFamily = .other,
         defaults: UserDefaults = .standard,
         flushDelay: Duration = .seconds(5),
-        send: @escaping Send = PostHogClient.urlSessionSend
+        send: @escaping Send = PostHogClient.urlSessionSend,
+        channel: @escaping @Sendable () async -> AnalyticsChannel? = { nil }
     ) {
         self.configuration = configuration
         self.appVersion = appVersion
@@ -78,6 +91,7 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         self.device = device.rawValue
         self.defaults = defaults
         self.flushDelay = flushDelay
+        readChannel = channel
         self.send = send
     }
 
@@ -127,6 +141,14 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     }
 
     public func capture(_ event: AnalyticsEvent) {
+        enqueue(event, id: UUID(), time: Date(), acknowledged: nil)
+    }
+
+    public func capture(_ event: AnalyticsEvent, id: UUID, time: Date, acknowledged: @escaping @Sendable () -> Void) {
+        enqueue(event, id: id, time: time, acknowledged: acknowledged)
+    }
+
+    private func enqueue(_ event: AnalyticsEvent, id: UUID, time: Date, acknowledged: (@Sendable () -> Void)?) {
         var properties: [String: Any] = [
             // The server makes no person profile and no location from the address.
             "$process_person_profile": false,
@@ -149,15 +171,34 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         defer { lock.unlock() }
         guard !isStopped else { return }
         properties["distinct_id"] = installID
-        queue.append(Pending(name: event.name, properties: properties, time: Date()))
-        if queue.count > Self.maxQueued { queue.removeFirst(queue.count - Self.maxQueued) }
+        queue.append(Pending(id: id, name: event.name, properties: properties, time: time, acknowledged: acknowledged))
+        // The oldest plain events go first. An event that waits for a confirmation stays, so its owner can trust that it waits.
+        var extra = queue.count - Self.maxQueued
+        queue.removeAll { pending in
+            guard extra > 0, pending.acknowledged == nil else { return false }
+            extra -= 1
+            return true
+        }
+        readChannelIfNeeded()
         scheduleFlush()
+    }
+
+    public func flush() async {
+        while let run = lock.withLock({ () -> Task<Void, Never>? in
+            scheduleFlush()
+            delay?.cancel()
+            return sending
+        }) {
+            await run.value
+        }
     }
 
     public func reset() {
         lock.lock()
         defer { lock.unlock() }
         isStopped = true
+        channelRead?.cancel()
+        channelRead = nil
         queue.removeAll()
         defaults.removeObject(forKey: Self.installIDKey)
     }
@@ -167,50 +208,86 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         lock.withLock { queue.count }
     }
 
-    /// Call with the lock held.
-    private func scheduleFlush() {
-        guard !isFlushing, !queue.isEmpty, Date() >= retryAfter else { return }
-        isFlushing = true
-        Task { [flushDelay] in
-            try? await Task.sleep(for: flushDelay)
-            await flush()
+    /// Call with the lock held. Nothing waits for the read, so an event never waits for StoreKit (spec 9, D144). A read that
+    /// gives no answer runs again with the next event.
+    private func readChannelIfNeeded() {
+        guard channel == nil, channelRead == nil else { return }
+        channelRead = Task { [readChannel] in
+            guard !Task.isCancelled else { return }
+            let answer = await readChannel()
+            lock.withLock {
+                guard !isStopped else { return }
+                channel = answer
+                channelRead = nil
+            }
         }
     }
 
-    /// Sends one batch. It ends the `isFlushing` state that `scheduleFlush` started.
-    func flush() async {
-        let batch: [Pending] = lock.withLock {
-            let oldest = Date().addingTimeInterval(-Self.maxAge)
-            queue.removeAll { $0.time < oldest }
-            return Array(queue.prefix(Self.batchSize))
+    /// Call with the lock held.
+    private func scheduleFlush() {
+        guard sending == nil, !isStopped, !queue.isEmpty, Date() >= retryAfter else { return }
+        // A cancelled sleep ends the wait. The request stays in another task, so the cancel does not reach it.
+        let wait = Task<Void, Never> { [flushDelay] in
+            try? await Task.sleep(for: flushDelay)
         }
-        guard !batch.isEmpty, let request = request(for: batch) else {
-            lock.withLock { isFlushing = false }
+        delay = wait
+        sending = Task {
+            await wait.value
+            await sendBatch()
+        }
+    }
+
+    /// Sends one batch. It ends the `sending` state that `scheduleFlush` started.
+    private func sendBatch() async {
+        let (batch, channel) = lock.withLock {
+            let oldest = Date().addingTimeInterval(-Self.maxAge)
+            queue.removeAll { $0.time < oldest && $0.acknowledged == nil }
+            return (Array(queue.prefix(Self.batchSize)), self.channel ?? .unknown)
+        }
+        guard !batch.isEmpty else {
+            lock.withLock { sending = nil }
+            return
+        }
+        guard let request = request(for: batch, channel: channel) else {
+            lock.withLock {
+                sending = nil
+                retryAfter = Date().addingTimeInterval(Self.retryDelay)
+            }
             return
         }
         let status = try? await send(request)
-        lock.withLock {
-            isFlushing = false
-            guard !isStopped else { return }
+        let confirmed = lock.withLock { () -> [Pending] in
+            sending = nil
+            guard !isStopped else { return [] }
+            let isConfirmed: Bool
             switch status {
             case let status? where (200..<300).contains(status):
-                queue.removeAll { sent in batch.contains { $0.id == sent.id } }
+                isConfirmed = true
             case let status? where (400..<500).contains(status) && status != 408 && status != 429:
                 // The server refuses the batch for good, for example with a wrong key. A retry cannot help.
-                queue.removeAll { sent in batch.contains { $0.id == sent.id } }
+                isConfirmed = false
             default:
                 retryAfter = Date().addingTimeInterval(Self.retryDelay)
-                return
+                return []
             }
+            queue.removeAll { sent in batch.contains { $0.id == sent.id } }
             scheduleFlush()
+            return isConfirmed ? batch : []
         }
+        for event in confirmed { event.acknowledged?() }
     }
 
-    private func request(for batch: [Pending]) -> URLRequest? {
+    private func request(for batch: [Pending], channel: AnalyticsChannel) -> URLRequest? {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         let events: [[String: Any]] = batch.map {
-            ["event": $0.name, "properties": $0.properties, "timestamp": formatter.string(from: $0.time)]
+            var properties = $0.properties
+            properties["channel"] = channel.rawValue
+            // With the same time, the same `uuid` tells the server that a repeat send is one event (D144).
+            return [
+                "uuid": $0.id.uuidString.lowercased(), "event": $0.name, "properties": properties,
+                "timestamp": formatter.string(from: $0.time),
+            ]
         }
         let body: [String: Any] = ["api_key": configuration.apiKey, "batch": events]
         guard let data = try? JSONSerialization.data(withJSONObject: body) else { return nil }

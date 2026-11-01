@@ -6,10 +6,19 @@ import Testing
 private final class RecordingClient: AnalyticsClient, @unchecked Sendable {
     private let lock = NSLock()
     private var storedEvents: [AnalyticsEvent] = []
+    private var storedSends: [(id: UUID, time: Date, confirm: @Sendable () -> Void)] = []
     private var storedResets = 0
     var events: [AnalyticsEvent] { lock.withLock { storedEvents } }
+    var sends: [(id: UUID, time: Date, confirm: @Sendable () -> Void)] { lock.withLock { storedSends } }
     var resets: Int { lock.withLock { storedResets } }
     func capture(_ event: AnalyticsEvent) { lock.withLock { storedEvents.append(event) } }
+    func capture(_ event: AnalyticsEvent, id: UUID, time: Date, acknowledged: @escaping @Sendable () -> Void) {
+        lock.withLock {
+            storedEvents.append(event)
+            storedSends.append((id, time, acknowledged))
+        }
+    }
+    func flush() async {}
     func reset() { lock.withLock { storedResets += 1 } }
 }
 
@@ -62,6 +71,39 @@ struct AnalyticsServiceTests {
         #expect(client.events.count == 1)
     }
 
+    /// A send that the server does not confirm, for example before a kill, must not lose the day or count it twice (D144).
+    @Test func theSummaryStaysUntilTheServerConfirmsIt() async throws {
+        let (defaults, cleanUp) = try isolatedDefaults()
+        defer { cleanUp() }
+        let client = RecordingClient()
+        func service() -> AnalyticsService {
+            AnalyticsService(
+                isAvailable: true, preference: AnalyticsPreference(defaults: defaults, regionCode: "AU"), defaults: defaults
+            ) { client }
+        }
+        let monday = Date(timeIntervalSince1970: 1_790_000_000)
+        let tuesday = monday.addingTimeInterval(86_400)
+        let first = service()
+        first.markUsed(.record, at: monday)
+        first.sendPendingUsage(at: tuesday)
+        // A second return to the app in this process does not queue the summary again.
+        first.sendPendingUsage(at: tuesday.addingTimeInterval(60))
+        #expect(client.sends.count == 1)
+
+        // A new process sends it again, with the same ID and the same time.
+        let next = service()
+        next.sendPendingUsage(at: tuesday.addingTimeInterval(3_600))
+        #expect(client.sends.count == 2)
+        #expect(client.sends[1].id == client.sends[0].id && client.sends[1].time == tuesday)
+
+        // Only the answer of the server ends it.
+        client.sends[1].confirm()
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(defaults.data(forKey: "analytics.usage.pending") == nil)
+        next.sendPendingUsage(at: tuesday.addingTimeInterval(7_200))
+        #expect(client.sends.count == 2)
+    }
+
     @Test func aFailingNetworkKeepsABoundedQueueAndRetriesLate() async throws {
         let (defaults, cleanUp) = try isolatedDefaults()
         defer { cleanUp() }
@@ -112,6 +154,8 @@ struct AnalyticsServiceTests {
             let batch = try #require(json["batch"] as? [[String: Any]])
             let properties = try #require(batch.first?["properties"] as? [String: Any])
             #expect(properties["$geoip_disable"] as? Bool == true)
+            #expect(properties["channel"] as? String == "unknown")
+            #expect((batch.first?["uuid"] as? String).flatMap(UUID.init(uuidString:)) != nil)
             return properties["region"] as? String
         }
         #expect(regions == [nil, "AU"])

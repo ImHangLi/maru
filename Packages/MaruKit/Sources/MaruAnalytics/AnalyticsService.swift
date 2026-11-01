@@ -23,7 +23,9 @@ public final class AnalyticsService {
         sinceKey, permissionKey,
     ]
 
-    /// The summary of an ended day that waits for the next open of the app. It has no time.
+    /// The summary of an ended day that waits for the next open of the app and for the answer of the server. It has no
+    /// time until the first open that sends it. A repeat send uses the same ID and the same time of that open, so the
+    /// server counts one event (D144).
     private struct PendingDay: Codable {
         let dayIndex: Int
         let flags: [String]
@@ -32,6 +34,8 @@ public final class AnalyticsService {
         let widget: Bool?
         let family: Int?
         let pro: AnalyticsEvent.ProUse?
+        var sendID: UUID?
+        var sendTime: Date?
     }
 
     public let isAvailable: Bool
@@ -40,6 +44,8 @@ public final class AnalyticsService {
     private let calendar: Calendar
     private let makeClient: () -> any AnalyticsClient
     private var client: (any AnalyticsClient)?
+    /// The waiting summary that the client of this process holds. Each return to the app sends it only once (D144).
+    private var queuedSummary: UUID?
 
     public init(
         isAvailable: Bool,
@@ -76,6 +82,7 @@ public final class AnalyticsService {
         // The client can be new in this process, and the install ID of an older run can exist. A new client forgets it.
         (client ?? makeClient()).reset()
         client = nil
+        queuedSummary = nil
         for key in Self.localKeys {
             defaults.removeObject(forKey: key)
         }
@@ -85,6 +92,12 @@ public final class AnalyticsService {
         guard isActive else { return }
         if client == nil { client = makeClient() }
         client?.capture(event)
+    }
+
+    /// Sends the queued events now (D144). It adds no event, and it makes no client.
+    public func flush() async {
+        guard isActive else { return }
+        await client?.flush()
     }
 
     /// Notes that the user used a part of the app today. The flag is one bit for the day. It has no time and no count.
@@ -137,16 +150,27 @@ public final class AnalyticsService {
         capture(.notificationPermission(state, previous: previous))
     }
 
-    /// Sends the summary of an earlier day, if one waits. Only the start and each return of the app call it, so
-    /// the time of the event is the time of an open, never the time of a background record (D077). A day with no
-    /// open and no flag has no summary, and no summary does not mean no intake (spec 11.5).
+    /// Queues the summary of an earlier day, if one waits. Only the start and each return of the app call it, so
+    /// the time of the event is the time of an open, never the time of a background record (D077). The summary stays on
+    /// the device until the server confirms it (D144). A day with no open and no flag has no summary, and no summary does
+    /// not mean no intake (spec 11.5).
     public func sendPendingUsage(at now: Date = Date()) {
         guard isActive else { return }
         endDay(before: calendar.startOfDay(for: now))
         guard let data = defaults.data(forKey: Self.usagePendingKey) else { return }
-        defaults.removeObject(forKey: Self.usagePendingKey)
-        guard let day = try? JSONDecoder().decode(PendingDay.self, from: data) else { return }
-        capture(.dailyUsage(
+        guard var day = try? JSONDecoder().decode(PendingDay.self, from: data) else {
+            defaults.removeObject(forKey: Self.usagePendingKey)
+            return
+        }
+        if day.sendID == nil || day.sendTime == nil {
+            day.sendID = UUID()
+            day.sendTime = now
+            if let data = try? JSONEncoder().encode(day) { defaults.set(data, forKey: Self.usagePendingKey) }
+        }
+        guard let id = day.sendID, let time = day.sendTime, id != queuedSummary else { return }
+        queuedSummary = id
+        if client == nil { client = makeClient() }
+        let event = AnalyticsEvent.dailyUsage(
             dayIndex: day.dayIndex,
             AnalyticsEvent.UsageDay(
                 used: Set(day.flags.compactMap(AnalyticsEvent.UsageFlag.init)),
@@ -156,7 +180,18 @@ public final class AnalyticsService {
                 familySize: day.family,
                 pro: day.pro
             )
-        ))
+        )
+        client?.capture(event, id: id, time: time) { [weak self] in
+            Task { @MainActor in self?.summaryWasConfirmed(id) }
+        }
+    }
+
+    /// A newer summary can replace the one that the server confirms. That newer one stays.
+    private func summaryWasConfirmed(_ id: UUID) {
+        if queuedSummary == id { queuedSummary = nil }
+        guard let data = defaults.data(forKey: Self.usagePendingKey),
+              let day = try? JSONDecoder().decode(PendingDay.self, from: data), day.sendID == id else { return }
+        defaults.removeObject(forKey: Self.usagePendingKey)
     }
 
     /// The day of the tallies is today. The tallies of an earlier day wait for the next open.
