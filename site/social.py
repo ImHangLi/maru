@@ -60,6 +60,7 @@ html, body {{ margin: 0; overflow: hidden; background: none; }}
 }}
 .rcard::after {{ content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px {ring}; }}
 .rcard .wallpaper {{ max-width: none; height: 100%; box-sizing: border-box; border-radius: 0; align-content: center; box-shadow: none; }}
+.rcard .m-actions {{ display: none; }}
 .rcard .device {{ --device-w: 270px; position: absolute; left: 50%; top: 44px; margin-left: -135px; }}
 </style>
 <div class="rcard">{block}</div>
@@ -165,11 +166,11 @@ DARK_TOKENS = """
 
 
 def card(code, size, extra="", dark=False):
-    """The card of one language. The dark card has one capture of Today in dark mode, with its bars."""
+    """The card of one language. The dark card has a capture of Today in dark mode."""
     parts = json.loads((SITE / "src/strings" / f"{code}.json").read_text("utf-8"))["home"]["h1"].split("|")
     headline = "".join(f"<span>{html.escape(part.strip())}</span>" for part in parts)
-    shots = [f"today-dark-{code}"] if dark else [f"today-{code}", f"today-bars-{code}"]
-    screen = "".join(f'<img src="shots/{shot}.webp" alt="">' for shot in shots)
+    shot = f"today-dark-{code}" if dark else f"today-{code}"
+    screen = f'<img src="shots/{shot}.webp" alt="">'
     return PAGE.format(code=code, width=size[0], height=size[1], zoom=size[1] / SIZE[1], headline=headline,
                        screen=screen, extra=extra.format())
 

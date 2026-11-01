@@ -12,6 +12,7 @@ import struct
 import subprocess
 import sys
 import tempfile
+from math import isqrt
 from pathlib import Path
 
 import mock
@@ -34,30 +35,19 @@ PAGES = ["index.html", "faq/index.html", "privacy/index.html", "support/index.ht
 # The addresses of the pages before the folders. _redirects sends them to the new addresses.
 OLD_PAGES = {"faq.html": "faq/index.html", "privacy.html": "privacy/index.html", "support.html": "support/index.html"}
 OG_LOCALE = {"en": "en_US", "zh-Hans": "zh_CN", "ja": "ja_JP", "es": "es_ES", "de": "de_DE", "ko": "ko_KR"}
-SHOTS = ["today", "history", "detail", "items"]
+# The picture of the site and the capture that it comes from, in <captures>/<lang>/.
+SHOTS = {"today": "today", "items": "items", "history": "history-all", "alarm": "alarm", "family": "family"}
 SHOT_WIDTH = 780
-# A capture of an iPhone 17 Pro simulator, and the rows of Today in it. The layout is the same in every language.
-CAPTURE_W, CAPTURE_H = 1206, 2622
-APP_BG = bytes.fromhex("F2F2F7")
-# The status bar starts at TODAY_STATUS, the toolbar buttons at TODAY_TOOLBAR, and the title at TODAY_TITLE.
-# TODAY_SEAM is an empty row between the date and the first group. The tab bar starts at TODAY_TAB_BAR.
-TODAY_STATUS, TODAY_TOOLBAR, TODAY_TITLE, TODAY_SEAM, TODAY_TAB_BAR = 60, 150, 370, 570, 2371
-# How far the shadow of a glass shape reaches: to each side, and below.
-GLASS_SHADOW = (7, 30)
-# The top of the screen hides the list that scrolls under it: the background is solid down to the first row, and it
-# fades out at the second row. The title is below the second row when the list is at its top.
-TODAY_EDGE = (300, 350)
-# Empty rows after the last group, so the last row comes to rest above the tab bar with a gap.
-TODAY_END_SPACE = 45
-# A sheet of the app (Settings, Add Item) in a capture. Its top edge is at SHEET_TOP. Its bar is solid down to the first
-# row of SHEET_EDGE and fades out at the second row. The first row of the form is below it when the form is at its top.
-SHEETS = ["settings", "add"]
-SHEET_TOP = 186
-SHEET_EDGE = (400, 430)
-# The form comes from the first capture down to SHEET_SEAM, and from the second capture after it. The last card of
-# the form ends above SHEET_LIMIT in the second capture. A debug build has more rows after it, and the site leaves them out.
-SHEET_SEAM, SHEET_LIMIT = 2300, 2570
-SHEET_END_SPACE = 105
+# The Lock Screen picture joins three captures of 2412 x 5244. The date comes from lock-date.png down to LOCK_DATE_END,
+# and the clock and the wallpaper come from lock-clock.png. LOCK_CARD (left, top, right, bottom) is where the card of the
+# Live Activity goes, over the reminder of those captures. Its rows start at LOCK_ACTIVITY_TOP in la.png, which shows the
+# card on black. LOCK_CARD_FILL is the color of the card, and LOCK_CARD_RADIUS is its corner radius.
+LOCK_W = 2412
+LOCK_DATE_END = 660
+LOCK_CARD = (84, 4015, 2328, 4535)
+LOCK_ACTIVITY_TOP = 2450
+LOCK_CARD_FILL = bytes.fromhex("1C1C1E")
+LOCK_CARD_RADIUS = 144
 # The jars of the photo block, from left to right. README.md names the source of each photo.
 JARS = ["omega3", "vitd3", "magnesium"]
 # Apple asks for a badge height of 40 px or more on a screen.
@@ -102,148 +92,58 @@ def webp_size(path):
     raise ValueError(f"{path} is not a WebP file")
 
 
+def png_width(png):
+    """The width of a PNG file."""
+    return struct.unpack(">I", png.read_bytes()[16:20])[0]
+
+
 def pixels(png):
     """The pixels of a capture as RGB bytes. Needs ffmpeg."""
     return subprocess.run(["ffmpeg", "-v", "error", "-i", str(png), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
                           check=True, capture_output=True).stdout
 
 
-def write_webp(data, mode, height, name):
-    """Write raw pixels of the capture width as a WebP file of SHOT_WIDTH. Needs ffmpeg and cwebp."""
+def write_webp(png, name, width=SHOT_WIDTH):
+    """Write a capture as a WebP file of the given width. Needs cwebp."""
+    subprocess.run(["cwebp", "-quiet", "-q", "90", "-sharp_yuv", "-resize", str(width), "0", str(png), "-o",
+                    str(SITE / "shots" / name)], check=True)
+
+
+def import_lock(folder, code):
+    """Make the Lock Screen picture: the Lock Screen with the card of the Live Activity in place of the reminder."""
+    clock, date, activity = (pixels(folder / f"{name}.png") for name in ("lock-clock", "lock-date", "la"))
+    line = LOCK_W * 3
+    full = bytearray(date[:LOCK_DATE_END * line] + clock[LOCK_DATE_END * line:])
+    left, top, right, bottom = LOCK_CARD
+    for y in range(top, bottom):
+        # The card rounds its corners: a row near an end of the card starts further in.
+        edge = max(0, LOCK_CARD_RADIUS - (y - top), LOCK_CARD_RADIUS - (bottom - 1 - y))
+        inset = LOCK_CARD_RADIUS - isqrt(max(0, LOCK_CARD_RADIUS ** 2 - edge ** 2)) if edge else 0
+        source = LOCK_ACTIVITY_TOP + y - top
+        cells = activity[source * line + (left + inset) * 3:source * line + (right - inset) * 3]
+        # The capture has the card on black, so each channel is the brighter of the capture and the card color.
+        full[y * line + (left + inset) * 3:y * line + (right - inset) * 3] = bytes(
+            max(value, LOCK_CARD_FILL[i % 3]) for i, value in enumerate(cells))
     with tempfile.TemporaryDirectory() as tmp:
-        png = Path(tmp) / "full.png"
-        subprocess.run(["ffmpeg", "-v", "error", "-f", "rawvideo", "-pix_fmt", mode, "-s", f"{CAPTURE_W}x{height}",
-                        "-i", "-", str(png)], input=bytes(data), check=True)
-        subprocess.run(["cwebp", "-quiet", "-q", "90", "-sharp_yuv", "-resize", str(SHOT_WIDTH), "0", str(png), "-o",
-                        str(SITE / "shots" / name)], check=True)
-
-
-def import_today(source, code):
-    """Make the two pictures of the hero phone from two captures of Today: the list at its top (today-<lang>.png) and
-    the list at its end (today-end-<lang>.png). today-<lang>.webp is the full list with no bars, and
-    today-bars-<lang>.webp is the status bar, the toolbar buttons, and the tab bar. The top of it hides the list, and the rest is clear."""
-    top, end = pixels(Path(source) / f"today-{code}.png"), pixels(Path(source) / f"today-end-{code}.png")
-    line = CAPTURE_W * 3
-    blank = APP_BG * CAPTURE_W
-
-    def row(buf, y):
-        return buf[y * line:(y + 1) * line]
-
-    # How far the list moved between the two captures.
-    shift = next(d for d in range(1, TODAY_TITLE) if all(row(top, y) == row(end, y - d) for y in range(700, 2100, 100)))
-    if row(top, TODAY_SEAM) != blank or row(end, TODAY_SEAM - shift) != blank or row(end, TODAY_TAB_BAR - 1) != blank:
-        raise ValueError(f"today-{code}: a cut is not on the background")
-    # The list: the title from the first capture, the rows from the second, and the space that lets the last row
-    # scroll above the tab bar, as in the app.
-    full = blank * TODAY_TITLE + top[TODAY_TITLE * line:TODAY_SEAM * line] \
-        + end[(TODAY_SEAM - shift) * line:TODAY_TAB_BAR * line]
-    height = CAPTURE_H + shift + TODAY_END_SPACE
-    full += blank * (height - len(full) // line)
-    write_webp(full, "rgb24", height, f"today-{code}.webp")
-
-    # The bars. A glass shape is opaque. Around it, a pixel that is a darker background is a shadow or the edge of a
-    # black glyph, so it becomes black with the same strength. That keeps the look over the rows that scroll under it.
-    bars = bytearray(CAPTURE_W * CAPTURE_H * 4)
-
-    def edge(y):
-        """How much of the background the top of the screen has at row y: 1 is solid, and 0 is clear."""
-        t = min(1, max(0, (TODAY_EDGE[1] - y) / (TODAY_EDGE[1] - TODAY_EDGE[0])))
-        return t * t * (3 - 2 * t)
-
-    for y in range(TODAY_EDGE[1]):
-        bars[y * CAPTURE_W * 4:(y + 1) * CAPTURE_W * 4] = (APP_BG + bytes([round(255 * edge(y))])) * CAPTURE_W
-    areas = [(top, TODAY_STATUS, TODAY_TOOLBAR, 0, CAPTURE_W), (top, TODAY_TOOLBAR, TODAY_TITLE, 0, CAPTURE_W // 2),
-             (top, TODAY_TOOLBAR, TODAY_TITLE, CAPTURE_W // 2, CAPTURE_W), (end, TODAY_TAB_BAR, CAPTURE_H, 0, CAPTURE_W)]
-    for index, (buf, y0, y1, x0, x1) in enumerate(areas):
-        marks = [(x, y) for y in range(y0, y1) for x in range(x0, x1)
-                 if buf[y * line + x * 3:y * line + x * 3 + 3] != APP_BG]
-        xs, ys = [x for x, _ in marks], [y for _, y in marks]
-        # The glass is a capsule. Its shadow reaches GLASS_SHADOW pixels to each side and below. The status bar has none.
-        side, below = (0, 0) if index == 0 else GLASS_SHADOW
-        left, right, up, radius = min(xs) + side, max(xs) - side, min(ys), (max(ys) - below - min(ys)) / 2
-        for x, y in marks:
-            r, g, b = buf[y * line + x * 3:y * line + x * 3 + 3]
-            nearest = min(max(x, left + radius), right - radius)
-            glass = index > 0 and (x - nearest) ** 2 + (y - up - radius) ** 2 <= radius ** 2
-            shade = r / APP_BG[0]
-            if not glass and r == g and shade < 1 and abs(b - APP_BG[2] * shade) < 4:
-                # The shadow lies over the background of the top of the screen, where that background is.
-                under, dark = edge(y), 1 - shade
-                cover = dark + under * shade
-                r, g, b = (round(c * under * shade / cover) for c in APP_BG)
-                alpha = round(255 * cover)
-            else:
-                alpha = 255
-            bars[(y * CAPTURE_W + x) * 4:(y * CAPTURE_W + x) * 4 + 4] = bytes((r, g, b, alpha))
-    write_webp(bars, "rgba", CAPTURE_H, f"today-bars-{code}.webp")
-
-
-def import_sheet(source, name, code):
-    """Make the two pictures of a sheet of the hero phone from two captures: the form at its top (<name>-<lang>.png)
-    and the form scrolled down (<name>-end-<lang>.png). <name>-<lang>.webp is the full form with no bar, and
-    <name>-bar-<lang>.webp is the bar of the sheet with a soft lower edge. Both start at the top edge of the sheet."""
-    top, end = pixels(Path(source) / f"{name}-{code}.png"), pixels(Path(source) / f"{name}-end-{code}.png")
-    line = CAPTURE_W * 3
-    blank = APP_BG * CAPTURE_W
-
-    def row(buf, y):
-        return buf[y * line:(y + 1) * line]
-
-    # How far the form moved between the two captures: some rows above the seam are the same in both.
-    marks = range(SHEET_SEAM - 200, SHEET_SEAM + 1, 25)
-    if all(row(top, y) == blank or row(top, y) == b"\xff\xff\xff" * CAPTURE_W for y in marks):
-        raise ValueError(f"{name}-{code}: the rows above the seam are empty")
-    shift = next(d for d in range(1, SHEET_SEAM - 200 - SHEET_EDGE[1]) if all(row(top, y) == row(end, y - d) for y in marks))
-    if any(row(top, y) != blank for y in range(*SHEET_EDGE)):
-        raise ValueError(f"{name}-{code}: the form starts under the bar")
-    # The last card is white, and the background follows it. The column in the middle has no text.
-    middle = CAPTURE_W // 2 * 3
-    last = next(y for y in range(SHEET_LIMIT, SHEET_SEAM - shift, -1)
-                if row(end, y)[middle:middle + 3] == b"\xff\xff\xff" and row(end, y + 1)[middle:middle + 3] == APP_BG)
-    full = blank * (SHEET_EDGE[0] - SHEET_TOP) + top[SHEET_EDGE[0] * line:SHEET_SEAM * line] \
-        + end[(SHEET_SEAM - shift) * line:(last + 2) * line] + blank * SHEET_END_SPACE
-    write_webp(full, "rgb24", len(full) // line, f"{name}-{code}.webp")
-
-    # The bar. The page rounds the top corners of the sheet, so the dark corners of the capture become background.
-    bar = bytearray()
-    for y in range(SHEET_TOP, SHEET_EDGE[1]):
-        if y >= SHEET_EDGE[0]:
-            t = (SHEET_EDGE[1] - y) / (SHEET_EDGE[1] - SHEET_EDGE[0])
-            bar += (APP_BG + bytes([round(255 * t * t * (3 - 2 * t))])) * CAPTURE_W
-            continue
-        cells = [row(top, y)[x * 3:x * 3 + 3] for x in range(CAPTURE_W)]
-        for side in (range(CAPTURE_W // 2), range(CAPTURE_W - 1, CAPTURE_W // 2, -1)):
-            for x in side:
-                if cells[x] == APP_BG:
-                    break
-                cells[x] = APP_BG
-        bar += b"".join(cell + b"\xff" for cell in cells)
-    write_webp(bar, "rgba", SHEET_EDGE[1] - SHEET_TOP, f"{name}-bar-{code}.webp")
+        png = Path(tmp) / "lock.png"
+        subprocess.run(["ffmpeg", "-v", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{LOCK_W}x{len(full) // line}",
+                        "-i", "-", str(png)], input=bytes(full), check=True)
+        write_webp(png, f"lock-{code}.webp")
 
 
 def import_shots(source):
-    """Convert the captures to WebP. Needs sips (macOS), cwebp, and ffmpeg."""
+    """Convert the captures of <source>/<lang>/ to WebP. Needs cwebp and ffmpeg. A language with no folder keeps its files."""
     (SITE / "shots").mkdir(exist_ok=True)
     for code, _ in LANGS:
-        if (Path(source) / f"today-end-{code}.png").exists():
-            import_today(source, code)
-            print(f"shot today-{code}")
-        for name in SHEETS:
-            if (Path(source) / f"{name}-end-{code}.png").exists():
-                import_sheet(source, name, code)
-                print(f"shot {name}-{code}")
-    for shot in SHOTS[1:]:
-        for code, _ in LANGS:
-            png = Path(source) / f"{shot}-{code}.png"
-            if not png.exists():
-                continue
-            with tempfile.TemporaryDirectory() as tmp:
-                small = Path(tmp) / "small.png"
-                subprocess.run(["sips", "--resampleWidth", str(SHOT_WIDTH), str(png), "--out", str(small)],
-                               check=True, capture_output=True)
-                subprocess.run(["cwebp", "-quiet", "-q", "90", "-sharp_yuv", str(small), "-o",
-                                str(SITE / "shots" / f"{shot}-{code}.webp")], check=True)
-            print(f"shot {shot}-{code}")
+        folder = Path(source) / code
+        if not folder.is_dir():
+            continue
+        for shot, capture in SHOTS.items():
+            write_webp(folder / f"{capture}.png", f"{shot}-{code}.webp")
+        import_lock(folder, code)
+        # The capture of the Watch is small, so it keeps its own width.
+        write_webp(folder / "watch.png", f"watch-{code}.webp", png_width(folder / "watch.png"))
+        print(f"shots {code}")
 
 
 def icon(name):
@@ -267,24 +167,24 @@ def device(code, shot):
 
 
 def live_device(code):
-    """The hero phone. The full Today list scrolls inside the screen, under the bars, as in the app.
-    With no script it is this one picture."""
-    imgs = ""
-    for name in ("today", "today-bars"):
-        file = SITE / "shots" / f"{name}-{code}.webp"
-        width, height = webp_size(file)
-        imgs += (f'<img src="/shots/{file.name}" width="{width}" height="{height}" fetchpriority="high" '
-                 f'draggable="false" alt="">')
-        if name == "today":
-            imgs = (f'<div class="device-scroll" tabindex="0" role="img" '
-                    f'aria-label="{e(STRINGS[code]["shots"]["today"]["alt"])}">{imgs}</div>')
+    """The hero phone. With no script it is the picture of Today."""
+    file = SITE / "shots" / f"today-{code}.webp"
+    width, height = webp_size(file)
     # site.js adds the other screens and the buttons over the controls of the captures. It loads their pictures late.
     words = STRINGS[code]["phone"]
-    labels = {name: words["show"].format(words[name]) for name in ("today", "items", "history", "settings", "add")}
-    labels |= {"back": words["back"], "close": words["close"], "settingsName": words["settings"], "addName": words["add"]}
+    labels = {name: words["show"].format(words[name]) for name in ("today", "items", "history")} | {"back": words["back"]}
     return (f'<div class="device" role="group" aria-label="{e(words["label"])}" data-shots="{code}" '
-            f'data-labels="{e(json.dumps(labels, ensure_ascii=False))}"><div class="device-screen">{imgs}</div>'
-            f'<span class="island" aria-hidden="true"></span></div>')
+            f'data-labels="{e(json.dumps(labels, ensure_ascii=False))}"><div class="device-screen">'
+            f'<img src="/shots/{file.name}" width="{width}" height="{height}" fetchpriority="high" draggable="false" '
+            f'alt="{e(STRINGS[code]["shots"]["today"]["alt"])}"></div><span class="island" aria-hidden="true"></span></div>')
+
+
+def watch(code):
+    """An Apple Watch frame around a real capture of the Watch app."""
+    file = SITE / "shots" / f"watch-{code}.webp"
+    width, height = webp_size(file)
+    return (f'<div class="watch"><img src="/shots/{file.name}" width="{width}" height="{height}" loading="lazy" '
+            f'decoding="async" alt="{e(STRINGS[code]["shots"]["watch"]["alt"])}"></div>')
 
 
 def jars(code):
@@ -296,13 +196,15 @@ def jars(code):
 
 
 def stage(code, shot):
-    """The picture of a block. The reminder block shows the widget and the reminder on a wallpaper."""
+    """The picture of a block. The reminder block shows the reminder and the widget on a wallpaper."""
     if shot == "duo":
         t = mock.load(code)
-        return (f'<div class="wallpaper">{picture(code, "widget", mock.widget(t), " enter d2")}'
-                f'{picture(code, "notification", mock.reminder(t), " enter d3")}</div>')
+        return (f'<div class="wallpaper">{picture(code, "notification", mock.reminder(t), " enter d2")}'
+                f'{picture(code, "widget", mock.widget(t), " enter d3")}</div>')
     if shot == "photos":
         return jars(code)
+    if shot == "watch":
+        return watch(code)
     return device(code, shot)
 
 
@@ -436,12 +338,17 @@ def layout(code, page, title, desc, main, head=""):
 """
 
 
+def mark(block):
+    """The small mark of a block heading, as on the store screenshots: "PRO" or the system that a feature needs."""
+    return f' <span class="mark">{e(block["mark"])}</span>' if "mark" in block else ""
+
+
 def home(code):
     s = STRINGS[code]
     h = s["home"]
     blocks = "".join(
         f'<article class="feature{" flip" if i % 2 else ""}" data-reveal><div class="feature-copy">'
-        f'<h2 class="enter">{phrases(b["title"], load=False)}</h2><p class="lede enter d1">{e(b["text"])}</p></div>'
+        f'<h2 class="enter">{phrases(b["title"], load=False)}{mark(b)}</h2><p class="lede enter d1">{e(b["text"])}</p></div>'
         f'<div class="feature-stage{"" if b["shot"] == "duo" else " enter d2"}">{stage(code, b["shot"])}</div></article>\n'
         for i, b in enumerate(s["blocks"]))
     store_link = f'<a href="{e(STORE_URL)}">{e(s["store"]["badge_alt"])}</a>' if RELEASED else ""
@@ -604,14 +511,15 @@ def llms():
 
 Facts:
 - Runs on: {devices}.
+- "Did I take it today?" One look at your records, and you know.
 - Free to download. Reminders, alarms, records, History, widgets, CSV export, and backup are free, with no limit on items. No account and no ads.
-- Maru Pro is optional: "Next Dose on Lock Screen" (a Live Activity), the Apple Watch app, PDF reports, 30-day counts, Family (people and pets on one iPhone), app icons, reminder sounds, and app colors. A yearly plan with a 7-day free trial, or a one-time lifetime purchase. Family Sharing is on.
-- Items and records stay on the device. Optional usage statistics never include names, doses, or times.
+- Maru Pro is optional: "Next Dose on Lock Screen" (a Live Activity), the Apple Watch app, PDF reports, 30-day counts, Family (people and pets on one iPhone or iPad), app icons, reminder sounds, and app colors. A yearly plan with a 7-day free trial, or a one-time lifetime purchase. Family Sharing is on.
+- Items and records stay on the iPhone or iPad. With Maru Pro, the iPhone sends the list of today to the user's own paired Apple Watch. Optional usage statistics never include names, doses, or times.
 - Today screen: record a dose with one tap.
-- Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose. On iOS 26 or later, an item can have an alarm that rings like the Clock app.
+- Local reminders at the times you choose, with an optional "Remind Again" of up to 12 more reminders for a dose. On iOS 26 or later, an item can have a free alarm that rings in Silent mode and Focus, like the Clock app.
 - Record from the reminder: "Taken", "Skip", and "Remind in 10 min" for one item, and "Take All" and "Skip All" for several items.
 - Schedules: every day, every other day, every few days (every 3 to 30 days), or days on and days off (for example 21 on and 7 off). As-needed items have no reminders.
-- History with undo and correction. Record export (CSV), backup, and restore. With Maru Pro, the 30-day counts of each item, and a medication list and a summary as PDF. The user chooses where each file goes.
+- History with undo and correction. No streaks and no penalties. Record export (CSV), backup, and restore. With Maru Pro, the 30-day counts of each item, and a medication list and a summary as PDF. The user chooses where each file goes.
 - Home Screen and Lock Screen widgets, with "Next Dose" and "Last Dose".
 - Item photos: take or choose a photo of a bottle as the item icon. Maru can remove the background on the device, and it never sends the photo.
 - Languages: English, Simplified Chinese, Japanese, Spanish, German, and Korean.

@@ -9,6 +9,11 @@
   ],
   "today": "Today",
   "reminder_title": "Time to take",
-  "reminder_item": "Vitamin D3",
-  "now": "now"
+  "reminder_item": "Dad: Atorvastatin",
+  "now": "now",
+  "actions": [
+    "Taken",
+    "Skip",
+    "Remind in 10 min"
+  ]
 }

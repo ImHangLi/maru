@@ -7,6 +7,11 @@
   ],
   "today": "今天",
   "reminder_title": "该服用了",
-  "reminder_item": "维生素 D3",
-  "now": "现在"
+  "reminder_item": "爸爸：阿托伐他汀",
+  "now": "现在",
+  "actions": [
+    "已服用",
+    "跳过",
+    "10分钟后提醒"
+  ]
 }

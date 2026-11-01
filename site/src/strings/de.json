@@ -6,9 +6,9 @@
   "nav_label": "Hauptmenü",
   "home": {
     "title": "Maru: Tabletten-Erinnerung",
-    "desc": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Einmal tippen, und die Einnahme ist erfasst. Kostenloser Download, ohne Konto.",
-    "h1": "Schon genommen? |Maru weiß es.",
-    "lede": "Maru erinnert dich an Vitamine, Supplements und Medikamente. Einmal tippen, und die Einnahme ist erfasst."
+    "desc": "Ein Blick auf den Verlauf genügt. Kostenlose Wecker klingeln auch im Stummmodus und bei aktivem Fokus (iOS 26+). Tippe in der Erinnerung auf „Eingenommen“. Ohne Konto. Ohne Werbung.",
+    "h1": "Schon genommen? |Ein Blick genügt",
+    "lede": "Ein Blick auf den Verlauf genügt. Maru erinnert dich an Vitamine, Supplements und Medikamente."
   },
   "store": {
     "badge_alt": "Laden im App Store",
@@ -17,31 +17,37 @@
     "soon": "Bald im App Store"
   },
   "phone": {
-    "label": "Eine Vorschau der Maru-App. Du kannst fünf Bildschirme ansehen. Nichts wird erfasst.",
+    "label": "Eine Vorschau der Maru-App. Du kannst drei Bildschirme ansehen. Nichts wird erfasst.",
     "show": "Bildschirm „{}“ anzeigen",
     "back": "Zurück",
-    "close": "Schließen",
     "today": "Heute",
     "items": "Meine Einträge",
-    "history": "Verlauf",
-    "settings": "Einstellungen",
-    "add": "Eintrag hinzufügen"
+    "history": "Verlauf"
   },
   "shots": {
     "today": {
-      "alt": "Die Ansicht „Heute“ in Maru mit dem, was jetzt dran ist."
+      "alt": "Die Ansicht „Heute“ in Maru mit den Dosen einer Familie: eingenommen und noch offen."
     },
     "history": {
-      "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der vergangenen Tage und den letzten 7 Tagen jedes Eintrags."
+      "alt": "Die Ansicht „Verlauf“ in Maru mit einer Grafik der letzten Monate und den letzten 7 Tagen jedes Eintrags."
     },
-    "detail": {
-      "alt": "Die Seite eines Eintrags in Maru mit Zeiten, Menge und den letzten 7 Tagen."
+    "alarm": {
+      "alt": "Die Bearbeitungsansicht eines Eintrags in Maru mit aktivem Schalter „Wecker“."
     },
     "notification": {
-      "alt": "Eine Erinnerung von Maru an Vitamin D3."
+      "alt": "Eine Erinnerung von Maru an Simvastatin für Papa, mit Eingenommen, Überspringen und In 10 Min. erinnern."
     },
     "widget": {
-      "alt": "Das Maru-Widget „Heute“: 2 von 5 eingenommen, mit Morgens, Mittags und Abends."
+      "alt": "Das Maru-Widget „Heute“: 5 von 8 eingenommen, mit Morgens, Mittags und Abends."
+    },
+    "lock": {
+      "alt": "Ein Sperrbildschirm mit der nächsten Dosis von Maru und der Taste „Eingenommen“."
+    },
+    "family": {
+      "alt": "Die Seite „Familie“ in Maru mit Ich, Mama, Papa, Mochi und Biscuit."
+    },
+    "watch": {
+      "alt": "Die Maru-App auf der Apple Watch mit den Dosen von heute."
     },
     "photos": {
       "alt": "Drei Nahrungsergänzungsdosen mit erfundenen Etiketten, freigestellt als Symbole von Einträgen in Maru."
@@ -49,19 +55,38 @@
   },
   "blocks": [
     {
+      "shot": "alarm",
+      "mark": "iOS 26+",
+      "title": "Gratis-Wecker klingeln auch im Stummmodus und Fokus",
+      "text": "Aktiviere „Wecker“ für einen Eintrag, und er klingelt wie die Uhr-App. „Erneut erinnern“ sendet bis zu 12 weitere Erinnerungen ohne Eintrag. Beides ist kostenlos."
+    },
+    {
       "shot": "duo",
-      "title": "Erinnerung und Überblick",
-      "text": "Maru erinnert dich zu deinen Zeiten, und das Widget zeigt deinen Tag."
+      "title": "Tippe in der Erinnerung auf Eingenommen",
+      "text": "Erfasse eine Dosis, ohne Maru zu öffnen. Die Erinnerung bietet auch Überspringen und In 10 Min. erinnern, und das kostenlose Widget zeigt deinen Tag."
+    },
+    {
+      "shot": "lock",
+      "mark": "PRO",
+      "title": "Deine nächste Dosis auf dem Sperrbildschirm",
+      "text": "Mit Maru Pro zeigt „Nächste Dosis auf dem Sperrbildschirm“ deine nächste Dosis, mit der Taste „Eingenommen“."
+    },
+    {
+      "shot": "family",
+      "mark": "PRO",
+      "title": "Für deine Familie und deine Haustiere",
+      "text": "Füge mit Maru Pro eine Person oder ein Tier hinzu, etwa deine Mutter oder deinen Hund. Jedes Mitglied hat eine Farbe. Aufzeichnungen bleiben auf deinem iPhone oder iPad, ohne geteilte Profile und ohne Sync."
     },
     {
       "shot": "history",
-      "title": "Sieh, was du genommen hast",
-      "text": "Ganze Monate auf einen Blick, dazu die letzten sieben Tage jedes Eintrags."
+      "title": "Monate im Überblick. Keine Streaks.",
+      "text": "Ganze Monate auf einen Blick, dazu die letzten sieben Tage jedes Eintrags. Vergessen zu erfassen? Es passiert nichts. Maru kennt keine Serien und keine Strafen."
     },
     {
-      "shot": "detail",
-      "title": "Zeiten und Mengen im Blick",
-      "text": "Dort stehen die Zeiten, die Menge und die letzten sieben Tage."
+      "shot": "watch",
+      "mark": "PRO",
+      "title": "Erfasse Dosen auf der Apple Watch",
+      "text": "Mit Maru Pro siehst du deine Einnahmen und erfasst sie am Handgelenk."
     },
     {
       "shot": "photos",
@@ -73,7 +98,8 @@
   "trust": [
     "Kostenloser Download",
     "Ohne Konto",
-    "Deine Aufzeichnungen bleiben auf deinen Geräten"
+    "Ohne Werbung",
+    "Aufzeichnungen bleiben auf deinem iPhone oder iPad"
   ],
   "footer": {
     "faq": "Fragen",
@@ -96,16 +122,8 @@
         "„Nächste Dosis auf dem Sperrbildschirm“, die App für die Apple Watch, PDF-Berichte für die Arztpraxis, die 30-Tage-Übersicht, Familie, App-Symbole, Erinnerungstöne und App-Farben. In den USA kostet das Jahresabo 9,99 USD mit 7 Tagen gratis. Der Einmalkauf kostet in den ersten 30 Tagen nach dem Start 19,99 USD, danach 29,99 USD. In anderen Ländern kann der Preis anders sein. Familienfreigabe ist aktiv, und es gibt kein Monatsabo."
       ],
       [
-        "Brauche ich ein Konto?",
-        "Nein. Öffne Maru und trag ein, was du nimmst."
-      ],
-      [
-        "Wo sind meine Daten?",
-        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad. Jedes Gerät hat seine eigenen Daten, und Maru synchronisiert nicht zwischen Geräten. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>."
-      ],
-      [
-        "Warum nicht ein Wecker oder Apple Health?",
-        "Ein Wecker klingelt, aber er weiß nicht, was du genommen hast. Apple Health kann viel mehr, und Maru macht nur eine kleine Sache: Es zeigt, was jetzt dran ist, und ein Tippen erfasst es."
+        "Klingeln Wecker auch im Stummmodus und bei Fokus?",
+        "Ja. Kostenlose Wecker klingeln wie die Uhr-App, auch im Stummmodus und bei aktivem Fokus. Aktiviere „Wecker“ für jeden Eintrag. Wecker brauchen iOS 26 oder neuer. Der Stummmodus oder ein Fokus können eine normale Erinnerung zurückhalten."
       ],
       [
         "Kann ich direkt in der Erinnerung erfassen?",
@@ -113,15 +131,39 @@
       ],
       [
         "Erinnert mich Maru mehrmals?",
-        "Kostenlose Wecker klingeln wie die Uhr-App, auch im Stummmodus und bei aktivem Fokus. Wecker brauchen iOS 26 oder neuer. Aktiviere „Wecker“ für jeden Eintrag. Schalte „Erneut erinnern“ für einen Eintrag oder in den Einstellungen für alle Einträge ein, dann schickt Maru bis zu 12 weitere Erinnerungen pro Einnahme. Der Stummmodus oder ein Fokus können eine normale Erinnerung zurückhalten."
+        "Schalte „Erneut erinnern“ für einen Eintrag oder in den Einstellungen für alle Einträge ein. Maru schickt dann bis zu 12 weitere Erinnerungen, wenn du eine Einnahme nicht erfasst."
+      ],
+      [
+        "Sehe ich meine nächste Dosis auf dem Sperrbildschirm?",
+        "Ja. Mit Maru Pro zeigt „Nächste Dosis auf dem Sperrbildschirm“ deine nächste Dosis, mit der Taste „Eingenommen“. Auch die kostenlosen Widgets zeigen deine nächste Dosis."
+      ],
+      [
+        "Brauche ich ein Konto?",
+        "Nein. Öffne Maru und trag ein, was du nimmst."
+      ],
+      [
+        "Kann ich Maru für meine Eltern oder mein Tier nutzen?",
+        "Ja. Öffne mit Maru Pro in den Einstellungen „Familie“ und tippe auf „Person oder Tier hinzufügen“. Jedes Mitglied hat eine Farbe, und „Heute“, „Verlauf“ und das PDF zeigen auf Wunsch nur ein Mitglied. Aufzeichnungen bleiben auf deinem iPhone oder iPad, ohne geteilte Profile und ohne Sync."
+      ],
+      [
+        "Was, wenn ich das Erfassen vergesse?",
+        "Du kannst später erfassen oder die erfasste Uhrzeit ändern. Sonst passiert nichts: Maru kennt keine Serien und keine Strafen."
+      ],
+      [
+        "Gibt es eine App für die Apple Watch?",
+        "Ja, mit Maru Pro. Die App für die Apple Watch zeigt deine Dosen, und du erfasst sie am Handgelenk."
+      ],
+      [
+        "Wo sind meine Daten?",
+        "Deine Einträge und Aufzeichnungen bleiben auf deinem iPhone oder iPad. Jedes Gerät hat seine eigenen Daten, und Maru synchronisiert nicht zwischen Geräten. Die Einzelheiten stehen auf der <a href=\"{privacy}\">Datenschutzseite</a>. Mit Maru Pro sendet dein iPhone die Liste von heute an deine eigene gekoppelte Apple Watch."
+      ],
+      [
+        "Warum nicht die Uhr-App oder Apple Health?",
+        "Ein Wecker der Uhr-App klingelt, aber er weiß nicht, was du genommen hast. Apple Health kann viel mehr, und Maru macht nur eine kleine Sache: Es zeigt, was jetzt dran ist, und ein Tippen erfasst es."
       ],
       [
         "Kann ich etwas alle paar Tage oder mit Pausen nehmen?",
         "Ja. Wähle „Jeden Tag“, „Jeden zweiten Tag“, „Alle paar Tage“ (alle 3 bis 30 Tage) oder „Einnahmetage und Pause“, zum Beispiel 21 Tage Einnahme und 7 Tage Pause. Einträge „Bei Bedarf“ haben keine Erinnerung: Du erfasst sie, wenn du sie nimmst."
-      ],
-      [
-        "Was, wenn ich das Erfassen vergesse?",
-        "Du kannst später erfassen oder die erfasste Uhrzeit ändern."
       ],
       [
         "Sagt mir Maru, was ich nehmen soll?",
@@ -142,14 +184,6 @@
       [
         "Kann ich meine Aufzeichnungen mitnehmen?",
         "Ja. „Aufzeichnungen exportieren“ in den Einstellungen erstellt eine Datei, die Numbers und Excel öffnen können. Mit Maru Pro erstellen „Medikamentenliste teilen“ und „Zusammenfassung teilen“ ein PDF. Du entscheidest, wohin jede Datei geht."
-      ],
-      [
-        "Gibt es eine App für die Apple Watch?",
-        "Ja, mit Maru Pro. Die App für die Apple Watch zeigt deine Dosen, und du erfasst sie am Handgelenk."
-      ],
-      [
-        "Kann ich Maru für meine Eltern oder mein Tier nutzen?",
-        "Ja. Öffne mit Maru Pro in den Einstellungen „Familie“ und tippe auf „Person oder Tier hinzufügen“. Jedes Mitglied hat eine Farbe, und „Heute“, „Verlauf“ und das PDF zeigen auf Wunsch nur ein Mitglied. Alles bleibt auf deinem iPhone. Maru hat keine geteilten Profile und keine Synchronisierung zwischen Geräten."
       ],
       [
         "Welche Sprachen spricht Maru?",

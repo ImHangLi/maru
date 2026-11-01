@@ -7,6 +7,11 @@
   ],
   "today": "今日",
   "reminder_title": "服用の時間です",
-  "reminder_item": "ビタミンD3",
-  "now": "今"
+  "reminder_item": "父：ロスバスタチン",
+  "now": "今",
+  "actions": [
+    "服用済み",
+    "スキップ",
+    "10分後に再通知"
+  ]
 }

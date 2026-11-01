@@ -6,9 +6,9 @@
   "nav_label": "Main",
   "home": {
     "title": "Maru: Pill & Vitamin Reminder",
-    "desc": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took. Free to download, with no account.",
-    "h1": "Did I take it? |One look.",
-    "lede": "Maru reminds you to take your vitamins, supplements, and medicine. One tap records what you took."
+    "desc": "One look at your records, and you know. Free alarms ring in Silent mode and Focus (iOS 26+). Tap Taken on the reminder. No account. No ads.",
+    "h1": "Did I take it |today?",
+    "lede": "One look at your records, and you know. Maru reminds you to take your vitamins, supplements, and medicine."
   },
   "store": {
     "badge_alt": "Download on the App Store",
@@ -17,31 +17,37 @@
     "soon": "Coming soon to the App Store"
   },
   "phone": {
-    "label": "A preview of the Maru app. You can look at five screens. Nothing is recorded.",
+    "label": "A preview of the Maru app. You can look at three screens. Nothing is recorded.",
     "show": "Show the {} screen",
     "back": "Back",
-    "close": "Close",
     "today": "Today",
     "items": "My Items",
-    "history": "History",
-    "settings": "Settings",
-    "add": "Add Item"
+    "history": "History"
   },
   "shots": {
     "today": {
-      "alt": "The Today screen of Maru with the items to take now."
+      "alt": "The Today screen of Maru with the doses of a family: taken and still to take."
     },
     "history": {
-      "alt": "The History screen of Maru with a graph of past days and the last 7 days of each item."
+      "alt": "The History screen of Maru with a graph of past months and the last 7 days of each item."
     },
-    "detail": {
-      "alt": "The page of one item in Maru with its times, its amount, and its last 7 days."
+    "alarm": {
+      "alt": "The edit screen of an item in Maru with the Alarm switch on."
     },
     "notification": {
-      "alt": "A Maru reminder to take Vitamin D3."
+      "alt": "A Maru reminder to take Atorvastatin for Dad, with Taken, Skip, and Remind in 10 min."
     },
     "widget": {
-      "alt": "The Maru Today widget: 2 of 5 taken, with Morning, Noon, and Evening."
+      "alt": "The Maru Today widget: 5 of 8 taken, with Morning, Noon, and Evening."
+    },
+    "lock": {
+      "alt": "A Lock Screen with the next dose of Maru and a Taken button."
+    },
+    "family": {
+      "alt": "The Family page of Maru with Me, Mom, Dad, Mochi, and Biscuit."
+    },
+    "watch": {
+      "alt": "The Maru app on Apple Watch with the doses of today."
     },
     "photos": {
       "alt": "Three supplement jars with made-up labels, cut out as item icons in Maru."
@@ -49,19 +55,38 @@
   },
   "blocks": [
     {
+      "shot": "alarm",
+      "mark": "iOS 26+",
+      "title": "Free alarms ring in Silent mode and Focus",
+      "text": "Turn on Alarm for an item, and it rings like the Clock app. Remind Again sends up to 12 more reminders if you do not record the dose. Both are free."
+    },
+    {
       "shot": "duo",
-      "title": "Reminders and today at a glance",
-      "text": "Maru reminds you at your times, and the widget shows your day."
+      "title": "Tap Taken on the reminder",
+      "text": "Record a dose and leave Maru closed. The reminder also has Skip and Remind in 10 min, and the free widget shows your day."
+    },
+    {
+      "shot": "lock",
+      "mark": "PRO",
+      "title": "See your next dose on the Lock Screen",
+      "text": "With Maru Pro, Next Dose on Lock Screen shows your next dose with a Taken button."
+    },
+    {
+      "shot": "family",
+      "mark": "PRO",
+      "title": "For your family and your pets",
+      "text": "With Maru Pro, add a person or a pet, such as a parent or your dog. Each one has a color. Records stay on your iPhone or iPad, with no shared profiles and no sync."
     },
     {
       "shot": "history",
-      "title": "See what you took",
-      "text": "See months at a glance, and the last seven days of every item."
+      "title": "Months of records. No streaks.",
+      "text": "See months at a glance, and the last seven days of every item. Forgot to record? Nothing happens. Maru has no streaks and no penalties."
     },
     {
-      "shot": "detail",
-      "title": "Check times and amounts",
-      "text": "See its times, its amount, and its last seven days."
+      "shot": "watch",
+      "mark": "PRO",
+      "title": "Record doses on your Apple Watch",
+      "text": "With Maru Pro, see your doses and record them from your wrist."
     },
     {
       "shot": "photos",
@@ -73,7 +98,8 @@
   "trust": [
     "Free to download",
     "No account",
-    "Your records stay on your devices"
+    "No ads",
+    "Your records stay on your iPhone or iPad"
   ],
   "footer": {
     "faq": "FAQ",
@@ -96,16 +122,8 @@
         "Next Dose on Lock Screen, the Apple Watch app, PDF reports for your doctor, 30-day counts, Family, app icons, reminder sounds, and app colors. In the US, the yearly plan costs $9.99 with a 7-day free trial. Lifetime costs $19.99 for the first 30 days after launch, then $29.99. Prices in other countries can be different. Family Sharing is on, and there is no monthly plan."
       ],
       [
-        "Do I need an account?",
-        "No. Open Maru and add what you take."
-      ],
-      [
-        "Where is my data?",
-        "Your items and records stay on your iPhone or iPad. Each device keeps its own data, and Maru does not sync between devices. The <a href=\"{privacy}\">privacy page</a> has the details."
-      ],
-      [
-        "Why not an alarm or Apple Health?",
-        "An alarm rings, but it does not know what you took. Apple Health does much more, and Maru does one small job: it shows what to take now, and one tap records it."
+        "Do alarms ring in Silent mode and Focus?",
+        "Yes. Free alarms ring through Silent mode and Focus, like the Clock app. Turn on Alarm for each item. Alarms need iOS 26 or later. Silent mode or a Focus can hold a normal reminder."
       ],
       [
         "Can I record from the reminder?",
@@ -113,15 +131,39 @@
       ],
       [
         "Will Maru keep reminding me?",
-        "Free alarms ring through Silent mode and Focus, like the Clock app. Alarms need iOS 26 or later. Turn on Alarm for each item. Turn on Remind Again for an item, or for all items in Settings. Maru sends up to 12 more reminders for a dose. Silent mode or a Focus can hold a normal reminder."
+        "Turn on Remind Again for an item, or for all items in Settings. Maru sends up to 12 more reminders for a dose that you did not record."
+      ],
+      [
+        "Can I see my next dose on the Lock Screen?",
+        "Yes. With Maru Pro, Next Dose on Lock Screen shows your next dose with a Taken button. The free widgets also show your next dose."
+      ],
+      [
+        "Do I need an account?",
+        "No. Open Maru and add what you take."
+      ],
+      [
+        "Can I use Maru for a parent or a pet?",
+        "Yes. With Maru Pro, open Family in Settings and tap Add Person or Pet. Each person or pet has a color, and Today, History, and the PDF can show one of them. Records stay on your iPhone or iPad, with no shared profiles and no sync."
+      ],
+      [
+        "What if I forget to record?",
+        "You can record later or change the recorded time. Nothing else happens: Maru has no streaks and no penalties."
+      ],
+      [
+        "Is there an Apple Watch app?",
+        "Yes, with Maru Pro. The Apple Watch app shows your doses, and you record them from your wrist."
+      ],
+      [
+        "Where is my data?",
+        "Your items and records stay on your iPhone or iPad. Each device keeps its own data, and Maru does not sync between devices. The <a href=\"{privacy}\">privacy page</a> has the details. With Maru Pro, your iPhone sends the list of today to your own paired Apple Watch."
+      ],
+      [
+        "Why not the Clock app or Apple Health?",
+        "A Clock alarm rings, but it does not know what you took. Apple Health does much more. Maru does one small job: it shows what to take now, and one tap records it."
       ],
       [
         "Can I take something every few days, or with a break?",
         "Yes. Choose Every Day, Every Other Day, Every Few Days (every 3 to 30 days), or Days On and Off, for example 21 days on and 7 off. An As Needed item has no reminders, and you record it when you take it."
-      ],
-      [
-        "What if I forget to record?",
-        "You can record later or change the recorded time."
       ],
       [
         "Does Maru tell me what to take?",
@@ -142,14 +184,6 @@
       [
         "Can I get my records out?",
         "Yes. In Settings, Export Records makes a file that Numbers and Excel can open. With Maru Pro, Share Medication List and Share Summary make a PDF. You choose where each file goes."
-      ],
-      [
-        "Is there an Apple Watch app?",
-        "Yes, with Maru Pro. The Apple Watch app shows your doses, and you record them from your wrist."
-      ],
-      [
-        "Can I use Maru for a parent or a pet?",
-        "Yes. With Maru Pro, open Family in Settings and tap Add Person or Pet. Each person or pet has a color, and Today, History, and the PDF can show one of them. All data stays on your iPhone. Maru has no shared profiles and no sync between devices."
       ],
       [
         "Which languages does Maru speak?",

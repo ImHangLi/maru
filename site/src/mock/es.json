@@ -7,6 +7,11 @@
   ],
   "today": "Hoy",
   "reminder_title": "Hora de tomar",
-  "reminder_item": "Vitamina D3",
-  "now": "ahora"
+  "reminder_item": "Papá: Atorvastatina",
+  "now": "ahora",
+  "actions": [
+    "Tomado",
+    "Omitir",
+    "Recordar en 10 min"
+  ]
 }
