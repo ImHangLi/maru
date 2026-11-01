@@ -2972,4 +2972,4 @@ Other fixes:
 
 Tests (D016): one new test keeps the summary until the server confirms it, with the same ID and time for a repeat.
 
-Not verified: a real send to PostHog, the real value of `channel` in TestFlight and in the App Store, and a real trial purchase. Local `swift test` crashes on this Mac at each `Date` comparison, also on `main`, so CI is the test evidence.
+Not verified: a real send to PostHog, the real value of `channel` in TestFlight and in the App Store, and a real trial purchase. Local `swift test` crashes on this Mac at each `Date` comparison, also on `main`. All 232 package tests pass with `xcodebuild test` on an iOS 27.0 simulator.
