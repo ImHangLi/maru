@@ -69,24 +69,18 @@ struct HeaderWash: View {
         let top = Self.top(color)
         VStack(spacing: 0) {
             top.frame(height: Self.overscroll)
-            Self.gradient(color)
-                .frame(height: Self.height)
+            LinearGradient(
+                stops: Self.fade.map { .init(color: top.opacity($0.amount), location: $0.location) },
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: Self.height)
         }
         .offset(y: -(Self.overscroll + scrolled))
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .ignoresSafeArea()
         .allowsHitTesting(false)
         .accessibilityHidden(true)
-    }
-
-    /// The fade of the wash, from the top color to clear. The onboarding picture has it too (D145).
-    nonisolated static func gradient(_ color: ItemColor) -> LinearGradient {
-        let top = top(color)
-        return LinearGradient(
-            stops: fade.map { .init(color: top.opacity($0.amount), location: $0.location) },
-            startPoint: .top,
-            endPoint: .bottom
-        )
     }
 
     /// The app tint mixed with white in light mode and with black in dark mode, to the relative luminance of

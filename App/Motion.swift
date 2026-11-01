@@ -16,8 +16,6 @@ enum Motion {
     case press
     /// The record circle fills after the commit: a short spring.
     case fill
-    /// The slow zoom of the onboarding picture (D145).
-    case camera
 
     /// The scale of a control while a finger presses it.
     static let pressedScale: CGFloat = 0.98
@@ -25,14 +23,13 @@ enum Motion {
     static let fillStartScale: CGFloat = 0.85
 
     /// With Reduce Motion nothing moves, so a layout change shows at once (spec 5.3). The state case is a
-    /// fade with no move, and it stays. The fill case then is the same fade, and the press and camera cases show at once.
+    /// fade with no move, and it stays. The fill case then is the same fade, and the press case shows at once.
     func animation(reduceMotion: Bool) -> Animation? {
         switch self {
         case .layout: reduceMotion ? nil : .snappy
         case .state: .easeInOut(duration: 0.2)
         case .press: reduceMotion ? nil : .easeOut(duration: 0.12)
         case .fill: reduceMotion ? .easeInOut(duration: 0.2) : .spring(duration: 0.35, bounce: 0.4)
-        case .camera: reduceMotion ? nil : .timingCurve(0.45, 0, 0.15, 1, duration: 2.2)
         }
     }
 }

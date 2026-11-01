@@ -1,0 +1,107 @@
+{
+  "images": [
+    {
+      "filename": "en-light.png",
+      "idiom": "universal",
+      "locale": "en"
+    },
+    {
+      "filename": "en-dark.png",
+      "idiom": "universal",
+      "locale": "en",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
+    },
+    {
+      "filename": "zh-Hans-light.png",
+      "idiom": "universal",
+      "locale": "zh-Hans"
+    },
+    {
+      "filename": "zh-Hans-dark.png",
+      "idiom": "universal",
+      "locale": "zh-Hans",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
+    },
+    {
+      "filename": "ja-light.png",
+      "idiom": "universal",
+      "locale": "ja"
+    },
+    {
+      "filename": "ja-dark.png",
+      "idiom": "universal",
+      "locale": "ja",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
+    },
+    {
+      "filename": "ko-light.png",
+      "idiom": "universal",
+      "locale": "ko"
+    },
+    {
+      "filename": "ko-dark.png",
+      "idiom": "universal",
+      "locale": "ko",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
+    },
+    {
+      "filename": "de-light.png",
+      "idiom": "universal",
+      "locale": "de"
+    },
+    {
+      "filename": "de-dark.png",
+      "idiom": "universal",
+      "locale": "de",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
+    },
+    {
+      "filename": "es-light.png",
+      "idiom": "universal",
+      "locale": "es"
+    },
+    {
+      "filename": "es-dark.png",
+      "idiom": "universal",
+      "locale": "es",
+      "appearances": [
+        {
+          "appearance": "luminosity",
+          "value": "dark"
+        }
+      ]
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  },
+  "properties": {
+    "localizable": true
+  }
+}

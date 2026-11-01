@@ -234,29 +234,22 @@ The strings below are new or changed in `App/Localizable.xcstrings`. They are dr
 
 ## Onboarding (D103, D104, D145)
 
-The strings below are in `App/Localizable.xcstrings`: the onboarding pages and their buttons. D145 replaced four of the older strings. "Skip" and "Add Item" reuse their translations. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm. "Taken", "Today", and "Alarm" must match the words of the app, and "Silent mode" and "Focus" must match the words of the system.
+The strings below are in `App/Localizable.xcstrings`: the onboarding pages and their buttons. D145 replaced the older pages. "Skip" and "Add Item" reuse their translations. "Did I take it today?", "Tap Taken on the reminder", and "No account. No ads." use the store headlines. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm. "Taken", "Today", "Remind Again", and "Alarm" must match the words of the app, and "Silent mode" and "Focus" must match the words of the system.
+
+The pictures of the pages are captures with the words of the app in each language, so a change of those words needs new captures (D145).
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| Reminders, Right on Time | 准时提醒 | 時間どおりにお知らせ | Recordatorios puntuales | Pünktlich erinnert | 제때 알려 드려요 |
-| You choose the time. One tap on Taken records the dose. | 时间由你来定。点一下“已服用”就记下这次服用。 | 時間はあなたが決めます。「服用済み」をタップするだけで記録できます。 | Tú eliges la hora. Un toque en «Tomado» registra la dosis. | Du wählst die Zeit. Ein Tippen auf „Eingenommen“ erfasst die Dosis. | 시간은 직접 정해요. ‘복용함’을 한 번 탭하면 기록돼요. |
-| Did I take it? Open Maru and you know. | 我吃了没？打开 Maru 就知道。 | 飲んだっけ？Maruを開けばすぐわかります。 | ¿Me lo tomé? Abre Maru y lo sabrás. | Schon genommen? Öffne Maru, und du weißt es. | 먹었던가? Maru를 열면 바로 알 수 있어요. |
+| Did I take it today? | 今天吃了吗？ | 今日、飲んだ？ | ¿Lo tomé hoy? | Schon genommen? | 오늘 먹었나? |
 | Today shows each dose and when you took it. | “今天”页面列出每次服用和服用时间。 | 「今日」に、服用ごとの記録と時刻が表示されます。 | «Hoy» muestra cada dosis y cuándo la tomaste. | „Heute“ zeigt jede Dosis und wann du sie genommen hast. | ‘오늘’에서 복용 항목과 복용 시간을 확인할 수 있어요. |
-| An Alarm, If You Want One | 需要的话，还有闹钟 | 必要なら、アラームも | Una alarma, si la quieres | Ein Wecker, wenn du möchtest | 원한다면 알람도 |
-| Turn on Alarm for any item, and it rings through Silent mode and Focus. | 为任一药品打开闹钟，静音模式和专注模式下也会响铃。 | 項目ごとにアラームをオンにできます。消音モードや集中モードでも鳴ります。 | Activa Alarma en cualquier elemento. Suena aunque tengas Silencio o Concentración activados. | Schalte „Wecker“ für einen Eintrag ein. Er klingelt auch im Stummmodus und bei aktivem Fokus. | 항목별로 알람을 켤 수 있어요. 무음 모드와 집중 모드에서도 울려요. |
+| Tap Taken on the reminder | 在提醒上点已服用就记好 | 通知の服用済みをタップ | Toca Tomado en el recordatorio | Tippe auf Eingenommen in der Erinnerung | 알림에서 복용함을 탭하세요 |
+| It records the dose without opening Maru. Allow notifications when asked. | 不用打开 Maru 就能记好。询问时，请允许通知。 | Maruを開かずに記録できます。確認が表示されたら、通知を許可してください。 | Registra la dosis sin abrir Maru. Permite las notificaciones cuando se te pregunte. | So erfasst du die Dosis, ohne Maru zu öffnen. Erlaube Mitteilungen, wenn du gefragt wirst. | Maru를 열지 않아도 기록돼요. 물어보면 알림을 허용해 주세요. |
+| So you don’t miss a dose | 以免漏服 | 飲み忘れを防ぐために | Para que no se te pase una dosis | Damit du keine Dosis verpasst | 복용을 놓치지 않도록 |
+| Remind Again follows up if you forget to record. Alarms ring through Silent mode and Focus. | 忘了记录时，“再次提醒”会继续提醒你。闹钟在静音模式和专注模式下也会响。 | 記録を忘れても「再通知」がお知らせします。アラームは消音モードや集中モードでも鳴ります。 | «Recordar de nuevo» vuelve a avisarte si olvidas registrar. Las alarmas suenan con Silencio y Concentración. | „Erneut erinnern“ meldet sich wieder, wenn du nichts erfasst. Wecker klingeln auch im Stummmodus und bei Fokus. | 기록을 잊으면 ‘다시 알림’이 또 알려 드려요. 알람은 무음 모드와 집중 모드에서도 울려요. |
+| Remind Again follows up if you forget to record. | 忘了记录时，“再次提醒”会继续提醒你。 | 記録を忘れても「再通知」がお知らせします。 | «Recordar de nuevo» vuelve a avisarte si olvidas registrar. | „Erneut erinnern“ meldet sich wieder, wenn du nichts erfasst. | 기록을 잊으면 ‘다시 알림’이 또 알려 드려요. |
+| No account. No ads. | 不用注册。没有广告。 | アカウント不要。広告なし。 | Sin cuenta. Sin anuncios. | Kein Konto. Keine Werbung. | 계정 없음. 광고 없음. |
 | Continue | 继续 | 続ける | Continuar | Weiter | 계속 |
 | Later | 以后再说 | あとで | Más tarde | Später | 나중에 |
-
-The pictures also show sample words. Use the common generic name, not a brand. They are never data of a user.
-
-| English | zh-Hans | ja | es | de | ko |
-|---|---|---|---|---|---|
-| Vitamin D | 维生素 D | ビタミンD | Vitamina D | Vitamin D | 비타민 D |
-| Omega-3 | 鱼油 | オメガ3 | Omega 3 | Omega-3 | 오메가3 |
-| Magnesium | 镁 | マグネシウム | Magnesio | Magnesium | 마그네슘 |
-| 1 softgel | 1 粒 | 1粒 | 1 cápsula blanda | 1 Kapsel | 1캡슐 |
-| 2 softgels | 2 粒 | 2粒 | 2 cápsulas blandas | 2 Kapseln | 2캡슐 |
-| 2 capsules | 2 粒 | 2粒 | 2 cápsulas | 2 Kapseln | 2캡슐 |
 
 ## Appearance (D105)
 

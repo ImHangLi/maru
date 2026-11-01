@@ -2973,40 +2973,52 @@ Other fixes:
 Tests (D016): one new test keeps the summary until the server confirms it, with the same ID and time for a repeat.
 
 Not verified: a real send to PostHog, the real value of `channel` in TestFlight and in the App Store, and a real trial purchase. Local `swift test` crashes on this Mac at each `Date` comparison, also on `main`. All 232 package tests pass with `xcodebuild test` on an iOS 27.0 simulator.
-## D145 · 2026-11-01 · Onboarding in the style of Apple's "What's New" pages (replaces the pages and the look of D103, and the place of "Skip" of D104)
+## D145 · 2026-11-01 · Onboarding in the style of Apple's onboarding pages (replaces the pages and the look of D103, and the place of "Skip" of D104)
 
-Maintainer decision of 2026-11-01. The maintainer did not like the symbol pages and asked for high-quality pictures that show the product, a zoom in and out on each step, and the style of Apple's "What's New" pages.
+Maintainer decision of 2026-11-01. The maintainer did not like the symbol pages and asked for a large, sharp picture of the product at the top, and words and buttons with the exact layout and weight of Apple's pages. The maintainer then rejected a moving version with a phone and a camera. The onboarding has no motion, no phone frame, and no drawn copy of a screen.
 
-Pages:
+Order of the pages. A new user wants three answers in 15 seconds: does this solve my doubt, what must I do, and can I trust it not to fail me. Maru wants the first item with a time, and permission for reminders. So each page answers one question and moves the user to "Add Item". The onboarding is not a feature tour:
 
-- A large picture of the product at the top, a large bold title, one line in the secondary color, the page dots, a large capsule button, and a borderless button. The dots and the two buttons stay in place on every page.
-- Reminder page: a reminder on the Lock Screen, its actions, and a tap on "Taken". Title "Reminders, Right on Time".
-- Today page: the Today page of the app, and one more dose recorded. Title "Did I take it today?", the promise of the app.
-- Alarm page: the alarm of an item, with "Stop" and "Taken". Title "An Alarm, If You Want One". The line uses the claim of D141. It promises no outcome.
-- The privacy page and the page "Ready When You Are" are removed, with their strings. The store page and `PRIVACY.md` keep the privacy claim.
+1. The answer. Title "Did I take it today?". The picture shows Today cards with Taken times and checks.
+2. The action. Title "Tap Taken on the reminder", the store headline. The line says that the dose is recorded without opening the app, and it prepares the user for the notification question. The picture shows the expanded reminder with Taken, Skip, and Remind in 10 min.
+3. The safety net. Title "So you don't miss a dose". It states the intent and promises no outcome. The line names "Remind Again" and, on iOS 26 or later, the alarm with the claim of D141. The picture shows the Reminders controls of the edit screen.
 
-Page count:
+Every system has three pages. iOS 17 to iOS 25 shows a capture with no "Alarm" row and a line with no alarm claim, because alarms need iOS 26. The privacy page and the page "Ready When You Are" are removed, with their strings. The last page has a small line "No account. No ads." above the buttons, in the place of Apple's privacy note. It answers the trust question with no separate page. No page shows a Pro feature or an owner name.
 
-- iOS 26 or later has three pages. iOS 17 to iOS 25 has two pages, because alarms need iOS 26 and the third page must not show a feature that the system does not have. The Today page is then the last page, with "Add Item" and "Later". No Pro feature shows, so no page has a PRO mark.
+Values of Apple's page. A scratch probe outside the repository ran `OBWelcomeController` of the system framework `OnBoardingKit` in iOS 27.0 simulators, with an iPhone 17 Pro, an iPhone SE, and an iPad Pro 11-inch. The probe read each frame and font. The real first-launch pages of Reminders, Calendar, Photos, Shortcuts, and News on iOS 27.0 have the same frames. The app uses no private API:
 
-Buttons:
+| Part | Value |
+|---|---|
+| Title | Title 2 emphasized: 22 points, bold, primary color, leading alignment |
+| Line | 22 points, regular, secondary color, leading alignment, line height 27.5 points |
+| Space between title and line | 1 point |
+| Side margin of the words and of a compact button | 38 points |
+| Width of the words in a regular window | 624 points, in the middle |
+| Main button | Capsule, 52 points high, system glass in the tint, 17 points semibold |
+| Second button | Capsule, 52 points high, system glass with no tint, 17 points semibold, primary color |
+| Width of a button in a regular window | 326 points, in the middle |
+| Space between the buttons | 10 points |
+| Space between the words and the first button | 24 points |
+| Space between the last button and the edge of the screen | 38 points, on each device |
+| Note above the buttons | Caption 2, 11 points, secondary color, leading alignment, 24 points above the button |
+| Page dots | None |
 
-- "Add Item" and "Later" keep their words and their results, on the last page. "Continue" keeps its word.
-- "Skip" moves from the top right to the place of "Later" on each page before the last. A borderless button under the main button is the pattern of Apple's pages, and the picture stays clear of a bar. Its result and the event value `skipped` do not change.
-- The rules of D104 for when the onboarding shows do not change. `AppModel+Onboarding.swift` did not change.
+So the page has no dots, the words are at the leading edge, and "Skip" is the second button on each page before the last. "Add Item" and "Later" keep their words on the last page. Their results and the event values `add_item`, `later`, and `skipped` do not change. A swipe still moves between the pages. `AppModel+Onboarding.swift` did not change.
 
-Picture:
+Buttons by system: iOS 26 or later uses `.glassProminent` and `.glass`. iOS 17 to iOS 25 uses `.borderedProminent` and `.bordered`, with the same shape, height, and font.
 
-- The app has no video and no image file for it, and the change adds no asset. Each picture is live SwiftUI from the app components (`FormIcon`, `RecordSymbol`, `HeaderWash`, `ReminderAction`, and the text of `SystemReminderCenter`). So it follows the language, the app color, and dark mode, and it stays sharp at each size.
-- A Lock Screen and an alarm are system screens that an app can not show, so these two pictures are drawings of them with the real words of the app. The picture can differ from a future system look.
-- The phone has a fixed size and a fixed text size, as a screenshot has. `OnboardingCamera` scales it. The scale runs inside one `drawingGroup`, so the text draws again at each scale. A system material does not draw in such a group, so a notification uses a plain color.
-- Each page runs a slow loop: wide view, zoom in, hold, zoom out. Only the page on the display runs. `Motion.camera` is the curve, and a view does not name it.
-- With Reduce Motion the page shows one still picture at the close view, with no zoom.
-- VoiceOver reads the title, the line, the dots, and the buttons. The picture is hidden from it, so it never reads a sample as data of the user.
-- At the three largest text sizes the picture hides and the page scrolls (D013).
-- Sample names are generic and in the app language. No brand. The pictures read and write nothing. They use no store, and they fill no value for the user (spec 2). The startup path does not change (spec 9).
+The page color is the system grouped background, the color around the cards of the app. Apple's page is white. The captures have the grouped color around their cards, so a picture has no band on the page.
 
-`ReminderAction.action` is public now, so the picture shows the exact action words of a reminder.
+Pictures:
+
+- Each picture is a real capture of the app or of iOS, in `App/Onboarding.xcassets`: one image for each page, language, and appearance. The fourth image set is the capture with no "Alarm" row. The images are 1320 pixels wide, and the 48 images add about 5.8 MB to `Assets.car` of each install.
+- The captures came from a simulator with a screen of 320 by 568 points at scale 6, so the real layout is wider on the page than a normal screenshot, and the text stays sharp. Temporary launch hooks stayed in a scratch worktree. The sample rows have no amount and no photo, so each row has one short line and no invented brand. There is no owner name.
+- The reminder picture is the real expanded reminder. The system glass of the two cards is real, and the dimmed app behind them is replaced by the color of the page, with a soft shadow.
+- A picture is decoration with sample words. VoiceOver reads the title, the line, and the buttons. At the three largest text sizes the picture hides and the page scrolls (D013). A small window clips a picture and fades its edge.
+- The pictures read and write nothing. They use no store, and they fill no value for the user (spec 2). The startup path does not change, because the view loads an image only when the onboarding shows (spec 9).
+- A picture does not follow a later change of the app, the system, or the app color. Pink is the color of a new install. When the look of Today, the reminder, or the edit screen changes, make the captures again.
+
+The ringing alarm is not in a picture. A simulator can not show it, and the page must not show a drawn system alarm.
 
 Tests (D016): none new. No record is at risk.
 

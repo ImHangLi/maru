@@ -1,118 +1,155 @@
 import MaruCore
 import SwiftUI
-import UIKit
 
-/// The short first-run onboarding (D103, D104, D145): the look of the "What's New" pages of Apple, shown once, only when
-/// the store has no item. It asks nothing and requests no permission. The notification permission comes with the first
-/// save that has a reminder time (spec 2.2). `AppModel+Onboarding.swift` decides when it shows.
+/// The short first-run onboarding (D103, D104, D145): three static pages, shown once, only when the store has no item.
+/// The type, the margins, and the buttons have the values of the onboarding pages of Apple. It asks nothing and requests
+/// no permission. The notification permission comes with the first save that has a reminder time (spec 2.2).
+/// `AppModel+Onboarding.swift` decides when it shows.
 enum Onboarding {
     /// `true` after the onboarding ends, after a read of a store with items, and after a restore.
     /// It is a preference in `UserDefaults.standard`, as the app color (D023), not in the health database.
     static let seenKey = "onboarding.seen"
 }
 
-/// One page of the onboarding: a moving picture of the product, a title, and one line.
-enum OnboardingPage: Int, CaseIterable, Identifiable {
-    case reminder, today, alarm
+/// The values of the onboarding pages of Apple, measured on iOS 27 (D145).
+private enum Metrics {
+    static let margin: CGFloat = 38
+    static let wordsWidth: CGFloat = 624
+    /// The width of the buttons in a regular window. A compact window has the margin on each side.
+    static let regularButtonWidth: CGFloat = 326
+    /// 52 points in all: the button styles add 7 points above and below the label.
+    static let buttonLabelHeight: CGFloat = 38
+    static let buttonSpacing: CGFloat = 10
+    /// The space between the words and the first button.
+    static let trayTop: CGFloat = 24
+    /// The space between the last button and the edge of the screen, with or without a Home indicator.
+    static let trayBottom: CGFloat = 38
+}
+
+/// One page: the answer that a new user wants, and a step toward "Add Item" (D145).
+private enum OnboardingPage: CaseIterable, Identifiable {
+    case answer, action, safetyNet
 
     var id: Self { self }
 
-    /// Alarms need iOS 26, so an older system has only the first two pages (D145).
-    static var shown: [OnboardingPage] {
-        AlarmSupport.isAvailable ? allCases : [.reminder, .today]
+    /// A real capture, with one image for each language and appearance. iOS 17 to iOS 25 has no alarm, so its capture has
+    /// no "Alarm" row.
+    var picture: String {
+        switch self {
+        case .answer: "onboarding-today"
+        case .action: "onboarding-reminder"
+        case .safetyNet: AlarmSupport.isAvailable ? "onboarding-reminders" : "onboarding-reminders-no-alarm"
+        }
+    }
+
+    /// The part of the picture that stays when a small window clips it.
+    var pictureAlignment: Alignment {
+        switch self {
+        case .answer: .top
+        case .action: .center
+        case .safetyNet: .bottom
+        }
     }
 
     var title: Text {
         switch self {
-        case .reminder: Text("Reminders, Right on Time")
-        case .today: Text("Did I take it today?")
-        case .alarm: Text("An Alarm, If You Want One")
+        case .answer: Text("Did I take it today?")
+        case .action: Text("Tap Taken on the reminder")
+        case .safetyNet: Text("So you don’t miss a dose")
         }
     }
 
     var line: Text {
         switch self {
-        case .reminder: Text("You choose the time. One tap on Taken records the dose.")
-        case .today: Text("Today shows each dose and when you took it.")
-        case .alarm: Text("Turn on Alarm for any item, and it rings through Silent mode and Focus.")
+        case .answer: Text("Today shows each dose and when you took it.")
+        case .action: Text("It records the dose without opening Maru. Allow notifications when asked.")
+        case .safetyNet:
+            AlarmSupport.isAvailable
+                ? Text("Remind Again follows up if you forget to record. Alarms ring through Silent mode and Focus.")
+                : Text("Remind Again follows up if you forget to record.")
         }
-    }
-
-    var words: some View {
-        VStack(spacing: 8) {
-            title
-                .font(.largeTitle.bold())
-                .accessibilityAddTraits(.isHeader)
-            line
-                .font(.title3)
-                .foregroundStyle(.secondary)
-        }
-        .multilineTextAlignment(.center)
-        .fixedSize(horizontal: false, vertical: true)
     }
 }
 
 struct OnboardingView: View {
+    @Environment(\.horizontalSizeClass) private var sizeClass
     /// The button that ended the onboarding. For `addItem` the caller opens the edit screen after the page closes.
     let finish: (AnalyticsEvent.OnboardingResult) -> Void
-    @State private var page = OnboardingPage.reminder
+    @State private var page = OnboardingPage.answer
 
-    private let pages = OnboardingPage.shown
+    private let pages = OnboardingPage.allCases
 
     private var isLast: Bool { page == pages.last }
 
     var body: some View {
-        GeometryReader { window in
-            VStack(spacing: 0) {
-                TabView(selection: $page) {
-                    ForEach(pages) { item in
-                        OnboardingPageView(page: item, isCurrent: item == page, topInset: window.safeAreaInsets.top)
-                            .tag(item)
-                    }
+        VStack(spacing: 0) {
+            TabView(selection: $page) {
+                ForEach(pages) { item in
+                    OnboardingPageView(page: item)
+                        .tag(item)
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                // The picture goes under the status bar, as in the pages of Apple.
-                .ignoresSafeArea(.container, edges: .top)
-                footer
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            buttons
+                .frame(maxWidth: sizeClass == .regular ? Metrics.regularButtonWidth : .infinity)
+                .padding(.horizontal, Metrics.margin)
+                .padding(.bottom, Metrics.trayBottom)
+        }
+        .ignoresSafeArea(.container, edges: .bottom)
+        // The captures have this color around their cards, so a picture has no edge on the page.
+        .background(Color(.systemGroupedBackground).ignoresSafeArea())
+    }
+
+    /// The two buttons stay in place on every page, so only the words change.
+    private var buttons: some View {
+        VStack(spacing: Metrics.buttonSpacing) {
+            Button {
+                if isLast {
+                    finish(.addItem)
+                } else {
+                    // A page change by the button moves like a swipe, and with Reduce Motion it shows at once.
+                    withMotion(.layout) { page = pages[(pages.firstIndex(of: page) ?? 0) + 1] }
+                }
+            } label: {
+                OnboardingButtonLabel(text: isLast ? Text("Add Item") : Text("Continue"))
+            }
+            .onboardingProminentButton()
+            Button {
+                finish(isLast ? .later : .skipped)
+            } label: {
+                OnboardingButtonLabel(text: isLast ? Text("Later") : Text("Skip"))
+            }
+            .onboardingPlainButton()
+        }
+        .buttonBorderShape(.capsule)
+    }
+}
+
+private struct OnboardingButtonLabel: View {
+    let text: Text
+
+    var body: some View {
+        text
+            .font(.body.weight(.semibold))
+            .frame(maxWidth: .infinity, minHeight: Metrics.buttonLabelHeight)
+    }
+}
+
+private extension View {
+    @ViewBuilder func onboardingProminentButton() -> some View {
+        if #available(iOS 26, *) {
+            buttonStyle(.glassProminent)
+        } else {
+            buttonStyle(.borderedProminent)
         }
     }
 
-    /// The dots and the two buttons stay in place on every page, so only the words change.
-    private var footer: some View {
-        VStack(spacing: 12) {
-            OnboardingDots(count: pages.count, current: pages.firstIndex(of: page) ?? 0) { index in
-                withMotion(.layout) { page = pages[index] }
-            }
-            VStack(spacing: 4) {
-                Button {
-                    if isLast {
-                        finish(.addItem)
-                    } else {
-                        // A page change by the button moves like a swipe, and with Reduce Motion it shows at once.
-                        withMotion(.layout) { page = pages[(pages.firstIndex(of: page) ?? 0) + 1] }
-                    }
-                } label: {
-                    (isLast ? Text("Add Item") : Text("Continue"))
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .controlSize(.extraLarge)
-                Button {
-                    finish(isLast ? .later : .skipped)
-                } label: {
-                    (isLast ? Text("Later") : Text("Skip"))
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderless)
-                .controlSize(.large)
-            }
+    @ViewBuilder func onboardingPlainButton() -> some View {
+        if #available(iOS 26, *) {
+            buttonStyle(.glass).tint(.primary)
+        } else {
+            buttonStyle(.bordered).tint(.primary)
         }
-        .frame(maxWidth: 480)
-        .padding(.horizontal, 24)
-        .padding(.bottom, 4)
     }
 }
 
@@ -121,66 +158,70 @@ struct OnboardingView: View {
 private struct OnboardingPageView: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     let page: OnboardingPage
-    let isCurrent: Bool
-    let topInset: CGFloat
 
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
                 VStack(spacing: 0) {
                     if typeSize < .accessibility3 {
-                        OnboardingStage(page: page, isCurrent: isCurrent, topInset: topInset)
-                            .frame(minHeight: typeSize.isAccessibilitySize ? 240 : 320, maxHeight: .infinity)
+                        picture
+                            .frame(minHeight: typeSize.isAccessibilitySize ? 200 : 240, maxHeight: .infinity)
                     } else {
-                        Color.clear.frame(height: topInset)
+                        Spacer(minLength: 0)
                     }
-                    // The tallest words of all pages set the height, so the picture keeps its size from page to page.
-                    ZStack(alignment: .top) {
-                        ForEach(OnboardingPage.shown) { $0.words.hidden() }
-                        page.words
-                    }
-                    .padding(.horizontal, 28)
-                    .padding(.top, 8)
-                    .padding(.bottom, 16)
-                    .frame(maxWidth: 600)
+                    words
                 }
                 .frame(maxWidth: .infinity, minHeight: proxy.size.height)
             }
             .scrollBounceBehavior(.basedOnSize)
         }
-        .ignoresSafeArea(.container, edges: .top)
-    }
-}
-
-/// The system page dots. A paged `TabView` draws its dots on the page, and there they do not show on the white page of
-/// light mode. This control stays under the words, and it keeps the adjustable action of VoiceOver.
-private struct OnboardingDots: UIViewRepresentable {
-    let count: Int
-    let current: Int
-    let select: (Int) -> Void
-
-    func makeCoordinator() -> Coordinator { Coordinator(select: select) }
-
-    func makeUIView(context: Context) -> UIPageControl {
-        let dots = UIPageControl()
-        dots.numberOfPages = count
-        dots.backgroundStyle = .minimal
-        dots.pageIndicatorTintColor = .tertiaryLabel
-        dots.currentPageIndicatorTintColor = .label
-        dots.addTarget(context.coordinator, action: #selector(Coordinator.changed), for: .valueChanged)
-        return dots
     }
 
-    func updateUIView(_ dots: UIPageControl, context: Context) {
-        dots.currentPage = current
-        context.coordinator.select = select
+    /// The picture keeps the width of the page, and a small window clips it. It is decoration with sample words, so
+    /// VoiceOver reads only the title and the line.
+    private var picture: some View {
+        GeometryReader { box in
+            Image(page.picture)
+                .resizable()
+                .scaledToFit()
+                .frame(width: box.size.width)
+                .frame(width: box.size.width, height: box.size.height, alignment: page.pictureAlignment)
+        }
+        .clipped()
+        .mask {
+            VStack(spacing: 0) {
+                LinearGradient(colors: [.clear, .black], startPoint: .top, endPoint: .bottom)
+                    .frame(height: page.pictureAlignment == .top ? 0 : 24)
+                Color.black
+                LinearGradient(colors: [.black, .clear], startPoint: .top, endPoint: .bottom).frame(height: 24)
+            }
+        }
+        .frame(maxWidth: Metrics.wordsWidth)
+        .accessibilityHidden(true)
     }
 
-    final class Coordinator: NSObject {
-        var select: (Int) -> Void
-
-        init(select: @escaping (Int) -> Void) { self.select = select }
-
-        @objc func changed(_ dots: UIPageControl) { select(dots.currentPage) }
+    private var words: some View {
+        VStack(alignment: .leading, spacing: 1) {
+            page.title
+                .font(.title2.bold())
+                .accessibilityAddTraits(.isHeader)
+            page.line
+                .font(.title2)
+                .lineSpacing(2)
+                .foregroundStyle(.secondary)
+            // The place of the privacy note on the pages of Apple.
+            if page == .safetyNet {
+                Text("No account. No ads.")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 20)
+            }
+        }
+        .multilineTextAlignment(.leading)
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: Metrics.wordsWidth, alignment: .leading)
+        .padding(.horizontal, Metrics.margin)
+        .padding(.top, 16)
+        .padding(.bottom, Metrics.trayTop)
     }
 }
