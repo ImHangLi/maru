@@ -107,7 +107,7 @@ private struct NextDoseSection: View {
     var body: some View {
         Section {
             Toggle(isOn: Binding(
-                get: { model.liveActivity.isOn },
+                get: { model.showsNextDose },
                 set: { model.setNextDoseOnLockScreen($0) }
             )) {
                 ProRowTitle("Next Dose on Lock Screen")

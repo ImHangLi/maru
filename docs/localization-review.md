@@ -623,3 +623,11 @@ The six FAQ answers use the same alarm claim and distinguish normal reminders.
 - Static layout review finds wrapping in benefit rows and purchase terms. It proves no rendered layout result.
 - Check the longest labels, prices, and legal links on a device, including large text.
 - A native speaker must review each language before release.
+
+## Family footer after Pro (D142)
+
+This string is new for a free user with members on the Family page. No native speaker read it.
+
+| English | zh-Hans | ja | es | de | ko |
+|---|---|---|---|---|---|
+| Everyone here keeps their reminders and records. A new person or pet needs Maru Pro. | 这里的每一位都会保留提醒和记录。添加新的家人或宠物需要 Maru Pro。 | ここにいる全員のリマインダーと記録はそのまま残ります。新しい人やペットの追加には Maru Pro が必要です。 | Todos los que están aquí conservan sus recordatorios y registros. Para añadir otra persona o mascota necesitas Maru Pro. | Alle hier behalten ihre Erinnerungen und Einträge. Für eine neue Person oder ein neues Tier brauchst du Maru Pro. | 여기 있는 모두의 미리 알림과 기록은 그대로 유지돼요. 새로운 사람이나 반려동물을 추가하려면 Maru Pro가 필요해요. |

@@ -6,6 +6,9 @@ import UIKit
 enum AppIcon: String, CaseIterable, Identifiable {
     case pink, blue, purple, green, night, mono, roseCeramic, blueLotus, roseAndSage
 
+    /// The icon of a user whose Pro ended, in `UserDefaults.standard`. It comes back with Pro (D142).
+    static let waitingKey = "display.waitingIcon"
+
     var id: Self { self }
 
     /// The name of the alternate icon for `setAlternateIconName`. The primary icon has none.

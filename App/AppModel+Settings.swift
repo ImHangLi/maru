@@ -32,6 +32,8 @@ struct SettingsState {
     var chosenSound = ReminderSound.chosen
     /// The icon on the Home Screen. Settings reads it when it opens (D112).
     var appIcon = AppIcon.pink
+    /// The change of the icon that waits for the app to settle (D142).
+    var iconAlignment: Task<Void, Never>?
 }
 
 extension AppModel {
@@ -202,16 +204,16 @@ extension AppModel {
     }
 
     /// "App Icon" (D112). A free user who chooses an icon other than the default gets the paywall, and the icon does not
-    /// change. The default icon is free, so a user whose Pro ended can go back to it. When Pro ends, Maru keeps the
-    /// icon and does not change it.
+    /// change. A choice replaces the icon that waits for Pro (D142).
     ///
     /// - Returns: `false` when the system refused the change. `true` for a change and for the icon of now.
     func chooseAppIcon(_ icon: AppIcon) async -> Bool {
-        guard icon != settings.appIcon else { return true }
         guard icon == .pink || pro.isPro else {
             presentPaywall(reason: .icons)
             return true
         }
+        UserDefaults.standard.removeObject(forKey: AppIcon.waitingKey)
+        guard icon != settings.appIcon else { return true }
         do {
             // The system shows its own alert that the icon changed.
             try await UIApplication.shared.setAlternateIconName(icon.alternateName)
@@ -221,6 +223,41 @@ extension AppModel {
         settings.appIcon = icon
         noteProUse()
         return true
+    }
+
+    /// The icon that Maru Pro asks for now, when it is not the icon on the Home Screen. Pro ended: the default icon. Pro came
+    /// back: the icon of the user. StoreKit must answer first, because the cache can be older than a renewal.
+    private var misalignedIcon: AppIcon? {
+        guard pro.hasReadEntitlement, UIApplication.shared.supportsAlternateIcons else { return nil }
+        let current = AppIcon.current
+        guard pro.isPro else { return current == .pink ? nil : .pink }
+        let waiting = UserDefaults.standard.string(forKey: AppIcon.waitingKey).flatMap(AppIcon.init(rawValue:))
+        return waiting == current ? nil : waiting
+    }
+
+    /// Keeps the app icon in step with Maru Pro, in both directions (D142). It runs after each read of StoreKit and each
+    /// return to the front, so a change that the system refused tries again.
+    ///
+    /// The system changes the icon only while the app is in front, and it refuses a change during a launch or a
+    /// transition, so the change waits one second. A free moment shorter than that, such as a renewal that comes late,
+    /// changes nothing. iOS shows its own alert for each change, and Maru cannot hide it.
+    func alignAppIcon() {
+        guard settings.iconAlignment == nil, misalignedIcon != nil else { return }
+        settings.iconAlignment = Task {
+            try? await Task.sleep(for: .seconds(1))
+            settings.iconAlignment = nil
+            guard let target = misalignedIcon, UIApplication.shared.applicationState == .active else { return }
+            // The call returns only after the user closes the alert, and the app can end before that.
+            if target == .pink { UserDefaults.standard.set(AppIcon.current.rawValue, forKey: AppIcon.waitingKey) }
+            do {
+                try await UIApplication.shared.setAlternateIconName(target.alternateName)
+            } catch {
+                return
+            }
+            if target != .pink { UserDefaults.standard.removeObject(forKey: AppIcon.waitingKey) }
+            settings.appIcon = target
+            noteProUse()
+        }
     }
 
     /// One run of the reminder engines for a change that touches many items. It reports like a save does.
