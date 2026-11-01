@@ -2944,7 +2944,7 @@ The analytics audit of 2026-11-01 found five defects. A read of the code confirm
 Maintainer decisions of 2026-11-01:
 
 - The statistics stay as they are in each region (D051, D078). They are on by default outside the opt-in regions, and off until opt-in inside them.
-- Maru adds no summary of day 0 from the background. A summary starts only at an open, so `PRIVACY.md` says "never from the background" with the verb "makes". A send of events that already wait is a different action, and `PRIVACY.md` now names it.
+- Maru adds no summary of day 0 from the background. A summary joins the waiting events only at an open, so `PRIVACY.md` says "never from the background" about that step. A background record can close the tallies of the day before, and the summary then waits on the device. A send of events that already wait is a different action, and `PRIVACY.md` now names it.
 
 Lost events:
 

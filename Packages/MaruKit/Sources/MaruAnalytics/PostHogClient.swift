@@ -65,7 +65,8 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     private var sending: Task<Void, Never>?
     /// `nil` until the system answers. A request reads it when it starts, so an event that waited gets the answer too.
     private var channel: AnalyticsChannel?
-    private var isReadingChannel = false
+    /// The read that runs now. `reset` cancels it.
+    private var channelRead: Task<Void, Never>?
     private var retryAfter = Date.distantPast
     /// A `reset` ends this client. A late task of an old event finds the flag and sends nothing.
     private var isStopped = false
@@ -171,7 +172,13 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         guard !isStopped else { return }
         properties["distinct_id"] = installID
         queue.append(Pending(id: id, name: event.name, properties: properties, time: time, acknowledged: acknowledged))
-        if queue.count > Self.maxQueued { queue.removeFirst(queue.count - Self.maxQueued) }
+        // The oldest plain events go first. An event that waits for a confirmation stays, so its owner can trust that it waits.
+        var extra = queue.count - Self.maxQueued
+        queue.removeAll { pending in
+            guard extra > 0, pending.acknowledged == nil else { return false }
+            extra -= 1
+            return true
+        }
         readChannelIfNeeded()
         scheduleFlush()
     }
@@ -190,6 +197,8 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         isStopped = true
+        channelRead?.cancel()
+        channelRead = nil
         queue.removeAll()
         defaults.removeObject(forKey: Self.installIDKey)
     }
@@ -202,13 +211,14 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     /// Call with the lock held. Nothing waits for the read, so an event never waits for StoreKit (spec 9, D144). A read that
     /// gives no answer runs again with the next event.
     private func readChannelIfNeeded() {
-        guard channel == nil, !isReadingChannel else { return }
-        isReadingChannel = true
-        Task { [readChannel] in
+        guard channel == nil, channelRead == nil else { return }
+        channelRead = Task { [readChannel] in
+            guard !Task.isCancelled else { return }
             let answer = await readChannel()
             lock.withLock {
+                guard !isStopped else { return }
                 channel = answer
-                isReadingChannel = false
+                channelRead = nil
             }
         }
     }
@@ -231,7 +241,7 @@ public final class PostHogClient: AnalyticsClient, @unchecked Sendable {
     private func sendBatch() async {
         let (batch, channel) = lock.withLock {
             let oldest = Date().addingTimeInterval(-Self.maxAge)
-            queue.removeAll { $0.time < oldest }
+            queue.removeAll { $0.time < oldest && $0.acknowledged == nil }
             return (Array(queue.prefix(Self.batchSize)), self.channel ?? .unknown)
         }
         guard !batch.isEmpty else {
