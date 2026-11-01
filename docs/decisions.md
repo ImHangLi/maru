@@ -2872,7 +2872,7 @@ Tests (D016): none new. No package test covered only Siri.
 
 The new strings are drafts in five languages (`docs/localization-review.md`).
 
-## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning
+## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning (the Focus check is replaced by D142)
 
 Maintainer decisions of 2026-10-30:
 
@@ -2887,3 +2887,14 @@ Maintainer decisions of 2026-10-30:
 
 The local FAQ and generated pages follow the store claim. Nothing is deployed or uploaded in this task.
 `docs/localization-review.md` lists the corrections and sources. `docs/release-plan.md` keeps screenshots and category changes open.
+
+## D142 · 2026-11-01 · The landing site follows the store page
+
+The maintainer asked the site to agree with the new store screenshots and focus.
+
+- The maintainer tested Silent mode and Focus on a real iPhone. This replaces the open Focus check of D141.
+- The site uses the store captures and the store headlines in six languages. The block order follows the store order.
+- A heading has a small PRO or iOS 26+ mark, as the store frames do.
+- The hero phone has Today, My Items, and History. Settings and Add Item left the phone, and Today does not scroll, because the store captures have no such pictures, and the old captures show an older Settings and an older sample set. A maintainer can add them back with new captures.
+- The item page block left the site, because the store captures have no item page and the store focus does not name it.
+- The Family claim is the store claim. The site does not say that nothing leaves the device, because Maru Pro sends the list of today to the user's own Apple Watch.

@@ -9,6 +9,11 @@
   ],
   "today": "오늘",
   "reminder_title": "복용할 시간",
-  "reminder_item": "비타민 D3",
-  "now": "지금"
+  "reminder_item": "아빠: 아토르바스타틴",
+  "now": "지금",
+  "actions": [
+    "복용함",
+    "건너뛰기",
+    "10분 후 다시 알림"
+  ]
 }

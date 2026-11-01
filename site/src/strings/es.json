@@ -6,9 +6,9 @@
   "nav_label": "Principal",
   "home": {
     "title": "Maru: Recordatorio de pastillas",
-    "desc": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste. Descarga gratuita y sin cuenta.",
-    "h1": "¿Ya me lo tomé? |Sal de dudas.",
-    "lede": "Maru te recuerda tomar tus vitaminas, suplementos y medicamentos. Con un toque registras lo que tomaste."
+    "desc": "Mira tus registros y sal de dudas. Las alarmas gratis suenan con Silencio o Concentración (iOS 26+). Toca Tomado en el recordatorio. Sin cuenta. Sin anuncios.",
+    "h1": "¿Lo tomé |hoy?",
+    "lede": "Mira tus registros y sal de dudas. Maru te recuerda tomar tus vitaminas, suplementos y medicamentos."
   },
   "store": {
     "badge_alt": "Consíguelo en el App Store",
@@ -17,31 +17,37 @@
     "soon": "Próximamente en el App Store"
   },
   "phone": {
-    "label": "Una vista previa de la app Maru. Puedes ver cinco pantallas. No se registra nada.",
+    "label": "Una vista previa de la app Maru. Puedes ver tres pantallas. No se registra nada.",
     "show": "Mostrar la pantalla {}",
     "back": "Atrás",
-    "close": "Cerrar",
     "today": "Hoy",
     "items": "Mis elementos",
-    "history": "Historial",
-    "settings": "Ajustes",
-    "add": "Añadir elemento"
+    "history": "Historial"
   },
   "shots": {
     "today": {
-      "alt": "La pantalla Hoy de Maru con lo que toca tomar ahora."
+      "alt": "La pantalla Hoy de Maru con las tomas de una familia: las tomadas y las pendientes."
     },
     "history": {
-      "alt": "La pantalla Historial de Maru con un gráfico de los días pasados y los últimos 7 días de cada elemento."
+      "alt": "La pantalla Historial de Maru con un gráfico de los últimos meses y los últimos 7 días de cada elemento."
     },
-    "detail": {
-      "alt": "La página de un elemento en Maru con sus horas, su cantidad y sus últimos 7 días."
+    "alarm": {
+      "alt": "La pantalla de edición de un elemento en Maru con «Alarma» activada."
     },
     "notification": {
-      "alt": "Un recordatorio de Maru para tomar la vitamina D3."
+      "alt": "Un recordatorio de Maru para que papá tome Atorvastatina, con Tomado, Omitir y Recordar en 10 min."
     },
     "widget": {
-      "alt": "El widget Hoy de Maru: 2 de 5 tomados, con Mañana, Mediodía y Noche."
+      "alt": "El widget Hoy de Maru: 5 de 8 tomados, con Mañana, Mediodía y Noche."
+    },
+    "lock": {
+      "alt": "Una pantalla bloqueada con la próxima dosis de Maru y el botón Tomado."
+    },
+    "family": {
+      "alt": "La página Familia de Maru con Yo, Mamá, Papá, Mochi y Biscuit."
+    },
+    "watch": {
+      "alt": "La app Maru en el Apple Watch con las tomas de hoy."
     },
     "photos": {
       "alt": "Tres frascos de suplementos con etiquetas inventadas, recortados como iconos de elementos en Maru."
@@ -49,19 +55,38 @@
   },
   "blocks": [
     {
+      "shot": "alarm",
+      "mark": "iOS 26+",
+      "title": "Alarmas gratis que suenan con Silencio o Concentración",
+      "text": "Activa «Alarma» en un elemento y sonará como la app Reloj. «Recordar de nuevo» envía hasta 12 avisos más si no registras la toma. Las dos cosas son gratis."
+    },
+    {
       "shot": "duo",
-      "title": "Recordatorios y tu día de un vistazo",
-      "text": "Maru te avisa a tus horas, y el widget muestra tu día."
+      "title": "Toca Tomado en el recordatorio",
+      "text": "Registra la toma sin abrir Maru. El recordatorio también tiene Omitir y Recordar en 10 min, y el widget gratis muestra tu día."
+    },
+    {
+      "shot": "lock",
+      "mark": "PRO",
+      "title": "Tu próxima dosis en la pantalla bloqueada",
+      "text": "Con Maru Pro, «Próxima dosis en la pantalla bloqueada» muestra tu próxima dosis con el botón Tomado."
+    },
+    {
+      "shot": "family",
+      "mark": "PRO",
+      "title": "Para tu familia y tus mascotas",
+      "text": "Con Maru Pro, añade una persona o una mascota, como tu madre o tu perro. Cada uno tiene un color. Los registros se quedan en tu iPhone o iPad, sin perfiles compartidos ni sincronización."
     },
     {
       "shot": "history",
-      "title": "Mira lo que tomaste",
-      "text": "Meses enteros de un vistazo, y los últimos siete días de cada elemento."
+      "title": "Meses de registros. Sin rachas.",
+      "text": "Meses enteros de un vistazo, y los últimos siete días de cada elemento. ¿Se te olvidó registrar? No pasa nada. Maru no tiene rachas ni penalizaciones."
     },
     {
-      "shot": "detail",
-      "title": "Consulta horas y cantidades",
-      "text": "Consulta sus horas, su cantidad y sus últimos siete días."
+      "shot": "watch",
+      "mark": "PRO",
+      "title": "Registra dosis en tu Apple Watch",
+      "text": "Con Maru Pro, mira tus tomas y regístralas desde la muñeca."
     },
     {
       "shot": "photos",
@@ -73,7 +98,8 @@
   "trust": [
     "Descarga gratuita",
     "Sin cuenta",
-    "Tus registros se quedan en tus dispositivos"
+    "Sin anuncios",
+    "Tus registros se quedan en tu iPhone o iPad"
   ],
   "footer": {
     "faq": "Preguntas",
@@ -96,16 +122,8 @@
         "«Próxima dosis en la pantalla bloqueada», la app para Apple Watch, informes en PDF para tu médico, el recuento de 30 días, Familia, iconos de la app, sonidos de recordatorio y colores de la app. En EE. UU., el plan anual cuesta 9,99 USD con 7 días de prueba gratis. El pago único cuesta 19,99 USD durante los primeros 30 días tras el lanzamiento, y después 29,99 USD. En otros países, el precio puede ser distinto. Puedes compartirlo con En familia, y no hay plan mensual."
       ],
       [
-        "¿Necesito una cuenta?",
-        "No. Abre Maru y añade lo que tomas."
-      ],
-      [
-        "¿Dónde están mis datos?",
-        "Tus elementos y registros se quedan en tu iPhone o iPad. Cada dispositivo guarda sus propios datos, y Maru no sincroniza entre dispositivos. La <a href=\"{privacy}\">página de privacidad</a> tiene los detalles."
-      ],
-      [
-        "¿Por qué no una alarma o la app Salud?",
-        "Una alarma suena, pero no sabe qué tomaste. La app Salud hace mucho más, y Maru hace una sola cosa: te muestra qué toca ahora y lo registras con un toque."
+        "¿Las alarmas suenan con Silencio o Concentración?",
+        "Sí. Las alarmas gratuitas suenan como la app Reloj, incluso con el modo Silencio o Concentración activados. Activa «Alarma» para cada elemento. Necesitan iOS 26 o posterior. El modo Silencio o Concentración pueden silenciar o retrasar un recordatorio normal."
       ],
       [
         "¿Puedo registrar desde el recordatorio?",
@@ -113,15 +131,39 @@
       ],
       [
         "¿Maru me sigue avisando?",
-        "Las alarmas gratuitas suenan como la app Reloj, incluso con el modo Silencio o Concentración activados. Necesitan iOS 26 o posterior. Activa «Alarma» para cada elemento. Activa «Recordar de nuevo» en un elemento, o para todos en Ajustes, y Maru envía hasta 12 recordatorios más por toma. El modo Silencio o Concentración pueden silenciar o retrasar un recordatorio normal."
+        "Activa «Recordar de nuevo» en un elemento, o para todos en Ajustes. Maru envía hasta 12 recordatorios más si no registras la toma."
+      ],
+      [
+        "¿Puedo ver mi próxima dosis en la pantalla bloqueada?",
+        "Sí. Con Maru Pro, «Próxima dosis en la pantalla bloqueada» muestra tu próxima dosis con el botón Tomado. Los widgets gratuitos también muestran tu próxima dosis."
+      ],
+      [
+        "¿Necesito una cuenta?",
+        "No. Abre Maru y añade lo que tomas."
+      ],
+      [
+        "¿Puedo usar Maru para mis padres o mi mascota?",
+        "Sí. Con Maru Pro, abre «Familia» en Ajustes y toca «Añadir persona o mascota». Cada uno tiene un color, y «Hoy», «Historial» y el PDF pueden mostrar solo a uno. Los registros se quedan en tu iPhone o iPad, sin perfiles compartidos ni sincronización."
+      ],
+      [
+        "¿Y si se me olvida registrar?",
+        "Puedes registrar más tarde o cambiar la hora registrada. No pasa nada más: Maru no tiene rachas ni penalizaciones."
+      ],
+      [
+        "¿Hay app para Apple Watch?",
+        "Sí, con Maru Pro. La app para Apple Watch muestra tus tomas, y las registras desde la muñeca."
+      ],
+      [
+        "¿Dónde están mis datos?",
+        "Tus elementos y registros se quedan en tu iPhone o iPad. Cada dispositivo guarda sus propios datos, y Maru no sincroniza entre dispositivos. La <a href=\"{privacy}\">página de privacidad</a> tiene los detalles. Con Maru Pro, tu iPhone envía la lista de hoy a tu propio Apple Watch enlazado."
+      ],
+      [
+        "¿Por qué no la app Reloj o la app Salud?",
+        "Una alarma del Reloj suena, pero no sabe qué tomaste. La app Salud hace mucho más, y Maru hace una sola cosa: te muestra qué toca ahora y lo registras con un toque."
       ],
       [
         "¿Puedo tomar algo cada varios días o con descansos?",
         "Sí. Elige «Todos los días», «Un día sí y otro no», «Cada varios días» (cada 3 a 30 días) o «Días de toma y de descanso», por ejemplo 21 días de toma y 7 de descanso. Los elementos «Si es necesario» no tienen recordatorios: los registras cuando los tomas."
-      ],
-      [
-        "¿Y si se me olvida registrar?",
-        "Puedes registrar más tarde o cambiar la hora registrada."
       ],
       [
         "¿Maru me dice qué tomar?",
@@ -142,14 +184,6 @@
       [
         "¿Puedo sacar mis registros?",
         "Sí. «Exportar registros» en Ajustes crea un archivo que Numbers y Excel pueden abrir. Con Maru Pro, «Compartir lista de medicación» y «Compartir resumen» crean un PDF. Tú eliges adónde va cada archivo."
-      ],
-      [
-        "¿Hay app para Apple Watch?",
-        "Sí, con Maru Pro. La app para Apple Watch muestra tus tomas, y las registras desde la muñeca."
-      ],
-      [
-        "¿Puedo usar Maru para mis padres o mi mascota?",
-        "Sí. Con Maru Pro, abre «Familia» en Ajustes y toca «Añadir persona o mascota». Cada uno tiene un color, y «Hoy», «Historial» y el PDF pueden mostrar solo a uno. Todo se queda en tu iPhone. Maru no tiene perfiles compartidos ni sincroniza entre dispositivos."
       ],
       [
         "¿En qué idiomas está Maru?",

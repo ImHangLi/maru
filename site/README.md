@@ -18,7 +18,7 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 | `mock.py` | The widget and the reminder of the home page, drawn in HTML |
 | `src/mock/<lang>.json` | The app text of the widget and the reminder in one language |
 | `../PRIVACY.md` | The full privacy policy. It stays English on every language page |
-| `style.css`, `site.js` | The style, the scroll entrances, the hero phone, and the language hint |
+| `style.css`, `site.js` | The style, the scroll entrances, the screens of the hero phone, and the language hint |
 | `social.py` | The social preview cards: `og.png` and one card for each other language. Also the pictures of the repository README |
 
 Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
@@ -41,7 +41,7 @@ The top bar has a language menu. It is a `details` element with plain links, so 
 
 Before the submission: build with `RELEASED = False` and deploy, because App Review reads the FAQ and the privacy pages. On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and deploy.
 
-`DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone", "ipad"]` now: version 1.1 has no Apple Watch app. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
+`DEVICES` in `build.py` is the list of devices that the row under the badge names: `"iphone"`, `"ipad"`, and `"watch"`. Each has one icon and its product name. **The list must match the devices that the released app supports.** It is `["iphone", "ipad", "watch"]` now: version 1.1.0 embeds the Apple Watch app as a Maru Pro feature. The FAQ answer about Apple Watch and the facts in `llms.txt` must agree with the list.
 
 ## Top bar
 
@@ -71,11 +71,16 @@ The site uses the system fonts of each language and loads no font file: San Fran
 
 | Block | Picture |
 |---|---|
-| Hero | A phone with five real screens: Today, My Items, History, Settings, and Add Item. Each one scrolls, and nothing in it works |
-| Reminders | The medium Today widget and a Lock Screen reminder on a wallpaper, drawn in HTML |
+| Hero | A phone with three real screens: Today, My Items, and History. Nothing in it works |
+| Alarm (iOS 26+) | A screenshot of the edit screen with the Alarm switch on |
+| Reminders | A Lock Screen reminder with its actions, and the medium Today widget, on a wallpaper, drawn in HTML |
+| Lock Screen (PRO) | A picture of the Lock Screen with the card of "Next Dose on Lock Screen" |
+| Family (PRO) | A screenshot of the Family page |
 | History | A screenshot of History: the graph and the last 7 days of each item |
-| Item | A screenshot of one item: its plan and its last 7 days with the counts |
+| Apple Watch (PRO) | A screenshot of the Watch app in a drawn frame |
 | Photos | Three supplement jars, cut out as item icons |
+
+The order of the blocks follows the store page. The closing panel has "No account" and "No ads". A block with `mark` in `src/strings/<lang>.json` has a small mark after its heading: `PRO`, or the system that it needs.
 
 ### Screenshots
 
@@ -83,39 +88,25 @@ The site uses the system fonts of each language and loads no font file: San Fran
 python3 site/build.py --shots /path/to/captures
 ```
 
-The command needs `sips` (macOS), `cwebp`, and `ffmpeg`. It reads `today-<lang>.png`, `today-end-<lang>.png`, `history-<lang>.png`, `detail-<lang>.png`, `items-<lang>.png`, and the two captures of each sheet (`settings-<lang>.png`, `settings-end-<lang>.png`, `add-<lang>.png`, `add-end-<lang>.png`), for example `today-zh-Hans.png`. A capture that is not there keeps its file. It writes WebP files of 780 px width to `shots/`. Each language page shows its own files in an iPhone frame.
+The command needs `cwebp` and `ffmpeg`. It reads the store captures of 2412 x 5244 in `<captures>/<lang>/`, for example `<captures>/zh-Hans/today.png`: `today.png`, `items.png`, `history-all.png`, `alarm.png`, `family.png`, `lock-clock.png`, `lock-date.png`, `la.png`, and `watch.png`. A language with no folder keeps its files. It writes WebP files of 780 px width to `shots/`, and the Watch capture keeps its own width. Each language page shows its own files in an iPhone frame.
 
-The hero phone is live. `today-<lang>.png` is Today at the top of the list, and `today-end-<lang>.png` is the same screen with the list scrolled to its end. The command joins them into two files:
+- Use the same captures as the store screenshots, so the site and the store show the same sample family: Me, Mom, Dad, Mochi the cat, and Biscuit the dog.
+- `lock-<lang>.webp` joins three captures, as the store frame does. The date comes from `lock-date.png`, the clock and the wallpaper come from `lock-clock.png`, and the card comes from `la.png`, where it is on black. The card covers the reminder of the Lock Screen captures.
 
-- `today-<lang>.webp`: the full list with no bars. It scrolls inside the screen.
-- `today-bars-<lang>.webp`: the status bar, the toolbar buttons, and the tab bar. It stays in place over the list. Its top has the background of the app with a soft lower edge, so the title scrolls away under it and does not show beside the buttons. The rest is clear.
+### The screens of the hero phone
 
-The list has some empty space after its last group, so the As Needed row comes to rest above the tab bar.
+With no script, the phone is the Today picture. `site.js` adds two screens. Their pictures load when the page is idle, or at the first use of the phone, so the first paint does not wait for them.
 
-The list scrolls with the wheel, a touch, the keys, or a mouse drag, and the scroll passes to the page at each end. When the phone comes into view, the list moves to its end one time and comes back. This hint does not play with reduced motion.
-
-### The other screens of the hero phone
-
-`site.js` adds four screens to the hero phone. With no script, the phone is the Today picture. The pictures of the four screens load when the page is idle, or at the first use of the phone, so the first paint does not wait for them.
-
-| Screen | How it opens, as in the app | Pictures |
+| Screen | How it opens, as in the app | Picture |
 |---|---|---|
 | My Items | The tab bar. No movement | `items-<lang>.webp` |
 | History | The calendar button. It slides in from the right, and the tab bar stays in place | `history-<lang>.webp`, the picture of the History block |
-| Settings | The gear button. A sheet rises over a shade | `settings-<lang>.webp`, `settings-bar-<lang>.webp` |
-| Add Item | The plus button. A sheet rises over a shade | `add-<lang>.webp`, `add-bar-<lang>.webp` |
 
-- A sheet has two captures: the form at its top, and the form scrolled down until its last card is on the screen. The command joins them. `<name>-<lang>.webp` is the full form, and `<name>-bar-<lang>.webp` is the bar of the sheet with a soft lower edge. A debug build shows a Debug section at the end of Settings, and the command leaves it out.
-- A capture of My Items or of a sheet must not show the home indicator. Capture again if it does.
-- A `button` lies over each control of a capture that moves between screens: the gear, the calendar, the plus, the two tabs, the back button, and "Done" or "Cancel". Each button has a label in the language of the page (`phone` in `src/strings/<lang>.json`), and it is 44 pt of the app or more in each direction. Escape closes a sheet or goes back. No other control of a capture does anything.
-- For assistive technology, the phone is one group with a short description, and each picture is hidden.
-- With reduced motion, a screen fades in and out and does not move.
-
-- Capture an iPhone 17 Pro simulator (1206 x 2622) in light mode, with a debug build of the app.
-- Launch with `-MaruSampleData YES -MaruSampleRecords YES`, and with `-AppleLanguages` and `-AppleLocale` of the language. The sample items follow the app language.
-- Remove the app before each language, because the sample items load only into an empty store.
-- Set the status bar: `xcrun simctl status_bar <device> override --time 9:41 --batteryLevel 100`.
-- Use only real captures of the app.
+- The phone shows the top of each list and does not scroll, because the store captures have one position of each list.
+- Settings and Add Item are not in the phone, because the store captures have no pictures of them.
+- A `button` lies over each control of a capture that moves between screens: the calendar, the two tabs, and the back button. Each button has a label in the language of the page (`phone` in `src/strings/<lang>.json`), and it is 44 pt of the app or more in each direction. Escape goes back. No other control of a capture does anything.
+- For assistive technology, the phone is one group with a short description, and each added picture is hidden.
+- With reduced motion, History fades in and out and does not move.
 
 ### Jars
 
@@ -131,7 +122,7 @@ The labels are new, and their numbers and barcodes are fake. Apple's Vision fram
 
 `mock.py` draws the widget and the reminder in HTML and CSS. `src/mock/<lang>.json` holds their words in one language (from the String Catalogs) and the time format.
 
-- The components follow `Widget/` and `docs/design.md`: the system font, the sizes in points, and the default pink. The reminder is a Lock Screen banner of iOS 26, measured from a capture at 3x. It shows the title and the body of a due reminder from `MaruNotifications`, and the time, with no action. It has the width of the widget.
+- The components follow `Widget/` and `docs/design.md`: the system font, the sizes in points, and the default pink. The reminder is a Lock Screen banner of iOS 26, measured from a capture at 3x. It shows the title and the body of a due reminder from `MaruNotifications`, and the time. Under it are the actions that a touch and hold shows. It has the width of the widget.
 - A component scales with its block. `--base` is the width that it fills, in points, and `--pt-max` stops it at a little more than its real size. The colors are tokens that start with `--app-`. The site is light only, because the app pictures are light captures. The dark colors for the README pictures are in `social.py`.
 - Each component is one picture for assistive technology: it has `role="img"` and the alt text of `shots` in `src/strings/<lang>.json`.
 

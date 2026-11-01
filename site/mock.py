@@ -1,7 +1,7 @@
 """The code-drawn app components of the home page: the widget and the reminder, in HTML, no pictures.
 
 The text of each language is in src/mock/<lang>.json. The facts that every language shares are below:
-the five scheduled sample items of App/DebugLaunch.swift. The screenshots of the home page show the same items.
+the eight doses of the Today screenshot. The widget and the screenshots of the home page show the same day.
 """
 
 import html
@@ -11,9 +11,9 @@ from pathlib import Path
 SITE = Path(__file__).resolve().parent
 e = html.escape
 
-# Part of the day (0 morning, 1 noon, 2 evening) and planned time of each item. The morning items are taken.
-ITEMS = [{"part": 0, "at": (7, 0)}, {"part": 0, "at": (8, 0)}, {"part": 1, "at": (12, 30)},
-         {"part": 2, "at": (21, 0)}, {"part": 2, "at": (21, 0)}]
+# Part of the day (0 morning, 1 noon, 2 evening) and planned time of each dose. The morning and noon doses are taken.
+ITEMS = [{"part": 0, "at": (7, 0)}, {"part": 0, "at": (8, 0)}, {"part": 0, "at": (8, 0)}, {"part": 1, "at": (12, 30)},
+         {"part": 1, "at": (12, 30)}, {"part": 2, "at": (20, 0)}, {"part": 2, "at": (21, 0)}, {"part": 2, "at": (21, 0)}]
 
 
 def load(code):
@@ -32,12 +32,12 @@ def clock(t, hour, minute):
 
 def widget(t):
     """The medium Today widget: the progress bar of the day, and each part of the day with its time and its capsules."""
-    taken = {0, 1}
+    taken = {0, 1, 2, 3, 4}
     cols = ""
     for p in range(3):
         mine = [i for i, it in enumerate(ITEMS) if it["part"] == p]
         caps = "".join(f'<i class="{"on" if i in taken else ""}"></i>' for i in mine)
-        now = ' class="now"' if p == 1 else ""
+        now = ' class="now"' if p == 2 else ""
         cols += (f'<div class="m-col"><b{now}>{e(t["parts"][p])}</b>'
                  f'<span class="m-time">{e(clock(t, *ITEMS[mine[0]]["at"]))}</span><span class="m-caps">{caps}</span></div>')
     # The bar has no text: its fill is the share of the doses that are taken (DayProgressBar).
@@ -47,7 +47,9 @@ def widget(t):
 
 
 def reminder(t):
-    """The Lock Screen reminder: the title and the body of a due reminder with the item name (MaruNotifications)."""
+    """The Lock Screen reminder: the title and the body of a due reminder with the member and the item name, and under
+    it the actions that a touch and hold shows (MaruNotifications)."""
+    actions = "".join(f"<span>{e(action)}</span>" for action in t["actions"])
     return (f'<div class="m-notif"><span class="m-app-icon"></span><span class="m-notif-text"><span class="m-notif-top">'
             f'<b>{e(t["reminder_title"])}</b><span class="m-now">{e(t["now"])}</span></span>'
-            f'<span class="m-body">{e(t["reminder_item"])}</span></span></div>')
+            f'<span class="m-body">{e(t["reminder_item"])}</span></span></div><div class="m-actions">{actions}</div>')

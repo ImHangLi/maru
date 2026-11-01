@@ -7,6 +7,11 @@
   ],
   "today": "Heute",
   "reminder_title": "Zeit zur Einnahme",
-  "reminder_item": "Vitamin D3",
-  "now": "Jetzt"
+  "reminder_item": "Papa: Simvastatin",
+  "now": "Jetzt",
+  "actions": [
+    "Eingenommen",
+    "Überspringen",
+    "In 10 Min. erinnern"
+  ]
 }

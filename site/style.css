@@ -26,9 +26,7 @@
 
   /* App components: the system colors of iOS in light mode, and the default pink of Maru (docs/design.md) */
   --app-tint: #FF2D55;
-  --app-bg: #F2F2F7;
   /* The shade over the screen behind a sheet, measured from a capture. */
-  --app-dim: rgba(0, 0, 0, 0.2);
   --app-label: #000000;
   --app-label-2: #8A8A8E;
   --app-widget: #FFFFFF;
@@ -257,6 +255,10 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   transform: translate(-50%, var(--shift-lift));
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), filter var(--dur-fast) var(--ease-out);
 }
+/* A touch screen has no hover. The hidden tooltip must not widen the page. */
+@media (hover: none) {
+  .icon-btn[data-tip]::after { content: none; }
+}
 @media (hover: hover) {
   .icon-btn[data-tip]:hover::after { opacity: 1; filter: blur(0); transform: translate(-50%, 0); }
 }
@@ -379,6 +381,13 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .get-devices { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2) var(--space-5); margin: 0; padding: 0; list-style: none; font-size: var(--fs-sm); color: var(--text-2); }
 .get-devices li { display: inline-flex; align-items: center; gap: var(--space-2); white-space: nowrap; }
 
+/* The small mark of a block heading: "PRO", or the system that a feature needs. */
+.mark {
+  display: inline-block; vertical-align: 0.5em; padding: 0.3em 0.6em; border-radius: var(--radius-full);
+  background: var(--tint-soft); color: var(--link); font-size: var(--fs-xs); line-height: 1; font-weight: var(--fw-semibold);
+  letter-spacing: 0.02em; white-space: nowrap;
+}
+
 /* Layout */
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
 
@@ -390,7 +399,7 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .hero h1 { font-size: var(--fs-hero); margin-bottom: var(--space-4); }
 .hero .lede { margin-bottom: var(--space-5); }
 
-/* Device frame: iPhone 17 Pro proportions around a real screenshot of 1206 x 2622. */
+/* Device frame: iPhone 17 Pro proportions around a real screenshot. */
 .device {
   width: var(--device-w); flex: none; position: relative;
   padding: calc(var(--device-w) * 0.0125);
@@ -404,37 +413,18 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   background: var(--device-screen);
 }
 .device-screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-/* The hero phone. The full Today list scrolls inside the screen, and the bars stay in place over it, as in the app.
-   The scroll passes to the page at each end. A mouse can drag the list (site.js). */
-.device-scroll {
-  position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
-  border-radius: inherit; cursor: grab; outline: none; user-select: none; -webkit-user-select: none;
-}
-.device-scroll::-webkit-scrollbar { display: none; }
-.device-scroll.is-dragging { cursor: grabbing; }
-.device-scroll img { position: static; display: block; height: auto; }
-.device-scroll + img { pointer-events: none; }
-.device:has(.device-scroll:focus-visible) { outline: var(--ring-width) solid var(--focus); outline-offset: var(--ring-offset); }
-/* The other screens of the hero phone. site.js adds them. Each position is a share of the capture of 1206 x 2622.
+/* The other screens of the hero phone. site.js adds them. Each position is a share of the capture.
    My Items is a page over Today. History is a page that slides in from the right, as a push in the app, and the tab
-   bar stays in place over it. A sheet rises over a shade, as in the app, and its top edge is at 186 of 2622. */
-.device-page, .device-hits, .device-tabs, .device-dim, .device-sheet { position: absolute; inset: 0; visibility: hidden; }
+   bar stays in place over it. */
+.device-page, .device-hits, .device-tabs { position: absolute; inset: 0; visibility: hidden; }
 .device-hits.is-on, .device-page.is-on, .device-tabs.is-on { visibility: visible; }
 .device-push, .device-tabs { transition: transform var(--dur-enter) var(--ease-smooth), visibility 0s var(--dur-enter); }
 .device-push { transform: translateX(100%); }
 .device-push.is-on, .device-tabs.is-on { transform: none; transition-delay: 0s; }
-/* A layer that only holds buttons lets a touch reach the list under it. */
+/* A layer that only holds buttons lets a touch reach the picture under it. */
 .device-hits, .device-tabs { pointer-events: none; }
-.device-tabs img { clip-path: inset(89% 0 0 0); }
-.device-dim { background: var(--app-dim); opacity: 0; pointer-events: none; transition: opacity var(--dur-enter) var(--ease-smooth), visibility 0s var(--dur-enter); }
-.device-dim.is-on { opacity: 1; visibility: visible; transition-delay: 0s; }
-.device-sheet {
-  top: 7.094%; overflow: hidden; border-radius: 9.37% 9.37% 0 0 / 4.64% 4.64% 0 0; background: var(--app-bg);
-  transform: translateY(100%); transition: transform var(--dur-enter) var(--ease-smooth), visibility 0s var(--dur-enter);
-}
-.device-sheet.is-on { transform: none; visibility: visible; transition-delay: 0s; }
-.device-sheet .device-scroll { border-radius: 0; }
-.device-screen .device-sheet-bar { bottom: auto; height: auto; pointer-events: none; }
+/* Only the capsule of the tab bar shows from this capture. */
+.device-tabs img { clip-path: inset(90.5% 26.5% 2.4% 26.5% round var(--radius-full)); }
 /* A button over a control of a capture. It is 44 pt or more of the app in each direction. */
 .device-hit {
   position: absolute; top: 6.1%; height: 7.25%; padding: 0; border: 0; background: none; cursor: pointer;
@@ -442,19 +432,22 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 }
 .device-hit:focus-visible { outline-offset: calc(-1 * var(--ring-width)); border-radius: var(--radius-full); }
 .hit-lead { left: 1.6%; width: 15.8%; }
-.hit-calendar { left: 69.6%; width: 13.5%; }
-.hit-plus { left: 83.1%; width: 14.5%; }
-.hit-tab-today, .hit-tab-items { top: 90%; height: 9.2%; width: 32%; }
-.hit-tab-today { left: 18%; }
+.hit-calendar { left: 52.5%; width: 13.5%; }
+.hit-tab-today, .hit-tab-items { top: 90%; height: 9.2%; width: 23.5%; }
+.hit-tab-today { left: 26.5%; }
 .hit-tab-items { left: 50%; }
-.hit-cancel, .hit-done { top: 1.4%; height: 7.8%; width: 36%; }
-.hit-cancel { left: 1.6%; }
-.hit-done { right: 1.6%; }
 .island {
   position: absolute; left: 50%; top: calc(var(--device-w) * 0.04);
   width: calc(var(--device-w) * 0.31); height: calc(var(--device-w) * 0.092); transform: translateX(-50%);
   background: var(--island); border-radius: var(--radius-full);
 }
+
+/* An Apple Watch around a real capture of 416 x 496. */
+.watch {
+  width: calc(var(--device-w) * 0.86); padding: calc(var(--device-w) * 0.04);
+  border-radius: calc(var(--device-w) * 0.2); background: var(--island); box-shadow: var(--shadow-float);
+}
+.watch img { display: block; width: 100%; height: auto; border-radius: calc(var(--device-w) * 0.15); }
 
 /* App components: the widget and the reminder, drawn in HTML.
    Every size is the size in the app in points, times --pt. A component fills the width of its container: --base is
@@ -508,6 +501,14 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
 .m-notif b, .m-body { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .m-notif b { flex: 1; font-weight: var(--fw-semibold); }
 .m-now { flex: none; position: relative; top: calc(1.07 * var(--pt)); font-size: calc(12 * var(--pt)); letter-spacing: 0; color: var(--app-banner-2); }
+
+/* The actions that a touch and hold shows under a reminder. */
+.m-actions {
+  display: grid; gap: calc(14 * var(--pt)); width: max-content; min-width: calc(190 * var(--pt)); margin-top: calc(8 * var(--pt));
+  padding: calc(14 * var(--pt)) calc(20 * var(--pt)); border-radius: calc(26 * var(--pt)); background: var(--app-banner);
+  box-shadow: var(--app-banner-rim); -webkit-backdrop-filter: blur(calc(20 * var(--pt))); backdrop-filter: blur(calc(20 * var(--pt)));
+  font-size: calc(16 * var(--pt)); line-height: calc(20 * var(--pt)); letter-spacing: calc(-0.15 * var(--pt)); color: var(--app-banner-text);
+}
 
 /* The photo block: three jars cut out as the app cuts out the photo of an item, on the panel with a soft shadow. */
 .jars { width: 100%; max-width: var(--max-stage); display: flex; align-items: flex-end; justify-content: center; gap: var(--space-3); padding: var(--space-5) 0; }
@@ -610,10 +611,10 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .closer-links a:active, .site-footer a:active { transform: none; }
   .icon-btn[data-tip]::after { filter: none; transform: translate(-50%, 0); }
   /* A screen of the hero phone still fades in and out, with no movement. */
-  .device-push, .device-sheet { transform: none; opacity: 0; }
-  .device-push, .device-sheet, .device-tabs, .device-dim { transition: opacity var(--dur-fade) var(--ease-out), visibility 0s var(--dur-fade) !important; }
-  .device-push.is-on, .device-sheet.is-on { opacity: 1; }
-  .device-push.is-on, .device-sheet.is-on, .device-tabs.is-on, .device-dim.is-on { transition-delay: 0s !important; }
+  .device-push { transform: none; opacity: 0; }
+  .device-push, .device-tabs { transition: opacity var(--dur-fade) var(--ease-out), visibility 0s var(--dur-fade) !important; }
+  .device-push.is-on { opacity: 1; }
+  .device-push.is-on, .device-tabs.is-on { transition-delay: 0s !important; }
   /* A menu still fades in and out, with no movement. */
   .lang-menu ul { animation: fade var(--dur-base) var(--ease-out) !important; }
   .lang-menu.closing ul { animation: fade-out var(--dur-close) var(--ease-in) forwards !important; }
