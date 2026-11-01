@@ -51,7 +51,7 @@ The settings:
 
 | Key | Value |
 |---|---|
-| `appColor` | The app color: `pink`, `orange`, `yellow`, `green`, `mint`, `blue`, `purple`, or `brown` |
+| `appColor` | The color that the user chose, also while it waits for Maru Pro (D146): `pink`, `orange`, `yellow`, `green`, `mint`, `blue`, `purple`, or `brown` |
 | `reminderNames` | `showNames` or `hideNames` |
 | `remindAgainMinutes` | Version 1.0 only (D079). The time between follow-ups in minutes: `0` for off, or `5`, `10`, `15`, `30`, or `60`. Version 1.1 writes no such row. A restore copies a value above `0` to every restored item |
 | `remindAgainCount` | Version 1.0 only (D079). The number of follow-ups: `1`, `2`, `3`, or `5`, or `0` for "Until Recorded". A backup with no such row restores "1 Time" |

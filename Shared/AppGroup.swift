@@ -24,7 +24,8 @@ enum AppGroup {
 
     private static let appColorKey = "display.appColor"
 
-    /// The app tint for the widgets. The app writes it when the user picks a color (D025). It is no health data.
+    /// The app tint for the widgets. The app writes it at each launch and each change of the color (D025, D146). It is
+    /// no health data.
     static var appColor: ItemColor {
         get { UserDefaults(suiteName: identifier)?.string(forKey: appColorKey).flatMap(ItemColor.init) ?? .pink }
         set { UserDefaults(suiteName: identifier)?.set(newValue.rawValue, forKey: appColorKey) }

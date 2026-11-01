@@ -42,7 +42,7 @@ On another Mac, use XcodeBuildMCP to run the app in a simulator, take screenshot
 - Show "recorded" or a success haptic only after the local transaction commits (spec §7.2).
 - UI calls domain operations. UI must not write to the database, StoreKit, or analytics directly (spec §6).
 - Never clear and rebuild the database to recover from an error (spec §7.3).
-- Health data stays on the device. Do not send medication names, doses, intake times, or item IDs to analytics, logs, or crash reports. Do not initialize any analytics SDK before consent (spec §10, §11).
+- Health data stays on the device. Do not send medication names, doses, intake times, or item IDs to analytics, logs, or crash reports. Start usage statistics only as D051 and D078 define: on by default outside the EU, the EEA, the UK, Switzerland, and South Korea, and off until opt-in inside these regions (spec §10, §11).
 - The startup path must not wait for the network, analytics, StoreKit, or image processing (spec §9).
 
 ## Conventions

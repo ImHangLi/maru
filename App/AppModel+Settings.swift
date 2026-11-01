@@ -9,8 +9,10 @@ import UIKit
 /// Preferences are not in the health database, because that file cannot be read after a restart and before the first unlock
 /// (D014). No app color means pink.
 enum DisplaySetting {
-    /// The app tint, as the raw value of an `ItemColor` (D025).
+    /// The app tint, as the raw value of an `ItemColor` (D025). Every reader reads this key, so pink here is pink everywhere.
     static let appColor = "display.appColor"
+    /// The color of a user whose Pro ended, as the raw value of an `ItemColor`. It returns with Pro (D146).
+    static let waitingColor = "display.waitingColor"
     /// The wash of the app tint behind the title of Today and My Items (D100). No value means on (D104).
     static let headerWash = "display.headerWash"
     /// The light or dark look of the app, as the raw value of an `AppAppearance` (D105). No value means the system look.
@@ -34,6 +36,8 @@ struct SettingsState {
     var appIcon = AppIcon.pink
     /// The change of the icon that waits for the app to settle (D142).
     var iconAlignment: Task<Void, Never>?
+    /// The change of the app color that waits for the app to settle (D146).
+    var colorAlignment: Task<Void, Never>?
 }
 
 extension AppModel {
@@ -260,6 +264,36 @@ extension AppModel {
             if target != .pink { UserDefaults.standard.removeObject(forKey: AppIcon.waitingKey) }
             settings.appIcon = target
             noteProUse()
+        }
+    }
+
+    /// The app color that Maru Pro asks for now, when the app shows another color. Pro ended: pink. Pro returned: the color
+    /// of the user. StoreKit must answer first, because the cache can be older than a renewal.
+    private var misalignedColor: ItemColor? {
+        guard pro.hasReadEntitlement else { return nil }
+        let defaults = UserDefaults.standard
+        let current = defaults.string(forKey: DisplaySetting.appColor).flatMap(ItemColor.init) ?? .pink
+        guard pro.isPro else { return current == .pink ? nil : .pink }
+        let waiting = defaults.string(forKey: DisplaySetting.waitingColor).flatMap(ItemColor.init)
+        return waiting == current ? nil : waiting
+    }
+
+    /// Keeps the app color in step with Maru Pro, in both directions (D146). It uses the timing of `alignAppIcon`, so the
+    /// cache never changes the color, and a free moment shorter than the wait changes nothing. A change shows no alert.
+    /// The change runs with the app in front, because the root view then passes it to the widgets and the Watch.
+    func alignAppColor() {
+        guard settings.colorAlignment == nil, misalignedColor != nil else { return }
+        settings.colorAlignment = Task {
+            try? await Task.sleep(for: .seconds(1))
+            settings.colorAlignment = nil
+            guard let target = misalignedColor, UIApplication.shared.applicationState == .active else { return }
+            let defaults = UserDefaults.standard
+            if pro.isPro {
+                defaults.removeObject(forKey: DisplaySetting.waitingColor)
+            } else {
+                defaults.set(defaults.string(forKey: DisplaySetting.appColor), forKey: DisplaySetting.waitingColor)
+            }
+            defaults.set(target.rawValue, forKey: DisplaySetting.appColor)
         }
     }
 

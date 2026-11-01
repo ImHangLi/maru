@@ -193,7 +193,7 @@ Owner decisions after the first install on a device.
 - The empty Today page does not read like a to-do list. With no items, it says "Add a supplement or medication with the + button." With items but nothing due today, it says "No doses to take today."
 - The "tab bar icons only" setting must work. A label style has no effect in the tab bar, so the icon-only item uses an image with an accessibility label.
 
-## D025 · 2026-10-11 · App color setting (colors other than pink need Pro by D114)
+## D025 · 2026-10-11 · App color setting (colors other than pink need Pro by D114, the color at the end of Pro changed by D146)
 
 Owner decision. The owner asked for a setting that changes the accent color of the whole app. This replaces "no accent setting" in D021. The item colors of D021 stay.
 
@@ -2291,7 +2291,7 @@ Not verified: no build of the app on this Mac (CI builds it), and nobody saw the
 4. "All done for today" after the last record, and the first dose of tomorrow after midnight, with no open of Maru.
 5. A restart with no unlock ("Open Maru to update."), and a tap on each family.
 
-## D114 · 2026-10-28 · Maru Pro: the app color (changes D025 and the paywall rows of D107) (paywall source `feature` replaced by D127)
+## D114 · 2026-10-28 · Maru Pro: the app color (changes D025 and the paywall rows of D107) (paywall source `feature` replaced by D127) (the color at the end of Pro and the restore rule replaced by D146)
 
 Maintainer decision on 2026-10-28, with agent detail. Personalization is part of Pro.
 
@@ -2872,7 +2872,7 @@ Tests (D016): none new. No package test covered only Siri.
 
 The new strings are drafts in five languages (`docs/localization-review.md`).
 
-## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning (the Focus check is replaced by D143)
+## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning (the Focus check is replaced by D143, native review waived by D147)
 
 Maintainer decisions of 2026-10-30:
 
@@ -2888,7 +2888,7 @@ Maintainer decisions of 2026-10-30:
 The local FAQ and generated pages follow the store claim. Nothing is deployed or uploaded in this task.
 `docs/localization-review.md` lists the corrections and sources. `docs/release-plan.md` keeps screenshots and category changes open.
 
-## D142 · 2026-11-01 · The end of Maru Pro: the icon resets, and every other Pro state is checked (replaces the icon rule of D112, changes the switch rule of D110)
+## D142 · 2026-11-01 · The end of Maru Pro: the icon resets, and every other Pro state is checked (replaces the icon rule of D112, changes the switch rule of D110) (app color rule replaced by D146)
 
 The maintainer reported from TestFlight build 18: after a cancel, the Pro app icon and Family stayed.
 
@@ -3023,3 +3023,60 @@ The ringing alarm is not in a picture. A simulator can not show it, and the page
 Tests (D016): none new. No record is at risk.
 
 The new strings are drafts in five languages (`docs/localization-review.md`).
+
+## D146 · 2026-11-01 · The app color follows Maru Pro (replaces the app color line of D142, and the end-of-Pro and restore rules of D114)
+
+Maintainer decision of 2026-11-01, with agent detail. D142 let the maintainer reverse the color rule, and the maintainer did.
+
+Rule:
+
+- When Maru Pro ends, the app shows pink. Maru keeps the chosen color and shows it again when Pro returns.
+- The change shows no iOS alert, so it does not have the cost of the icon change of D142.
+
+Design:
+
+- `display.appColor` stays the color that the app shows, and each reader keeps its key. So the app, the header wash, the badges, and the avatars change together, and only one place writes the change.
+- The chosen color waits in `UserDefaults.standard` under `display.waitingColor`, as `display.waitingIcon` does for the icon (D142). A value derived at each read needs a change in each `@AppStorage` reader, and it also needs the StoreKit rule in each reader.
+- `alignAppColor` runs after each read of StoreKit and each return to the front. It changes the color only after StoreKit answered in this process, with the app in front, and one second after the trigger.
+- The cache never changes the color. A Pro user whose cached plan ended sees no pink at launch, because the code does nothing before the first StoreKit answer. A late renewal shorter than one second changes nothing.
+
+Choices:
+
+- A free user's choice keeps the preview and the paywall of D114. A free user's tap on pink keeps the waiting color.
+- A Pro user's choice replaces the waiting color. A purchase while a preview shows makes the preview color the app color, as in D114.
+
+Readers:
+
+- The root view passes each change to the App Group, the widgets, the Watch, and the Live Activity. The new `redraw` change draws the activity again, because the color is not part of its state.
+- The Family color of a new member and a new alarm read `display.appColor`, so they follow with no change.
+- `setting_changed` stays a user change. A change from Pro sends no event.
+
+Backup (D040):
+
+- A backup carries the chosen color, also while it waits. So a new device with Pro shows the color. The file format does not change.
+- A restore sets the choice of the backup. With Pro the color shows at once. Without Pro the color waits and the app stays pink. This replaces the restore rule of D114.
+
+Limits:
+
+- A plan that ends while Maru is closed changes nothing until the next open. Until then, the widgets keep the old color, and the first seconds of that open show it too.
+- A renewal that arrives more than one second after the StoreKit answer shows pink, and the color then returns by itself. The icon of D142 has the same limit.
+- A waiting alarm keeps the tint of its schedule, as after each color change since D025. The identifier of an alarm holds its content, and a tint in it replaces every alarm for a change of a color. So the next alarm with new content has the new tint.
+
+Tests (D016): none new. The rule sits in the app target, and no record is at risk.
+
+Not verified: CI builds the app. Nobody ran the change on a simulator or a device. Device checks with the StoreKit configuration or TestFlight:
+
+1. A Pro user with blue lets the plan end: the app, the header wash, the widgets, and the Watch turn pink, with no alert. A new purchase shows blue again.
+2. A relaunch with a valid Pro plan and a cached plan that ended shows no pink.
+3. A free user with a waiting color chooses orange, then buys: the app turns orange. Blue does not return.
+4. A backup from a free user with a waiting color, restored on a Pro device, shows the color.
+
+## D147 · 2026-11-01 · Maintainer decisions before the first release (analytics, device tests, reviews, Family)
+
+Maintainer decisions of 2026-11-01:
+
+- Analytics: option A. Usage statistics stay as D051 and D078 define them. They are on by default outside the EU, the EEA, the UK, Switzerland, and South Korea, and off until opt-in inside these regions. `AGENTS.md` now says the same.
+- Device tests: the maintainer's tests passed for Focus and Silent alarm, purchases, the Watch, and the iPad.
+- The paid native review is waived. This replaces the rule in the D141 section of `docs/release-plan.md` that keeps a native speaker review before release.
+- The Ask to Buy test is waived.
+- Family stays as D122 and T59 define it.
