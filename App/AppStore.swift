@@ -22,6 +22,8 @@ actor AppStore {
     private var opened: LocalStore?
     /// Reports a run problem as a fixed code and a fixed rule word (D088). It holds no health data.
     private var runProblem: (@Sendable (AnalyticsEvent.ErrorCode, StoredDataRule?) -> Void)?
+    /// The `failed` code of a run went out in this process (D144).
+    private var reportedRunFailure = false
     private var engine: ReminderEngine?
     private var followUps: FollowUpEngine?
     private var alarms: AlarmEngine?
@@ -57,6 +59,14 @@ actor AppStore {
 
     func setRunProblemHandler(_ handler: @escaping @Sendable (AnalyticsEvent.ErrorCode, StoredDataRule?) -> Void) {
         runProblem = handler
+    }
+
+    /// A reminder, follow-up, or alarm run failed for a reason with no rule. The next launch, return, or save runs again, so one
+    /// report for each process is enough (D144).
+    private func reportRunFailure() {
+        guard !reportedRunFailure, let runProblem else { return }
+        reportedRunFailure = true
+        runProblem(.failed, nil)
     }
 
     /// The open store. The first call opens the database, and a call after a failed open tries again.
@@ -148,7 +158,8 @@ actor AppStore {
             alarmsRing: { AlarmSupport.isAuthorized },
             wanted: wantedAlarms,
             generations: generations,
-            index: DefaultsAlarmIndex(defaults: AppGroup.defaults)
+            index: DefaultsAlarmIndex(defaults: AppGroup.defaults),
+            scheduleFailed: { [weak self] in Task { await self?.reportRunFailure() } }
         )
         self.alarms = alarms
         return alarms
@@ -176,8 +187,13 @@ actor AppStore {
             // path with no error at all gives it items. An error of the read, a schedule, or a cancel keeps it empty,
             // so every item with an alarm gets its normal reminder.
             self.cover.withLock { $0 = .none }
-            if let failed = try? await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone) {
-                self.cover.withLock { $0 = AlarmCover(rings: AlarmSupport.isAuthorized, failed: failed) }
+            do {
+                if let failed = try await self.alarmEngine()?.refresh(at: now, deviceTimeZone: deviceTimeZone) {
+                    self.cover.withLock { $0 = AlarmCover(rings: AlarmSupport.isAuthorized, failed: failed) }
+                }
+            } catch {
+                Self.log.error("Alarm refresh failed: \(String(describing: type(of: error)), privacy: .public)")
+                self.reportRunFailure()
             }
             let outcome: ReminderOutcome
             do {
@@ -190,7 +206,11 @@ actor AppStore {
                 Self.log.error(
                     "Reminder run failed: \(String(describing: (error as? PlanReadError)?.storage ?? error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
                 )
-                if rule != nil || (error as? StorageError) == .invalidData { self.runProblem?(.invalidData, rule) }
+                if rule != nil || (error as? StorageError) == .invalidData {
+                    self.runProblem?(.invalidData, rule)
+                } else {
+                    self.reportRunFailure()
+                }
                 throw error
             }
             let followUps: FollowUpOutcome?
@@ -201,6 +221,7 @@ actor AppStore {
                 Self.log.error(
                     "Follow-up refresh failed: \(String(describing: (error as? PlanReadError)?.storage ?? error), privacy: .public). Rule: \(rule?.rawValue ?? "none", privacy: .public)"
                 )
+                self.reportRunFailure()
                 followUps = nil
             }
             for rule in LocalStore.takeSkippedRules() { self.runProblem?(.rowSkipped, rule) }

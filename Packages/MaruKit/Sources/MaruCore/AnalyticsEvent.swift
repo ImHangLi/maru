@@ -106,6 +106,8 @@ public struct AnalyticsEvent: Sendable, Equatable {
         "purchase_result": [
             "result": .choice(PurchaseResult.allCases.map(\.rawValue)),
             "plan": .choice(PurchasePlan.allCases.map(\.rawValue)),
+            // The purchase starts an introductory free trial (D144).
+            "trial": .flag,
         ],
     ]
 
@@ -374,8 +376,8 @@ public extension AnalyticsEvent {
     }
 
     /// `plan` is `nil` for a restore that found no purchase, or a failure before a plan was known.
-    static func purchaseResult(_ result: PurchaseResult, plan: PurchasePlan?) -> AnalyticsEvent {
-        var properties: [String: Value] = ["result": .text(result.rawValue)]
+    static func purchaseResult(_ result: PurchaseResult, plan: PurchasePlan?, trial: Bool = false) -> AnalyticsEvent {
+        var properties: [String: Value] = ["result": .text(result.rawValue), "trial": .flag(trial)]
         if let plan { properties["plan"] = .text(plan.rawValue) }
         return AnalyticsEvent(unchecked: "purchase_result", properties)
     }

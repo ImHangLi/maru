@@ -4,14 +4,33 @@ import Foundation
 public protocol AnalyticsClient: Sendable {
     /// Queues one event. It never blocks, and it never throws.
     func capture(_ event: AnalyticsEvent)
+    /// Queues one event that the caller keeps until the server confirms it (D144). `id` and `time` stay the same for a repeat
+    /// send, so the server counts one event. `acknowledged` runs only after that confirmation.
+    func capture(_ event: AnalyticsEvent, id: UUID, time: Date, acknowledged: @escaping @Sendable () -> Void)
+    /// Sends the queued events now, and returns when the send ends (D144). A wait after a failed request still applies.
+    func flush() async
     /// Stops sending, clears the queue, and forgets the install ID (T43).
     func reset()
+}
+
+/// How this install reached the device (D144, spec 11.6). The value is the `channel` field of each event. It is not a
+/// purchase and not an ID.
+public enum AnalyticsChannel: String, Sendable {
+    case appStore = "app_store"
+    /// A TestFlight install, or any other install that uses the App Store sandbox, such as App Review.
+    case testflight
+    /// A Debug build, or a build that Xcode installed.
+    case debug
+    /// The system gave no answer yet.
+    case unknown
 }
 
 /// The client of a build with no analytics key. It does nothing (T41).
 public struct NullAnalyticsClient: AnalyticsClient {
     public init() {}
     public func capture(_ event: AnalyticsEvent) {}
+    public func capture(_ event: AnalyticsEvent, id: UUID, time: Date, acknowledged: @escaping @Sendable () -> Void) {}
+    public func flush() async {}
     public func reset() {}
 }
 

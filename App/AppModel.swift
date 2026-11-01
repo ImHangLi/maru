@@ -245,6 +245,7 @@ final class AppModel {
     func didEnterBackground() {
         backgroundedAt = .now
         today.focus = nil
+        flushAnalytics()
     }
 
     #if DEBUG

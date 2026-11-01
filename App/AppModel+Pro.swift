@@ -75,7 +75,7 @@ extension AppModel {
     /// A purchase from the paywall. A cancel returns the user to the paywall with no other screen.
     func buyPro(_ plan: ProPlan) async -> AnalyticsEvent.PurchaseResult? {
         let result = await pro.buy(plan)
-        if let result { analytics.capture(.purchaseResult(result, plan: plan.analytics)) }
+        if let result { analytics.capture(.purchaseResult(result, plan: plan.analytics, trial: pro.purchaseStartedTrial)) }
         return result
     }
 
