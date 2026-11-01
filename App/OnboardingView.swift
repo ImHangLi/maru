@@ -25,7 +25,7 @@ enum OnboardingPage: Int, CaseIterable, Identifiable {
     var title: Text {
         switch self {
         case .reminder: Text("Reminders, Right on Time")
-        case .today: Text("Did I take it? Open Maru and you know.")
+        case .today: Text("Did I take it today?")
         case .alarm: Text("An Alarm, If You Want One")
         }
     }

@@ -40,8 +40,8 @@ struct OnboardingStage: View {
     private func fade(height: CGFloat) -> some View {
         LinearGradient(
             stops: [
-                .init(color: .clear, location: topInset * 0.7 / height),
-                .init(color: .black, location: (topInset + 8) / height),
+                .init(color: .clear, location: topInset * 0.5 / height),
+                .init(color: .black, location: (topInset + 56) / height),
                 .init(color: .black, location: 0.9),
                 .init(color: .clear, location: 1),
             ],
