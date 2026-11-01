@@ -1,6 +1,76 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Did I take it today?" : {
+      "comment" : "Onboarding, page 1: the title. The question that a user asks, and the promise of the app. It is the store headline.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schon genommen?"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "¿Lo tomé hoy?"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今日、飲んだ？"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "오늘 먹었나?"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今天吃了吗？"
+          }
+        }
+      }
+    },
+    "It records the dose without opening Maru. Allow notifications when asked." : {
+      "comment" : "Onboarding, page 2: the line under the title. It prepares the user for the system notification question.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So erfasst du die Dosis, ohne Maru zu öffnen. Erlaube Mitteilungen, wenn du gefragt wirst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Registra la dosis sin abrir Maru. Permite las notificaciones cuando se te pregunte."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maruを開かずに記録できます。確認が表示されたら、通知を許可してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maru를 열지 않아도 기록돼요. 물어보면 알림을 허용해 주세요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不用打开 Maru 就能记好。询问时，请允许通知。"
+          }
+        }
+      }
+    },
     "Membership" : {
       "comment" : "A section header on the root of Settings (D138).",
       "localizations" : {
@@ -71,6 +141,41 @@
         }
       }
     },
+    "No account. No ads." : {
+      "comment" : "Onboarding, last page: the small line above the buttons. It is the store headline.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Konto. Keine Werbung."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin cuenta. Sin anuncios."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "アカウント不要。広告なし。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "계정 없음. 광고 없음."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不用注册。没有广告。"
+          }
+        }
+      }
+    },
     "Personalization" : {
       "comment" : "A section header on the root of Settings (D138).",
       "localizations" : {
@@ -137,6 +242,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "데이터 및 개인정보"
+          }
+        }
+      }
+    },
+    "Remind Again follows up if you forget to record. Alarms ring through Silent mode and Focus." : {
+      "comment" : "Onboarding, page 3 on iOS 26 or later: the line under the title. Remind Again is the name of the picker on the edit screen. Silent mode and Focus are the words of the system.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Erneut erinnern“ meldet sich wieder, wenn du nichts erfasst. Wecker klingeln auch im Stummmodus und bei Fokus."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Recordar de nuevo» vuelve a avisarte si olvidas registrar. Las alarmas suenan con Silencio y Concentración."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録を忘れても「再通知」がお知らせします。アラームは消音モードや集中モードでも鳴ります。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록을 잊으면 ‘다시 알림’이 또 알려 드려요. 알람은 무음 모드와 집중 모드에서도 울려요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘了记录时，“再次提醒”会继续提醒你。闹钟在静音模式和专注模式下也会响。"
+          }
+        }
+      }
+    },
+    "Remind Again follows up if you forget to record." : {
+      "comment" : "Onboarding, page 3 before iOS 26: the line under the title. Remind Again is the name of the picker on the edit screen.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Erneut erinnern“ meldet sich wieder, wenn du nichts erfasst."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Recordar de nuevo» vuelve a avisarte si olvidas registrar."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "記録を忘れても「再通知」がお知らせします。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "기록을 잊으면 ‘다시 알림’이 또 알려 드려요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "忘了记录时，“再次提醒”会继续提醒你。"
           }
         }
       }
@@ -1790,41 +1965,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加"
-          }
-        }
-      }
-    },
-    "Add a supplement or medication. You choose the time, and Maru reminds you." : {
-      "comment" : "Onboarding, page 3: the line under the title. The user sets the reminder time. Maru sets none.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Füge ein Supplement oder Medikament hinzu. Du wählst die Zeit, und Maru erinnert dich."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Añade un suplemento o un medicamento. Tú eliges la hora, y Maru te avisa."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "サプリメントや薬を追加しましょう。時間はあなたが決めて、Maruがお知らせします。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "영양제나 의약품을 추가해 보세요. 시간은 직접 정하고, 알림은 Maru가 드려요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "添加一种保健品或药物。时间由你来定，Maru 按时提醒你。"
           }
         }
       }
@@ -4170,41 +4310,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "详细信息"
-          }
-        }
-      }
-    },
-    "Did I take it? Open Maru and you know." : {
-      "comment" : "Onboarding, page 1: the title. The question that a user asks, and the promise of the app.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Schon genommen? Öffne Maru, und du weißt es."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "¿Me lo tomé? Abre Maru y lo sabrás."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "飲んだっけ？Maruを開けばすぐわかります。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "먹었던가? Maru를 열면 바로 알 수 있어요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "我吃了没？打开 Maru 就知道。"
           }
         }
       }
@@ -6928,41 +7033,6 @@
         }
       }
     },
-    "Maru reminds you on time, and one tap records each dose." : {
-      "comment" : "Onboarding, page 1: the line under the title.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru erinnert dich pünktlich, und ein Tippen erfasst jede Dosis."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru te avisa a tiempo, y con un toque registras cada dosis."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maruが時間どおりにお知らせ。タップひとつで毎回の服用を記録できます。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru가 제때 알려 드리고, 한 번 탭하면 복용이 기록돼요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Maru 准时提醒你，点一下就能记下每次服用。"
-          }
-        }
-      }
-    },
     "Maru sets the reminders of the next 7 dose days each time you open it." : {
       "comment" : "Item detail: the footer of a plan that counts days (every other day, every few days, or days on and days off) when its reminders are set. iPhone has no repeating reminder for this plan, so Maru sets dated reminders at each open.",
       "localizations" : {
@@ -7488,41 +7558,6 @@
         }
       }
     },
-    "Ready When You Are" : {
-      "comment" : "Onboarding, page 3: the title. A calm invitation to add the first item.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Los geht’s, wenn du so weit bist"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Empezamos cuando quieras"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "準備ができたら、はじめましょう"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "준비되면 시작해요"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "准备好了就开始吧"
-          }
-        }
-      }
-    },
     "Rising Chime" : {
       "comment" : "Settings, Reminder Sound: the name of a sound, a quick rising run of small chimes.",
       "localizations" : {
@@ -7554,6 +7589,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "上升风铃"
+          }
+        }
+      }
+    },
+    "So you don’t miss a dose" : {
+      "comment" : "Onboarding, page 3: the title. It states the intent and promises no outcome.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Damit du keine Dosis verpasst"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Para que no se te pase una dosis"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "飲み忘れを防ぐために"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "복용을 놓치지 않도록"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "以免漏服"
           }
         }
       }
@@ -11584,7 +11654,7 @@
       }
     },
     "Skip" : {
-      "comment" : "Today: a row action that records the dose as skipped. Onboarding, pages 1 and 2: the button at the top that closes the onboarding.",
+      "comment" : "Today: a row action that records the dose as skipped. Onboarding, pages 1 and 2: the button under the main button, which closes the onboarding.",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -11859,119 +11929,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从明天开始"
-          }
-        }
-      }
-    },
-    "Stays on Your iPhone" : {
-      "comment" : "Onboarding, page 2 (privacy): the title. The iPad form names the iPad.",
-      "localizations" : {
-        "de" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Bleibt auf deinem iPad"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Bleibt auf deinem iPhone"
-                }
-              }
-            }
-          }
-        },
-        "en" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Stays on Your iPad"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Stays on Your iPhone"
-                }
-              }
-            }
-          }
-        },
-        "es" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Se queda en tu iPad"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Se queda en tu iPhone"
-                }
-              }
-            }
-          }
-        },
-        "ja" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPadの中だけに"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPhoneの中だけに"
-                }
-              }
-            }
-          }
-        },
-        "ko" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPad에만 남아요"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "iPhone에만 남아요"
-                }
-              }
-            }
-          }
-        },
-        "zh-Hans" : {
-          "variations" : {
-            "device" : {
-              "ipad" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "只留在你的 iPad 上"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "只留在你的 iPhone 上"
-                }
-              }
-            }
           }
         }
       }
@@ -12676,6 +12633,41 @@
         }
       }
     },
+    "Tap Taken on the reminder" : {
+      "comment" : "Onboarding, page 2: the title. It is the store headline. Taken is the action of a reminder, and it must match that word.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tippe auf Eingenommen in der Erinnerung"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toca Tomado en el recordatorio"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "通知の服用済みをタップ"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "알림에서 복용함을 탭하세요"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在提醒上点已服用就记好"
+          }
+        }
+      }
+    },
     "Tap the name on the label" : {
       "comment" : "Label scan: the prompt on the card before the user taps a text.",
       "localizations" : {
@@ -13143,41 +13135,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "恢复没有完成。请再试一次。"
-          }
-        }
-      }
-    },
-    "There’s no account to make and no ads. What you take is yours alone." : {
-      "comment" : "Onboarding, page 2 (privacy): the line under the title.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kein Konto, keine Werbung. Was du nimmst, bleibt deine Sache."
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay cuenta que crear ni anuncios. Lo que tomas es solo tuyo."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "アカウント登録も広告もありません。何を飲んでいるかは、あなただけのものです。"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "계정을 만들 필요도, 광고도 없어요. 무엇을 복용하는지는 나만 알아요."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不用注册账户，也没有广告。你服用的内容只属于你。"
           }
         }
       }
@@ -13703,6 +13660,41 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "“今天”有变化"
+          }
+        }
+      }
+    },
+    "Today shows each dose and when you took it." : {
+      "comment" : "Onboarding, page 1: the line under the title. Today is the name of the main page.",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Heute“ zeigt jede Dosis und wann du sie genommen hast."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Hoy» muestra cada dosis y cuándo la tomaste."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "「今日」に、服用ごとの記録と時刻が表示されます。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "‘오늘’에서 복용 항목과 복용 시간을 확인할 수 있어요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“今天”页面列出每次服用和服用时间。"
           }
         }
       }

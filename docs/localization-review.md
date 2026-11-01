@@ -232,18 +232,22 @@ The strings below are new or changed in `App/Localizable.xcstrings`. They are dr
 | This change didn’t save. Please try again. | 这次更改没保存成功，请再试一次。 | この変更はうまく保存できませんでした。もう一度お試しください。 | Este cambio no se guardó. Inténtalo de nuevo, por favor. | Diese Änderung wurde nicht gespeichert. Bitte versuche es erneut. | 이 변경 사항이 저장되지 않았어요. 다시 시도해 주세요. |
 | Made with care by the Maru team. | Maru 团队用心制作。 | Maruチームが心を込めてつくりました。 | Hecho con cariño por el equipo de Maru. | Mit Sorgfalt gemacht vom Maru-Team. | Maru 팀이 정성을 담아 만들었어요. |
 
-## Onboarding (D103, D104)
+## Onboarding (D103, D104, D145)
 
-The eight strings below are new in `App/Localizable.xcstrings`: the three onboarding pages and their buttons. D104 removed the two tips and their strings. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm (D101). "Stays on Your iPhone" also has an iPad form.
+The strings below are in `App/Localizable.xcstrings`: the onboarding pages and their buttons. D145 replaced the older pages. "Skip" and "Add Item" reuse their translations. "Did I take it today?", "Tap Taken on the reminder", and "No account. No ads." use the store headlines. No native speaker read them. The reviewer checks the same three things as above, and that the voice is warm and calm. "Taken", "Today", "Remind Again", and "Alarm" must match the words of the app, and "Silent mode" and "Focus" must match the words of the system.
+
+The pictures of the pages are captures with the words of the app in each language, so a change of those words needs new captures (D145).
 
 | English | zh-Hans | ja | es | de | ko |
 |---|---|---|---|---|---|
-| Did I take it? Open Maru and you know. | 我吃了没？打开 Maru 就知道。 | 飲んだっけ？Maruを開けばすぐわかります。 | ¿Me lo tomé? Abre Maru y lo sabrás. | Schon genommen? Öffne Maru, und du weißt es. | 먹었던가? Maru를 열면 바로 알 수 있어요. |
-| Maru reminds you on time, and one tap records each dose. | Maru 准时提醒你，点一下就能记下每次服用。 | Maruが時間どおりにお知らせ。タップひとつで毎回の服用を記録できます。 | Maru te avisa a tiempo, y con un toque registras cada dosis. | Maru erinnert dich pünktlich, und ein Tippen erfasst jede Dosis. | Maru가 제때 알려 드리고, 한 번 탭하면 복용이 기록돼요. |
-| Stays on Your iPhone | 只留在你的 iPhone 上 | iPhoneの中だけに | Se queda en tu iPhone | Bleibt auf deinem iPhone | iPhone에만 남아요 |
-| There’s no account to make and no ads. What you take is yours alone. | 不用注册账户，也没有广告。你服用的内容只属于你。 | アカウント登録も広告もありません。何を飲んでいるかは、あなただけのものです。 | No hay cuenta que crear ni anuncios. Lo que tomas es solo tuyo. | Kein Konto, keine Werbung. Was du nimmst, bleibt deine Sache. | 계정을 만들 필요도, 광고도 없어요. 무엇을 복용하는지는 나만 알아요. |
-| Ready When You Are | 准备好了就开始吧 | 準備ができたら、はじめましょう | Empezamos cuando quieras | Los geht’s, wenn du so weit bist | 준비되면 시작해요 |
-| Add a supplement or medication. You choose the time, and Maru reminds you. | 添加一种保健品或药物。时间由你来定，Maru 按时提醒你。 | サプリメントや薬を追加しましょう。時間はあなたが決めて、Maruがお知らせします。 | Añade un suplemento o un medicamento. Tú eliges la hora, y Maru te avisa. | Füge ein Supplement oder Medikament hinzu. Du wählst die Zeit, und Maru erinnert dich. | 영양제나 의약품을 추가해 보세요. 시간은 직접 정하고, 알림은 Maru가 드려요. |
+| Did I take it today? | 今天吃了吗？ | 今日、飲んだ？ | ¿Lo tomé hoy? | Schon genommen? | 오늘 먹었나? |
+| Today shows each dose and when you took it. | “今天”页面列出每次服用和服用时间。 | 「今日」に、服用ごとの記録と時刻が表示されます。 | «Hoy» muestra cada dosis y cuándo la tomaste. | „Heute“ zeigt jede Dosis und wann du sie genommen hast. | ‘오늘’에서 복용 항목과 복용 시간을 확인할 수 있어요. |
+| Tap Taken on the reminder | 在提醒上点已服用就记好 | 通知の服用済みをタップ | Toca Tomado en el recordatorio | Tippe auf Eingenommen in der Erinnerung | 알림에서 복용함을 탭하세요 |
+| It records the dose without opening Maru. Allow notifications when asked. | 不用打开 Maru 就能记好。询问时，请允许通知。 | Maruを開かずに記録できます。確認が表示されたら、通知を許可してください。 | Registra la dosis sin abrir Maru. Permite las notificaciones cuando se te pregunte. | So erfasst du die Dosis, ohne Maru zu öffnen. Erlaube Mitteilungen, wenn du gefragt wirst. | Maru를 열지 않아도 기록돼요. 물어보면 알림을 허용해 주세요. |
+| So you don’t miss a dose | 以免漏服 | 飲み忘れを防ぐために | Para que no se te pase una dosis | Damit du keine Dosis verpasst | 복용을 놓치지 않도록 |
+| Remind Again follows up if you forget to record. Alarms ring through Silent mode and Focus. | 忘了记录时，“再次提醒”会继续提醒你。闹钟在静音模式和专注模式下也会响。 | 記録を忘れても「再通知」がお知らせします。アラームは消音モードや集中モードでも鳴ります。 | «Recordar de nuevo» vuelve a avisarte si olvidas registrar. Las alarmas suenan con Silencio y Concentración. | „Erneut erinnern“ meldet sich wieder, wenn du nichts erfasst. Wecker klingeln auch im Stummmodus und bei Fokus. | 기록을 잊으면 ‘다시 알림’이 또 알려 드려요. 알람은 무음 모드와 집중 모드에서도 울려요. |
+| Remind Again follows up if you forget to record. | 忘了记录时，“再次提醒”会继续提醒你。 | 記録を忘れても「再通知」がお知らせします。 | «Recordar de nuevo» vuelve a avisarte si olvidas registrar. | „Erneut erinnern“ meldet sich wieder, wenn du nichts erfasst. | 기록을 잊으면 ‘다시 알림’이 또 알려 드려요. |
+| No account. No ads. | 不用注册。没有广告。 | アカウント不要。広告なし。 | Sin cuenta. Sin anuncios. | Kein Konto. Keine Werbung. | 계정 없음. 광고 없음. |
 | Continue | 继续 | 続ける | Continuar | Weiter | 계속 |
 | Later | 以后再说 | あとで | Más tarde | Später | 나중에 |
 

@@ -1,6 +1,6 @@
 # Design
 
-The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, D109, and D112 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
+The visual rules for the app. The decisions behind them are D010–D013, D015, D018, D020, D021, D024, D025, D026, D028, D030, D032, D033, D036, D038, D041, D043, D044, D048, D050, D055, D056, D058, D065, D072, D085, D099, D100, D101, D103, D104, D105, D109, D112, and D145 in `docs/decisions.md`. The study is in `docs/research/2026-10-10-visual-direction.md`.
 
 ## Principles
 
@@ -45,10 +45,13 @@ The visual rules for the app. The decisions behind them are D010–D013, D015, D
 
 ## First run
 
-A short onboarding, once (D103, D104). It asks nothing and requests no permission. The app has no first-use tips.
+A short onboarding, once (D103, D104, D145), with the layout and the type of Apple's onboarding pages. It asks nothing and requests no permission. The app has no first-use tips.
 
-- The onboarding fills the window in place of the tabs, with three pages in a paged `TabView`. It is not a sheet, so Today is not under it, and a rotation or Split View keeps it. Before the first read decides, the window shows the plain system background, not Today. Each page has an SF Symbol of 64 points in the tint, a title in bold title style, and one sentence in the secondary color, in the middle. The symbol hides at the three largest text sizes, and the page scrolls.
-- "Skip" is at the top right of pages 1 and 2. Under the pages: "Continue" on pages 1 and 2, and "Add Item" and "Later" on page 3. Page 3 has no "Skip". "Continue" and "Add Item" are large prominent buttons in the tint. "Later" is a borderless button. The page dots have the system background, so they show in light mode.
+- The onboarding fills the window in place of the tabs, with three pages in a paged `TabView` and no page dots. It is not a sheet, so Today is not under it, and a rotation or Split View keeps it. Before the first read decides, the window shows the plain system background, not Today. The page color is the system grouped background.
+- The pages are the answer, the action, and the safety net. Each page has a static picture at the top and has no motion.
+- A picture is a real capture in `App/Onboarding.xcassets`, for each language and appearance. It has no phone frame and shows only the important part. It fills what the words leave, up to 624 points wide, and a small window clips it and fades its edge. VoiceOver does not read it. It hides at the three largest text sizes, and the page scrolls.
+- Under the picture: a title in Title 2 bold, and a line in Title 2 regular and the secondary color, both at the leading edge, 38 points from the side. The last page also has "No account. No ads." in Caption 2.
+- Under the words: two capsule buttons, 52 points high, 10 points apart, with a 17-point semibold label, and 38 points from the bottom of the screen. The main button is system glass in the tint. The second button is system glass with no tint. On iOS 17 to iOS 25 they are `.borderedProminent` and `.bordered`. A regular window has a width of 326 points for them. "Continue" and "Skip" are on each page before the last. "Add Item" and "Later" are on the last page.
 - "Add Item" shows the tabs and opens the add screen on them.
 
 ## Maru Pro
