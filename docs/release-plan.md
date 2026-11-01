@@ -98,10 +98,12 @@ Open: apply the new categories in App Store Connect before submission. This task
 Two reviews (seven user personas, and App Review, ASO, and localization) changed the store page. The reports are outside the repository.
 
 - The screenshots now use a stronger rose background and bold headlines, with accent words in deep rose.
-- Pro frames show "Maru Pro · In-app purchase required" (guideline 2.3.2). Alarm frames show the system requirement.
+- Pro frames and Watch images show a small PRO mark (guideline 2.3.2). Alarm frames show a small iOS 26+ or iPadOS 26+ mark. No frame has a bottom pill.
+- The first two iPhone frames are one picture: the Today phone continues across the cut, with the real alarm controls in frame 2.
+- The sample family is Me, Mom, Dad, Mochi the cat, and Biscuit the dog. The "Tap Taken" frame shows the real Show Names in Reminders switch.
 - The free alarm moved to place 2 in the iPhone and iPad sets.
 - es-MX has its own alarm frame, because Apple Mexico uses "Enfoque".
-- Not done: Watch frames have no Pro line, because the image has no free space. iPad frame 2 shows dimmed 30-day counts behind the alarm sheet.
+- Not done: iPad frames 1 and 2 stay separate pictures. iPad frame 2 shows a dimmed 30-day counts row with its PRO badge behind the alarm sheet.
 
 ### Regional prices and later languages (D141)
 
