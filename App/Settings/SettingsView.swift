@@ -177,6 +177,8 @@ struct SettingsView: View {
             return model.presentPaywall(reason: .appColor)
         }
         previewColor = nil
+        // The choice of a Pro user replaces the color that waits (D146). A free user keeps it.
+        if model.pro.isPro { UserDefaults.standard.removeObject(forKey: DisplaySetting.waitingColor) }
         guard color != appColor else { return }
         appColor = color
         model.appColorDidChange(color)

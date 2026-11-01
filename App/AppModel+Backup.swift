@@ -162,7 +162,7 @@ extension AppModel {
             }
             forgetReplacedData(generation: result.generation)
             transfer.isRestoring = false
-            BackupSettings.apply(staged.settings)
+            BackupSettings.apply(staged.settings, isPro: pro.isPro)
             // A restored store never shows the onboarding, also when the backup had no item or all items go later (D104).
             endOnboarding()
             analytics.capture(.dataAction(.restore, result.isFlushed ? .done : .notConfirmed))
@@ -238,14 +238,19 @@ private enum BackupSettings {
     static func current() -> [String: String] {
         // The follow-ups and the alarm of each item are in the database (D079).
         [
-            appColor: UserDefaults.standard.string(forKey: DisplaySetting.appColor) ?? ItemColor.pink.rawValue,
+            // The choice of the user, also while it waits for Pro (D146).
+            appColor: UserDefaults.standard.string(forKey: DisplaySetting.waitingColor)
+                ?? UserDefaults.standard.string(forKey: DisplaySetting.appColor) ?? ItemColor.pink.rawValue,
             reminderNames: DefaultsReminderPrivacy().load().rawValue,
         ]
     }
 
-    static func apply(_ settings: [String: String]) {
+    static func apply(_ settings: [String: String], isPro: Bool) {
         if let color = settings[appColor].flatMap(ItemColor.init(rawValue:)) {
-            UserDefaults.standard.set(color.rawValue, forKey: DisplaySetting.appColor)
+            // The backup gives the choice of the user. Without Pro it waits, and the app stays pink (D146).
+            let waits = !isPro && color != .pink
+            UserDefaults.standard.set(waits ? color.rawValue : nil, forKey: DisplaySetting.waitingColor)
+            UserDefaults.standard.set((waits ? .pink : color).rawValue, forKey: DisplaySetting.appColor)
         }
         if let privacy = settings[reminderNames].flatMap(ReminderPrivacy.init(rawValue:)) {
             DefaultsReminderPrivacy().save(privacy)

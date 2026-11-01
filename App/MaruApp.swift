@@ -44,7 +44,7 @@ struct MaruApp: App {
         WatchLink.shared.start()
         // The "Taken" button of the Live Activity runs in this process (D110).
         TakeNextDoseHook.install { await AppModel.shared.takeNextDose($0) }
-        // A loss of Pro ends the Live Activity (D110), and the app icon follows Pro (D142).
+        // A loss of Pro ends the Live Activity (D110), and the app icon and color follow Pro (D142, D146).
         ProStore.shared.entitlementDidLoad = { AppModel.shared.proEntitlementDidLoad() }
         // A change of Pro changes the sound of the reminders (D112).
         ProStore.shared.entitlementDidChange = { AppModel.shared.proDidChange() }
@@ -70,6 +70,7 @@ struct MaruApp: App {
                     AppGroup.appColor = color
                     WidgetCenter.shared.reloadAllTimelines()
                     model.sendWatchDay()
+                    model.redrawNextDose()
                 }
                 // The Watch app is a Pro feature. A purchase, a restore, or the end of a plan reaches the Watch (D111).
                 .onChange(of: model.pro.isPro) { _, _ in model.sendWatchDay() }

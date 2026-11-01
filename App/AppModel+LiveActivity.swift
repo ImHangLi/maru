@@ -29,6 +29,8 @@ enum NextDoseChange: Sendable {
     case notConfirmed
     /// "Taken" had an unknown or older token. The activity asks to open Maru.
     case expire
+    /// Draw the activity again with its state. The app color is not part of the state (D146).
+    case redraw
 }
 
 /// The doses of the activity, on the device (D110). The content of the activity holds only the token, because
@@ -101,7 +103,7 @@ extension AppModel {
     }
 
     /// StoreKit read the entitlement (D107). A loss of Pro, for example after an expiry or a refund, ends the activity.
-    /// The choice stays, so a return of Pro starts the activity again (D142). The app icon follows Pro.
+    /// The choice stays, so a return of Pro starts the activity again (D142). The app icon and the app color follow Pro.
     func proEntitlementDidLoad() {
         noteProUse()
         if pro.isPro {
@@ -110,6 +112,13 @@ extension AppModel {
             enqueueNextDose { .end }
         }
         alignAppIcon()
+        alignAppColor()
+    }
+
+    /// The app color changed. The activity reads it when the system draws it, so it needs a draw (D146).
+    func redrawNextDose() {
+        guard liveActivity.isOn else { return }
+        enqueueNextDose { .redraw }
     }
 
     /// The user can change the system switch in the Settings app while Maru is away.
@@ -318,6 +327,10 @@ enum NextDoseActivity {
             NextDoseSlot.clear()
             for activity in all {
                 await activity.end(nil, dismissalPolicy: .immediate)
+            }
+        case .redraw:
+            for activity in live {
+                await activity.update(activity.content)
             }
         case .notConfirmed:
             for activity in live {

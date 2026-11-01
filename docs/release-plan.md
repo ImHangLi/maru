@@ -112,7 +112,7 @@ Maintainer decision of 2026-10-30:
 - Make no per-country price changes at launch. Keep Apple's default price equalization.
 - Revisit regional prices with real regional data after launch.
 - Add pt-BR and pt-PT first after launch. Then add fr, it, and zh-Hant, from the Doz teardown.
-- Keep native speaker review before release. The current translation review does not replace it.
+- (Replaced by D147: the maintainer waived the paid native review on 2026-11-01.) Keep native speaker review before release. The current translation review does not replace it.
 
 
 ### Territories
@@ -184,7 +184,7 @@ The code has the purchase, the paywall, and the entitlement. The agent does thes
 - [ ] Add both products to the version 1.1.0 submission. The first in-app purchase of an app must go to review with a new version.
 - [ ] Add "Purchase History" to the privacy label (see "Privacy label").
 - [x] Change the store text of 1.1.0: it says what needs a purchase (guideline 2.3.2), and it has no "no paywall" (see "Store text of version 1.1").
-- [ ] Test in TestFlight with a Sandbox account: buy yearly, buy lifetime, restore, an offer code, and Ask to Buy.
+- [x] Test the purchases in TestFlight with a Sandbox account. The maintainer reported a pass and waived the Ask to Buy test on 2026-11-01 (D147).
 - [ ] Do not submit before the Pro features are in the build. A purchase with no content is a rejection risk (guideline 3.1.1).
 
 ### Apple Watch app (D111)
@@ -246,11 +246,11 @@ Checks before the text goes to App Store Connect:
 
 - D141 approves the free alarm claim through Silent mode and Focus, with the iOS 26 limit and the per-item switch.
 - The maintainer tested Silent mode on an iPhone on 2026-10-30. Apple supports Focus in WWDC25 session 230.
-- Open: check Focus and the locked screen on the submitted build. Focus is not yet tested by the maintainer.
+- Open: check the locked screen on the submitted build. The maintainer tested Focus and the Silent alarm (D147).
 - Keep a Pro line only when the feature is in the submitted build.
 - The keyword field holds at most 100 bytes in en, es, and de. The zh-Hans, ja, and ko fields hold at most 100 characters, as in 1.0.0, and they are more than 100 bytes. Apple states the limit as 100 bytes. App Store Connect accepted the 1.0.0 values. Check the CJK fields when you push them.
 - Each subtitle has at most 30 characters, each promotional text at most 170, and each description at most 4000.
-- The translation review of 2026-10-30 covers zh-Hans, ja, ko, es, and de (`docs/localization-review.md`). Native speaker review stays open.
+- The translation review of 2026-10-30 covers zh-Hans, ja, ko, es, and de (`docs/localization-review.md`). The maintainer waived the paid native review (D147).
 - The site FAQ and home page show the 1.1 text, and `RELEASED` in `site/build.py` stays `False` until the release.
 
 ### Submission of version 1.1.0
