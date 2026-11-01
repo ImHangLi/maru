@@ -93,6 +93,16 @@ The launch plan uses primary Medical and secondary Health & Fitness (maintainer 
 This replaces the earlier category plan. The settings table above records the earlier App Store Connect values.
 Open: apply the new categories in App Store Connect before submission. This task changes local files only.
 
+### Store page review of 2026-11-01
+
+Two reviews (seven user personas, and App Review, ASO, and localization) changed the store page. The reports are outside the repository.
+
+- The screenshots now use a stronger rose background and bold headlines, with accent words in deep rose.
+- Pro frames show "Maru Pro · In-app purchase required" (guideline 2.3.2). Alarm frames show the system requirement.
+- The free alarm moved to place 2 in the iPhone and iPad sets.
+- es-MX has its own alarm frame, because Apple Mexico uses "Enfoque".
+- Not done: Watch frames have no Pro line, because the image has no free space. iPad frame 2 shows dimmed 30-day counts behind the alarm sheet.
+
 ### Regional prices and later languages (D141)
 
 Maintainer decision of 2026-10-30:

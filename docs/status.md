@@ -1,11 +1,12 @@
 # Status
 
-Updated: 2026-10-30.
+Updated: 2026-11-01.
 
 Maru was developed in an older private repository. Issue numbers, pull request numbers, and commit IDs in `docs/decisions.md` and `docs/research/` refer to that older history. This repository starts from one clean commit.
 
 ## Current state
 
+- The store page review of 2026-11-01 changes the screenshots, three subtitles, three keyword fields, and the store description (see `docs/release-plan.md`).
 - D141 updates the eight local store drafts and six FAQ answers with free alarms through Silent mode and Focus (iOS 26 or later). Each item has an Alarm switch. The maintainer tested Silent mode on an iPhone on 2026-10-30. Focus uses Apple's WWDC25 statement and still needs a device check. Local metadata validation passes. The site build generates 24 pages. Nothing is deployed or uploaded.
 - The store, paywall, thank-you, and Family translation review covers zh-Hans, ja, ko, de, and es. The correction list is in `docs/localization-review.md`. Native speaker review and rendered layout checks stay open. D141 keeps default price equalization and plans primary Medical with secondary Health & Fitness. The release plan marks store screenshots and category changes open.
 
