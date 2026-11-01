@@ -18,7 +18,7 @@ The plan for TestFlight and the App Store release (D051). Update the status colu
 ## 2. Identity
 
 - Freeze the bundle IDs `com.imhangli.maru` and `com.imhangli.maru.widgets` before the first upload (D005).
-- The Watch app has the bundle ID `com.imhangli.maru.watchkitapp` (D071). Version 1.0 shipped without it (D074). It is a Pro feature, and the app embeds it again (D111), so an archive has the Watch app. Register the App ID on the paid team with the first archive. The steps are in "Apple Watch app (D111)" in section 7.
+- The Watch app has the bundle ID `com.imhangli.maru.watchkitapp` (D071). Version 1.0.0 had no Watch app (D074), and it did not ship. It is a Pro feature, and the app embeds it again (D111), so an archive has the Watch app. Register the App ID on the paid team with the first archive. The steps are in "Apple Watch app (D111)" in section 7.
 - Register the App Group on the paid team. Done: the paid team is the free team, so the group ID stays (D062).
 - Set the version to 1.0.0. Done (D062).
 - Add the time-sensitive notification entitlement (D034). Done in code (D062). The device build waits for the Apple ID in Xcode.
@@ -71,11 +71,11 @@ Set on 2026-10-13 (D075), with the `asc` CLI and, for the parts with no public A
 
 | Setting | Value | Reason |
 |---|---|---|
-| Version | 1.0.0, manual release after approval | The record had "1.0", and the project has 1.0.0. A manual release keeps the release a maintainer decision |
+| Version | 1.1.0, manual release after approval | Version 1.0.0 with build 4 does not ship. A manual release keeps the release a maintainer decision |
 | Store text | The files in `metadata/`, for en-US, en-GB, zh-Hans, ja, ko, de-DE, es-ES, and es-MX | `asc metadata push`. A second dry run shows no difference. The folder `metadata/version/1.0.0/` is deleted, because its text has open-source claims (D096). App Store Connect keeps the 1.0.0 text |
 | Support, privacy, and marketing URLs | `https://maru.day/support/`, `https://maru.day/privacy/`, and `https://maru.day/`, with the folder `cn`, `jp`, `kr`, `de`, or `es` for the other languages | The paths of the live site. Each page returns 200 |
-| Copyright | 2026 Hang Li | The name of the account holder |
-| Primary category | Health & Fitness | See "Category" below |
+| Copyright | 2026 the Maru team | The store shows the seller name of the account in a separate field |
+| Primary category | Medical, with Health & Fitness as the secondary category | See "Category" below |
 | Secondary category | Medical | The maintainer decided it. Search reads both categories |
 | Price | Free, base territory United States | |
 | Availability | 174 territories, and new territories automatically. Not mainland China | The maintainer decided: no ICP filing for the first release |
@@ -122,7 +122,7 @@ Maintainer decision of 2026-10-30:
 - EU: the trader status. Maru is declared as a non-trader, so the page shows no address or phone number.
 - EU, EEA, UK, and US: the medical device declaration, see below.
 - Age rating: no territory blocks the rating.
-- In-app purchases: Australia can refuse them while the maintainer has no GST registration (D064). The Paid Apps agreement decides it. Version 1.1.0 has no in-app purchase (D099).
+- In-app purchases: Australia can refuse them while the maintainer has no GST registration (D064). The Paid Apps agreement decides it. Version 1.1.0 has the two Maru Pro products.
 - Not checked beyond Apple's own pages: local consumer or health law of each territory.
 
 ### Age rating
@@ -161,9 +161,9 @@ The question is: "Is your app a regulated medical device in any country or regio
 | Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, `ios_major`, and `device` |
 | Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) and `app_language` (D077) |
 
-| Purchases: Purchase History | Analytics | Yes | No | `purchase_result` (D107) and `pro_plan` in `daily_usage_summary` (D127). Not published yet |
+| Purchases: Purchase History | Analytics | Yes | No | `purchase_result` (D107) and `pro_plan` in `daily_usage_summary` (D127). Publish this row before the submission of 1.1.0 |
 
-The published label matches `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy` of 1.1. The code of 1.2 sends `purchase_result` (D107), and `App/PrivacyInfo.xcprivacy` lists "Purchase History". Add "Purchase History" to the label in App Store Connect before the release of 1.2.
+The label must match `PostHogClient`, `PRIVACY.md`, and `App/PrivacyInfo.xcprivacy`. Build 18 sends `purchase_result` (D107). Add "Purchase History" to the published label before the submission of 1.1.0.
 
 ### Tips
 
@@ -171,7 +171,7 @@ The tips were removed (D099). Maru Pro comes in version 1.1.0, the first public 
 
 ### Maru Pro (D107)
 
-The code has the purchase, the paywall, and the entitlement. The maintainer does these steps in App Store Connect. The agent does not touch App Store Connect.
+The code has the purchase, the paywall, and the entitlement. The agent does these steps in App Store Connect after maintainer approval.
 
 - [ ] Paid Apps agreement: the state is "Active", with the bank and the tax forms. No in-app purchase can be sold before that.
 - [ ] Remove the three tip products of D053, or leave them "Removed from Sale" (D099).
@@ -196,7 +196,7 @@ The app embeds the Watch app, and the Watch app is a Pro feature. The maintainer
 - [ ] Add Apple Watch screenshots to the version in App Store Connect. A version with a Watch app needs them.
 - [ ] Review notes: the Watch app is part of Maru Pro. A free user sees a screen that names Maru Pro and has no purchase. Give App Review the steps to buy Pro with a sandbox account and to see the list on the Watch.
 - [ ] The store text of the release: name the Apple Watch app as a Pro feature (guideline 2.3.2).
-- [ ] On the day of the release: build the site and deploy it. `DEVICES` in `site/build.py`, the FAQ answer about Apple Watch, and `site/llms.txt` already name the Watch app. The privacy pages already have the section "Apple Watch".
+- [ ] Before the submission: build the site with `RELEASED = False` and deploy it, because App Review reads the FAQ and the privacy pages. On the day of the release: set `RELEASED = True`, build, and deploy. `DEVICES` in `site/build.py`, the FAQ answer about Apple Watch, and `site/llms.txt` already name the Watch app. The privacy pages already have the section "Apple Watch".
 
 ### Notes for App Review
 
@@ -253,10 +253,29 @@ Checks before the text goes to App Store Connect:
 - The translation review of 2026-10-30 covers zh-Hans, ja, ko, es, and de (`docs/localization-review.md`). Native speaker review stays open.
 - The site FAQ and home page show the 1.1 text, and `RELEASED` in `site/build.py` stays `False` until the release.
 
+### Submission of version 1.1.0
+
+The final check of 2026-11-01 gives these steps. Do them in this order. The rejection of 1.0.0 is final, so do steps 1 to 4 first.
+
+1. Replace "Siri" in the 12 product descriptions of Maru Pro.
+2. Replace the review image of both products with the current paywall image.
+3. Build the site with `RELEASED = False` and deploy it.
+4. Record the Focus check, the sandbox purchases, the iPad check, and the statistics decision.
+5. Publish the Purchases label.
+6. Reject version 1.0.0 on the website. The maintainer signs in.
+7. Set version 1.1.0, attach build 18, and confirm the manual release.
+8. Set the categories and the copyright. Push the text of `metadata/`. If App Store Connect refuses `whatsNew` on a first version, remove the field for this push only.
+9. Upload the screenshots: `en` to en-US and en-GB, `de` to de-DE, `es` to es-ES, and `es-MX` to es-MX. The Watch images of es-MX come from `es`.
+10. Paste the review notes. Replace the old notes completely.
+11. Add both products to the version on the website.
+12. Run `asc validate --strict`, and read back each value. Submit only after the maintainer says "submit".
+13. After approval, the maintainer releases the version. Set `RELEASED = True`, build, deploy, and check the addresses in `site/README.md`.
+14. Schedule the lifetime price of USD 29.99 for release day plus 30 days. Change the FAQ on that date.
+
 ### What is open before the submission
 
 `asc validate --strict` on version 1.0.0 reports no error. Its three warnings are the tips that are not in the submission.
 
 - The screenshots are uploaded for the eight store languages: six for the 6.9-inch iPhone and six for the 13-inch iPad in each.
-- The Paid Apps agreement has the state "Pending User Info": a tax form is missing. The Free Apps agreement is active. The app ships without the tips.
-- Done: the maintainer submitted version 1.0.0 with build 4 on 2026-10-14. Its state is "Waiting for Review", and the release is manual.
+- The Paid Apps agreement is active by a session note of 2026-10-30. Confirm it on the website before the submission.
+- Version 1.0.0 with build 4 is approved, with the state "Pending Developer Release". It does not ship. Build 18 (code commit `c55005a`) is the submission build of version 1.1.0. No app code changed after that commit.
