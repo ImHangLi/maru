@@ -16082,6 +16082,41 @@
         }
       }
     },
+    "Everyone here keeps their reminders and records. A new person or pet needs Maru Pro." : {
+      "comment" : "Family page: a second footer line for a free user with members. Existing members stay after Maru Pro ends (D122, D142).",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle hier behalten ihre Erinnerungen und Einträge. Für eine neue Person oder ein neues Tier brauchst du Maru Pro."
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Todos los que están aquí conservan sus recordatorios y registros. Para añadir otra persona o mascota necesitas Maru Pro."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ここにいる全員のリマインダーと記録はそのまま残ります。新しい人やペットの追加には Maru Pro が必要です。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "여기 있는 모두의 미리 알림과 기록은 그대로 유지돼요. 새로운 사람이나 반려동물을 추가하려면 Maru Pro가 필요해요."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "这里的每一位都会保留提醒和记录。添加新的家人或宠物需要 Maru Pro。"
+          }
+        }
+      }
+    },
     "Each one has their own items, reminders, and records. The records stay on this iPhone." : {
       "comment" : "Family page: the footer under the members.",
       "localizations" : {

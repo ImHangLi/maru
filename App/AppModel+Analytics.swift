@@ -88,7 +88,7 @@ extension AppModel {
     func noteProUse() {
         analytics.noteProUse(AnalyticsEvent.ProUse(
             plan: pro.plan?.analytics,
-            liveActivity: liveActivity.isOn,
+            liveActivity: showsNextDose,
             customIcon: AppIcon.current != .pink,
             customSound: reminderSound != nil
         ))

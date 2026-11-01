@@ -94,7 +94,7 @@ struct SettingsView: View {
             if UIDevice.current.userInterfaceIdiom == .phone {
                 NavigationLink(value: SettingsPage.lockScreen) {
                     LabeledContent {
-                        Text(model.liveActivity.isOn ? LocalizedStringKey("On") : "Off")
+                        Text(model.showsNextDose ? LocalizedStringKey("On") : "Off")
                     } label: {
                         // The whole page is Maru Pro, so the row has the badge (D134).
                         SettingsRowLabel("Lock Screen", systemImage: "lock", isPro: true)
