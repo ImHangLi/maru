@@ -2981,7 +2981,7 @@ Pages:
 
 - A large picture of the product at the top, a large bold title, one line in the secondary color, the page dots, a large capsule button, and a borderless button. The dots and the two buttons stay in place on every page.
 - Reminder page: a reminder on the Lock Screen, its actions, and a tap on "Taken". Title "Reminders, Right on Time".
-- Today page: the Today page of the app, and one more dose recorded. Title "Did I take it? Open Maru and you know.", the promise of the app.
+- Today page: the Today page of the app, and one more dose recorded. Title "Did I take it today?", the promise of the app.
 - Alarm page: the alarm of an item, with "Stop" and "Taken". Title "An Alarm, If You Want One". The line uses the claim of D141. It promises no outcome.
 - The privacy page and the page "Ready When You Are" are removed, with their strings. The store page and `PRIVACY.md` keep the privacy claim.
 
