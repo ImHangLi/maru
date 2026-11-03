@@ -1976,7 +1976,7 @@ Maintainer decision.
 
 Not verified: no build of the app on this Mac, and nobody saw the window fix on a display. CI builds the app.
 
-## D106 · 2026-10-28 · Maru runs on iPhone Duo with its current layout
+## D106 · 2026-10-28 · Maru runs on iPhone Duo with its current layout (device check and screenshot plan on 2026-11-03)
 
 Maintainer request: support iPhone Duo simply, with no special layout. Agent decision on the details.
 
@@ -2002,7 +2002,7 @@ What Maru does:
 - CI builds with Xcode 27.1 and the iOS 27.1 SDK (runner image `xcode-27-arm64`). The Mac of the maintainer has Xcode 27.1, so the next archive is optimized. Version 1.0.0 build 4 is older, and nobody checked its SDK.
 - `project.yml` and `docs/design.md` say that the inner display ignores the portrait lock.
 
-Maintainer decision still open: iPhone Duo screenshots for the store. They give the badge now, and they are required from April 2027.
+Maintainer decision on 2026-11-03: add iPhone Duo screenshots in the first update after the launch. They give the badge, and they are required from April 2027. The maintainer checked build 19 on a real iPhone Duo on 2026-11-03.
 
 Sources:
 
