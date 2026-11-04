@@ -2872,7 +2872,7 @@ Tests (D016): none new. No package test covered only Siri.
 
 The new strings are drafts in five languages (`docs/localization-review.md`).
 
-## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning (the Focus check is replaced by D143, native review waived by D147)
+## D141 · 2026-10-30 · Free alarm copy, translation review, and launch planning (the Focus check is replaced by D143, native review waived by D147, free headline removed by D148)
 
 Maintainer decisions of 2026-10-30:
 
@@ -3080,3 +3080,23 @@ Maintainer decisions of 2026-11-01:
 - The paid native review is waived. This replaces the rule in the D141 section of `docs/release-plan.md` that keeps a native speaker review before release.
 - The Ask to Buy test is waived.
 - Family stays as D122 and T59 define it.
+
+## D148 · 2026-11-04 · App Review rejected version 1.1.0 for a price word in the screenshots (guideline 2.3.7)
+
+App Review rejected version 1.1.0 (build 19) on 2026-11-04. The submission was on 2026-11-01. The review devices were iPhone 17 Pro Max and iPad Air 11-inch (M3).
+
+Reason, from the message of App Review:
+
+- Guideline 2.3.7, Accurate Metadata. "The app screenshots include references to the price of the app or the service it provides."
+- "References to free or discounted services are considered a price reference and are not appropriate for app metadata."
+- The attached image is the iPad alarm frame, with the headline "Free alarms ring in Silent mode and Focus".
+
+The two products of Maru Pro were not rejected. They wait for the next version review.
+
+Fix:
+
+- The alarm headline in all six languages has no price word: "Alarms ring in Silent mode and Focus". The iPhone and iPad alarm frames are rendered again for the eight store localizations.
+- The promotional text of the eight localizations has no price word.
+- The description keeps its free wording, because App Review names the description as the place for price information.
+
+Rule for later store work: screenshots, app previews, the name, the subtitle, the keywords, and the promotional text must not say "free", a discount, or a price, in any language. This replaces the free alarm headline of D141.
