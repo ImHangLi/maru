@@ -244,7 +244,7 @@ Changes of 2026-10-30. Version 1.1.0 is the first public release, and it is a fr
 
 Checks before the text goes to App Store Connect:
 
-- D141 approves the free alarm claim through Silent mode and Focus, with the iOS 26 limit and the per-item switch.
+- D141 approves the alarm claim through Silent mode and Focus, with the iOS 26 limit and the per-item switch. D148 removes the word "free" from the screenshots and the promotional text after the rejection of 2026-11-04.
 - The maintainer tested Silent mode on an iPhone on 2026-10-30. Apple supports Focus in WWDC25 session 230.
 - Open: check the locked screen on the submitted build. The maintainer tested Focus and the Silent alarm (D147).
 - Keep a Pro line only when the feature is in the submitted build.
