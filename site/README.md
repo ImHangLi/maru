@@ -8,12 +8,13 @@ The landing site of Maru at `https://maru.day`. Static files, no framework, no t
 python3 site/build.py
 ```
 
-The command needs Python 3 and nothing else. It writes the four pages of each language and `sitemap.xml`. Commit the generated pages with the source.
+The command needs Python 3 and nothing else. It writes the four pages of each language, the English comparison and topic pages, and `sitemap.xml`. Commit the generated pages with the source.
 
 | Source | What it holds |
 |---|---|
 | `build.py` | The layout of every page, and the `STORE_URL` constant |
 | `src/strings/<lang>.json` | The text of one language |
+| `src/guides/en.json` | The text of the English comparison and topic pages |
 | `shots/` | The screenshots of the app in each language |
 | `mock.py` | The widget and the reminder of the home page, drawn in HTML |
 | `src/mock/<lang>.json` | The app text of the widget and the reminder in one language |
@@ -21,7 +22,22 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 | `style.css`, `site.js` | The style, the scroll entrances, the screens of the hero phone, and the language hint |
 | `social.py` | The social preview cards: `og.png` and one card for each other language. Also the pictures of the repository README |
 
-Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
+Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/compare.html`, `/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
+
+## Comparison and topic pages
+
+The English site also has pages for search: `/compare/` lists them, and the English footer links to it. The research and the sources are in `~/Documents/Research/maru/seo-pages-research.md` (D149).
+
+| Kind | Pages |
+|---|---|
+| Comparison | `/compare/medisafe/`, `/compare/mytherapy/`, `/compare/apple-health/`, `/compare/round-health/` |
+| Topic | `/pill-reminder-app/`, `/vitamin-reminder-app/`, `/medication-alarm/`, `/apple-watch-pill-reminder/`, `/pill-reminder-no-account/` |
+
+- The pages are English only. They have no `hreflang` alternates, and the language menu goes to the home page of each language.
+- A fact about another app needs a source on that app's own store page, help pages, or support pages. Put the source in `sources`, and change `checked` to the date that you read it. If you cannot verify a fact, do not write it.
+- Each comparison shows the App Store privacy label of Maru next to the label of the other app.
+- Titles and headings have no "free", no price, and no discount. The body can say "free" when it is true.
+- `sitemap.xml` and `llms.txt` list the pages.
 
 ## Languages
 

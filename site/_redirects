@@ -1,4 +1,4 @@
-/compare.html /faq/ 301
+/compare.html /compare/ 301
 /us / 301
 /us/* /:splat 301
 /faq.html /faq/ 301

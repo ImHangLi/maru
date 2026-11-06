@@ -574,6 +574,28 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
 .card p:last-child, .card ul, .card li:last-child { margin-bottom: 0; }
 .summary { margin-bottom: var(--space-5); }
 
+/* Comparison and topic pages (English only) */
+.compare { width: 100%; border-collapse: collapse; margin: var(--space-5) 0 var(--space-6); font-size: var(--fs-sm); }
+.compare th, .compare td { text-align: left; vertical-align: top; padding: var(--space-3) var(--space-3) var(--space-3) 0; border-bottom: var(--line) solid var(--ring-color); }
+.compare thead th { font-size: var(--fs-md); }
+.compare tbody th { width: 28%; font-weight: var(--fw-semibold); }
+.compare td { color: var(--text-2); }
+.prose .guide-list { list-style: none; padding: 0; margin: 0; }
+.prose .guide-list li { margin: 0; padding: var(--space-4) 0; border-bottom: var(--line) solid var(--ring-color); }
+.guide-list a { font-size: var(--fs-lg); font-weight: var(--fw-semibold); letter-spacing: var(--track-body); }
+.guide-list p { margin: var(--space-1) 0 0; color: var(--text-2); }
+.sources ul { font-size: var(--fs-sm); }
+.guide-cta { justify-content: flex-start; margin: var(--space-7) 0 var(--space-4); }
+/* A phone has no room for three columns. Each row is a block, and each cell names its app. */
+@media (max-width: 599px) {
+  .compare thead { display: none; }
+  .compare tr, .compare th, .compare td { display: block; }
+  .compare tr { padding: var(--space-4) 0; border-bottom: var(--line) solid var(--ring-color); }
+  .compare th, .compare td { border: 0; padding: 0 0 var(--space-2); }
+  .compare tbody th { width: auto; font-size: var(--fs-md); }
+  .compare td::before { content: attr(data-label); display: block; color: var(--text); font-size: var(--fs-xs); font-weight: var(--fw-semibold); }
+}
+
 @media (min-width: 720px) {
   :root { --gutter: 32px; --device-w: 17.5rem; }
   .feature { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; padding: var(--space-8) var(--space-7); }

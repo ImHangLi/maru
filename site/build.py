@@ -69,6 +69,9 @@ ICONS = {
 
 SITE = Path(__file__).resolve().parent
 STRINGS = {code: json.loads((SITE / "src/strings" / f"{code}.json").read_text("utf-8")) for code, _ in LANGS}
+# The comparison and topic pages. They are English only, so they have no hreflang alternates.
+GUIDES = json.loads((SITE / "src/guides/en.json").read_text("utf-8"))
+GUIDE_PAGES = [GUIDES["hub"]["path"] + "index.html"] + [g["path"] + "index.html" for g in GUIDES["pages"]]
 FOLDER = dict(LANGS)
 e = html.escape
 
@@ -261,28 +264,40 @@ HEADERS = """/*
 """
 
 
-def layout(code, page, title, desc, main, head=""):
+def layout(code, page, title, desc, main, head="", langs=None):
+    """langs: the languages that have this page. A link to another language goes to its home page."""
     s = STRINGS[code]
     f = s["footer"]
     here = ORIGIN + url(code, page)
-    alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
+    langs = langs or [c for c, _ in LANGS]
+
+    def other(c):
+        return page if c in langs else "index.html"
+
+    alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c in langs)
+    if len(langs) > 1:
+        alternates += f'<link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}">\n'
+    else:
+        alternates = ""
     banner = (f'<meta name="apple-itunes-app" content="app-id={re.search(r"id(\d+)", STORE_URL).group(1)}">\n'
               if RELEASED else "")
     # Google Search Console reads this tag on the home page to confirm the owner of the site. Keep it.
     if page == "index.html" and code == LANGS[0][0]:
         banner += '<meta name="google-site-verification" content="RS5MimbYtPjYD6RQrpYsM9gtvHPVW_mOC43pGs5eqRc">\n'
     cta = f'<a class="bar-cta" href="{e(STORE_URL)}">{e(s["store"]["download"])}</a>\n' if RELEASED else ""
-    locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c, _ in LANGS if c != code)
+    locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c in langs if c != code)
     # The social preview card of the language (social.py), and its words for a screen reader.
     card = f'{ORIGIN}/og{"-" + FOLDER[code] if FOLDER[code] else ""}.png'
     card_alt = e(f'Maru. {" ".join(part.strip() for part in s["home"]["h1"].split("|"))} {s["shots"]["today"]["alt"]}')
     current = ' aria-current="page"'
+    # Only the English footer links to the comparison pages, because they are English only.
+    compare = f'<li><a href="{url(code, GUIDE_PAGES[0])}">{e(f["compare"])}</a></li>' if "compare" in f else ""
     menu = "".join(
-        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
+        f'<li><a href="{url(c, other(c))}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
         f'{icon("check") if c == code else ""}</a></li>'
         for c, _ in LANGS)
     languages = "".join(
-        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
+        f'<li><a href="{url(c, other(c))}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
         f'data-close="{e(STRINGS[c]["close"])}"{current if c == code else ""}>{e(STRINGS[c]["name"])}</a></li>'
         for c, _ in LANGS)
     return f"""<!DOCTYPE html>
@@ -295,8 +310,7 @@ def layout(code, page, title, desc, main, head=""):
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#FFFFFF">
 {banner}<link rel="canonical" href="{here}">
-{alternates}<link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}">
-<link rel="icon" href="/icon.png" type="image/png">
+{alternates}<link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/icon.png">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Maru">
@@ -326,7 +340,7 @@ def layout(code, page, title, desc, main, head=""):
 {main}
 <footer class="site-footer">
 <div class="footer-inner">
-<ul class="footer-links"><li><a href="{url(code, "faq/index.html")}">{e(f["faq"])}</a></li><li><a href="{url(code, "support/index.html")}">{e(f["support"])}</a></li><li><a href="{url(code, "privacy/index.html")}">{e(f["privacy"])}</a></li></ul>
+<ul class="footer-links"><li><a href="{url(code, "faq/index.html")}">{e(f["faq"])}</a></li><li><a href="{url(code, "support/index.html")}">{e(f["support"])}</a></li><li><a href="{url(code, "privacy/index.html")}">{e(f["privacy"])}</a></li>{compare}</ul>
 <nav class="langs" aria-label="{e(f["language"])}"><ul>{languages}</ul></nav>
 <p>{e(f["advice"])}</p>
 </div>
@@ -464,6 +478,78 @@ def privacy(code):
     return layout(code, "privacy/index.html", s["title"], s["desc"], main)
 
 
+def guide_title(path):
+    return next(g["h1"] for g in GUIDES["pages"] if g["path"] == path)
+
+
+def guide_end(related=()):
+    """The end of a comparison or topic page: the related pages, the store link, and the note about advice."""
+    out = ""
+    if related:
+        items = "".join(f'<li><a href="/{r}">{e(guide_title(r))}</a></li>' for r in related)
+        out += f'<h2>{e(GUIDES["related_title"])}</h2>\n<ul>{items}</ul>\n'
+    store = f'<a href="{e(STORE_URL)}">{e(STRINGS["en"]["store"]["badge_alt"])}</a>' if RELEASED else ""
+    out += f'<p class="closer-links guide-cta">{store}<a href="/faq/">{e(STRINGS["en"]["faq"]["h1"])}</a></p>\n'
+    return out + f'<p class="note">{e(GUIDES["advice"])}</p>\n'
+
+
+def compare_table(g):
+    """Maru and one other app, one row for each fact. On a phone each row is a block with its own labels."""
+    t = g["table"]
+    maru, other = GUIDES["maru_label"], t["other"]
+    rows = "".join(f'<tr><th scope="row">{e(label)}</th><td data-label="{e(maru)}">{e(a)}</td>'
+                   f'<td data-label="{e(other)}">{e(b)}</td></tr>' for label, a, b in t["rows"])
+    return (f'<table class="compare"><caption class="sr">{e(g["h1"])}</caption><thead><tr><td></td>'
+            f'<th scope="col">{e(maru)}</th><th scope="col">{e(other)}</th></tr></thead><tbody>{rows}</tbody></table>\n')
+
+
+def guide(g):
+    """A comparison or topic page. Paragraphs and list items in src/guides/en.json may hold links, so they are not escaped."""
+    body = ""
+    checked = GUIDES["checked_note"].format(date=GUIDES["checked"])
+    if g["group"] == "compare":
+        body += f'<p class="note">{e(GUIDES["checked_short"].format(date=GUIDES["checked"]))}</p>\n'
+    if "table" in g:
+        body += compare_table(g)
+    for sec in g["sections"]:
+        body += f'<h2>{e(sec["h2"])}</h2>\n'
+        if "ul" in sec:
+            body += "<ul>" + "".join(f"<li>{item}</li>" for item in sec["ul"]) + "</ul>\n"
+        body += "".join(f"<p>{para}</p>\n" for para in sec.get("p", []))
+    if "sources" in g:
+        items = "".join(f'<li><a href="{e(link)}">{e(label)}</a></li>' for label, link in g["sources"])
+        body += (f'<section class="sources" aria-labelledby="sources-title"><h2 id="sources-title">'
+                 f'{e(GUIDES["sources_title"])}</h2><p class="note">{e(checked)}</p><ul>{items}</ul></section>\n')
+    body += guide_end(g.get("related", ()))
+    main = f"""<main id="main" class="prose guide">
+<h1 class="load">{e(g["h1"])}</h1>
+<div class="load d1">
+<p class="lede">{e(g["lede"])}</p>
+{body}</div>
+</main>"""
+    return layout("en", g["path"] + "index.html", g["title"], g["desc"], main, langs=["en"])
+
+
+def guide_hub():
+    h = GUIDES["hub"]
+
+    def group(name):
+        return "".join(f'<li><a href="/{g["path"]}">{e(g["h1"])}</a><p>{e(g["card"])}</p></li>'
+                       for g in GUIDES["pages"] if g["group"] == name)
+
+    main = f"""<main id="main" class="prose guide">
+<h1 class="load">{e(h["h1"])}</h1>
+<div class="load d1">
+<p class="lede">{e(h["lede"])}</p>
+<h2>{e(h["compare_title"])}</h2>
+<ul class="guide-list">{group("compare")}</ul>
+<h2>{e(h["topics_title"])}</h2>
+<ul class="guide-list">{group("topic")}</ul>
+{guide_end()}</div>
+</main>"""
+    return layout("en", GUIDE_PAGES[0], h["title"], h["desc"], main, langs=["en"])
+
+
 def sitemap():
     rows = []
     for page in PAGES:
@@ -471,6 +557,7 @@ def sitemap():
             f'<xhtml:link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}"/>' for c, _ in LANGS)
         alternates += f'<xhtml:link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}"/>'
         rows += [f"  <url><loc>{ORIGIN}{url(code, page)}</loc>{alternates}</url>" for code, _ in LANGS]
+    rows += [f"  <url><loc>{ORIGIN}{url('en', page)}</loc></url>" for page in GUIDE_PAGES]
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
             'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + "\n".join(rows) + "\n</urlset>\n")
 
@@ -491,7 +578,7 @@ def not_found():
 
 
 def redirects():
-    rows = ["/compare.html /faq/ 301", "/us / 301", "/us/* /:splat 301"]
+    rows = [f"/compare.html {url('en', GUIDE_PAGES[0])} 301", "/us / 301", "/us/* /:splat 301"]
     for code, folder in LANGS:
         prefix = f"/{folder}" if folder else ""
         rows += [f"{prefix}/{old} {url(code, new)} 301" for old, new in OLD_PAGES.items()]
@@ -503,6 +590,7 @@ def redirects():
 def llms():
     state = "It is in the App Store." if RELEASED else "It is not in the App Store yet."
     devices = ", ".join(DEVICE_NAMES[d][1] for d in DEVICES)
+    guides = "\n".join(f"- [{g['h1']}]({ORIGIN}/{g['path']}): {g['card']}" for g in GUIDES["pages"])
     languages = "\n".join(f"- {name}: {ORIGIN}{url(code, 'index.html')}" for code, name in [
         ("en", "English"), ("zh-Hans", "Simplified Chinese"), ("ja", "Japanese"), ("es", "Spanish"), ("de", "German"), ("ko", "Korean")])
     return f"""# Maru
@@ -530,6 +618,10 @@ Pages:
 - [FAQ]({ORIGIN}/faq/): short answers.
 - [Privacy]({ORIGIN}/privacy/): what the app stores and what it does not do.
 - [Support]({ORIGIN}/support/): hello@maru.day and the feedback form.
+- [Compare]({ORIGIN}/{GUIDES["hub"]["path"]}): Maru and other pill reminder apps, in English.
+
+Comparisons and guides (English):
+{guides}
 
 Languages:
 {languages}
@@ -545,12 +637,16 @@ def main():
             file = SITE / folder / page
             file.parent.mkdir(parents=True, exist_ok=True)
             file.write_text(render[page](code), "utf-8")
+    for page, render_guide in zip(GUIDE_PAGES, [guide_hub] + [lambda g=g: guide(g) for g in GUIDES["pages"]]):
+        file = SITE / page
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(render_guide(), "utf-8")
     (SITE / "404.html").write_text(not_found(), "utf-8")
     (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
     (SITE / "_redirects").write_text(redirects(), "utf-8")
     (SITE / "_headers").write_text(HEADERS, "utf-8")
     (SITE / "llms.txt").write_text(llms(), "utf-8")
-    print(f"built {len(LANGS) * len(PAGES)} pages")
+    print(f"built {len(LANGS) * len(PAGES) + len(GUIDE_PAGES)} pages")
 
 
 if __name__ == "__main__":

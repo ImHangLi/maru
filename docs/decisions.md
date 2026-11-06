@@ -3100,3 +3100,15 @@ Fix:
 - The description keeps its free wording, because App Review names the description as the place for price information.
 
 Rule for later store work: screenshots, app previews, the name, the subtitle, the keywords, and the promotional text must not say "free", a discount, or a price, in any language. This replaces the free alarm headline of D141.
+
+## D149 · 2026-11-06 · English comparison and topic pages on the site
+
+Maintainer request on 2026-11-06: add pages for search to maru.day. Comparisons with the most searched apps of the category, and pages for search phrases with evidence of volume.
+
+- Comparisons: Medisafe, MyTherapy, Apple Health Medications, and a Round Health alternative page. Topics: "pill reminder app", "vitamin reminder app", "medication alarm", "Apple Watch pill reminder", and "pill reminder with no account and no ads". A hub at `/compare/` lists them.
+- No source gave a search volume number. The choice follows Google autocomplete, App Store suggestions, the US rating counts of the iTunes Search API, and existing pages and forum threads. The notes and every source are in `~/Documents/Research/maru/seo-pages-research.md`.
+- Each fact about another app has a source on that app's own pages, with the date that it was read. A fact with no such source is not on a page. Each comparison also shows the App Store privacy label of Maru, so the comparison is fair.
+- The pages are English only, so they have no `hreflang` alternates. `/compare.html` now redirects to `/compare/`.
+- Titles and headings follow the D148 rule: no "free", no price, and no discount. No page names a price of Maru, so the price change of 2026-12-06 does not change them.
+
+Not verified: search demand in numbers, and the ranking of the pages. Nothing is deployed.
