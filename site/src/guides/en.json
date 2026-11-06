@@ -3,24 +3,38 @@
   "checked_note": "We read each fact about another app on {date}, on that app's own store page, help pages, or support pages. Apps change, so check the sources below before you decide.",
   "checked_short": "The Maru team makes Maru. Facts about other apps were checked on {date}. The sources are at the end of this page.",
   "sources_title": "Sources",
-  "related_title": "Related pages",
+  "related_title": "More from the blog",
   "advice": "Maru gives no medical advice and does not choose a dose or a time for you. Ask your doctor or pharmacist about your medicine.",
   "maru_label": "Maru",
-  "hub": {
-    "path": "compare/",
-    "title": "Maru and Other Pill Reminder Apps",
-    "desc": "Compare Maru with Medisafe, MyTherapy, and Apple Health Medications, and read what Maru does as a pill, vitamin, and medication reminder.",
-    "h1": "Maru and other pill reminder apps",
+  "kinds": {
+    "compare": "Comparison",
+    "guide": "Guide"
+  },
+  "byline": "By the Maru team",
+  "published_label": "Published",
+  "read": "{n} min read",
+  "all_posts": "All posts",
+  "crumb_home": "Maru",
+  "crumb_blog": "Blog",
+  "cta_title": "Did I take it today?",
+  "cta_text": "Maru reminds you at the times you choose and records a dose with one tap. No account and no ads.",
+  "blog": {
+    "path": "blog/",
+    "old": "compare/",
+    "title": "Maru Blog: Pill Reminder App Comparisons and Guides",
+    "desc": "Fair comparisons of Maru with Medisafe, MyTherapy, and Apple Health Medications, and short guides to pill, vitamin, and medication reminders on iPhone, by the Maru team.",
+    "h1": "The Maru blog",
     "lede": "Fair comparisons with facts from each app's own pages, and short guides to what Maru does.",
-    "compare_title": "Compare",
-    "topics_title": "What Maru does"
+    "about": "The Maru team writes this blog. We make Maru, so we say where another app can be the better choice, and each comparison lists its sources."
   },
   "pages": [
     {
-      "path": "compare/medisafe/",
+      "path": "blog/maru-vs-medisafe/",
+      "old": "compare/medisafe/",
       "group": "compare",
-      "title": "Maru vs Medisafe: Pill Reminder Apps Compared",
-      "desc": "Maru and Medisafe side by side: the price model, the account, the devices, the App Store privacy labels, and the features. Facts from each app's own pages.",
+      "published": "2026-11-06",
+      "title": "Medisafe Alternative: Maru vs Medisafe Compared",
+      "desc": "Looking for a Medisafe alternative? Maru and Medisafe side by side: the price model, the account, the devices, the App Store privacy labels, and the features, with sources.",
       "h1": "Maru vs Medisafe",
       "card": "Prescriptions and refills, or a small daily reminder with no account.",
       "lede": "Both apps remind you to take your medicine and keep a record. Medisafe does more for prescriptions. Maru does less, needs no account, and keeps your records on your iPhone or iPad.",
@@ -72,13 +86,15 @@
         ["Medisafe Help Center: How do I create an account?", "https://help-center.medisafe.com/en/articles/8095166-how-do-i-create-an-account"],
         ["Maru on the App Store (US)", "https://apps.apple.com/app/id6822159516"]
       ],
-      "related": ["compare/mytherapy/", "compare/apple-health/", "pill-reminder-no-account/"]
+      "related": ["blog/maru-vs-mytherapy/", "blog/maru-vs-apple-health/", "blog/pill-reminder-no-account/"]
     },
     {
-      "path": "compare/mytherapy/",
+      "path": "blog/maru-vs-mytherapy/",
+      "old": "compare/mytherapy/",
       "group": "compare",
-      "title": "Maru vs MyTherapy: Pill Reminder Apps Compared",
-      "desc": "Maru and MyTherapy side by side: ads, devices, App Store privacy labels, health tracking, and reminders. Facts from each app's own pages.",
+      "published": "2026-11-06",
+      "title": "MyTherapy Alternative: Maru vs MyTherapy Compared",
+      "desc": "Looking for a MyTherapy alternative? Maru and MyTherapy side by side: ads, devices, App Store privacy labels, health tracking, and reminders, with sources.",
       "h1": "Maru vs MyTherapy",
       "card": "A health diary with many trackers, or a small daily reminder with no ads.",
       "lede": "MyTherapy is a health diary: medicine, measurements, symptoms, and reports. Maru does one small job: it shows what to take now, and one tap records it.",
@@ -127,13 +143,15 @@
         ["MyTherapy on the App Store (US)", "https://apps.apple.com/us/app/pill-reminder-mytherapy/id662170995"],
         ["Maru on the App Store (US)", "https://apps.apple.com/app/id6822159516"]
       ],
-      "related": ["compare/medisafe/", "compare/apple-health/", "pill-reminder-app/"]
+      "related": ["blog/maru-vs-medisafe/", "blog/maru-vs-apple-health/", "blog/pill-reminder-app/"]
     },
     {
-      "path": "compare/apple-health/",
+      "path": "blog/maru-vs-apple-health/",
+      "old": "compare/apple-health/",
       "group": "compare",
-      "title": "Maru vs Apple Health Medications",
-      "desc": "Apple Health Medications and Maru side by side: reminders, alarms in Silent mode, schedules, and Apple Watch. Facts from Apple Support.",
+      "published": "2026-11-06",
+      "title": "Maru vs Apple Health Medications: Pill Reminders Compared",
+      "desc": "The Medications feature of Apple Health and Maru side by side: reminders, alarms in Silent mode, schedules, and Apple Watch. Facts from Apple Support.",
       "h1": "Maru vs Apple Health Medications",
       "card": "The medication log built into Health, or a separate small app for one job.",
       "lede": "Medications is part of the Health app on iPhone and iPad, and it reminds and logs. Apple Health does much more than Maru. Maru does one small job: it shows what to take now, and one tap records it.",
@@ -181,12 +199,14 @@
         ["Apple Watch User Guide: Track your medications on Apple Watch", "https://support.apple.com/guide/watch/medications-apd3dd24d78b/watchos"],
         ["Maru on the App Store (US)", "https://apps.apple.com/app/id6822159516"]
       ],
-      "related": ["apple-watch-pill-reminder/", "medication-alarm/", "compare/medisafe/"]
+      "related": ["blog/apple-watch-pill-reminder/", "blog/medication-alarm/", "blog/maru-vs-medisafe/"]
     },
     {
-      "path": "compare/round-health/",
+      "path": "blog/round-health-alternative/",
+      "old": "compare/round-health/",
       "group": "compare",
-      "title": "Round Health Alternative for iPhone: Maru",
+      "published": "2026-11-06",
+      "title": "Round Health Not in the App Store? An Alternative: Maru",
       "desc": "Round Health was not in the US App Store on November 6, 2026. Maru is a pill and vitamin reminder for iPhone, iPad, and Apple Watch, with no account.",
       "h1": "A Round Health alternative",
       "card": "Round Health was not in the US App Store when we checked. Here is what Maru does.",
@@ -225,11 +245,13 @@
         ["Apple search service: lookup of app ID 1059591124 in the US store", "https://itunes.apple.com/lookup?id=1059591124&country=us"],
         ["Maru on the App Store (US)", "https://apps.apple.com/app/id6822159516"]
       ],
-      "related": ["pill-reminder-app/", "compare/medisafe/", "compare/mytherapy/"]
+      "related": ["blog/pill-reminder-app/", "blog/maru-vs-medisafe/", "blog/maru-vs-mytherapy/"]
     },
     {
-      "path": "pill-reminder-app/",
-      "group": "topic",
+      "path": "blog/pill-reminder-app/",
+      "old": "pill-reminder-app/",
+      "group": "guide",
+      "published": "2026-11-06",
       "title": "Pill Reminder App for iPhone and iPad | Maru",
       "desc": "Maru reminds you to take your pills at the times you choose, records a dose with one tap, and shows if you took it today. No account. No ads.",
       "h1": "A pill reminder app that shows what you took",
@@ -240,7 +262,7 @@
           "h2": "Reminders that keep going",
           "p": [
             "Maru sends a reminder at each time that you set. Turn on Remind Again, and Maru sends up to 12 more reminders for a dose that you did not record, from 5 minutes to 1 hour apart. It stops when you record.",
-            "On iOS 26 or later, turn on Alarm for an item. The dose time then rings like the Clock app, also in Silent mode and in a Focus. Read more about the <a href=\"/medication-alarm/\">medication alarm</a>."
+            "On iOS 26 or later, turn on Alarm for an item. The dose time then rings like the Clock app, also in Silent mode and in a Focus. Read more about the <a href=\"/blog/medication-alarm/\">medication alarm</a>."
           ]
         },
         {
@@ -262,7 +284,7 @@
           ]
         },
         {
-          "h2": "What is free",
+          "h2": "What you get, and what Maru Pro adds",
           "p": [
             "Maru is free to download. Reminders, alarms, Remind Again, records, History, undo, widgets, Export Records, and backups are free, with no limit on items. Maru Pro is optional. It adds Next Dose on Lock Screen, the Apple Watch app, PDF reports, 30-day counts, Family, app icons, reminder sounds, and app colors. The <a href=\"/faq/\">FAQ</a> has the prices."
           ]
@@ -276,11 +298,13 @@
           ]
         }
       ],
-      "related": ["vitamin-reminder-app/", "medication-alarm/", "pill-reminder-no-account/"]
+      "related": ["blog/vitamin-reminder-app/", "blog/medication-alarm/", "blog/pill-reminder-no-account/"]
     },
     {
-      "path": "vitamin-reminder-app/",
-      "group": "topic",
+      "path": "blog/vitamin-reminder-app/",
+      "old": "vitamin-reminder-app/",
+      "group": "guide",
+      "published": "2026-11-06",
       "title": "Vitamin and Supplement Reminder App | Maru",
       "desc": "A daily reminder for your vitamins and supplements on iPhone and iPad. Record with one tap, see if you took them today, and keep months of records.",
       "h1": "A reminder for your vitamins and supplements",
@@ -319,17 +343,19 @@
           ]
         },
         {
-          "h2": "What is free",
+          "h2": "What you get, and what Maru Pro adds",
           "p": [
             "Reminders, alarms, records, History, widgets, Export Records, and backups are free, with no limit on items. No account and no ads. Maru Pro is optional."
           ]
         }
       ],
-      "related": ["pill-reminder-app/", "pill-reminder-no-account/", "compare/apple-health/"]
+      "related": ["blog/pill-reminder-app/", "blog/pill-reminder-no-account/", "blog/maru-vs-apple-health/"]
     },
     {
-      "path": "medication-alarm/",
-      "group": "topic",
+      "path": "blog/medication-alarm/",
+      "old": "medication-alarm/",
+      "group": "guide",
+      "published": "2026-11-06",
       "title": "Medication Alarm for iPhone in Silent Mode and Focus | Maru",
       "desc": "On iOS 26 or later, Maru can ring like the Clock app at the time of a dose, also in Silent mode and in a Focus. Tap Taken on the alarm to record it.",
       "h1": "A medication alarm that rings in Silent mode and Focus",
@@ -359,17 +385,17 @@
           ]
         },
         {
-          "h2": "The alarm is free",
-          "p": [
-            "Alarms and Remind Again are free in Maru, with no limit on items. Maru needs no account and has no ads."
-          ]
+          "h2": "The alarm needs no Maru Pro",
+          "p": ["Alarms and Remind Again are free in Maru, with no limit on items. Maru needs no account and has no ads."]
         }
       ],
-      "related": ["pill-reminder-app/", "compare/apple-health/", "apple-watch-pill-reminder/"]
+      "related": ["blog/pill-reminder-app/", "blog/maru-vs-apple-health/", "blog/apple-watch-pill-reminder/"]
     },
     {
-      "path": "apple-watch-pill-reminder/",
-      "group": "topic",
+      "path": "blog/apple-watch-pill-reminder/",
+      "old": "apple-watch-pill-reminder/",
+      "group": "guide",
+      "published": "2026-11-06",
       "title": "Apple Watch Pill Reminder App | Maru",
       "desc": "With Maru Pro, the Maru app on Apple Watch shows the doses of today. Tap a dose to record it from your wrist. Your iPhone keeps the records.",
       "h1": "Record your pills from your Apple Watch",
@@ -393,23 +419,22 @@
         },
         {
           "h2": "What you need",
-          "ul": [
-            "Maru on your iPhone, with Maru Pro.",
-            "An Apple Watch with watchOS 10 or later, paired with that iPhone."
-          ]
+          "ul": ["Maru on your iPhone, with Maru Pro.", "An Apple Watch with watchOS 10 or later, paired with that iPhone."]
         },
         {
           "h2": "Maru or the Medications app on the Watch?",
           "p": [
-            "Apple Watch also has a Medications app that logs the medicines of Apple Health. Maru and Apple Health do not share data. Read the <a href=\"/compare/apple-health/\">comparison of Maru and Apple Health</a>."
+            "Apple Watch also has a Medications app that logs the medicines of Apple Health. Maru and Apple Health do not share data. Read the <a href=\"/blog/maru-vs-apple-health/\">comparison of Maru and Apple Health</a>."
           ]
         }
       ],
-      "related": ["compare/apple-health/", "pill-reminder-app/", "medication-alarm/"]
+      "related": ["blog/maru-vs-apple-health/", "blog/pill-reminder-app/", "blog/medication-alarm/"]
     },
     {
-      "path": "pill-reminder-no-account/",
-      "group": "topic",
+      "path": "blog/pill-reminder-no-account/",
+      "old": "pill-reminder-no-account/",
+      "group": "guide",
+      "published": "2026-11-06",
       "title": "Pill Reminder App With No Account and No Ads | Maru",
       "desc": "Maru is a pill and vitamin reminder for iPhone and iPad with no account, no sign-up, and no ads. Your items and records stay on your device.",
       "h1": "A pill reminder with no account and no ads",
@@ -424,9 +449,7 @@
         },
         {
           "h2": "No ads",
-          "p": [
-            "Maru shows no ads, also without Maru Pro."
-          ]
+          "p": ["Maru shows no ads, also without Maru Pro."]
         },
         {
           "h2": "Your records stay on your device",
@@ -442,13 +465,13 @@
           ]
         },
         {
-          "h2": "What is free",
+          "h2": "What you get, and what Maru Pro adds",
           "p": [
             "Reminders, alarms, Remind Again, records, History, undo, widgets, Export Records, and backups are free, with no limit on items. Maru Pro is optional."
           ]
         }
       ],
-      "related": ["pill-reminder-app/", "compare/medisafe/", "compare/mytherapy/"]
+      "related": ["blog/pill-reminder-app/", "blog/maru-vs-medisafe/", "blog/maru-vs-mytherapy/"]
     }
   ]
 }

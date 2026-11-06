@@ -134,6 +134,8 @@
   --fs-2xl: clamp(1.875rem, 4vw + 0.75rem, 3rem);
   --fs-hero: clamp(1.875rem, 5vw + 0.875rem, 4rem);
   --fs-code: 0.875em;
+  --fs-post: 1.1875rem;
+  --fs-post-h2: 1.5rem;
   --fw-medium: 500;
   --fw-semibold: 600;
   --fw-bold: 700;
@@ -143,6 +145,7 @@
   --lh-head: 1.08;
   --lh-lede: 1.4;
   --lh-tight: 1.3;
+  --lh-post: 1.6;
 
   /* Space */
   --space-1: 4px;
@@ -156,6 +159,8 @@
   --gutter: 20px;
   --max: 66rem;
   --max-prose: 44rem;
+  /* The column of a blog post. With --fs-post it holds about 65 characters a line. */
+  --max-post: 42rem;
   --max-lede: 34rem;
   --max-copy: 26rem;
   --max-stage: 25rem;
@@ -167,6 +172,7 @@
   --bar-cta-h: 36px;
   --badge-page: 56px;
   --brand-icon: 28px;
+  --cta-icon: 64px;
   /* One point of an app component at its largest. */
   --pt-max: 1.1px;
 }
@@ -339,6 +345,15 @@ code { font: var(--fs-code) var(--font-mono); background: var(--fill-3); padding
   transition: transform var(--dur-fast) var(--ease-smooth), opacity var(--dur-fast) var(--ease-smooth);
 }
 .bar-cta:active { transform: scale(var(--press)); }
+/* The text link of the blog in the English top bar. */
+.bar-link {
+  display: inline-flex; align-items: center; height: var(--hit); padding: 0 var(--space-3); border-radius: var(--radius-full);
+  color: var(--bar-text-2); font-size: var(--fs-sm); font-weight: var(--fw-semibold); text-decoration: none; white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-smooth), background-color var(--dur-fast) var(--ease-smooth), transform var(--dur-fast) var(--ease-smooth);
+}
+.bar-link[aria-current] { color: var(--bar-text); }
+.bar-link:hover { color: var(--bar-text); background: var(--bar-fill); opacity: 1; }
+.bar-link:active { transform: scale(var(--press)); background: var(--bar-fill-press); opacity: 1; }
 
 /* Language menu: a details element with plain links, so it works with no script. */
 .lang-menu { position: relative; }
@@ -574,23 +589,64 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
 .card p:last-child, .card ul, .card li:last-child { margin-bottom: 0; }
 .summary { margin-bottom: var(--space-5); }
 
-/* Comparison and topic pages (English only) */
-.compare { width: 100%; border-collapse: collapse; margin: var(--space-5) 0 var(--space-6); font-size: var(--fs-sm); }
+/* Blog (English only): one narrow column for reading, about 65 characters a line. */
+main.post { max-width: var(--max-post); margin: 0 auto; padding: var(--space-7) var(--gutter) 0; }
+.post-head { margin-bottom: var(--space-6); }
+.post-head h1 { margin-bottom: var(--space-4); }
+.post-head .lede { max-width: none; margin-bottom: var(--space-4); }
+.crumbs ol { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: 0 0 var(--space-4); padding: 0; list-style: none; font-size: var(--fs-sm); font-weight: var(--fw-semibold); }
+.crumbs li + li::before { content: "/" / ""; margin-right: var(--space-2); color: var(--text-2); font-weight: var(--fw-medium); }
+.crumbs a { display: inline-block; color: var(--text-2); text-decoration: none; transition: color var(--dur-fast) var(--ease-smooth), transform var(--dur-fast) var(--ease-smooth); }
+.crumbs a:hover { color: var(--text); opacity: 1; }
+.crumbs a:active { transform: scale(var(--press)); }
+.byline, .post-meta { margin: 0; font-size: var(--fs-sm); color: var(--text-2); }
+.byline > * { white-space: nowrap; }
+.post-body { font-size: var(--fs-post); line-height: var(--lh-post); }
+.post-body h2 { margin: var(--space-7) 0 var(--space-3); font-size: var(--fs-post-h2); line-height: var(--lh-tight); }
+.post-body p, .post-body ul { margin: 0 0 var(--space-5); }
+.post-body ul { padding-left: var(--space-5); }
+.post-body li { margin-bottom: var(--space-2); padding-left: var(--space-1); }
+.post-body li::marker { color: var(--text-2); }
+.post-body .note { font-size: var(--fs-sm); line-height: var(--lh-body); }
+.sources { margin-top: var(--space-7); padding-top: var(--space-1); box-shadow: var(--edge-above); }
+.sources ul { font-size: var(--fs-sm); line-height: var(--lh-body); }
+.compare { width: 100%; border-collapse: collapse; margin: var(--space-5) 0 var(--space-6); font-size: var(--fs-sm); line-height: var(--lh-body); }
 .compare th, .compare td { text-align: left; vertical-align: top; padding: var(--space-3) var(--space-3) var(--space-3) 0; border-bottom: var(--line) solid var(--ring-color); }
-.compare thead th { font-size: var(--fs-md); }
+.compare thead th { font-size: var(--fs-md); padding-top: 0; }
 .compare tbody th { width: 28%; font-weight: var(--fw-semibold); }
 .compare td { color: var(--text-2); }
-.prose .guide-list { list-style: none; padding: 0; margin: 0; }
-.prose .guide-list li { margin: 0; padding: var(--space-4) 0; border-bottom: var(--line) solid var(--ring-color); }
-.guide-list a { font-size: var(--fs-lg); font-weight: var(--fw-semibold); letter-spacing: var(--track-body); }
-.guide-list p { margin: var(--space-1) 0 0; color: var(--text-2); }
-.sources ul { font-size: var(--fs-sm); }
-.guide-cta { justify-content: flex-start; margin: var(--space-7) 0 var(--space-4); }
+
+/* A list of posts. The whole row is the link, and the title takes the link color on hover. */
+.post-list { margin: 0; padding: 0; list-style: none; }
+.post-list li { box-shadow: var(--edge-below); }
+.post-list article { position: relative; padding: var(--space-5) 0; }
+.post-list :is(h2, h3) { margin: var(--space-1) 0 var(--space-2); font-size: var(--fs-post-h2); line-height: var(--lh-tight); letter-spacing: var(--track-body); }
+.post-list h3 { font-size: var(--fs-lg); }
+.post-list :is(h2, h3) a { color: var(--text); text-decoration: none; transition: color var(--dur-fast) var(--ease-smooth); }
+.post-list :is(h2, h3) a::after { content: ""; position: absolute; inset: 0; }
+.post-list article:hover :is(h2, h3) a { color: var(--link); opacity: 1; }
+.post-list article > p:last-child { margin: 0; color: var(--text-2); }
+
+/* The download panel at the end of a blog page. */
+.post-cta {
+  display: grid; justify-items: center; gap: var(--space-3); margin: var(--space-8) 0 var(--space-7); padding: var(--space-7) var(--space-5);
+  text-align: center; background: var(--bg-alt); border-radius: var(--radius-lg); box-shadow: var(--hairline);
+}
+.post-cta > img { width: var(--cta-icon); height: var(--cta-icon); border-radius: var(--radius-icon); box-shadow: var(--shadow-card); }
+.post-cta h2 { margin: 0; font-size: var(--fs-xl); }
+.post-cta p { margin: 0; color: var(--text-2); max-width: var(--max-lede); text-wrap: balance; }
+.post-cta .badge { margin: 0; }
+.related h2 { font-size: var(--fs-xl); }
+.all-posts { margin: var(--space-5) 0 var(--space-6); font-size: var(--fs-sm); font-weight: var(--fw-semibold); }
+.all-posts a { display: inline-block; text-decoration: none; transition: transform var(--dur-fast) var(--ease-smooth), opacity var(--dur-fast) var(--ease-smooth); }
+.all-posts a:active { transform: scale(var(--press)); }
 /* A phone has no room for three columns. Each row is a block, and each cell names its app. */
 @media (max-width: 599px) {
   .compare thead { display: none; }
-  .compare tr, .compare th, .compare td { display: block; }
+  .compare tbody, .compare tr, .compare th, .compare td { display: block; }
+  .compare tbody { padding: 0 var(--space-4); background: var(--bg-alt); border-radius: var(--radius-lg); box-shadow: var(--hairline); }
   .compare tr { padding: var(--space-4) 0; border-bottom: var(--line) solid var(--ring-color); }
+  .compare tr:last-child { border-bottom: 0; }
   .compare th, .compare td { border: 0; padding: 0 0 var(--space-2); }
   .compare tbody th { width: auto; font-size: var(--fs-md); }
   .compare td::before { content: attr(data-label); display: block; color: var(--text); font-size: var(--fs-xs); font-weight: var(--fw-semibold); }
@@ -623,6 +679,7 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
   .nav-inner { padding: 0 var(--space-2) 0 var(--space-3); }
   .nav-links { gap: 0; }
   .bar-cta { padding: 0 var(--space-3); margin-left: var(--space-1); }
+  .bar-link { padding: 0 var(--space-2); }
   .get-devices { column-gap: var(--space-3); }
   .get-devices li { gap: var(--space-1); }
 }
@@ -630,7 +687,7 @@ main.prose { max-width: var(--max-prose); margin: 0 auto; padding: var(--space-7
 /* Reduced motion: no movement, no blur, and each state shows at once. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
-  .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .closer-links a:active, .site-footer a:active { transform: none; }
+  .icon-btn:active, .brand:active, .bar-cta:active, .lang-menu li a:active, .closer-links a:active, .site-footer a:active, .bar-link:active, .crumbs a:active, .all-posts a:active { transform: none; }
   .icon-btn[data-tip]::after { filter: none; transform: translate(-50%, 0); }
   /* A screen of the hero phone still fades in and out, with no movement. */
   .device-push { transform: none; opacity: 0; }
