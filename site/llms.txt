@@ -1,6 +1,6 @@
 # Maru
 
-> Maru is a small app for daily vitamins, supplements, and simple medication schedules. It reminds you at the times you choose, shows what to take now, and keeps a record. It is not in the App Store yet.
+> Maru is a small app for daily vitamins, supplements, and simple medication schedules. It reminds you at the times you choose, shows what to take now, and keeps a record. It is in the App Store.
 
 Facts:
 - Runs on: iPhone, iPad, Apple Watch.

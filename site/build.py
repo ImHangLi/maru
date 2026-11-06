@@ -19,7 +19,7 @@ import mock
 
 # Is Maru in the App Store? While this is False, the site says "coming soon", shows no Apple badge,
 # has no link to the App Store, and has no Smart App Banner. Set it to True on the day of the release, and build again.
-RELEASED = False
+RELEASED = True
 # The App Store link of Maru. When RELEASED is True, this one constant sets the link of the badge, of the "Download"
 # button in the top bar, and of the text link at the end of the home page. It also sets the Smart App Banner.
 STORE_URL = "https://apps.apple.com/app/id6822159516"
