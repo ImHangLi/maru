@@ -3100,3 +3100,19 @@ Fix:
 - The description keeps its free wording, because App Review names the description as the place for price information.
 
 Rule for later store work: screenshots, app previews, the name, the subtitle, the keywords, and the promotional text must not say "free", a discount, or a price, in any language. This replaces the free alarm headline of D141.
+
+## D149 · 2026-11-06 · English blog with comparisons and guides on the site
+
+Maintainer request on 2026-11-06: add pages for search to maru.day. Comparisons with the most searched apps of the category, and pages for search phrases with evidence of volume.
+
+- Comparisons: Medisafe, MyTherapy, Apple Health Medications, and a Round Health alternative page. Topics: "pill reminder app", "vitamin reminder app", "medication alarm", "Apple Watch pill reminder", and "pill reminder with no account and no ads". A hub at `/compare/` lists them.
+- No source gave a search volume number. The choice follows Google autocomplete, App Store suggestions, the US rating counts of the iTunes Search API, and existing pages and forum threads. The notes and every source are in `~/Documents/Research/maru/seo-pages-research.md`.
+- Each fact about another app has a source on that app's own pages, with the date that it was read. A fact with no such source is not on a page. Each comparison also shows the App Store privacy label of Maru, so the comparison is fair.
+- The pages are English only, so they have no `hreflang` alternates. `/compare.html` now redirects to `/compare/`.
+- Titles and headings follow the D148 rule: no "free", no price, and no discount. No page names a price of Maru, so the price change of 2026-12-06 does not change them.
+
+- Update of 2026-11-06, maintainer request in the same PR: the pages are a blog at `/blog/` (index and nine posts), with the "Blog" link in the English top bar and footer. Each post has a breadcrumb, the byline "By the Maru team", the date, related posts, and a download panel. The first addresses (`/compare/...` and the five topic folders) redirect to the posts, so no shared link breaks. Reason: one clear section is easier to find and to link than ten loose pages, and Google asks for a visible byline and date.
+- Structured data: `BlogPosting` and `BreadcrumbList` on posts, `Blog` on the index, and `lastmod` in the sitemap. No `FAQPage`, because Google stopped the FAQ rich result in 2026. The comparison titles now start with "Medisafe Alternative" and "MyTherapy Alternative", the two phrases that Google suggests. The notes and links are in section 6 of the research file.
+- The blog pages have no language hint, because no other language has them.
+
+Not verified: search demand in numbers, and the ranking of the pages. Nothing is deployed.

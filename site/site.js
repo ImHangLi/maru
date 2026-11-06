@@ -166,10 +166,12 @@
     wanted = supported(tag);
     return wanted;
   });
-  if (!wanted || wanted === page || chosen()) return;
+  // A page in one language (the blog) has no hint, because it has no other version.
+  var template = document.getElementById("lang-hint");
+  if (!template || !wanted || wanted === page || chosen()) return;
 
   var target = document.querySelector('.langs a[hreflang="' + wanted + '"]');
-  var hint = document.getElementById("lang-hint").content.firstElementChild.cloneNode(true);
+  var hint = template.content.firstElementChild.cloneNode(true);
   hint.lang = wanted;
   hint.setAttribute("aria-label", target.textContent);
   var go = hint.querySelector("a");

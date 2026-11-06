@@ -8,12 +8,13 @@ The landing site of Maru at `https://maru.day`. Static files, no framework, no t
 python3 site/build.py
 ```
 
-The command needs Python 3 and nothing else. It writes the four pages of each language and `sitemap.xml`. Commit the generated pages with the source.
+The command needs Python 3 and nothing else. It writes the four pages of each language, the English blog, and `sitemap.xml`. Commit the generated pages with the source.
 
 | Source | What it holds |
 |---|---|
 | `build.py` | The layout of every page, and the `STORE_URL` constant |
 | `src/strings/<lang>.json` | The text of one language |
+| `src/guides/en.json` | The text of the English blog |
 | `shots/` | The screenshots of the app in each language |
 | `mock.py` | The widget and the reminder of the home page, drawn in HTML |
 | `src/mock/<lang>.json` | The app text of the widget and the reminder in one language |
@@ -21,7 +22,26 @@ The command needs Python 3 and nothing else. It writes the four pages of each la
 | `style.css`, `site.js` | The style, the scroll entrances, the screens of the hero phone, and the language hint |
 | `social.py` | The social preview cards: `og.png` and one card for each other language. Also the pictures of the repository README |
 
-Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
+Each page is the index file of its own folder: `/`, `/faq/`, `/privacy/`, `/support/`, and the same under each language folder. The address ends with a slash, so Cloudflare serves it with no redirect. The build also writes `404.html`, `_redirects`, and `llms.txt`. `_redirects` sends the old addresses (`/compare.html`, the first addresses of the blog posts, `/faq.html`, `/privacy.html`, `/support.html`, `/zh-hans/`, `/ja/`, `/ko/`, `/us/`) to the new ones. Do not edit a generated file by hand.
+
+## Blog
+
+The English site has a blog at `/blog/`: comparisons with other apps and short guides. The English top bar and the English footer link to it. The research and the sources are in `~/Documents/Research/maru/seo-pages-research.md` (D149).
+
+| Kind | Posts |
+|---|---|
+| Comparison | `/blog/maru-vs-medisafe/`, `/blog/maru-vs-mytherapy/`, `/blog/maru-vs-apple-health/`, `/blog/round-health-alternative/` |
+| Guide | `/blog/pill-reminder-app/`, `/blog/vitamin-reminder-app/`, `/blog/medication-alarm/`, `/blog/apple-watch-pill-reminder/`, `/blog/pill-reminder-no-account/` |
+
+- `src/guides/en.json` holds the text. Each post has `path`, `published` (the date in ISO 8601), `title` and `desc` for search, `h1`, `card` (the summary in lists), `lede`, the sections, `sources`, and three `related` posts. `old` is the address of the post in the first draft, and `_redirects` sends it to `path`.
+- A post has a breadcrumb back to the blog, the kind and the date, the byline "By the Maru team", the reading time, the download panel, and its related posts. The blog index lists every post with its kind, date, title, and summary.
+- The head of a post has `BlogPosting` and `BreadcrumbList` structured data, and the blog index has `Blog`. The author is the organization "The Maru team". `sitemap.xml` gives each blog page a `lastmod`. Do not use `FAQPage` for the blog: Google stopped the FAQ rich result in 2026.
+- When a post changes in a real way, add the date of the change. Do not change a date for a small edit.
+- The blog is English only. Its pages have no `hreflang` alternates, and no language hint. The language menu goes to the home page of each language. The other languages have no blog link.
+- A fact about another app needs a source on that app's own store page, help pages, or support pages. Put the source in `sources`, and change `checked` to the date that you read it. If you cannot verify a fact, do not write it.
+- Each comparison shows the App Store privacy label of Maru next to the label of the other app.
+- Titles and headings have no "free", no price, and no discount. The body can say "free" when it is true.
+- `sitemap.xml` and `llms.txt` list the posts. The 404 page links to the blog.
 
 ## Languages
 
@@ -37,7 +57,7 @@ The top bar has a language menu. It is a `details` element with plain links, so 
 
 - While it is `False`, the hero has one plain line, "Coming soon to the App Store", in the language of the page. The page has no Apple badge, no "Download" button, no link to the App Store, and no Smart App Banner. Apple's badge is a call to get an app that is in the store, and the pre-order badge is only for an app on pre-order. See Apple's [marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/).
 - When it is `True`, the hero has Apple's "Download on the App Store" badge in the language of the page, the top bar has a "Download" button, the end of the home page has a text link, and the Smart App Banner is on. `STORE_URL` is the link of all of them.
-- The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. The badge is in the hero only, because Apple asks for one badge in a layout.
+- The files in `badges/` come from Apple's marketing tools. Do not change them. Apple asks for a height of 40 px or more on a screen and a clear space of one quarter of the height. Apple asks for one badge in a layout, so the badge is in the hero of the home page and in the download panel of a blog page, which has no hero.
 
 Before the submission: build with `RELEASED = False` and deploy, because App Review reads the FAQ and the privacy pages. On the day of the release: set `RELEASED = True`, check `DEVICES`, build, and deploy.
 
@@ -45,7 +65,7 @@ Before the submission: build with `RELEASED = False` and deploy, because App Rev
 
 ## Top bar
 
-The top bar is a dark island that hangs from the top edge, in the middle of the page, as wide as its content. It is solid, so it stays readable over a picture, and it does not change when the page scrolls. Below 420 px it is the full width. It holds the logo, the language button, and the "Download" button. The tokens that start with `--bar-` in `style.css` set its colors.
+The top bar is a dark island that hangs from the top edge, in the middle of the page, as wide as its content. It is solid, so it stays readable over a picture, and it does not change when the page scrolls. Below 420 px it is the full width. It holds the logo, the language button, and the "Download" button. An English page also has a "Blog" link before the language button. The tokens that start with `--bar-` in `style.css` set its colors.
 
 ## Icons
 
@@ -60,7 +80,7 @@ The site uses the system fonts of each language and loads no font file: San Fran
 `style.css` starts with one block of tokens: color, radius, duration, easing, shadow, icon, type, and space. A rule below that block uses a token and no raw value.
 
 - A transition or an animation uses one of the four easing tokens. Do not use `ease` or `ease-in-out`.
-- The page has one entrance when it loads, about 660 ms long. The top bar falls in from above the top edge (480 ms), and its content fades in at the end. The headline lines, the sentence, and the download unit rise 14 px in order, 60 ms apart (420 ms each), and the hero phone rises 24 px and grows from 97% (520 ms). A text page has the same bar and a shorter entrance of its title and its body.
+- The page has one entrance when it loads, about 660 ms long. The top bar falls in from above the top edge (480 ms), and its content fades in at the end. The headline lines, the sentence, and the download unit rise 14 px in order, 60 ms apart (420 ms each), and the hero phone rises 24 px and grows from 97% (520 ms). A text page and a blog page have the same bar and a shorter entrance of the head and the body. The download panel and the related posts of a blog page enter when they scroll into view.
 - The hero phone is in the first paint at 30% opacity, so the largest picture of the page does not wait for the entrance.
 - A block enters one time when it scrolls into view, with the same rise, blur, and duration as the hero parts. The blur clears at 60% of the time, so text is sharp when it comes to rest.
 - Content is visible with no script. `<html>` gets the class `motion` only when the visitor did not ask for reduced motion. `site.js` adds the class `is-in` to a block when it enters the view. A page from the back and forward cache shows at rest.

@@ -23,6 +23,18 @@ Pages:
 - [FAQ](https://maru.day/faq/): short answers.
 - [Privacy](https://maru.day/privacy/): what the app stores and what it does not do.
 - [Support](https://maru.day/support/): hello@maru.day and the feedback form.
+- [Blog](https://maru.day/blog/): comparisons with other pill reminder apps, and guides, in English.
+
+Blog posts (English):
+- [Maru vs Medisafe](https://maru.day/blog/maru-vs-medisafe/): Prescriptions and refills, or a small daily reminder with no account.
+- [Maru vs MyTherapy](https://maru.day/blog/maru-vs-mytherapy/): A health diary with many trackers, or a small daily reminder with no ads.
+- [Maru vs Apple Health Medications](https://maru.day/blog/maru-vs-apple-health/): The medication log built into Health, or a separate small app for one job.
+- [A Round Health alternative](https://maru.day/blog/round-health-alternative/): Round Health was not in the US App Store when we checked. Here is what Maru does.
+- [A pill reminder app that shows what you took](https://maru.day/blog/pill-reminder-app/): Reminders at your times, one tap to record, and a clear record of today.
+- [A reminder for your vitamins and supplements](https://maru.day/blog/vitamin-reminder-app/): Morning vitamins, evening magnesium, and every other day. One look at today.
+- [A medication alarm that rings in Silent mode and Focus](https://maru.day/blog/medication-alarm/): On iOS 26 or later, a dose can ring like the Clock app. Tap Taken to record it.
+- [Record your pills from your Apple Watch](https://maru.day/blog/apple-watch-pill-reminder/): See the doses of today on your wrist and record them with a tap.
+- [A pill reminder with no account and no ads](https://maru.day/blog/pill-reminder-no-account/): Open the app and add what you take. Your records stay on your device.
 
 Languages:
 - English: https://maru.day/

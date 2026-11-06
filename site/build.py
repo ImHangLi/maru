@@ -7,11 +7,13 @@ With --shots DIR it first converts the screenshots in DIR to 780 px wide WebP fi
 
 import html
 import json
+import math
 import re
 import struct
 import subprocess
 import sys
 import tempfile
+from datetime import date
 from math import isqrt
 from pathlib import Path
 
@@ -69,6 +71,11 @@ ICONS = {
 
 SITE = Path(__file__).resolve().parent
 STRINGS = {code: json.loads((SITE / "src/strings" / f"{code}.json").read_text("utf-8")) for code, _ in LANGS}
+# The blog: comparisons and guides. It is English only, so its pages have no hreflang alternates.
+GUIDES = json.loads((SITE / "src/guides/en.json").read_text("utf-8"))
+BLOG = GUIDES["blog"]
+POSTS = GUIDES["pages"]
+GUIDE_PAGES = [BLOG["path"] + "index.html"] + [g["path"] + "index.html" for g in POSTS]
 FOLDER = dict(LANGS)
 e = html.escape
 
@@ -261,28 +268,47 @@ HEADERS = """/*
 """
 
 
-def layout(code, page, title, desc, main, head=""):
+def layout(code, page, title, desc, main, head="", langs=None, kind="website"):
+    """langs: the languages that have this page. A link to another language goes to its home page.
+    kind: the Open Graph type, "website" or "article"."""
     s = STRINGS[code]
     f = s["footer"]
     here = ORIGIN + url(code, page)
-    alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c, _ in LANGS)
+    langs = langs or [c for c, _ in LANGS]
+
+    def other(c):
+        return page if c in langs else "index.html"
+
+    alternates = "".join(f'<link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}">\n' for c in langs)
+    if len(langs) > 1:
+        alternates += f'<link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}">\n'
+    else:
+        alternates = ""
     banner = (f'<meta name="apple-itunes-app" content="app-id={re.search(r"id(\d+)", STORE_URL).group(1)}">\n'
               if RELEASED else "")
     # Google Search Console reads this tag on the home page to confirm the owner of the site. Keep it.
     if page == "index.html" and code == LANGS[0][0]:
         banner += '<meta name="google-site-verification" content="RS5MimbYtPjYD6RQrpYsM9gtvHPVW_mOC43pGs5eqRc">\n'
     cta = f'<a class="bar-cta" href="{e(STORE_URL)}">{e(s["store"]["download"])}</a>\n' if RELEASED else ""
-    locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c, _ in LANGS if c != code)
+    locales = "".join(f'<meta property="og:locale:alternate" content="{OG_LOCALE[c]}">\n' for c in langs if c != code)
     # The social preview card of the language (social.py), and its words for a screen reader.
     card = f'{ORIGIN}/og{"-" + FOLDER[code] if FOLDER[code] else ""}.png'
     card_alt = e(f'Maru. {" ".join(part.strip() for part in s["home"]["h1"].split("|"))} {s["shots"]["today"]["alt"]}')
     current = ' aria-current="page"'
+    # Only the English pages link to the blog, because it is English only.
+    blog_url = url(code, GUIDE_PAGES[0])
+    blog = f'<li><a href="{blog_url}">{e(f["blog"])}</a></li>' if "blog" in f else ""
+    bar_blog = (f'<a class="bar-link" href="{blog_url}"{current if page == GUIDE_PAGES[0] else ""}>{e(f["blog"])}</a>\n'
+                if "blog" in f else "")
+    # The hint offers the page in the language of the browser. A page with one language has no other version to offer.
+    hint = (f'<template id="lang-hint"><aside class="lang-hint"><a href="{url(code, page)}">{e(s["suggest"])}</a><button type="button" '
+            f'class="icon-btn" aria-label="{e(s["close"])}">{icon("close")}</button></aside></template>\n' if len(langs) > 1 else "")
     menu = "".join(
-        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
+        f'<li><a href="{url(c, other(c))}" lang="{c}" hreflang="{c}"{current if c == code else ""}>{e(STRINGS[c]["name"])}'
         f'{icon("check") if c == code else ""}</a></li>'
         for c, _ in LANGS)
     languages = "".join(
-        f'<li><a href="{url(c, page)}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
+        f'<li><a href="{url(c, other(c))}" lang="{c}" hreflang="{c}" data-suggest="{e(STRINGS[c]["suggest"])}" '
         f'data-close="{e(STRINGS[c]["close"])}"{current if c == code else ""}>{e(STRINGS[c]["name"])}</a></li>'
         for c, _ in LANGS)
     return f"""<!DOCTYPE html>
@@ -295,10 +321,9 @@ def layout(code, page, title, desc, main, head=""):
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#FFFFFF">
 {banner}<link rel="canonical" href="{here}">
-{alternates}<link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}">
-<link rel="icon" href="/icon.png" type="image/png">
+{alternates}<link rel="icon" href="/icon.png" type="image/png">
 <link rel="apple-touch-icon" href="/icon.png">
-<meta property="og:type" content="website">
+<meta property="og:type" content="{kind}">
 <meta property="og:site_name" content="Maru">
 <meta property="og:title" content="{e(title)}">
 <meta property="og:description" content="{e(desc)}">
@@ -320,19 +345,18 @@ def layout(code, page, title, desc, main, head=""):
 <header class="site-header"><div class="nav-inner">
 <a class="brand" href="{url(code, "index.html")}"><img src="/icon.png" alt="" width="28" height="28"><span>Maru</span></a>
 <nav class="nav-links" aria-label="{e(s["nav_label"])}">
-<details class="lang-menu"><summary class="icon-btn" aria-label="{e(f["language"])}: {e(s["name"])}" data-tip="{e(f["language"])}">{icon("globe")}</summary><ul>{menu}</ul></details>
+{bar_blog}<details class="lang-menu"><summary class="icon-btn" aria-label="{e(f["language"])}: {e(s["name"])}" data-tip="{e(f["language"])}">{icon("globe")}</summary><ul>{menu}</ul></details>
 {cta}</nav>
 </div></header>
 {main}
 <footer class="site-footer">
 <div class="footer-inner">
-<ul class="footer-links"><li><a href="{url(code, "faq/index.html")}">{e(f["faq"])}</a></li><li><a href="{url(code, "support/index.html")}">{e(f["support"])}</a></li><li><a href="{url(code, "privacy/index.html")}">{e(f["privacy"])}</a></li></ul>
+<ul class="footer-links"><li><a href="{url(code, "faq/index.html")}">{e(f["faq"])}</a></li><li><a href="{url(code, "support/index.html")}">{e(f["support"])}</a></li><li><a href="{url(code, "privacy/index.html")}">{e(f["privacy"])}</a></li>{blog}</ul>
 <nav class="langs" aria-label="{e(f["language"])}"><ul>{languages}</ul></nav>
 <p>{e(f["advice"])}</p>
 </div>
 </footer>
-<template id="lang-hint"><aside class="lang-hint"><a href="{url(code, page)}">{e(s["suggest"])}</a><button type="button" class="icon-btn" aria-label="{e(s["close"])}">{icon("close")}</button></aside></template>
-<script src="/site.js" defer></script>
+{hint}<script src="/site.js" defer></script>
 </body>
 </html>
 """
@@ -464,6 +488,133 @@ def privacy(code):
     return layout(code, "privacy/index.html", s["title"], s["desc"], main)
 
 
+def post_by_path(path):
+    return next(g for g in POSTS if g["path"] == path)
+
+
+def long_date(iso):
+    d = date.fromisoformat(iso)
+    return f"{d:%B} {d.day}, {d.year}"
+
+
+def ld_json(data):
+    return f'<script type="application/ld+json">{json.dumps(data, ensure_ascii=False)}</script>\n'
+
+
+AUTHOR = {"@type": "Organization", "name": "The Maru team", "url": f"{ORIGIN}/"}
+PUBLISHER = {"@type": "Organization", "name": "Maru", "url": f"{ORIGIN}/", "logo": {"@type": "ImageObject", "url": f"{ORIGIN}/icon.png"}}
+
+
+def crumbs_ld(*trail):
+    """BreadcrumbList for Google: (name, path) pairs. The last item is the page itself, so it has no address."""
+    items = [{"@type": "ListItem", "position": i + 1, "name": name} | ({"item": f"{ORIGIN}/{path}"} if path is not None else {})
+             for i, (name, path) in enumerate(trail)]
+    return {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": items}
+
+
+def meta(g):
+    """The line above a post title in a list: the kind of post and its date."""
+    return (f'<p class="post-meta">{e(GUIDES["kinds"][g["group"]])}<span aria-hidden="true"> · </span>'
+            f'<time datetime="{g["published"]}">{long_date(g["published"])}</time></p>')
+
+
+def post_list(posts, heading="h2"):
+    """A list of posts: the kind, the date, the title, and the summary. The whole row is the link."""
+    items = "".join(f'<li><article>{meta(g)}<{heading}><a href="/{g["path"]}">{e(g["h1"])}</a></{heading}>'
+                    f'<p>{e(g["card"])}</p></article></li>' for g in posts)
+    return f'<ol class="post-list">{items}</ol>\n'
+
+
+def post_cta():
+    """The download panel at the end of a blog page. A blog page has no hero, so this is the only App Store badge of the page."""
+    get = badge("en", PAGE_BADGE) if RELEASED else f'<p class="soon">{e(STRINGS["en"]["store"]["soon"])}</p>'
+    return (f'<aside class="post-cta" data-reveal aria-labelledby="cta-title">'
+            f'<img class="enter" src="/icon.png" alt="" width="64" height="64">'
+            f'<h2 id="cta-title" class="enter d1">{e(GUIDES["cta_title"])}</h2>'
+            f'<p class="enter d1">{e(GUIDES["cta_text"])}</p>'
+            f'<div class="enter d2">{get}</div>'
+            f'<p class="closer-links enter d3"><a href="/faq/">{e(STRINGS["en"]["faq"]["h1"])}</a></p></aside>\n')
+
+
+def compare_table(g):
+    """Maru and one other app, one row for each fact. On a phone each row is a block with its own labels."""
+    t = g["table"]
+    maru, other = GUIDES["maru_label"], t["other"]
+    rows = "".join(f'<tr><th scope="row">{e(label)}</th><td data-label="{e(maru)}">{e(a)}</td>'
+                   f'<td data-label="{e(other)}">{e(b)}</td></tr>' for label, a, b in t["rows"])
+    return (f'<table class="compare"><caption class="sr">{e(g["h1"])}</caption><thead><tr><td></td>'
+            f'<th scope="col">{e(maru)}</th><th scope="col">{e(other)}</th></tr></thead><tbody>{rows}</tbody></table>\n')
+
+
+def guide(g):
+    """A blog post. Paragraphs and list items in src/guides/en.json may hold links, so they are not escaped."""
+    body = ""
+    checked = GUIDES["checked_note"].format(date=GUIDES["checked"])
+    if g["group"] == "compare":
+        body += f'<p class="note">{e(GUIDES["checked_short"].format(date=GUIDES["checked"]))}</p>\n'
+    if "table" in g:
+        body += compare_table(g)
+    for sec in g["sections"]:
+        body += f'<h2>{e(sec["h2"])}</h2>\n'
+        if "ul" in sec:
+            body += "<ul>" + "".join(f"<li>{item}</li>" for item in sec["ul"]) + "</ul>\n"
+        body += "".join(f"<p>{para}</p>\n" for para in sec.get("p", []))
+    if "sources" in g:
+        items = "".join(f'<li><a href="{e(link)}">{e(label)}</a></li>' for label, link in g["sources"])
+        body += (f'<section class="sources" aria-labelledby="sources-title"><h2 id="sources-title">'
+                 f'{e(GUIDES["sources_title"])}</h2><p class="note">{e(checked)}</p><ul>{items}</ul></section>\n')
+    # The reading time: the words of the lede and the body at 200 words a minute.
+    words = len(re.sub(r"<[^>]+>", " ", g["lede"] + " " + body).split())
+    minutes = GUIDES["read"].format(n=max(1, math.ceil(words / 200)))
+    here = f'{ORIGIN}/{g["path"]}'
+    schema = {"@context": "https://schema.org", "@type": "BlogPosting", "headline": g["h1"], "description": g["desc"],
+              "datePublished": g["published"], "dateModified": g["published"], "author": AUTHOR, "publisher": PUBLISHER,
+              "image": [f"{ORIGIN}/og.png"], "mainEntityOfPage": here, "inLanguage": "en",
+              "isPartOf": {"@type": "Blog", "@id": f'{ORIGIN}/{BLOG["path"]}', "name": BLOG["h1"]}}
+    trail = crumbs_ld((GUIDES["crumb_home"], ""), (GUIDES["crumb_blog"], BLOG["path"]), (g["h1"], None))
+    head = (ld_json(schema) + ld_json(trail) + f'<meta property="article:published_time" content="{g["published"]}">\n'
+            f'<meta property="article:modified_time" content="{g["published"]}">\n')
+    related = post_list([post_by_path(r) for r in g.get("related", ())], "h3")
+    main = f"""<main id="main" class="post">
+<article>
+<header class="post-head load">
+<nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">{e(GUIDES["crumb_home"])}</a></li><li><a href="/{BLOG["path"]}">{e(GUIDES["crumb_blog"])}</a></li></ol></nav>
+<h1>{e(g["h1"])}</h1>
+<p class="lede">{e(g["lede"])}</p>
+<p class="byline"><span>{e(GUIDES["byline"])}</span><span aria-hidden="true"> · </span><time datetime="{g["published"]}">{e(GUIDES["published_label"])} {long_date(g["published"])}</time><span aria-hidden="true"> · </span><span>{e(minutes)}</span></p>
+</header>
+<div class="post-body load d1">
+{body}</div>
+</article>
+{post_cta()}<section class="related" aria-labelledby="related-title">
+<h2 id="related-title">{e(GUIDES["related_title"])}</h2>
+{related}<p class="all-posts"><a href="/{BLOG["path"]}"><span aria-hidden="true">← </span>{e(GUIDES["all_posts"])}</a></p>
+</section>
+<p class="note">{e(GUIDES["advice"])}</p>
+</main>"""
+    return layout("en", g["path"] + "index.html", g["title"], g["desc"], main, head, langs=["en"], kind="article")
+
+
+def blog_index():
+    here = f'{ORIGIN}/{BLOG["path"]}'
+    schema = {"@context": "https://schema.org", "@type": "Blog", "name": BLOG["h1"], "description": BLOG["desc"], "url": here,
+              "inLanguage": "en", "publisher": PUBLISHER,
+              "blogPost": [{"@type": "BlogPosting", "headline": g["h1"], "url": f'{ORIGIN}/{g["path"]}',
+                            "datePublished": g["published"], "author": AUTHOR} for g in POSTS]}
+    head = ld_json(schema) + ld_json(crumbs_ld((GUIDES["crumb_home"], ""), (GUIDES["crumb_blog"], None)))
+    main = f"""<main id="main" class="post blog">
+<header class="post-head load">
+<h1>{e(BLOG["h1"])}</h1>
+<p class="lede">{e(BLOG["lede"])}</p>
+<p class="note">{e(BLOG["about"])}</p>
+</header>
+<div class="load d1">
+{post_list(POSTS)}</div>
+{post_cta()}<p class="note">{e(GUIDES["advice"])}</p>
+</main>"""
+    return layout("en", GUIDE_PAGES[0], BLOG["title"], BLOG["desc"], main, head, langs=["en"])
+
+
 def sitemap():
     rows = []
     for page in PAGES:
@@ -471,6 +622,9 @@ def sitemap():
             f'<xhtml:link rel="alternate" hreflang="{c}" href="{ORIGIN}{url(c, page)}"/>' for c, _ in LANGS)
         alternates += f'<xhtml:link rel="alternate" hreflang="x-default" href="{ORIGIN}{url("en", page)}"/>'
         rows += [f"  <url><loc>{ORIGIN}{url(code, page)}</loc>{alternates}</url>" for code, _ in LANGS]
+    # A blog page names the date of its last change. The blog index changes with its newest post.
+    changed = [max(g["published"] for g in POSTS)] + [g["published"] for g in POSTS]
+    rows += [f"  <url><loc>{ORIGIN}{url('en', page)}</loc><lastmod>{day}</lastmod></url>" for page, day in zip(GUIDE_PAGES, changed)]
     return ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" '
             'xmlns:xhtml="http://www.w3.org/1999/xhtml">\n' + "\n".join(rows) + "\n</urlset>\n")
 
@@ -483,6 +637,7 @@ def not_found():
 <div class="load d1">
 <p class="lede">This address has no page. Go to the home page of Maru.</p>
 <ul>{homes}</ul>
+<p>Looking for a post? See <a href="/{BLOG["path"]}">all posts of the Maru blog</a>, in English.</p>
 </div>
 </main>"""
     page = layout("en", "index.html", "Maru: Page not found", "This address has no page.", main,
@@ -491,7 +646,11 @@ def not_found():
 
 
 def redirects():
-    rows = ["/compare.html /faq/ 301", "/us / 301", "/us/* /:splat 301"]
+    rows = [f"/compare.html /{BLOG['path']} 301", "/us / 301", "/us/* /:splat 301"]
+    # The blog pages had other addresses in the first draft of the pull request. Each old address, with and without
+    # the last slash, goes to the new one.
+    for item in [BLOG] + POSTS:
+        rows += [f"/{old} /{item['path']} 301" for old in (item["old"], item["old"].rstrip("/"))]
     for code, folder in LANGS:
         prefix = f"/{folder}" if folder else ""
         rows += [f"{prefix}/{old} {url(code, new)} 301" for old, new in OLD_PAGES.items()]
@@ -503,6 +662,7 @@ def redirects():
 def llms():
     state = "It is in the App Store." if RELEASED else "It is not in the App Store yet."
     devices = ", ".join(DEVICE_NAMES[d][1] for d in DEVICES)
+    guides = "\n".join(f"- [{g['h1']}]({ORIGIN}/{g['path']}): {g['card']}" for g in POSTS)
     languages = "\n".join(f"- {name}: {ORIGIN}{url(code, 'index.html')}" for code, name in [
         ("en", "English"), ("zh-Hans", "Simplified Chinese"), ("ja", "Japanese"), ("es", "Spanish"), ("de", "German"), ("ko", "Korean")])
     return f"""# Maru
@@ -530,6 +690,10 @@ Pages:
 - [FAQ]({ORIGIN}/faq/): short answers.
 - [Privacy]({ORIGIN}/privacy/): what the app stores and what it does not do.
 - [Support]({ORIGIN}/support/): hello@maru.day and the feedback form.
+- [Blog]({ORIGIN}/{BLOG["path"]}): comparisons with other pill reminder apps, and guides, in English.
+
+Blog posts (English):
+{guides}
 
 Languages:
 {languages}
@@ -545,12 +709,16 @@ def main():
             file = SITE / folder / page
             file.parent.mkdir(parents=True, exist_ok=True)
             file.write_text(render[page](code), "utf-8")
+    for page, render_guide in zip(GUIDE_PAGES, [blog_index] + [lambda g=g: guide(g) for g in POSTS]):
+        file = SITE / page
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(render_guide(), "utf-8")
     (SITE / "404.html").write_text(not_found(), "utf-8")
     (SITE / "sitemap.xml").write_text(sitemap(), "utf-8")
     (SITE / "_redirects").write_text(redirects(), "utf-8")
     (SITE / "_headers").write_text(HEADERS, "utf-8")
     (SITE / "llms.txt").write_text(llms(), "utf-8")
-    print(f"built {len(LANGS) * len(PAGES)} pages")
+    print(f"built {len(LANGS) * len(PAGES) + len(GUIDE_PAGES)} pages")
 
 
 if __name__ == "__main__":
