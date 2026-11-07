@@ -2138,7 +2138,7 @@ No store change, no schema change, and no new test (D016).
 
 Not verified: no build of the app on this Mac, and nobody saw the graph on a display. CI builds the app. It needs a check on a real device: a swipe up and down that starts on the graph, a tap on a square, a press and a drag across the squares, the haptic, and VoiceOver. Check on an iPhone, an iPad, and the inner display of iPhone Duo, on iOS 17 and on iOS 26.
 
-## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123) (paywall source `feature` replaced by D127) (switch at the end of Pro changed by D142)
+## D110 · 2026-10-28 · "Next Dose on Lock Screen": the Live Activity of Maru Pro ("Taken" for one member only: D123) (paywall source `feature` replaced by D127) (switch at the end of Pro changed by D142) (Lock Screen layout and compact Dynamic Island replaced by D150)
 
 Maintainer decision on 2026-10-28, with agent detail. It is the first Pro feature of D107. It follows spec 6, 7.2, 8, 9, and 10, and it uses the record checks of D034, D048, and D089.
 
@@ -3116,3 +3116,50 @@ Maintainer request on 2026-11-06: add pages for search to maru.day. Comparisons 
 - The blog pages have no language hint, because no other language has them.
 
 Not verified: search demand in numbers, and the ranking of the pages. Nothing is deployed.
+
+## D150 · 2026-11-07 · The Live Activity draws again on the Lock Screen, and a narrow compact Dynamic Island (replaces the Lock Screen layout and the compact form of D110)
+
+Maintainer report on 2026-11-07, version 1.1.0 from the App Store on iOS 27. Two bugs, with screenshots:
+
+1. The Lock Screen showed the Live Activity as an empty black card: no text, no symbol, and no "Taken" button.
+2. The compact Dynamic Island was much wider than usual. It showed the pill symbol and the full planned time, "9:00 am".
+
+The cause of bug 1:
+
+- `NextDoseStatus` put `.fixedSize()` on the relative time, a text that the system moves on the screen (`Text(.currentDate, format: .reference(...))`, and `Text(_:style: .relative)` on iOS 17).
+- With this modifier, the widget renderer drew nothing for the whole view that held the text. The Lock Screen view held it, so the card was empty. The expanded Dynamic Island lost its trailing and bottom regions in the same way. The compact form and the leading region did not hold the text, so they drew.
+- The evidence is a bisection in an iOS 27.0 simulator. The original view gave the same empty card. The names and "Taken" alone drew. The relative time inside `NextDoseStatus` gave an empty card with both text styles. The same text with no `.fixedSize()` drew ("10 hours ago"). The renderer log had no decode error, so the content state, the App Group, and the strings were not the cause.
+- On 2026-10-30, a simulator capture of the store screenshots also showed an empty card. That note called it a limit of the simulator. It was this bug.
+
+The fix: the relative time has no `.fixedSize()`, and its comment says why. No record, database, reminder, or "Taken" logic changed.
+
+The new Lock Screen layout (maintainer goal: clean, premium, simple):
+
+- One row. At the leading edge, the pill symbol in the tint on a circle of the tint at 18% opacity.
+- In the middle: the part of the day and the planned time in the tint, then the names in bold (at most two lines), then the relative time in gray.
+- At the trailing edge, the capsule button "Taken" in the tint.
+- It keeps the system background of a Live Activity and system text colors. iOS 27 draws a dark card on light and dark Lock Screens, and the text reads on both.
+- The text when the save does not confirm, and "Open Maru to update." after the day ends, take the place of the names line. These states have no button, as before.
+
+The compact Dynamic Island:
+
+- Options: a symbol only, a progress ring, the hour only ("9"), or the hour and the minute with no "am" or "pm" ("9:00").
+- The choice is the hour and the minute with no day period, in the tint. It is "9:00" in a 12-hour region and "21:00" in a 24-hour region.
+- A symbol or a ring tells nothing new beside the pill symbol, and a ring needs the count of the day in the content. The hour alone is not clear at "9:30".
+- The full time stays in the expanded form and on the Lock Screen. The minimal form does not change.
+
+The size of the compact Dynamic Island (second pass, same day). The maintainer said that the first pass was still too wide, and asked for an island as narrow as the one of Spotify.
+
+- How the system sizes it: the renderer log of `chronod` in the simulator gives the camera area as 125.33 by 36.67 points. Each side gets 7 points at the outer edge, 0 points at the camera, and a width from 0 to 101.67 points. So the island is 139.33 points plus the width of the two sides. The two sides do not need the same width.
+- The cause: the first pass gave the pill symbol and the time no font, so the system drew them at a large default size. The time also had digits of one width. The sides were about 19 and 30 points wide.
+- The leading side has a floor of about 17 points in the simulator. A 12-point frame on the symbol did not make the island narrower.
+- A text style does not make the content small enough. `.caption` made the island only 4 points narrower, and `.caption2` drew at the same size as `.caption`. So the sides use fixed sizes: the pill symbol at 10 points semibold, and the time at 11 points bold. The time does not change in place, so it has no digits of one width.
+- No system Live Activity runs in the iOS 27.0 simulator: it has no Clock app, and Maps has no navigation. So a capture of the island of Spotify or of a timer was not possible. The reference is the system floor above and the HIG rule "Keep content as narrow as possible and ensure it's snug against the TrueDepth camera."
+- Widths in the iPhone 17 simulator, at 1206 pixels: first pass 573 pixels (191 points, 47.5%). Second pass 544 pixels (181.3 points, 45.1%). Floor with empty sides 418 pixels (139.33 points, 34.7%). Floor with the 17-point leading side and an equal trailing side about 520 pixels (173.3 points, 43.1%).
+
+Files: `Widget/NextDoseLiveActivity.swift`, `docs/design.md`.
+
+Tests: none (D016). The change is layout only.
+
+Not verified: a real iPhone. The captures come from an iPhone 17 simulator on iOS 27.0. The minimal form needs a second Live Activity of another app, so no capture shows it. A side by side check with Spotify needs the iPhone. It needs a check on the maintainer's iPhone: the Lock Screen card with light and dark wallpapers, the compact island, the expanded island, and "Taken".
+

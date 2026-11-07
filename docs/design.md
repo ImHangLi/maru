@@ -209,11 +209,12 @@ Two Home Screen widgets, small and medium each (D048), and "Last Dose", small (D
 
 "Next Dose on Lock Screen" is the Live Activity of Maru Pro (D110). It uses the system background of a Live Activity and system fonts.
 
-- Lock Screen: a first line with the pill symbol and the part of the day in the tint, the planned time in gray, and the relative time at the trailing edge in the text color: "in 12 minutes" before the planned time and "12 minutes ago" after it. The system moves it with no update. iOS 17 shows only the distance, "12 min".
-- Under it, the item names in bold, at most two lines, and a capsule button "Taken" in the tint at the trailing edge. At most three names, then the number of the other doses: "Vitamin D, Iron, Zinc, and 2 more". With "Show Names in Reminders" off, "2 doses" takes the place of the names.
-- Dynamic Island: compact, the pill symbol and the planned time, both in the tint. Minimal, the pill symbol. Expanded, the part of the day and the time at the leading edge, the relative time at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
+- Lock Screen (D150): one row. At the leading edge, the pill symbol in the tint on a circle of the tint at 18% opacity. In the middle, the part of the day and the planned time in the tint, the item names in bold (at most two lines), and the relative time in gray: "in 12 minutes" before the planned time and "12 minutes ago" after it. The system moves it with no update. iOS 17 shows only the distance, "12 min". At the trailing edge, a capsule button "Taken" in the tint.
+- At most three names, then the number of the other doses: "Vitamin D, Iron, Zinc, and 2 more". With "Show Names in Reminders" off, "2 doses" takes the place of the names.
+- Never put `.fixedSize()` on the relative time. The renderer then draws an empty card (D150).
+- Dynamic Island: compact, the pill symbol at 10 points and the planned time with no "am" or "pm" ("9:00") at 11 points bold, both in the tint, so the island stays narrow (D150). Minimal, the pill symbol. Expanded, the part of the day and the full time at the leading edge, the relative time at the trailing edge, and the names and "Taken" at the bottom. The keyline has the tint.
 - A tap outside the button opens Today at the part of the day.
-- When the record does not confirm, a line with a warning symbol takes the place of the button. When the day of the dose ended, only "Open Maru to update." shows, with no name and no button.
+- When the record does not confirm, a line with a warning symbol takes the place of the button and of the relative time. When the day of the dose ended, only "Open Maru to update." shows, with no name and no button.
 
 ## iPad
 
