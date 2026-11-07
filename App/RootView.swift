@@ -152,6 +152,13 @@ struct RootView: View {
             guard !Task.isCancelled, firstValueIsDue, !windowPresents else { return }
             model.showFirstValueOffer()
         }
+        #if DEBUG
+        .task {
+            guard DebugLaunch.opensPaywall else { return }
+            try? await Task.sleep(for: .seconds(1))
+            model.presentPaywall(reason: .settings)
+        }
+        #endif
         // The paywall that a free user asked for on the Watch, the next time that Maru is in front (D111).
         .onChange(of: askedOfferIsDue, initial: true) { _, isDue in
             if isDue { model.showAskedOffer() }

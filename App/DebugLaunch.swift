@@ -35,6 +35,23 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruDebugPro")
     }
 
+    /// `-MaruOpenPaywall YES`: open the paywall at launch, for the captures of the paywall carousel prototype.
+    static var opensPaywall: Bool {
+        UserDefaults.standard.bool(forKey: "MaruOpenPaywall")
+    }
+
+    /// `-MaruSampleOffers YES`: show the two plans with fixed sample prices, because `simctl launch` has no StoreKit
+    /// configuration. `PaywallView` reads it. For the captures of the paywall carousel prototype. A purchase does not start.
+    static var fakesOffers: Bool {
+        UserDefaults.standard.bool(forKey: "MaruSampleOffers")
+    }
+
+    /// `-MaruSampleSoon YES`: the evening samples get a time 40 minutes from the launch, so the Live Activity shows a
+    /// dose that is still to come. For the Lock Screen clip of the paywall carousel prototype.
+    static var wantsSoonSample: Bool {
+        UserDefaults.standard.bool(forKey: "MaruSampleSoon")
+    }
+
     /// `-MaruTap 8:00` or `-MaruTap 8:00+120`: after the first read, act as a tap on the reminder of that time of today,
     /// delivered on time or that many minutes late. The simulator cannot set the delivery date of a notification.
     static var tap: (time: WallClockTime, delay: Int)? {
@@ -188,7 +205,12 @@ extension AppStore {
             guard !sample.times.isEmpty else { continue }
             var schedule = Schedule(itemID: item.id, isEnabled: true)
             let slotTimes = try sample.times.map { time in
-                SlotTime(slotID: try schedule.addSlot().id, time: try WallClockTime(hour: time.hour, minute: time.minute))
+                var time = time
+                if DebugLaunch.wantsSoonSample, time.hour == 21 {
+                    let soon = Calendar.current.dateComponents([.hour, .minute], from: now.addingTimeInterval(40 * 60))
+                    time = (soon.hour ?? 21, (soon.minute ?? 0) / 5 * 5)
+                }
+                return SlotTime(slotID: try schedule.addSlot().id, time: try WallClockTime(hour: time.hour, minute: time.minute))
             }
             try schedule.appendVersion(
                 ScheduleVersion(

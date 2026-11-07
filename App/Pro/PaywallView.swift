@@ -4,7 +4,8 @@ import SwiftUI
 /// The Maru Pro paywall uses `ProStore` for purchases (D107, D119).
 /// This custom view offers yearly and lifetime plans together, which `SubscriptionStoreView` cannot do (D115).
 struct PaywallView: View {
-    /// Why the paywall shows. The headline names the reason for Family (D128), the reports, and the insights (D130).
+    /// Why the paywall shows. The headline names the reason for Family (D128), the reports, and the insights (D130). The
+    /// carousel starts at the matching feature (prototype).
     let source: AnalyticsEvent.PaywallSource
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -12,6 +13,9 @@ struct PaywallView: View {
     @Environment(\.dynamicTypeSize) private var typeSize
     @ScaledMetric(relativeTo: .largeTitle) private var headlineWidth = 270
     @State private var plan = ProPlan.yearly
+    @State private var slide: Int
+    /// The top safe area of the full screen cover. The page runs under the status bar.
+    @State private var topInset: CGFloat = 0
     @State private var notice: Notice?
     @State private var isWelcoming = false
     @State private var bounce = false
@@ -29,6 +33,25 @@ struct PaywallView: View {
     private static let purchaseFade: CGFloat = 28
     /// The height of the fade under the picture.
     private static let heroFade: CGFloat = 96
+    /// The height of the clip of each slide. The clips are 720 by 556 pixels, and the card crops their top and bottom a little.
+    /// The first screen keeps the purchase area in view.
+    private var clipHeight: CGFloat { typeSize.isAccessibilitySize ? 200 : 244 }
+
+    init(source: AnalyticsEvent.PaywallSource) {
+        self.source = source
+        // The carousel starts at the feature that the user asked for.
+        let first: Int = switch source {
+        case .liveActivity: 0
+        case .family: 1
+        case .watch: 2
+        case .report, .insights: 3
+        case .icons: 4
+        case .sounds: 5
+        case .appColor: 6
+        default: 0
+        }
+        _slide = State(initialValue: first)
+    }
     /// The purchase area scrolls at accessibility text sizes, so it cannot cover the screen.
     private var pinsPurchase: Bool { !typeSize.isAccessibilitySize }
 
@@ -38,9 +61,11 @@ struct PaywallView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 0) {
                         header
-                        column { benefits }
-                            .padding(.top, 16)
-                            .padding(.bottom, pinsPurchase ? 16 + Self.purchaseFade : 16)
+                        // PROTOTYPE: the carousel of Pro features replaces the benefit rows.
+                        ProCarousel(slides: ProSlide.all, index: $slide, clipHeight: clipHeight)
+                            .frame(maxWidth: 600)
+                            .frame(maxWidth: .infinity)
+                            .padding(.bottom, pinsPurchase ? Self.purchaseFade : 16)
                         if pinsPurchase == false { column { purchase }.padding(.bottom, 24) }
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
@@ -65,6 +90,7 @@ struct PaywallView: View {
                 }
             }
             .background(Color(.systemBackground).ignoresSafeArea())
+            .onGeometryChange(for: CGFloat.self) { $0.safeAreaInsets.top } action: { topInset = $0 }
             .toolbar { ToolbarItem(placement: .topBarTrailing) { closeButton } }
             // The picture runs under the navigation bar, so the bar has no background of its own.
             .toolbarBackground(.hidden, for: .navigationBar)
@@ -73,7 +99,7 @@ struct PaywallView: View {
         .overlay { if isWelcoming { welcome } }
         .task { await model.loadProOffers() }
         // When only the other plan loaded, select it, so the buy button sells the plan whose tile shows.
-        .onChange(of: model.pro.offers) { _, offers in
+        .onChange(of: model.pro.offers) { _, _ in
             if offers[plan] == nil, let loaded = ProPlan.allCases.first(where: { offers[$0] != nil }) { plan = loaded }
         }
         // A purchase that ends outside the paywall, for example an approved request, closes it too.
@@ -128,10 +154,10 @@ struct PaywallView: View {
 
     private var header: some View {
         column { headline }
-            // The top padding keeps the text clear of the close button at a large text size.
-            .padding(.top, 60)
-            // The empty block under the headline holds the fade, so the fade ends before the first benefit.
-            .padding(.bottom, 12 + Self.heroFade)
+            // The page is a full screen cover. The top inset holds the status bar and the bar of the close button.
+            .padding(.top, topInset + 4)
+            // PROTOTYPE: the carousel starts under the headline, and the fade of the picture runs on under its top part.
+            .padding(.bottom, 16)
             // The picture runs from the top edge, under the status bar and the close button. It ends in a long, eased fade
             // into the plain background, so no black text sits on the picture or on the fade.
             .background(alignment: .top) {
@@ -148,6 +174,8 @@ struct PaywallView: View {
                             .frame(height: Self.heroFade)
                     }
                 }
+                // The picture and its fade reach below the header, behind the top of the carousel.
+                .padding(.bottom, -Self.heroFade)
                 .accessibilityHidden(true)
             }
     }
@@ -165,38 +193,11 @@ struct PaywallView: View {
         if #available(iOS 26, *) {
             Button(role: .close) { dismiss() }
                 // The app tint would color the glass button. The system close button is neutral.
+                // The app tint would color the glass button. The system close button is neutral.
                 .tint(.white)
         } else {
             Button { dismiss() } label: { Image(systemName: "xmark") }
                 .accessibilityLabel("Close")
-        }
-    }
-
-    // MARK: Benefits
-
-    /// Five rows, each a two-tone icon in the tint, a semibold title, and one gray line. The reports share a row with the
-    /// insights, so the list stays short (D130).
-    private var benefits: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            BenefitRow(
-                icon: "benefit-lock-screen", title: "Right on your Lock Screen",
-                detail: "See dose and time without opening Maru."
-            )
-            BenefitRow(
-                icon: "benefit-family", title: "Your whole family",
-                detail: "People and pets, each with their own reminders."
-            )
-            BenefitRow(
-                icon: "benefit-watch", title: "Record from your wrist",
-                detail: "Apple Watch shows and records each dose."
-            )
-            BenefitRow(
-                icon: "benefit-report", title: "Reports for your doctor",
-                detail: "PDF summaries and 30-day counts."
-            )
-            BenefitRow(
-                icon: "benefit-palette", title: "Make Maru yours", detail: "App colors, icons, and reminder sounds."
-            )
         }
     }
 
@@ -228,7 +229,7 @@ struct PaywallView: View {
     /// display (App Review 3.1.2).
     @ViewBuilder
     private var plans: some View {
-        if !model.pro.offers.isEmpty {
+        if !offers.isEmpty {
             let layout = typeSize.isAccessibilitySize
                 ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
             layout {
@@ -374,7 +375,20 @@ struct PaywallView: View {
     }
 
     private func offer(_ plan: ProPlan) -> ProOffer? {
-        model.pro.offers[plan]
+        offers[plan]
+    }
+
+    private var offers: [ProPlan: ProOffer] {
+        #if DEBUG
+        // `-MaruSampleOffers YES`: `simctl launch` has no StoreKit configuration, so the captures use fixed prices.
+        if DebugLaunch.fakesOffers {
+            return [
+                .yearly: ProOffer(plan: .yearly, displayPrice: "$9.99", trialDays: 7, monthlyPrice: "$0.83"),
+                .lifetime: ProOffer(plan: .lifetime, displayPrice: "$19.99", trialDays: nil, monthlyPrice: nil),
+            ]
+        }
+        #endif
+        return model.pro.offers
     }
 
     private func buy() {
@@ -416,33 +430,6 @@ struct HeroArt: View {
         } else {
             withAnimation(.easeInOut(duration: 10).repeatForever(autoreverses: true)) { drifts = true }
         }
-    }
-}
-
-/// One paid feature: a two-tone icon in the tint, a semibold title, and one line in gray. The icons share one column.
-private struct BenefitRow: View {
-    /// An image of Icons.xcassets.
-    let icon: String
-    let title: LocalizedStringKey
-    let detail: LocalizedStringKey
-    @ScaledMetric(relativeTo: .title3) private var iconSide = 32
-
-    var body: some View {
-        HStack(alignment: .center, spacing: 14) {
-            // Two-tone icons in the style of the item forms (Icons.xcassets), in the app color.
-            Image(icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: iconSide, height: iconSide)
-                .foregroundStyle(.tint)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title).font(.headline)
-                Text(detail).font(.subheadline).foregroundStyle(.secondary)
-            }
-            .fixedSize(horizontal: false, vertical: true)
-        }
-        .accessibilityElement(children: .combine)
     }
 }
 
@@ -528,7 +515,8 @@ private struct PaywallHost: ViewModifier {
     let isActive: Bool
 
     func body(content: Content) -> some View {
-        content.sheet(item: Binding(
+        // PROTOTYPE: a full page, so the picture, the carousel, and the plans have room.
+        content.fullScreenCover(item: Binding(
             get: { isActive ? model.proState.paywall : nil },
             set: { if $0 == nil, isActive { model.paywallDidClose() } }
         )) { request in
