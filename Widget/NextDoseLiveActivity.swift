@@ -36,13 +36,18 @@ struct NextDoseLiveActivity: Widget {
                         .padding(.horizontal, 4)
                 }
             } compactLeading: {
-                Image(systemName: "pills.fill").foregroundStyle(shown.tint)
+                // The island is the camera, 7 points at each outer edge, and the two sides. Small fixed sizes keep the
+                // sides small (D150). In the island, a text style draws larger than its size, so it is not used here.
+                Image(systemName: "pills.fill")
+                    .font(.system(size: 10, weight: .semibold))
+                    .foregroundStyle(shown.tint)
             } compactTrailing: {
                 // The hour and the minute with no "am" or "pm", so the island stays narrow (D150). The expanded form and
-                // the Lock Screen show the full time. It needs no update.
+                // the Lock Screen show the full time. The text does not change in place, so it needs no digits of one
+                // width, which are wider.
                 if shown.phase != .expired {
                     Text(shown.shortTime)
-                        .monospacedDigit()
+                        .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(shown.tint)
                 }
             } minimal: {

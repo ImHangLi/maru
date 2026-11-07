@@ -3144,13 +3144,22 @@ The new Lock Screen layout (maintainer goal: clean, premium, simple):
 The compact Dynamic Island:
 
 - Options: a symbol only, a progress ring, the hour only ("9"), or the hour and the minute with no "am" or "pm" ("9:00").
-- The choice is the hour and the minute with no day period, in the tint, with digits of one width. The system draws the compact island as wide as its wider side, so a short trailing text keeps it narrow. It is "9:00" in a 12-hour region and "21:00" in a 24-hour region.
+- The choice is the hour and the minute with no day period, in the tint. It is "9:00" in a 12-hour region and "21:00" in a 24-hour region.
 - A symbol or a ring tells nothing new beside the pill symbol, and a ring needs the count of the day in the content. The hour alone is not clear at "9:30".
-- The full time stays in the expanded form and on the Lock Screen. The leading pill symbol and the minimal form do not change.
+- The full time stays in the expanded form and on the Lock Screen. The minimal form does not change.
+
+The size of the compact Dynamic Island (second pass, same day). The maintainer said that the first pass was still too wide, and asked for an island as narrow as the one of Spotify.
+
+- How the system sizes it: the renderer log of `chronod` in the simulator gives the camera area as 125.33 by 36.67 points. Each side gets 7 points at the outer edge, 0 points at the camera, and a width from 0 to 101.67 points. So the island is 139.33 points plus the width of the two sides. The two sides do not need the same width.
+- The cause: the first pass gave the pill symbol and the time no font, so the system drew them at a large default size. The time also had digits of one width. The sides were about 19 and 30 points wide.
+- The leading side has a floor of about 17 points in the simulator. A 12-point frame on the symbol did not make the island narrower.
+- A text style does not make the content small enough. `.caption` made the island only 4 points narrower, and `.caption2` drew at the same size as `.caption`. So the sides use fixed sizes: the pill symbol at 10 points semibold, and the time at 11 points bold. The time does not change in place, so it has no digits of one width.
+- No system Live Activity runs in the iOS 27.0 simulator: it has no Clock app, and Maps has no navigation. So a capture of the island of Spotify or of a timer was not possible. The reference is the system floor above and the HIG rule "Keep content as narrow as possible and ensure it's snug against the TrueDepth camera."
+- Widths in the iPhone 17 simulator, at 1206 pixels: first pass 573 pixels (191 points, 47.5%). Second pass 544 pixels (181.3 points, 45.1%). Floor with empty sides 418 pixels (139.33 points, 34.7%). Floor with the 17-point leading side and an equal trailing side about 520 pixels (173.3 points, 43.1%).
 
 Files: `Widget/NextDoseLiveActivity.swift`, `docs/design.md`.
 
 Tests: none (D016). The change is layout only.
 
-Not verified: a real iPhone. The captures come from an iPhone 17 simulator on iOS 27.0. The minimal form needs a second Live Activity of another app, so no capture shows it. It needs a check on the maintainer's iPhone: the Lock Screen card with light and dark wallpapers, the compact island, the expanded island, and "Taken".
+Not verified: a real iPhone. The captures come from an iPhone 17 simulator on iOS 27.0. The minimal form needs a second Live Activity of another app, so no capture shows it. A side by side check with Spotify needs the iPhone. It needs a check on the maintainer's iPhone: the Lock Screen card with light and dark wallpapers, the compact island, the expanded island, and "Taken".
 
