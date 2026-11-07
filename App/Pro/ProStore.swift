@@ -59,6 +59,8 @@ final class ProStore {
     private(set) var plan: ProPlan?
     private(set) var offers: [ProPlan: ProOffer] = [:]
     private(set) var isLoading = false
+    /// The last load of the offers ended with none. Before the first load ends, the paywall shows a placeholder.
+    private(set) var offersFailed = false
     /// The plan of a purchase that runs. The paywall disables its buttons while it runs.
     private(set) var buying: ProPlan?
     /// StoreKit answered in this process. Before it, `isPro` is the cache, and a renewal can come after the cached end of
@@ -108,7 +110,7 @@ final class ProStore {
 
     /// Reads the entitlement, and listens for transactions that end outside a purchase call: a renewal, a refund, an
     /// approved purchase, a code, and a change of Family Sharing. Both tasks wait for the system, so the launch waits
-    /// for nothing (T35).
+    /// for nothing (T35). A free user also gets the offers now, so the paywall opens with both plans (D153).
     func start() {
         guard listener == nil else { return }
         listener = Task { [weak self] in
@@ -121,7 +123,10 @@ final class ProStore {
             }
         }
         scheduleExpiryCheck()
-        Task { await refreshEntitlement() }
+        Task {
+            await refreshEntitlement()
+            if !isPro { await loadOffers() }
+        }
     }
 
     /// Pro is active when a verified transaction for one of the two products is current and not revoked. A family
@@ -164,15 +169,22 @@ final class ProStore {
         return max(expiration, grace ?? expiration)
     }
 
-    /// Loads the two plans when a paywall shows. A failure leaves the offers empty, and the paywall says so.
+    /// Loads the two plans, at launch for a free user and again when a paywall shows with no offers. Both plans
+    /// arrive in one change, so the paywall never shows one plan before the other (D153). A failure leaves the offers
+    /// empty, and the paywall says so.
     func loadOffers() async {
         guard offers.count < ProPlan.allCases.count, !isLoading else { return }
         isLoading = true
         defer { isLoading = false }
-        guard let loaded = try? await Product.products(for: ProPlan.allCases.map(\.productID)) else { return }
+        guard let loaded = try? await Product.products(for: ProPlan.allCases.map(\.productID)) else {
+            offersFailed = offers.isEmpty
+            return
+        }
+        var newProducts: [ProPlan: Product] = [:]
+        var newOffers: [ProPlan: ProOffer] = [:]
         for product in loaded {
             guard let plan = ProPlan(productID: product.id) else { continue }
-            products[plan] = product
+            newProducts[plan] = product
             var trialDays: Int?
             if let subscription = product.subscription, let intro = subscription.introductoryOffer,
                intro.paymentMode == .freeTrial, await subscription.isEligibleForIntroOffer {
@@ -183,10 +195,13 @@ final class ProStore {
                 }
             }
             let monthly = plan == .yearly ? (product.price / 12).formatted(product.priceFormatStyle) : nil
-            offers[plan] = ProOffer(
+            newOffers[plan] = ProOffer(
                 plan: plan, displayPrice: product.displayPrice, trialDays: trialDays, monthlyPrice: monthly
             )
         }
+        products.merge(newProducts) { _, new in new }
+        offers.merge(newOffers) { _, new in new }
+        offersFailed = offers.isEmpty
     }
 
     /// One purchase. `nil` when no purchase started, for example while another one runs.

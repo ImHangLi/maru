@@ -211,9 +211,9 @@ struct PaywallView: View {
                     noticeText(notice).font(.footnote)
                 } else if let terms {
                     terms.font(.footnote).foregroundStyle(.secondary).minimumScaleFactor(0.9)
-                } else if plan == .lifetime {
+                } else {
                     // The lifetime tile says "Pay once. It’s yours.", so no terms line repeats it. One blank line keeps
-                    // the button where it is.
+                    // the button where it is, also while the offers load.
                     Text(verbatim: " ").font(.footnote).accessibilityHidden(true)
                 }
             }
@@ -254,10 +254,7 @@ struct PaywallView: View {
             .fixedSize(horizontal: false, vertical: true)
             // The free trial tag sits half over the top edge of its tile.
             .padding(.top, offer(.yearly)?.trialDays == nil ? 0 : 10)
-        } else if model.pro.isLoading {
-            ProgressView()
-                .frame(maxWidth: .infinity, minHeight: 80)
-        } else {
+        } else if model.pro.offersFailed, !model.pro.isLoading {
             VStack(spacing: 12) {
                 Text("Prices didn’t load. Check your connection and try again.")
                     .foregroundStyle(.secondary)
@@ -265,7 +262,26 @@ struct PaywallView: View {
                 Button("Try Again") { Task { await model.loadProOffers() } }
             }
             .frame(maxWidth: .infinity, minHeight: 80)
+        } else {
+            placeholderPlans
         }
+    }
+
+    /// While the offers load, two quiet tiles with the shape of the real ones keep the height of the purchase area, so
+    /// nothing moves when the prices arrive (D153). They show no price, and they do nothing.
+    private var placeholderPlans: some View {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(spacing: 12)) : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
+            ForEach(ProPlan.allCases, id: \.self) { _ in
+                PlanTile(title: "Yearly", price: "$00.00", tag: nil, note: Text(verbatim: "Pay once."), isSelected: false) {}
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.top, 10)
+        .redacted(reason: .placeholder)
+        .disabled(true)
+        .accessibilityHidden(true)
     }
 
     /// The terms of the selected subscription, directly above the button, with its price and its period (App Review
