@@ -27,6 +27,8 @@ struct NextDoseLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.trailing) {
                     NextDoseStatus(shown: shown)
                         .font(.subheadline.weight(.semibold))
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                         .padding(.trailing, 4)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
@@ -36,9 +38,12 @@ struct NextDoseLiveActivity: Widget {
             } compactLeading: {
                 Image(systemName: "pills.fill").foregroundStyle(shown.tint)
             } compactTrailing: {
-                // The planned time, because a relative time does not fit in all languages. It needs no update.
+                // The hour and the minute with no "am" or "pm", so the island stays narrow (D150). The expanded form and
+                // the Lock Screen show the full time. It needs no update.
                 if shown.phase != .expired {
-                    Text(shown.time).foregroundStyle(shown.tint)
+                    Text(shown.shortTime)
+                        .monospacedDigit()
+                        .foregroundStyle(shown.tint)
                 }
             } minimal: {
                 Image(systemName: "pills.fill").foregroundStyle(shown.tint)
@@ -65,6 +70,8 @@ private struct NextDoseShown {
     let phase: Phase
     let tint: Color
     let time: String
+    /// The planned time with no day period, for example "9:00" or "21:00", for the compact Dynamic Island (D150).
+    let shortTime: String
 
     init(_ context: ActivityViewContext<NextDoseAttributes>) {
         state = context.state
@@ -78,7 +85,11 @@ private struct NextDoseShown {
             phase = .open
         }
         tint = AppGroup.appColor.tint
-        time = state.plannedAt.formatted(.rowTime(in: TimeZone(identifier: state.timeZone) ?? .current))
+        let timeZone = TimeZone(identifier: state.timeZone) ?? .current
+        time = state.plannedAt.formatted(.rowTime(in: timeZone))
+        var short = Date.FormatStyle(timeZone: timeZone).hour(.defaultDigits(amPM: .omitted)).minute()
+        short.locale = .current
+        shortTime = state.plannedAt.formatted(short)
     }
 
     /// The names, or the number of doses when "Show Names in Reminders" is off (D029). The state has at most three
@@ -91,21 +102,49 @@ private struct NextDoseShown {
     }
 }
 
+/// The Lock Screen: the pill mark, the part of the day and the planned time, the doses, the relative time, and "Taken".
+/// It uses the system background of the activity and system text colors, so it reads on light and dark Lock Screens.
 private struct NextDoseLockScreen: View {
     let shown: NextDoseShown
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
-                Image(systemName: "pills.fill").foregroundStyle(shown.tint)
-                if let part = shown.part { Text(part.title).foregroundStyle(shown.tint) }
-                Text(shown.time).foregroundStyle(.secondary)
-                Spacer(minLength: 8)
-                NextDoseStatus(shown: shown)
+        HStack(alignment: .center, spacing: 12) {
+            Image(systemName: "pills.fill")
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(shown.tint)
+                .frame(width: 44, height: 44)
+                .background(shown.tint.opacity(0.18), in: Circle())
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 4) {
+                    if let part = shown.part { Text(part.title) }
+                    Text(shown.time)
+                }
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(shown.tint)
+                .lineLimit(1)
+                switch shown.phase {
+                case .expired:
+                    Text("Open Maru to update.")
+                        .font(.headline)
+                case .notConfirmed:
+                    shown.doses.font(.headline).lineLimit(1)
+                    // The dose can be stored, so the text does not say that nothing was recorded (spec 7.2, D014).
+                    Label("Couldn’t confirm the save. Open Maru to check.", systemImage: "exclamationmark.triangle")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                case .open:
+                    shown.doses.font(.headline).lineLimit(2)
+                    NextDoseStatus(shown: shown)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
-            .font(.subheadline.weight(.semibold))
-            .lineLimit(1)
-            NextDoseBody(shown: shown)
+            Spacer(minLength: 0)
+            if shown.phase == .open {
+                NextDoseTakenButton(shown: shown)
+            }
         }
         .padding(16)
         .widgetURL(AppGroup.activityURL(shown.part))
@@ -114,14 +153,15 @@ private struct NextDoseLockScreen: View {
 
 /// The planned time relative to now. The system moves it on the screen, also across the planned time, so the activity
 /// needs no update at the planned time. It never says "late" or "missed" (D101).
+///
+/// Do not add `.fixedSize()` to this text. The widget renderer then draws nothing for the whole view: the Lock Screen
+/// showed an empty card in version 1.1.0 (D150).
 private struct NextDoseStatus: View {
     let shown: NextDoseShown
 
     var body: some View {
         if shown.phase == .open {
             relative
-                .multilineTextAlignment(.trailing)
-                .fixedSize()
         }
     }
 
@@ -159,21 +199,29 @@ private struct NextDoseBody: View {
                     .font(.headline)
                     .lineLimit(2)
                 Spacer(minLength: 0)
-                // The app records only after the unlock and the checks of the record. The activity changes after the commit.
-                // Doses of two or more members have no button: one tap must not record a dose for another member (D123).
-                if shown.state.canRecord != false {
-                    Button(intent: TakeNextDoseIntent(shown.state)) {
-                        Text("Taken")
-                            .font(.subheadline.weight(.semibold))
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .buttonBorderShape(.capsule)
-                    .tint(shown.tint)
-                    .accessibilityHint(
-                        shown.state.count == 1 ? Text("Records this dose as taken") : Text("Records these doses as taken")
-                    )
-                }
+                NextDoseTakenButton(shown: shown)
             }
+        }
+    }
+}
+
+/// "Taken". The app records only after the unlock and the checks of the record. The activity changes after the commit.
+/// Doses of two or more members have no button: one tap must not record a dose for another member (D123).
+private struct NextDoseTakenButton: View {
+    let shown: NextDoseShown
+
+    var body: some View {
+        if shown.state.canRecord != false {
+            Button(intent: TakeNextDoseIntent(shown.state)) {
+                Text("Taken")
+                    .font(.subheadline.weight(.semibold))
+            }
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .tint(shown.tint)
+            .accessibilityHint(
+                shown.state.count == 1 ? Text("Records this dose as taken") : Text("Records these doses as taken")
+            )
         }
     }
 }
