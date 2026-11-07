@@ -16,6 +16,8 @@ struct PaywallView: View {
     @State private var slide: Int
     /// The top safe area of the full screen cover. The page runs under the status bar.
     @State private var topInset: CGFloat = 0
+    /// The height of the picture block with the headline, before the fade.
+    @State private var headerHeight: CGFloat = 300
     @State private var notice: Notice?
     @State private var isWelcoming = false
     @State private var bounce = false
@@ -32,10 +34,17 @@ struct PaywallView: View {
     /// The height of the fade above the purchase area.
     private static let purchaseFade: CGFloat = 28
     /// The height of the fade under the picture.
-    private static let heroFade: CGFloat = 96
-    /// The height of the clip of each slide. The clips are 720 by 556 pixels, and the card crops their top and bottom a little.
-    /// The first screen keeps the purchase area in view.
-    private var clipHeight: CGFloat { typeSize.isAccessibilitySize ? 200 : 244 }
+    private static let heroFade: CGFloat = 150
+    /// The part of the fade of the picture that lies under the end of the headline block.
+    private static let heroOverlap: CGFloat = 50
+    /// Stills instead of clips: `-MaruPaywallStills YES` in a debug build (prototype). A release build shows the clips.
+    private var usesStills: Bool {
+        #if DEBUG
+        DebugLaunch.usesStills
+        #else
+        false
+        #endif
+    }
 
     init(source: AnalyticsEvent.PaywallSource) {
         self.source = source
@@ -45,9 +54,7 @@ struct PaywallView: View {
         case .family: 1
         case .watch: 2
         case .report, .insights: 3
-        case .icons: 4
-        case .sounds: 5
-        case .appColor: 6
+        case .icons, .sounds, .appColor: 4
         default: 0
         }
         _slide = State(initialValue: first)
@@ -62,13 +69,14 @@ struct PaywallView: View {
                     VStack(alignment: .leading, spacing: 0) {
                         header
                         // PROTOTYPE: the carousel of Pro features replaces the benefit rows.
-                        ProCarousel(slides: ProSlide.all, index: $slide, clipHeight: clipHeight)
+                        ProCarousel(slides: ProSlide.all, index: $slide, usesStills: usesStills)
                             .frame(maxWidth: 600)
                             .frame(maxWidth: .infinity)
                             .padding(.bottom, pinsPurchase ? Self.purchaseFade : 16)
                         if pinsPurchase == false { column { purchase }.padding(.bottom, 24) }
                     }
                     .frame(maxWidth: .infinity, alignment: .topLeading)
+                    .background(alignment: .top) { heroBackground }
                 }
                 .scrollBounceBehavior(.basedOnSize)
                 .ignoresSafeArea(edges: .top)
@@ -85,8 +93,8 @@ struct PaywallView: View {
                 }
                 if pinsPurchase {
                     column { purchase }
-                        .padding(.top, 8)
-                        .padding(.bottom, 8)
+                        .padding(.top, 4)
+                        .padding(.bottom, 4)
                 }
             }
             .background(Color(.systemBackground).ignoresSafeArea())
@@ -157,27 +165,28 @@ struct PaywallView: View {
             // The page is a full screen cover. The top inset holds the status bar and the bar of the close button.
             .padding(.top, topInset + 4)
             // PROTOTYPE: the carousel starts under the headline, and the fade of the picture runs on under its top part.
-            .padding(.bottom, 16)
-            // The picture runs from the top edge, under the status bar and the close button. It ends in a long, eased fade
-            // into the plain background, so no black text sits on the picture or on the fade.
-            .background(alignment: .top) {
-                ZStack {
-                    HeroArt(isStill: reduceMotion)
-                    LinearGradient(
-                        colors: [.black.opacity(0.1), .black.opacity(0.45)], startPoint: .top, endPoint: .bottom
-                    )
-                }
-                .mask {
-                    VStack(spacing: 0) {
-                        Rectangle()
-                        LinearGradient(stops: Self.fadeStops, startPoint: .top, endPoint: .bottom)
-                            .frame(height: Self.heroFade)
-                    }
-                }
-                // The picture and its fade reach below the header, behind the top of the carousel.
-                .padding(.bottom, -Self.heroFade)
-                .accessibilityHidden(true)
+            .padding(.bottom, 4)
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { headerHeight = $0 }
+    }
+
+    /// The picture runs from the top edge, under the status bar and the close button, and behind the top of the
+    /// carousel. It ends in a long, eased fade into the plain background, so no black text sits on the picture or on the
+    /// fade. It lies behind the whole page, so the carousel draws over its fade.
+    private var heroBackground: some View {
+        ZStack {
+            HeroArt(isStill: reduceMotion)
+            LinearGradient(colors: [.black.opacity(0.1), .black.opacity(0.45)], startPoint: .top, endPoint: .bottom)
+        }
+        .mask {
+            VStack(spacing: 0) {
+                Rectangle()
+                LinearGradient(stops: Self.fadeStops, startPoint: .top, endPoint: .bottom)
+                    .frame(height: Self.heroFade)
             }
+        }
+        // The fade starts above the end of the headline block, so the picture is already soft where the carousel starts.
+        .frame(height: headerHeight + Self.heroFade - Self.heroOverlap)
+        .accessibilityHidden(true)
     }
 
     /// An eased fade from opaque to clear, with no visible start or end (smootherstep).
@@ -205,7 +214,7 @@ struct PaywallView: View {
 
     /// Plans, the terms, the button, and the legal links. It stays at the foot of the sheet.
     private var purchase: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             plans
             Group {
                 if let notice {
@@ -220,6 +229,7 @@ struct PaywallView: View {
             }
             .multilineTextAlignment(.center)
             .fixedSize(horizontal: false, vertical: true)
+            .padding(.top, 2)
             buyButton
             legalLinks
         }
@@ -320,15 +330,22 @@ struct PaywallView: View {
     /// Terms of Use and Privacy Policy, quiet, on one line at the foot (App Review 3.1.2).
     private var legalLinks: some View {
         HStack(spacing: 6) {
-            if let url = Self.termsURL { Link("Terms of Use", destination: url) }
+            if let url = Self.termsURL { Link(destination: url) { linkLabel("Terms of Use") } }
             Text(verbatim: "·").accessibilityHidden(true)
-            if let url = Self.privacyURL { Link("Privacy Policy", destination: url) }
+            if let url = Self.privacyURL { Link(destination: url) { linkLabel("Privacy Policy") } }
         }
+        // The links take 44 points of height for a tap, and the line keeps only the height of its text.
+        .padding(.vertical, -15)
+        .padding(.top, 2)
         .font(.caption2)
         .foregroundStyle(.secondary)
         .tint(.secondary)
         .lineLimit(1)
         .minimumScaleFactor(0.9)
+    }
+
+    private func linkLabel(_ title: LocalizedStringKey) -> some View {
+        Text(title).padding(.vertical, 15).contentShape(.rect)
     }
 
     @ViewBuilder
@@ -445,19 +462,23 @@ private struct PlanTile: View {
     let select: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    private static let cornerRadius: CGFloat = 16
+    private static let cornerRadius: CGFloat = 14
     /// The selection ring: a thin line, drawn outside the tile with a small gap, like a system selection ring.
     private static let ringWidth: CGFloat = 1.5
     private static let ringGap: CGFloat = 3
 
     var body: some View {
         Button(action: select) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title).font(.subheadline.weight(.semibold))
-                Text(verbatim: price).font(.title2.bold())
+            // PROTOTYPE: a shorter tile. The name and the price share one line, and the price stays the largest text.
+            VStack(alignment: .leading, spacing: 1) {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    Text(title).font(.subheadline.weight(.semibold))
+                    Spacer(minLength: 0)
+                    Text(verbatim: price).font(.title3.bold())
+                }
                 // A tile with no note keeps the height of its neighbor.
                 (note ?? Text(verbatim: " "))
-                    .font(.footnote)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
@@ -465,8 +486,8 @@ private struct PlanTile: View {
             .foregroundStyle(.primary)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
             .multilineTextAlignment(.leading)
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
+            .padding(.vertical, 9)
+            .padding(.horizontal, 14)
             .background {
                 Color(.secondarySystemBackground)
                     .clipShape(.rect(cornerRadius: Self.cornerRadius, style: .continuous))

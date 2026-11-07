@@ -46,6 +46,12 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruSampleOffers")
     }
 
+    /// `-MaruPaywallStills YES`: the paywall carousel shows still images instead of clips, for the comparison of the two
+    /// variants of the prototype.
+    static var usesStills: Bool {
+        UserDefaults.standard.bool(forKey: "MaruPaywallStills")
+    }
+
     /// `-MaruSampleSoon YES`: the evening samples get a time 40 minutes from the launch, so the Live Activity shows a
     /// dose that is still to come. For the Lock Screen clip of the paywall carousel prototype.
     static var wantsSoonSample: Bool {
