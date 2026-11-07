@@ -15,7 +15,7 @@ settings:
     # The widgets and the Watch app have a catalog each: Widget/ and Watch/.
     SWIFT_EMIT_LOC_STRINGS: YES
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
-    MARKETING_VERSION: "1.1.0"
+    MARKETING_VERSION: "1.1.1"
     CURRENT_PROJECT_VERSION: "1"
 packages:
   MaruKit:
