@@ -140,10 +140,14 @@ struct RootView: View {
         } message: {
             Text("Maru can remind you again up to 2 times, 30 minutes apart, if you don’t record a dose.")
         }
-        // The first-value offer of Maru Pro comes last after a save: after the edit screen, the notification permission
-        // alert, the reminder alerts, "Remind Again?", and the opt-in question (D107).
-        .onChange(of: firstValueIsDue, initial: true) { _, isDue in
-            if isDue { model.showFirstValueOffer() }
+        // The first-value offer of Maru Pro comes after the first dose taken on a later day than the first launch (D151).
+        // It waits for the edit screen, the alerts, and the questions, and for a normal open with Today in front. The
+        // pause lets the user see the record before it. A change of the rules during the pause cancels it.
+        .task(id: firstValueIsDue) {
+            guard firstValueIsDue else { return }
+            try? await Task.sleep(for: .seconds(1.5))
+            guard !Task.isCancelled, firstValueIsDue else { return }
+            model.showFirstValueOffer()
         }
         // The paywall that a free user asked for on the Watch, the next time that Maru is in front (D111).
         .onChange(of: askedOfferIsDue, initial: true) { _, isDue in
@@ -185,14 +189,16 @@ struct RootView: View {
     }
 
     private var firstValueIsDue: Bool {
-        model.proState.firstValueOffer && model.onboarding == .hidden && model.remindAgainOffer == nil
+        model.proState.firstValueOffer && scenePhase == .active && !model.opensForAction && model.selectedTab == .today
+            && model.onboarding == .hidden && model.remindAgainOffer == nil && model.today.lockedTap == nil
+            && model.today.pending.isEmpty
             && !model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
             && model.reminderAlerts.isEmpty && !model.settings.isPresented && model.proState.paywall == nil
     }
 
     private var askedOfferIsDue: Bool {
         model.proState.askedSource != nil && scenePhase == .active && model.onboarding == .hidden
-            && !model.proState.firstValueOffer && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice
+            && !firstValueIsDue && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice
             && !showsOffer && model.reminderAlerts.isEmpty && model.proState.paywall == nil
     }
 
