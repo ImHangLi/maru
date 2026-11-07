@@ -254,6 +254,8 @@ extension AppModel {
     /// says so, and Today keeps the events for a retry (D014).
     func takeNextDose(_ intent: TakeNextDoseIntent) async {
         analytics.markUsed(.liveActivity)
+        // A taken dose from outside the app offers Maru Pro only at the next normal open (D151).
+        opensForAction = true
         // The generation comes before the first await, so a restore after this line refuses the record (D040).
         let generation = dataGeneration
         let now = Date()

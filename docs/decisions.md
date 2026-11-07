@@ -1886,7 +1886,7 @@ Details:
 
 Not verified: no build of the app on this Mac, and nobody saw the text on a display. CI builds the app.
 
-## D102 · 2026-10-28 · The App Store rating prompt
+## D102 · 2026-10-28 · The App Store rating prompt (no prompt on the day of the first-value offer, D151)
 
 Maintainer decision.
 
@@ -2016,7 +2016,7 @@ Sources:
 
 Not verified: nobody ran Maru in the iPhone Duo simulator or on an iPhone Duo. This Mac does not run a simulator. CI builds the app with the iOS 27.1 SDK. Nobody listed the simulators of the CI image.
 
-## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115, paywall changed by D118) (paywall source `feature` replaced by D127)
+## D107 · 2026-10-28 · Maru Pro: the purchase foundation and the paywall (replaces the supporter rule of spec 1, P06, 6, 11.5, 14 C, and T48) (third benefit row and app color changed by D114, look and first-value picture changed by D115, paywall changed by D118) (paywall source `feature` replaced by D127) (first-value trigger replaced by D151)
 
 Maintainer decisions of 2026-10-28, with agent detail. They follow the two paywall studies of 2026-10-28 in the maintainer's research folder. They define the "Pro" tier of D099.
 
@@ -2352,7 +2352,7 @@ Check: after the merge, on 2026-10-29, the merged code ran in paired simulators 
 
 Not verified: nobody ran the Watch app on a real Watch. The checks of D071 and D066 for a real iPhone and Watch stay open. App Store Connect needs Apple Watch screenshots before a submission with the Watch app, and App Review needs a way to see the Watch app with Pro (a sandbox purchase).
 
-## D115 · 2026-10-28 · A plain Apple look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107; the paywall part is replaced by D118)
+## D115 · 2026-10-28 · A plain Apple look for Maru Pro: the paywall, the Settings row, the Today card, and the thank-you (changes the look of D107; the paywall part is replaced by D118; the first-value trigger is replaced by D151)
 
 Maintainer request on 2026-10-28, in two rounds. First, the paywall looked plain. A serif, a glow, and a preview card followed, and the maintainer rejected them: the paywall was "very ugly", it must be simpler and more direct, a reader of another language must understand it at once, it may use only the app font, and everything must look like Apple. This decision changes the look only. The StoreKit code, the entitlement rules, the offers, and every price rule of D107 stay as they are. The paywall still has no countdown, no trial switch, no discount, no urgency text, and a "Continue Free" button with the size and shape of the buy button.
 
@@ -3163,3 +3163,36 @@ Tests: none (D016). The change is layout only.
 
 Not verified: a real iPhone. The captures come from an iPhone 17 simulator on iOS 27.0. The minimal form needs a second Live Activity of another app, so no capture shows it. A side by side check with Spotify needs the iPhone. It needs a check on the maintainer's iPhone: the Lock Screen card with light and dark wallpapers, the compact island, the expanded island, and "Taken".
 
+
+## D151 · 2026-11-07 · The first-value offer comes after the first dose taken on a later day (replaces the first-value trigger of D107 and D115)
+
+Maintainer request of 2026-11-07: the paywall showed right after the first item was added. A new user can think that the one item needs a payment. Show it later, for example after the first recorded dose or after about a day of use.
+
+The rule:
+
+- Maru offers Maru Pro once per install, after the first dose that is taken on a calendar day after the day of the first launch (`review.firstLaunch` of D102).
+- A save of an item never offers it. The old trigger and its code are removed.
+- Only a confirmed commit counts (spec 7.2). The record paths do not change. `proRecordsDidCommit`, which every path calls after its commit, reads the records. A record whose last event is "Taken" counts. A skip or an undo does not count. A reminder action whose flush failed does not count. The retry of its events counts when it commits.
+- The offer shows 1.5 seconds after the record, so the user sees "Taken" first. A change of the rules during the pause cancels it.
+- It waits for: a normal open (not a process in which a reminder tap, a widget, a "Taken" action of a reminder, or the Live Activity ran), the app in front, the Today tab with no page over it (History or an item detail), no record in flight or not saved, the onboarding, the edit screen, Settings, the alerts, "Remind Again?", and the opt-in question. At the end of the pause, the window must also show no sheet, alert, or menu, for example "Change Time…" of a row. Otherwise the offer waits for the next record or the next return to the front.
+- The offer and the rating prompt (D102) never show on the same day. The offer does not show on a day of the rating prompt, and the rating prompt does not show on a day of the offer (`pro.firstValueShownAt`). That day still counts for the rating prompt.
+- A dose from a reminder action, a widget, or the Lock Screen keeps the offer in `pro.firstValueDue`. It shows at the next launch that is a normal open with Today in front, after the same pause. This is the one case in which the offer can show soon after an open.
+- `pro.firstValueShown` stays the flag for "once per install". Users who saw the old offer do not see it again.
+- The analytics source stays `first_value`. The event has no item data.
+- The card of Today (day 7), the Settings row, and every feature gate do not change.
+
+Research (`~/Documents/Research/maru/paywall-timing.md` in the maintainer's research folder):
+
+- Purchases concentrate on the install day: 82% of trials start on day 0 (RevenueCat 2025), and 93% of first purchases happen on the install day (Adapty 2026). These numbers come mostly from apps that lock the core with an onboarding paywall. Maru's core stays free, so its offer sells extras.
+- No controlled study compares "after the first core action" with "after N days" for a free-core app. The evidence for the first value moment is case studies and anecdotes.
+- Apple's guidance: let people experience the app before a purchase prompt, and prompt at relevant times.
+- Medisafe users complain about upgrade prompts at each open and leave the app. Calm apps such as Round Health get no such complaints.
+- The core value of a reminder app is a reminder that works on a later day. A dose on the install day often follows the save by seconds, so an offer after it is almost the same moment as the old offer.
+
+Reason: the chosen rule waits until the user has lived with one reminder cycle and has seen that recording is free. It gives up a part of the install-day window. The day-7 card and the feature gates stay as the later chances.
+
+Files: `App/AppModel+Pro.swift`, `App/AppModel+Editor.swift`, `App/RootView.swift`, `App/AppModel.swift`, `App/AppModel+Today.swift`, `App/AppModel+ReminderAction.swift`, `App/AppModel+LiveActivity.swift`, `PRIVACY.md`, the generated privacy pages of the site, `docs/spec.md`, `docs/design.md`.
+
+Tests: none (D016). The change reads committed records and writes no record.
+
+Checks: the app build passed. In an iPhone 17 Pro simulator on iOS 27.0: on the install day, the save and a taken dose showed no paywall. With the first launch moved to the day before, the open showed no paywall, an undo and a new "Taken" showed the paywall after the record, and a relaunch did not show it again. Captures and videos are in `~/Documents/Research/maru/paywall-timing/`. Not verified: the offer after a reminder action, a widget, or the Lock Screen, and a real iPhone.

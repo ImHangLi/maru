@@ -31,6 +31,8 @@ extension AppModel {
         }
         switch action {
         case .taken:
+            // A taken dose from outside the app offers Maru Pro only at the next normal open (D151).
+            opensForAction = true
             await recordFromReminder(.taken, reminder, at: now, deviceTimeZone: deviceTimeZone, generation: generation)
         case .skip:
             await recordFromReminder(.skipped, reminder, at: now, deviceTimeZone: deviceTimeZone, generation: generation)
@@ -49,7 +51,7 @@ extension AppModel {
             // A restore replaced the data after the model read it. The store refused the record, or the model forgets it.
             guard generation == dataGeneration else { return finishWithNotice(.notSaved, reminder) }
             let recorded = result.recorded
-            if !recorded.isEmpty { didCommit(recorded.map { $0.record }) }
+            if !recorded.isEmpty { didCommit(recorded.map { $0.record }, isFlushed: result.isFlushed) }
             guard result.isFlushed else {
                 // The events are stored and the flush failed. Today keeps them for a retry and shows no success (spec 7.2, D014).
                 didFail(

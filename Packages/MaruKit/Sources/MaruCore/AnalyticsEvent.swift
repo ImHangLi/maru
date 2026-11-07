@@ -307,7 +307,7 @@ public extension AnalyticsEvent {
 
     /// The place that showed the paywall of Maru Pro (D107).
     enum PaywallSource: String, CaseIterable, Sendable {
-        /// The one offer after the first save of an item with a time.
+        /// The one offer after the first dose taken on a later day than the first launch (D151).
         case firstValue = "first_value"
         /// The card at the bottom of Today.
         case day7Card = "day7_card"

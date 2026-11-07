@@ -13,8 +13,10 @@ struct PaywallRequest: Identifiable, Equatable {
 struct ProState {
     /// The paywall on the display.
     var paywall: PaywallRequest?
-    /// The first-value offer waits for the alerts and the questions after a save.
-    var firstValueOffer = false
+    /// The first-value offer waits for a normal open with Today in front, and for the alerts and the sheets (D151).
+    /// A dose that was taken in the background or in an earlier process keeps it in `UserDefaults.standard`.
+    var firstValueOffer = UserDefaults.standard.bool(forKey: ProOffers.firstValueDueKey)
+        && !UserDefaults.standard.bool(forKey: ProOffers.firstValueShownKey)
     /// At least 5 doses have a record. The card of Today needs it. It is read until it is true, and again after an
     /// undo, a delete, or a restore.
     var hasEnoughRecords = false
@@ -35,6 +37,9 @@ struct ProState {
 /// The keys and the limits of the two offers that Maru shows by itself (D107).
 enum ProOffers {
     static let firstValueShownKey = "pro.firstValueShown"
+    static let firstValueDueKey = "pro.firstValueDue"
+    /// The time of the first-value offer. The rating prompt does not show on that day (D151).
+    static let firstValueShownAtKey = "pro.firstValueShownAt"
     static let cardDismissedKey = "pro.cardDismissed"
     static let askedSourceKey = "pro.askedSource"
     /// The days on which the card of Today showed, at most `cardDayLimit`.
@@ -42,6 +47,12 @@ enum ProOffers {
     static let cardDayLimit = 3
     static let cardFirstDays: TimeInterval = 7 * 24 * 60 * 60
     static let cardRecords = 5
+
+    /// The first-value offer showed on the calendar day of `now`.
+    static func firstValueShownToday(now: Date = Date()) -> Bool {
+        guard let shownAt = UserDefaults.standard.object(forKey: firstValueShownAtKey) as? Date else { return false }
+        return Calendar.current.isDate(shownAt, inSameDayAs: now)
+    }
 }
 
 extension AppStore {
@@ -108,24 +119,29 @@ extension AppModel {
 
     // MARK: First-value offer
 
-    /// The first save of a new item with a time offers Maru Pro once per install. The save already waited for the
-    /// notification permission alert. The root view shows the offer after the edit screen, the alerts, and the
-    /// questions of the save.
-    ///
-    /// Not after a launch from a reminder or a widget in this process. Then the flag stays unset, and the next such save
-    /// offers it.
-    func offerFirstValue(schedule: Schedule?, session: EditorSession) {
-        guard session.isNew, session.replaced == nil, let schedule, schedule.isEnabled,
-              schedule.versions.last?.slotTimes.isEmpty == false, !opensForAction, !pro.isPro, pro.canMakePayments,
-              !UserDefaults.standard.bool(forKey: ProOffers.firstValueShownKey) else { return }
+    /// The first taken dose on a calendar day after the day of the first launch offers Maru Pro once per install (D151).
+    /// The record committed already. The offer shows later, from the root view: never in the middle of a record, and
+    /// for a dose from a reminder, a widget, or the Lock Screen, at the next normal open with Today in front.
+    private func offerFirstValue(after records: [OccurrenceRecord], at now: Date = Date()) {
+        let defaults = UserDefaults.standard
+        guard !proState.firstValueOffer, !defaults.bool(forKey: ProOffers.firstValueShownKey), !pro.isPro,
+              records.contains(where: { $0.events.last?.action == .taken }),
+              let firstLaunch = ReviewPrompt.firstLaunch(),
+              Calendar.current.startOfDay(for: now) > Calendar.current.startOfDay(for: firstLaunch)
+        else { return }
+        defaults.set(true, forKey: ProOffers.firstValueDueKey)
         proState.firstValueOffer = true
     }
 
-    /// The root view shows the offer now. It never shows again on this device.
+    /// The root view shows the offer now. It never shows again on this device. On a day of the rating prompt it waits
+    /// for a later open.
     func showFirstValueOffer() {
         guard proState.firstValueOffer else { return }
         proState.firstValueOffer = false
+        guard !pro.isPro, pro.canMakePayments, !ReviewPrompt.askedToday() else { return }
         UserDefaults.standard.set(true, forKey: ProOffers.firstValueShownKey)
+        UserDefaults.standard.set(Date(), forKey: ProOffers.firstValueShownAtKey)
+        UserDefaults.standard.removeObject(forKey: ProOffers.firstValueDueKey)
         presentPaywall(reason: .firstValue)
     }
 
@@ -187,9 +203,11 @@ extension AppModel {
         }
     }
 
-    /// An undo removes the record of a dose.
-    func proRecordsDidCommit(_ records: [OccurrenceRecord]) {
+    /// Each commit of records, from every path. An undo removes the record of a dose. A taken dose can offer Maru Pro,
+    /// but only after a flush that confirms it (spec 7.2, D151).
+    func proRecordsDidCommit(_ records: [OccurrenceRecord], isFlushed: Bool = true) {
         if records.contains(where: { $0.events.last?.action == .undo }) { proRecordsDidChange() }
+        if isFlushed { offerFirstValue(after: records) }
     }
 
     /// An undo, a delete, or a restore can remove records. The count is read again, and a read that runs gives no result.

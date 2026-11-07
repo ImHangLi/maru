@@ -56,7 +56,8 @@ final class AppModel {
     var reviewRequest = 0
     /// The first-run onboarding (D103, D104). `AppModel+Onboarding.swift` has the rule.
     var onboarding = OnboardingState.initial
-    /// A reminder tap or a widget link opened the app in this process. The onboarding does not show in it (D104).
+    /// A reminder tap or a widget link opened the app in this process, or a "Taken" of a reminder or of the Live Activity
+    /// ran in it. The onboarding (D104) and the first-value offer of Maru Pro (D151) do not show in it.
     var opensForAction = false
     /// The window is in front. The onboarding waits for it, so a launch in the background does not decide (D104).
     var windowIsActive = false

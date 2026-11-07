@@ -255,10 +255,12 @@ extension AppModel {
         return history.days?.lazy.flatMap(\.doses).first { $0.occurrence.id == id }?.record
     }
 
-    func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = []) {
+    /// - Parameter isFlushed: `false` when a reminder action committed and its flush failed. Today keeps the events for a
+    ///   retry, and the records do not count as confirmed (spec 7.2).
+    func didCommit(_ records: [OccurrenceRecord], backfilled: [Occurrence] = [], isFlushed: Bool = true) {
         let wasComplete = todaySnapshot.map { isComplete($0) } ?? true
         noteRecords(records)
-        proRecordsDidCommit(records)
+        proRecordsDidCommit(records, isFlushed: isFlushed)
         for record in records {
             today.pending[record.occurrenceID] = nil
         }
@@ -298,9 +300,10 @@ extension AppModel {
     }
 
     /// A record completed the day. Maru asks for a rating only while the user sees the app, so a record from a
-    /// reminder or a widget in the background only counts the day (D102).
+    /// reminder or a widget in the background only counts the day (D102). On a day of the first-value offer of Maru Pro,
+    /// it only counts the day too (D151).
     private func dayDidComplete(_ date: LocalDate) {
-        let canAsk = UIApplication.shared.applicationState == .active
+        let canAsk = UIApplication.shared.applicationState == .active && !ProOffers.firstValueShownToday()
         if ReviewPrompt.dayDidComplete(date, canAsk: canAsk) { reviewRequest += 1 }
     }
 
