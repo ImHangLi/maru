@@ -1,5 +1,6 @@
 import MaruCore
 import SwiftUI
+import UIKit
 
 /// The frame of the app: two tabs, or the storage problem in place of them.
 struct RootView: View {
@@ -142,11 +143,13 @@ struct RootView: View {
         }
         // The first-value offer of Maru Pro comes after the first dose taken on a later day than the first launch (D151).
         // It waits for the edit screen, the alerts, and the questions, and for a normal open with Today in front. The
-        // pause lets the user see the record before it. A change of the rules during the pause cancels it.
+        // pause lets the user see the record before it. A change of the rules during the pause cancels it. A menu, an
+        // alert, or a sheet of a row keeps its state in the row, so the end of the pause also checks the window. Then
+        // the offer waits for the next record or the next return to the front.
         .task(id: firstValueIsDue) {
             guard firstValueIsDue else { return }
             try? await Task.sleep(for: .seconds(1.5))
-            guard !Task.isCancelled, firstValueIsDue else { return }
+            guard !Task.isCancelled, firstValueIsDue, !windowPresents else { return }
             model.showFirstValueOffer()
         }
         // The paywall that a free user asked for on the Watch, the next time that Maru is in front (D111).
@@ -190,10 +193,19 @@ struct RootView: View {
 
     private var firstValueIsDue: Bool {
         model.proState.firstValueOffer && scenePhase == .active && !model.opensForAction && model.selectedTab == .today
-            && model.onboarding == .hidden && model.remindAgainOffer == nil && model.today.lockedTap == nil
-            && model.today.pending.isEmpty
+            && model.today.path.isEmpty && !model.history.isOpen && model.onboarding == .hidden
+            && model.remindAgainOffer == nil && model.today.lockedTap == nil && model.today.failure == nil
+            && model.today.asNeeded.failure == nil && !model.endFailed && model.unsavedCount == 0
+            && model.today.inFlight.isEmpty && model.today.asNeeded.inFlight.isEmpty
             && !model.analyticsNotice && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice && !showsOffer
             && model.reminderAlerts.isEmpty && !model.settings.isPresented && model.proState.paywall == nil
+    }
+
+    /// A window of Maru shows a sheet, an alert, or a menu.
+    private var windowPresents: Bool {
+        UIApplication.shared.connectedScenes.contains { scene in
+            (scene as? UIWindowScene)?.windows.contains { $0.rootViewController?.presentedViewController != nil } == true
+        }
     }
 
     private var askedOfferIsDue: Bool {

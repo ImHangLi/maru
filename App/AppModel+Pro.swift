@@ -38,6 +38,8 @@ struct ProState {
 enum ProOffers {
     static let firstValueShownKey = "pro.firstValueShown"
     static let firstValueDueKey = "pro.firstValueDue"
+    /// The time of the first-value offer. The rating prompt does not show on that day (D151).
+    static let firstValueShownAtKey = "pro.firstValueShownAt"
     static let cardDismissedKey = "pro.cardDismissed"
     static let askedSourceKey = "pro.askedSource"
     /// The days on which the card of Today showed, at most `cardDayLimit`.
@@ -45,6 +47,12 @@ enum ProOffers {
     static let cardDayLimit = 3
     static let cardFirstDays: TimeInterval = 7 * 24 * 60 * 60
     static let cardRecords = 5
+
+    /// The first-value offer showed on the calendar day of `now`.
+    static func firstValueShownToday(now: Date = Date()) -> Bool {
+        guard let shownAt = UserDefaults.standard.object(forKey: firstValueShownAtKey) as? Date else { return false }
+        return Calendar.current.isDate(shownAt, inSameDayAs: now)
+    }
 }
 
 extension AppStore {
@@ -132,6 +140,7 @@ extension AppModel {
         proState.firstValueOffer = false
         guard !pro.isPro, pro.canMakePayments, !ReviewPrompt.askedToday() else { return }
         UserDefaults.standard.set(true, forKey: ProOffers.firstValueShownKey)
+        UserDefaults.standard.set(Date(), forKey: ProOffers.firstValueShownAtKey)
         UserDefaults.standard.removeObject(forKey: ProOffers.firstValueDueKey)
         presentPaywall(reason: .firstValue)
     }
@@ -194,11 +203,11 @@ extension AppModel {
         }
     }
 
-    /// Each confirmed commit of records, from every path. An undo removes the record of a dose. A taken dose can offer
-    /// Maru Pro (D151).
-    func proRecordsDidCommit(_ records: [OccurrenceRecord]) {
+    /// Each commit of records, from every path. An undo removes the record of a dose. A taken dose can offer Maru Pro,
+    /// but only after a flush that confirms it (spec 7.2, D151).
+    func proRecordsDidCommit(_ records: [OccurrenceRecord], isFlushed: Bool = true) {
         if records.contains(where: { $0.events.last?.action == .undo }) { proRecordsDidChange() }
-        offerFirstValue(after: records)
+        if isFlushed { offerFirstValue(after: records) }
     }
 
     /// An undo, a delete, or a restore can remove records. The count is read again, and a read that runs gives no result.

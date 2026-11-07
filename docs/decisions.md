@@ -1886,7 +1886,7 @@ Details:
 
 Not verified: no build of the app on this Mac, and nobody saw the text on a display. CI builds the app.
 
-## D102 · 2026-10-28 · The App Store rating prompt
+## D102 · 2026-10-28 · The App Store rating prompt (no prompt on the day of the first-value offer, D151)
 
 Maintainer decision.
 
@@ -3172,10 +3172,11 @@ The rule:
 
 - Maru offers Maru Pro once per install, after the first dose that is taken on a calendar day after the day of the first launch (`review.firstLaunch` of D102).
 - A save of an item never offers it. The old trigger and its code are removed.
-- Only a confirmed commit counts. The record paths do not change. `proRecordsDidCommit`, which every path calls after its commit, reads the records. A record whose last event is "Taken" counts. A skip or an undo does not count.
+- Only a confirmed commit counts (spec 7.2). The record paths do not change. `proRecordsDidCommit`, which every path calls after its commit, reads the records. A record whose last event is "Taken" counts. A skip or an undo does not count. A reminder action whose flush failed does not count. The retry of its events counts when it commits.
 - The offer shows 1.5 seconds after the record, so the user sees "Taken" first. A change of the rules during the pause cancels it.
-- It waits for: a normal open (not a process that a reminder or a widget opened), the app in front, the Today tab, no record in flight, the onboarding, the edit screen, Settings, the alerts, "Remind Again?", and the opt-in question. It does not show on a day of the rating prompt.
-- A dose from a reminder action, a widget, or the Lock Screen keeps the offer in `pro.firstValueDue`. It shows at the next normal open with Today in front, after the same pause. This is the one case in which the offer can show soon after an open.
+- It waits for: a normal open (not a process in which a reminder tap, a widget, a "Taken" action of a reminder, or the Live Activity ran), the app in front, the Today tab with no page over it (History or an item detail), no record in flight or not saved, the onboarding, the edit screen, Settings, the alerts, "Remind Again?", and the opt-in question. At the end of the pause, the window must also show no sheet, alert, or menu, for example "Change Time…" of a row. Otherwise the offer waits for the next record or the next return to the front.
+- The offer and the rating prompt (D102) never show on the same day. The offer does not show on a day of the rating prompt, and the rating prompt does not show on a day of the offer (`pro.firstValueShownAt`). That day still counts for the rating prompt.
+- A dose from a reminder action, a widget, or the Lock Screen keeps the offer in `pro.firstValueDue`. It shows at the next launch that is a normal open with Today in front, after the same pause. This is the one case in which the offer can show soon after an open.
 - `pro.firstValueShown` stays the flag for "once per install". Users who saw the old offer do not see it again.
 - The analytics source stays `first_value`. The event has no item data.
 - The card of Today (day 7), the Settings row, and every feature gate do not change.
@@ -3190,7 +3191,7 @@ Research (`~/Documents/Research/maru/paywall-timing.md` in the maintainer's rese
 
 Reason: the chosen rule waits until the user has lived with one reminder cycle and has seen that recording is free. It gives up a part of the install-day window. The day-7 card and the feature gates stay as the later chances.
 
-Files: `App/AppModel+Pro.swift`, `App/AppModel+Editor.swift`, `App/RootView.swift`, `PRIVACY.md`, the generated privacy pages of the site, `docs/spec.md`, `docs/design.md`.
+Files: `App/AppModel+Pro.swift`, `App/AppModel+Editor.swift`, `App/RootView.swift`, `App/AppModel.swift`, `App/AppModel+Today.swift`, `App/AppModel+ReminderAction.swift`, `App/AppModel+LiveActivity.swift`, `PRIVACY.md`, the generated privacy pages of the site, `docs/spec.md`, `docs/design.md`.
 
 Tests: none (D016). The change reads committed records and writes no record.
 
