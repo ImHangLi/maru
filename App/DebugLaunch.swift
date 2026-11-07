@@ -22,12 +22,6 @@ enum DebugLaunch {
         UserDefaults.standard.bool(forKey: "MaruSampleFamily")
     }
 
-    /// `-MaruFirstRun YES`: show the onboarding again, as after a new install (D103).
-    /// For a check on a device or a simulator that already showed it. The onboarding still needs a store with no item.
-    static var wantsFirstRun: Bool {
-        UserDefaults.standard.bool(forKey: "MaruFirstRun")
-    }
-
     /// `-MaruDebugPro YES`: act as if Maru Pro is active, with no purchase. For the check of the Watch app in a
     /// simulator (D111), and of the PDF reports and the 30-day counts (D130). Without it, the purchase of the
     /// StoreKit configuration decides.

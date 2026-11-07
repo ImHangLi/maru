@@ -213,8 +213,8 @@ extension AppModel {
             // The button records for one member only (D123).
             canRecord: Set(doses.map(\.entry.look.personID)).count == 1
         )
-        // Never during the onboarding (D103). An app in the background can only update or end an activity.
-        let canStart = onboarding == .hidden && UIApplication.shared.applicationState == .active
+        // An app in the background can only update or end an activity.
+        let canStart = UIApplication.shared.applicationState == .active
         return .show(state, staleDate: endOfDay, canStart: canStart)
     }
 

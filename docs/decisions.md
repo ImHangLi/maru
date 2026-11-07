@@ -1901,7 +1901,7 @@ Maintainer decision.
 
 Not verified: no build of the app on this Mac. The system shows the prompt in a Debug build every time and never in TestFlight, so only an App Store build shows the real behavior.
 
-## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips (tips removed, timing and "Skip" changed by D104, pages and look replaced by D145)
+## D103 · 2026-10-28 · A short first-run onboarding and two first-use tips (tips removed, timing and "Skip" changed by D104, pages and look replaced by D145, onboarding removed by D152)
 
 Maintainer decision for version 1.1, with agent detail. The copy uses the voice of D101.
 
@@ -1930,7 +1930,7 @@ The new strings in zh-Hans, ja, es, de, and ko are a draft until a native speake
 
 Not verified: no build of the app on this Mac, and nobody saw the pages or the tips on a display. CI builds the app.
 
-## D104 · 2026-10-28 · No first-use tips, "Color Header" on by default, and exact onboarding timing (changes D100 and D103, the place of "Skip" changed by D145)
+## D104 · 2026-10-28 · No first-use tips, "Color Header" on by default, and exact onboarding timing (changes D100 and D103, the place of "Skip" changed by D145, onboarding timing removed by D152)
 
 Maintainer decision after a test of TestFlight build 13.
 
@@ -2614,7 +2614,7 @@ Maintainer decision of 2026-10-28: version 1.0.0 will not be released. The first
 
 Tests (D016): the upgrade fixture gives every item to "Me" (T56), an older backup restores with "Me", a backup with members restores with one "Me" and the owners (T69), an action listed before an owner change records nothing (T70), and a request for two members has no group action (T60). The archive test covers T63.
 
-## D127 · 2026-10-29 · Analytics for the features since D099: Pro state, new surfaces, onboarding, and the paywall close (changes spec 11.5, `used_siri` replaced by D140)
+## D127 · 2026-10-29 · Analytics for the features since D099: Pro state, new surfaces, onboarding, and the paywall close (changes spec 11.5, `used_siri` replaced by D140, `onboarding_result` removed by D152)
 
 Lead decision for the maintainer, who asked for usage and Pro conversion data before the first public release. Each new field is a fixed choice or a flag in the strict schema of `AnalyticsEvent` (T45). No field holds an item, a member, a dose, a time, an ID, a date, a price, an icon name, or a sound name (spec 10, 11.2, T42, T68).
 
@@ -2973,7 +2973,7 @@ Other fixes:
 Tests (D016): one new test keeps the summary until the server confirms it, with the same ID and time for a repeat.
 
 Not verified: a real send to PostHog, the real value of `channel` in TestFlight and in the App Store, and a real trial purchase. Local `swift test` crashes on this Mac at each `Date` comparison, also on `main`. All 232 package tests pass with `xcodebuild test` on an iOS 27.0 simulator.
-## D145 · 2026-11-01 · Onboarding in the style of Apple's onboarding pages (replaces the pages and the look of D103, and the place of "Skip" of D104)
+## D145 · 2026-11-01 · Onboarding in the style of Apple's onboarding pages (replaces the pages and the look of D103, and the place of "Skip" of D104, removed by D152)
 
 Maintainer decision of 2026-11-01. The maintainer did not like the symbol pages and asked for a large, sharp picture of the product at the top, and words and buttons with the exact layout and weight of Apple's pages. The maintainer then rejected a moving version with a phone and a camera. The onboarding has no motion, no phone frame, and no drawn copy of a screen.
 
@@ -3196,3 +3196,21 @@ Files: `App/AppModel+Pro.swift`, `App/AppModel+Editor.swift`, `App/RootView.swif
 Tests: none (D016). The change reads committed records and writes no record.
 
 Checks: the app build passed. In an iPhone 17 Pro simulator on iOS 27.0: on the install day, the save and a taken dose showed no paywall. With the first launch moved to the day before, the open showed no paywall, an undo and a new "Taken" showed the paywall after the record, and a relaunch did not show it again. Captures and videos are in `~/Documents/Research/maru/paywall-timing/`. Not verified: the offer after a reminder action, a widget, or the Lock Screen, and a real iPhone.
+
+
+## D152 · 2026-11-07 · No first-run onboarding (removes the onboarding of D103, D104, and D145, and `onboarding_result` of D127)
+
+Maintainer decision of 2026-11-07: remove the first-run onboarding completely. A new install opens on Today, with its empty state and "Add Item".
+
+- The onboarding pages, their state, their timing rules, their pictures, and their strings are removed. Strings that other screens use ("Add Item" and "Skip") stay.
+- The analytics event `onboarding_result` is removed from the schema, the spec, `PRIVACY.md`, and the privacy pages of the site.
+- The debug launch argument `-MaruFirstRun` is removed. It had no other use.
+- A reminder tap, a widget link, and the "Taken" button of a widget still set `opensForAction`. The first-value offer of Maru Pro (D151) still waits for a normal open.
+- The Live Activity can start at the first open in front. Before, it waited for the end of the onboarding.
+- The key `onboarding.seen` stays in `UserDefaults` on devices that showed the onboarding. Nothing reads it, and no migration removes it.
+
+Reason: the maintainer wants a new user to see the app at once. The empty Today page already tells the user to add the first item.
+
+Files: `App/AppModel.swift`, `App/RootView.swift`, `App/AppModel+Backup.swift`, `App/AppModel+LiveActivity.swift`, `App/AppModel+ReminderTap.swift`, `App/AppModel+Widget.swift`, `App/AppModel+Pro.swift`, `App/MaruApp.swift`, `App/DebugLaunch.swift`, `App/Localizable.xcstrings`, `Packages/MaruKit/Sources/MaruCore/AnalyticsEvent.swift`, `Packages/MaruKit/Tests/MaruCoreTests/AnalyticsTests.swift`, `PRIVACY.md`, the privacy pages of the site, `docs/spec.md`, `docs/design.md`, `docs/localization-review.md`, `docs/release-plan.md`. Removed: `App/OnboardingView.swift`, `App/AppModel+Onboarding.swift`, `App/Onboarding.xcassets`.
+
+Tests: none (D016). The analytics factory check loses the line of the removed event.

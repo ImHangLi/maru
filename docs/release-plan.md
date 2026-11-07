@@ -157,7 +157,7 @@ The question is: "Is your app a regulated medical device in any country or regio
 | Data type | Purpose | Linked to the user | Tracking | What it is in the code |
 |---|---|---|---|---|
 | Identifiers: Device ID | Analytics | Yes | No | `distinct_id`, the random install ID |
-| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077), and `paywall_shown` from 1.2 (D107). From 1.2 also `onboarding_result` and the new flags of `daily_usage_summary` and `setting_changed` (D127) |
+| Usage Data: Product Interaction | Analytics | Yes | No | The events `setup_step`, `daily_usage_summary`, `notification_permission`, `setting_changed`, `data_action`, and `feedback_entry` (D077), and `paywall_shown` from 1.2 (D107). From 1.2 also the new flags of `daily_usage_summary` and `setting_changed` (D127) |
 | Diagnostics: Other Diagnostic Data | Analytics | Yes | No | `core_error`, `app_version`, `ios_major`, `device`, and `channel` (D144) |
 | Other Data: Other Data Types | Analytics | Yes | No | `region` (D064) and `app_language` (D077) |
 

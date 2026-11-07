@@ -99,8 +99,6 @@ public struct AnalyticsEvent: Sendable, Equatable {
             "result": .choice(DataResult.allCases.map(\.rawValue)),
         ],
         "feedback_entry": ["entry": .choice(["settings"])],
-        // The end of a first-run onboarding that showed (D104, D127).
-        "onboarding_result": ["result": .choice(OnboardingResult.allCases.map(\.rawValue))],
         // Maru Pro (D107). The place that showed the paywall, and the end of a purchase or a restore. No item data.
         "paywall_shown": ["source": .choice(PaywallSource.allCases.map(\.rawValue))],
         "purchase_result": [
@@ -345,22 +343,6 @@ public extension AnalyticsEvent {
     /// The look of the app in Settings (D105).
     enum Appearance: String, CaseIterable, Sendable {
         case system, light, dark
-    }
-
-    /// How a first-run onboarding that showed ended (D104, D127).
-    enum OnboardingResult: String, CaseIterable, Sendable {
-        /// "Add Item" on the last page.
-        case addItem = "add_item"
-        /// "Later" on the last page.
-        case later
-        /// "Skip" before the last page.
-        case skipped
-        /// A reminder tap or a widget link opened Today. The onboarding shows again at the next launch with no item.
-        case yielded
-    }
-
-    static func onboardingResult(_ result: OnboardingResult) -> AnalyticsEvent {
-        AnalyticsEvent(unchecked: "onboarding_result", ["result": .text(result.rawValue)])
     }
 
     static func headerWashChanged(_ isOn: Bool) -> AnalyticsEvent {

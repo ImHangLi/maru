@@ -480,7 +480,6 @@ Apple 的启动优化资料明确区分冷启动、暖启动与恢复，也用�
 | setting_changed | “再次提醒”次数与间隔枚举（设置页“所有项目”，D085）、是否开启全部项目的闹钟、是否在提醒中显示名称、App 颜色枚举。D127 adds `header_wash` (a flag) and `appearance` (`system`, `light`, or `dark`) | 其他设置值；分析开关关闭后不再发送 |
 | data_action | 导出/备份/恢复枚举、结果枚举 | 文件名、文件内容、路径 |
 | feedback_entry | 入口枚举、是否发送成功 | 用户反馈正文、附件和邮箱（单独支持端点处理） |
-| onboarding_result | `result`: `add_item`, `later`, `skipped`, or `yielded` (a reminder tap or a widget link opened Today) (D127). Only an onboarding that showed sends it | 页面停留时间、页序列 |
 | paywall_shown | `source`: `first_value`, `day7_card`, `settings`, `app_color`, `live_activity`, `watch`, `icons`, `sounds`, `family`, `report`, or `insights` (D107, D112, D122, D127, D130, D140) | 项目名称、剂量、时间、ItemID |
 | purchase_result | `result`: `purchased`, `cancelled`, `pending`, `failed`, `restored`, or `dismissed` (the paywall closed with no active Pro, D127). `plan`: `yearly` or `lifetime` (D107). `trial`: a flag, true when the purchase starts an introductory free trial (D144) | Apple 账号、原始交易收据、价格、金融身份 |
 
