@@ -10,7 +10,7 @@ extension AppModel {
     func openWidgetLink(_ url: URL) {
         guard url.scheme == "maru", url.host() == "today" || url.host() == "item" else { return }
         analytics.markUsed(url.query() == AppGroup.activityQuery ? .liveActivity : .widget)
-        onboardingYieldsToAction()
+        opensForAction = true
         selectedTab = .today
         resetHistory()
         let component = url.pathComponents.dropFirst().first
@@ -50,8 +50,8 @@ extension AppModel {
     /// shows a success, and asks the system to open Maru (spec 7.2).
     func takeFromWidget(_ intent: TakeDoseIntent) async throws {
         analytics.markUsed(.widget)
-        // The intent can continue in front and open Today, so the onboarding waits for the next launch (D104).
-        onboardingYieldsToAction()
+        // The intent can continue in front and open Today, so the first-value offer waits (D151).
+        opensForAction = true
         // The generation comes before the first await. A restore that ends after this line changes the generation
         // of the store, so the record is refused (D040). A restore that ended before it changed the epoch.
         let generation = dataGeneration

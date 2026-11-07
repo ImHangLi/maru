@@ -8,8 +8,8 @@ struct PaywallRequest: Identifiable, Equatable {
     let source: AnalyticsEvent.PaywallSource
 }
 
-/// The state of Maru Pro that is not in StoreKit (D107). The flags of the offers are in `UserDefaults.standard`, as
-/// the onboarding flag (D103). They hold no item data, and a backup does not carry them.
+/// The state of Maru Pro that is not in StoreKit (D107). The flags of the offers are in `UserDefaults.standard`.
+/// They hold no item data, and a backup does not carry them.
 struct ProState {
     /// The paywall on the display.
     var paywall: PaywallRequest?
@@ -100,8 +100,7 @@ extension AppModel {
     // MARK: Watch
 
     /// The locked screen of the Watch app asked for Maru Pro (D111).
-    /// The root view shows the paywall the next time that Maru is in front, after the onboarding, the edit screen, and the
-    /// alerts.
+    /// The root view shows the paywall the next time that Maru is in front, after the edit screen and the alerts.
     func askedForPro(from source: AnalyticsEvent.PaywallSource) {
         // A paywall that is open already answers the request, so its close does not open a second one.
         guard !pro.isPro, proState.paywall == nil else { return }

@@ -46,7 +46,6 @@ struct AnalyticsTests {
             .allRemindAgainIntervalChanged(.minutes60),
             .headerWashChanged(false),
             .appearanceChanged(.dark),
-            .onboardingResult(.yielded),
             .dataAction(.restore, .newerFile),
             .feedbackOpened,
             .paywallShown(.day7Card),

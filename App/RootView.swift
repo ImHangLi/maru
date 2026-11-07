@@ -26,16 +26,6 @@ struct RootView: View {
         Group {
             if case let .failed(error) = model.content {
                 StorageProblemView(error: error)
-            } else if model.onboarding == .undecided {
-                // The first read decides. Today does not show for a frame before the onboarding (D104).
-                Color.clear
-            } else if model.onboarding == .shows {
-                // The page of the window, not a sheet: Today is not under it, and a rotation or Split View keeps it (D104).
-                OnboardingView { result in
-                    model.finishOnboarding(result)
-                    // The edit screen opens on the tabs.
-                    if result == .addItem { model.openEditor(for: nil) }
-                }
             } else {
                 TabView(selection: $model.selectedTab) {
                     TodayView()
@@ -55,10 +45,6 @@ struct RootView: View {
                 // Settings hosts the paywall while it is up. The edit screen never shows it (D107).
                 .paywallHost(!editorIsUp && !model.settings.isPresented)
             }
-        }
-        // The onboarding decides only in front, so a launch in the background for a reminder action does not use it (D104).
-        .onChange(of: scenePhase == .active, initial: true) { _, isActive in
-            model.windowDidChange(isActive: isActive)
         }
         // The storage problem page removes the tabs and their sheet, so `onDismiss` can not run.
         // Without the sheet, the edit screen is not on the display.
@@ -193,7 +179,7 @@ struct RootView: View {
 
     private var firstValueIsDue: Bool {
         model.proState.firstValueOffer && scenePhase == .active && !model.opensForAction && model.selectedTab == .today
-            && model.today.path.isEmpty && !model.history.isOpen && model.onboarding == .hidden
+            && model.today.path.isEmpty && !model.history.isOpen
             && model.remindAgainOffer == nil && model.today.lockedTap == nil && model.today.failure == nil
             && model.today.asNeeded.failure == nil && !model.endFailed && model.unsavedCount == 0
             && model.today.inFlight.isEmpty && model.today.asNeeded.inFlight.isEmpty
@@ -209,7 +195,7 @@ struct RootView: View {
     }
 
     private var askedOfferIsDue: Bool {
-        model.proState.askedSource != nil && scenePhase == .active && model.onboarding == .hidden
+        model.proState.askedSource != nil && scenePhase == .active
             && !firstValueIsDue && !editorIsUp && !showsAlert && !showsEnd && !showsStatisticsNotice
             && !showsOffer && model.reminderAlerts.isEmpty && model.proState.paywall == nil
     }

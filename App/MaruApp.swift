@@ -14,10 +14,6 @@ struct MaruApp: App {
     private let tapDelegate: ReminderTapDelegate
 
     init() {
-        #if DEBUG
-        // Before the model reads the flag.
-        if DebugLaunch.wantsFirstRun { UserDefaults.standard.removeObject(forKey: Onboarding.seenKey) }
-        #endif
         let model = AppModel.shared
         // Start the launch path here, so the database opens while the system builds the first view.
         model.refresh()
@@ -63,7 +59,7 @@ struct MaruApp: App {
                 .environment(model)
                 // The user picks the app color in settings. Pink is the default (D025).
                 .tint(appColor.tint)
-                // On the window, so every open sheet, alert, and the onboarding follow a change at once (D105).
+                // On the window, so every open sheet and alert follow a change at once (D105).
                 .background(WindowStyle(style: appearance.style))
                 .onOpenURL { model.openWidgetLink($0) }
                 .onChange(of: appColor) { _, color in
