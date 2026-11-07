@@ -6,6 +6,7 @@ Maru was developed in an older private repository. Issue numbers, pull request n
 
 ## Current state
 
+- The paywall opens with both plans at once (D153, branch `leon/paywall-offers-at-once`, open PR, not merged). The offers load in the background at launch for a free user, and both arrive in one change. While they load, redacted tiles keep the height of the purchase area. CI builds the app. A real iPhone must check the first open of the paywall after a launch.
 - Version 1.1.0 (build 19) and both Maru Pro products passed App Review on 2026-11-06. The maintainer released the version on 2026-11-06. The site has `RELEASED = True`. Deploy the site when the App Store page answers. The lifetime price changes to $29.99 on 2026-12-06. Then change the FAQ answer about the price.
 - Version 1.1.1 has D150 and D151. Build 20 is for TestFlight only, for a check on the maintainer's iPhone. It is not submitted for App Review. The App Store version 1.1.1, its store text, and its screenshots do not exist yet.
 - Build 21 of version 1.1.1 (from `main` at `7023e11`, with D152) is on internal TestFlight since 2026-11-07, for the group "Internal" only. The export used the manual "Maru … App Store 2026-10" profiles.

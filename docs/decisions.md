@@ -3214,3 +3214,15 @@ Reason: the maintainer wants a new user to see the app at once. The empty Today 
 Files: `App/AppModel.swift`, `App/RootView.swift`, `App/AppModel+Backup.swift`, `App/AppModel+LiveActivity.swift`, `App/AppModel+ReminderTap.swift`, `App/AppModel+Widget.swift`, `App/AppModel+Pro.swift`, `App/MaruApp.swift`, `App/DebugLaunch.swift`, `App/Localizable.xcstrings`, `Packages/MaruKit/Sources/MaruCore/AnalyticsEvent.swift`, `Packages/MaruKit/Tests/MaruCoreTests/AnalyticsTests.swift`, `PRIVACY.md`, the privacy pages of the site, `docs/spec.md`, `docs/design.md`, `docs/localization-review.md`, `docs/release-plan.md`. Removed: `App/OnboardingView.swift`, `App/AppModel+Onboarding.swift`, `App/Onboarding.xcassets`.
 
 Tests: none (D016). The analytics factory check loses the line of the removed event.
+
+## D153 · 2026-11-07 · The paywall opens with both plans at once (changes the offer load of D107)
+
+The maintainer saw the lifetime plan first and the yearly plan a moment later when the paywall opened. `loadOffers()` wrote each offer as it went, and it waited for the trial eligibility of the yearly plan between the two writes. The offers also loaded only when the paywall opened, so the first open waited for the App Store.
+
+- `loadOffers()` builds both offers first and writes them in one change, so both tiles show in the same frame.
+- For a free user, the offers load after the first read of the entitlement at launch, in a background task. The launch waits for nothing (spec 9, T35). The paywall still loads them when it opens with none, for example when the launch load failed.
+- While the offers load, the purchase area shows two redacted tiles with the shape of the real ones, and a blank terms line. So the page keeps its height when the prices arrive. The message "Prices didn’t load" shows only after a load ended with no offer.
+
+Files: `App/Pro/ProStore.swift`, `App/Pro/PaywallView.swift`.
+
+Tests: none (D016).
